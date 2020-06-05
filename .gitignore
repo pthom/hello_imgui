@@ -560,4 +560,8 @@ MigrationBackup/
 
 # End of https://www.gitignore.io/api/c++,linux,clion,qtcreator,visualstudio,visualstudiocode,xcode
 
+# Jetbrains settings
 .idea
+
+# Misc
+nohup.out

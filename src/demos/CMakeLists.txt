@@ -1,3 +1,2 @@
-if (IMGUIRUNNER_QT)
-    add_subdirectory(demo_imgui)
-endif()
+add_subdirectory(demo_imgui)
+add_subdirectory(demo_imgui_runner_minimal)

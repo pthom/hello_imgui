@@ -1,0 +1,120 @@
+Checks: |
+  '-*,
+   clang-diagnostic-*,
+   clang-analyzer-*,
+   -clang-analyzer-core.NullDereference,
+   -clang-analyzer-optin.mpi.MPI-Checker,
+   -clang-analyzer-security.FloatLoopCounter,
+   bugprone-*,
+   clang-analyzer-alpha.*,
+   modernize-deprecated-headers,
+   modernize-make-shared,
+   modernize-make-unique,
+   modernize-return-braced-init-list,
+   modernize-redundant-void-arg,
+   modernize-loop-convert,
+   modernize-pass-by-value,
+   modernize-use-auto,
+   modernize-use-bool-literals,
+   modernize-use-emplace,
+   modernize-use-equals-default,
+   modernize-use-equals-delete,
+   modernize-use-noexcept,
+   modernize-use-nullptr,
+   modernize-use-override,
+   readability-avoid-const-params-in-decls,
+   readability-container-size-empty,
+   readability-delete-null-pointer,
+   readability-deleted-default,
+   readability-else-after-return,
+   readability-non-const-parameter,
+   readability-redundant-control-flow,
+   readability-simplify-boolean-expr,
+   readability-simplify-subscript-expr,
+   readability-static-definition-in-anonymous-namespace,
+   readability-string-compare,
+   readability-uniqueptr-delete-release,
+   readability-function-size'
+WarningsAsErrors: '*,-clang-analyzer-core.StackAddrEscapeBase,-clang-analyzer-optin.mpi.MPI-Checker'
+HeaderFilterRegex: '.*'
+AnalyzeTemporaryDtors: false
+FormatStyle:     none
+User: espresso
+CheckOptions:    
+  - key:             bugprone-argument-comment.StrictMode
+    value:           '0'
+  - key:             bugprone-assert-side-effect.AssertMacros
+    value:           assert
+  - key:             bugprone-assert-side-effect.CheckFunctionCalls
+    value:           '0'
+  - key:             bugprone-dangling-handle.HandleClasses
+    value:           'std::basic_string_view;std::experimental::basic_string_view'
+  - key:             bugprone-string-constructor.LargeLengthThreshold
+    value:           '8388608'
+  - key:             bugprone-string-constructor.WarnOnLargeLength
+    value:           '1'
+  - key:             google-readability-braces-around-statements.ShortStatementLines
+    value:           '1'
+  - key:             google-readability-function-size.StatementThreshold
+    value:           '800'
+  - key:             google-readability-namespace-comments.ShortNamespaceLines
+    value:           '10'
+  - key:             google-readability-namespace-comments.SpacesBeforeComments
+    value:           '2'
+  - key:             modernize-loop-convert.MaxCopySize
+    value:           '16'
+  - key:             modernize-loop-convert.MinConfidence
+    value:           reasonable
+  - key:             modernize-loop-convert.NamingStyle
+    value:           CamelCase
+  - key:             modernize-make-shared.IgnoreMacros
+    value:           '1'
+  - key:             modernize-make-shared.IncludeStyle
+    value:           '0'
+  - key:             modernize-make-shared.MakeSmartPtrFunction
+    value:           'std::make_shared'
+  - key:             modernize-make-shared.MakeSmartPtrFunctionHeader
+    value:           memory
+  - key:             modernize-make-unique.IgnoreMacros
+    value:           '1'
+  - key:             modernize-make-unique.IncludeStyle
+    value:           '0'
+  - key:             modernize-make-unique.MakeSmartPtrFunction
+    value:           'std::make_unique'
+  - key:             modernize-make-unique.MakeSmartPtrFunctionHeader
+    value:           memory
+  - key:             modernize-pass-by-value.IncludeStyle
+    value:           llvm
+  - key:             modernize-pass-by-value.ValuesOnly
+    value:           '0'
+  - key:             modernize-replace-auto-ptr.IncludeStyle
+    value:           llvm
+  - key:             modernize-use-auto.RemoveStars
+    value:           '0'
+  - key:             modernize-use-emplace.ContainersWithPushBack
+    value:           '::std::vector;::std::list;::std::deque'
+  - key:             modernize-use-emplace.SmartPointers
+    value:           '::std::shared_ptr;::std::unique_ptr;::std::auto_ptr;::std::weak_ptr'
+  - key:             modernize-use-emplace.TupleMakeFunctions
+    value:           '::std::make_pair;::std::make_tuple'
+  - key:             modernize-use-emplace.TupleTypes
+    value:           '::std::pair;::std::tuple'
+  - key:             modernize-use-equals-default.IgnoreMacros
+    value:           '1'
+  - key:             modernize-use-noexcept.ReplacementString
+    value:           ''
+  - key:             modernize-use-noexcept.UseNoexceptFalse
+    value:           '1'
+  - key:             modernize-use-nullptr.NullMacros
+    value:           'NULL'
+  - key:             modernize-use-transparent-functors.SafeMode
+    value:           '1'
+  - key:             readability-simplify-boolean-expr.ChainedConditionalAssignment
+    value:           '0'
+  - key:             readability-simplify-boolean-expr.ChainedConditionalReturn
+    value:           '0'
+  - key:             readability-static-accessed-through-instance.NameSpecifierNestingThreshold
+    value:           '3'
+  - key:             readability-function-size.BranchThreshold
+    value:           '3'
+    

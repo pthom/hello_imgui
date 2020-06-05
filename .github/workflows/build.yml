@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Install Doxygen
+      run: sudo apt-get install doxygen
+    - name: Install Sphinx, breathe, and sphinx_rtd_theme
+      run: |
+           sudo pip3 install sphinx
+           sudo pip3 install breathe
+           sudo pip3 install sphinx_rtd_theme
+    - name: Configure
+      run: |
+          mkdir build
+          cd build
+          cmake -DBUILD_DOCS=ON -DBUILD_DOCS_EXCLUDE_FROM_ALL=ON -DCMAKE_BUILD_TYPE=Release ..
+    - name: Build
+      working-directory: build
+      run: |
+          make
+    - name: Test
+      working-directory: build
+      run: |
+          make test
+    - name: Make doxygen doc
+      working-directory: build
+      run: |
+        make Doxygen
+    - name: Make sphinx doc
+      working-directory: build
+      run: |
+        make Sphinx

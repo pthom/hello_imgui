@@ -1,0 +1,10 @@
+﻿add_library (Canidae "dog.cpp" "dog.h")
+target_include_directories(Canidae PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+target_link_libraries(Canidae PUBLIC project_properties project_warnings)
+target_link_libraries(Canidae PUBLIC Mamals)
+
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+    add_executable(dog_test dog.test.cpp)
+    target_link_libraries(dog_test PRIVATE main_test Canidae)
+    add_test(NAME dog_test COMMAND dog_test)
+endif()

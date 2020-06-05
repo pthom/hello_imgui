@@ -1,0 +1,2 @@
+add_library(imgui_runner_qt imgui_runner_qt.cpp)
+target_link_libraries(imgui_runner_qt PUBLIC imgui_runner qt_imgui_quick)

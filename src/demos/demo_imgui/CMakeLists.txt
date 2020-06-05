@@ -1,0 +1,5 @@
+add_executable(demo_imgui demo_imgui.main.cpp)
+target_link_libraries(demo_imgui PRIVATE imgui_runner)
+if (IMGUIRUNNER_QT)
+    target_link_libraries(demo_imgui PRIVATE imgui_runner_qt)
+endif()

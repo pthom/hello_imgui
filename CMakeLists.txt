@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(PROJECTNAME LANGUAGES CXX)
+option(IMGUIRUNNER_QT "Build ImGuiRunner for Qt" ON)
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake/")
+project(ImGuiRunner LANGUAGES CXX)
+
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_LIST_DIR}/cmake/")
 
 include(StandardProjectSettings)
 include(CompilerWarnings)
@@ -12,10 +14,7 @@ include(StaticAnalyzers)
 # Link to this library to inherit the properties
 add_library(project_properties INTERFACE)
 target_compile_features(project_properties INTERFACE cxx_std_14)
-# Link this 'library' to use the warnings specified in CompilerWarnings.cmake
-add_library(project_warnings INTERFACE)
-set_project_warnings(project_warnings)
-
+set_project_warnings(project_properties)
 # sanitizer options if supported by compiler
 include(Sanitizers)
 enable_sanitizers(project_properties)

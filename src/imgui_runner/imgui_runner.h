@@ -13,10 +13,11 @@ struct AppWindowParams
                     int windowWidth = 800,
                     int windowHeight = 600,
                     bool provideFullBackgroundWindow = true)
-        : window_title(windowTitle),
+        : provide_full_background_window(provideFullBackgroundWindow),
+          window_title(windowTitle),
           window_width(windowWidth),
-          window_height(windowHeight),
-          provide_full_background_window(provideFullBackgroundWindow)
+          window_height(windowHeight)
+
     {
     }
 
@@ -75,16 +76,13 @@ using GuiLoopWithExitFunction = std::function<bool(void)>;
   provided. You need to link with the correct version (imgui_runner_qt or imgui_runner_glfw)
  \endverbatim
  */
-void RunWithExit(GuiLoopWithExitFunction guiLoopFunction,
-                const AppWindowParams &params = AppWindowParams());
-
+void RunWithExit(GuiLoopWithExitFunction guiLoopFunction, const AppWindowParams &params = AppWindowParams());
 
 /**
  * Runs an application whose gui loop is provided by guiLoopFunction.
  * @param guiLoopFunction a function of type GuiLoopFunction (aka void(void)) that will render ImGui widgets
  * @param appWindowParams application window params
  */
-void Run(GuiLoopFunction guiLoopFunction,
-         const AppWindowParams &appWindowParams = AppWindowParams());
+void Run(GuiLoopFunction guiLoopFunction, const AppWindowParams &appWindowParams = AppWindowParams());
 
 }  // namespace ImGuiRunner

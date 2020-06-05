@@ -1,3 +1,6 @@
 [submodule "external/imgui"]
 	path = external/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "external/qtimgui"]
+	path = external/qtimgui
+	url = https://github.com/seanchas116/qtimgui.git

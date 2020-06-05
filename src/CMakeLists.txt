@@ -1,1 +1,5 @@
 add_subdirectory(imgui_runner)
+add_subdirectory(demos)
+if (IMGUIRUNNER_QT)
+    add_subdirectory(imgui_runner_qt)
+endif()

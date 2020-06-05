@@ -20,7 +20,12 @@ function(add_imguirunner_app)
         add_qt_android_apk(${app_name}_apk ${app_name})
     endif()
 
+    target_link_libraries(${app_name} PRIVATE imgui_runner)
+
     if (IMGUIRUNNER_QT)
         target_link_libraries(${app_name} PRIVATE qt_imgui_quick imgui_runner_qt)
+    endif()
+    if (IMGUIRUNNER_GLFW)
+        target_link_libraries(${app_name} PRIVATE imgui_runner_glfw)
     endif()
 endfunction()

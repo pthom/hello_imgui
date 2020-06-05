@@ -100,7 +100,7 @@ class ImGuiQtRunnerWindow : public QOpenGLWindow, private QOpenGLExtraFunctions
     bool shall_close = false;
 };
 
-} // namespace details
+} // namespace DetailsQt
 
 
 void RunWithExit(
@@ -131,4 +131,4 @@ void RunWithExit(
     (void)return_code;
 }
 
-} // namespace QtImGuiRunner
+} // namespace ImGuiRunner

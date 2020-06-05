@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
-option(IMGUIRUNNER_QT "Build ImGuiRunner for Qt" ON)
+option(IMGUIRUNNER_QT "Build ImGuiRunner for Qt" OFF)
+option(IMGUIRUNNER_GLFW "Build ImGuiRunner for GLFW" ON)
 
 project(ImGuiRunner LANGUAGES CXX)
 

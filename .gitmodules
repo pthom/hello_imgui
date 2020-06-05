@@ -4,3 +4,6 @@
 [submodule "external/qtimgui"]
 	path = external/qtimgui
 	url = https://github.com/seanchas116/qtimgui.git
+[submodule "external/glfw"]
+	path = external/glfw
+	url = https://github.com/glfw/glfw.git

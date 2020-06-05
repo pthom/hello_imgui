@@ -12,7 +12,6 @@ include(StaticAnalyzers)
 # Link to this library to inherit the properties
 add_library(project_properties INTERFACE)
 target_compile_features(project_properties INTERFACE cxx_std_14)
-
 # Link this 'library' to use the warnings specified in CompilerWarnings.cmake
 add_library(project_warnings INTERFACE)
 set_project_warnings(project_warnings)
@@ -21,14 +20,6 @@ set_project_warnings(project_warnings)
 include(Sanitizers)
 enable_sanitizers(project_properties)
 
-# enable doxygen
-enable_doxygen()
-
-
-option(BUILD_TESTING "Build tests" ON)
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
-  enable_testing()
-endif()
 
 add_subdirectory(external)
 add_subdirectory(src)
@@ -38,5 +29,6 @@ option(BUILD_DOCS "Build docs" OFF)
 # You can exclude the docs from "make all"
 option(BUILD_DOCS_EXCLUDE_FROM_ALL "Build docs, but exclude them from 'build all'" OFF)
 if (BUILD_DOCS)
+    enable_doxygen()
     add_subdirectory(docs)
 endif()

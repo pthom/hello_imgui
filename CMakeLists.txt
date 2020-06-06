@@ -1,12 +1,14 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
+cmake_policy(VERSION 3.15)
 
 # Docs options (the docs use Sphinx: see docs/index.rst)
 option(BUILD_DOCS "Build docs" OFF)
 # You can exclude the docs from "make all"
 option(BUILD_DOCS_EXCLUDE_FROM_ALL "Build docs, but exclude them from 'build all'" OFF)
 
-option(IMGUIRUNNER_QT "Build ImGuiRunner for Qt" OFF)
+option(IMGUIRUNNER_QT "Build ImGuiRunner for Qt" ON)
 option(IMGUIRUNNER_GLFW "Build ImGuiRunner for GLFW" ON)
+option(IMGUIRUNNER_SDL "Build ImGuiRunner for SDL" ON)
 
 project(ImGuiRunner LANGUAGES CXX)
 

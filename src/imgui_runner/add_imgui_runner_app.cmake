@@ -24,9 +24,6 @@ function(add_imguirunner_app)
     if (IMGUIRUNNER_QT)
         set(imgui_runner_impl_libs qt_imgui_quick imgui_runner_qt)
     endif()
-    if (IMGUIRUNNER_GLFW)
-        set(imgui_runner_impl_libs imgui_runner_glfw glfw)
-    endif()
 
     target_link_libraries(${app_name} PRIVATE ${imgui_runner_impl_libs})
 

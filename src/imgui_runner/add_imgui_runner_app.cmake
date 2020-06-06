@@ -8,7 +8,6 @@ function(add_imguirunner_app)
     list(GET args 0 app_name)
     list(REMOVE_AT args 0)
     set(app_sources ${args})
-    message("add_imgui_app app_name=${app_name} sources=${app_sources}")
 
     if (ANDROID)
         add_library(${app_name} SHARED ${app_sources})
@@ -23,9 +22,16 @@ function(add_imguirunner_app)
     target_link_libraries(${app_name} PRIVATE imgui_runner)
 
     if (IMGUIRUNNER_QT)
-        target_link_libraries(${app_name} PRIVATE qt_imgui_quick imgui_runner_qt)
+        set(imgui_runner_impl_libs qt_imgui_quick imgui_runner_qt)
     endif()
     if (IMGUIRUNNER_GLFW)
-        target_link_libraries(${app_name} PRIVATE imgui_runner_glfw)
+        set(imgui_runner_impl_libs imgui_runner_glfw glfw)
     endif()
+
+    target_link_libraries(${app_name} PRIVATE ${imgui_runner_impl_libs})
+
+    message("add_imgui_app
+             app_name=${app_name}
+             sources=${app_sources}
+             linked with ${imgui_runner_impl_libs}")
 endfunction()

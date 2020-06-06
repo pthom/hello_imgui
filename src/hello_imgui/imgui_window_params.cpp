@@ -2,10 +2,7 @@
 
 namespace HelloImGui
 {
-void ImGuiWindowParams::ResetDockLayout()
-{
-    WasDockLayoutApplied = false;
-}
+void ImGuiWindowParams::ResetDockLayout() { wasDockLayoutApplied = false; }
 
 namespace DockingDetails
 {
@@ -23,7 +20,7 @@ namespace DockingDetails
         ImGui::SetNextWindowSize(winSize);
         ImGuiWindowFlags windowFlags =
             ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoBringToFrontOnFocus;
-        if (imGuiWindowParams.ShowMenuBar)
+        if (imGuiWindowParams.showMenuBar)
             windowFlags |= ImGuiWindowFlags_MenuBar;
         ImGui::Begin("Main window (title bar invisible)", nullptr, windowFlags);
     }
@@ -40,7 +37,7 @@ namespace DockingDetails
         window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
                         ImGuiWindowFlags_NoMove;
         window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-        if (imGuiWindowParams.ShowMenuBar)
+        if (imGuiWindowParams.showMenuBar)
             window_flags |= ImGuiWindowFlags_MenuBar;
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -56,30 +53,28 @@ namespace DockingDetails
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
     }
 
-    bool WasDockLayoutDone(const ImGuiWindowParams& p) { return p.WasDockLayoutApplied; }
-    void SetDockLayout_Done(ImGuiWindowParams& p) { p.WasDockLayoutApplied = true; }
+    bool WasDockLayoutDone(const ImGuiWindowParams& p) { return p.wasDockLayoutApplied; }
+    void SetDockLayout_Done(ImGuiWindowParams& p) { p.wasDockLayoutApplied = true; }
     void SetDockLayout_NotDone(ImGuiWindowParams& p)
     {
         remove("imgui.ini");
-        p.WasDockLayoutApplied = false;
+        p.wasDockLayoutApplied = false;
     }
 
     void ConfigureImGuiDocking(const ImGuiWindowParams& imGuiWindowParams)
     {
-        if (imGuiWindowParams.DefaultWindowType ==
-            ImGuiWindowParams::ImGuiDefaultWindowType::ProvideFullScreenDockSpace)
+        if (imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenDockSpace)
             ImGui::GetIO().ConfigFlags = ImGui::GetIO().ConfigFlags | ImGuiConfigFlags_DockingEnable;
 
-        ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = imGuiWindowParams.ConfigWindowsMoveFromTitleBarOnly;
+        ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = imGuiWindowParams.configWindowsMoveFromTitleBarOnly;
     }
 
     void ProvideWindowOrDock(ImGuiWindowParams& imGuiWindowParams)
     {
-        if (imGuiWindowParams.DefaultWindowType == ImGuiWindowParams::ImGuiDefaultWindowType::ProvideFullScreenWindow)
+        if (imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenWindow)
             ImplProvideFullScreenImGuiWindow(imGuiWindowParams);
 
-        if (imGuiWindowParams.DefaultWindowType ==
-            ImGuiWindowParams::ImGuiDefaultWindowType::ProvideFullScreenDockSpace)
+        if (imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenDockSpace)
         {
             if (!WasDockLayoutDone(imGuiWindowParams))
             {
@@ -93,10 +88,9 @@ namespace DockingDetails
 
     void CloseWindowOrDock(ImGuiWindowParams& imGuiWindowParams)
     {
-        if (imGuiWindowParams.DefaultWindowType != ImGuiWindowParams::ImGuiDefaultWindowType ::NoDefaultWindow)
+        if (imGuiWindowParams.defaultImGuiWindowType != DefaultImGuiWindowType ::NoDefaultWindow)
             ImGui::End();
     }
-
 
 }  // namespace DockingDetails
 

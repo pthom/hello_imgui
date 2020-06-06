@@ -160,7 +160,7 @@ namespace HelloImGui
     {
         auto& io = ImGui::GetIO();
         glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
-        ImVec4 clear_color = params.imGuiWindowParams.BackgroundColor;
+        ImVec4 clear_color = params.imGuiWindowParams.backgroundColor;
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
     }

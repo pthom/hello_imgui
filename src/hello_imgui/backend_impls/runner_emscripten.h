@@ -1,7 +1,7 @@
 #pragma once
 #ifdef __EMSCRIPTEN__
 
-#include "imgui_utils/imgui_runner/runner_sdl.h"
+#include "hello_imgui/backend_impls/runner_sdl.h"
 
 namespace HelloImGui
 {

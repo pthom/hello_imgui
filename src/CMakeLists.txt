@@ -1,5 +1,5 @@
 add_subdirectory(imgui_runner)
-add_subdirectory(hello_imgui_runner)
+add_subdirectory(hello_imgui)
 add_subdirectory(demos)
 if (HELLOIMGUI_USE_QT)
     add_subdirectory(imgui_runner_qt)

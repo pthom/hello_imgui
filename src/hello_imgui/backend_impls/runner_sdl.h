@@ -1,16 +1,15 @@
 #pragma once
-#ifdef HELLOIMGUI_USE_GLFW
-#include "hello_imgui_runner/abstract_runner.h"
+#ifdef HELLOIMGUI_USE_SDL
+#include "hello_imgui/abstract_runner.h"
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include <SDL.h>
 
 namespace HelloImGui
 {
-    class RunnerGlfw : public AbstractRunner
+    class RunnerSdl : public AbstractRunner
 {
        public:
-        virtual ~RunnerGlfw() = default;
+        virtual ~RunnerSdl() = default;
 
        protected:
         void Impl_InitBackend() override;
@@ -20,7 +19,7 @@ namespace HelloImGui
         void Impl_InitGlLoader() override;
         void Impl_SetupPlatformRendererBindings() override;
 
-        bool Impl_PollEvents() override; // returns true if exit required
+        bool Impl_PollEvents() override;
         void Impl_NewFrame_3D() override;
         void Impl_NewFrame_Backend() override;
         void Impl_Frame_3D_ClearColor() override;
@@ -30,8 +29,10 @@ namespace HelloImGui
         void Impl_SwapBuffers() override;
 
        private:
-        GLFWwindow* mWindow = nullptr;
+        SDL_Window* mWindow = nullptr;
+        SDL_GLContext mGlContext = nullptr;
     };
 
 }  // namespace HelloImGui
-#endif  // #ifdef HELLOIMGUI_USE_GLFW
+
+#endif  // #ifdef HELLOIMGUI_USE_SDL

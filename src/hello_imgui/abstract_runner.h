@@ -9,10 +9,10 @@ class AbstractRunner
 {
    public:
     /// Step 0: Construct a concrete Runner (for example RunnerSdl or RunnerGlfw)
-    AbstractRunner() = default;
+    AbstractRunner(RunnerParams &params_) : params(params_) {};
     virtual ~AbstractRunner() = default;
 
-    RunnerParams params;
+    RunnerParams & params;
 
     /// Step 4.a: Call Run()
     inline void Run()

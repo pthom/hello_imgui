@@ -9,6 +9,7 @@ namespace HelloImGui
     class RunnerSdl : public AbstractRunner
 {
        public:
+        RunnerSdl(RunnerParams & runnerParams) : AbstractRunner(runnerParams) {}
         virtual ~RunnerSdl() = default;
 
        protected:

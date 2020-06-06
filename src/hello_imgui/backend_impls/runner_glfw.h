@@ -10,6 +10,7 @@ namespace HelloImGui
     class RunnerGlfw : public AbstractRunner
 {
        public:
+        RunnerGlfw(RunnerParams & runnerParams) : AbstractRunner(runnerParams) {}
         virtual ~RunnerGlfw() = default;
 
        protected:

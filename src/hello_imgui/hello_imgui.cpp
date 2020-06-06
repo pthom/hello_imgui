@@ -5,7 +5,7 @@ namespace HelloImGui
 {
     void Run(RunnerParams & runnerParams)
     {
-        auto runner = FactorRunner();
+        auto runner = FactorRunner(runnerParams);
         runner->params = runnerParams;
         runner->Run();
     }

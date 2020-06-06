@@ -8,6 +8,7 @@ namespace HelloImGui
     class RunnerEmscripten : public RunnerSdl
     {
        public:
+        RunnerEmscripten(RunnerParams & runnerParams) : RunnerSdl(runnerParams) {}
         virtual ~RunnerEmscripten() = default;
         void Run() override;
 

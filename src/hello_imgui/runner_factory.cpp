@@ -7,27 +7,33 @@
 namespace HelloImGui
 {
 #ifdef HELLOIMGUI_USE_GLFW
-std::unique_ptr<AbstractRunner> FactorRunnerGlfw() { return std::make_unique<RunnerGlfw>(); }
+std::unique_ptr<AbstractRunner> FactorRunnerGlfw(RunnerParams& params)
+{
+    return std::make_unique<RunnerGlfw>(params);
+}
 #endif
 
 #ifdef HELLOIMGUI_USE_SDL
-std::unique_ptr<AbstractRunner> FactorRunnerSdl() { return std::make_unique<RunnerSdl>(); }
+std::unique_ptr<AbstractRunner> FactorRunnerSdl(RunnerParams& params)
+{
+    return std::make_unique<RunnerSdl>(params);
+}
 #endif
 
 #ifdef __EMSCRIPTEN__
 std::unique_ptr<AbstractRunner> FactorRunnerEmscripten() { return std::make_unique<RunnerEmscripten>(); }
 #endif
 
-std::unique_ptr<AbstractRunner> FactorRunner()
+std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 {
 #ifdef HELLOIMGUI_USE_SDL
-    return FactorRunnerSdl();
+    return FactorRunnerSdl(params);
 #endif
 #ifdef HELLOIMGUI_USE_GLFW
-    return FactorRunnerGlfw();
+    return FactorRunnerGlfw(params);
 #endif
 #ifdef __EMSCRIPTEN__
-    return FactorRunnerEmscripten();
+    return FactorRunnerEmscripten(params);
 #endif
 }
 }  // namespace HelloImGui

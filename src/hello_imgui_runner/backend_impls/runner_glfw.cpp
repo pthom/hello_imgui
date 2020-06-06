@@ -58,7 +58,7 @@ namespace HelloImGui
 
     void RunnerGlfw::Impl_CreateWindowAndContext()
     {
-        const BackendWindowParams& backendWindowParams = params.backendWindowParams;
+        const AppWindowParams& backendWindowParams = params.backendWindowParams;
         ImVec2 windowSize = backendWindowParams.windowSize;
         ImVec2 windowPosition = backendWindowParams.windowPosition;
 

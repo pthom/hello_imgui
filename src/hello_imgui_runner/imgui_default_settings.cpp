@@ -1,17 +1,14 @@
 #include "imgui_default_settings.h"
 
-#include "abstract_runner.h"
 #include <imgui.h>
 
 namespace HelloImGui
 {
 namespace ImGuiDefaultSettings
 {
-
-inline bool HelloGui()
+void LoadFontAwesome()
 {
-    ImGui::Text("Hello, World");
-    return false;
+
 }
 
 void SetupDefaultImGuiConfig()

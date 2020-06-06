@@ -28,9 +28,6 @@ class AbstractRunner
     bool Render();
     void TearDown();
 
-    // Call ResetDockLayout to restore the initial dock layout
-    void ResetDockLayout();
-
    protected:
     //
     // The methods Impl_* are astract

@@ -56,10 +56,4 @@ void AbstractRunner::TearDown()
 }
 
 
-void AbstractRunner::ResetDockLayout()
-{
-    ImGuiWindowParamsFunctions::ResetDockLayout(params.imGuiWindowParams);
-}
-
-
 }  // namespace HelloImGui

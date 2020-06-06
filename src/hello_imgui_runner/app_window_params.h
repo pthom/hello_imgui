@@ -4,12 +4,12 @@
 
 namespace HelloImGui
 {
-/// BackendWindowParams: defines the application window display params
+/// AppWindowParams: defines the application window display params
 /// Note for mobile apps: Mobile apps are always full screen, so that these
 /// params will not be taken into account
-struct BackendWindowParams
+struct AppWindowParams
 {
-    BackendWindowParams(std::string windowTitle_ = "",
+    AppWindowParams(std::string windowTitle_ = "",
                             ImVec2 windowSize_ = {800.f, 600.f},
                             bool maximized_ = false,
                             bool fullScreen_ = false,

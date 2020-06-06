@@ -1,6 +1,6 @@
 #pragma once
 #ifdef HELLOIMGUI_USE_GLFW
-#include "hello_imgui_runner/abstract_runner/abstract_runner.h"
+#include "hello_imgui_runner/abstract_runner.h"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>

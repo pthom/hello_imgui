@@ -1,6 +1,6 @@
 #pragma once
 #ifdef HELLOIMGUI_USE_SDL
-#include "hello_imgui_runner/abstract_runner/abstract_runner.h"
+#include "hello_imgui_runner/abstract_runner.h"
 
 #include <SDL.h>
 

@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
-#include "internal/main_screen_resolution.h"
-#include "imgui_default_settings.h"
+#include "hello_imgui/internal/main_screen_resolution.h"
+#include "hello_imgui/imgui_default_settings.h"
 
 namespace HelloImGui
 {

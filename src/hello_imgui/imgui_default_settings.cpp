@@ -1,6 +1,6 @@
-#include "imgui_default_settings.h"
+#include "hello_imgui/imgui_default_settings.h"
 
-#include <imgui.h>
+#include "imgui.h"
 
 namespace HelloImGui
 {

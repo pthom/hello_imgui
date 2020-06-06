@@ -1,8 +1,8 @@
-#include "runner_factory.h"
+#include "hello_imgui/runner_factory.h"
 
-#include "backend_impls/runner_emscripten.h"
-#include "backend_impls/runner_glfw.h"
-#include "backend_impls/runner_sdl.h"
+#include "hello_imgui/backend_impls/runner_emscripten.h"
+#include "hello_imgui/backend_impls/runner_glfw.h"
+#include "hello_imgui/backend_impls/runner_sdl.h"
 
 namespace HelloImGui
 {
@@ -20,11 +20,11 @@ std::unique_ptr<AbstractRunner> FactorRunnerEmscripten() { return std::make_uniq
 
 std::unique_ptr<AbstractRunner> FactorRunner()
 {
-#ifdef HELLOIMGUI_USE_GLFW
-    return FactorRunnerGlfw();
-#endif
 #ifdef HELLOIMGUI_USE_SDL
     return FactorRunnerSdl();
+#endif
+#ifdef HELLOIMGUI_USE_GLFW
+    return FactorRunnerGlfw();
 #endif
 #ifdef __EMSCRIPTEN__
     return FactorRunnerEmscripten();

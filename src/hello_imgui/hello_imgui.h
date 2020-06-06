@@ -1,5 +1,6 @@
 #pragma once
-#include "runner_params.h"
+#include "hello_imgui/runner_params.h"
+#include "hello_imgui/icons_font_awesome.h"
 
 namespace HelloImGui
 {

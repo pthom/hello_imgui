@@ -21,16 +21,18 @@ struct ImGuiWindowParams
     bool ConfigWindowsMoveFromTitleBarOnly = true;
 
     std::function<void(ImGuiID /* fullDockSpace */)> InitialDockLayoutFunction = nullptr;
+
     bool WasDockLayoutApplied = false;
+
+    void ResetDockLayout();
 };
 
 // Internal functions below
-namespace ImGuiWindowParamsFunctions
+namespace DockingDetails
 {
     void ConfigureImGuiDocking(const ImGuiWindowParams& imGuiWindowParams);
     void ProvideWindowOrDock(ImGuiWindowParams& imGuiWindowParams);
     void CloseWindowOrDock(ImGuiWindowParams& imGuiWindowParams);
-    void ResetDockLayout(ImGuiWindowParams& imGuiWindowParams);
-}  // namespace ImGuiWindowParamsFunctions
+}  // namespace DockingDetails
 
 }  // namespace HelloImGui

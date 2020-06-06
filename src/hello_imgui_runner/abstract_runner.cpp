@@ -16,7 +16,7 @@ void AbstractRunner::Setup()
     Impl_SetupPlatformRendererBindings();
     params.callbacks.LoadAdditionalFonts();
 
-    ImGuiWindowParamsFunctions::ConfigureImGuiDocking(params.imGuiWindowParams);
+    DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
 
     params.callbacks.PostInit();
 }
@@ -31,12 +31,12 @@ bool AbstractRunner::Render()
     Impl_NewFrame_Backend();
     ImGui::NewFrame();
 
-    ImGuiWindowParamsFunctions::ProvideWindowOrDock(params.imGuiWindowParams);
+    DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams);
 
     if (params.callbacks.ShowGui())
         exitRequired = true;
 
-    ImGuiWindowParamsFunctions::CloseWindowOrDock(params.imGuiWindowParams);
+    DockingDetails::CloseWindowOrDock(params.imGuiWindowParams);
 
     ImGui::Render();
     Impl_Frame_3D_ClearColor();

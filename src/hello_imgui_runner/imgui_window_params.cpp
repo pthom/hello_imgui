@@ -2,7 +2,12 @@
 
 namespace HelloImGui
 {
-namespace ImGuiWindowParamsFunctions
+void ImGuiWindowParams::ResetDockLayout()
+{
+    WasDockLayoutApplied = false;
+}
+
+namespace DockingDetails
 {
     ImGuiID MainDockSpaceId()
     {
@@ -92,11 +97,7 @@ namespace ImGuiWindowParamsFunctions
             ImGui::End();
     }
 
-    void ResetDockLayout(ImGuiWindowParams& imGuiWindowParams)
-    {
-        imGuiWindowParams.WasDockLayoutApplied = false;
-    }
 
-}  // namespace ImGuiWindowParamsFunctions
+}  // namespace DockingDetails
 
 }  // namespace HelloImGui

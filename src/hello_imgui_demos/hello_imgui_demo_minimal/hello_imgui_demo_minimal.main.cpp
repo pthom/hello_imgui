@@ -1,21 +1,15 @@
 #include "hello_imgui/hello_imgui.h"
-
-int main()
-{
+int main() {
     HelloImGui::RunnerParams params;
-
-    params.backendWindowParams.windowTitle = "Hello, Dear ImGui!";
-    params.backendWindowParams.windowSize = {300.f, 200.f};
-
-    params.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::NoDefaultWindow;
-    params.imGuiWindowParams.backgroundColor = ImVec4{ 0.5f, 0.5f, 0.3f, 1.f };
-
-    params.callbacks.ShowGui = []() {
-        ImGui::Text("Hello, ImGui !");
+    params.backendWindowParams = {"Hello, Dear ImGui!", {300.f, 120.f}};
+    int nb_cpp = 15, nb_cmake = 2;
+    params.callbacks.ShowGui = [&]() {
+        ImGui::TextWrapped("How many lines for this app that works on desktop and mbile devices?");
+        ImGui::SliderInt("C++ lines", &nb_cpp, 0, 100);
+        ImGui::InputInt("Cmake lines", &nb_cmake);
         if (ImGui::Button("Quit"))
             return true;
         return false;
     };
     HelloImGui::Run(params);
-    return 0;
 }

@@ -63,7 +63,7 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
 	COMMENT "Generating documentation with Sphinx")
 
 # Nice named target so we can run the job easily
-if (BUILD_DOCS_EXCLUDE_FROM_ALL)
+if (HELLOIMGUI_BUILD_DOCS_EXCLUDE_FROM_ALL)
 	add_custom_target(Sphinx DEPENDS ${SPHINX_INDEX_FILE})
 else()
 	add_custom_target(Sphinx ALL DEPENDS ${SPHINX_INDEX_FILE})

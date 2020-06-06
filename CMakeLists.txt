@@ -2,15 +2,17 @@ cmake_minimum_required(VERSION 3.15)
 cmake_policy(VERSION 3.15)
 
 # Docs options (the docs use Sphinx: see docs/index.rst)
-option(BUILD_DOCS "Build docs" OFF)
+option(HELLOIMGUI_BUILD_DOCS "Build docs" OFF)
 # You can exclude the docs from "make all"
-option(BUILD_DOCS_EXCLUDE_FROM_ALL "Build docs, but exclude them from 'build all'" OFF)
+option(HELLOIMGUI_BUILD_DOCS_EXCLUDE_FROM_ALL "Build docs, but exclude them from 'build all'" OFF)
 
-option(IMGUIRUNNER_QT "Build ImGuiRunner for Qt" ON)
-option(IMGUIRUNNER_GLFW "Build ImGuiRunner for GLFW" ON)
-option(IMGUIRUNNER_SDL "Build ImGuiRunner for SDL" ON)
+option(HELLOIMGUI_BUILD_IMGUI "Use imgui sources provided in external/imgui" ON)
+option(HELLOIMGUI_USE_QT "Build ImGuiRunner for Qt" ON)
+option(HELLOIMGUI_USE_GLFW "Build ImGuiRunner for GLFW" ON)
+option(HELLOIMGUI_USE_SDL "Build ImGuiRunner for SDL" ON)
+option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ON)
 
-project(ImGuiRunner LANGUAGES CXX)
+project(ImGuiRunner LANGUAGES C CXX)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_LIST_DIR}/cmake/")
 
@@ -33,7 +35,7 @@ enable_sanitizers(project_properties)
 add_subdirectory(external)
 add_subdirectory(src)
 
-if (BUILD_DOCS)
+if (HELLOIMGUI_BUILD_DOCS)
     enable_doxygen()
     add_subdirectory(docs)
 endif()

@@ -1,1 +1,2 @@
 add_subdirectory(hello_imgui_demo_minimal)
+add_subdirectory(hello_imgui_demo_classic)

@@ -1,0 +1,2 @@
+add_executable(hello_imgui_demo_classic hello_imgui_demo_classic.main.cpp)
+target_link_libraries(hello_imgui_demo_classic PRIVATE hello_imgui)

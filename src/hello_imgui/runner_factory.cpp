@@ -34,7 +34,6 @@ std::unique_ptr<AbstractRunner> FactorRunnerEmscripten() { return std::make_uniq
 
 std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 {
-    return FactorRunnerQt(params);
 #ifdef HELLOIMGUI_USE_SDL
     return FactorRunnerSdl(params);
 #endif
@@ -47,5 +46,6 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 #ifdef __EMSCRIPTEN__
     return FactorRunnerEmscripten(params);
 #endif
+    throw std::logic_error("HelloImGui::FactorRunner no bakend selected!");
 }
 }  // namespace HelloImGui

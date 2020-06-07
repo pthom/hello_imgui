@@ -34,6 +34,11 @@ if (HELLOIMGUI_USE_GLFW)
         )
 endif()
 
+if (HELLOIMGUI_USE_QT)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_QT)
+    target_link_libraries(${target_name} PUBLIC qt_imgui_quick)
+endif()
+
 if (HELLOIMGUI_USE_GLAD)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLAD)
     target_link_libraries(${target_name} PUBLIC glad)

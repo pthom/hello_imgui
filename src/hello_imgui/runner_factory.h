@@ -12,6 +12,10 @@ std::unique_ptr<AbstractRunner> FactorRunnerGlfw(RunnerParams & params);
 std::unique_ptr<AbstractRunner> FactorRunnerSdl(RunnerParams & params);
 #endif
 
+#ifdef HELLOIMGUI_USE_QT
+std::unique_ptr<AbstractRunner> FactorRunnerQt(RunnerParams & params);
+#endif
+
 #ifdef __EMSCRIPTEN__
 std::unique_ptr<AbstractRunner> FactorRunnerEmscripten(RunnerParams & params);
 #endif

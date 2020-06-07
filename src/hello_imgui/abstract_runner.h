@@ -15,17 +15,12 @@ class AbstractRunner
     RunnerParams & params;
 
     /// Step 4.a: Call Run()
-    inline void Run()
-    {
-        Setup();
-        while (!Render()) // Render() returns true when exit is required
-            ;
-        TearDown();
-    }
+    virtual void Run();
 
     /// Step 4.b: Or implement your own Run using Setup()/Render()/TearDown()
     void Setup();
-    bool Render();
+    bool CreateFramesAndRender(); // Returns true when exit is required by the user
+    bool RenderGui();
     void TearDown();
 
    protected:

@@ -3,6 +3,7 @@
 #include "hello_imgui/backend_impls/runner_emscripten.h"
 #include "hello_imgui/backend_impls/runner_glfw.h"
 #include "hello_imgui/backend_impls/runner_sdl.h"
+#include "hello_imgui/backend_impls/runner_qt.h"
 
 namespace HelloImGui
 {
@@ -20,17 +21,28 @@ std::unique_ptr<AbstractRunner> FactorRunnerSdl(RunnerParams& params)
 }
 #endif
 
+#ifdef HELLOIMGUI_USE_QT
+std::unique_ptr<AbstractRunner> FactorRunnerQt(RunnerParams & params)
+{
+    return std::make_unique<RunnerQt>(params);
+}
+#endif
+
 #ifdef __EMSCRIPTEN__
 std::unique_ptr<AbstractRunner> FactorRunnerEmscripten() { return std::make_unique<RunnerEmscripten>(); }
 #endif
 
 std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 {
+    return FactorRunnerQt(params);
 #ifdef HELLOIMGUI_USE_SDL
     return FactorRunnerSdl(params);
 #endif
 #ifdef HELLOIMGUI_USE_GLFW
     return FactorRunnerGlfw(params);
+#endif
+#ifdef HELLOIMGUI_USE_QT
+    return FactorRunnerQt(params);
 #endif
 #ifdef __EMSCRIPTEN__
     return FactorRunnerEmscripten(params);

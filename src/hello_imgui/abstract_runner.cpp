@@ -4,6 +4,14 @@
 namespace HelloImGui
 {
 
+void AbstractRunner::Run()
+{
+    Setup();
+    while (!CreateFramesAndRender()) // Render() returns true when exit is required
+        ;
+    TearDown();
+}
+
 
 void AbstractRunner::Setup()
 {
@@ -11,6 +19,8 @@ void AbstractRunner::Setup()
     Impl_Select_Gl_Version();
     Impl_CreateWindowAndContext();
     Impl_InitGlLoader();
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
     params.callbacks.SetupImGuiConfig();
     params.callbacks.SetupImGuiStyle();
     Impl_SetupPlatformRendererBindings();
@@ -21,7 +31,18 @@ void AbstractRunner::Setup()
     params.callbacks.PostInit();
 }
 
-bool AbstractRunner::Render()
+bool AbstractRunner::RenderGui()
+{
+    bool exitRequired = false;
+    DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams);
+    if (params.callbacks.ShowGui())
+        exitRequired = true;
+    DockingDetails::CloseWindowOrDock(params.imGuiWindowParams);
+    return exitRequired;
+}
+
+
+bool AbstractRunner::CreateFramesAndRender()
 {
     bool exitRequired = false;
     if (Impl_PollEvents())
@@ -31,12 +52,8 @@ bool AbstractRunner::Render()
     Impl_NewFrame_Backend();
     ImGui::NewFrame();
 
-    DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams);
-
-    if (params.callbacks.ShowGui())
+    if (RenderGui())
         exitRequired = true;
-
-    DockingDetails::CloseWindowOrDock(params.imGuiWindowParams);
 
     ImGui::Render();
     Impl_Frame_3D_ClearColor();

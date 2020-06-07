@@ -8,14 +8,14 @@
 namespace HelloImGui
 {
 #ifdef HELLOIMGUI_USE_GLFW_OPENGL3
-std::unique_ptr<AbstractRunner> FactorRunnerGlfw(RunnerParams& params)
+std::unique_ptr<AbstractRunner> FactorRunnerGlfwOpenGl3(RunnerParams& params)
 {
     return std::make_unique<RunnerGlfwOpenGl3>(params);
 }
 #endif
 
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
-std::unique_ptr<AbstractRunner> FactorRunnerSdl(RunnerParams& params)
+std::unique_ptr<AbstractRunner> FactorRunnerSdlOpenGl3(RunnerParams& params)
 {
     return std::make_unique<RunnerSdlOpenGl3>(params);
 }
@@ -35,10 +35,10 @@ std::unique_ptr<AbstractRunner> FactorRunnerEmscripten() { return std::make_uniq
 std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 {
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
-    return FactorRunnerSdl(params);
+    return FactorRunnerSdlOpenGl3(params);
 #endif
 #ifdef HELLOIMGUI_USE_GLFW_OPENGL3
-    return FactorRunnerGlfw(params);
+    return FactorRunnerGlfwOpenGl3(params);
 #endif
 #ifdef HELLOIMGUI_USE_QT
     return FactorRunnerQt(params);

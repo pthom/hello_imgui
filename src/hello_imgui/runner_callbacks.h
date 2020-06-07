@@ -29,7 +29,7 @@ struct RunnerCallbacks
     VoidFunctionPointer PostInit = NoAction;
     /// If needed, fill LoadAdditionalFonts with your own
     /// font loading code
-    VoidFunctionPointer LoadAdditionalFonts = ImGuiDefaultSettings::LoadFontAwesome;
+    VoidFunctionPointer LoadAdditionalFonts = ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesome;
     /// If needed, change ImGui config via SetupImGuiConfig
     /// (enable docking, gamepad, etc)
     VoidFunctionPointer SetupImGuiConfig = ImGuiDefaultSettings::SetupDefaultImGuiConfig;

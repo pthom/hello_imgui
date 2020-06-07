@@ -4,7 +4,7 @@ namespace HelloImGui
 {
 namespace ImGuiDefaultSettings
 {
-    void LoadFontAwesome();
+    void LoadDefaultFont_WithFontAwesome();
     void SetupDefaultImGuiConfig();
     void SetupDefaultImGuiStyle();
 }  // namespace ImGuiDefaultSettings

@@ -7,17 +7,18 @@ namespace HelloImGui
 {
 namespace ImGuiDefaultSettings
 {
-void LoadFontAwesome()
+void LoadDefaultFont_WithFontAwesome()
 {
     ImGuiIO& io = ImGui::GetIO();
-    io.Fonts->AddFontDefault();
+    float fontSize = 14.f;
+    //ImFont * font = io.Fonts->AddFontDefault();
+    ImFont * font = io.Fonts->AddFontFromFileTTF(HELLOIMGUI_FONTDIR "/DroidSans.ttf", fontSize);
     ImFontConfig config;
     config.MergeMode = true;
     const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
     std::string fontFile = HELLOIMGUI_FONTDIR "/fontawesome-webfont.ttf";
-    io.Fonts->AddFontFromFileTTF(fontFile.c_str(), 13.0f, &config, icon_ranges);
-    // Usage, e.g.
-    //ImGui::Text("%s Search", ICON_FA_SEARCH);
+    font = io.Fonts->AddFontFromFileTTF(fontFile.c_str(), fontSize, &config, icon_ranges);
+    io.Fonts->Build();
 }
 
 void SetupDefaultImGuiConfig()

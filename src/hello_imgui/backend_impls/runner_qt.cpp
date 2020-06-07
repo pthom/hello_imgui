@@ -90,10 +90,10 @@ class RunnerQt_WindowImpl : public QOpenGLWindow, private QOpenGLExtraFunctions
     {
         QtImGui::newFrame();
 
+        ApplyClearColor();
+
         if (runnerQt_->RenderGui())
             shall_close_ = true;
-
-        ApplyClearColor();
 
         ImGui::Render();
     }
@@ -117,11 +117,10 @@ void RunnerQt::Run()
 
 void RunnerQt::RunQGuiApplication()
 {
-    DetailsQt::SetOpenGlVersion();
-
     int dummy_argc = 0;
     char **dummy_argv = nullptr;
     QGuiApplication a(dummy_argc, dummy_argv);
+    DetailsQt::SetOpenGlVersion();
 
     impl_ = std::make_unique<RunnerQt_WindowImpl>(this);
 
@@ -149,7 +148,6 @@ void RunnerQt::Impl_InitBackend()
 
 void RunnerQt::Impl_Select_Gl_Version()
 {
-    DetailsQt::SetOpenGlVersion();
 }
 
 std::string RunnerQt::Impl_GlslVersion()

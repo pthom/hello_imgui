@@ -1,2 +1,0 @@
-add_subdirectory(demo_imgui)
-add_subdirectory(demo_imgui_runner_minimal)

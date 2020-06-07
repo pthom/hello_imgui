@@ -8,7 +8,7 @@ namespace HelloImGui
 class AbstractRunner
 {
    public:
-    /// Step 0: Construct a concrete Runner (for example RunnerSdl or RunnerGlfw)
+    /// Step 0: Construct a concrete Runner (for example RunnerSdlOpenGl3 or RunnerGlfwOpenGl3)
     AbstractRunner(RunnerParams &params_) : params(params_) {};
     virtual ~AbstractRunner() = default;
 

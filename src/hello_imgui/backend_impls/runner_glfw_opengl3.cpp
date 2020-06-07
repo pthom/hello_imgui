@@ -1,4 +1,4 @@
-#ifdef HELLOIMGUI_USE_GLFW
+#ifdef HELLOIMGUI_USE_GLFW_OPENGL3
 
 #ifdef HELLOIMGUI_USE_GLAD
 #include <glad/glad.h>
@@ -9,7 +9,7 @@
 #include <imgui.h>
 #include <stdexcept>
 
-#include "runner_glfw.h"
+#include "runner_glfw_opengl3.h"
 
 namespace HelloImGui
 {
@@ -18,14 +18,14 @@ namespace HelloImGui
         fprintf(stderr, "Glfw Error %d: %s\n", error, description);
     }
 
-    void RunnerGlfw::Impl_InitBackend()
+    void RunnerGlfwOpenGl3::Impl_InitBackend()
     {
         glfwSetErrorCallback(glfw_error_callback);
         if (!glfwInit())
-            throw std::runtime_error("RunnerGlfw::Impl_InitBackend failed");
+            throw std::runtime_error("RunnerGlfwOpenGl3::Impl_InitBackend failed");
     }
 
-    void RunnerGlfw::Impl_Select_Gl_Version()
+    void RunnerGlfwOpenGl3::Impl_Select_Gl_Version()
     {
         // Decide GL+GLSL versions
 #if __APPLE__
@@ -44,7 +44,7 @@ namespace HelloImGui
 #endif
     }
 
-    std::string RunnerGlfw::Impl_GlslVersion()
+    std::string RunnerGlfwOpenGl3::Impl_GlslVersion()
     {
 #if __APPLE__
         // GLSL 150
@@ -56,7 +56,7 @@ namespace HelloImGui
         return glsl_version;
     }
 
-    void RunnerGlfw::Impl_CreateWindowAndContext()
+    void RunnerGlfwOpenGl3::Impl_CreateWindowAndContext()
     {
         const AppWindowParams& backendWindowParams = params.appWindowParams;
         ImVec2 windowSize = backendWindowParams.windowSize;
@@ -86,13 +86,13 @@ namespace HelloImGui
         if (mWindow == NULL)
         {
             glfwTerminate();
-            throw std::runtime_error("RunnerGlfw::Impl_CreateWindowAndContext failed");
+            throw std::runtime_error("RunnerGlfwOpenGl3::Impl_CreateWindowAndContext failed");
         }
         glfwMakeContextCurrent(mWindow);
         glfwSwapInterval(1);  // Enable vsync
     }
 
-    void RunnerGlfw::Impl_InitGlLoader()
+    void RunnerGlfwOpenGl3::Impl_InitGlLoader()
     {
 #ifndef __EMSCRIPTEN__
         //  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -113,7 +113,7 @@ namespace HelloImGui
 #endif
         if (err)
         {
-            throw std::runtime_error("RunnerGlfw::Impl_InitGlLoader(): Failed to initialize OpenGL loader!");
+            throw std::runtime_error("RunnerGlfwOpenGl3::Impl_InitGlLoader(): Failed to initialize OpenGL loader!");
         }
 #endif  // #ifndef __EMSCRIPTEN__
 
@@ -123,13 +123,13 @@ namespace HelloImGui
 #endif
     }
 
-    void RunnerGlfw::Impl_SetupPlatformRendererBindings()
+    void RunnerGlfwOpenGl3::Impl_SetupPlatformRendererBindings()
     {
         ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
         ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
     }
 
-    bool RunnerGlfw::Impl_PollEvents()
+    bool RunnerGlfwOpenGl3::Impl_PollEvents()
     {
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants
@@ -143,11 +143,11 @@ namespace HelloImGui
         return exitRequired;
     }
 
-    void RunnerGlfw::Impl_NewFrame_3D() { ImGui_ImplOpenGL3_NewFrame(); }
+    void RunnerGlfwOpenGl3::Impl_NewFrame_3D() { ImGui_ImplOpenGL3_NewFrame(); }
 
-    void RunnerGlfw::Impl_NewFrame_Backend() { ImGui_ImplGlfw_NewFrame(); }
+    void RunnerGlfwOpenGl3::Impl_NewFrame_Backend() { ImGui_ImplGlfw_NewFrame(); }
 
-    void RunnerGlfw::Impl_Frame_3D_ClearColor()
+    void RunnerGlfwOpenGl3::Impl_Frame_3D_ClearColor()
     {
         auto& io = ImGui::GetIO();
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
@@ -156,9 +156,9 @@ namespace HelloImGui
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    void RunnerGlfw::Impl_RenderDrawData_To_3D() { ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); }
+    void RunnerGlfwOpenGl3::Impl_RenderDrawData_To_3D() { ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); }
 
-    void RunnerGlfw::Impl_UpdateAndRenderAdditionalPlatformWindows()
+    void RunnerGlfwOpenGl3::Impl_UpdateAndRenderAdditionalPlatformWindows()
     {
         GLFWwindow* backup_current_context = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
@@ -166,7 +166,7 @@ namespace HelloImGui
         glfwMakeContextCurrent(backup_current_context);
     }
 
-    void RunnerGlfw::Impl_Cleanup()
+    void RunnerGlfwOpenGl3::Impl_Cleanup()
     {
         // Impl_Cleanup
         ImGui_ImplOpenGL3_Shutdown();
@@ -177,7 +177,7 @@ namespace HelloImGui
         glfwTerminate();
     }
 
-    void RunnerGlfw::Impl_SwapBuffers() { glfwSwapBuffers(mWindow); }
+    void RunnerGlfwOpenGl3::Impl_SwapBuffers() { glfwSwapBuffers(mWindow); }
 
 }  // namespace HelloImGui
-#endif  // #ifdef HELLOIMGUI_USE_GLFW
+#endif  // #ifdef HELLOIMGUI_USE_GLFW_OPENGL3

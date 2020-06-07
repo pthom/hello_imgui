@@ -5,10 +5,10 @@
 
 namespace HelloImGui
 {
-    class RunnerEmscripten : public RunnerSdl
+    class RunnerEmscripten : public RunnerSdlOpenGl3
     {
        public:
-        RunnerEmscripten(RunnerParams & runnerParams) : RunnerSdl(runnerParams) {}
+        RunnerEmscripten(RunnerParams & runnerParams) : RunnerSdlOpenGl3(runnerParams) {}
         virtual ~RunnerEmscripten() = default;
         void Run() override;
 

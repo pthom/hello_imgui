@@ -6,7 +6,7 @@ if (HELLOIMGUI_USE_QT)
 endif()
 
 # GLFW (Free, open source, portable framework for OpenGL application development).
-if (HELLOIMGUI_USE_GLFW)
+if (HELLOIMGUI_USE_GLFW_OPENGL3)
     SET(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Build the GLFW example programs" FORCE)
     SET(GLFW_BUILD_TESTS OFF CACHE BOOL "Build the GLFW test programs" FORCE)
     SET(GLFW_BUILD_DOCS OFF CACHE BOOL "Build the GLFW documentation" FORCE)
@@ -14,7 +14,7 @@ if (HELLOIMGUI_USE_GLFW)
     add_subdirectory(glfw)
 endif()
 
-if (HELLOIMGUI_USE_SDL AND NOT EMSCRIPTEN) # SDL is already build by emscripten
+if (HELLOIMGUI_USE_SDL_OPENGL3 AND NOT EMSCRIPTEN) # SDL is already build by emscripten
     add_subdirectory(SDL)
 endif()
 

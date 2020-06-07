@@ -1,9 +1,9 @@
-#ifdef HELLOIMGUI_USE_SDL
+#ifdef HELLOIMGUI_USE_SDL_OPENGL3
 
 #ifdef HELLOIMGUI_USE_GLAD
 #include <glad/glad.h>
 #endif
-#include "runner_sdl.h"
+#include "runner_sdl_opengl3.h"
 #include <examples/imgui_impl_opengl3.h>
 #include <examples/imgui_impl_sdl.h>
 
@@ -12,17 +12,17 @@
 
 namespace HelloImGui
 {
-    void RunnerSdl::Impl_InitBackend()
+    void RunnerSdlOpenGl3::Impl_InitBackend()
     {
         if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
         {
             std::stringstream msg;
-            msg << "RunnerSdl::Impl_InitBackend error " << SDL_GetError();
+            msg << "RunnerSdlOpenGl3::Impl_InitBackend error " << SDL_GetError();
             throw std::runtime_error(msg.str().c_str());
         }
     }
 
-    void RunnerSdl::Impl_Select_Gl_Version()
+    void RunnerSdlOpenGl3::Impl_Select_Gl_Version()
     {
         // Decide GL+GLSL versions
 #if __APPLE__
@@ -42,7 +42,7 @@ namespace HelloImGui
 #endif
     }
 
-    std::string RunnerSdl::Impl_GlslVersion()
+    std::string RunnerSdlOpenGl3::Impl_GlslVersion()
     {
 #if __APPLE__
         // GL 3.2 Core + GLSL 150
@@ -54,7 +54,7 @@ namespace HelloImGui
         return glsl_version;
     }
 
-    void RunnerSdl::Impl_CreateWindowAndContext()
+    void RunnerSdlOpenGl3::Impl_CreateWindowAndContext()
     {
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
@@ -94,7 +94,7 @@ namespace HelloImGui
 
         mGlContext = SDL_GL_CreateContext(mWindow);
         if (!mGlContext)
-            throw std::runtime_error("RunnerSdl::Impl_CreateWindowAndContext(): Failed to initialize WebGL context!");
+            throw std::runtime_error("RunnerSdlOpenGl3::Impl_CreateWindowAndContext(): Failed to initialize WebGL context!");
 
         SDL_GL_MakeCurrent(mWindow, mGlContext);
 #ifndef __EMSCRIPTEN__
@@ -102,7 +102,7 @@ namespace HelloImGui
 #endif
     }
 
-    void RunnerSdl::Impl_InitGlLoader()
+    void RunnerSdlOpenGl3::Impl_InitGlLoader()
     {
 #ifndef __EMSCRIPTEN__
         // Initialize OpenGL loader
@@ -128,13 +128,13 @@ namespace HelloImGui
 #endif
     }
 
-    void RunnerSdl::Impl_SetupPlatformRendererBindings()
+    void RunnerSdlOpenGl3::Impl_SetupPlatformRendererBindings()
     {
         ImGui_ImplSDL2_InitForOpenGL(mWindow, mGlContext);
         ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
     }
 
-    bool RunnerSdl::Impl_PollEvents()
+    bool RunnerSdlOpenGl3::Impl_PollEvents()
     {
         SDL_Event event;
         bool exitRequired = false;
@@ -152,11 +152,11 @@ namespace HelloImGui
         return exitRequired;
     }
 
-    void RunnerSdl::Impl_NewFrame_3D() { ImGui_ImplOpenGL3_NewFrame(); }
+    void RunnerSdlOpenGl3::Impl_NewFrame_3D() { ImGui_ImplOpenGL3_NewFrame(); }
 
-    void RunnerSdl::Impl_NewFrame_Backend() { ImGui_ImplSDL2_NewFrame(mWindow); }
+    void RunnerSdlOpenGl3::Impl_NewFrame_Backend() { ImGui_ImplSDL2_NewFrame(mWindow); }
 
-    void RunnerSdl::Impl_Frame_3D_ClearColor()
+    void RunnerSdlOpenGl3::Impl_Frame_3D_ClearColor()
     {
         auto& io = ImGui::GetIO();
         glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
@@ -165,9 +165,9 @@ namespace HelloImGui
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    void RunnerSdl::Impl_RenderDrawData_To_3D() { ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); }
+    void RunnerSdlOpenGl3::Impl_RenderDrawData_To_3D() { ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); }
 
-    void RunnerSdl::Impl_UpdateAndRenderAdditionalPlatformWindows()
+    void RunnerSdlOpenGl3::Impl_UpdateAndRenderAdditionalPlatformWindows()
     {
         SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
         SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
@@ -176,7 +176,7 @@ namespace HelloImGui
         SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
     }
 
-    void RunnerSdl::Impl_Cleanup()
+    void RunnerSdlOpenGl3::Impl_Cleanup()
     {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplSDL2_Shutdown();
@@ -187,8 +187,8 @@ namespace HelloImGui
         SDL_Quit();
     }
 
-    void RunnerSdl::Impl_SwapBuffers() { SDL_GL_SwapWindow(mWindow); }
+    void RunnerSdlOpenGl3::Impl_SwapBuffers() { SDL_GL_SwapWindow(mWindow); }
 
 }  // namespace HelloImGui
 
-#endif  // #ifdef HELLOIMGUI_USE_SDL
+#endif  // #ifdef HELLOIMGUI_USE_SDL_OPENGL3

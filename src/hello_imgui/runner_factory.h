@@ -4,11 +4,11 @@
 
 namespace HelloImGui
 {
-#ifdef HELLOIMGUI_USE_GLFW
+#ifdef HELLOIMGUI_USE_GLFW_OPENGL3
 std::unique_ptr<AbstractRunner> FactorRunnerGlfw(RunnerParams & params);
 #endif
 
-#ifdef HELLOIMGUI_USE_SDL
+#ifdef HELLOIMGUI_USE_SDL_OPENGL3
 std::unique_ptr<AbstractRunner> FactorRunnerSdl(RunnerParams & params);
 #endif
 

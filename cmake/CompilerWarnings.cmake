@@ -62,7 +62,7 @@ function(set_project_warnings project_name)
 
   if (WARNINGS_AS_ERRORS)
     set(CLANG_WARNINGS ${CLANG_WARNINGS} -Werror)
-    set(MSVC_WARNINGS ${MSVC_WARNINGS} /WX)
+#     set(MSVC_WARNINGS ${MSVC_WARNINGS} /WX)
   endif()
 
   set(GCC_WARNINGS

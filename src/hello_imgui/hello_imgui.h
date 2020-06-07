@@ -5,4 +5,10 @@
 namespace HelloImGui
 {
     void Run(RunnerParams & runnerParams);
+
+    void Run(
+        GuiFunctionPointer guiFonction,
+        ImVec2 windowSize = {800.f, 600.f},
+        std::string windowTitle = ""
+        );
 }

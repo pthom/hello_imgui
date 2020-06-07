@@ -8,7 +8,7 @@ namespace HelloImGui
 /// GuiFunctionPointer ; any function that displays a GUI via ImGui
 ///and returns false most of the time, except if exit is required
 /// (following a user action for example)
-using GuiFunctionPointer = std::function<bool(void)>;
+using GuiFunctionPointer = std::function<void(void)>;
 /// VoidFunctionPointer: any void(void) function
 using VoidFunctionPointer = std::function<void(void)>;
 /// NoAction: empty void(void) function (aka VoidFunctionPointer)

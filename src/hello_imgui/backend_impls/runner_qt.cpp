@@ -63,7 +63,7 @@ class RunnerQt_WindowImpl : public QOpenGLWindow, private QOpenGLExtraFunctions
 
     void closeIfRequired()
     {
-        if (shall_close_)
+        if (runnerQt_->params.appShallExit)
             close();
     }
 
@@ -73,10 +73,6 @@ class RunnerQt_WindowImpl : public QOpenGLWindow, private QOpenGLExtraFunctions
         glViewport(0, 0, width(), height());
         glClearColor(color.x, color.y, color.z, color.w);
         glClear(GL_COLOR_BUFFER_BIT);
-    }
-
-    bool ShallClose() {
-        return shall_close_;
     }
 
    protected:
@@ -92,15 +88,13 @@ class RunnerQt_WindowImpl : public QOpenGLWindow, private QOpenGLExtraFunctions
 
         ApplyClearColor();
 
-        if (runnerQt_->RenderGui())
-            shall_close_ = true;
+        runnerQt_->RenderGui();
 
         ImGui::Render();
     }
 
    private:
     RunnerQt* runnerQt_;
-    bool shall_close_ = false;
 };
 
 RunnerQt::RunnerQt(RunnerParams& runnerParams) : AbstractRunner(runnerParams) {

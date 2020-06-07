@@ -19,6 +19,8 @@ struct RunnerParams
     AppWindowParams appWindowParams;
     /// imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)
     ImGuiWindowParams imGuiWindowParams;
+    /// Set appShallExit to true in order to quit
+    bool appShallExit = false;
 };
 
 }  // namespace HelloImGui

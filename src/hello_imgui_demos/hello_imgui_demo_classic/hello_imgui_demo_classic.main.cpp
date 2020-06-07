@@ -8,7 +8,6 @@ int main() {
     // Our state
     bool show_demo_window = true;
     bool show_another_window = false;
-    bool shall_quit = false;
 
     params.callbacks.ShowGui = [&]() {
 
@@ -38,7 +37,7 @@ int main() {
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
             if (ImGui::Button("Quit"))
-                shall_quit = true;
+                params.appShallExit = true;
 
             ImGui::End();
         }
@@ -52,8 +51,6 @@ int main() {
                 show_another_window = false;
             ImGui::End();
         }
-
-        return shall_quit;
     };
     HelloImGui::Run(params);
 }

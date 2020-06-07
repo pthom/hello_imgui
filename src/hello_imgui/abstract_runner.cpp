@@ -7,8 +7,8 @@ namespace HelloImGui
 void AbstractRunner::Run()
 {
     Setup();
-    while (!CreateFramesAndRender()) // Render() returns true when exit is required
-        ;
+    while (!params.appShallExit)
+        CreateFramesAndRender();
     TearDown();
 }
 
@@ -31,29 +31,24 @@ void AbstractRunner::Setup()
     params.callbacks.PostInit();
 }
 
-bool AbstractRunner::RenderGui()
+void AbstractRunner::RenderGui()
 {
-    bool exitRequired = false;
     DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams);
-    if (params.callbacks.ShowGui())
-        exitRequired = true;
+    params.callbacks.ShowGui();
     DockingDetails::CloseWindowOrDock(params.imGuiWindowParams);
-    return exitRequired;
 }
 
 
-bool AbstractRunner::CreateFramesAndRender()
+void AbstractRunner::CreateFramesAndRender()
 {
-    bool exitRequired = false;
     if (Impl_PollEvents())
-        exitRequired = true;
+        params.appShallExit = true;
 
     Impl_NewFrame_3D();
     Impl_NewFrame_Backend();
     ImGui::NewFrame();
 
-    if (RenderGui())
-        exitRequired = true;
+    RenderGui();
 
     ImGui::Render();
     Impl_Frame_3D_ClearColor();
@@ -63,8 +58,6 @@ bool AbstractRunner::CreateFramesAndRender()
         Impl_UpdateAndRenderAdditionalPlatformWindows();
 
     Impl_SwapBuffers();
-
-    return exitRequired;
 }
 
 void AbstractRunner::TearDown()

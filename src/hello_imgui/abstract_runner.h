@@ -19,8 +19,8 @@ class AbstractRunner
 
     /// Step 4.b: Or implement your own Run using Setup()/Render()/TearDown()
     void Setup();
-    bool CreateFramesAndRender(); // Returns true when exit is required by the user
-    bool RenderGui();
+    void CreateFramesAndRender(); // Returns true when exit is required by the user
+    void RenderGui();
     void TearDown();
 
    protected:

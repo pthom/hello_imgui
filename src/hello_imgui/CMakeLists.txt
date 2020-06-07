@@ -12,6 +12,7 @@ target_link_libraries(${target_name} PUBLIC
     project_properties
     imgui
     )
+target_compile_definitions(${target_name} PUBLIC -DHELLOIMGUI_FONTDIR="${CMAKE_CURRENT_LIST_DIR}/../../assets/fonts")
 
 if (HELLOIMGUI_USE_SDL)
     target_compile_definitions(${target_name} PRIVATE -DHELLOIMGUI_USE_SDL)
@@ -51,3 +52,4 @@ endif()
 #if (UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
 #    target_link_libraries(${TARGET} PUBLIC X11)
 #endif()
+

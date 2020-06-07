@@ -1,5 +1,6 @@
 #include "hello_imgui/imgui_default_settings.h"
-
+#include "hello_imgui/icons_font_awesome.h"
+#include <string>
 #include "imgui.h"
 
 namespace HelloImGui
@@ -8,7 +9,15 @@ namespace ImGuiDefaultSettings
 {
 void LoadFontAwesome()
 {
-
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->AddFontDefault();
+    ImFontConfig config;
+    config.MergeMode = true;
+    const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+    std::string fontFile = HELLOIMGUI_FONTDIR "/fontawesome-webfont.ttf";
+    io.Fonts->AddFontFromFileTTF(fontFile.c_str(), 13.0f, &config, icon_ranges);
+    // Usage, e.g.
+    //ImGui::Text("%s Search", ICON_FA_SEARCH);
 }
 
 void SetupDefaultImGuiConfig()

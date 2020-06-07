@@ -1,8 +1,8 @@
 #include "hello_imgui/hello_imgui.h"
 int main() {
     HelloImGui::RunnerParams params;
-    params.backendWindowParams.windowSize = {1280.f, 720.f};
-    params.backendWindowParams.windowTitle = "Dear ImGui example with 'Hello ImGui'";
+    params.appWindowParams.windowSize = {1280.f, 720.f};
+    params.appWindowParams.windowTitle = "Dear ImGui example with 'Hello ImGui'";
     params.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::NoDefaultWindow;
 
     // Our state

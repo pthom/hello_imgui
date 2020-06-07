@@ -61,7 +61,7 @@ namespace HelloImGui
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
 #ifndef __EMSCRIPTEN__
-        const auto &backendWindowParams = params.backendWindowParams;
+        const auto &backendWindowParams = params.appWindowParams;
         ImVec2 windowPosition = backendWindowParams.windowPosition;
         ImVec2 windowSize = backendWindowParams.windowSize;
         SDL_WindowFlags window_flags =

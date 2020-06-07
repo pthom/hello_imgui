@@ -40,19 +40,19 @@ class RunnerQt_WindowImpl : public QOpenGLWindow, private QOpenGLExtraFunctions
    public:
     RunnerQt_WindowImpl(RunnerQt* runnerQt) : runnerQt_(runnerQt)
     {
-        setTitle(QString::fromStdString(runnerQt->params.backendWindowParams.windowTitle));
-        if (runnerQt->params.backendWindowParams.fullScreen)
+        setTitle(QString::fromStdString(runnerQt->params.appWindowParams.windowTitle));
+        if (runnerQt->params.appWindowParams.fullScreen)
             showFullScreen();
-        else if (runnerQt->params.backendWindowParams.maximized)
+        else if (runnerQt->params.appWindowParams.maximized)
             showMaximized();
         else
         {
-            resize(static_cast<int>(runnerQt->params.backendWindowParams.windowSize[0]),
-                   static_cast<int>(runnerQt->params.backendWindowParams.windowSize[1]));
-            if (runnerQt->params.backendWindowParams.windowPosition.x >= -10000.f)
+            resize(static_cast<int>(runnerQt->params.appWindowParams.windowSize[0]),
+                   static_cast<int>(runnerQt->params.appWindowParams.windowSize[1]));
+            if (runnerQt->params.appWindowParams.windowPosition.x >= -10000.f)
             {
-                setPosition(static_cast<int>(runnerQt->params.backendWindowParams.windowPosition[0]),
-                            static_cast<int>(runnerQt->params.backendWindowParams.windowPosition[1]));
+                setPosition(static_cast<int>(runnerQt->params.appWindowParams.windowPosition[0]),
+                            static_cast<int>(runnerQt->params.appWindowParams.windowPosition[1]));
             }
             show();
         }

@@ -16,8 +16,9 @@ struct RunnerParams
     /// RunnerCallbacks (ShowGui() will render the gui, Config, etc)
     RunnerCallbacks callbacks;
     /// application Window Params (position, size, title)
-    AppWindowParams backendWindowParams;
+    AppWindowParams appWindowParams;
     /// imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)
     ImGuiWindowParams imGuiWindowParams;
 };
+
 }  // namespace HelloImGui

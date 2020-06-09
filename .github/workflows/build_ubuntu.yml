@@ -32,18 +32,8 @@ jobs:
           cmake \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
-                -DHELLOIMGUI_BUILD_DOCS=ON -DHELLOIMGUI_BUILD_DOCS_EXCLUDE_FROM_ALL=ON \
                 ..
     - name: Build
       working-directory: build
       run: |
           make
-
-    - name: Make doxygen doc
-      working-directory: build
-      run: |
-        make Doxygen
-    - name: Make sphinx doc
-      working-directory: build
-      run: |
-        make Sphinx

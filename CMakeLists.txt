@@ -33,7 +33,6 @@ set_project_warnings(project_properties)
 include(Sanitizers)
 enable_sanitizers(project_properties)
 
-
 add_subdirectory(external)
 add_subdirectory(src)
 

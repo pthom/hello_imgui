@@ -32,7 +32,7 @@ jobs:
           cmake \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
-                -DBUILD_DOCS=ON -DBUILD_DOCS_EXCLUDE_FROM_ALL=ON \
+                -DHELLOIMGUI_BUILD_DOCS=ON -DHELLOIMGUI_BUILD_DOCS_EXCLUDE_FROM_ALL=ON \
                 ..
     - name: Build
       working-directory: build

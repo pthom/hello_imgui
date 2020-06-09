@@ -13,11 +13,13 @@ void LoadDefaultFont_WithFontAwesome()
     float fontSize = 14.f;
     //ImFont * font = io.Fonts->AddFontDefault();
     ImFont * font = io.Fonts->AddFontFromFileTTF(HELLOIMGUI_FONTDIR "/DroidSans.ttf", fontSize);
+    assert(font != nullptr); (void)font;
     ImFontConfig config;
     config.MergeMode = true;
     const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
     std::string fontFile = HELLOIMGUI_FONTDIR "/fontawesome-webfont.ttf";
     font = io.Fonts->AddFontFromFileTTF(fontFile.c_str(), fontSize, &config, icon_ranges);
+    assert(font != nullptr); (void)font;
     io.Fonts->Build();
 }
 

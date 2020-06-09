@@ -5,19 +5,6 @@ if (HELLOIMGUI_USE_QT)
     add_subdirectory(qtimgui)
 endif()
 
-# GLFW (Free, open source, portable framework for OpenGL application development).
-if (HELLOIMGUI_USE_GLFW_OPENGL3)
-    SET(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Build the GLFW example programs" FORCE)
-    SET(GLFW_BUILD_TESTS OFF CACHE BOOL "Build the GLFW test programs" FORCE)
-    SET(GLFW_BUILD_DOCS OFF CACHE BOOL "Build the GLFW documentation" FORCE)
-    set(GLFW_BUILD_INSTALL OFF CACHE BOOL "Generate installation target" FORCE)
-    add_subdirectory(glfw)
-endif()
-
-if (HELLOIMGUI_USE_SDL_OPENGL3 AND NOT EMSCRIPTEN) # SDL is already build by emscripten
-    add_subdirectory(SDL)
-endif()
-
 # glad OpenGL loader
 if (HELLOIMGUI_USE_GLAD)
     include(${CMAKE_CURRENT_LIST_DIR}/OpenGL_Loaders/glad.cmake)

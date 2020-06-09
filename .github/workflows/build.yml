@@ -11,6 +11,12 @@ jobs:
     - uses: actions/checkout@master
     - name: Checkout submodules
       run: git submodule update --init --recursive
+
+    - name: Install needed libraries
+      run: sudo apt-get install -y libxrandr-dev xorg-dev libxinerama-dev
+    - name: Install sdl and glfw via vcpkg
+      run: tools/vcpkg_install_third_parties.sh
+
     - name: Install Doxygen
       run: sudo apt-get install doxygen
     - name: Install Sphinx, breathe, and sphinx_rtd_theme
@@ -18,11 +24,16 @@ jobs:
            sudo pip3 install sphinx
            sudo pip3 install breathe
            sudo pip3 install sphinx_rtd_theme
+
     - name: Configure
       run: |
           mkdir build
           cd build
-          cmake -DBUILD_DOCS=ON -DBUILD_DOCS_EXCLUDE_FROM_ALL=ON -DCMAKE_BUILD_TYPE=Release ..
+          cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+                -DBUILD_DOCS=ON -DBUILD_DOCS_EXCLUDE_FROM_ALL=ON \
+                ..
     - name: Build
       working-directory: build
       run: |
@@ -31,6 +42,7 @@ jobs:
       working-directory: build
       run: |
           make test
+
     - name: Make doxygen doc
       working-directory: build
       run: |

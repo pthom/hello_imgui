@@ -565,3 +565,6 @@ MigrationBackup/
 
 # Misc
 nohup.out
+
+# vcpk
+vcpkg/

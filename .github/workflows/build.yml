@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
+    - name: Checkout submodules
+      run: git submodule update --init --recursive
     - name: Install Doxygen
       run: sudo apt-get install doxygen
     - name: Install Sphinx, breathe, and sphinx_rtd_theme

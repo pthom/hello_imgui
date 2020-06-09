@@ -1,4 +1,5 @@
-#include "hello_imgui/abstract_runner.h"
+#include "hello_imgui/internal/backend_impls/abstract_runner.h"
+#include "hello_imgui/internal/docking_details.h"
 #include "imgui.h"
 
 namespace HelloImGui

@@ -1,16 +1,17 @@
 #pragma once
-#ifdef HELLOIMGUI_USE_SDL_OPENGL3
-#include "hello_imgui/abstract_runner.h"
+#ifdef HELLOIMGUI_USE_GLFW_OPENGL3
+#include "hello_imgui/internal/backend_impls/abstract_runner.h"
 
-#include <SDL.h>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 namespace HelloImGui
 {
-    class RunnerSdlOpenGl3 : public AbstractRunner
+class RunnerGlfwOpenGl3 : public AbstractRunner
 {
        public:
-        RunnerSdlOpenGl3(RunnerParams & runnerParams) : AbstractRunner(runnerParams) {}
-        virtual ~RunnerSdlOpenGl3() = default;
+        RunnerGlfwOpenGl3(RunnerParams & runnerParams) : AbstractRunner(runnerParams) {}
+        virtual ~RunnerGlfwOpenGl3() = default;
 
        protected:
         void Impl_InitBackend() override;
@@ -20,7 +21,7 @@ namespace HelloImGui
         void Impl_InitGlLoader() override;
         void Impl_SetupPlatformRendererBindings() override;
 
-        bool Impl_PollEvents() override;
+        bool Impl_PollEvents() override; // returns true if exit required
         void Impl_NewFrame_3D() override;
         void Impl_NewFrame_Backend() override;
         void Impl_Frame_3D_ClearColor() override;
@@ -30,10 +31,8 @@ namespace HelloImGui
         void Impl_SwapBuffers() override;
 
        private:
-        SDL_Window* mWindow = nullptr;
-        SDL_GLContext mGlContext = nullptr;
+        GLFWwindow* mWindow = nullptr;
     };
 
 }  // namespace HelloImGui
-
-#endif  // #ifdef HELLOIMGUI_USE_SDL_OPENGL3
+#endif  // #ifdef HELLOIMGUI_USE_GLFW_OPENGL3

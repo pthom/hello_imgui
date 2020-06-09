@@ -40,12 +40,4 @@ struct ImGuiWindowParams
     bool wasDockLayoutApplied = false;
 };
 
-// Internal functions below
-namespace DockingDetails
-{
-    void ConfigureImGuiDocking(const ImGuiWindowParams& imGuiWindowParams);
-    void ProvideWindowOrDock(ImGuiWindowParams& imGuiWindowParams);
-    void CloseWindowOrDock(ImGuiWindowParams& imGuiWindowParams);
-}  // namespace DockingDetails
-
 }  // namespace HelloImGui

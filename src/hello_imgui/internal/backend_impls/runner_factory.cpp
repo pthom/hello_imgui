@@ -1,9 +1,9 @@
-#include "hello_imgui/runner_factory.h"
+#include "hello_imgui/internal/backend_impls/runner_factory.h"
 
-#include "hello_imgui/backend_impls/runner_emscripten.h"
-#include "hello_imgui/backend_impls/runner_glfw_opengl3.h"
-#include "hello_imgui/backend_impls/runner_qt.h"
-#include "hello_imgui/backend_impls/runner_sdl_opengl3.h"
+#include "hello_imgui/internal/backend_impls/runner_emscripten.h"
+#include "hello_imgui/internal/backend_impls/runner_glfw_opengl3.h"
+#include "hello_imgui/internal/backend_impls/runner_qt.h"
+#include "hello_imgui/internal/backend_impls/runner_sdl_opengl3.h"
 
 namespace HelloImGui
 {

@@ -1,7 +1,6 @@
 #pragma once
 #include "hello_imgui/app_window_params.h"
 #include "hello_imgui/imgui_window_params.h"
-#include "hello_imgui/internal/main_screen_resolution.h"
 #include "hello_imgui/runner_callbacks.h"
 
 namespace HelloImGui

@@ -7,7 +7,7 @@ option(HELLOIMGUI_BUILD_DOCS "Build docs" OFF)
 option(HELLOIMGUI_BUILD_DOCS_EXCLUDE_FROM_ALL "Build docs, but exclude them from 'build all'" OFF)
 
 option(HELLOIMGUI_BUILD_IMGUI "Use imgui sources provided in external/imgui" ON)
-option(HELLOIMGUI_USE_QT "Build ImGuiRunner for Qt" ON)
+option(HELLOIMGUI_USE_QT "Build ImGuiRunner for Qt" OFF)
 option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build ImGuiRunner for GLFW+OpenGL3" ON)
 option(HELLOIMGUI_USE_SDL_OPENGL3 "Build ImGuiRunner for SDL+OpenGL3" ON)
 option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build ImGuiRunner for SDL+DirectX11" ON)

@@ -84,7 +84,7 @@ namespace DockingDetails
             }
             ImplProvideFullScreenDockSpace(imGuiWindowParams);
         }
-    };
+    }
 
     void CloseWindowOrDock(ImGuiWindowParams& imGuiWindowParams)
     {

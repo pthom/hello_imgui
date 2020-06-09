@@ -38,10 +38,6 @@ jobs:
       working-directory: build
       run: |
           make
-    - name: Test
-      working-directory: build
-      run: |
-          make test
 
     - name: Make doxygen doc
       working-directory: build

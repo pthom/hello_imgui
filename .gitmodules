@@ -10,3 +10,5 @@
 [submodule "external/SDL"]
 	path = external/SDL
 	url = https://github.com/SDL-mirror/SDL.git
+[submodule "qtimgui"]
+	url = https://github.com/pthom/qtimgui.git

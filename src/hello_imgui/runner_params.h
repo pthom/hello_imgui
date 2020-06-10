@@ -2,6 +2,7 @@
 #include "hello_imgui/app_window_params.h"
 #include "hello_imgui/imgui_window_params.h"
 #include "hello_imgui/runner_callbacks.h"
+#include "hello_imgui/docking_params.h"
 
 namespace HelloImGui
 {
@@ -18,6 +19,8 @@ struct RunnerParams
     AppWindowParams appWindowParams;
     /// imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)
     ImGuiWindowParams imGuiWindowParams;
+    /// docking params
+    DockingParams dockingParams;
     /// Set appShallExit to true in order to quit
     bool appShallExit = false;
 };

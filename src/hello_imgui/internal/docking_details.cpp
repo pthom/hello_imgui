@@ -2,8 +2,6 @@
 
 namespace HelloImGui
 {
-void ImGuiWindowParams::ResetDockLayout() { wasDockLayoutApplied = false; }
-
 namespace DockingDetails
 {
 ImGuiID MainDockSpaceId()
@@ -53,14 +51,6 @@ void ImplProvideFullScreenDockSpace(const ImGuiWindowParams& imGuiWindowParams)
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 }
 
-bool WasDockLayoutDone(const ImGuiWindowParams& p) { return p.wasDockLayoutApplied; }
-void SetDockLayout_Done(ImGuiWindowParams& p) { p.wasDockLayoutApplied = true; }
-void SetDockLayout_NotDone(ImGuiWindowParams& p)
-{
-    remove("imgui.ini");
-    p.wasDockLayoutApplied = false;
-}
-
 void ConfigureImGuiDocking(const ImGuiWindowParams& imGuiWindowParams)
 {
     if (imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenDockSpace)
@@ -69,18 +59,18 @@ void ConfigureImGuiDocking(const ImGuiWindowParams& imGuiWindowParams)
     ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = imGuiWindowParams.configWindowsMoveFromTitleBarOnly;
 }
 
-void ProvideWindowOrDock(ImGuiWindowParams& imGuiWindowParams)
+void ProvideWindowOrDock(const ImGuiWindowParams& imGuiWindowParams, DockingParams &dockingParams)
 {
     if (imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenWindow)
         ImplProvideFullScreenImGuiWindow(imGuiWindowParams);
 
     if (imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenDockSpace)
     {
-        if (!WasDockLayoutDone(imGuiWindowParams))
+        if (!dockingParams.wasDockLayoutApplied)
         {
-            if (imGuiWindowParams.InitialDockLayoutFunction)
-                imGuiWindowParams.InitialDockLayoutFunction(MainDockSpaceId());
-            SetDockLayout_Done(imGuiWindowParams);
+            if (dockingParams.InitialDockLayoutFunction)
+                dockingParams.InitialDockLayoutFunction(MainDockSpaceId());
+            dockingParams.wasDockLayoutApplied = true;
         }
         ImplProvideFullScreenDockSpace(imGuiWindowParams);
     }

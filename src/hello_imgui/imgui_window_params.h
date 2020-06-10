@@ -29,15 +29,6 @@ struct ImGuiWindowParams
 
     /// Make windows only movable from the title bar
     bool configWindowsMoveFromTitleBarOnly = true;
-
-    /// Callback that will create the initial docking layout
-    std::function<void(ImGuiID /* fullDockSpace */)> InitialDockLayoutFunction = nullptr;
-    /// Call this function from the code in order to restore the dock layout
-    /// to the initial layout provided by InitialDockLayoutFunction
-    void ResetDockLayout();
-
-    /// wasDockLayoutApplied is an internal variable (set by InitialDockLayoutFunction() and ResetDockLayout())
-    bool wasDockLayoutApplied = false;
 };
 
 }  // namespace HelloImGui

@@ -34,7 +34,7 @@ void AbstractRunner::Setup()
 
 void AbstractRunner::RenderGui()
 {
-    DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams);
+    DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams, params.dockingParams);
     params.callbacks.ShowGui();
     DockingDetails::CloseWindowOrDock(params.imGuiWindowParams);
 }

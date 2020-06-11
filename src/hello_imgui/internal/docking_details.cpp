@@ -110,7 +110,7 @@ void ShowDockableWindows(std::vector<DockableWindow>& dockableWindows)
             else
                 collapsed = ImGui::Begin(dockableWindow.label.c_str());
             if (!collapsed)
-                dockableWindow.guiFonction();
+                dockableWindow.GuiFonction();
             ImGui::End();
         }
     }

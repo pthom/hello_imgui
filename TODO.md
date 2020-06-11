@@ -1,15 +1,20 @@
 Features
     * [ ] Font size according to platform (mobile)
-    * [ ] Std behaviors
+    * [X] Std behaviors
         * [X] Menu (quit, font size)
         * [X] Menu customizable
         * [X] StatusBar (FPS)
         * [N] showMenuBar and ShowMenus() : remove duplicate info / idem for status
-    * [ ] Docking
+    * [X] Docking
         * [X] Option / Reset pref
         * [X] Menu (Layout)
         * [X] Hide close button
-        * [ ] Review naming / splits and spaces
+        * [X] Review naming / splits and spaces
+        * [ ] External windows ?
+
+Misc
+    * [ ] Simplify cmake
+    * [X] Check all struct members start lowercase
 
 * [ ] Doc
     * [ ] Demos
@@ -23,11 +28,6 @@ Features
     * [ ] OSX
     * [ ] Android    
     See https://github.com/jurplel/install-qt-action
-
-    
-Misc
-    * [ ] Simplify cmake
-    * [ ] Check all struct members start lowercase
 
     
 * [ ] make imgui optional in qtimgui

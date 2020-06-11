@@ -5,5 +5,6 @@ namespace HelloImGui
 namespace ImGuiDefaultBehaviors
 {
     void ShowMenu(RunnerParams & runnerParams);
+    void ShowStatusBar(const RunnerParams & params);
 }  // namespace ImGuiDefaultBehaviors
 }  // namespace HelloImGui

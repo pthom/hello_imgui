@@ -17,27 +17,27 @@ void MenuItems_FontScale()
     ImGui::MenuItem(msgCurrentRatio, nullptr, false, false);
 
     bool zoomChanged = false;
-    if (ImGui::MenuItem("Zoom ++"))
+    if (ImGui::MenuItem( "Zoom ++"))
     {
         ratio = ratio * 1.2f * 1.2f;
         zoomChanged = true;
     }
-    if (ImGui::MenuItem("Zoom +"))
+    if (ImGui::MenuItem( "Zoom +"))
     {
         ratio = ratio * 1.2f;
         zoomChanged = true;
     }
-    if (ImGui::MenuItem("Zoom -"))
+    if (ImGui::MenuItem( "Zoom -"))
     {
         ratio = ratio / 1.2f;
         zoomChanged = true;
     }
-    if (ImGui::MenuItem("Zoom --"))
+    if (ImGui::MenuItem(  "Zoom --"))
     {
         ratio = ratio / 1.2f / 1.2f;
         zoomChanged = true;
     }
-    if (ImGui::MenuItem("Restore Zoom"))
+    if (ImGui::MenuItem( "Restore Zoom"))
     {
         ratio = 1.f;
         zoomChanged = true;
@@ -60,7 +60,7 @@ void ShowDefaultAppMenu_QuitZoom(RunnerParams & runnerParams)
         MenuItems_FontScale();
         ImGui::Separator();
 
-        if (ImGui::MenuItem("Quit"))
+        if (ImGui::MenuItem( "Quit"))
             runnerParams.appShallExit = true;
 
         ImGui::EndMenu();
@@ -76,7 +76,7 @@ void ShowMenu(RunnerParams & runnerParams)
 
     ImGui::BeginMenuBar();
 
-    if (runnerParams.imGuiWindowParams.showDefaultAppMenu_QuitZoom)
+    if (runnerParams.imGuiWindowParams.showMenu_App_QuitZoom)
         ShowDefaultAppMenu_QuitZoom(runnerParams);
 
     if (runnerParams.callbacks.ShowMenus)
@@ -85,6 +85,32 @@ void ShowMenu(RunnerParams & runnerParams)
     ImGui::EndMenuBar();
 
 }
+
+void ShowStatus_Fps()
+{
+    ImGui::SameLine(ImGui::GetIO().DisplaySize.x - 60.f);
+    ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+}
+
+void ShowStatusBar(const RunnerParams & params)
+{
+    float statusWindowHeight = 30.f;
+    ImVec2 windowLocation( 0., ImGui::GetIO().DisplaySize.y - statusWindowHeight );
+    ImVec2 windowSize(ImGui::GetIO().DisplaySize.x, statusWindowHeight);
+    ImGui::SetNextWindowPos(windowLocation);
+    ImGui::SetNextWindowSize(windowSize);
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking;
+    ImGui::Begin("StatusBar", nullptr, windowFlags);
+
+    if (params.callbacks.ShowStatus)
+        params.callbacks.ShowStatus();
+
+    if (params.imGuiWindowParams.showStatus_Fps)
+        ShowStatus_Fps();
+
+    ImGui::End();
+}
+
 
 }  // namespace ImGuiDefaultBehaviors
 }  // namespace HelloImGui

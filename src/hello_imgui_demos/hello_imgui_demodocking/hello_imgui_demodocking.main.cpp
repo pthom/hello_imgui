@@ -4,7 +4,7 @@ int main() {
 
     runnerParams.imGuiWindowParams.defaultImGuiWindowType =
         HelloImGui::DefaultImGuiWindowType::ProvideFullScreenDockSpace;
-    runnerParams.imGuiWindowParams.showMenuBar = true;
+
 
     runnerParams.dockingParams.dockingSplits =
         {
@@ -33,6 +33,7 @@ int main() {
         ImGui::End();
     };
 
+    runnerParams.imGuiWindowParams.showMenuBar = true;
     runnerParams.callbacks.ShowMenus = []() {
         if (ImGui::BeginMenu("My Menu"))
         {
@@ -41,7 +42,12 @@ int main() {
             ImGui::MenuItem("Third item");
             ImGui::EndMenu();
         }
+    };
 
+    runnerParams.imGuiWindowParams.showStatusBar = true;
+    // runnerParams.imGuiWindowParams.showStatus_Fps = false;
+    runnerParams.callbacks.ShowStatus = [] {
+        ImGui::Text("This is my status");
     };
 
     HelloImGui::Run(runnerParams);

@@ -40,6 +40,10 @@ void AbstractRunner::RenderGui()
         ImGuiDefaultBehaviors::ShowMenu(params);
 
     params.callbacks.ShowGui();
+
+    if (params.imGuiWindowParams.showStatusBar)
+        ImGuiDefaultBehaviors::ShowStatusBar(params);
+
     DockingDetails::CloseWindowOrDock(params.imGuiWindowParams);
 }
 

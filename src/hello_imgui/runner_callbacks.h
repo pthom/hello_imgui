@@ -29,6 +29,11 @@ struct RunnerCallbacks
     ///    ImGui::BeginMenu(...) / ImGui::MenuItem(...) / ImGui::EndMenu()
     GuiFunctionPointer ShowMenus = {};
 
+    /// Fill ShowStatus() with a function that will add items to the status bar
+    /// Use small items (ImGui::Text for example), since the height of the status
+    /// is 30. Also, remember to call ImGui::SameLine() between items.
+    GuiFunctionPointer ShowStatus = {};
+
     /// If needed, fill PostInit with a function that will be called once
     /// after OpenGl and ImGui are inited
     VoidFunctionPointer PostInit = NoAction;

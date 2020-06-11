@@ -1,14 +1,51 @@
 #pragma once
 #include "imgui.h"
+#include "hello_imgui/runner_callbacks.h"
 #include <functional>
+#include <string>
+#include <vector>
+#include <utility>
 #include <stdio.h>
 
 namespace HelloImGui
 {
+//StatusBar
+//ToolBar
+//Menu
+
+
+//using LayoutMode = std::string;
+//using DockableWindowId = std::string;
+//
+
+using DockSpaceId = std::string;
+using WindowId = std::string;
+struct DockingSplit
+{
+    /// id of the space that should be split :
+    /// At the start, there is only one space, named "MainDockSpace"
+    DockSpaceId initialDock;
+    DockSpaceId newDock;
+    ImGuiDir_ direction;
+    float ratio;
+};
+
+struct DockableWindowInfo {
+    std::string label = "";
+    bool isVisible = true;
+    bool displayCloseButton = true;
+
+
+    GuiFunctionPointer guiFonction = {};
+};
+
+
+
 struct DockingParams
 {
-    /// Callback that will create the initial docking layout
-    std::function<void(ImGuiID /* fullDockSpace */)> InitialDockLayoutFunction = nullptr;
+    std::vector<DockingSplit> dockingSplits;
+    std::vector<std::pair<WindowId, DockSpaceId>>  windowDockingLocations;
+
     /// Call this function from the code in order to restore the dock layout
     /// to the initial layout provided by InitialDockLayoutFunction
     inline void ResetDockLayout() { wasDockLayoutApplied = false; }
@@ -22,6 +59,5 @@ struct DockingParams
         remove("imgui.ini");
         wasDockLayoutApplied = false;
     }
-
 };
 }

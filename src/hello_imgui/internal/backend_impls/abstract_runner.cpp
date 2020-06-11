@@ -1,5 +1,6 @@
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
 #include "hello_imgui/internal/docking_details.h"
+#include "hello_imgui/imgui_default_behaviors.h"
 #include "imgui.h"
 
 namespace HelloImGui
@@ -26,7 +27,6 @@ void AbstractRunner::Setup()
     params.callbacks.SetupImGuiStyle();
     Impl_SetupPlatformRendererBindings();
     params.callbacks.LoadAdditionalFonts();
-
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
 
     params.callbacks.PostInit();
@@ -35,6 +35,10 @@ void AbstractRunner::Setup()
 void AbstractRunner::RenderGui()
 {
     DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams, params.dockingParams);
+
+    if (params.imGuiWindowParams.showMenuBar)
+        ImGuiDefaultBehaviors::ShowMenu(params);
+
     params.callbacks.ShowGui();
     DockingDetails::CloseWindowOrDock(params.imGuiWindowParams);
 }

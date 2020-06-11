@@ -24,7 +24,7 @@ struct ImGuiWindowParams
     /// backgroundColor (only visible is defaultImGuiWindowType is NoDefaultWindow !)
     ImVec4 backgroundColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    /// Show Menu bar on top of imgui windows
+    /// Show Menu bar on top of imgui main window
     bool showMenuBar = false;
 
     /// Make windows only movable from the title bar

@@ -1,6 +1,6 @@
 #pragma once
-#include <functional>
 #include "hello_imgui/imgui_default_settings.h"
+#include <functional>
 
 namespace HelloImGui
 {

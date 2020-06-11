@@ -4,6 +4,7 @@ int main() {
 
     runnerParams.imGuiWindowParams.defaultImGuiWindowType =
         HelloImGui::DefaultImGuiWindowType::ProvideFullScreenDockSpace;
+    runnerParams.imGuiWindowParams.showMenuBar = true;
 
     runnerParams.dockingParams.dockingSplits =
         {

@@ -1,6 +1,6 @@
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
 #include "hello_imgui/internal/docking_details.h"
-#include "hello_imgui/imgui_default_behaviors.h"
+#include "hello_imgui/internal/menu_statusbar.h"
 #include "imgui.h"
 
 namespace HelloImGui
@@ -37,14 +37,14 @@ void AbstractRunner::RenderGui()
     DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams, params.dockingParams);
 
     if (params.imGuiWindowParams.showMenuBar)
-        ImGuiDefaultBehaviors::ShowMenu(params);
+        Menu_StatusBar::ShowMenu(params);
 
     params.callbacks.ShowGui();
 
     DockingDetails::ShowDockableWindows(params.dockingParams.dockableWindows);
 
     if (params.imGuiWindowParams.showStatusBar)
-        ImGuiDefaultBehaviors::ShowStatusBar(params);
+        Menu_StatusBar::ShowStatusBar(params);
 
     DockingDetails::CloseWindowOrDock(params.imGuiWindowParams);
 }

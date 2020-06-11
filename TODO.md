@@ -5,12 +5,14 @@ Features
         * [X] Menu customizable
         * [X] StatusBar (FPS)
         * [N] showMenuBar and ShowMenus() : remove duplicate info / idem for status
+        * [X] Menu_StatusBar -> internal
     * [X] Docking
         * [X] Option / Reset pref
         * [X] Menu (Layout)
         * [X] Hide close button
         * [X] Review naming / splits and spaces
         * [ ] External windows ?
+
 
 Misc
     * [ ] Simplify cmake

@@ -4,9 +4,22 @@
 
 namespace HelloImGui
 {
-/// AppWindowParams: defines the application window display params
-/// Note for mobile apps: Mobile apps are always full screen, so that these
-/// params will not be taken into account
+/**
+@@md
+__AppWindowParams__ is a struct that defines the application window display params.
+
+Members:
+* `windowTitle`: _string, default=""_. Title of the application window
+* `windowSize`: _ImVec2, default (800,600)_. Size of the window.
+* `maximized`: _bool, default=false_. If this boolean flag is true, the application window
+   will occupy the full space of the primary screen
+* `fullScreen`: _bool, default=false_. If this boolean flag is true, the application window
+   will be full screen, with no decorations.
+    _Note: on a mobile device, the application will always be full screen._
+* `windowPosition`: _ImVec2, default=(-11000, -1)_. Position of the window if x >= -1000,
+   else let the OS decide
+@@md
+**/
 struct AppWindowParams
 {
     AppWindowParams(std::string windowTitle_ = "",
@@ -21,21 +34,11 @@ struct AppWindowParams
           windowPosition(windowPosition_)
     {
     }
-
-    /// title of the application window (empty by default)
+    
     std::string windowTitle = "";
-
-    /// size of the window (default 800x600)
     ImVec2 windowSize = {800.f, 600.f};
-
-    /// If this boolean flag is true, the application window will occupy the full space of the primary screen
     bool maximized = false;
-
-    /// If this boolean flag is true, the application window will be full screen, with no decorations.
-    /// _Note: on a mobile device, the application will always be full screen._
     bool fullScreen = false;
-
-    /// position of the window (if x <= -10000., then let the OS decide)
     ImVec2 windowPosition = {-11000.f, -1.f};
 };
 

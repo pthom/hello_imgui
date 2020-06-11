@@ -9,8 +9,7 @@ namespace HelloImGui
         runner->Run();
     }
 
-    void Run(
-        GuiFunctionPointer guiFonction,
+    void Run(VoidFunction guiFonction,
         ImVec2 windowSize,
         std::string windowTitle
     )

@@ -1,3 +1,5 @@
+// From https://github.com/leiradel/ImGuiAl
+
 #include "imguial_term.h"
 
 #include <stdio.h>
@@ -132,6 +134,9 @@ void ImGuiAl::Crt::vprintf(char const* const format, va_list args) {
     if (line != temp) {
         delete[] line;
     }
+
+    if (autoScrollToBotttom)
+        scrollToBottom();
 }
 
 void ImGuiAl::Crt::scrollToBottom() {
@@ -254,6 +259,7 @@ ImGuiAl::Log::Log(void* const buffer, size_t const buffer_size)
     setColor(Level::Info, CGA::BrightGreen);
     setColor(Level::Warning, CGA::Yellow);
     setColor(Level::Error, CGA::BrightRed);
+    autoScrollToBotttom = true;
 }
 
 void ImGuiAl::Log::debug(char const* const format, ...) {
@@ -374,6 +380,11 @@ int ImGuiAl::Log::draw(ImVec2 const& size) {
 
         ImGui::SameLine();
         ImGui::Checkbox(_cumulativeLabel, &_cumulative);
+
+        ImGui::SameLine();
+        if (ImGui::Button("Clear##LogsClear"))
+            clear();
+
         _filter.Draw(_filterLabel);
     }
 

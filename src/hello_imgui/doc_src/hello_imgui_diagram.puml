@@ -1,0 +1,89 @@
+namespace HelloImGui {
+
+enum _ <functions>{
+    + void Run(RunnerParams &)
+    + void Run(VoidFunction, windowSize, title)
+}
+
+_ --> RunnerParams: use
+
+class RunnerParams <struct> {
+    RunnerCallbacks callbacks;
+    AppWindowParams appWindowParams;
+    ImGuiWindowParams imGuiWindowParams;
+    DockingParams dockingParams;
+    bool appShallExit = false;
+}
+
+class RunnerCallbacks <struct> {
+    VoidFunction ShowGui = {};
+    VoidFunction ShowMenus = {};
+    VoidFunction ShowStatus = {};
+    VoidFunction PostInit = NoAction;
+    
+    VoidFunction LoadAdditionalFonts =
+       LoadDefaultFont_WithFontAwesome;
+
+    VoidFunction SetupImGuiConfig = 
+      SetupDefaultImGuiConfig;
+
+    VoidFunction SetupImGuiStyle = 
+      SetupDefaultImGuiStyle;
+}
+
+class AppWindowParams <struct> {
+    std::string windowTitle = "";
+    ImVec2 windowSize = {800.f, 600.f};
+    bool maximized = false;
+    bool fullScreen = false;
+    ImVec2 windowPosition = {-11000.f, -1.f};
+}
+
+class ImGuiWindowParams <struct> {
+    defaultImGuiWindowType = ProvideFullScreenWindow;
+
+    ImVec4 backgroundColor;
+
+    bool showMenuBar = false;
+    bool showMenu_App_QuitZoom = true;
+    bool showMenu_View = true;
+
+    bool showStatusBar = false;
+    bool showStatus_Fps = true;
+
+    bool configWindowsMoveFromTitleBarOnly = true;
+}
+
+class DockingParams <struct> {
+    vector<DockingSplit> dockingSplits;
+
+    vector<DockableWindow> dockableWindows;
+
+    bool resetUserDockLayout = true;
+    bool wasDockLayoutApplied = false;
+}
+
+class DockableWindow <struct> {
+    string label;
+    DockSpaceName dockSpaceName;
+    VoidFunction GuiFonction = {};
+    bool isVisible = true;
+    bool canBeClosed = true;
+}
+
+class DockingSplit <struct> {
+    DockSpaceName initialDock;
+    DockSpaceName newDock;
+    ImGuiDir_ direction;
+    float ratio = 0.25f;
+}
+
+
+RunnerParams *-- RunnerCallbacks
+RunnerParams *-- AppWindowParams
+RunnerParams *-- ImGuiWindowParams
+RunnerParams *-- DockingParams
+DockingParams *-- DockableWindow : vector
+DockingParams *-- DockingSplit : vector
+
+}

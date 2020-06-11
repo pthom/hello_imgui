@@ -8,20 +8,37 @@ namespace HelloImGui
 {
 
 /**
- * RunnerParams contains all the information and callbacks
- * needed to run an application
+ @@md
+ **RunnerParams** is a struct that contains all the settings and callbacks needed to run an application.
+
+ Members:
+* `callbacks`: _see [RunnerCallbacks](runner_callbacks.h)_
+
+    callbacks.ShowGui() will render the gui, ShowMenus() will show the menus, etc.
+
+* `appWindowParams`: _see [AppWindowParams](app_window_params.h)_
+
+    application Window Params (position, size, title)
+
+* `imGuiWindowParams`: _see [ImGuiWindowParams](imgui_window_params.h)_
+
+    imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)
+
+* `dockingParams`: _see [DockingParams](docking_params.h)_
+
+    dockable windows content and layout
+
+* `appShallExit`: _bool, default=false_
+
+   will be set to true by the app when exiting.
+@@md
  */
 struct RunnerParams
 {
-    /// RunnerCallbacks (ShowGui() will render the gui, Config, etc)
     RunnerCallbacks callbacks;
-    /// application Window Params (position, size, title)
     AppWindowParams appWindowParams;
-    /// imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)
     ImGuiWindowParams imGuiWindowParams;
-    /// docking params
     DockingParams dockingParams;
-    /// Set appShallExit to true in order to quit
     bool appShallExit = false;
 };
 

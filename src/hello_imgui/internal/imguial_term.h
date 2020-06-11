@@ -104,6 +104,7 @@ class Crt {
     ImU32 _foregroundColor;
     unsigned _metaData;
     bool _scrollToBottom;
+    bool autoScrollToBotttom = false;
 };
 
 class Log : protected Crt {

@@ -91,8 +91,10 @@ void ShowViewMenu(RunnerParams & runnerParams)
         MenuView_DockableWindows(runnerParams);
         ImGui::Separator();
 
-        if (ImGui::MenuItem("View Status bar##kwlmcldmdsl", nullptr, runnerParams.imGuiWindowParams.showStatusBar))
+        if (ImGui::MenuItem("View Status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatusBar))
             runnerParams.imGuiWindowParams.showStatusBar = ! runnerParams.imGuiWindowParams.showStatusBar;
+        if (ImGui::MenuItem("FPS in status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatus_Fps))
+            runnerParams.imGuiWindowParams.showStatus_Fps = ! runnerParams.imGuiWindowParams.showStatus_Fps;
 
         ImGui::EndMenu();
     }
@@ -104,12 +106,12 @@ void ShowDockableWindows(std::vector<DockableWindow>& dockableWindows)
     {
         if (dockableWindow.isVisible)
         {
-            bool collapsed = false;
+            bool not_collapsed = true;
             if (dockableWindow.canBeClosed)
-                collapsed = ImGui::Begin(dockableWindow.label.c_str(), &dockableWindow.isVisible);
+                not_collapsed = ImGui::Begin(dockableWindow.label.c_str(), &dockableWindow.isVisible);
             else
-                collapsed = ImGui::Begin(dockableWindow.label.c_str());
-            if (!collapsed)
+                not_collapsed = ImGui::Begin(dockableWindow.label.c_str());
+            if (not_collapsed && dockableWindow.GuiFonction)
                 dockableWindow.GuiFonction();
             ImGui::End();
         }
@@ -121,7 +123,8 @@ void ImplProvideFullScreenImGuiWindow(const ImGuiWindowParams& imGuiWindowParams
 {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImVec2 winSize = ImGui::GetIO().DisplaySize;
-    // winSize.y -= 10.f;
+    if (imGuiWindowParams.showStatusBar)
+        winSize.y -= 30.f;
     ImGui::SetNextWindowSize(winSize);
     ImGuiWindowFlags windowFlags =
         ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoBringToFrontOnFocus;
@@ -134,7 +137,11 @@ void ImplProvideFullScreenDockSpace(const ImGuiWindowParams& imGuiWindowParams)
 {
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->Pos);
-    ImGui::SetNextWindowSize(viewport->Size);
+
+    ImVec2 viewportSize = viewport->Size;
+    if (imGuiWindowParams.showStatusBar)
+        viewportSize.y -= 30.f;
+    ImGui::SetNextWindowSize(viewportSize);
     ImGui::SetNextWindowViewport(viewport->ID);
     ImGui::SetNextWindowBgAlpha(0.0f);
 

@@ -1,5 +1,5 @@
-#include "hello_imgui/imgui_default_behaviors.h"
 #include "hello_imgui/icons_font_awesome.h"
+#include "hello_imgui/internal/menu_statusbar.h"
 #include "imgui.h"
 #include <string>
 
@@ -54,35 +54,6 @@ void SetupDefaultImGuiStyle()
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 }
-
-void ShowMenu(RunnerParams & runnerParams)
-{
-    std::string appName = runnerParams.appWindowParams.windowTitle.c_str();
-    ImGui::BeginMenuBar();
-    if (ImGui::BeginMenu("Menu name"))
-    {
-//        IMGUI_API bool          MenuItem(const char* label,
-//            const char* shortcut = NULL,
-//            bool selected = false,
-//            bool enabled = true);
-//        // return true when activated. shortcuts are displayed for convenience
-//        // but not processed by ImGui at the moment
-//        IMGUI_API bool          MenuItem(const char* label,
-//            const char* shortcut, bool* p_selected, bool enabled = true);
-//        // return true when activated + toggle (*p_selected) if p_selected != NULL
-
-        //const char *nullShortcut = nullptr;
-        if (ImGui::MenuItem("Quit"))
-            runnerParams.appShallExit = true;
-
-        ImGui::Separator();
-
-        ImGui::EndMenu();
-    }
-    ImGui::EndMenuBar();
-
-}
-
 
 }  // namespace ImGuiDefaultSettings
 }  // namespace HelloImGui

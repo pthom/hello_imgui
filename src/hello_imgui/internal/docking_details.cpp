@@ -60,15 +60,24 @@ void MenuView_DockableWindows(RunnerParams& runnerParams)
 
     if (ImGui::MenuItem("View All##DSQSDDF"))
         for (auto& dockableWindow: runnerParams.dockingParams.dockableWindows)
-            dockableWindow.isVisible = true;
+            if (dockableWindow.canBeClosed)
+                dockableWindow.isVisible = true;
     if (ImGui::MenuItem("Hide All##DSQSDDF"))
         for (auto& dockableWindow: runnerParams.dockingParams.dockableWindows)
-            dockableWindow.isVisible = false;
+            if (dockableWindow.canBeClosed)
+                dockableWindow.isVisible = false;
 
     for (auto& dockableWindow: runnerParams.dockingParams.dockableWindows)
     {
-        if (ImGui::MenuItem(dockableWindow.label.c_str(), nullptr, dockableWindow.isVisible))
-            dockableWindow.isVisible = ! dockableWindow.isVisible;
+        if (dockableWindow.canBeClosed)
+        {
+            if (ImGui::MenuItem(dockableWindow.label.c_str(), nullptr, dockableWindow.isVisible))
+                dockableWindow.isVisible = ! dockableWindow.isVisible;
+        }
+        else
+        {
+            ImGui::MenuItem(dockableWindow.label.c_str(), nullptr, dockableWindow.isVisible, false);
+        }
     }
 
     ImGui::Separator();
@@ -95,8 +104,11 @@ void ShowDockableWindows(std::vector<DockableWindow>& dockableWindows)
     {
         if (dockableWindow.isVisible)
         {
-            //ImGuiWindowFlags flags; // = ImGuiWindowFlags_@
-            bool collapsed = ImGui::Begin(dockableWindow.label.c_str(), &dockableWindow.isVisible);// flags);
+            bool collapsed = false;
+            if (dockableWindow.canBeClosed)
+                collapsed = ImGui::Begin(dockableWindow.label.c_str(), &dockableWindow.isVisible);
+            else
+                collapsed = ImGui::Begin(dockableWindow.label.c_str());
             if (!collapsed)
                 dockableWindow.guiFonction();
             ImGui::End();

@@ -8,8 +8,7 @@ Features
     * [ ] Docking
         * [X] Option / Reset pref
         * [X] Menu (Layout)
-        * [ ] Hide close button
-        * [ ] Demo
+        * [X] Hide close button
         * [ ] Review naming / splits and spaces
 
 * [ ] Doc

@@ -16,13 +16,13 @@ int main() {
         {
             {"Main", "MainDockSpace", []() {
                 ImGui::Text("Hello Main");
-            }},
+            }, true, false  },
             {"Logs", "BottomSpace", []() {
                 ImGui::Text("Hello Logs");
             }},
             {"Left", "LeftSpace", []() {
                 ImGui::Text("Hello Left");
-            }}
+            }, false, true}
         };
 
     runnerParams.callbacks.ShowGui = []() {

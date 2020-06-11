@@ -1,5 +1,6 @@
 #include "hello_imgui/imgui_default_behaviors.h"
 #include "hello_imgui/icons_font_awesome.h"
+#include "hello_imgui/internal/docking_details.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include <string>
@@ -79,11 +80,13 @@ void ShowMenu(RunnerParams & runnerParams)
     if (runnerParams.imGuiWindowParams.showMenu_App_QuitZoom)
         ShowDefaultAppMenu_QuitZoom(runnerParams);
 
+    if (runnerParams.imGuiWindowParams.showMenu_View)
+        DockingDetails::ShowViewMenu(runnerParams);
+
     if (runnerParams.callbacks.ShowMenus)
         runnerParams.callbacks.ShowMenus();
 
     ImGui::EndMenuBar();
-
 }
 
 void ShowStatus_Fps()

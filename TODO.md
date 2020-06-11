@@ -3,11 +3,14 @@ Features
     * [ ] Std behaviors
         * [X] Menu (quit, font size)
         * [X] Menu customizable
-        * [ ] StatusBar (FPS)
+        * [X] StatusBar (FPS)
+        * [N] showMenuBar and ShowMenus() : remove duplicate info / idem for status
     * [ ] Docking
-        * [ ] Option / Reset pref
+        * [X] Option / Reset pref
+        * [X] Menu (Layout)
+        * [ ] Hide close button
         * [ ] Demo
-        * [ ] Menu (Layout)
+        * [ ] Review naming / splits and spaces
 
 * [ ] Doc
     * [ ] Demos

@@ -41,6 +41,8 @@ void AbstractRunner::RenderGui()
 
     params.callbacks.ShowGui();
 
+    DockingDetails::ShowDockableWindows(params.dockingParams.dockableWindows);
+
     if (params.imGuiWindowParams.showStatusBar)
         ImGuiDefaultBehaviors::ShowStatusBar(params);
 

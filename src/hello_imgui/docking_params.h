@@ -18,33 +18,46 @@ namespace HelloImGui
 //using DockableWindowId = std::string;
 //
 
-using DockSpaceId = std::string;
+using DockSpaceName = std::string;
 using WindowId = std::string;
 struct DockingSplit
 {
     /// id of the space that should be split :
     /// At the start, there is only one space, named "MainDockSpace"
-    DockSpaceId initialDock;
-    DockSpaceId newDock;
+    DockSpaceName initialDock;
+    DockSpaceName newDock;
     ImGuiDir_ direction;
     float ratio;
 };
 
-struct DockableWindowInfo {
-    std::string label = "";
+struct DockableWindow
+{
+    DockableWindow(
+        const std::string & label_,
+        const DockSpaceName & dockSpaceName_,
+        const GuiFunctionPointer guiFonction_,
+        bool isVisible_ = true,
+        bool displayCloseButton_ = true)
+    : label(label_), dockSpaceName(dockSpaceName_), guiFonction(guiFonction_),
+      isVisible(isVisible_), displayCloseButton(displayCloseButton_) {}
+
+    std::string label;
+    DockSpaceName dockSpaceName;
+    GuiFunctionPointer guiFonction = {};
+
     bool isVisible = true;
     bool displayCloseButton = true;
-
-
-    GuiFunctionPointer guiFonction = {};
 };
-
 
 
 struct DockingParams
 {
     std::vector<DockingSplit> dockingSplits;
-    std::vector<std::pair<WindowId, DockSpaceId>>  windowDockingLocations;
+    //std::vector<std::pair<WindowId, DockSpaceName>>  windowDockingLocations;
+    std::vector<DockableWindow> dockableWindows;
+
+    /// Reset user layout at application startup?
+    bool resetUserDockLayout = true;
 
     /// Call this function from the code in order to restore the dock layout
     /// to the initial layout provided by InitialDockLayoutFunction
@@ -52,12 +65,5 @@ struct DockingParams
 
     /// wasDockLayoutApplied is an internal variable (set by InitialDockLayoutFunction() and ResetDockLayout())
     bool wasDockLayoutApplied = false;
-
-    /// Restores the initial layout (and remove imgui.ini, since it could override the programmatic layout)
-    inline void ForceResetLayout()
-    {
-        remove("imgui.ini");
-        wasDockLayoutApplied = false;
-    }
 };
 }

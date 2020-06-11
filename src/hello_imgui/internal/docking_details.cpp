@@ -6,7 +6,7 @@
 namespace HelloImGui
 {
 
-std::map<DockSpaceId, ImGuiID> gImGuiSplitIDs;
+std::map<DockSpaceName, ImGuiID> gImGuiSplitIDs;
 
 namespace DockingDetails
 {
@@ -35,14 +35,75 @@ void ApplyDockingSplits(const std::vector<DockingSplit>& dockingSplits)
 }
 
 void ApplyWindowDockingLocations(
-    const std::vector<std::pair<WindowId, DockSpaceId>> & windowDockingLocations)
+    const std::vector<DockableWindow> & dockableWindows)
 {
-    for (const auto & windowDockingLocation: windowDockingLocations)
+    for (const auto & dockableWindow: dockableWindows)
         ImGui::DockBuilderDockWindow(
-            windowDockingLocation.first.c_str(),
-            gImGuiSplitIDs[windowDockingLocation.second]
+            dockableWindow.label.c_str(),
+            gImGuiSplitIDs[dockableWindow.dockSpaceName]
         );
 }
+
+void MenuView_DockableWindows(RunnerParams& runnerParams)
+{
+    auto & dockableWindows = runnerParams.dockingParams.dockableWindows;
+    if (dockableWindows.empty())
+        return;
+
+    ImGui::MenuItem("Dockable windows##asldqsl", nullptr, false, false);
+
+    if (ImGui::MenuItem("Restore default layout##szzz"))
+    {
+        runnerParams.dockingParams.resetUserDockLayout = true;
+        runnerParams.dockingParams.wasDockLayoutApplied = false;
+    }
+
+    if (ImGui::MenuItem("View All##DSQSDDF"))
+        for (auto& dockableWindow: runnerParams.dockingParams.dockableWindows)
+            dockableWindow.isVisible = true;
+    if (ImGui::MenuItem("Hide All##DSQSDDF"))
+        for (auto& dockableWindow: runnerParams.dockingParams.dockableWindows)
+            dockableWindow.isVisible = false;
+
+    for (auto& dockableWindow: runnerParams.dockingParams.dockableWindows)
+    {
+        if (ImGui::MenuItem(dockableWindow.label.c_str(), nullptr, dockableWindow.isVisible))
+            dockableWindow.isVisible = ! dockableWindow.isVisible;
+    }
+
+    ImGui::Separator();
+}
+
+void ShowViewMenu(RunnerParams & runnerParams)
+{
+    (void)runnerParams;
+    if (ImGui::BeginMenu("View##kdsflmkdflm"))
+    {
+        MenuView_DockableWindows(runnerParams);
+        ImGui::Separator();
+
+        if (ImGui::MenuItem("View Status bar##kwlmcldmdsl", nullptr, runnerParams.imGuiWindowParams.showStatusBar))
+            runnerParams.imGuiWindowParams.showStatusBar = ! runnerParams.imGuiWindowParams.showStatusBar;
+
+        ImGui::EndMenu();
+    }
+}
+
+void ShowDockableWindows(std::vector<DockableWindow>& dockableWindows)
+{
+    for (auto& dockableWindow: dockableWindows)
+    {
+        if (dockableWindow.isVisible)
+        {
+            //ImGuiWindowFlags flags; // = ImGuiWindowFlags_@
+            bool collapsed = ImGui::Begin(dockableWindow.label.c_str(), &dockableWindow.isVisible);// flags);
+            if (!collapsed)
+                dockableWindow.guiFonction();
+            ImGui::End();
+        }
+    }
+}
+
 
 void ImplProvideFullScreenImGuiWindow(const ImGuiWindowParams& imGuiWindowParams)
 {
@@ -95,6 +156,27 @@ void ConfigureImGuiDocking(const ImGuiWindowParams& imGuiWindowParams)
     ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = imGuiWindowParams.configWindowsMoveFromTitleBarOnly;
 }
 
+bool IsMainDockSpaceAlreadySplit(ImGuiID mainDockspaceId)
+{
+    auto *ctx = GImGui;
+    ImGuiDockNode* node = (ImGuiDockNode*)ctx->DockContext.Nodes.GetVoidPtr(mainDockspaceId);
+    bool result = node->IsSplitNode();
+    return result;
+}
+
+void ApplyDockLayout(DockingParams& dockingParams)
+{
+    if (!dockingParams.wasDockLayoutApplied)
+    {
+        ImGuiID mainDockspaceId = ImGui::GetID("MainDockSpace");
+        if (dockingParams.resetUserDockLayout)
+            ImGui::DockBuilderRemoveNodeChildNodes(mainDockspaceId);
+        if (!IsMainDockSpaceAlreadySplit(mainDockspaceId))
+            ApplyDockingSplits(dockingParams.dockingSplits);
+        ApplyWindowDockingLocations(dockingParams.dockableWindows);
+        dockingParams.wasDockLayoutApplied = true;
+    }
+}
 void ProvideWindowOrDock(const ImGuiWindowParams& imGuiWindowParams, DockingParams &dockingParams)
 {
     if (imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenWindow)
@@ -103,14 +185,7 @@ void ProvideWindowOrDock(const ImGuiWindowParams& imGuiWindowParams, DockingPara
     if (imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenDockSpace)
     {
         ImplProvideFullScreenDockSpace(imGuiWindowParams);
-        if (!dockingParams.wasDockLayoutApplied)
-        {
-            ImGuiID mainDockspaceId = ImGui::GetID("MainDockSpace");
-            ImGui::DockBuilderRemoveNodeChildNodes(mainDockspaceId);
-            ApplyDockingSplits(dockingParams.dockingSplits);
-            ApplyWindowDockingLocations(dockingParams.windowDockingLocations);
-            dockingParams.wasDockLayoutApplied = true;
-        }
+        ApplyDockLayout(dockingParams);
     }
 }
 
@@ -119,48 +194,6 @@ void CloseWindowOrDock(ImGuiWindowParams& imGuiWindowParams)
     if (imGuiWindowParams.defaultImGuiWindowType != DefaultImGuiWindowType ::NoDefaultWindow)
         ImGui::End();
 }
-
-
-/// Handle docking splits
-
-
-//ImGuiID DoSplit(ImGuiID* io_dockToSplit, ImGuiDir_ splitDirection, float ratio)
-//{
-//    ImGuiID new_dock
-//        = ImGui::DockBuilderSplitNode(*io_dockToSplit, splitDirection, ratio, nullptr, io_dockToSplit);
-//    return new_dock;
-//}
-//
-//void BabylonStudioLayout::PrepareLayout(ImGuiID fullDockSpaceId)
-//{
-//    ImGui::DockBuilderRemoveNode(fullDockSpaceId); // Clear out existing layout
-//    ImGui::DockBuilderAddNode(fullDockSpaceId);    // Add empty node
-//    ImGui::DockBuilderSetNodeSize(fullDockSpaceId, ImGui::GetIO().DisplaySize);
-//
-//    ImGuiID dock_main_id = fullDockSpaceId;
-//    ImGuiID dock_id_bottom = DoSplit(&dock_main_id, ImGuiDir_Down, 0.25f);
-//    ImGuiID dock_id_left = DoSplit(&dock_main_id, ImGuiDir_Left, 0.33f);
-//    ImGuiID dock_id_right = DoSplit(&dock_main_id, ImGuiDir_Right, 0.45f);
-//
-//#ifdef BABYLON_BUILD_PLAYGROUND
-//    DoDock(DockableWindowId::PlaygroundEditor, dock_main_id);
-//#endif
-//    DoDock(DockableWindowId::SamplesCodeViewer, dock_main_id);
-//
-//    if (_layoutMode == LayoutMode::Dev) {
-//        DoDock(DockableWindowId::Inspector, dock_main_id);
-//        DoDock(DockableWindowId::SampleBrowser, dock_main_id);
-//    }
-//    else {
-//        DoDock(DockableWindowId::Inspector, dock_id_left);
-//        DoDock(DockableWindowId::SampleBrowser, dock_id_left);
-//    }
-//
-//    DoDock(DockableWindowId::Scene3d, dock_id_right);
-//    DoDock(DockableWindowId::Logs, dock_id_bottom);
-//
-//    ImGui::DockBuilderFinish(fullDockSpaceId);
-//}
 
 
 

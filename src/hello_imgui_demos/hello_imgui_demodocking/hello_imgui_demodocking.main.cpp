@@ -12,25 +12,20 @@ int main() {
             { "MainDockSpace", "LeftSpace", ImGuiDir_Left, 0.25 }
 
         };
-    runnerParams.dockingParams.windowDockingLocations =
+    runnerParams.dockingParams.dockableWindows =
         {
-            {"Main", "MainDockSpace"},
-            {"Logs", "BottomSpace"},
-            {"Left", "LeftSpace"}
+            {"Main", "MainDockSpace", []() {
+                ImGui::Text("Hello Main");
+            }},
+            {"Logs", "BottomSpace", []() {
+                ImGui::Text("Hello Logs");
+            }},
+            {"Left", "LeftSpace", []() {
+                ImGui::Text("Hello Left");
+            }}
         };
 
     runnerParams.callbacks.ShowGui = []() {
-        ImGui::Begin("Main");
-        ImGui::Text("Hello Main");
-        ImGui::End();
-
-        ImGui::Begin("Logs");
-        ImGui::Text("Hello Logs");
-        ImGui::End();
-
-        ImGui::Begin("Left");
-        ImGui::Text("Hello Left");
-        ImGui::End();
     };
 
     runnerParams.imGuiWindowParams.showMenuBar = true;

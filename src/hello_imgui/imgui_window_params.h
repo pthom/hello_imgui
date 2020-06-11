@@ -29,6 +29,8 @@ struct ImGuiWindowParams
     bool showMenuBar = false;
     /// If menu bar is shown, include or not the default app menu (Quit + zoom) ?
     bool showMenu_App_QuitZoom = true;
+    /// If menu bar is shown, include or not the default layout menu (docking layouts)
+    bool showMenu_View = true;
 
     /// Show Status bar at the bottom ?
     /// You can customize the status bar via RunnerCallbacks.ShowStatus()

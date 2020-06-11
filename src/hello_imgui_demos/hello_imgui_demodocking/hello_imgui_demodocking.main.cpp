@@ -33,5 +33,16 @@ int main() {
         ImGui::End();
     };
 
+    runnerParams.callbacks.ShowMenus = []() {
+        if (ImGui::BeginMenu("My Menu"))
+        {
+            ImGui::MenuItem("First item");
+            ImGui::MenuItem("Second item");
+            ImGui::MenuItem("Third item");
+            ImGui::EndMenu();
+        }
+
+    };
+
     HelloImGui::Run(runnerParams);
 }

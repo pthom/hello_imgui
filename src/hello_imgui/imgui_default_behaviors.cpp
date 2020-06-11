@@ -48,16 +48,12 @@ void MenuItems_FontScale()
 
 }
 
-void ShowMenu(RunnerParams & runnerParams)
+void ShowDefaultAppMenu_QuitZoom(RunnerParams & runnerParams)
 {
-    bool hasMenu = ImGui::GetCurrentWindow()->Flags & ImGuiWindowFlags_MenuBar;
-    if (!hasMenu)
-        return;
-
     std::string appName = runnerParams.appWindowParams.windowTitle.c_str();
     if (appName.empty())
         appName = "App";
-    ImGui::BeginMenuBar();
+
     if (ImGui::BeginMenu(appName.c_str()))
     {
         ImGui::Separator();
@@ -69,6 +65,23 @@ void ShowMenu(RunnerParams & runnerParams)
 
         ImGui::EndMenu();
     }
+
+}
+
+void ShowMenu(RunnerParams & runnerParams)
+{
+    bool hasMenu = ImGui::GetCurrentWindow()->Flags & ImGuiWindowFlags_MenuBar;
+    if (!hasMenu)
+        return;
+
+    ImGui::BeginMenuBar();
+
+    if (runnerParams.imGuiWindowParams.showDefaultAppMenu_QuitZoom)
+        ShowDefaultAppMenu_QuitZoom(runnerParams);
+
+    if (runnerParams.callbacks.ShowMenus)
+        runnerParams.callbacks.ShowMenus();
+
     ImGui::EndMenuBar();
 
 }

@@ -1,12 +1,13 @@
-Misc
-    * [X] Ameliorer process exit (sans return mais via params) ?
-    * [X] Alternative Run Scripts
-    * [N] External via download and uncompress
-    * [X] Hide private sources in internal/
+Features
     * [ ] Font size according to platform (mobile)
+    * [ ] Std behaviors
+        * [X] Menu (quit, font size)
+        * [X] Menu customizable
+        * [ ] StatusBar (FPS)
     * [ ] Docking
+        * [ ] Option / Reset pref
         * [ ] Demo
-        * [ ] Logger -> advanced demo (later)
+        * [ ] Menu (Layout)
 
 * [ ] Doc
     * [ ] Demos
@@ -18,24 +19,13 @@ Misc
     * [ ] IOS
     * [ ] Linux
     * [ ] OSX
-    * [ ] Android
-    
+    * [ ] Android    
     See https://github.com/jurplel/install-qt-action
 
-
-* [ ] Access devices
-    * [ ] Camera
     
-* [ ] Simplify cmake
-
-* [X] Pick ideas from babylon imgui
-    * [X] Compile the code
-    * [X] Add SDL
-    * [X] Add GLFW
-    * [X] Add Demo
-    * [X] PostInit
-    * [X] SetupOpenGL
-    * [X] Customize Font
+Misc
+    * [ ] Simplify cmake
+    * [ ] Check all struct members start lowercase
 
     
 * [ ] make imgui optional in qtimgui

@@ -26,6 +26,8 @@ struct ImGuiWindowParams
 
     /// Show Menu bar on top of imgui main window
     bool showMenuBar = false;
+    /// If menu bar is shown, include or not the default app menu (Quit + zoom) ?
+    bool showDefaultAppMenu_QuitZoom = true;
 
     /// Make windows only movable from the title bar
     bool configWindowsMoveFromTitleBarOnly = true;

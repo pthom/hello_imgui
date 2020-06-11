@@ -16,13 +16,19 @@ inline void NoAction() {}
 
 struct RunnerCallbacks
 {
-    /// Fill ShowGui with a lambda function that will render your own gui!
+    /// Fill ShowGui with a lambda or function that will render your own gui!
     GuiFunctionPointer ShowGui = []() {
             // This implementation should be overriden in your code
             // by setting showGui
             ImGui::Text("Hello, World");
             return false;
     };
+
+    /// Fill ShowMenus() with a function that will add ImGui menus
+    /// by calling:
+    ///    ImGui::BeginMenu(...) / ImGui::MenuItem(...) / ImGui::EndMenu()
+    GuiFunctionPointer ShowMenus = {};
+
     /// If needed, fill PostInit with a function that will be called once
     /// after OpenGl and ImGui are inited
     VoidFunctionPointer PostInit = NoAction;

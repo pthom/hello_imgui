@@ -6,7 +6,8 @@ Features
 Misc
 
 * [ ] Doc
-    * [ ] Build android (copy android apt script)
+    * [ ] Build android
+    * [ ] Build iOS
 
 * [ ] Test run + CI
     * [ ] Win / OsX

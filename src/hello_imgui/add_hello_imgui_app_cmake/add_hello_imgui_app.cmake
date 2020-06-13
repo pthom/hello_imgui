@@ -1,6 +1,5 @@
 if(ANDROID)
-    set(qtimgui_dir ${CMAKE_CURRENT_LIST_DIR}/../../external/qtimgui)
-    include(${qtimgui_dir}/tools/qt-android-cmake/AddQtAndroidApk.cmake)
+    include(${CMAKE_CURRENT_LIST_DIR}/qt-android-cmake/AddQtAndroidApk.cmake)
 endif()
 
 function(add_hello_imgui_app)

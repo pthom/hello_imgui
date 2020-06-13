@@ -566,5 +566,7 @@ MigrationBackup/
 # Misc
 nohup.out
 
-# vcpk
+# vcpkg
 vcpkg/
+
+build-ios/

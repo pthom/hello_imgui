@@ -9,7 +9,7 @@ endif()
 # add_hello_imgui_app(app_name file1.cpp file2.cpp ...)
 #
 # Features:
-# * It will automaticaly link the exe to hello_imgui labrary
+# * It will automaticaly link the exe to hello_imgui library
 # * Under android, it uses [qt-android-cmake](https://github.com/LaurentGomila/qt-android-cmake.git)
 #   in order to create an apk
 function(add_hello_imgui_app)

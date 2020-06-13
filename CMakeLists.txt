@@ -15,6 +15,7 @@ option(HELLOIMGUI_BUILD_DOCS "Build docs" OFF)
 option(HELLOIMGUI_BUILD_IMGUI "Use imgui sources provided in external/imgui" ON)
 
 project(HelloImGui LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_LIST_DIR}/cmake/")
 
@@ -24,7 +25,7 @@ include(StaticAnalyzers)
 
 # Link to this library to inherit the properties
 add_library(project_properties INTERFACE)
-target_compile_features(project_properties INTERFACE cxx_std_14)
+
 set_project_warnings(project_properties)
 # sanitizer options if supported by compiler
 include(Sanitizers)

@@ -2,6 +2,16 @@ if(ANDROID)
     include(${CMAKE_CURRENT_LIST_DIR}/qt-android-cmake/AddQtAndroidApk.cmake)
 endif()
 
+#
+# add_hello_imgui_app is a helper function, similar to cmake's "add_executable"
+#
+# Usage:
+# add_hello_imgui_app(app_name file1.cpp file2.cpp ...)
+#
+# Features:
+# * It will automaticaly link the exe to hello_imgui labrary
+# * Under android, it uses [qt-android-cmake](https://github.com/LaurentGomila/qt-android-cmake.git)
+#   in order to create an apk
 function(add_hello_imgui_app)
     set(args ${ARGN})
     list(GET args 0 app_name)

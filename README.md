@@ -123,6 +123,7 @@ _RunnerParams_ contains all the settings and callbacks in order to run an applic
 ````bash
 git clone https://github.com/pthom/hello_imgui.git
 cd hello_imgui
+git submodule update --init
 ````
 
 ## Select your backend
@@ -152,7 +153,8 @@ If you intend to use SDL provided by vcpkg use the following instructions:
 ````bash
 mkdir build
 cd build
-cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake  -DHELLOIMGUI_USE_SDL_OPENGL3=ON
+cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake  -DHELLOIMGUI_USE_SDL_OPENGL3=ON ..
+make -j4
 ````
 
 If you intend to use your own SDL installation, simply remove the argument "-DCMAKE_TOOLCHAIN_FILE".

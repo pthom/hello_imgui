@@ -28,6 +28,7 @@ __Table of contents__
     * [Backend with SDL2 + OpenGL3](#backend-with-sdl2--opengl3)
     * [Backend with with Glfw3 + OpenGL3](#backend-with-with-glfw3--opengl3)
     * [Backend with Qt](#backend-with-qt)
+    * [Build instructions for iOS with SDL backend](#build-instructions-for-ios-with-sdl-backend)
   * [Multiplatform cmake in 2 lines](#multiplatform-cmake-in-2-lines)
   * [Android](#android)
 * [Developer informations](#developer-informations)
@@ -174,9 +175,25 @@ For example, this line would build with Qt backend for an androïd_armv7 target:
 cmake -DCMAKE_PREFIX_PATH=/path/to/Qt/5.12.8/android_armv7 -DHELLOIMGUI_USE_QT=ON
 ````
 
+### Build instructions for iOS with SDL backend
+
+
+`tools/sdl_compile_ios.sh`
+
+````bash
+cmake .. \
+  -GXcode \
+  -DCMAKE_TOOLCHAIN_FILE=../helloimgui_cmake/ios-cmake/ios.toolchain.cmake \
+  -DHELLOIMGUI_USE_SDL_OPENGL3=ON \
+  -DPLATFORM=OS64 \
+  -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=XXXXXXXXXX \
+  -DENABLE_BITCODE=OFF 
+````
+
+
 ## Multiplatform cmake in 2 lines
 
-[src/hello_imgui/helloimgui_add_app_cmake/helloimgui_add_app.cmake](src/hello_imgui/helloimgui_add_app_cmake/helloimgui_add_app.cmake) is a cmake script that provides `helloimgui_add_app`, a cmake helper function, similar to cmake's "add_executable"
+[helloimgui_cmake/helloimgui_add_app.cmake](helloimgui_cmake/helloimgui_add_app.cmake) is a cmake script that provides `helloimgui_add_app`, a cmake helper function, similar to cmake's "add_executable"
 
 **Usage**
 

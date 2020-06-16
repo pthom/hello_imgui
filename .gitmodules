@@ -11,5 +11,5 @@
 	path = external/SDL
 	url = https://github.com/SDL-mirror/SDL.git
 [submodule "external/ios-cmake"]
-	path = external/ios-cmake
+	path = helloimgui_cmake/ios-cmake
 	url = https://github.com/leetal/ios-cmake.git

@@ -27,3 +27,14 @@ namespace HelloImGui
         std::string windowTitle = ""
         );
 }
+
+/**
+Warning for SDL apps under iOS:
+- SDL will use a dirty hack in order to replace your main() function by its own main()
+  which will the  call your own main ! For this reason, we do have to include <SDL_main.h>
+- Please make sure that the signature of your main() function is *exactly*
+ int main(int argc, char **argv)
+*/
+#if defined(IOS) && defined(HELLOIMGUI_USE_SDL_OPENGL3)
+#include <SDL_main.h>
+#endif

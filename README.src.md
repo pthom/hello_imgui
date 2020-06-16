@@ -84,8 +84,8 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 
 ## Backends
 
-* glfw + OpenGL 3
-* SDL + OpenGL 3
+* Glfw3 + OpenGL 3
+* SDL2 + OpenGL 3
 * Qt
 
 # Usage instructions and API

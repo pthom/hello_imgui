@@ -104,8 +104,8 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 
 ## Backends
 
-* glfw + OpenGL 3
-* SDL + OpenGL 3
+* Glfw3 + OpenGL 3
+* SDL2 + OpenGL 3
 * Qt
 
 # Usage instructions and API
@@ -188,12 +188,16 @@ add_hello_imgui_app(my_app main.cpp lib.cpp ...)
 
 **Features**
 
-* It will automaticaly link the exe to hello_imgui labrary
+* It will automaticaly link the exe to hello_imgui library
 * Under android, it uses [qt-android-cmake](https://github.com/LaurentGomila/qt-android-cmake.git) in order to create an apk
 
+If needed, you can copy-paste-customize this script.
 
 ## Android
 
+... To be continued...
+
+With Android, it is preferred to use the Qt backend.
 
 # Developer informations
 

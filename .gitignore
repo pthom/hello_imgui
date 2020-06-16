@@ -569,4 +569,5 @@ nohup.out
 # vcpkg
 vcpkg/
 
-build-ios/
+build-*/
+build/

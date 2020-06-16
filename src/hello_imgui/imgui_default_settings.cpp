@@ -3,23 +3,43 @@
 #include "imgui.h"
 #include <string>
 
+#ifdef IOS
+#include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
+#endif
 namespace HelloImGui
 {
 namespace ImGuiDefaultSettings
 {
+
+/// Access font files in application bundle or assets/fonts/
+std::string fontFileFullPath(const std::string& fontBaseFilename)
+{
+#ifdef IOS
+    std::string path = getAppleBundleResourcePath(fontBaseFilename.c_str());
+    return path;
+#else
+    std::string path = std::string(HELLOIMGUI_ASSETSDIR) + "/fonts/" + fontBaseFilename;
+    return path;
+#endif
+}
+
 void LoadDefaultFont_WithFontAwesome()
 {
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
     float fontSize = 14.f;
+
     //ImFont * font = io.Fonts->AddFontDefault();
-    ImFont * font = io.Fonts->AddFontFromFileTTF(HELLOIMGUI_FONTDIR "/DroidSans.ttf", fontSize);
+
+    std::string fontFilename = fontFileFullPath("DroidSans.ttf");
+    ImFont * font = io.Fonts->AddFontFromFileTTF(fontFilename.c_str(), fontSize);
     assert(font != nullptr); (void)font;
     ImFontConfig config;
     config.MergeMode = true;
     const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-    std::string fontFile = HELLOIMGUI_FONTDIR "/fontawesome-webfont.ttf";
-    font = io.Fonts->AddFontFromFileTTF(fontFile.c_str(), fontSize, &config, icon_ranges);
+
+    fontFilename = fontFileFullPath("fontawesome-webfont.ttf");
+    font = io.Fonts->AddFontFromFileTTF(fontFilename.c_str(), fontSize, &config, icon_ranges);
     assert(font != nullptr); (void)font;
     io.Fonts->Build();
 }

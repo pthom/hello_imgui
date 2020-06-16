@@ -36,8 +36,8 @@ int main()
 `````
 1. [_CMakeLists.txt_](src/hello_imgui_demos/hello_world/CMakeLists.txt):
 ````cmake
-include(${CMAKE_CURRENT_LIST_DIR}/../../hello_imgui/add_hello_imgui_app_cmake/add_hello_imgui_app.cmake)
-add_hello_imgui_app(hello_world hello_world.main.cpp)
+include(${CMAKE_CURRENT_LIST_DIR}/../../hello_imgui/helloimgui_add_app_cmake/helloimgui_add_app.cmake)
+helloimgui_add_app(hello_world hello_world.main.cpp)
 ````
 
 > _Although this app was extremely simple to write, it will run with no additional modifications (including in the cmake code) on iOS, Android, Linux, Mac, Windows_
@@ -156,14 +156,14 @@ cmake -DCMAKE_PREFIX_PATH=/path/to/Qt/5.12.8/android_armv7 -DHELLOIMGUI_USE_QT=O
 
 ## Multiplatform cmake in 2 lines
 
-[src/hello_imgui/add_hello_imgui_app_cmake/add_hello_imgui_app.cmake](src/hello_imgui/add_hello_imgui_app_cmake/add_hello_imgui_app.cmake) is a cmake script that provides `add_hello_imgui_app`, a cmake helper function, similar to cmake's "add_executable"
+[src/hello_imgui/helloimgui_add_app_cmake/helloimgui_add_app.cmake](src/hello_imgui/helloimgui_add_app_cmake/helloimgui_add_app.cmake) is a cmake script that provides `helloimgui_add_app`, a cmake helper function, similar to cmake's "add_executable"
 
 **Usage**
 
 ````cmake
-include(${hello_imgui_dir}/src/hello_imgui/add_hello_imgui_app_cmake/add_hello_imgui_app.cmake)
+include(${hello_imgui_dir}/src/hello_imgui/helloimgui_add_app_cmake/helloimgui_add_app.cmake)
 
-add_hello_imgui_app(my_app main.cpp lib.cpp ...)
+helloimgui_add_app(my_app main.cpp lib.cpp ...)
 ````
 
 **Features**

@@ -24,3 +24,7 @@ if (HELLOIMGUI_BUILD_IMGUI)
             )
     target_include_directories(imgui PUBLIC ${imgui_dir})
 endif()
+
+if (NOT IOS)
+    add_subdirectory(SDL)
+endif()

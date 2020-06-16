@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 cmake_policy(VERSION 3.15)
 
+project(HelloImGui LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 14)
+
 #
 # Available backends: you need to select at least on of them!
 #
@@ -11,13 +14,18 @@ option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build HelloImGui for SDL+DirectX11" OFF)
 
 option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ON)
 
+#
+# Build options
+#
 option(HELLOIMGUI_BUILD_DOCS "Build docs" OFF)
 option(HELLOIMGUI_BUILD_IMGUI "Use imgui sources provided in external/imgui" ON)
+option(HELLOIMGUI_BUILD_DEMOS "Build demos" ON)
 
-project(HelloImGui LANGUAGES C CXX)
-set(CMAKE_CXX_STANDARD 14)
 
+set(HELLOIMGUI_BASEPATH ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Hello imgui base path" FORCE)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_LIST_DIR}/cmake/")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${HELLOIMGUI_BASEPATH}/helloimgui_cmake/")
+
 
 include(StandardProjectSettings)
 include(CompilerWarnings)

@@ -1,2 +1,4 @@
 add_subdirectory(hello_imgui)
-add_subdirectory(hello_imgui_demos)
+if (HELLOIMGUI_BUILD_DEMOS)
+    add_subdirectory(hello_imgui_demos)
+endif()

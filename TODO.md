@@ -2,10 +2,21 @@ Features
     * [ ] Font size according to platform (mobile)
     * [X] Docking
         * [ ] External windows ?
-
+        
 Misc
 
+* [ ] iOS
+    * [X] fontes dans bundle
+    * [X] Arnaque / SDL_Main ?
+    * [ ] Set icon ?
+    * [X] Submodule cmake-ios
+    * [ ] Pas possible quitter ?
+    * [ ] Full screen raté
+        See https://stackoverflow.com/questions/56212017/how-do-i-request-a-fullscreen-window-on-ios-using-sdl2
+    * [ ] Doc / Build
+
 * [ ] Doc
+    * [ ] Doc for new projet / add hello-imgui as submodule
     * [ ] Build android
     * [ ] Build iOS
 

@@ -1,6 +1,9 @@
 #ifdef HELLOIMGUI_USE_GLFW_OPENGL3
 
-#ifdef HELLOIMGUI_USE_GLAD
+#if defined(HELLOIMGUI_USE_GLES3)
+#include <OpenGLES/ES3/gl.h>
+#include <OpenGLES/ES3/glext.h>
+#elif defined(HELLOIMGUI_USE_GLAD)
 #include <glad/glad.h>
 #endif
 #include <GLFW/glfw3.h>
@@ -27,27 +30,39 @@ namespace HelloImGui
 
     void RunnerGlfwOpenGl3::Impl_Select_Gl_Version()
     {
-        // Decide GL+GLSL versions
-#if __APPLE__
-        // GL 3.2 + GLSL 150
-        // const char* glsl_version = "#version 150";
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
+#if defined(HELLOIMGUI_USE_GLES3)
+        {
+            //test
+            throw std::logic_error("RunnerGlfwOpenGl3 needs implementation for GLES !");
+//            SDL_GL_SetAttribute(SDL_GL_CONTEXT_EGL, 3);
+//            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+//                                SDL_GL_CONTEXT_PROFILE_ES);
+//            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+//            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+        }
+#elif defined(__APPLE__)
+        {
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
+        }
 #else
-        // GL 3.2+
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+        {
+            // GL 3.2+
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+        }
 #endif
     }
 
     std::string RunnerGlfwOpenGl3::Impl_GlslVersion()
     {
-#if __APPLE__
-        // GLSL 150
+#if defined(HELLOIMGUI_USE_GLES3)
+        const char* glsl_version = "#version 300es";
+#elif defined(__APPLE__)
         const char* glsl_version = "#version 150";
 #else
         // GLSL 130

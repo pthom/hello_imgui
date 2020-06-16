@@ -1,5 +1,6 @@
 #include "hello_imgui/hello_imgui.h"
-int main() {
+
+int main(int , char *[]) {
     HelloImGui::RunnerParams params;
     params.appWindowParams.windowSize = {1280.f, 720.f};
     params.appWindowParams.windowTitle = "Dear ImGui example with 'Hello ImGui'";

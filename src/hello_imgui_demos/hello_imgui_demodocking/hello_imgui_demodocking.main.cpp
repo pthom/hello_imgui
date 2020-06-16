@@ -33,13 +33,13 @@ void CommandGui(AppState & state, HelloImGui::Widgets::Logger & logger)
     ImGui::Text("counter = %d", state.counter);
 
     if (state.rocketState == AppState::RocketState::Init)
-        if (ImGui::Button("Launch rocket")) {
+        if (ImGui::Button(ICON_FA_ROCKET " Launch rocket")) {
             state.rocketState = AppState::RocketState::Preparing;
             logger.warning("Rocket is being prepared");
         }
     if (state.rocketState == AppState::RocketState::Preparing)
     {
-        ImGui::Text("Please Wait");
+        ImGui::Text(ICON_FA_ROCKET " Please Wait");
         state.rocket_progress += 0.003f;
         if (state.rocket_progress >= 1.f)
         {
@@ -48,7 +48,7 @@ void CommandGui(AppState & state, HelloImGui::Widgets::Logger & logger)
         }
     }
     if (state.rocketState == AppState::RocketState::Launched) {
-        ImGui::Text("Rocket Launched");
+        ImGui::Text(ICON_FA_ROCKET " Rocket Launched");
         if (ImGui::Button("Reset Rocket"))
         {
             state.rocketState = AppState::RocketState ::Init;
@@ -67,7 +67,7 @@ void StatusBarGui(const AppState &appState)
     }
 }
 
-int main()
+int main(int, char **)
 {
     // Our application state
     AppState appState;

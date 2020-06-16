@@ -1,5 +1,5 @@
 #include "hello_imgui/hello_imgui.h"
-int main()
+int main(int , char *[])
 {
     HelloImGui::Run(
         []{ ImGui::Text("Hello, world!"); }, // Gui code

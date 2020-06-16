@@ -1,5 +1,6 @@
 #include "hello_imgui/hello_imgui.h"
-int main() {
+
+int main(int, char *[]) {
     int nb_cpp = 10, nb_cmake = 2;
     auto showGui = [&]() {
         ImGui::TextWrapped("How many lines for this app that works on computers and mobile devices?");

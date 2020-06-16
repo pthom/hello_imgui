@@ -50,25 +50,25 @@ The diagram below summarize all the possible settings and callbacks (which are e
  **RunnerParams** is a struct that contains all the settings and callbacks needed to run an application.
 
  Members:
-* `callbacks`: _see [RunnerCallbacks](runner_callbacks.h)_
-
+* `callbacks`: _see [runner_callbacks.h](runner_callbacks.h)_.
     callbacks.ShowGui() will render the gui, ShowMenus() will show the menus, etc.
-
-* `appWindowParams`: _see [AppWindowParams](app_window_params.h)_
-
+* `appWindowParams`: _see [app_window_params.h](app_window_params.h)_.
     application Window Params (position, size, title)
-
-* `imGuiWindowParams`: _see [ImGuiWindowParams](imgui_window_params.h)_
-
+* `imGuiWindowParams`: _see [imgui_window_params.h](imgui_window_params.h)_.
     imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)
-
-* `dockingParams`: _see [DockingParams](docking_params.h)_
-
+* `dockingParams`: _see [docking_params.h](docking_params.h)_.
     dockable windows content and layout
-
-* `appShallExit`: _bool, default=false_
-
+* `appShallExit`: _bool, default=false_.
    will be set to true by the app when exiting.
+@@md
+ */
+struct RunnerParams
+{
+    RunnerCallbacks callbacks;
+    AppWindowParams appWindowParams;
+    ImGuiWindowParams imGuiWindowParams;
+    DockingParams dockingParams;
+    bool appShallExit = false;
 
 ----
 

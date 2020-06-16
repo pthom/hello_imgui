@@ -26,17 +26,18 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
     target_compile_definitions(${target_name} PUBLIC -DHELLOIMGUI_USE_SDL_OPENGL3)
 
     if (IOS)
-        target_include_directories(${target_name} PUBLIC "/Users/pascal/dvp/OpenSource/ImGuiWork/hello_imgui/external/SDL/include/")
-        target_link_directories(${target_name} PUBLIC "/Users/pascal/dvp/OpenSource/ImGuiWork/hello_imgui/external/SDL/Xcode-iOS/SDL/output/iOS/debug/")
+        target_include_directories(${target_name} PUBLIC "${HELLOIMGUI_BASEPATH}/external/SDL/include/")
+        target_link_directories(${target_name} PUBLIC "${HELLOIMGUI_BASEPATH}/external/SDL/Xcode-iOS/SDL/build/Release-iphoneos/")
         target_link_libraries(${target_name} PUBLIC SDL2)
         target_link_libraries(${target_name} PUBLIC
             "-framework Foundation"
             "-framework AVFoundation"
             "-framework AudioToolbox"
+            "-framework CoreBluetooth"
+            "-framework CoreGraphics"
             "-framework CoreMedia"
             "-framework CoreMotion"
             "-framework CoreVideo"
-            "-framework CoreGraphics"
             "-framework GameController"
             "-framework Metal"
             "-framework OpenGLES"

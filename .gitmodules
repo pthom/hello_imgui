@@ -5,5 +5,5 @@
 	path = external/qtimgui
 	url = https://github.com/seanchas116/qtimgui.git
 [submodule "cmake/qt-android-cmake"]
-	path = src/hello_imgui/add_hello_imgui_app_cmake/qt-android-cmake
+	path = hello_imgui_cmake/qt-android-cmake/qt-android-cmake
 	url = https://github.com/LaurentGomila/qt-android-cmake.git

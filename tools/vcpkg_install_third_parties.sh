@@ -7,5 +7,5 @@ if [ ! -d vcpkg ]; then
   git clone https://github.com/Microsoft/vcpkg.git
   cd vcpkg
   ./bootstrap-vcpkg.sh
-  ./vcpkg install glfw3
+  ./vcpkg install glfw3 sdl2
 fi

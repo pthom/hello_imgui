@@ -1,13 +1,18 @@
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
 
-#ifdef HELLOIMGUI_USE_GLAD
+#if defined(HELLOIMGUI_USE_GLES3)
+#include <OpenGLES/ES3/gl.h>
+#include <OpenGLES/ES3/glext.h>
+#elif defined(HELLOIMGUI_USE_GLAD)
 #include <glad/glad.h>
 #endif
+
 #include "runner_sdl_opengl3.h"
 #include <examples/imgui_impl_opengl3.h>
 #include <examples/imgui_impl_sdl.h>
 
 #include <SDL.h>
+#include <SDL_main.h>
 #include <sstream>
 
 namespace HelloImGui
@@ -24,27 +29,42 @@ namespace HelloImGui
 
     void RunnerSdlOpenGl3::Impl_Select_Gl_Version()
     {
-        // Decide GL+GLSL versions
-#if __APPLE__
-        // GL 3.2 Core + GLSL 150
-        // const char* glsl_version = "#version 150";
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);  // Always required on Mac
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+#if defined(HELLOIMGUI_USE_GLES3)
+        {
+            //test
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_EGL, 3);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                                SDL_GL_CONTEXT_PROFILE_ES);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+        }
+#elif defined(__APPLE__)
+        {
+            // GL 3.2 Core + GLSL 150
+            // const char* glsl_version = "#version 150";
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);  // Always required on Mac
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        }
 #else
-        // GL 3.0 + GLSL 130
-        // const char* glsl_version = "#version 130";
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+        {
+            // GL 3.0 + GLSL 130
+            // const char* glsl_version = "#version 130";
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+        }
 #endif
     }
 
     std::string RunnerSdlOpenGl3::Impl_GlslVersion()
     {
-#if __APPLE__
+#if defined(HELLOIMGUI_USE_GLES3)
+        // GL 3.0 + GLSL 130
+        const char* glsl_version = "#version 300 es";
+#elif defined(__APPLE__)
         // GL 3.2 Core + GLSL 150
         const char* glsl_version = "#version 150";
 #else

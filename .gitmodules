@@ -7,3 +7,6 @@
 [submodule "cmake/qt-android-cmake"]
 	path = hello_imgui_cmake/qt-android-cmake/qt-android-cmake
 	url = https://github.com/LaurentGomila/qt-android-cmake.git
+[submodule "external/SDL"]
+	path = external/SDL
+	url = https://github.com/SDL-mirror/SDL.git

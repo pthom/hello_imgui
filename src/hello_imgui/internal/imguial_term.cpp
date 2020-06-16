@@ -1,7 +1,7 @@
 // From https://github.com/leiradel/ImGuiAl
 
 #include "imguial_term.h"
-
+#include "hello_imgui/icons_font_awesome.h"
 #include <stdio.h>
 #include <ctype.h>
 #include <algorithm>
@@ -244,11 +244,11 @@ static ImU32 changeValue(ImU32 const color, float const delta_value) {
 ImGuiAl::Log::Log(void* const buffer, size_t const buffer_size)
     : Crt(buffer, buffer_size)
     , _debugLabel("Debug")
-    , _infoLabel("Info")
-    , _warningLabel("Warning")
-    , _errorLabel("Error")
+    , _infoLabel(ICON_FA_INFO " Info")
+    , _warningLabel(ICON_FA_EXCLAMATION " Warning")
+    , _errorLabel(ICON_FA_BOMB " Error")
     , _cumulativeLabel("Cumulative")
-    , _filterLabel("Filter (inc,-exc)")
+    , _filterLabel(ICON_FA_FILTER " Filter (inc,-exc)")
     , _filterHeaderLabel(nullptr)
     , _showFilters(true)
     , _actions(nullptr)

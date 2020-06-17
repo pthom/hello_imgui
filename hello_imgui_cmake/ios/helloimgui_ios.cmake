@@ -2,7 +2,7 @@
 #   set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.mycompany.\${PRODUCT_NAME:identifier}")
 #   set(APP_TYPE MACOSX_BUNDLE)
 # Does *NOT* workk yet
-function(helloimgui_ios_set_bundle_id app_name)
+function(hello_imgui_ios_set_bundle_id app_name)
 #   set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.mycompany.\${PRODUCT_NAME:identifier}" CACHE STRING "bundle id" FORCE)
 #   set(APP_TYPE MACOSX_BUNDLE)
 
@@ -28,7 +28,7 @@ function(helloimgui_ios_set_bundle_id app_name)
 endfunction()
 
 # Check CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM
-function(helloimgui_ios_check_development_team)
+function(hello_imgui_ios_check_development_team)
     if(NOT DEFINED CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM)
         if(DEFINED ENV{CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM})
             set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM $ENV{CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM})
@@ -39,12 +39,12 @@ function(helloimgui_ios_check_development_team)
 endfunction()
 
 # Bundle assets
-function(helloimgui_ios_bundle_assets app_name)
-    FILE(GLOB_RECURSE helloimgui_assets ${HELLOIMGUI_BASEPATH}/helloimgui_assets/*.*)
-    target_sources(${app_name} PRIVATE ${helloimgui_assets})
+function(hello_imgui_ios_bundle_assets app_name)
+    FILE(GLOB_RECURSE hello_imgui_assets ${HELLOIMGUI_BASEPATH}/hello_imgui_assets/*.*)
+    target_sources(${app_name} PRIVATE ${hello_imgui_assets})
     SET_SOURCE_FILES_PROPERTIES (
         ${app_name}
-        ${helloimgui_assets}
+        ${hello_imgui_assets}
         PROPERTIES
         MACOSX_PACKAGE_LOCATION Resources
     )
@@ -52,7 +52,7 @@ endfunction()
 
 
 ## Font dir for desktop
-#set(HELLOIMGUI_ASSETSDIR ${CMAKE_CURRENT_LIST_DIR}/../../helloimgui_assets)
+#set(HELLOIMGUI_ASSETSDIR ${CMAKE_CURRENT_LIST_DIR}/../../hello_imgui_assets)
 #target_compile_definitions(${target_name} PUBLIC -DHELLOIMGUI_ASSETSDIR="${HELLOIMGUI_ASSETSDIR}")
 ## Place fonts in bundle for IOS
 #if (IOS)
@@ -74,8 +74,8 @@ endfunction()
 
 
 
-function(helloimgui_ios_adapt app_name)
-    helloimgui_ios_check_development_team()
-    helloimgui_ios_set_bundle_id(${app_name})
-    helloimgui_ios_bundle_assets(${app_name})
+function(hello_imgui_ios_adapt app_name)
+    hello_imgui_ios_check_development_team()
+    hello_imgui_ios_set_bundle_id(${app_name})
+    hello_imgui_ios_bundle_assets(${app_name})
 endfunction()

@@ -24,7 +24,7 @@ option(HELLOIMGUI_BUILD_DEMOS "Build demos" ON)
 
 set(HELLOIMGUI_BASEPATH ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Hello imgui base path" FORCE)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_LIST_DIR}/cmake/")
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${HELLOIMGUI_BASEPATH}/helloimgui_cmake/")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/")
 
 
 include(StandardProjectSettings)
@@ -43,7 +43,7 @@ add_subdirectory(external)
 add_subdirectory(src)
 
 if (HELLOIMGUI_BUILD_DOCS)
-    add_custom_target(helloimgui_build_doc ALL 
+    add_custom_target(hello_imgui_build_doc ALL
         ${CMAKE_SOURCE_DIR}/tools/process_md_docs.py
         COMMENT "Generating md doc files"
     )

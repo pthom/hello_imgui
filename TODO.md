@@ -2,7 +2,9 @@ Features
     * [ ] Font size according to platform (mobile)
     * [X] Docking
         * [ ] External windows ?
-        
+      
+    * replace hello_imgui by helloimgui 
+     
 Misc
 
 * [ ] iOS

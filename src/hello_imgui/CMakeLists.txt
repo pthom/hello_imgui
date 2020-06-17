@@ -16,7 +16,7 @@ target_link_libraries(${target_name} PUBLIC
     imgui
     )
 
-set(HELLOIMGUI_ASSETSDIR ${CMAKE_CURRENT_LIST_DIR}/../../helloimgui_assets)
+set(HELLOIMGUI_ASSETSDIR ${CMAKE_CURRENT_LIST_DIR}/../../hello_imgui_assets)
 target_compile_definitions(${target_name} PUBLIC -DHELLOIMGUI_ASSETSDIR="${HELLOIMGUI_ASSETSDIR}")
 
 if (IOS)

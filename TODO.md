@@ -1,36 +1,38 @@
-Features
-    * [ ] Font size according to platform (mobile)
-    * [X] Docking
-        * [ ] External windows ?
-      
-    * replace hello_imgui by helloimgui 
+## Features
+    * [N] Font size according to platform (mobile)
+    * [ ] Docking / External windows ?
      
-Misc
+## iOS
+* [X] Classer assets par repertoire
+* [X] Info.plist pour SDL (avec rep SDL)
+    Voir best practices dans https://github.com/forexample/testapp/blob/master/CMakeLists.txt
+    https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/AboutInformationPropertyListFiles.html#//apple_ref/doc/uid/TP40009254-SW1
+    Set icon ?
+* [X] fontes dans bundle
+* [X] Arnaque / SDL_Main ?
+* [X] Submodule cmake-ios
+* [X] Full screen raté
+    See https://stackoverflow.com/questions/56212017/how-do-i-request-a-fullscreen-window-on-ios-using-sdl2
+* [ ] CI Github
+* [ ] Pas possible quitter ?
+* [ ] Doc / Build
+* [ ] Doc / Custom icon and Info.plist (+ create custom icons !)
 
-* [ ] iOS
-    * [X] fontes dans bundle
-    * [X] Arnaque / SDL_Main ?
-    * [ ] Set icon ?
-    * [X] Submodule cmake-ios
-    * [ ] Pas possible quitter ?
-    * [ ] Full screen raté
-        See https://stackoverflow.com/questions/56212017/how-do-i-request-a-fullscreen-window-on-ios-using-sdl2
-    * [ ] Doc / Build
+## Emscripten
 
-* [ ] Doc
-    * [ ] Doc for new projet / add hello-imgui as submodule
-    * [ ] Build android
-    * [ ] Build iOS
+## Doc
 
-* [ ] Test run + CI
-    * [ ] Win / OsX
-    * [ ] Android    
-    * [ ] IOS
-    See https://github.com/jurplel/install-qt-action
+* [ ] Doc for new projet / add hello-imgui as submodule
+* [ ] Build android
+* [ ] Build iOS
+
+## Test run + CI
+
+* [ ] Win / OsX
+* [ ] Android    
+* [ ] IOS
+See https://github.com/jurplel/install-qt-action
     
-* [ ] make imgui optional in qtimgui
-    * [X] Make Modifs
-    * [X] Push modifs & PR
-    * [ ] Wait for merge and relocate submodule
-    * [ ] Issue qtimgui / Win
+## qtimgui
+* [ ] Issue qtimgui / Win
     

@@ -21,11 +21,16 @@ function(hello_imgui_ios_set_bundle_id app_name)
 #        XCODE_ATTRIBUTE_SKIP_INSTALL NO
 #        XCODE_ATTRIBUTE_INSTALL_PATH "$(LOCAL_APPS_DIR)"
 #    )
+
+    set(info_plist_dir_all ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/ios/info_plist)
+    set(info_plist ${info_plist_dir_all}/${plist_type}/Info.plist)
+
     set_target_properties( ${app_name} PROPERTIES
-        MACOSX_BUNDLE_GUI_IDENTIFIER "com.ivs.${app_name}"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "com.company.${app_name}"
         XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM}
         )
 endfunction()
+
 
 # Check CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM
 function(hello_imgui_ios_check_development_team)
@@ -38,6 +43,7 @@ function(hello_imgui_ios_check_development_team)
     endif()
     message("CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=${CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM}")
 endfunction()
+
 
 # Bundle assets
 function(hello_imgui_ios_bundle_assets app_name assets_folder)
@@ -55,9 +61,26 @@ function(hello_imgui_ios_bundle_assets app_name assets_folder)
     endforeach()
 endfunction()
 
+
+function(hello_imgui_ios_add_icons app_name)
+    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/ios/icons)
+        message("hello_imgui_ios_add_icons: ${app_name} found app specific icons")
+        set(icons_assets_folder ${CMAKE_CURRENT_SOURCE_DIR}/ios/icons)
+    else()
+        set(icons_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/ios/icons)
+    endif()
+    hello_imgui_ios_bundle_assets(${app_name} ${icons_assets_folder})
+endfunction()
+
+
 function(hello_imgui_ios_add_info_plist app_name plist_type)
-    set(info_plist_dir_all ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/ios/info_plist)
-    set(info_plist ${info_plist_dir_all}/${plist_type}/Info.plist)
+    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/ios/Info.plist)
+        message("hello_imgui_ios_add_info_plist: ${app_name} found app specific Info.plist")
+        set(info_plist ${CMAKE_CURRENT_SOURCE_DIR}/ios/Info.plist)
+    else()
+        set(info_plist_dir_all ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/ios/info_plist)
+        set(info_plist ${info_plist_dir_all}/${plist_type}/Info.plist)
+    endif()
     set_target_properties(${app_name} PROPERTIES
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_INFO_PLIST ${info_plist}
@@ -74,5 +97,6 @@ function(hello_imgui_ios_adapt app_name)
     if (IOS)
         set(assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_assets)
         hello_imgui_ios_bundle_assets(${app_name} ${assets_folder})
+        hello_imgui_ios_add_icons(${app_name})
     endif()
 endfunction()

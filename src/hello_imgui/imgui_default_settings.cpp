@@ -18,7 +18,7 @@ std::string fontFileFullPath(const std::string& fontBaseFilename)
     std::string path = getAppleBundleResourcePath(fontBaseFilename.c_str());
     return path;
 #else
-    std::string path = std::string(HELLOIMGUI_ASSETSDIR) + fontBaseFilename;
+    std::string path = std::string(HELLOIMGUI_ASSETSDIR) + "/" + fontBaseFilename;
     return path;
 #endif
 }

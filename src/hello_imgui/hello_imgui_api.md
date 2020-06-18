@@ -5,6 +5,7 @@
       * [RunnerParams](#runnerparams)
   * [Runner callbacks](#runner-callbacks)
       * [RunnerCallbacks](#runnercallbacks)
+      * [MobileCallbacks](#mobilecallbacks)
   * [Application window params](#application-window-params)
   * [ImGui window params](#imgui-window-params)
       * [ImGuiWindowParams](#imguiwindowparams)
@@ -104,12 +105,32 @@ See [runner_callbacks.h](runner_callbacks.h).
 * `SetupImGuiStyle`: _VoidFunction, default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig_.
     If needed, setup your own style by providing your own SetupImGuiStyle callback
 
+* `mobileCallbacks`: _MobileCallbacks. Callbacks that are called by the application
+    when running under "Android, iOS and WinRT".  _These events are handled only with SDL backend._
 
 **VoidFunctionPointer** can hold any void(void) function.
 ````cpp
 using VoidFunction = std::function<void(void)>
 ````
 __NoAction__ is a VoidFunction that does nothing.
+
+#### MobileCallbacks
+
+**MobileCallbacks** is a struct that contains callbacks that are called by the application
+ when running under "Android, iOS and WinRT".
+ These events are specific to mobile and embedded devices that have different requirements
+ than your usual desktop application. These events must be handled quickly,
+ since often the OS needs an immediate response and will terminate your process shortly
+ after sending the event if you do not handle them apprpriately.
+
+ Note: on mobile devices, it is not possible to "Quit" an application, it can only be put on Pause.
+
+ * OnDestroy(): _VoidFunction, default=empty_. The application is being terminated by the OS.
+ * OnLowMemory(): _VoidFunction, default=empty_. The application is low on memory, free memory if possible.
+ * OnPause(): _VoidFunction, default=empty_. The application is about to enter the background.
+ * onResume(): _VoidFunction, default=empty_. The application is has come to foreground and is now interactive.
+
+ _Note: these events are handled only with SDL backend._
 
 ----
 

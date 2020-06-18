@@ -168,6 +168,14 @@ namespace HelloImGui
             {
                 exitRequired = true;
             }
+            if (event.type == SDL_APP_TERMINATING && params.callbacks.mobileCallbacks.OnDestroy)
+                params.callbacks.mobileCallbacks.OnDestroy();
+            if (event.type == SDL_APP_LOWMEMORY && params.callbacks.mobileCallbacks.OnLowMemory)
+                params.callbacks.mobileCallbacks.OnLowMemory();
+            if (event.type == SDL_APP_WILLENTERBACKGROUND && params.callbacks.mobileCallbacks.OnPause)
+                params.callbacks.mobileCallbacks.OnPause();
+            if (event.type == SDL_APP_DIDENTERFOREGROUND && params.callbacks.mobileCallbacks.OnResume)
+                params.callbacks.mobileCallbacks.OnResume();
         }
         return exitRequired;
     }

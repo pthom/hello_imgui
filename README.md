@@ -13,7 +13,7 @@ __Table of contents__
 
 * [Hello, Dear ImGui](#hello-dear-imgui)
 * [Examples](#examples)
-  * [Hello, world!](#hello-world!)
+  * [Hello, world!](#hello-world)
   * [Advanced example with docking support](#advanced-example-with-docking-support)
   * [ImGui "classic" demo](#imgui-"classic"-demo)
 * [Features](#features)

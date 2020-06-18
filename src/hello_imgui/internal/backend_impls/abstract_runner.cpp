@@ -9,8 +9,12 @@ namespace HelloImGui
 void AbstractRunner::Run()
 {
     Setup();
-    while (!params.appShallExit)
+    while (!params.appShallExit) {
         CreateFramesAndRender();
+#ifdef HELLOIMGUI_CANNOTEXIT
+        params.appShallExit = false;
+#endif
+    }
     TearDown();
 }
 

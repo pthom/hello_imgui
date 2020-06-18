@@ -33,7 +33,6 @@ by runnerParams.
 in order to start a simple application with ease.
 
 
-
 ## Runner params
 
 See [runner_params.h](runner_params.h).
@@ -60,15 +59,9 @@ The diagram below summarize all the possible settings and callbacks (which are e
     dockable windows content and layout
 * `appShallExit`: _bool, default=false_.
    will be set to true by the app when exiting.
-@@md
- */
-struct RunnerParams
-{
-    RunnerCallbacks callbacks;
-    AppWindowParams appWindowParams;
-    ImGuiWindowParams imGuiWindowParams;
-    DockingParams dockingParams;
-    bool appShallExit = false;
+
+   _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
+   shall not exit._
 
 ----
 
@@ -263,7 +256,6 @@ _Members:_
 * `GuiFunction`: _VoidFuntion_. Any function that will render this window's Gui.
 * `isVisible`: _bool, default=true_. Flag that indicates whether this window is visible or not.
 * `canBeClosed`: _bool, default=true_. Flag that indicates whether the user can close this window.
-
 
 #### Docking Params
 

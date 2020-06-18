@@ -22,6 +22,7 @@ target_compile_definitions(${target_name} PUBLIC -DHELLOIMGUI_ASSETSDIR="${HELLO
 if (IOS)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLES3)
     target_compile_definitions(${target_name} PUBLIC -DIOS)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_CANNOTEXIT)
 endif()
 
 

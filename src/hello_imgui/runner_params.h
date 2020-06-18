@@ -22,6 +22,9 @@ namespace HelloImGui
     dockable windows content and layout
 * `appShallExit`: _bool, default=false_.
    will be set to true by the app when exiting.
+
+   _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
+   shall not exit._
 @@md
  */
 struct RunnerParams

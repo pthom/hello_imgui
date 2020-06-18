@@ -8,7 +8,6 @@ See [hello_imgui.h](hello_imgui.h).
 
 @import "hello_imgui.h" {line_begin=7 line_end=18 code_block=false}
 
-
 ## Runner params
 
 See [runner_params.h](runner_params.h).
@@ -22,7 +21,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 
 #### RunnerParams
 
-@import "runner_params.h" {line_begin=11 line_end=33 code_block=false}
+@import "runner_params.h" {line_begin=11 line_end=27 code_block=false}
 
 ----
 
@@ -75,7 +74,6 @@ See [docking_params.h](docking_params.h).
 #### Dockable window
 
 @import "docking_params.h" {line_begin=89 line_end=99 code_block=false}
-
 
 #### Docking Params
 

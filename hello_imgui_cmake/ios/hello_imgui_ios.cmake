@@ -39,43 +39,39 @@ function(hello_imgui_ios_check_development_team)
 endfunction()
 
 # Bundle assets
-function(hello_imgui_ios_bundle_assets app_name)
-    FILE(GLOB_RECURSE hello_imgui_assets ${HELLOIMGUI_BASEPATH}/hello_imgui_assets/*.*)
-    target_sources(${app_name} PRIVATE ${hello_imgui_assets})
-    SET_SOURCE_FILES_PROPERTIES (
-        ${app_name}
-        ${hello_imgui_assets}
-        PROPERTIES
-        MACOSX_PACKAGE_LOCATION Resources
-    )
+function(hello_imgui_ios_bundle_assets app_name assets_folder)
+    FILE(GLOB_RECURSE assets ${assets_folder}/*.*)
+    target_sources(${app_name} PRIVATE ${assets})
+    foreach(asset ${assets})
+        string(REPLACE ${assets_folder}/ "" asset_relative ${asset})
+        get_filename_component(asset_dir ${asset_relative} DIRECTORY)
+        SET_SOURCE_FILES_PROPERTIES (
+            ${app_name}
+            ${asset}
+            PROPERTIES
+            MACOSX_PACKAGE_LOCATION Resources/${asset_dir}
+        )
+    endforeach()
 endfunction()
 
-
-## Font dir for desktop
-#set(HELLOIMGUI_ASSETSDIR ${CMAKE_CURRENT_LIST_DIR}/../../hello_imgui_assets)
-#target_compile_definitions(${target_name} PUBLIC -DHELLOIMGUI_ASSETSDIR="${HELLOIMGUI_ASSETSDIR}")
-## Place fonts in bundle for IOS
-#if (IOS)
-#    set(bundle_fonts ${fonts_dir}/DroidSans.ttf ${fonts_dir}/fontawesome-webfont.ttf)
-#    target_sources(${target_name} PRIVATE ${bundle_fonts})
-#
-#    SET_SOURCE_FILES_PROPERTIES (
-#        ${PROJECT_NAME}
-#        ${bundle_fonts}
-#        PROPERTIES
-#        MACOSX_PACKAGE_LOCATION Resources
-#    )
-#endif()
-
-
-# * Link SDL ?
-
-# * Qt Link
-
+function(hello_imgui_ios_add_info_plist app_name plist_type)
+    set(info_plist_dir_all ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/ios/info_plist)
+    set(info_plist ${info_plist_dir_all}/${plist_type}/Info.plist)
+    set_target_properties(${app_name} PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_INFO_PLIST ${info_plist}
+        )
+endfunction()
 
 
 function(hello_imgui_ios_adapt app_name)
     hello_imgui_ios_check_development_team()
     hello_imgui_ios_set_bundle_id(${app_name})
-    hello_imgui_ios_bundle_assets(${app_name})
+    if (HELLOIMGUI_USE_SDL_OPENGL3)
+        hello_imgui_ios_add_info_plist(${app_name} sdl)
+    endif()
+    if (IOS)
+        set(assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_assets)
+        hello_imgui_ios_bundle_assets(${app_name} ${assets_folder})
+    endif()
 endfunction()

@@ -13,8 +13,13 @@
 * [X] Submodule cmake-ios
 * [X] Full screen raté
     See https://stackoverflow.com/questions/56212017/how-do-i-request-a-fullscreen-window-on-ios-using-sdl2
+* [X] Set app Icon name
+    CFBundleDisplayName -> le rendre configurable ?
+* [X] Bug / product name...
+* [X] Pas possible quitter ?
+* [X] voir callbacks
+      https://wiki.libsdl.org/SDL_EventType#Android.2C_iOS_and_WinRT_Events
 * [ ] CI Github
-* [ ] Pas possible quitter ?
 * [ ] Doc / Build
 * [ ] Doc / Custom icon and Info.plist (+ create custom icons !)
 

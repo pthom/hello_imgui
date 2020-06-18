@@ -4,6 +4,10 @@
 <dict>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
+
+    <key>CFBundleIdentifier</key>
+    <string>dummy.helloimgui.com</string>
+
     <key>NSBluetoothAlwaysUsageDescription</key>
     <string>Bluetooth is used (by the SDL Library) when using Bluetooth joysticks</string>
 </dict>

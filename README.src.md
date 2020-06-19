@@ -76,7 +76,7 @@ This example reproduces ImGui default example.
 
 Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/hello_imgui_demos/hello_imgui_demo_classic)
 
-## Use _HelloImGui_ as a submodule in your own application
+## Use HelloImGui as a submodule in your own application
 
 [hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule in a separate application. 
 

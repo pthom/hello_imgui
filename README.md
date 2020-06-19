@@ -32,7 +32,7 @@ __Table of contents__
   * [Hello, world!](#hello-world)
   * [Advanced example with docking support](#advanced-example-with-docking-support)
   * [ImGui "classic" demo](#imgui-classic-demo)
-  * [Use _HelloImGui_ as a submodule in your own application](#use-_helloimgui_-as-a-submodule-in-your-own-application)
+  * [Use HelloImGui as a submodule in your own application](#use-helloimgui-as-a-submodule-in-your-own-application)
 * [Features](#features)
 * [Supported platforms and backends](#supported-platforms-and-backends)
   * [Platforms](#platforms)
@@ -110,7 +110,7 @@ This example reproduces ImGui default example.
 
 Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/hello_imgui_demos/hello_imgui_demo_classic)
 
-## Use _HelloImGui_ as a submodule in your own application
+## Use HelloImGui as a submodule in your own application
 
 [hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule in a separate application. 
 

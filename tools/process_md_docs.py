@@ -20,6 +20,12 @@ def repeat(s, nb):
         r = r + s
     return r
 
+def make_nbsp(nb):
+    r = ""
+    for i in range(nb):
+        r = r + "&nbsp;"
+    return r
+
 def is_header_line(line):
     return line.startswith("#") and not (line.startswith("#include"))
 
@@ -27,7 +33,7 @@ def make_toc(file):
     with open(file, "r") as f:
         lines = f.readlines()
     header_lines = [line[:-1] for line in lines if is_header_line(line)]
-    toc = ""
+    toc =  "<span id=\"TOC\"/></span>\n\n"
     for header_line in header_lines:
         level, title, anchor_title = parse_header_line(header_line)
         toc = toc + "{}* [{}]({})\n".format( 
@@ -75,6 +81,10 @@ def process_md_file(input_file, output_file):
             content = content + extract_lines_between(imported_file, line_begin, line_end)
         elif line.startswith("[TOC]"):
             content = content + make_toc(input_file)
+        elif is_header_line(line):
+            content = content + line + "\n"
+            content = content + make_nbsp(60)
+            content = content + "[<--TOC](#TOC)"
         else:
             content = content + line
 

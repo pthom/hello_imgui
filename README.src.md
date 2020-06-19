@@ -25,7 +25,6 @@ __Online Emscripten/Wasm demos:__
 
 __Table of contents__
 
-<span id="TOC" />
 [TOC]
 
 ----
@@ -99,8 +98,7 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 * emscripten
 * Android
 
-## Backends [<--TOC](#TOC)
-
+## Backends 
 * Glfw3 + OpenGL 3
 * SDL2 + OpenGL 3 or OpenGLES3 for mobile devices
 * Qt

@@ -54,6 +54,7 @@ __Table of contents__
     * [Customizing the emscripten build](#customizing-the-emscripten-build)
     * [Embed more files with your emscripten application](#embed-more-files-with-your-emscripten-application)
   * [Build instructions for Android](#build-instructions-for-android)
+* [Use Hello ImGui as asubmodule in your own app ](#use-hello-imgui-as-asubmodule-in-your-own-app-)
 * [Developer informations](#developer-informations)
   * [Adding backends](#adding-backends)
   * [Multiplatform cmake in 2 lines](#multiplatform-cmake-in-2-lines)
@@ -365,6 +366,9 @@ By default, the emscripten apps will embed the fonts provided in the [hello_imgu
 ... To be continued...
 
 
+# Use Hello ImGui as asubmodule in your own app 
+
+[hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule in a separate application. 
 
 ----
 

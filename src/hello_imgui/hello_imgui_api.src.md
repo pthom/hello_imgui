@@ -31,7 +31,7 @@ See [runner_callbacks.h](runner_callbacks.h).
 
 #### RunnerCallbacks
 
-@import "runner_callbacks.h" {line_begin=55 line_end=100 code_block=false}
+@import "runner_callbacks.h" {line_begin=55 line_end=99 code_block=false}
 
 @import "runner_callbacks.h" {line_begin=8 line_end=18 code_block=false}
 

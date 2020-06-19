@@ -1,3 +1,4 @@
+@startuml
 namespace HelloImGui {
 
 enum _ <functions>{
@@ -16,11 +17,15 @@ class RunnerParams <struct> {
 }
 
 class RunnerCallbacks <struct> {
+    ---
     VoidFunction ShowGui = {};
     VoidFunction ShowMenus = {};
     VoidFunction ShowStatus = {};
-    VoidFunction PostInit = NoAction;
-    
+    VoidFunction PostInit = {};
+
+    //Handle any backend event (e.g.SDL_Event)
+    AnyBackendEventCallback = {};
+
     VoidFunction LoadAdditionalFonts =
        LoadDefaultFont_WithFontAwesome;
 
@@ -29,7 +34,20 @@ class RunnerCallbacks <struct> {
 
     VoidFunction SetupImGuiStyle = 
       SetupDefaultImGuiStyle;
+
+    mobileCallbacks;
 }
+
+class MobileCallbacks <struct>{
+    ---
+    Only available on mobile devices
+    ---
+    VoidFunction OnDestroy = {};
+    VoidFunction OnLowMemory = {};
+    VoidFunction OnPause = {};
+    VoidFunction OnResume = {};
+}
+RunnerCallbacks *-- MobileCallbacks
 
 class AppWindowParams <struct> {
     std::string windowTitle = "";
@@ -87,3 +105,4 @@ DockingParams *-- DockableWindow : vector
 DockingParams *-- DockingSplit : vector
 
 }
+@enduml

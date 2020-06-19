@@ -12,8 +12,7 @@ using VoidFunction = std::function<void(void)>
 ````
 
 **AnyEventCallback** can hold any bool(void *) function.
-It is designed to handle callbacks for a specific backend: for SDL, backendEvent will be of type
-'SDL_Event *'. This function should return true if the event was handled and shall not be processed further.
+  It is designed to handle callbacks for a specific backend.
 ````cpp
 using AnyEventCallback = std::function<bool(void * backendEvent)>
 ````
@@ -77,7 +76,8 @@ struct MobileCallbacks
     You can here add a function that will be called once after OpenGL and ImGui are inited
 
 * `AnyBackendEventCallback`: *AnyBackendCallback, default=empty*.
-  Callbacks for events from a specific backend. _Only implemented for SDL._
+  Callbacks for events from a specific backend. _Only implemented for SDL, where the event
+  will be of type 'SDL_Event *'_
   This callback should return true if the event was handled and shall not be processed further.
 
 * `LoadAdditionalFonts`: *VoidFunction, default=_LoadDefaultFont_WithFontAwesome*.
@@ -93,11 +93,10 @@ struct MobileCallbacks
 
 * `mobileCallbacks`: *_MobileCallbacks_*. Callbacks that are called by the application
     when running under "Android, iOS and WinRT".
-
-    > Notes:
-    > * 'mobileCallbacks' is present only if the target device is a mobile device (iOS, Android).
-    >   Use `#ifdef HELLOIMGUI_MOBILEDEVICE` to detect this.
-    > * These events are handled only with SDL backend.
+Notes:
+  * 'mobileCallbacks' is present only if the target device is a mobile device (iOS, Android).
+     Use `#ifdef HELLOIMGUI_MOBILEDEVICE` to detect this.
+  * These events are currently handled only with SDL backend.
 @@md
  */
 struct RunnerCallbacks

@@ -8,7 +8,7 @@ def parse_header_line(header_line):
     level = len(header_line.split(' ')[0])
     title = header_line[level + 1:]
     anchor_title = title.lower().replace(" ", "-")
-    ignored_chars = [":", "+", ",", "!", "\""]
+    ignored_chars = [":", "+", ",", "!", "\"", "(", ")"]
     for ignored_char in ignored_chars:
         anchor_title = anchor_title.replace(ignored_char, "")
     return level, title, anchor_title
@@ -20,11 +20,12 @@ def repeat(s, nb):
         r = r + s
     return r
 
-def make_nbsp(nb):
-    r = ""
-    for i in range(nb):
-        r = r + "&nbsp;"
+
+def toc_link():
+    toc_image = "docs/toc.png"
+    r = repeat("&nbsp;", 10) + f"[![TOC]({toc_image})](#TOC)"
     return r
+
 
 def is_header_line(line):
     return line.startswith("#") and not (line.startswith("#include"))
@@ -82,9 +83,7 @@ def process_md_file(input_file, output_file):
         elif line.startswith("[TOC]"):
             content = content + make_toc(input_file)
         elif is_header_line(line):
-            content = content + line + "\n"
-            content = content + make_nbsp(60)
-            content = content + "<font size=-2>[<--TOC](#TOC)</font>\n\n"
+            content = content + line[:-1] + toc_link() + "\n"
         else:
             content = content + line
 

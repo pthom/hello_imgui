@@ -197,7 +197,7 @@ This project uses the [ios-cmake](https://github.com/leetal/ios-cmake) toolchain
 
 ### Install requirements
 
-1. First, you need to download and compile SDL (you need )
+1. First, you need to download and compile SDL
 
 Launch [tools/ios/sdl_compile_ios.sh](tools/ios/sdl_compile_ios.sh), which will download and compile SDL for iOS and the simulator, into the folder "external/SDL"
 
@@ -336,16 +336,11 @@ For example, the docking demo will be available at
 
 Refer to the [emscripten docs](https://emscripten.org/)
 
-hello_imgui_cmake/emscripten/runner_emscripten_shell.html
+By default, the application will be presented in an empty html page. You can adapt [hello_imgui_cmake/emscripten/runner_emscripten_shell.html](hello_imgui_cmake/emscripten/runner_emscripten_shell.html) if you want.
 
 ### Embed more files with your emscripten application
 
-By default, the emscripten apps will embed the fonts provided in the [hello_imgui_assets](hello_imgui_assets) folder.
-
-        target_link_options(${app_name} PRIVATE
-            ${EMSCRIPTEN_LINK_OPTIONS}
-            --preload-file ${HELLOIMGUI_ASSETSDIR}@/
-            )
+By default, the emscripten apps will embed the fonts provided in the [hello_imgui_assets](hello_imgui_assets) folder, using emscripten `--preload-file` option.
 
 ----
 

@@ -7,7 +7,10 @@ import sys
 def parse_header_line(header_line):
     level = len(header_line.split(' ')[0])
     title = header_line[level + 1:]
-    anchor_title = title.lower().replace(" ", "-").replace(":", "").replace("+", "").replace(",", "").replace("!", "")
+    anchor_title = title.lower().replace(" ", "-")
+    ignored_chars = [":", "+", ",", "!", "\""]
+    for ignored_char in ignored_chars:
+        anchor_title = anchor_title.replace(ignored_char, "")
     return level, title, anchor_title
 
 

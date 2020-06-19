@@ -15,7 +15,7 @@ __Table of contents__
 * [Examples](#examples)
   * [Hello, world!](#hello-world)
   * [Advanced example with docking support](#advanced-example-with-docking-support)
-  * [ImGui "classic" demo](#imgui-"classic"-demo)
+  * [ImGui "classic" demo](#imgui-classic-demo)
 * [Features](#features)
 * [Supported platforms and backends](#supported-platforms-and-backends)
   * [Platforms](#platforms)

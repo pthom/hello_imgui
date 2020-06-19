@@ -20,7 +20,7 @@ namespace HelloImGui
     int HandleAppEvents(void *runnerSdlOpenGl3_void, SDL_Event *event)
     {
         RunnerSdlOpenGl3 * runnerSdlOpenGl3 = (RunnerSdlOpenGl3 *)(runnerSdlOpenGl3_void);
-        if (runnerSdlOpenGl3->HandleMobileDeviceEvent(event->type))
+        if (runnerSdlOpenGl3->priv_HandleMobileDeviceEvent(event->type))
             return 0;
         else
             return 1;
@@ -171,6 +171,9 @@ namespace HelloImGui
         bool exitRequired = false;
         while (SDL_PollEvent(&event))
         {
+            if (OnSdlEvent_Callback)
+                if (OnSdlEvent_Callback(event))
+                    continue;
             ImGui_ImplSDL2_ProcessEvent(&event);
             if (event.type == SDL_QUIT)
                 exitRequired = true;
@@ -222,7 +225,7 @@ namespace HelloImGui
 
 
 
-    bool RunnerSdlOpenGl3::HandleMobileDeviceEvent(unsigned int sdl_EventType)
+    bool RunnerSdlOpenGl3::priv_HandleMobileDeviceEvent(unsigned int sdl_EventType)
     {
         switch(sdl_EventType)
         {

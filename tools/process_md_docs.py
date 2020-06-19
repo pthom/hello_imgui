@@ -23,7 +23,9 @@ def repeat(s, nb):
 
 def toc_link():
     toc_image = "docs/toc.png"
-    r = repeat("&nbsp;", 10) + f"[![TOC]({toc_image})](#TOC)"
+    # <div style="text-align: right"> your-text-here </div>
+    image_link = f"[![TOC]({toc_image})](#TOC)"
+    r = f" <div style=\"text-align: right\">{image_link}</div>"
     return r
 
 

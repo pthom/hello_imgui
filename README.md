@@ -35,13 +35,13 @@ __Table of contents__
 * [Features](#features)
 * [Supported platforms and backends](#supported-platforms-and-backends)
   * [Platforms](#platforms)
-  * [Backends ](#backends-)
+  * [Backends](#backends)
 * [Usage instructions and API](#usage-instructions-and-api)
 * [Build instructions](#build-instructions)
   * [Clone the repository](#clone-the-repository)
   * [Build instructions for desktop platforms (Linux, MacOS, Windows)](#build-instructions-for-desktop-platforms-linux-macos-windows)
     * [Select your backend](#select-your-backend)
-    * [Install Glfw3 and Sdl2 via vcpkg ](#install-glfw3-and-sdl2-via-vcpkg-)
+    * [Install Glfw3 and Sdl2 via vcpkg](#install-glfw3-and-sdl2-via-vcpkg)
     * [Backend with SDL2 + OpenGL3](#backend-with-sdl2--opengl3)
     * [Backend with with Glfw3 + OpenGL3](#backend-with-with-glfw3--opengl3)
     * [Backend with Qt](#backend-with-qt)
@@ -56,7 +56,7 @@ __Table of contents__
     * [Customizing the emscripten build](#customizing-the-emscripten-build)
     * [Embed more files with your emscripten application](#embed-more-files-with-your-emscripten-application)
   * [Build instructions for Android](#build-instructions-for-android)
-* [Use Hello ImGui as asubmodule in your own app ](#use-hello-imgui-as-asubmodule-in-your-own-app-)
+* [Use Hello ImGui as a submodule in your own app](#use-hello-imgui-as-a-submodule-in-your-own-app)
 * [Developer informations](#developer-informations)
   * [Adding backends](#adding-backends)
   * [Multiplatform cmake in 2 lines](#multiplatform-cmake-in-2-lines)
@@ -367,7 +367,7 @@ By default, the emscripten apps will embed the fonts provided in the [hello_imgu
 ... To be continued...
 
 
-# Use Hello ImGui as asubmodule in your own app 
+# Use Hello ImGui as a submodule in your own app
 
 [hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule in a separate application. 
 

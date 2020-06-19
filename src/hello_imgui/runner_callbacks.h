@@ -80,10 +80,10 @@ struct MobileCallbacks
 * `mobileCallbacks`: *_MobileCallbacks_*. Callbacks that are called by the application
     when running under "Android, iOS and WinRT".
 
-    _Notes:
-    * 'mobileCallbacks' is present only if the target device is a mobile device (iOS, Android).
-      Use `#ifdef HELLOIMGUI_MOBILEDEVICE` to detect this.
-    * These events are handled only with SDL backend.
+    > Notes:
+    > * 'mobileCallbacks' is present only if the target device is a mobile device (iOS, Android).
+    >   Use `#ifdef HELLOIMGUI_MOBILEDEVICE` to detect this.
+    > * These events are handled only with SDL backend.
 @@md
  */
 struct RunnerCallbacks

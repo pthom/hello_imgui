@@ -346,14 +346,13 @@ Adding new backend should be easy: simply add a new derivate of [AbstractRunner]
 
 ## Multiplatform cmake in 2 lines
 
-[helloimgui_cmake/helloimgui_add_app.cmake](helloimgui_cmake/helloimgui_add_app.cmake) is a cmake script that provides `helloimgui_add_app`, a cmake helper function, similar to cmake's "add_executable"
+[hello_imgui_cmake/hello_imgui_add_app.cmake](hello_imgui_cmake/hello_imgui_add_app.cmake) is a cmake script that provides `helloimgui_add_app`, a cmake helper function, similar to cmake's "add_executable"
 
 **Usage**
 
 ````cmake
-include(${hello_imgui_dir}/src/hello_imgui/helloimgui_add_app_cmake/helloimgui_add_app.cmake)
-
-helloimgui_add_app(my_app main.cpp lib.cpp ...)
+include(hello_imgui_add_app)
+hello_imgui_add_app(my_app my_app.main.cpp)
 ````
 
 **Features**

@@ -168,6 +168,8 @@ namespace HelloImGui
             {
                 exitRequired = true;
             }
+
+            #ifdef HELLOIMGUI_MOBILEDEVICE
             if (event.type == SDL_APP_TERMINATING && params.callbacks.mobileCallbacks.OnDestroy)
                 params.callbacks.mobileCallbacks.OnDestroy();
             if (event.type == SDL_APP_LOWMEMORY && params.callbacks.mobileCallbacks.OnLowMemory)
@@ -176,6 +178,7 @@ namespace HelloImGui
                 params.callbacks.mobileCallbacks.OnPause();
             if (event.type == SDL_APP_DIDENTERFOREGROUND && params.callbacks.mobileCallbacks.OnResume)
                 params.callbacks.mobileCallbacks.OnResume();
+            #endif
         }
         return exitRequired;
     }

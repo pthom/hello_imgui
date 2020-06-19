@@ -78,28 +78,30 @@ struct MobileCallbacks
 * `SetupImGuiStyle`: *VoidFunction, default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.
     If needed, setup your own style by providing your own SetupImGuiStyle callback
 
-* `mobileCallbacks`: *_MobileCallbacks_*. Callbacks that are called by the application
-    when running under "Android, iOS and WinRT".  _These events are handled only with SDL backend._
 
+* `mobileCallbacks`: *_MobileCallbacks_*. Callbacks that are called by the application
+    when running under "Android, iOS and WinRT".
+
+    _Notes:
+    * 'mobileCallbacks' is present only if the target device is a mobile device (iOS, Android).
+      Use `#ifdef HELLOIMGUI_MOBILEDEVICE` to detect this.
+    * These events are handled only with SDL backend.
 @@md
  */
 struct RunnerCallbacks
 {
     VoidFunction ShowGui = {};
-
     VoidFunction ShowMenus = {};
-
     VoidFunction ShowStatus = {};
-
     VoidFunction PostInit = NoAction;
 
     VoidFunction LoadAdditionalFonts = ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesome;
-
     VoidFunction SetupImGuiConfig = ImGuiDefaultSettings::SetupDefaultImGuiConfig;
-
     VoidFunction SetupImGuiStyle = ImGuiDefaultSettings::SetupDefaultImGuiStyle;
 
+#ifdef HELLOIMGUI_MOBILEDEVICE
     MobileCallbacks mobileCallbacks;
+#endif
 };
 
 }  // namespace HelloImGui

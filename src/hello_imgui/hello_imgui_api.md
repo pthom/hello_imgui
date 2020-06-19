@@ -105,8 +105,14 @@ See [runner_callbacks.h](runner_callbacks.h).
 * `SetupImGuiStyle`: *VoidFunction, default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.
     If needed, setup your own style by providing your own SetupImGuiStyle callback
 
+
 * `mobileCallbacks`: *_MobileCallbacks_*. Callbacks that are called by the application
-    when running under "Android, iOS and WinRT".  _These events are handled only with SDL backend._
+    when running under "Android, iOS and WinRT".
+
+    _Notes:
+    * 'mobileCallbacks' is present only if the target device is a mobile device (iOS, Android).
+      Use `#ifdef HELLOIMGUI_MOBILEDEVICE` to detect this.
+    * These events are handled only with SDL backend.
 
 **VoidFunctionPointer** can hold any void(void) function.
 ````cpp

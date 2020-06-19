@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build_emscripten:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - uses: lovasoa/setup-emscripten@master
+
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+
+      - name: Configure
+        run: |
+          mkdir build-emscripten
+          cd build-emscripten
+          emcmake cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON
+
+      - name: Build
+        working-directory: build-emscripten
+        run: |
+          make -j 4

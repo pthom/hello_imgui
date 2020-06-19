@@ -1,4 +1,4 @@
-name: CI
+name: build_emscripten
 
 on:
   push:

@@ -72,8 +72,6 @@ See [runner_callbacks.h](runner_callbacks.h).
 
 #### RunnerCallbacks
 
- **RunnerCallbacks** is a struct that contains the callbacks that are called by the application
-
  _Members_
 
 * `ShowGui`: *VoidFunction, default=empty*.
@@ -135,8 +133,6 @@ __NoAction__ is a VoidFunction that does nothing.
  * `OnLowMemory`: _VoidFunction, default=empty_. The application is low on memory, free memory if possible.
  * `OnPause`: _VoidFunction, default=empty_. The application is about to enter the background.
  * `OnResume`: _VoidFunction, default=empty_. The application is has come to foreground and is now interactive.
-
- _Note: these events are handled only with SDL backend._
 
 ----
 

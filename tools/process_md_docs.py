@@ -85,7 +85,8 @@ def process_md_file(input_file, output_file):
         elif line.startswith("[TOC]"):
             content = content + make_toc(input_file)
         elif is_header_line(line):
-            content = content + line + toc_link()
+            # content = content + line + toc_link() # too ugly
+            content = content + line
         else:
             content = content + line
 

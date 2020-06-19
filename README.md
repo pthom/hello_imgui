@@ -4,8 +4,7 @@
 
 _HelloImGui_ is a library that enables to write  multiplatform Gui apps for Windows, Mac, Linux, iOS, Android, emscripten; with the simplicity of a "Hello World" app!
 
-It is based on [Dear ImGui](https://github.com/ocornut/imgui), a  Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
-
+It is based on [Dear ImGui](https://github.com/ocornut/imgui), a Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
 
 ----
 
@@ -23,16 +22,22 @@ __Table of contents__
 * [Usage instructions and API](#usage-instructions-and-api)
 * [Build instructions](#build-instructions)
   * [Clone the repository](#clone-the-repository)
+  * [Build instructions for desktop platforms (Linux, MacOS, Windows)](#build-instructions-for-desktop-platforms-(linux-macos-windows))
   * [Select your backend](#select-your-backend)
     * [Install Glfw3 and Sdl2 via vcpkg ](#install-glfw3-and-sdl2-via-vcpkg-)
     * [Backend with SDL2 + OpenGL3](#backend-with-sdl2--opengl3)
     * [Backend with with Glfw3 + OpenGL3](#backend-with-with-glfw3--opengl3)
     * [Backend with Qt](#backend-with-qt)
-    * [Build instructions for iOS with SDL backend](#build-instructions-for-ios-with-sdl-backend)
-  * [Multiplatform cmake in 2 lines](#multiplatform-cmake-in-2-lines)
+  * [Build instructions for iOS](#build-instructions-for-ios)
+    * [Build for iOS](#build-for-ios)
+      * [Install requirements](#install-requirements)
+      * [Build for iOS](#build-for-ios)
+    * [Customizing the iOS build](#customizing-the-ios-build)
+    * [Embed more files with your application](#embed-more-files-with-your-application)
   * [Android](#android)
 * [Developer informations](#developer-informations)
   * [Adding backends](#adding-backends)
+  * [Multiplatform cmake in 2 lines](#multiplatform-cmake-in-2-lines)
 
 ----
 
@@ -127,6 +132,8 @@ cd hello_imgui
 git submodule update --init
 ````
 
+## Build instructions for desktop platforms (Linux, MacOS, Windows)
+
 ## Select your backend
 
 Several cmake options are provided: you need to select at least one backend:
@@ -174,20 +181,97 @@ For example, this line would build with Qt backend for an androïd_armv7 target:
 cmake -DCMAKE_PREFIX_PATH=/path/to/Qt/5.12.8/android_armv7 -DHELLOIMGUI_USE_QT=ON
 ````
 
-### Build instructions for iOS with SDL backend
+## Build instructions for iOS
 
+### Build for iOS
 
-`tools/sdl_compile_ios.sh`
+"SDL + OpenGL ES3" is currently the preferred backend for iOS.
+
+This project uses the [ios-cmake](https://github.com/leetal/ios-cmake) toolchain which is a submodule at [hello_imgui_cmake/ios-cmake](hello_imgui_cmake/ios-cmake).
+
+#### Install requirements
+
+1. First, you need to download and compile SDL (you need )
+
+Launch [tools/ios/sdl_compile_ios.sh](tools/ios/sdl_compile_ios.sh), which will download and compile SDL for iOS and the simulator, into the folder "external/SDL"
+
+2. Set your development team Id inside [tools/ios/set_dev_team.source](tools/ios/set_dev_team.source)
+
+Edit the file and replace the id with your own team id.
+````bash
+export CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM="0123456789"
+````
+
+#### Build for iOS
+
+1. **Source** tools/ios/set_dev_team.source in order to add the CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM environment variable
 
 ````bash
+source tools/ios/set_dev_team.source
+````
+
+2. Launch cmake using [./tools/ios/cmake_ios_sdl.sh](tools/ios/cmake_ios_sdl.sh):
+
+This will create a build directory named "build_ios_sdl/" and then open the project "HelloImGui.xcodeproj".
+
+If you want to run cmake by yourself, here are the required commands:
+`````bash
+mkdir build_ios_sdl
+cd build_ios_sdl
+export CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=YourTeamIdHere
 cmake .. \
   -GXcode \
-  -DCMAKE_TOOLCHAIN_FILE=../helloimgui_cmake/ios-cmake/ios.toolchain.cmake \
+  -DCMAKE_TOOLCHAIN_FILE=../hello_imgui_cmake/ios-cmake/ios.toolchain.cmake \
   -DHELLOIMGUI_USE_SDL_OPENGL3=ON \
   -DPLATFORM=OS64 \
-  -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=XXXXXXXXXX \
-  -DENABLE_BITCODE=OFF 
+  -DENABLE_BITCODE=OFF \
+  .. \
+`````
+
+### Customizing the iOS build
+
+Simply create a folder named "ios" beside the application 'CMakeLists.txt'
+
+Example of customization:
 ````
+YourAppSourceFolder/
+├── CMakeLists.txt                              # The app's CMakeLists
+├── hello_imgui_demodocking.main.cpp            # its source code
+|
+└── ios/                                        # ios/ is where you customize the iOS App
+    |
+    ├── Info.plist                              # If present, this Info.plist will be applied 
+    |                                           # (if not, a default is provided)
+    |                                           # You can there customize the App icon name, etc.
+    |
+    └── icons/                                  # Icons and Launch images placed inside icons/ 
+        ├── Default-375w-812h@3x.disabled.png   # will be placed in the application bundle 
+        ├── Default-568h@2x.png                 # and thus used by the app
+        ├── Default.png
+        ├── Icon.png
+        └── Readme.md
+````
+
+The example [src/hello_imgui_demos/hello_imgui_demodocking](src/hello_imgui_demos/hello_imgui_demodocking) shows some customization.
+
+
+### Embed more files with your application
+
+[hello_imgui_cmake/ios/hello_imgui_ios.cmake](hello_imgui_cmake/ios/hello_imgui_ios.cmake) provides a function named `hello_imgui_ios_bundle_assets` which helps embedding assets.
+ 
+
+
+## Android
+
+... To be continued...
+
+With Android, it is preferred to use the Qt backend.
+
+# Developer informations
+
+## Adding backends
+
+Adding new backend should be easy: simply add a new derivate of [AbstractRunner](src/hello_imgui/internal/backend_impls/abstract_runner.h).
 
 
 ## Multiplatform cmake in 2 lines
@@ -208,15 +292,3 @@ helloimgui_add_app(my_app main.cpp lib.cpp ...)
 * Under android, it uses [qt-android-cmake](https://github.com/LaurentGomila/qt-android-cmake.git) in order to create an apk
 
 If needed, you can copy-paste-customize this script.
-
-## Android
-
-... To be continued...
-
-With Android, it is preferred to use the Qt backend.
-
-# Developer informations
-
-## Adding backends
-
-Adding new backend should be easy: simply add a new derivate of [AbstractRunner](src/hello_imgui/internal/backend_impls/abstract_runner.h).

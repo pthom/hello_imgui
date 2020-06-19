@@ -84,7 +84,7 @@ def process_md_file(input_file, output_file):
         elif is_header_line(line):
             content = content + line + "\n"
             content = content + make_nbsp(60)
-            content = content + "[<--TOC](#TOC)"
+            content = content + "<font size=-2>[<--TOC](#TOC)</font>\n\n"
         else:
             content = content + line
 

@@ -31,7 +31,7 @@ else()
 endif()
 
 set(HELLOIMGUI_BASEPATH ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Hello imgui base path" FORCE)
-set(HELLOIMGUI_ASSETSDIR ${CMAKE_CURRENT_LIST_DIR}/hello_imgui_assets)
+set(HELLOIMGUI_ASSETSDIR ${CMAKE_CURRENT_LIST_DIR}/hello_imgui_assets CACHE STRING "Hello imgui assets path" FORCE)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_LIST_DIR}/cmake/")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/")
@@ -51,7 +51,7 @@ enable_sanitizers(project_properties)
 
 
 if (EMSCRIPTEN)
-    include(${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/EmscriptenOptions.cmake)
+    include(${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_emscripten_global_options.cmake)
 endif()
 
 

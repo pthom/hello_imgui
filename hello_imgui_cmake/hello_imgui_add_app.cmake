@@ -4,6 +4,9 @@ endif()
 if (IOS)
     include(${CMAKE_CURRENT_LIST_DIR}/ios/hello_imgui_ios.cmake)
 endif()
+if (EMSCRIPTEN)
+    include(${CMAKE_CURRENT_LIST_DIR}/emscripten/hello_imgui_emscripten.cmake)
+endif()
 
 #
 # hello_imgui_add_app is a helper function, similar to cmake's "add_executable"
@@ -34,10 +37,7 @@ function(hello_imgui_add_app)
         hello_imgui_ios_adapt(${app_name})
     endif()
     if (EMSCRIPTEN)
-        target_link_options(${app_name} PRIVATE
-            ${EMSCRIPTEN_LINK_OPTIONS}
-            --preload-file ${HELLOIMGUI_ASSETSDIR}@/
-            )
+        hello_imgui_emscripten_adapt(${app_name})
     endif()
 
     target_link_libraries(${app_name} PRIVATE hello_imgui)

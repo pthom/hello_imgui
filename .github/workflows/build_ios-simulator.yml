@@ -14,7 +14,7 @@ jobs:
         run: git submodule update --init --recursive
 
       - name: Install sdl via tools/sdl_compile_ios.sh
-        run: tools/sdl_compile_ios.sh
+        run: tools/ios/sdl_compile_ios.sh
 
       - name: Configure
         run: |

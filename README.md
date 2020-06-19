@@ -25,6 +25,7 @@ __Online Emscripten/Wasm demos:__
 
 __Table of contents__
 
+<span id="TOC" />
 * [Hello, Dear ImGui](#hello-dear-imgui)
 * [Examples](#examples)
   * [Hello, world!](#hello-world)
@@ -33,7 +34,7 @@ __Table of contents__
 * [Features](#features)
 * [Supported platforms and backends](#supported-platforms-and-backends)
   * [Platforms](#platforms)
-  * [Backends](#backends)
+  * [Backends [<--TOC](#TOC)](#backends-[<--toc](#toc))
 * [Usage instructions and API](#usage-instructions-and-api)
 * [Build instructions](#build-instructions)
   * [Clone the repository](#clone-the-repository)
@@ -130,7 +131,7 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 * emscripten
 * Android
 
-## Backends
+## Backends [<--TOC](#TOC)
 
 * Glfw3 + OpenGL 3
 * SDL2 + OpenGL 3 or OpenGLES3 for mobile devices

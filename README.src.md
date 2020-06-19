@@ -12,29 +12,14 @@ It is based on [Dear ImGui](https://github.com/ocornut/imgui), a Bloat-free Imme
 
 __Online Emscripten/Wasm demos:__
 
-* [Hello world](https://traineq.org/HelloImGui/hello_imgui_demos/hello_world/hello_world.html)
 
-  <a href="https://traineq.org/HelloImGui/hello_imgui_demos/hello_world/hello_world.html">
-  
-  <img src="docs/images/wasm_demos/hello.jpg" />
-  
-  </a>
-  
-* [Advanced Docking demo](https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html)
+| Hello, World | Advanced Docking | Classic ImGui Demo
+| --- | --- | --- |
+| [![Hello, World](docs/images/wasm_demos/hello.jpg)][hello-world]  | [![Advanced Docking demo](docs/images/wasm_demos/docking.jpg)][docking]  | [![ImGui classic demo](docs/images/wasm_demos/classic.jpg)][classic]
 
-  <a href="https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html">
-  
-  <img src="docs/images/wasm_demos/docking.jpg" />
-  
-  </a>
-
-* [ImGui classic demo](https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demo_classic/hello-imgui-demo-classic.html)
-  
-    <a href="https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demo_classic/hello-imgui-demo-classic.html">
-    
-    <img src="docs/images/wasm_demos/classic.jpg" />
-    
-    </a>
+[hello-world]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_world/hello_world.html  "Hello world"
+[docking]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html  "Advanced docking demo"
+[classic]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demo_classic/hello-imgui-demo-classic.html  "ImGui classic demo"
 
 ----
 

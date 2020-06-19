@@ -13,7 +13,7 @@ endif()
 # imgui is built by default
 # You can use your own (but make sure that a target named imgui is available
 if (HELLOIMGUI_BUILD_IMGUI)
-    set(imgui_dir ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
+    set(imgui_dir ${CMAKE_CURRENT_LIST_DIR}/imgui)
     add_library(imgui
             ${imgui_dir}/imgui_demo.cpp
             ${imgui_dir}/imgui_draw.cpp

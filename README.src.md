@@ -76,6 +76,10 @@ This example reproduces ImGui default example.
 
 Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/hello_imgui_demos/hello_imgui_demo_classic)
 
+## Use _HelloImGui_ as a submodule in your own application
+
+[hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule in a separate application. 
+
 
 # Features
 
@@ -332,10 +336,6 @@ By default, the emscripten apps will embed the fonts provided in the [hello_imgu
 
 ... To be continued...
 
-
-# Use Hello ImGui as a submodule in your own app
-
-[hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule in a separate application. 
 
 ----
 

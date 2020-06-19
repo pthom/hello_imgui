@@ -32,6 +32,7 @@ __Table of contents__
   * [Hello, world!](#hello-world)
   * [Advanced example with docking support](#advanced-example-with-docking-support)
   * [ImGui "classic" demo](#imgui-classic-demo)
+  * [Use _HelloImGui_ as a submodule in your own application](#use-_helloimgui_-as-a-submodule-in-your-own-application)
 * [Features](#features)
 * [Supported platforms and backends](#supported-platforms-and-backends)
   * [Platforms](#platforms)
@@ -56,7 +57,6 @@ __Table of contents__
     * [Customizing the emscripten build](#customizing-the-emscripten-build)
     * [Embed more files with your emscripten application](#embed-more-files-with-your-emscripten-application)
   * [Build instructions for Android](#build-instructions-for-android)
-* [Use Hello ImGui as a submodule in your own app](#use-hello-imgui-as-a-submodule-in-your-own-app)
 * [Developer informations](#developer-informations)
   * [Adding backends](#adding-backends)
   * [Multiplatform cmake in 2 lines](#multiplatform-cmake-in-2-lines)
@@ -109,6 +109,10 @@ This example reproduces ImGui default example.
 <img src=https://i.gyazo.com/6f12592e43590d98aa0d992aaffe685f.gif height=100> [Online demo][classic]
 
 Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/hello_imgui_demos/hello_imgui_demo_classic)
+
+## Use _HelloImGui_ as a submodule in your own application
+
+[hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule in a separate application. 
 
 
 # Features
@@ -366,10 +370,6 @@ By default, the emscripten apps will embed the fonts provided in the [hello_imgu
 
 ... To be continued...
 
-
-# Use Hello ImGui as a submodule in your own app
-
-[hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule in a separate application. 
 
 ----
 

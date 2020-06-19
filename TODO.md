@@ -27,7 +27,12 @@
 * [ ] Doc / callback suspend
 
 ## Emscripten
-
+ * [ ] Doc: 
+    tools/install_emscripten.sh
+    emcmake cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON
+ * [ ] CI with docker: see https://github.com/marketplace/actions/setup-emscripten
+ * [ ] Link demo online!
+ 
 ## Doc
 
 * [ ] Doc for new projet / add hello-imgui as submodule

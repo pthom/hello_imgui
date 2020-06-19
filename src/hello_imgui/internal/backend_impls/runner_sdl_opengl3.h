@@ -29,6 +29,9 @@ namespace HelloImGui
         void Impl_Cleanup() override;
         void Impl_SwapBuffers() override;
 
+       public:
+        bool HandleMobileDeviceEvent(unsigned int sdl_EventType);
+
        private:
         SDL_Window* mWindow = nullptr;
         SDL_GLContext mGlContext = nullptr;

@@ -17,6 +17,16 @@
 
 namespace HelloImGui
 {
+    int HandleAppEvents(void *runnerSdlOpenGl3_void, SDL_Event *event)
+    {
+        RunnerSdlOpenGl3 * runnerSdlOpenGl3 = (RunnerSdlOpenGl3 *)(runnerSdlOpenGl3_void);
+        if (runnerSdlOpenGl3->HandleMobileDeviceEvent(event->type))
+            return 0;
+        else
+            return 1;
+    }
+
+
     void RunnerSdlOpenGl3::Impl_InitBackend()
     {
         if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
@@ -25,6 +35,7 @@ namespace HelloImGui
             msg << "RunnerSdlOpenGl3::Impl_InitBackend error " << SDL_GetError();
             throw std::runtime_error(msg.str().c_str());
         }
+        SDL_SetEventFilter(HandleAppEvents, this);
     }
 
     void RunnerSdlOpenGl3::Impl_Select_Gl_Version()
@@ -168,17 +179,6 @@ namespace HelloImGui
             {
                 exitRequired = true;
             }
-
-            #ifdef HELLOIMGUI_MOBILEDEVICE
-            if (event.type == SDL_APP_TERMINATING && params.callbacks.mobileCallbacks.OnDestroy)
-                params.callbacks.mobileCallbacks.OnDestroy();
-            if (event.type == SDL_APP_LOWMEMORY && params.callbacks.mobileCallbacks.OnLowMemory)
-                params.callbacks.mobileCallbacks.OnLowMemory();
-            if (event.type == SDL_APP_WILLENTERBACKGROUND && params.callbacks.mobileCallbacks.OnPause)
-                params.callbacks.mobileCallbacks.OnPause();
-            if (event.type == SDL_APP_DIDENTERFOREGROUND && params.callbacks.mobileCallbacks.OnResume)
-                params.callbacks.mobileCallbacks.OnResume();
-            #endif
         }
         return exitRequired;
     }
@@ -219,6 +219,59 @@ namespace HelloImGui
     }
 
     void RunnerSdlOpenGl3::Impl_SwapBuffers() { SDL_GL_SwapWindow(mWindow); }
+
+
+
+    bool RunnerSdlOpenGl3::HandleMobileDeviceEvent(unsigned int sdl_EventType)
+    {
+        switch(sdl_EventType)
+        {
+#ifdef HELLOIMGUI_MOBILEDEVICE
+            case SDL_APP_TERMINATING:
+                /* Terminate the app.
+                   Shut everything down before returning from this function.
+                */
+                OnDestroy();
+                return true;
+            case SDL_APP_LOWMEMORY:
+                /* You will get this when your app is paused and iOS wants more memory.
+                   Release as much memory as possible.
+                */
+                OnLowMemory();
+                return true;
+            case SDL_APP_WILLENTERBACKGROUND:
+                /* Prepare your app to go into the background.  Stop loops, etc.
+                   This gets called when the user hits the home button, or gets a call.
+                */
+                OnPause();
+                return true;
+            case SDL_APP_DIDENTERBACKGROUND:
+                /* This will get called if the user accepted whatever sent your app to the background.
+                   If the user got a phone call and canceled it, you'll instead get an    SDL_APP_DIDENTERFOREGROUND event and restart your loops.
+                   When you get this, you have 5 seconds to save all your state or the app will be terminated.
+                   Your app is NOT active at this point.
+                */
+                OnPause();
+                return true;
+            case SDL_APP_WILLENTERFOREGROUND:
+                /* This call happens when your app is coming back to the foreground.
+                    Restore all your state here.
+                */
+                OnResume();
+                return true;
+            case SDL_APP_DIDENTERFOREGROUND:
+                /* Restart your loops here.
+                   Your app is interactive and getting CPU again.
+                */
+                OnResume();
+                return true;
+#endif // #ifdef HELLOIMGUI_MOBILEDEVICE
+            default:
+                /* No special processing, add it to the event queue */
+                return false;
+        }
+    }
+
 
 }  // namespace HelloImGui
 

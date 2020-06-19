@@ -9,12 +9,14 @@ namespace HelloImGui
 void AbstractRunner::Run()
 {
     Setup();
-    while (!params.appShallExit) {
+
+#ifdef HELLOIMGUI_MOBILEDEVICE
+    while (true)
         CreateFramesAndRender();
-#ifdef HELLOIMGUI_CANNOTEXIT
-        params.appShallExit = false;
+#else
+    while (!params.appShallExit)
+        CreateFramesAndRender();
 #endif
-    }
     TearDown();
 }
 
@@ -33,7 +35,8 @@ void AbstractRunner::Setup()
     params.callbacks.LoadAdditionalFonts();
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
 
-    params.callbacks.PostInit();
+    if (params.callbacks.PostInit)
+        params.callbacks.PostInit();
 }
 
 void AbstractRunner::RenderGui()
@@ -75,10 +78,41 @@ void AbstractRunner::CreateFramesAndRender()
     Impl_SwapBuffers();
 }
 
+void AbstractRunner::OnPause()
+{
+#ifdef HELLOIMGUI_MOBILEDEVICE
+    if (params.callbacks.mobileCallbacks.OnPause)
+        params.callbacks.mobileCallbacks.OnPause();
+#endif
+}
+
+void AbstractRunner::OnResume()
+{
+#ifdef HELLOIMGUI_MOBILEDEVICE
+    if (params.callbacks.mobileCallbacks.OnResume)
+        params.callbacks.mobileCallbacks.OnResume();
+#endif
+}
+
+void AbstractRunner::OnDestroy()
+{
+#ifdef HELLOIMGUI_MOBILEDEVICE
+    if (params.callbacks.mobileCallbacks.OnDestroy)
+        params.callbacks.mobileCallbacks.OnDestroy();
+#endif
+}
+
+void AbstractRunner::OnLowMemory()
+{
+#ifdef HELLOIMGUI_MOBILEDEVICE
+    if (params.callbacks.mobileCallbacks.OnLowMemory)
+        params.callbacks.mobileCallbacks.OnLowMemory();
+#endif
+}
+
 void AbstractRunner::TearDown()
 {
     Impl_Cleanup();
 }
-
 
 }  // namespace HelloImGui

@@ -60,7 +60,7 @@ void ShowDefaultAppMenu_QuitZoom(RunnerParams & runnerParams)
         MenuItems_FontScale();
         ImGui::Separator();
 
-#ifndef HELLOIMGUI_CANNOTEXIT
+#ifndef HELLOIMGUI_MOBILEDEVICE
         if (ImGui::MenuItem( "Quit"))
             runnerParams.appShallExit = true;
 #endif

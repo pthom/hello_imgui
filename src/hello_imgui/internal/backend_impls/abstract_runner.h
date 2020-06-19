@@ -23,6 +23,14 @@ class AbstractRunner
     void RenderGui();
     void TearDown();
 
+   public:
+    // Events for mobile devices
+    void OnPause();
+    void OnResume();
+    void OnDestroy();
+    void OnLowMemory();
+
+
    protected:
     //
     // The methods Impl_* are astract

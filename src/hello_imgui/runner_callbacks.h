@@ -10,11 +10,9 @@ namespace HelloImGui
 ````cpp
 using VoidFunction = std::function<void(void)>
 ````
-__NoAction__ is a VoidFunction that does nothing.
 @@md
 **/
 using VoidFunction = std::function<void(void)>;
-inline void NoAction() {}
 
 /**
 @@md
@@ -31,6 +29,9 @@ inline void NoAction() {}
  * `OnLowMemory`: _VoidFunction, default=empty_. The application is low on memory, free memory if possible.
  * `OnPause`: _VoidFunction, default=empty_. The application is about to enter the background.
  * `OnResume`: _VoidFunction, default=empty_. The application is has come to foreground and is now interactive.
+
+ Note: 'OnPause' and 'OnResume' are called twice consecutively under iOS (before and after entering background
+ or foreground).
  @@md
  */
 struct MobileCallbacks
@@ -91,7 +92,7 @@ struct RunnerCallbacks
     VoidFunction ShowGui = {};
     VoidFunction ShowMenus = {};
     VoidFunction ShowStatus = {};
-    VoidFunction PostInit = NoAction;
+    VoidFunction PostInit = {};
 
     VoidFunction LoadAdditionalFonts = ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesome;
     VoidFunction SetupImGuiConfig = ImGuiDefaultSettings::SetupDefaultImGuiConfig;

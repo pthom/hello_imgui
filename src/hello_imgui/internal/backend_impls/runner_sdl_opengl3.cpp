@@ -171,9 +171,11 @@ namespace HelloImGui
         bool exitRequired = false;
         while (SDL_PollEvent(&event))
         {
-            if (OnSdlEvent_Callback)
-                if (OnSdlEvent_Callback(event))
+            if (params.callbacks.AnyBackendEventCallback)
+            {
+                if (params.callbacks.AnyBackendEventCallback(&event))
                     continue;
+            }
             ImGui_ImplSDL2_ProcessEvent(&event);
             if (event.type == SDL_QUIT)
                 exitRequired = true;

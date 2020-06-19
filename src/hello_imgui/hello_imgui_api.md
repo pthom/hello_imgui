@@ -95,6 +95,10 @@ See [runner_callbacks.h](runner_callbacks.h).
 * `PostInit`: *VoidFunction, default=empty*.
     You can here add a function that will be called once after OpenGL and ImGui are inited
 
+* `AnyBackendEventCallback`: *AnyBackendCallback, default=empty*.
+  Callbacks for events from a specific backend. _Only implemented for SDL._
+  This callback should return true if the event was handled and shall not be processed further.
+
 * `LoadAdditionalFonts`: *VoidFunction, default=_LoadDefaultFont_WithFontAwesome*.
    A function that is called when fonts are ready to be loaded.
    By default, _LoadDefaultFont_WithFontAwesome_ is called but you can copy-customize it.
@@ -117,6 +121,13 @@ See [runner_callbacks.h](runner_callbacks.h).
 **VoidFunctionPointer** can hold any void(void) function.
 ````cpp
 using VoidFunction = std::function<void(void)>
+````
+
+**AnyEventCallback** can hold any bool(void *) function.
+It is designed to handle callbacks for a specific backend: for SDL, backendEvent will be of type
+'SDL_Event *'. This function should return true if the event was handled and shall not be processed further.
+````cpp
+using AnyEventCallback = std::function<bool(void * backendEvent)>
 
 #### MobileCallbacks
 

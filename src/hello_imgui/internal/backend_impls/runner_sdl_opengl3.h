@@ -33,11 +33,6 @@ namespace HelloImGui
        public:
         bool priv_HandleMobileDeviceEvent(unsigned int sdl_EventType);
 
-        // You can preempt the SDL event handling by filling this with your own callback.
-        // Return true if you handled the event, and you do not want it to be handled further.
-        // These events will be sent in the main thread.
-        std::function<bool(SDL_Event)> OnSdlEvent_Callback = {};
-
        private:
         SDL_Window* mWindow = nullptr;
         SDL_GLContext mGlContext = nullptr;

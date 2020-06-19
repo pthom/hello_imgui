@@ -1,6 +1,10 @@
 #include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/widgets/logger.h"
 
+#ifdef HELLOIMGUI_USE_SDL_OPENGL3
+#include <SDL.h>
+#endif
+
 // Struct that holds the application's state
 struct AppState
 {
@@ -138,6 +142,22 @@ int main(int, char **)
                 logger.warning("It works");
             ImGui::EndMenu();
         }
+    };
+
+    // Example of native SDL events handling
+    runnerParams.callbacks.AnyBackendEventCallback = [&logger](void * event) {
+#ifdef HELLOIMGUI_USE_SDL_OPENGL3
+        SDL_Event*  sdlEvent = (SDL_Event *)event;
+        switch( sdlEvent->type)
+        {
+            case SDL_KEYDOWN:
+                logger.warning( "SDL_KEYDOWN detected\n" );
+                return true; // if you return true, the event is not processd further
+        }
+        return false;
+#else
+        return false;
+#endif
     };
 
     // Status bar:

@@ -43,6 +43,7 @@ class AbstractRunner
     virtual void Impl_CreateWindowAndContext() = 0;
     virtual void Impl_InitGlLoader() = 0;
     virtual void Impl_SetupPlatformRendererBindings() = 0;
+    virtual void Impl_SetupImgGuiContext() {}
 
     virtual bool Impl_PollEvents() = 0;  // returns true if exit required
     virtual void Impl_NewFrame_3D() = 0;

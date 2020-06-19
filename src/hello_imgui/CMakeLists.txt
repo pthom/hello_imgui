@@ -16,15 +16,20 @@ target_link_libraries(${target_name} PUBLIC
     imgui
     )
 
-set(HELLOIMGUI_ASSETSDIR ${CMAKE_CURRENT_LIST_DIR}/../../hello_imgui_assets)
 target_compile_definitions(${target_name} PUBLIC -DHELLOIMGUI_ASSETSDIR="${HELLOIMGUI_ASSETSDIR}")
 
-if (IOS)
+if (IOS OR EMSCRIPTEN)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLES3)
+endif()
+
+if (IOS)
     target_compile_definitions(${target_name} PUBLIC IOS)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_MOBILEDEVICE)
 endif()
 
+if (EMSCRIPTEN)
+    set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
+endif()
 
 if (HELLOIMGUI_USE_SDL_OPENGL3)
 #    find_package(SDL2 CONFIG REQUIRED)
@@ -59,6 +64,9 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
             )
 
         target_compile_definitions(${target_name} PUBLIC IMGUI_IMPL_OPENGL_LOADER_CUSTOM="<OpenGLES/ES3/gl.h>")
+    elseif(EMSCRIPTEN)
+        target_compile_options(${target_name} PUBLIC -s USE_SDL=2)
+        target_link_options(${target_name} INTERFACE -s USE_SDL=2)
     else()
         find_package(SDL2 CONFIG REQUIRED)
         target_link_libraries(${target_name} PUBLIC SDL2::SDL2main SDL2::SDL2-static)
@@ -89,7 +97,7 @@ if (HELLOIMGUI_USE_QT)
     target_link_libraries(${target_name} PUBLIC qt_imgui_quick)
 endif()
 
-if (HELLOIMGUI_USE_GLAD AND NOT IOS)
+if (HELLOIMGUI_USE_GLAD)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLAD)
     target_link_libraries(${target_name} PUBLIC glad)
 endif()

@@ -1,7 +1,7 @@
 #pragma once
 #ifdef __EMSCRIPTEN__
 
-#include "hello_imgui/internal/backend_impls/runner_sdl.h"
+#include "hello_imgui/internal/backend_impls/runner_sdl_opengl3.h"
 
 namespace HelloImGui
 {
@@ -13,10 +13,10 @@ namespace HelloImGui
         void Run() override;
 
        protected:
-        void Select_Gl_Version() override;
-        std::string GlslVersion() override;
-        void InitGlLoader() override;
-        void SetupImgGuiContext() override;
+        void Impl_Select_Gl_Version() override;
+        std::string Impl_GlslVersion() override;
+        void Impl_InitGlLoader() override;
+        void Impl_SetupImgGuiContext() override;
     };
 
 }  // namespace HelloImGui

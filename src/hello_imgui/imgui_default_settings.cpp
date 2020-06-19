@@ -12,13 +12,16 @@ namespace ImGuiDefaultSettings
 {
 
 /// Access font files in application bundle or assets/fonts/
-std::string fontFileFullPath(const std::string& fontBaseFilename)
+std::string assetFileFullPath(const std::string& assetFilename)
 {
-#ifdef IOS
-    std::string path = getAppleBundleResourcePath(fontBaseFilename.c_str());
+#if defined(IOS)
+    std::string path = getAppleBundleResourcePath(assetFilename.c_str());
+    return path;
+#elif defined(__EMSCRIPTEN__)
+    std::string path = std::string("/") + assetFilename;
     return path;
 #else
-    std::string path = std::string(HELLOIMGUI_ASSETSDIR) + "/" + fontBaseFilename;
+    std::string path = std::string(HELLOIMGUI_ASSETSDIR) + "/" + assetFilename;
     return path;
 #endif
 }
@@ -31,14 +34,14 @@ void LoadDefaultFont_WithFontAwesome()
 
     //ImFont * font = io.Fonts->AddFontDefault();
 
-    std::string fontFilename = fontFileFullPath("fonts/DroidSans.ttf");
+    std::string fontFilename = assetFileFullPath("fonts/DroidSans.ttf");
     ImFont * font = io.Fonts->AddFontFromFileTTF(fontFilename.c_str(), fontSize);
     assert(font != nullptr); (void)font;
     ImFontConfig config;
     config.MergeMode = true;
     const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 
-    fontFilename = fontFileFullPath("fonts/fontawesome-webfont.ttf");
+    fontFilename = assetFileFullPath("fonts/fontawesome-webfont.ttf");
     font = io.Fonts->AddFontFromFileTTF(fontFilename.c_str(), fontSize, &config, icon_ranges);
     assert(font != nullptr); (void)font;
     io.Fonts->Build();

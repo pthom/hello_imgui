@@ -29,6 +29,7 @@ void AbstractRunner::Setup()
     Impl_InitGlLoader();
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    Impl_SetupImgGuiContext();
     params.callbacks.SetupImGuiConfig();
     params.callbacks.SetupImGuiStyle();
     Impl_SetupPlatformRendererBindings();

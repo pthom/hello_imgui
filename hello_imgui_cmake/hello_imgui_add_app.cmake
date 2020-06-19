@@ -33,6 +33,12 @@ function(hello_imgui_add_app)
     if (IOS)
         hello_imgui_ios_adapt(${app_name})
     endif()
+    if (EMSCRIPTEN)
+        target_link_options(${app_name} PRIVATE
+            ${EMSCRIPTEN_LINK_OPTIONS}
+            --preload-file ${HELLOIMGUI_ASSETSDIR}@/
+            )
+    endif()
 
     target_link_libraries(${app_name} PRIVATE hello_imgui)
 

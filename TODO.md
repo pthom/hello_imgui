@@ -19,9 +19,12 @@
 * [X] Pas possible quitter ?
 * [X] voir callbacks
       https://wiki.libsdl.org/SDL_EventType#Android.2C_iOS_and_WinRT_Events
-* [ ] CI Github
-* [ ] Doc / Build
+* [X] CI Github
+* [X] Handle pause/Resume / Add ifdef
+* [X] transmit sdl events ?
+* [ ] Doc / Build (+script ?)
 * [ ] Doc / Custom icon and Info.plist (+ create custom icons !)
+* [ ] Doc / callback suspend
 
 ## Emscripten
 

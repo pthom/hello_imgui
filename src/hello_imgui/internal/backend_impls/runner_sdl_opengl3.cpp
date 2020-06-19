@@ -1,10 +1,15 @@
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
 
 #if defined(HELLOIMGUI_USE_GLES3)
-#include <OpenGLES/ES3/gl.h>
-#include <OpenGLES/ES3/glext.h>
+    #ifdef IOS
+        #include <OpenGLES/ES3/gl.h>
+        #include <OpenGLES/ES3/glext.h>
+    #else
+        #include <GLES3/gl3.h>
+        #include <GLES3/gl2ext.h>
+    #endif
 #elif defined(HELLOIMGUI_USE_GLAD)
-#include <glad/glad.h>
+    #include <glad/glad.h>
 #endif
 
 #include "runner_sdl_opengl3.h"
@@ -14,6 +19,7 @@
 #include <SDL.h>
 #include <SDL_main.h>
 #include <sstream>
+
 
 namespace HelloImGui
 {
@@ -115,12 +121,13 @@ namespace HelloImGui
             SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN);
         }
 #else
+        const auto &backendWindowParams = params.appWindowParams;
         SDL_DisplayMode current;
         SDL_GetCurrentDisplayMode(0, &current);
         SDL_WindowFlags window_flags =
             (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
         mWindow = SDL_CreateWindow(
-            mBackendWindowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+            backendWindowParams.windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
 #endif
 
         mGlContext = SDL_GL_CreateContext(mWindow);

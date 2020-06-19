@@ -3,6 +3,6 @@ int main(int , char *[])
 {
     HelloImGui::Run(
         []{ ImGui::Text("Hello, world!"); }, // Gui code
-        { 200.f, 50.f },                     // Window Size
-        "Hello!" );                          // Window title
+        { 200.f, 50.f },                  // Window Size
+        "Hello!" );                               // Window title
 }

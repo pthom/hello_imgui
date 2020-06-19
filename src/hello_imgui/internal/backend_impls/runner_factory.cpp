@@ -29,11 +29,17 @@ std::unique_ptr<AbstractRunner> FactorRunnerQt(RunnerParams & params)
 #endif
 
 #ifdef __EMSCRIPTEN__
-std::unique_ptr<AbstractRunner> FactorRunnerEmscripten() { return std::make_unique<RunnerEmscripten>(); }
+std::unique_ptr<AbstractRunner> FactorRunnerEmscripten(RunnerParams & params)
+{
+    return std::make_unique<RunnerEmscripten>(params);
+}
 #endif
 
 std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 {
+#ifdef __EMSCRIPTEN__
+    return FactorRunnerEmscripten(params);
+#endif
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
     return FactorRunnerSdlOpenGl3(params);
 #endif
@@ -42,9 +48,6 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 #endif
 #ifdef HELLOIMGUI_USE_QT
     return FactorRunnerQt(params);
-#endif
-#ifdef __EMSCRIPTEN__
-    return FactorRunnerEmscripten(params);
 #endif
     throw std::logic_error("HelloImGui::FactorRunner no bakend selected!");
 }

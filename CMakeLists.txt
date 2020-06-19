@@ -12,7 +12,12 @@ option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
 option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
 option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build HelloImGui for SDL+DirectX11" OFF)
 
-option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ON)
+if (IOS OR EMSCRIPTEN)
+    set(need_opengl_loader OFF)
+else()
+    set(need_opengl_loader ON)
+endif()
+option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 
 #
 # Build options
@@ -23,6 +28,8 @@ option(HELLOIMGUI_BUILD_DEMOS "Build demos" ON)
 
 
 set(HELLOIMGUI_BASEPATH ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Hello imgui base path" FORCE)
+set(HELLOIMGUI_ASSETSDIR ${CMAKE_CURRENT_LIST_DIR}/hello_imgui_assets)
+
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_LIST_DIR}/cmake/")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/")
 
@@ -38,6 +45,12 @@ set_project_warnings(project_properties)
 # sanitizer options if supported by compiler
 include(Sanitizers)
 enable_sanitizers(project_properties)
+
+
+if (EMSCRIPTEN)
+    include(${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/EmscriptenOptions.cmake)
+endif()
+
 
 add_subdirectory(external)
 add_subdirectory(src)

@@ -49,11 +49,9 @@ set_project_warnings(project_properties)
 include(Sanitizers)
 enable_sanitizers(project_properties)
 
-
 if (EMSCRIPTEN)
     include(${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_emscripten_global_options.cmake)
 endif()
-
 
 add_subdirectory(external)
 add_subdirectory(src)

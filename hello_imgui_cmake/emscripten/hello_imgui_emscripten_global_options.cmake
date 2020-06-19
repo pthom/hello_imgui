@@ -15,9 +15,3 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     # Advice: always debug the same exact source code on desktop before even trying to run in the browser
     set(link_options_debug -O0 --source-map-base http://localhost:8000/src/)
 endif()
-
-set(EMSCRIPTEN_LINK_OPTIONS
-    --shell-file ${CMAKE_CURRENT_LIST_DIR}/runner_emscripten_shell.html
-    ${link_options_debug}
-    CACHE INTERNAL ""
-    )

@@ -1,6 +1,8 @@
 ![build_emscripten](https://github.com/pthom/hello_imgui/workflows/build_emscripten/badge.svg)
 ![build_ios-simulator](https://github.com/pthom/hello_imgui/workflows/build_ios_simulator/badge.svg)
 ![build_ubuntu](https://github.com/pthom/hello_imgui/workflows/build_ubuntu/badge.svg)
+![build_windows](https://github.com/pthom/hello_imgui/workflows/build_windows/badge.svg)
+![build_mac](https://github.com/pthom/hello_imgui/workflows/build_mac/badge.svg)
 
 # Hello, Dear ImGui
 

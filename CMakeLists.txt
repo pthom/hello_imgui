@@ -24,8 +24,11 @@ option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 #
 option(HELLOIMGUI_BUILD_DOCS "Build docs" OFF)
 option(HELLOIMGUI_BUILD_IMGUI "Use imgui sources provided in external/imgui" ON)
-option(HELLOIMGUI_BUILD_DEMOS "Build demos" ON)
-
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+    option(HELLOIMGUI_BUILD_DEMOS "Build demos" ON)
+else()
+    option(HELLOIMGUI_BUILD_DEMOS "Build demos" OFF)
+endif()
 
 set(HELLOIMGUI_BASEPATH ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Hello imgui base path" FORCE)
 set(HELLOIMGUI_ASSETSDIR ${CMAKE_CURRENT_LIST_DIR}/hello_imgui_assets)

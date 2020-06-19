@@ -23,18 +23,22 @@ __Table of contents__
 * [Build instructions](#build-instructions)
   * [Clone the repository](#clone-the-repository)
   * [Build instructions for desktop platforms (Linux, MacOS, Windows)](#build-instructions-for-desktop-platforms-(linux-macos-windows))
-  * [Select your backend](#select-your-backend)
+    * [Select your backend](#select-your-backend)
     * [Install Glfw3 and Sdl2 via vcpkg ](#install-glfw3-and-sdl2-via-vcpkg-)
     * [Backend with SDL2 + OpenGL3](#backend-with-sdl2--opengl3)
     * [Backend with with Glfw3 + OpenGL3](#backend-with-with-glfw3--opengl3)
     * [Backend with Qt](#backend-with-qt)
   * [Build instructions for iOS](#build-instructions-for-ios)
+    * [Install requirements](#install-requirements)
     * [Build for iOS](#build-for-ios)
-      * [Install requirements](#install-requirements)
-      * [Build for iOS](#build-for-ios)
     * [Customizing the iOS build](#customizing-the-ios-build)
-    * [Embed more files with your application](#embed-more-files-with-your-application)
-  * [Android](#android)
+    * [Embed more files with your iOS application](#embed-more-files-with-your-ios-application)
+  * [Build instructions for emscripten](#build-instructions-for-emscripten)
+    * [Install the requirements (emsdk)](#install-the-requirements-(emsdk))
+    * [Build for emscripten](#build-for-emscripten)
+    * [Customizing the emscripten build](#customizing-the-emscripten-build)
+    * [Embed more files with your emscripten application](#embed-more-files-with-your-emscripten-application)
+  * [Build instructions for Android](#build-instructions-for-android)
 * [Developer informations](#developer-informations)
   * [Adding backends](#adding-backends)
   * [Multiplatform cmake in 2 lines](#multiplatform-cmake-in-2-lines)
@@ -95,6 +99,8 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 * Status bar
 * Log widget
 * Zoom (especialy useful for mobile devices)
+* Mobile apps specific callbacks (OnPause, OnResume, OnLowMemory)
+* Mobile apps customization (icon, embedded files, etc)
 
 
 # Supported platforms and backends
@@ -103,14 +109,14 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 * Windows
 * Linux
 * OSX
+* iOS
+* emscripten
 * Android
-* iOS should come soon
-* emscripten should come soon
 
 ## Backends
 
 * Glfw3 + OpenGL 3
-* SDL2 + OpenGL 3
+* SDL2 + OpenGL 3 or OpenGLES3 for mobile devices
 * Qt
 
 # Usage instructions and API
@@ -134,7 +140,7 @@ git submodule update --init
 
 ## Build instructions for desktop platforms (Linux, MacOS, Windows)
 
-## Select your backend
+### Select your backend
 
 Several cmake options are provided: you need to select at least one backend:
 ````cmake
@@ -181,19 +187,24 @@ For example, this line would build with Qt backend for an androïd_armv7 target:
 cmake -DCMAKE_PREFIX_PATH=/path/to/Qt/5.12.8/android_armv7 -DHELLOIMGUI_USE_QT=ON
 ````
 
-## Build instructions for iOS
+----
 
-### Build for iOS
+## Build instructions for iOS
 
 "SDL + OpenGL ES3" is currently the preferred backend for iOS.
 
-This project uses the [ios-cmake](https://github.com/leetal/ios-cmake) toolchain which is a submodule at [hello_imgui_cmake/ios-cmake](hello_imgui_cmake/ios-cmake).
+This project uses the [ios-cmake](https://github.com/leetal/ios-cmake) toolchain which is a submodule in the folder [hello_imgui_cmake/ios-cmake](hello_imgui_cmake/ios-cmake).
 
-#### Install requirements
+### Install requirements
 
 1. First, you need to download and compile SDL (you need )
 
 Launch [tools/ios/sdl_compile_ios.sh](tools/ios/sdl_compile_ios.sh), which will download and compile SDL for iOS and the simulator, into the folder "external/SDL"
+
+````bash
+./tools/ios/sdl_compile_ios.sh
+````
+
 
 2. Set your development team Id inside [tools/ios/set_dev_team.source](tools/ios/set_dev_team.source)
 
@@ -202,7 +213,7 @@ Edit the file and replace the id with your own team id.
 export CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM="0123456789"
 ````
 
-#### Build for iOS
+### Build for iOS
 
 1. **Source** tools/ios/set_dev_team.source in order to add the CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM environment variable
 
@@ -211,6 +222,10 @@ source tools/ios/set_dev_team.source
 ````
 
 2. Launch cmake using [./tools/ios/cmake_ios_sdl.sh](tools/ios/cmake_ios_sdl.sh):
+
+````bash
+./tools/ios/cmake_ios_sdl.sh
+````
 
 This will create a build directory named "build_ios_sdl/" and then open the project "HelloImGui.xcodeproj".
 
@@ -255,17 +270,92 @@ YourAppSourceFolder/
 The example [src/hello_imgui_demos/hello_imgui_demodocking](src/hello_imgui_demos/hello_imgui_demodocking) shows some customization.
 
 
-### Embed more files with your application
+### Embed more files with your iOS application
 
-[hello_imgui_cmake/ios/hello_imgui_ios.cmake](hello_imgui_cmake/ios/hello_imgui_ios.cmake) provides a function named `hello_imgui_ios_bundle_assets` which helps embedding assets.
+By default, the iPhone apps will embed the fonts provided in the [hello_imgui_assets](hello_imgui_assets) folder.
+
+[hello_imgui_cmake/ios/hello_imgui_ios.cmake](hello_imgui_cmake/ios/hello_imgui_ios.cmake) provides a function named `hello_imgui_ios_bundle_assets` which helps embedding more assets.
  
+----
 
+## Build instructions for emscripten
 
-## Android
+> [emscripten](https://emscripten.org/) is a toolchain for compiling to asm.js and WebAssembly, built using LLVM, that lets you run C and C++ on the web at near-native speed without plugins.
+
+### Install the requirements (emsdk)
+
+You can either install emsdk following [the instruction on the emscripten website](https://emscripten.org/docs/getting_started/downloads.html) or you can use the script [tools/emscripten/cmake_emscripten.sh](tools/emscripten/cmake_emscripten.sh).
+
+`````bash
+./tools/emscripten/cmake_emscripten.sh
+`````
+
+This script will download and install emscripten into `~/emsdk`
+
+### Build for emscripten
+
+1. Add emsdk to your shell path;
+
+You need to **source** the script ~/emsdk/emsdk_env.sh
+
+````bash
+source ~/emsdk/emsdk_env.sh
+````
+
+2. Run cmake, using "emcmake":
+
+`````bash
+mkdir build_emscripten
+cd build_emscripten
+emcmake cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON ..
+`````
+
+Note: the script [tools/emscripten/cmake_emscripten.sh](tools/emscripten/cmake_emscripten.sh) does exactly this.
+
+3. Build
+
+````bash
+make -j 4
+````
+
+4. Test your emscripten application
+
+You will need a web server. Python provides a basic web server that is easy to usen which you can launch like this:
+
+`````bash
+cd build_emscripten
+python3 -m http.server
+`````
+
+Open a browser, and navigate to [http://localhost:8000](http://localhost:8000).
+
+For example, the docking demo will be available at 
+[http://localhost:8000/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html](http://localhost:8000/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html)
+
+### Customizing the emscripten build
+
+Refer to the [emscripten docs](https://emscripten.org/)
+
+hello_imgui_cmake/emscripten/runner_emscripten_shell.html
+
+### Embed more files with your emscripten application
+
+By default, the emscripten apps will embed the fonts provided in the [hello_imgui_assets](hello_imgui_assets) folder.
+
+        target_link_options(${app_name} PRIVATE
+            ${EMSCRIPTEN_LINK_OPTIONS}
+            --preload-file ${HELLOIMGUI_ASSETSDIR}@/
+            )
+
+----
+
+## Build instructions for Android
 
 ... To be continued...
 
-With Android, it is preferred to use the Qt backend.
+
+
+----
 
 # Developer informations
 

@@ -25,7 +25,7 @@ def toc_link():
     toc_image = "docs/toc.png"
     # <div style="text-align: right"> your-text-here </div>
     image_link = f"[![TOC]({toc_image})](#TOC)"
-    r = f" <div style=\"text-align: right\">{image_link}</div>"
+    r = f"{image_link}\n"
     return r
 
 
@@ -85,7 +85,7 @@ def process_md_file(input_file, output_file):
         elif line.startswith("[TOC]"):
             content = content + make_toc(input_file)
         elif is_header_line(line):
-            content = content + line[:-1] + toc_link() + "\n"
+            content = content + line + toc_link()
         else:
             content = content + line
 

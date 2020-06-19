@@ -4,7 +4,8 @@
 ![build_ios-simulator](https://github.com/pthom/hello_imgui/workflows/build_ios_simulator/badge.svg)
 ![build_emscripten](https://github.com/pthom/hello_imgui/workflows/build_emscripten/badge.svg)
 
-# Hello, Dear ImGui <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+# Hello, Dear ImGui
+[![TOC](docs/toc.png)](#TOC)
 
 _HelloImGui_ is a library that enables to write  multiplatform Gui apps for Windows, Mac, Linux, iOS, Android, emscripten; with the simplicity of a "Hello World" app!
 
@@ -63,9 +64,11 @@ __Table of contents__
 
 ----
 
-# Examples <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+# Examples
+[![TOC](docs/toc.png)](#TOC)
 
-## Hello, world! <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Hello, world!
+[![TOC](docs/toc.png)](#TOC)
 
 With HelloImGui, the equivalent of the "Hello, World!" can be written with 8 C++ lines + 2 CMake lines:
 
@@ -94,7 +97,8 @@ _Although this app was extremely simple to write, it will run with no additional
 Source for this example: [src/hello_imgui_demos/hello_world](src/hello_imgui_demos/hello_world)
 
 
-## Advanced example with docking support <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Advanced example with docking support
+[![TOC](docs/toc.png)](#TOC)
 
 This example showcases various features of _Hello ImGui_.
 ![demo docking](docs/images/docking.gif) [Online demo][docking]
@@ -102,7 +106,8 @@ This example showcases various features of _Hello ImGui_.
 Source for this example: [src/hello_imgui_demos/hello_imgui_demodocking](src/hello_imgui_demos/hello_imgui_demodocking)
 
 
-## ImGui "classic" demo <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## ImGui "classic" demo
+[![TOC](docs/toc.png)](#TOC)
 
 This example reproduces ImGui default example.
 
@@ -111,7 +116,8 @@ This example reproduces ImGui default example.
 Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/hello_imgui_demos/hello_imgui_demo_classic)
 
 
-# Features <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+# Features
+[![TOC](docs/toc.png)](#TOC)
 
 * Docking support (based on ImGui [docking branch](https://github.com/ocornut/imgui/tree/docking))
 * Default docking layout + View menu with option to restore the layout
@@ -122,9 +128,11 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 * Mobile apps customization (icon, embedded files, etc)
 
 
-# Supported platforms and backends <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+# Supported platforms and backends
+[![TOC](docs/toc.png)](#TOC)
 
-## Platforms <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Platforms
+[![TOC](docs/toc.png)](#TOC)
 * Windows
 * Linux
 * OSX
@@ -132,12 +140,14 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 * emscripten
 * Android
 
-## Backends  <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Backends 
+[![TOC](docs/toc.png)](#TOC)
 * Glfw3 + OpenGL 3
 * SDL2 + OpenGL 3 or OpenGLES3 for mobile devices
 * Qt
 
-# Usage instructions and API <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+# Usage instructions and API
+[![TOC](docs/toc.png)](#TOC)
 
 _RunnerParams_ contains all the settings and callbacks in order to run an application. 
 
@@ -147,18 +157,22 @@ _RunnerParams_ contains all the settings and callbacks in order to run an applic
 
 
 
-# Build instructions <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+# Build instructions
+[![TOC](docs/toc.png)](#TOC)
 
-## Clone the repository <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Clone the repository
+[![TOC](docs/toc.png)](#TOC)
 ````bash
 git clone https://github.com/pthom/hello_imgui.git
 cd hello_imgui
 git submodule update --init
 ````
 
-## Build instructions for desktop platforms (Linux, MacOS, Windows) <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Build instructions for desktop platforms (Linux, MacOS, Windows)
+[![TOC](docs/toc.png)](#TOC)
 
-### Select your backend <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+### Select your backend
+[![TOC](docs/toc.png)](#TOC)
 
 Several cmake options are provided: you need to select at least one backend:
 ````cmake
@@ -168,7 +182,8 @@ option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" ON)
 option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build HelloImGui for SDL+DirectX11" ON)
 ````
 
-### Install Glfw3 and Sdl2 via vcpkg  <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+### Install Glfw3 and Sdl2 via vcpkg 
+[![TOC](docs/toc.png)](#TOC)
 
 If you intend to use SDL of glfw, you can either use your own installation or have them installed automatically via [vcpkg](https://github.com/Microsoft/vcpkg):
 
@@ -179,7 +194,8 @@ Simply run this command:
 
 This script will download and build vcpkg, then install sdl2 and Glfw3 into `hello_imgui/vcpkg/`
 
-### Backend with SDL2 + OpenGL3 <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+### Backend with SDL2 + OpenGL3
+[![TOC](docs/toc.png)](#TOC)
 
 If you intend to use SDL provided by vcpkg use the following instructions:
 ````bash
@@ -191,11 +207,13 @@ make -j4
 
 If you intend to use your own SDL installation, simply remove the argument "-DCMAKE_TOOLCHAIN_FILE".
 
-### Backend with with Glfw3 + OpenGL3 <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+### Backend with with Glfw3 + OpenGL3
+[![TOC](docs/toc.png)](#TOC)
 
 Follow the instructiosn for SDL2, but replace HELLOIMGUI_USE_SDL_OPENGL3 by HELLOIMGUI_USE_GLFW_OPENGL3.
 
-### Backend with Qt <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+### Backend with Qt
+[![TOC](docs/toc.png)](#TOC)
 
 Simply pass the option `-DHELLOIMGUI_USE_QT=ON` and specify the path to Qt via CMAKE_PREFIX_PATH.
 
@@ -207,13 +225,15 @@ cmake -DCMAKE_PREFIX_PATH=/path/to/Qt/5.12.8/android_armv7 -DHELLOIMGUI_USE_QT=O
 
 ----
 
-## Build instructions for iOS <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Build instructions for iOS
+[![TOC](docs/toc.png)](#TOC)
 
 "SDL + OpenGL ES3" is currently the preferred backend for iOS.
 
 This project uses the [ios-cmake](https://github.com/leetal/ios-cmake) toolchain which is a submodule in the folder [hello_imgui_cmake/ios-cmake](hello_imgui_cmake/ios-cmake).
 
-### Install requirements <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+### Install requirements
+[![TOC](docs/toc.png)](#TOC)
 
 1. First, you need to download and compile SDL
 
@@ -231,7 +251,8 @@ Edit the file and replace the id with your own team id.
 export CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM="0123456789"
 ````
 
-### Build for iOS <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+### Build for iOS
+[![TOC](docs/toc.png)](#TOC)
 
 1. **Source** tools/ios/set_dev_team.source in order to add the CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM environment variable
 
@@ -261,7 +282,8 @@ cmake .. \
   .. \
 `````
 
-### Customizing the iOS build <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+### Customizing the iOS build
+[![TOC](docs/toc.png)](#TOC)
 
 Simply create a folder named "ios" beside the application 'CMakeLists.txt'
 
@@ -288,7 +310,8 @@ YourAppSourceFolder/
 The example [src/hello_imgui_demos/hello_imgui_demodocking](src/hello_imgui_demos/hello_imgui_demodocking) shows some customization.
 
 
-### Embed more files with your iOS application <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+### Embed more files with your iOS application
+[![TOC](docs/toc.png)](#TOC)
 
 By default, the iPhone apps will embed the fonts provided in the [hello_imgui_assets](hello_imgui_assets) folder.
 
@@ -296,11 +319,13 @@ By default, the iPhone apps will embed the fonts provided in the [hello_imgui_as
  
 ----
 
-## Build instructions for emscripten <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Build instructions for emscripten
+[![TOC](docs/toc.png)](#TOC)
 
 > [emscripten](https://emscripten.org/) is a toolchain for compiling to asm.js and WebAssembly, built using LLVM, that lets you run C and C++ on the web at near-native speed without plugins.
 
-### Install the requirements (emsdk) <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+### Install the requirements (emsdk)
+[![TOC](docs/toc.png)](#TOC)
 
 You can either install emsdk following [the instruction on the emscripten website](https://emscripten.org/docs/getting_started/downloads.html) or you can use the script [tools/emscripten/cmake_emscripten.sh](tools/emscripten/cmake_emscripten.sh).
 
@@ -310,7 +335,8 @@ You can either install emsdk following [the instruction on the emscripten websit
 
 This script will download and install emscripten into `~/emsdk`
 
-### Build for emscripten <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+### Build for emscripten
+[![TOC](docs/toc.png)](#TOC)
 
 1. Add emsdk to your shell path;
 
@@ -350,37 +376,44 @@ Open a browser, and navigate to [http://localhost:8000](http://localhost:8000).
 For example, the docking demo will be available at 
 [http://localhost:8000/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html](http://localhost:8000/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html)
 
-### Customizing the emscripten build <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+### Customizing the emscripten build
+[![TOC](docs/toc.png)](#TOC)
 
 Refer to the [emscripten docs](https://emscripten.org/)
 
 By default, the application will be presented in an empty html page. You can adapt [hello_imgui_cmake/emscripten/runner_emscripten_shell.html](hello_imgui_cmake/emscripten/runner_emscripten_shell.html) if you want.
 
-### Embed more files with your emscripten application <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+### Embed more files with your emscripten application
+[![TOC](docs/toc.png)](#TOC)
 
 By default, the emscripten apps will embed the fonts provided in the [hello_imgui_assets](hello_imgui_assets) folder, using emscripten `--preload-file` option.
 
 ----
 
-## Build instructions for Android <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Build instructions for Android
+[![TOC](docs/toc.png)](#TOC)
 
 ... To be continued...
 
 
-# Use Hello ImGui as asubmodule in your own app  <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+# Use Hello ImGui as asubmodule in your own app 
+[![TOC](docs/toc.png)](#TOC)
 
 [hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule in a separate application. 
 
 ----
 
-# Developer informations <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+# Developer informations
+[![TOC](docs/toc.png)](#TOC)
 
-## Adding backends <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Adding backends
+[![TOC](docs/toc.png)](#TOC)
 
 Adding new backend should be easy: simply add a new derivate of [AbstractRunner](src/hello_imgui/internal/backend_impls/abstract_runner.h).
 
 
-## Multiplatform cmake in 2 lines <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Multiplatform cmake in 2 lines
+[![TOC](docs/toc.png)](#TOC)
 
 [hello_imgui_cmake/hello_imgui_add_app.cmake](hello_imgui_cmake/hello_imgui_add_app.cmake) is a cmake script that provides `helloimgui_add_app`, a cmake helper function, similar to cmake's "add_executable"
 

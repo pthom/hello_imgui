@@ -18,9 +18,11 @@
       * [Dockable window](#dockable-window)
       * [Docking Params](#docking-params)
 
-# API <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+# API
+[![TOC](docs/toc.png)](#TOC)
 
-## HelloImGui::Run() <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## HelloImGui::Run()
+[![TOC](docs/toc.png)](#TOC)
 
 See [hello_imgui.h](hello_imgui.h).
 
@@ -36,18 +38,21 @@ by runnerParams.
 in order to start a simple application with ease.
 
 
-## Runner params <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Runner params
+[![TOC](docs/toc.png)](#TOC)
 
 See [runner_params.h](runner_params.h).
 
-#### Diagram <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+#### Diagram
+[![TOC](docs/toc.png)](#TOC)
 
 _RunnerParams_ contains all the settings and callbacks in order to run an application. 
 The diagram below summarize all the possible settings and callbacks (which are explained in detail later in this document).
 
 ![a](doc_src/hello_imgui_diagram.png)
 
-#### RunnerParams <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+#### RunnerParams
+[![TOC](docs/toc.png)](#TOC)
 
  **RunnerParams** is a struct that contains all the settings and callbacks needed to run an application.
 
@@ -68,11 +73,13 @@ The diagram below summarize all the possible settings and callbacks (which are e
 
 ----
 
-## Runner callbacks <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Runner callbacks
+[![TOC](docs/toc.png)](#TOC)
 
 See [runner_callbacks.h](runner_callbacks.h).
 
-#### RunnerCallbacks <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+#### RunnerCallbacks
+[![TOC](docs/toc.png)](#TOC)
 
 
  _Members_
@@ -130,7 +137,8 @@ using VoidFunction = std::function<void(void)>
 using AnyEventCallback = std::function<bool(void * backendEvent)>
 ````
 
-#### MobileCallbacks <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+#### MobileCallbacks
+[![TOC](docs/toc.png)](#TOC)
 
  when running under "Android, iOS and WinRT".
  These events are specific to mobile and embedded devices that have different requirements
@@ -151,7 +159,8 @@ using AnyEventCallback = std::function<bool(void * backendEvent)>
 
 ----
 
-## Application window params <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Application window params
+[![TOC](docs/toc.png)](#TOC)
 
 See [app_window_params.h](app_window_params.h).
 
@@ -172,11 +181,13 @@ Members:
 
 ----
 
-## ImGui window params <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## ImGui window params
+[![TOC](docs/toc.png)](#TOC)
 
 See [imgui_window_params.h](imgui_window_params.h).
 
-#### ImGuiWindowParams <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+#### ImGuiWindowParams
+[![TOC](docs/toc.png)](#TOC)
 
 __ImGuiWindowParams__ is a struct that defines the ImGui inner windows params
 These settings affect the imgui inner windows inside the application window.
@@ -211,7 +222,8 @@ In order to change the application window settings, change the _AppWindowsParams
   * `configWindowsMoveFromTitleBarOnly`: _bool, default=true_.
     Make windows only movable from the title bar
 
-#### Default window types <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+#### Default window types
+[![TOC](docs/toc.png)](#TOC)
 
  __DefaultImGuiWindowType__ is an enum class that defines whether or not a full screen background window is provided.
 
@@ -222,11 +234,13 @@ In order to change the application window settings, change the _AppWindowsParams
 
 ----
 
-## Docking <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+## Docking
+[![TOC](docs/toc.png)](#TOC)
 
 See [docking_params.h](docking_params.h).
 
-#### Docking Params: Example usage <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+#### Docking Params: Example usage
+[![TOC](docs/toc.png)](#TOC)
 
 ````cpp
 HelloImGui::RunnerParams runnerParams;
@@ -263,7 +277,8 @@ runnerParams.imGuiWindowParams.showStatusBar = true;
 HelloImGui::Run(runnerParams);
 ````
 
-#### Docking Splits <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+#### Docking Splits
+[![TOC](docs/toc.png)](#TOC)
 
  **DockingSplit** is a struct that defines the way the docking splits should be applied on the screen
  in order to create new Dock Spaces. _DockingParams_ contains a _vector[DockingSplit]_,
@@ -282,7 +297,8 @@ _Members:_
 Direction where this dock space should be created
 * `ratio`: _float, default=0.25f_. Ratio of the initialDock size that should be used by the new dock space
 
-#### Dockable window <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+#### Dockable window
+[![TOC](docs/toc.png)](#TOC)
 
  **DockableWindow** is a struct that represents a window that can be docked.
 
@@ -295,7 +311,8 @@ _Members:_
 * `isVisible`: _bool, default=true_. Flag that indicates whether this window is visible or not.
 * `canBeClosed`: _bool, default=true_. Flag that indicates whether the user can close this window.
 
-#### Docking Params <div style="text-align: right">[![TOC](docs/toc.png)](#TOC)</div>
+#### Docking Params
+[![TOC](docs/toc.png)](#TOC)
 
  **DockingParams** contains all the settings concerning the docking, 
  together _with the Gui functions for the docked windows_.

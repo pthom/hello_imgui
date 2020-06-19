@@ -10,6 +10,32 @@ _HelloImGui_ is a library that enables to write  multiplatform Gui apps for Wind
 
 It is based on [Dear ImGui](https://github.com/ocornut/imgui), a Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
 
+__Online Emscripten/Wasm demos:__
+
+* [Hello world](https://traineq.org/HelloImGui/hello_imgui_demos/hello_world/hello_world.html)
+
+  <a href="https://traineq.org/HelloImGui/hello_imgui_demos/hello_world/hello_world.html">
+  
+  <img src="docs/images/wasm_demos/hello.jpg)" />
+  
+  </a>
+  
+* [Advanced Docking demo](https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html)
+
+  <a href="https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html">
+  
+  <img src="docs/images/wasm_demos/docking.jpg)" />
+  
+  </a>
+
+* [ImGui classic demo](https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demo_classic/hello-imgui-demo-classic.html)
+  
+    <a href="https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demo_classic/hello-imgui-demo-classic.html">
+    
+    <img src="docs/images/wasm_demos/classic.jpg)" />
+    
+    </a>
+
 ----
 
 __Table of contents__

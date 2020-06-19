@@ -53,12 +53,11 @@ This example showcases various features of _Hello ImGui_.
 Source for this example: [src/hello_imgui_demos/hello_imgui_demodocking](src/hello_imgui_demos/hello_imgui_demodocking)
 
 
-
 ## ImGui "classic" demo
 
 This example reproduces ImGui default example.
 
-![demo](https://i.gyazo.com/6f12592e43590d98aa0d992aaffe685f.gif)
+<img src=https://i.gyazo.com/6f12592e43590d98aa0d992aaffe685f.gif height=100>
 
 Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/hello_imgui_demos/hello_imgui_demo_classic)
 

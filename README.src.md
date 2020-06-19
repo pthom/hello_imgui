@@ -1,10 +1,14 @@
-![](https://github.com/pthom/hello_imgui/workflows/.github/workflows/build_ubuntu.yml/badge.svg)
+![build_emscripten](https://github.com/pthom/hello_imgui/workflows/build_emscripten/badge.svg)
+![build_ios-simulator](https://github.com/pthom/hello_imgui/workflows/build_ios_simulator/badge.svg)
+![build_ubuntu](https://github.com/pthom/hello_imgui/workflows/build_ubuntu/badge.svg)
 
 # Hello, Dear ImGui
 
 _HelloImGui_ is a library that enables to write  multiplatform Gui apps for Windows, Mac, Linux, iOS, Android, emscripten; with the simplicity of a "Hello World" app!
 
 It is based on [Dear ImGui](https://github.com/ocornut/imgui), a Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
+
+
 
 ----
 

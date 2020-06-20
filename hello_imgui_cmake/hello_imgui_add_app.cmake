@@ -1,8 +1,8 @@
-if(ANDROID)
-    include(${CMAKE_CURRENT_LIST_DIR}/qt-android-cmake/AddQtAndroidApk.cmake)
-endif()
 if (IOS)
     include(${CMAKE_CURRENT_LIST_DIR}/ios/hello_imgui_ios.cmake)
+endif()
+if (ANDROID)
+    include(${CMAKE_CURRENT_LIST_DIR}/android/hello_imgui_android.cmake)
 endif()
 if (EMSCRIPTEN)
     include(${CMAKE_CURRENT_LIST_DIR}/emscripten/hello_imgui_emscripten.cmake)
@@ -16,8 +16,6 @@ endif()
 #
 # Features:
 # * It will automaticaly link the exe to hello_imgui library
-# * Under android, it uses [qt-android-cmake](https://github.com/LaurentGomila/qt-android-cmake.git)
-#   in order to create an apk
 function(hello_imgui_add_app)
     set(args ${ARGN})
     list(GET args 0 app_name)
@@ -31,7 +29,7 @@ function(hello_imgui_add_app)
     endif()
 
     if (ANDROID)
-        add_qt_android_apk(${app_name}_apk ${app_name})
+        hello_imgui_android_adapt(${app_name})
     endif()
     if (IOS)
         hello_imgui_ios_adapt(${app_name})

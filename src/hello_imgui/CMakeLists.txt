@@ -72,6 +72,10 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
         target_link_libraries(${target_name} PUBLIC SDL2::SDL2main SDL2::SDL2-static)
     endif()
 
+    if(ANDROID)
+        target_link_libraries(${target_name} PUBLIC GLESv3)
+    endif()
+
     target_sources(${target_name} PRIVATE
         ${imgui_examples_dir}/imgui_impl_opengl3.h
         ${imgui_examples_dir}/imgui_impl_opengl3.cpp

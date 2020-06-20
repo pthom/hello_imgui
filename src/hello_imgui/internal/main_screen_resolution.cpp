@@ -16,6 +16,11 @@ std::array<int, 2> MainScreenResolution()
     GetSystemMetrics(SM_CYSCREEN)
   };
 }
+#elif defined(__ANDROID__)
+std::array<int, 2> MainScreenResolution()
+{
+  return { 1024, 768 };
+}
 #elif defined(__linux__)
 #include <X11/Xlib.h>
 std::array<int, 2> MainScreenResolution()

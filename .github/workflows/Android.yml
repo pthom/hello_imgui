@@ -25,28 +25,28 @@ jobs:
 
     - name: Setup env variables
       run : |
-          export ANDROID_NDK_HOME=$(pwd)/toolchains/android-ndk-r21d
-          echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
-          ls $ANDROID_NDK_HOME
+        export ANDROID_NDK_HOME=$(pwd)/toolchains/android-ndk-r21d
+        echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
 
-          which java
-          java -version
-          which javac
-          echo "JAVA_HOME=$JAVA_HOME"
+        which java
+        java -version
+        which javac
+        echo "JAVA_HOME=$JAVA_HOME"
+        # /usr/lib/jvm/java-8-openjdk-amd64 ?
 
-#    - name: Configure
-#      run: |
-#          mkdir build
-#          cd build
-#          cmake \
-#                -DCMAKE_BUILD_TYPE=Release \
-#                -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
-#                -DHELLOIMGUI_USE_SDL_OPENGL3=ON  \
-#                -DHELLOIMGUI_USE_GLFW_OPENGL3=ON \
-#                -DHELLOIMGUI_USE_GLAD=ON         \
-#                -DHELLOIMGUI_BUILD_DOCS=ON       \
-#                ..
-#    - name: Build
-#      working-directory: build
-#      run: |
-#          make
+    - name: Install SDL for android via vcpkg
+      run: ./tools/android/vcpkg_install_sdl.sh
+
+    - name: Configure & build arm64-android
+      run: |
+          pwd
+          ./tools/android/cmake_arm64-android.sh
+          cd build_arm64-android
+          make -j 4
+
+    - name: Configure & build arm-android
+      run: |
+        pwd
+        ./tools/android/cmake_arm-android.sh
+        cd build_arm-android
+        make -j 4

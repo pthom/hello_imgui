@@ -58,6 +58,11 @@ __Table of contents__
     * [Customizing the emscripten build](#customizing-the-emscripten-build)
     * [Embed more files with your emscripten application](#embed-more-files-with-your-emscripten-application)
   * [Build instructions for Android](#build-instructions-for-android)
+    * [Set Android required environment variables](#set-android-required-environment-variables)
+    * [Install SDL2 for Android via vcpkg](#install-sdl2-for-android-via-vcpkg)
+    * [Run cmake with the android toolchain](#run-cmake-with-the-android-toolchain)
+    * [Build for Android](#build-for-android)
+    * [Android build status](#android-build-status)
 * [Developer informations](#developer-informations)
   * [Adding backends](#adding-backends)
   * [Multiplatform cmake in 2 lines](#multiplatform-cmake-in-2-lines)
@@ -135,7 +140,7 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 * OSX
 * iOS
 * emscripten
-* Android support is planned : as I do not own an Android device, help would be appreciated.
+* Android : being developed
 
 ## Backends 
 * Glfw3 + OpenGL 3
@@ -380,8 +385,61 @@ By default, the emscripten apps will embed the fonts provided in the [hello_imgu
 
 ## Build instructions for Android
 
-Android support is planned : as I do not own an Android device, help would be appreciated.
+Android support is being developed : as I do not own an Android device, help would be appreciated.
+The Android version uses SDL + OpenGLES3.
 
+### Set Android required environment variables
+
+````bash
+export ANDROID_NDK_HOME=/path/to/AndroidNdk
+export JAVA_HOME=/path/to/jdk8
+````
+
+For example (MacOS):
+````bash
+xport ANDROID_NDK_HOME=/Users/Me/Library/Android/sdk/ndk-bundle
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
+````
+
+### Install SDL2 for Android via vcpkg
+
+[tools/android/vcpkg_install_sdl.sh](tools/android/vcpkg_install_sdl.sh) will install sdl for both arm-android
+and arm64-android.
+
+Note: see the [vcpkg doc about android](https://github.com/microsoft/vcpkg/blob/master/docs/users/android.md
+)
+
+`````bash
+./tools/android/vcpkg_install_sdl.sh
+`````
+
+### Run cmake with the android toolchain
+
+[tools/android/cmake_arm64-android.sh](tools/android/cmake_arm64-android.sh) will create a folder "build_arm64-android" and run cmake with the correct toolchains (vcpkg + android).
+
+````bash
+./tools/android/cmake_arm64-android.sh
+````
+
+You can also create a build for arm-android with:
+````bash
+./tools/android/cmake_arm-android.sh
+````
+
+### Build for Android
+
+````
+cd build_arm-android
+make -j 4
+````
+
+### Android build status
+
+The Android build is not complete: the application is correctly compiled as a static library, and linked with SDL. However, no apk is produced at the moment. 
+
+Help would be appreciated!
+
+The principle would be to fill [hello_imgui_cmake/android/hello_imgui_android.cmake](hello_imgui_cmake/android/hello_imgui_android.cmake), with inspiration from [hello_imgui_cmake/ios/hello_imgui_ios.cmake](hello_imgui_cmake/ios/hello_imgui_ios.cmake).
 
 ----
 

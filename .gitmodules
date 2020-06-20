@@ -1,9 +1,6 @@
 [submodule "external/imgui"]
 	path = external/imgui
 	url = https://github.com/ocornut/imgui.git
-[submodule "cmake/qt-android-cmake"]
-	path = hello_imgui_cmake/qt-android-cmake
-	url = https://github.com/LaurentGomila/qt-android-cmake.git
 [submodule "external/ios-cmake"]
 	path = hello_imgui_cmake/ios-cmake
 	url = https://github.com/leetal/ios-cmake.git

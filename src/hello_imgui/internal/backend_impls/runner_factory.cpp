@@ -5,6 +5,8 @@
 #include "hello_imgui/internal/backend_impls/runner_qt.h"
 #include "hello_imgui/internal/backend_impls/runner_sdl_opengl3.h"
 
+#include <stdexcept>
+
 namespace HelloImGui
 {
 #ifdef HELLOIMGUI_USE_GLFW_OPENGL3

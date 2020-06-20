@@ -1,5 +1,16 @@
 if (HELLOIMGUI_USE_QT)
-    # qtimgui build imgui as a submodule by default
+    if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/qtimgui)
+        message(FATAL_ERROR "Please clone qtimgui in external/, like this:
+        cd ${HELLOIMGUI_BASEPATH}/external/
+        git clone https://github.com/seanchas116/qtimgui.git
+        cd qtimgui
+        git checkout 8666384bc5c6cb0b6b415b27c648375f734c2366
+
+        (Yes, I chose to stay away from ExternalProject_Add quirks)
+        ")
+    endif()
+
+    # qtimgui includes imgui as a submodule by default
     # we prefer to use our own version (in external/imgui)
     set(QTIMGUI_BUILD_IMGUI OFF CACHE BOOL "disable qtimgui included imgui" FORCE)
     add_subdirectory(qtimgui)

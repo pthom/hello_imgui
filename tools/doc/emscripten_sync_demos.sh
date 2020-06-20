@@ -8,4 +8,4 @@ source ./tools/emscripten/activate_emsdk.source
 cd build_emscripten/
 make -j 4
 cd src
-rsync hello_imgui_demos pascal@traineq.org:HTML/HelloImGui
+rsync -vaz hello_imgui_demos pascal@traineq.org:HTML/HelloImGui

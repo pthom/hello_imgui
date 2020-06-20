@@ -19,6 +19,7 @@ if not os.path.isdir("vcpkg"):
         run("./bootstrap-vcpkg.sh")
 
     if os.name == 'nt':
-        run("vcpkg.exe install glfw3 sdl2")
+        run("vcpkg.exe install glfw3:x86-windows sdl2:x86-windows")
+        run("vcpkg.exe install glfw3:x64-windows sdl2:x64-windows")
     else:
         run("./vcpkg install glfw3 sdl2")

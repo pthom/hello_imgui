@@ -144,7 +144,7 @@ If you intend to use SDL of glfw, you can either use your own installation or ha
 
 Simply run this command:
 ````bash
-./tools/vcpkg_install_third_parties.sh
+./tools/vcpkg_install_third_parties.py
 ````
 
 This script will download and build vcpkg, then install sdl2 and Glfw3 into `hello_imgui/vcpkg/`

@@ -100,7 +100,7 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 * OSX
 * iOS
 * emscripten
-* Android
+* Android support is planned : as I do not own an Android device, help would be appreciated.
 
 ## Backends 
 * Glfw3 + OpenGL 3
@@ -366,6 +366,5 @@ hello_imgui_add_app(my_app my_app.main.cpp)
 **Features**
 
 * It will automaticaly link the exe to hello_imgui library
-* Under android, it uses [qt-android-cmake](https://github.com/LaurentGomila/qt-android-cmake.git) in order to create an apk
-
-If needed, you can copy-paste-customize this script.
+* Under iOS it will set the Development Team, add an Info.plist, add icon and LaunchImages
+* It will bundle the assets in the app (fonts)

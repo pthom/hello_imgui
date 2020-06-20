@@ -24,16 +24,19 @@ jobs:
 #          unzip android-ndk-r21d-linux-x86_64.zip
 #          cd ..
 
-    - name: Setup ANDROID_NDK_HOME and JAVA_HOME env variables
+    - name: Setup ANDROID_NDK_HOME env variable
       run : |
-        export ANDROID_NDK_HOME=/usr/local/lib/android/sdk/ndk-bundle/
-        echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
+        run: echo '::set-env name=ANDROID_NDK_HOME::/usr/local/lib/android/sdk/ndk-bundle/'
 
         which java
         java -version
         which javac
         echo "JAVA_HOME=$JAVA_HOME"
         # /usr/lib/jvm/java-8-openjdk-amd64 ?
+
+    - name: Check ANDROID_NDK_HOME env variable
+      run : |
+        run: echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
 
     - name: Install SDL for android via vcpkg
       run: ./tools/android/vcpkg_install_sdl_android.sh

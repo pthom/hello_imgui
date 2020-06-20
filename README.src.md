@@ -178,7 +178,7 @@ Simply pass the option `-DHELLOIMGUI_USE_QT=ON` and specify the path to Qt via C
 For example, this line would build with Qt backend for an androïd_armv7 target:
 
 ````bash
-cmake -DCMAKE_PREFIX_PATH=/path/to/Qt/5.12.8/android_armv7 -DHELLOIMGUI_USE_QT=ON
+cmake -DCMAKE_PREFIX_PATH=/path/to/Qt/5.12.8/clang_64 -DHELLOIMGUI_USE_QT=ON
 ````
 
 ----
@@ -340,7 +340,7 @@ By default, the emscripten apps will embed the fonts provided in the [hello_imgu
 
 ## Build instructions for Android
 
-... To be continued...
+Android support is planned : as I do not own an Android device, help would be appreciated.
 
 
 ----

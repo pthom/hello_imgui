@@ -15,8 +15,8 @@ jobs:
     - name: Install sdl and glfw via vcpkg
       run: python tools/vcpkg_install_third_parties.py
 
-   - name: Configure
-     run: |
+    - name: Configure
+      run: |
          mkdir build
          cd build
          cmake ^

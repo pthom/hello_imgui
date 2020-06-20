@@ -37,16 +37,19 @@ jobs:
     - name: Install SDL for android via vcpkg
       run: ./tools/android/vcpkg_install_sdl_android.sh
 
-    - name: Configure & build arm64-android
-      run: |
-          pwd
-          ./tools/android/cmake_arm64-android.sh
-          cd build_arm64-android
-          make -j 4
+    - name: Setup interactive tmate session
+      uses: mxschmitt/action-tmate@v2
 
-    - name: Configure & build arm-android
-      run: |
-        pwd
-        ./tools/android/cmake_arm-android.sh
-        cd build_arm-android
-        make -j 4
+#    - name: Configure & build arm64-android
+#      run: |
+#          pwd
+#          ./tools/android/cmake_arm64-android.sh
+#          cd build_arm64-android
+#          make -j 4
+#
+#    - name: Configure & build arm-android
+#      run: |
+#        pwd
+#        ./tools/android/cmake_arm-android.sh
+#        cd build_arm-android
+#        make -j 4

@@ -23,7 +23,7 @@ jobs:
       run: |
          mkdir build
          cd build
-         cmake -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_USE_SDL_OPENGL3=ON -DHELLOIMGUI_USE_GLFW_OPENGL3=ON -DHELLOIMGUI_USE_GLAD=ON -DHELLOIMGUI_BUILD_DOCS=ON ..
+         cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=D:/a/hello_imgui/hello_imgui/vcpkg/scripts/buildsystems/vcpkg.cmake -DHELLOIMGUI_USE_SDL_OPENGL3=ON -DHELLOIMGUI_USE_GLFW_OPENGL3=ON -DHELLOIMGUI_USE_GLAD=ON -DHELLOIMGUI_BUILD_DOCS=ON ..
 
     - name: Build
       working-directory: build

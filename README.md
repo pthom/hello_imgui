@@ -167,11 +167,13 @@ git submodule update --init
 
 Several cmake options are provided: you need to select at least one backend:
 ````cmake
+option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
+option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
 option(HELLOIMGUI_USE_QT "Build HelloImGui for Qt" OFF)
-option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" ON)
-option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" ON)
-option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build HelloImGui for SDL+DirectX11" ON)
+option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build HelloImGui for SDL+DirectX11" OFF)
 ````
+
+_"HELLOIMGUI_USE_SDL_OPENGL3" is the preferred backend, since it works under all platforms (windows, linux, osx, android, emscripten, iOS). On Mobile platforms, it will use OpenGLES3._
 
 ### Install Glfw3 and Sdl2 via vcpkg 
 
@@ -198,13 +200,11 @@ If you intend to use your own SDL installation, simply remove the argument "-DCM
 
 #### Warning: main() signature with SDL
 
-
 Warning for SDL apps under iOS:
 
 SDL uses a dirty hack in order to _replace your main() function by its own main() function_, which will then call your own main !
 
 Please make sure that the signature of your main() function is *exactly* `int main(int argc, char **argv)` and that your main() function returns an int.
-
 
 
 ### Backend with with Glfw3 + OpenGL3

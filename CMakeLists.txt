@@ -7,9 +7,9 @@ set(CMAKE_CXX_STANDARD 14)
 #
 # Available backends: you need to select at least on of them!
 #
-option(HELLOIMGUI_USE_QT "Build HelloImGui for Qt" OFF)
-option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
 option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
+option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
+option(HELLOIMGUI_USE_QT "Build HelloImGui for Qt" OFF)
 option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build HelloImGui for SDL+DirectX11" OFF)
 
 if (IOS OR EMSCRIPTEN)

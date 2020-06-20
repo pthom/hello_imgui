@@ -1,4 +1,4 @@
-name: build_emscripten
+name: Emscripten
 
 on:
   push:

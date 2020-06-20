@@ -1,8 +1,9 @@
-![build_ubuntu](https://github.com/pthom/hello_imgui/workflows/build_ubuntu/badge.svg)
-![build_windows](https://github.com/pthom/hello_imgui/workflows/build_windows/badge.svg)
-![build_mac](https://github.com/pthom/hello_imgui/workflows/build_mac/badge.svg)
-![build_ios-simulator](https://github.com/pthom/hello_imgui/workflows/build_ios_simulator/badge.svg)
-![build_emscripten](https://github.com/pthom/hello_imgui/workflows/build_emscripten/badge.svg)
+![Ubuntu](https://github.com/pthom/hello_imgui/workflows/Ubuntu/badge.svg)
+![Windows](https://github.com/pthom/hello_imgui/workflows/Windows/badge.svg)
+![MacOS](https://github.com/pthom/hello_imgui/workflows/MacOS/badge.svg)
+![iOS](https://github.com/pthom/hello_imgui/workflows/iOS/badge.svg)
+![Android](https://github.com/pthom/hello_imgui/workflows/Android/badge.svg)
+![Emscripten](https://github.com/pthom/hello_imgui/workflows/Emscripten/badge.svg)
 
 # Hello, Dear ImGui
 
@@ -103,8 +104,8 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 * Android : being developed
 
 ## Backends 
-* Glfw3 + OpenGL 3
 * SDL2 + OpenGL 3 or OpenGLES3 for mobile devices
+* Glfw3 + OpenGL 3
 * Qt
 
 # Usage instructions and API

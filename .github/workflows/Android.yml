@@ -12,8 +12,25 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init --recursive
 
-    - name: Install needed libraries
-      run: sudo apt-get install -y openjdk-8-jdk-headless
+    - name: Setup ANDROID_NDK_HOME env variable
+      run : |
+        echo "::set-env name=ANDROID_NDK_HOME::/usr/local/lib/android/sdk/ndk-bundle/"
+        which java
+        java -version
+        which javac
+        echo "JAVA_HOME=$JAVA_HOME"
+        # /usr/lib/jvm/java-8-openjdk-amd64 ?
+
+    - name: Check ANDROID_NDK_HOME env variable
+      run : echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
+
+    - name: Install openjdk-8
+      run: |
+          which java || true
+          echo $JAVA_HOME
+          sudo apt-get install -y openjdk-8-jdk-headless
+          which java || true
+          echo $JAVA_HOME
 
 #    Disabled, there is already a sdk at /usr/local/lib/android
 #    - name: Download Android NDK
@@ -23,20 +40,6 @@ jobs:
 #          wget https://dl.google.com/android/repository/android-ndk-r21d-linux-x86_64.zip
 #          unzip android-ndk-r21d-linux-x86_64.zip
 #          cd ..
-
-    - name: Setup ANDROID_NDK_HOME env variable
-      run : |
-        run: echo '::set-env name=ANDROID_NDK_HOME::/usr/local/lib/android/sdk/ndk-bundle/'
-
-        which java
-        java -version
-        which javac
-        echo "JAVA_HOME=$JAVA_HOME"
-        # /usr/lib/jvm/java-8-openjdk-amd64 ?
-
-    - name: Check ANDROID_NDK_HOME env variable
-      run : |
-        run: echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
 
     - name: Install SDL for android via vcpkg
       run: ./tools/android/vcpkg_install_sdl_android.sh

@@ -185,7 +185,8 @@ bool IsMainDockSpaceAlreadySplit(ImGuiID mainDockspaceId)
 
 void ApplyDockLayout(DockingParams& dockingParams)
 {
-    if (!dockingParams.wasDockLayoutApplied)
+    bool isFirstFrame = ImGui::GetFrameCount() <= 1;
+    if (!dockingParams.wasDockLayoutApplied && !isFirstFrame)
     {
         ImGuiID mainDockspaceId = ImGui::GetID("MainDockSpace");
         if (dockingParams.resetUserDockLayout)

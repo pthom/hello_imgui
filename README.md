@@ -397,7 +397,7 @@ export JAVA_HOME=/path/to/jdk8
 
 For example (MacOS):
 ````bash
-xport ANDROID_NDK_HOME=/Users/Me/Library/Android/sdk/ndk-bundle
+export ANDROID_NDK_HOME=/Users/Me/Library/Android/sdk/ndk-bundle
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
 ````
 
@@ -415,7 +415,7 @@ Note: see the [vcpkg doc about android](https://github.com/microsoft/vcpkg/blob/
 
 ### Run cmake with the android toolchain
 
-[tools/android/cmake_arm64-android.sh](tools/android/cmake_arm64-android.sh) will create a folder "build_arm64-android" and run cmake with the correct toolchains (vcpkg + android).
+[tools/android/cmake_arm64-android.sh](tools/android/cmake_arm64-android.sh) will create a folder "build_arm64-android" and run cmake with the correct toolchains for vcpkg and android (see also [tools/android/_impl_cmake_android.sh](tools/android/_impl_cmake_android.sh)).
 
 ````bash
 ./tools/android/cmake_arm64-android.sh
@@ -425,6 +425,8 @@ You can also create a build for arm-android with:
 ````bash
 ./tools/android/cmake_arm-android.sh
 ````
+
+
 
 ### Build for Android
 

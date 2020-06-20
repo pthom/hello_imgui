@@ -161,6 +161,12 @@ make -j4
 
 If you intend to use your own SDL installation, simply remove the argument "-DCMAKE_TOOLCHAIN_FILE".
 
+#### Warning: main() signature with SDL
+
+
+@import "src/hello_imgui/hello_imgui.h" {line_begin=32 line_end=38 code_block=false}
+
+
 ### Backend with with Glfw3 + OpenGL3
 
 Follow the instructiosn for SDL2, but replace HELLOIMGUI_USE_SDL_OPENGL3 by HELLOIMGUI_USE_GLFW_OPENGL3.

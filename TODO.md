@@ -4,9 +4,8 @@
 * [ ] Build android
 
 ## Windows
-* [ ] Test build
-* [ ] .bat scripts
-
+* [X] Test build
+* [X] .py multiplatform script
 
 ## Android
 

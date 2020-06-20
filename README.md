@@ -44,6 +44,7 @@ __Table of contents__
     * [Select your backend](#select-your-backend)
     * [Install Glfw3 and Sdl2 via vcpkg](#install-glfw3-and-sdl2-via-vcpkg)
     * [Backend with SDL2 + OpenGL3](#backend-with-sdl2--opengl3)
+      * [Warning: main() signature with SDL](#warning-main-signature-with-sdl)
     * [Backend with with Glfw3 + OpenGL3](#backend-with-with-glfw3--opengl3)
     * [Backend with Qt](#backend-with-qt)
   * [Build instructions for iOS](#build-instructions-for-ios)
@@ -194,6 +195,17 @@ make -j4
 ````
 
 If you intend to use your own SDL installation, simply remove the argument "-DCMAKE_TOOLCHAIN_FILE".
+
+#### Warning: main() signature with SDL
+
+
+Warning for SDL apps under iOS:
+
+SDL uses a dirty hack in order to _replace your main() function by its own main() function_, which will then call your own main !
+
+Please make sure that the signature of your main() function is *exactly* `int main(int argc, char **argv)` and that your main() function returns an int.
+
+
 
 ### Backend with with Glfw3 + OpenGL3
 

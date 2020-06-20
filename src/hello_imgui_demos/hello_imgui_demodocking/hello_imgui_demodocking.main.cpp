@@ -168,5 +168,6 @@ int main(int, char **)
 
     // Then, we run the app
     HelloImGui::Run(runnerParams);
+    return 0;
 }
 

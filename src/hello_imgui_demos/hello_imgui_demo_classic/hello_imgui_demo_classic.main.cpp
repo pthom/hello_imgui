@@ -55,4 +55,5 @@ int main(int , char *[]) {
         }
     };
     HelloImGui::Run(params);
+    return 0;
 }

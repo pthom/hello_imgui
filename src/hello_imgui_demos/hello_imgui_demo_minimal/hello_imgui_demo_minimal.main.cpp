@@ -8,4 +8,5 @@ int main(int, char *[]) {
         ImGui::InputInt( ICON_FA_FILE_CODE " Cmake lines", &nb_cmake);
     };
     HelloImGui::Run(showGui, {320.f, 120.f}, "Hello, Dear ImGui!");
+    return 0;
 }

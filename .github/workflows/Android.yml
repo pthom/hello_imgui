@@ -1,11 +1,11 @@
-name: Ubuntu
+name: Android
 
 on:
   push:
   pull_request:
 
 jobs:
-  build_ubuntu:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -13,23 +13,40 @@ jobs:
       run: git submodule update --init --recursive
 
     - name: Install needed libraries
-      run: sudo apt-get install -y libxrandr-dev xorg-dev libxinerama-dev
-    - name: Install sdl and glfw via vcpkg
-      run: python tools/vcpkg_install_third_parties.py
+      run: sudo apt-get install -y openjdk-8-jdk-headless
 
-    - name: Configure
+    - name: Download Android NDK
       run: |
-          mkdir build
-          cd build
-          cmake \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
-                -DHELLOIMGUI_USE_SDL_OPENGL3=ON  \
-                -DHELLOIMGUI_USE_GLFW_OPENGL3=ON \
-                -DHELLOIMGUI_USE_GLAD=ON         \
-                -DHELLOIMGUI_BUILD_DOCS=ON       \
-                ..
-    - name: Build
-      working-directory: build
-      run: |
-          make
+          mkdir toolchains
+          cd toolchains
+          wget https://dl.google.com/android/repository/android-ndk-r21d-linux-x86_64.zip
+          unzip android-ndk-r21d-linux-x86_64.zip
+          cd ..
+
+    - name: Setup env variables
+      run : |
+          export ANDROID_NDK_HOME=$(pwd)/toolchains/android-ndk-r21d
+          echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
+          ls $ANDROID_NDK_HOME
+
+          which java
+          java -version
+          which javac
+          echo "JAVA_HOME=$JAVA_HOME"
+
+#    - name: Configure
+#      run: |
+#          mkdir build
+#          cd build
+#          cmake \
+#                -DCMAKE_BUILD_TYPE=Release \
+#                -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+#                -DHELLOIMGUI_USE_SDL_OPENGL3=ON  \
+#                -DHELLOIMGUI_USE_GLFW_OPENGL3=ON \
+#                -DHELLOIMGUI_USE_GLAD=ON         \
+#                -DHELLOIMGUI_BUILD_DOCS=ON       \
+#                ..
+#    - name: Build
+#      working-directory: build
+#      run: |
+#          make

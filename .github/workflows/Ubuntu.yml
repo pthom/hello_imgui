@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  build_ubuntu:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master

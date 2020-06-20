@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  build_ios_simulator:
+  build:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@master

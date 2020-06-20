@@ -45,9 +45,6 @@ jobs:
 
     - name: Configure & build arm64-android
       run: |
-          pwd
-          echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
-          echo "JAVA_HOME=$JAVA_HOME"
           ./tools/android/cmake_arm64-android.sh
           cd build_arm64-android
           make -j 4

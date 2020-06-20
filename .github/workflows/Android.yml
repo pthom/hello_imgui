@@ -15,17 +15,18 @@ jobs:
     - name: Install needed libraries
       run: sudo apt-get install -y openjdk-8-jdk-headless
 
-    - name: Download Android NDK
-      run: |
-          mkdir toolchains
-          cd toolchains
-          wget https://dl.google.com/android/repository/android-ndk-r21d-linux-x86_64.zip
-          unzip android-ndk-r21d-linux-x86_64.zip
-          cd ..
+#    Disabled, there is already a sdk at /usr/local/lib/android
+#    - name: Download Android NDK
+#      run: |
+#          mkdir toolchains
+#          cd toolchains
+#          wget https://dl.google.com/android/repository/android-ndk-r21d-linux-x86_64.zip
+#          unzip android-ndk-r21d-linux-x86_64.zip
+#          cd ..
 
     - name: Setup ANDROID_NDK_HOME and JAVA_HOME env variables
       run : |
-        export ANDROID_NDK_HOME=$(pwd)/toolchains/android-ndk-r21d
+        export ANDROID_NDK_HOME=/usr/local/lib/android/sdk/ndk-bundle/
         echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
 
         which java
@@ -37,19 +38,15 @@ jobs:
     - name: Install SDL for android via vcpkg
       run: ./tools/android/vcpkg_install_sdl_android.sh
 
-    - name: Setup interactive tmate session
-      uses: mxschmitt/action-tmate@v2
+#    - name: Setup interactive tmate session
+#      uses: mxschmitt/action-tmate@v2
 
-#    - name: Configure & build arm64-android
-#      run: |
-#          pwd
-#          ./tools/android/cmake_arm64-android.sh
-#          cd build_arm64-android
-#          make -j 4
-#
-#    - name: Configure & build arm-android
-#      run: |
-#        pwd
-#        ./tools/android/cmake_arm-android.sh
-#        cd build_arm-android
-#        make -j 4
+    - name: Configure & build arm64-android
+      run: |
+          pwd
+          echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
+          echo "JAVA_HOME=$JAVA_HOME"
+          ./tools/android/cmake_arm64-android.sh
+          cd build_arm64-android
+          make -j 4
+          cd ..

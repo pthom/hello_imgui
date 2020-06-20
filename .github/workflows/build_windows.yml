@@ -27,8 +27,8 @@ jobs:
                -DHELLOIMGUI_USE_GLAD=ON         ^
                -DHELLOIMGUI_BUILD_DOCS=ON       ^
                ..
-
+               
     - name: Build
-     working-directory: build
-     run: |
+      working-directory: build
+      run: |
          cmake --build .

@@ -1,24 +1,32 @@
 ## Doc
-* [ ] Demo emscripten
-* [ ] Doc for new projet / add hello-imgui as submodule
-     Factorize embed files
+* [X] Demo emscripten
+* [X] Doc for new projet / add hello-imgui as submodule
 * [ ] Build android
+
+## Windows
+* [ ] Test build
+* [ ] .bat scripts
+
+
+## Android
+
 
 ## Features
 * [N] Font size according to platform (mobile)
 * [ ] Docking / External windows ?
+* [ ] Factorize embed files
      
 ## iOS
-* [ ] Doc / Build (+script ?)
-* [ ] Doc / Custom icon and Info.plist (+ create custom icons !)
-* [ ] Doc / callback suspend
+* [X] Doc / Build (+script ?)
+* [X] Doc / Custom icon and Info.plist (+ create custom icons !)
+* [X] Doc / callback suspend
 
 ## Emscripten
- * [ ] Faire un hello_imgui_emscripten.cmake
- * [ ] Doc: 
- * [ ] Link demo online!
+ * [X] Faire un hello_imgui_emscripten.cmake
+ * [X] Doc
+ * [X] CI
+ * [X] Link demo online!
  
-
 ## Test run + CI
 * [ ] Win
 * [ ] Android    

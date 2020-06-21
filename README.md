@@ -316,7 +316,7 @@ The example [src/hello_imgui_demos/hello_imgui_demodocking](src/hello_imgui_demo
 
 By default, the iPhone apps will embed the fonts provided in the [hello_imgui_assets](hello_imgui_assets) folder.
 
-[hello_imgui_cmake/ios/hello_imgui_ios.cmake](hello_imgui_cmake/ios/hello_imgui_ios.cmake) provides a function named `hello_imgui_ios_bundle_assets` which helps embedding more assets.
+[hello_imgui_cmake/ios/hello_imgui_ios.cmake](hello_imgui_cmake/ios/hello_imgui_ios.cmake) provides a function named `hello_imgui_bundle_assets` which helps embedding more assets.
  
 ----
 

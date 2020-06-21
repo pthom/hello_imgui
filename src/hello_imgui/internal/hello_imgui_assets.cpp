@@ -3,6 +3,7 @@
 #ifdef IOS
 #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
 #endif
+#include "hello_imgui/internal/whereami/whereami_cpp.h"
 
 namespace HelloImGui
 {
@@ -17,7 +18,8 @@ std::string assetFileFullPath(const std::string& assetFilename)
     std::string path = std::string("/") + assetFilename;
         return path;
 #else
-    std::string path = std::string(HELLOIMGUI_ASSETSDIR) + "/" + assetFilename;
+    std::string assetsFolder = wai_getExecutableFolder_string() + "/assets/";
+    std::string path = assetsFolder + assetFilename;
     return path;
 #endif
 }

@@ -3,6 +3,7 @@
 #include "hello_imgui/hello_imgui.h"
 #include "imgui.h"
 #include <string>
+#include <filesystem>
 
 #ifdef IOS
 #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
@@ -11,6 +12,9 @@ namespace HelloImGui
 {
 ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize)
 {
+    if (!std::filesystem::exists(fontFilename.c_str()))
+        HIMG_THROW_STRING(std::string("LoadFontTTF, file not found: ") + fontFilename);
+
     ImFont * font = ImGui::GetIO().Fonts->AddFontFromFileTTF(fontFilename.c_str(), fontSize);
     if (font == nullptr) {
         HIMG_THROW_STRING(std::string("Cannot load ") + fontFilename);

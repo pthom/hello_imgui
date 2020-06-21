@@ -1,10 +1,4 @@
-function(hello_imgui_emscripten_bundle_assets app_name assets_folder)
-    target_link_options(
-        ${app_name} 
-        PRIVATE
-        "SHELL:--preload-file ${assets_folder}@/"
-    )
-endfunction()
+if (EMSCRIPTEN)
 
 function(hello_imgui_emscripten_add_shell_file app_name)
     target_link_options(
@@ -32,17 +26,12 @@ endfunction()
 #     )
 # endfunction()
 
-function(hello_imgui_emscripten_add_local_assets app_name)
-    if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/assets)
-        message("hello_imgui_emscripten_add_local_assets: ${app_name} found local assets")
-        hello_imgui_emscripten_bundle_assets(${app_name} ${CMAKE_CURRENT_SOURCE_DIR}/assets)
-    endif()
-endfunction()
 
 
-function(hello_imgui_emscripten_adapt app_name)
-    hello_imgui_emscripten_bundle_assets(${app_name} ${HELLOIMGUI_ASSETSDIR})
+function(hello_imgui_platform_customization app_name)
+    hello_imgui_bundle_assets(${app_name} ${HELLOIMGUI_ASSETSDIR})
     hello_imgui_emscripten_add_shell_file(${app_name})
-    hello_imgui_emscripten_add_local_assets(${app_name})
     # hello_imgui_emscripten_target_compile_options(${app_name})
 endfunction()
+
+endif (EMSCRIPTEN)

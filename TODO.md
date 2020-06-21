@@ -7,14 +7,13 @@
 
 ## Android
 * [ ] cmake adapt (bundle assets, manifest, etc)
-    Voir SDL examples
-    Voir https://github.com/LaurentGomila/qt-android-cmake.git
+    See SDL examples
+    See https://github.com/LaurentGomila/qt-android-cmake.git
 
 ## CMake Mobile
 * [ ] Factorize embed files
-* [ ] Add customizable assets
-    Demo with font
-
+* [X] Add customizable assets
+* [ ] Doc
 
 ## Features
 * [ ] Docking / External windows ?

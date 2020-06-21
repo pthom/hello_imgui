@@ -1,3 +1,7 @@
+if (IOS)
+
+# Bundle assets / iOS version
+
 function(hello_imgui_ios_set_dev_team app_name)
     set_target_properties( ${app_name} PROPERTIES
         XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM}
@@ -22,23 +26,6 @@ function(hello_imgui_ios_check_development_team)
 endfunction()
 
 
-# Bundle assets
-function(hello_imgui_ios_bundle_assets app_name assets_folder)
-    FILE(GLOB_RECURSE assets ${assets_folder}/*.*)
-    target_sources(${app_name} PRIVATE ${assets})
-    foreach(asset ${assets})
-        string(REPLACE ${assets_folder}/ "" asset_relative ${asset})
-        get_filename_component(asset_dir ${asset_relative} DIRECTORY)
-        SET_SOURCE_FILES_PROPERTIES (
-            ${app_name}
-            ${asset}
-            PROPERTIES
-            MACOSX_PACKAGE_LOCATION Resources/${asset_dir}
-        )
-    endforeach()
-endfunction()
-
-
 function(hello_imgui_ios_add_icons app_name)
     if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/ios/icons)
         message("hello_imgui_ios_add_icons: ${app_name} found app specific icons")
@@ -46,7 +33,7 @@ function(hello_imgui_ios_add_icons app_name)
     else()
         set(icons_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/ios/icons)
     endif()
-    hello_imgui_ios_bundle_assets(${app_name} ${icons_assets_folder})
+    hello_imgui_bundle_assets(${app_name} ${icons_assets_folder})
 endfunction()
 
 
@@ -65,15 +52,13 @@ function(hello_imgui_ios_add_info_plist app_name plist_type)
 endfunction()
 
 
-function(hello_imgui_ios_adapt app_name)
+function(hello_imgui_platform_customization app_name)
     hello_imgui_ios_check_development_team()
     hello_imgui_ios_set_dev_team(${app_name})
     if (HELLOIMGUI_USE_SDL_OPENGL3)
         hello_imgui_ios_add_info_plist(${app_name} sdl)
     endif()
-    if (IOS)
-        set(assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_assets)
-        hello_imgui_ios_bundle_assets(${app_name} ${assets_folder})
-        hello_imgui_ios_add_icons(${app_name})
-    endif()
+    hello_imgui_ios_add_icons(${app_name})
 endfunction()
+
+endif(IOS)

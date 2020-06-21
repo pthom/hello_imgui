@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 cmake_policy(VERSION 3.15)
 
 project(HelloImGui LANGUAGES C CXX)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 #
 # Available backends: you need to select at least on of them!
@@ -31,7 +31,6 @@ else()
 endif()
 
 set(HELLOIMGUI_BASEPATH ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Hello imgui base path" FORCE)
-set(HELLOIMGUI_ASSETSDIR ${CMAKE_CURRENT_LIST_DIR}/hello_imgui_assets CACHE STRING "Hello imgui assets path" FORCE)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_LIST_DIR}/cmake/")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/")

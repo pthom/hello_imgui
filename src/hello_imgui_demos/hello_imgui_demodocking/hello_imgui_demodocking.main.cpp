@@ -21,8 +21,11 @@ struct AppState
     RocketState rocketState;
 };
 
-// MyLoadFonts: demonstrate how to load additional fonts
-// and how to use local assets that are embedded automatically
+// MyLoadFonts: demonstrate
+// * how to load additional fonts
+// * how to use assets from the local assets/ folder
+//   Files in the application assets/ folder are embedded automatically
+//   (on iOS/Android/Emscripten)
 ImFont * gAkronimFont = nullptr;
 void MyLoadFonts()
 {
@@ -32,7 +35,6 @@ void MyLoadFonts()
     // Then we load a second font from
     // Since this font is in a local assets/ folder, it was embedded automatically
     std::string fontFilename = HelloImGui::assetFileFullPath("fonts/Akronim-Regular.ttf");
-    fontFilename = "/Users/pascal/dvp/OpenSource/ImGuiWork/hello_imgui/src/hello_imgui_demos/hello_imgui_demodocking/assets/fonts/Akronim-Regular.ttf";
     gAkronimFont = HelloImGui::LoadFontTTF_WithFontAwesomeIcons(fontFilename, 40.f);
 }
 
@@ -40,9 +42,10 @@ void MyLoadFonts()
 // CommandGui: the widgets on the left panel
 void CommandGui(AppState & state, HelloImGui::Widgets::Logger & logger)
 {
-    ImGui::TextWrapped("The font below was loaded from assets embedded locally by this app");
+    ImGui::TextWrapped("The font below was loaded from the application assets folder"\
+        "(those files are embedded automatically).");
     ImGui::PushFont(gAkronimFont);
-    ImGui::Text("Docking " ICON_FA_SMILE);
+    ImGui::TextWrapped("Hello, Dear ImGui! " ICON_FA_SMILE);
     ImGui::PopFont();
     ImGui::Separator();
 

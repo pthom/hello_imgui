@@ -1,7 +1,5 @@
 if (IOS)
 
-# Bundle assets / iOS version
-
 function(hello_imgui_ios_set_dev_team app_name)
     set_target_properties( ${app_name} PROPERTIES
         XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM}

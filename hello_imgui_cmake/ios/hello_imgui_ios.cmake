@@ -40,14 +40,28 @@ endfunction()
 function(hello_imgui_ios_add_info_plist app_name plist_type)
     if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/ios/Info.plist)
         message("hello_imgui_ios_add_info_plist: ${app_name} found app specific Info.plist")
-        set(info_plist ${CMAKE_CURRENT_SOURCE_DIR}/ios/Info.plist)
+        set(info_plist_in ${CMAKE_CURRENT_SOURCE_DIR}/ios/Info.plist)
     else()
+        message("2. HELLO_IMGUI_BUNDLE_IDENTIFIER is ${HELLO_IMGUI_BUNDLE_IDENTIFIER}")
         set(info_plist_dir_all ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/ios/info_plist)
-        set(info_plist ${info_plist_dir_all}/${plist_type}/Info.plist)
+        set(info_plist_in ${info_plist_dir_all}/${plist_type}/Info.plist.in)
     endif()
+    set(info_plist_configured ${CMAKE_CURRENT_BINARY_DIR}/Info.plist)
+
+    # Clean CFBundleIdentifier (remove unwanted characters)
+    # See https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/TP40009249-SW1
+    # The string should be in reverse DNS format using only the Roman alphabet
+    # in upper and lower case (A–Z, a–z), the dot (“.”), and the hyphen (“-”)
+    string(REGEX REPLACE
+        "[^a-zA-Z.-]" "-"
+        HELLO_IMGUI_BUNDLE_IDENTIFIER
+        ${HELLO_IMGUI_BUNDLE_IDENTIFIER}
+        )
+
+    configure_file(${info_plist_in} ${info_plist_configured})
     set_target_properties(${app_name} PROPERTIES
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_INFO_PLIST ${info_plist}
+        MACOSX_BUNDLE_INFO_PLIST ${info_plist_configured}
         )
 endfunction()
 
@@ -55,9 +69,9 @@ endfunction()
 function(hello_imgui_platform_customization app_name)
     hello_imgui_ios_check_development_team()
     hello_imgui_ios_set_dev_team(${app_name})
-    if (HELLOIMGUI_USE_SDL_OPENGL3)
+    #if (HELLOIMGUI_USE_SDL_OPENGL3)
         hello_imgui_ios_add_info_plist(${app_name} sdl)
-    endif()
+    #endif()
     hello_imgui_ios_add_icons(${app_name})
 endfunction()
 

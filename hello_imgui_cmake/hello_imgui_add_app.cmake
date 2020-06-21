@@ -11,6 +11,31 @@ function(hello_imgui_emscripten_add_local_assets app_name)
     endif()
 endfunction()
 
+function(set_bundle_variables_defaults app_name)
+    if (NOT DEFINED HELLO_IMGUI_BUNDLE_IDENTIFIER)
+        set(HELLO_IMGUI_BUNDLE_IDENTIFIER ${app_name}.helloimgui.com PARENT_SCOPE)
+    endif()
+    if (NOT DEFINED HELLO_IMGUI_BUNDLE_DISPLAY_NAME)
+        set(HELLO_IMGUI_BUNDLE_DISPLAY_NAME ${app_name} PARENT_SCOPE)
+    endif()
+    if (NOT DEFINED HELLO_IMGUI_BUNDLE_NAME)
+        set(HELLO_IMGUI_BUNDLE_NAME ${app_name} PARENT_SCOPE)
+    endif()
+    if (NOT DEFINED HELLO_IMGUI_BUNDLE_COPYRIGHT)
+        set(HELLO_IMGUI_BUNDLE_COPYRIGHT "" PARENT_SCOPE)
+    endif()
+    if (NOT DEFINED HELLO_IMGUI_BUNDLE_EXECUTABLE)
+        set(HELLO_IMGUI_BUNDLE_EXECUTABLE ${app_name} PARENT_SCOPE)
+    endif()
+    if (NOT DEFINED HELLO_IMGUI_BUNDLE_VERSION)
+        set(HELLO_IMGUI_BUNDLE_VERSION 0.0.1 PARENT_SCOPE)
+    endif()
+    if (NOT DEFINED HELLO_IMGUI_BUNDLE_ICON_FILE)
+        set(HELLO_IMGUI_BUNDLE_ICON_FILE "" PARENT_SCOPE)
+    endif()
+endfunction()
+
+
 #
 # hello_imgui_add_app is a helper function, similar to cmake's "add_executable"
 #
@@ -30,6 +55,8 @@ function(hello_imgui_add_app)
     else()
         add_executable(${app_name} ${app_sources})
     endif()
+
+    set_bundle_variables_defaults(${app_name})
 
     set(common_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_assets)
     hello_imgui_bundle_assets(${app_name} ${common_assets_folder})

@@ -10,7 +10,7 @@
 namespace HelloImGui
 {
 /**
-@@md
+@@md#DockingExample
 **Docking params: Example usage**
 
 ````cpp
@@ -58,7 +58,7 @@ A DockSpaceName is a simple string that identifies a zone on the screen where wi
 using DockSpaceName = std::string;
 
 /**
-@@md
+@@md#DockingSplit
  **DockingSplit** is a struct that defines the way the docking splits should be applied on the screen
  in order to create new Dock Spaces. _DockingParams_ contains a _vector[DockingSplit]_,
  in order to partition the screen at your will.
@@ -86,7 +86,7 @@ struct DockingSplit
 };
 
 /**
-@@md
+@@md#DockableWindow
  **DockableWindow** is a struct that represents a window that can be docked.
 
 _Members:_
@@ -123,7 +123,7 @@ struct DockableWindow
 };
 
 /**
-@@md
+@@md#DockingParams
  **DockingParams** contains all the settings concerning the docking, 
  together _with the Gui functions for the docked windows_.
 

@@ -2,6 +2,7 @@
 
 * [API](#api)
   * [HelloImGui::Run()](#helloimguirun)
+  * [Applications assets](#applications-assets)
   * [Runner params](#runner-params)
       * [Diagram](#diagram)
       * [RunnerParams](#runnerparams)
@@ -35,6 +36,25 @@ by runnerParams.
 * `HelloImGui::Run(guiFunction, windowSize, windowTitle)`: simple signature 
 in order to start a simple application with ease.
 
+## Applications assets
+
+See [hello_imgui.h](hello_imgui.h).
+
+`std::string assetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
+
+For example, if you have the following project structure:
+````
+my_app/
+├── CMakeLists.txt        # Your app's CMakeLists
+├── assets/               # Its assets: for mobile devices and emscripten
+│   └── fonts/            # they are embeddd automatically by hello_imgui_add_app.cmake
+│       └── my_font.ttf
+├── my_app.main.cpp       # Its source code
+````
+then you can call `assetFileFullPath("fonts/my_font.ttf")`
+
+* Under iOS it will give a path in the app bundle (/private/XXX/....)
+* Under emscripten, it will be stored in the virtual filesystem at "/"
 
 ## Runner params
 
@@ -74,6 +94,7 @@ See [runner_callbacks.h](runner_callbacks.h).
 
 #### RunnerCallbacks
 
+ **RunnerCallbacks** is a struct that contains the callbacks that are called by the application
 
  _Members_
 
@@ -130,8 +151,10 @@ using VoidFunction = std::function<void(void)>
 using AnyEventCallback = std::function<bool(void * backendEvent)>
 ````
 
+
 #### MobileCallbacks
 
+**MobileCallbacks** is a struct that contains callbacks that are called by the application
  when running under "Android, iOS and WinRT".
  These events are specific to mobile and embedded devices that have different requirements
  than your usual desktop application. These events must be handled quickly,
@@ -147,7 +170,6 @@ using AnyEventCallback = std::function<bool(void * backendEvent)>
 
  Note: 'OnPause' and 'OnResume' are called twice consecutively under iOS (before and after entering background
  or foreground).
- @@md
 
 ----
 
@@ -167,8 +189,6 @@ Members:
     _Note: on a mobile device, the application will always be full screen._
 * `windowPosition`: _ImVec2, default=(-11000, -1)_. Position of the window if x >= -1000,
    else let the OS decide
-@@md
-**/
 
 ----
 
@@ -227,6 +247,8 @@ In order to change the application window settings, change the _AppWindowsParams
 See [docking_params.h](docking_params.h).
 
 #### Docking Params: Example usage
+
+**Docking params: Example usage**
 
 ````cpp
 HelloImGui::RunnerParams runnerParams;
@@ -308,6 +330,3 @@ _Members:_
   List of the dockable windows, together with their Gui code
 * `resetUserDockLayout`: _bool, default=true_.
   Reset user layout at application startup
-
-
-

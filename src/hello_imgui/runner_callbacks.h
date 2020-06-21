@@ -5,7 +5,7 @@
 namespace HelloImGui
 {
 /**
-@@md
+@@md#VoidFunction_AnyEventCallback
 **VoidFunctionPointer** can hold any void(void) function.
 ````cpp
 using VoidFunction = std::function<void(void)>
@@ -23,7 +23,7 @@ using VoidFunction = std::function<void(void)>;
 using AnyEventCallback = std::function<bool(void * backendEvent)>;
 
 /**
-@@md
+@@md#MobileCallbacks
 **MobileCallbacks** is a struct that contains callbacks that are called by the application
  when running under "Android, iOS and WinRT".
  These events are specific to mobile and embedded devices that have different requirements
@@ -51,7 +51,7 @@ struct MobileCallbacks
 };
 
 /**
- @@md
+ @@md#RunnerCallbacks
  **RunnerCallbacks** is a struct that contains the callbacks that are called by the application
 
  _Members_

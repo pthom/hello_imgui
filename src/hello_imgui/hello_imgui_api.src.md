@@ -6,7 +6,13 @@
 
 See [hello_imgui.h](hello_imgui.h).
 
-@import "hello_imgui.h" {line_begin=7 line_end=18 code_block=false}
+@import "hello_imgui.h" {md_id=HelloImGui::Run}
+
+## Applications assets
+
+See [hello_imgui.h](hello_imgui.h).
+
+@import "hello_imgui_assets.h" {md_id=assets}
 
 ## Runner params
 
@@ -21,7 +27,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 
 #### RunnerParams
 
-@import "runner_params.h" {line_begin=11 line_end=27 code_block=false}
+@import "runner_params.h" {md_id=RunnerParams}
 
 ----
 
@@ -31,13 +37,13 @@ See [runner_callbacks.h](runner_callbacks.h).
 
 #### RunnerCallbacks
 
-@import "runner_callbacks.h" {line_begin=55 line_end=99 code_block=false}
+@import "runner_callbacks.h" {md_id=RunnerCallbacks}
 
-@import "runner_callbacks.h" {line_begin=8 line_end=18 code_block=false}
+@import "runner_callbacks.h" {md_id=VoidFunction_AnyEventCallback}
 
 #### MobileCallbacks
 
-@import "runner_callbacks.h" {line_begin=27 line_end=43 code_block=false}
+@import "runner_callbacks.h" {md_id=MobileCallbacks}
 
 ----
 
@@ -45,7 +51,7 @@ See [runner_callbacks.h](runner_callbacks.h).
 
 See [app_window_params.h](app_window_params.h).
 
-@import "app_window_params.h" {line_begin=8 line_end=22 code_block=false}
+@import "app_window_params.h" {md_id=AppWindowParams}
 
 ----
 
@@ -55,11 +61,11 @@ See [imgui_window_params.h](imgui_window_params.h).
 
 #### ImGuiWindowParams
 
-@import "imgui_window_params.h" {line_begin=25 line_end=57 code_block=false}
+@import "imgui_window_params.h" {md_id=ImGuiWindowParams}
 
 #### Default window types
 
-@import "imgui_window_params.h" {line_begin=8 line_end=14 code_block=false}
+@import "imgui_window_params.h" {md_id=DefaultImGuiWindowType}
 
 ----
 
@@ -69,19 +75,16 @@ See [docking_params.h](docking_params.h).
 
 #### Docking Params: Example usage
 
-@import "docking_params.h" {line_begin=15 line_end=49 code_block=false}
+@import "docking_params.h" {md_id=DockingExample}
 
 #### Docking Splits
 
-@import "docking_params.h" {line_begin=61 line_end=77 code_block=false}
+@import "docking_params.h" {md_id=DockingSplit}
 
 #### Dockable window
 
-@import "docking_params.h" {line_begin=89 line_end=99 code_block=false}
+@import "docking_params.h" {md_id=DockableWindow}
 
 #### Docking Params
 
-@import "docking_params.h" {line_begin=126 line_end=137 code_block=false}
-
-
-
+@import "docking_params.h" {md_id=DockingParams}

@@ -5,7 +5,7 @@
 namespace HelloImGui
 {
 /**
-@@md
+@@md#AppWindowParams
 __AppWindowParams__ is a struct that defines the application window display params.
 
 Members:

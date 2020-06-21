@@ -5,7 +5,7 @@
 namespace HelloImGui
 {
 /**
-@@md
+@@md#DefaultImGuiWindowType
  __DefaultImGuiWindowType__ is an enum class that defines whether or not a full screen background window is provided.
 
  Values:
@@ -22,7 +22,7 @@ enum class DefaultImGuiWindowType
 };
 
 /**
-@@md
+@@md#ImGuiWindowParams
 __ImGuiWindowParams__ is a struct that defines the ImGui inner windows params
 These settings affect the imgui inner windows inside the application window.
 In order to change the application window settings, change the _AppWindowsParams_

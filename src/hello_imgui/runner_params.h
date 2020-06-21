@@ -8,7 +8,7 @@ namespace HelloImGui
 {
 
 /**
- @@md
+ @@md#RunnerParams
  **RunnerParams** is a struct that contains all the settings and callbacks needed to run an application.
 
  Members:

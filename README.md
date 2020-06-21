@@ -208,10 +208,12 @@ If you intend to use your own SDL installation, simply remove the argument "-DCM
 
 Warning for SDL apps under iOS:
 
-SDL uses a dirty hack in order to _replace your main() function by its own main() function_, which will then call your own main !
+SDL uses a dirty hack in order to _replace your main() function by its own main() function_,
+which will then call your own main !
 
-Please make sure that the signature of your main() function is *exactly* `int main(int argc, char **argv)` and that your main() function returns an int.
-
+Please make sure that the signature of your main() function is *exactly*
+    `int main(int argc, char **argv)`
+and that your main() function returns an int.
 
 ### Backend with with Glfw3 + OpenGL3
 

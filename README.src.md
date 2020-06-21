@@ -166,7 +166,7 @@ If you intend to use your own SDL installation, simply remove the argument "-DCM
 
 #### Warning: main() signature with SDL
 
-@import "src/hello_imgui/hello_imgui.h" {line_begin=32 line_end=38 code_block=false}
+@import "src/hello_imgui/hello_imgui.h" {md_id=SDLMain}
 
 ### Backend with with Glfw3 + OpenGL3
 

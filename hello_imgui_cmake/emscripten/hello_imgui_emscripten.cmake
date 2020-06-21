@@ -29,7 +29,6 @@ endfunction()
 
 
 function(hello_imgui_platform_customization app_name)
-    hello_imgui_bundle_assets(${app_name} ${HELLOIMGUI_ASSETSDIR})
     hello_imgui_emscripten_add_shell_file(${app_name})
     # hello_imgui_emscripten_target_compile_options(${app_name})
 endfunction()

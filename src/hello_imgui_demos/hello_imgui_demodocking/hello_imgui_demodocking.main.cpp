@@ -21,9 +21,31 @@ struct AppState
     RocketState rocketState;
 };
 
+// MyLoadFonts: demonstrate how to load additional fonts
+// and how to use local assets that are embedded automatically
+ImFont * gAkronimFont = nullptr;
+void MyLoadFonts()
+{
+    // First, we load the default fonts (the font that was loaded first is the default font)
+    HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons();
+
+    // Then we load a second font from
+    // Since this font is in a local assets/ folder, it was embedded automatically
+    std::string fontFilename = HelloImGui::assetFileFullPath("fonts/Akronim-Regular.ttf");
+    fontFilename = "/Users/pascal/dvp/OpenSource/ImGuiWork/hello_imgui/src/hello_imgui_demos/hello_imgui_demodocking/assets/fonts/Akronim-Regular.ttf";
+    gAkronimFont = HelloImGui::LoadFontTTF_WithFontAwesomeIcons(fontFilename, 40.f);
+}
+
+
 // CommandGui: the widgets on the left panel
 void CommandGui(AppState & state, HelloImGui::Widgets::Logger & logger)
 {
+    ImGui::TextWrapped("The font below was loaded from assets embedded locally by this app");
+    ImGui::PushFont(gAkronimFont);
+    ImGui::Text("Docking " ICON_FA_SMILE);
+    ImGui::PopFont();
+    ImGui::Separator();
+
     // Edit 1 float using a slider from 0.0f to 1.0f
     if (ImGui::SliderFloat("float", &state.f, 0.0f, 1.0f))
         logger.warning("state.f was changed to %f", state.f);
@@ -36,28 +58,32 @@ void CommandGui(AppState & state, HelloImGui::Widgets::Logger & logger)
     ImGui::SameLine();
     ImGui::Text("counter = %d", state.counter);
 
-    if (state.rocketState == AppState::RocketState::Init)
-        if (ImGui::Button(ICON_FA_ROCKET " Launch rocket")) {
-            state.rocketState = AppState::RocketState::Preparing;
-            logger.warning("Rocket is being prepared");
-        }
-    if (state.rocketState == AppState::RocketState::Preparing)
+    switch(state.rocketState)
     {
-        ImGui::Text(ICON_FA_ROCKET " Please Wait");
-        state.rocket_progress += 0.003f;
-        if (state.rocket_progress >= 1.f)
-        {
-            state.rocketState = AppState::RocketState::Launched;
-            logger.warning("Rocket was launched!");
-        }
-    }
-    if (state.rocketState == AppState::RocketState::Launched) {
-        ImGui::Text(ICON_FA_ROCKET " Rocket Launched");
-        if (ImGui::Button("Reset Rocket"))
-        {
-            state.rocketState = AppState::RocketState ::Init;
-            state.rocket_progress = 0.f;
-        }
+        case AppState::RocketState::Init:
+            if (ImGui::Button(ICON_FA_ROCKET " Launch rocket"))
+            {
+                state.rocketState = AppState::RocketState::Preparing;
+                logger.warning("Rocket is being prepared");
+            }
+            break;
+        case AppState::RocketState::Preparing:
+            ImGui::Text(ICON_FA_ROCKET " Please Wait");
+            state.rocket_progress += 0.003f;
+            if (state.rocket_progress >= 1.f)
+            {
+                state.rocketState = AppState::RocketState::Launched;
+                logger.warning("Rocket was launched!");
+            }
+            break;
+        case AppState::RocketState::Launched:
+            ImGui::Text(ICON_FA_ROCKET " Rocket Launched");
+            if (ImGui::Button("Reset Rocket"))
+            {
+                state.rocketState = AppState::RocketState ::Init;
+                state.rocket_progress = 0.f;
+            }
+            break;
     }
 }
 
@@ -71,8 +97,10 @@ void StatusBarGui(const AppState &appState)
     }
 }
 
+
 int main(int, char **)
 {
+
     // Our application state
     AppState appState;
 
@@ -131,6 +159,9 @@ int main(int, char **)
         // It will automatically be placed in "MainDockSpace"
         ImGui::ShowDemoWindow();
     };
+
+    // Custom load fonts
+    runnerParams.callbacks.LoadAdditionalFonts = MyLoadFonts;
 
     // Menu bar: we use the default menu of Hello ImGui,
     // to which we add some more items

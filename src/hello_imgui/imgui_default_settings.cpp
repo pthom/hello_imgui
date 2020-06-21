@@ -1,5 +1,6 @@
 #include "hello_imgui/icons_font_awesome.h"
 #include "hello_imgui/internal/menu_statusbar.h"
+#include "hello_imgui/hello_imgui.h"
 #include "imgui.h"
 #include <string>
 
@@ -8,43 +9,48 @@
 #endif
 namespace HelloImGui
 {
+ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize)
+{
+    ImFont * font = ImGui::GetIO().Fonts->AddFontFromFileTTF(fontFilename.c_str(), fontSize);
+    if (font == nullptr) {
+        HIMG_THROW_STRING(std::string("Cannot load ") + fontFilename);
+    }
+    return font;
+};
+
+ImFont* MergeFontAwesomeToLastFont(float fontSize)
+{
+    static std::string faFile = HelloImGui::assetFileFullPath("fonts/fontawesome-webfont.ttf");
+    static const ImWchar icon_fa_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+    static ImFontConfig faConfig = [] {
+        ImFontConfig config;
+        config.MergeMode = true;
+        return config;
+    }();
+    auto font = ImGui::GetIO().Fonts->AddFontFromFileTTF(faFile.c_str(), fontSize, &faConfig, icon_fa_ranges);
+    if (font == nullptr)
+        HIMG_THROW_STRING(std::string("Cannot load ") + faFile);
+    return font;
+}
+
+ImFont* LoadFontTTF_WithFontAwesomeIcons(const std::string & fontFilename, float fontSize)
+{
+    ImFont *font = LoadFontTTF(fontFilename, fontSize);
+    font = MergeFontAwesomeToLastFont(fontSize);
+    return font;
+}
+
 namespace ImGuiDefaultSettings
 {
 
-/// Access font files in application bundle or assets/fonts/
-std::string assetFileFullPath(const std::string& assetFilename)
-{
-#if defined(IOS)
-    std::string path = getAppleBundleResourcePath(assetFilename.c_str());
-    return path;
-#elif defined(__EMSCRIPTEN__)
-    std::string path = std::string("/") + assetFilename;
-    return path;
-#else
-    std::string path = std::string(HELLOIMGUI_ASSETSDIR) + "/" + assetFilename;
-    return path;
-#endif
-}
 
-void LoadDefaultFont_WithFontAwesome()
+void LoadDefaultFont_WithFontAwesomeIcons()
 {
-    ImGuiIO& io = ImGui::GetIO();
-    io.Fonts->Clear();
     float fontSize = 14.f;
-
-    //ImFont * font = io.Fonts->AddFontDefault();
-
     std::string fontFilename = assetFileFullPath("fonts/DroidSans.ttf");
-    ImFont * font = io.Fonts->AddFontFromFileTTF(fontFilename.c_str(), fontSize);
-    assert(font != nullptr); (void)font;
-    ImFontConfig config;
-    config.MergeMode = true;
-    const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-
-    fontFilename = assetFileFullPath("fonts/fontawesome-webfont.ttf");
-    font = io.Fonts->AddFontFromFileTTF(fontFilename.c_str(), fontSize, &config, icon_ranges);
-    assert(font != nullptr); (void)font;
-    io.Fonts->Build();
+    ImFont * font = LoadFontTTF(fontFilename, fontSize);
+    (void) font;
+    MergeFontAwesomeToLastFont(fontSize);
 }
 
 void SetupDefaultImGuiConfig()

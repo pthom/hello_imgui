@@ -33,7 +33,9 @@ void AbstractRunner::Setup()
     params.callbacks.SetupImGuiConfig();
     params.callbacks.SetupImGuiStyle();
     Impl_SetupPlatformRendererBindings();
+    ImGui::GetIO().Fonts->Clear();
     params.callbacks.LoadAdditionalFonts();
+    ImGui::GetIO().Fonts->Build();
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
 
     if (params.callbacks.PostInit)

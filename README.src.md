@@ -52,8 +52,8 @@ int main()
 
 [__CMakeLists.txt__](src/hello_imgui_demos/hello_world/CMakeLists.txt):
 ````cmake
-include(${CMAKE_CURRENT_LIST_DIR}/../../hello_imgui/helloimgui_add_app_cmake/helloimgui_add_app.cmake)
-helloimgui_add_app(hello_world hello_world.main.cpp)
+include(hello_imgui_add_app)
+hello_imgui_add_app(hello_world hello_world.main.cpp)
 ````
 
 _Although this app was extremely simple to write, it will run with no additional modifications (including in the cmake code) on iOS, Linux, Mac, Windows and Emscripten, and hopefuly soon Android_

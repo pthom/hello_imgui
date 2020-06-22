@@ -148,4 +148,4 @@ struct DockingParams
     // wasDockLayoutApplied is an internal variable
     bool wasDockLayoutApplied = false;
 };
-}
+} // namespace HelloImGui

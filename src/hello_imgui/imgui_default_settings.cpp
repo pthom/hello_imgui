@@ -7,6 +7,7 @@
 #ifdef IOS
 #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
 #endif
+
 namespace HelloImGui
 {
 ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize)

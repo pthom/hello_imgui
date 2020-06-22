@@ -5,7 +5,7 @@ project(HelloImGui LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 #
-# Available backends: you need to select at least on of them!
+# Available backends: you need to select at least one of them!
 #
 option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
 option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)

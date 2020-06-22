@@ -1,13 +1,6 @@
 if (HELLOIMGUI_USE_QT)
     if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/qtimgui)
-        message(FATAL_ERROR "Please clone qtimgui in external/, like this:
-        cd ${HELLOIMGUI_BASEPATH}/external/
-        git clone https://github.com/seanchas116/qtimgui.git
-        cd qtimgui
-        git checkout 8666384bc5c6cb0b6b415b27c648375f734c2366
-
-        (Yes, I chose to stay away from ExternalProject_Add quirks)
-        ")
+        message(FATAL_ERROR "Please download qtimgui by running ${HELLOIMGUI_BASEPATH}/tools/qtimgui_download.py")
     endif()
 
     # qtimgui includes imgui as a submodule by default

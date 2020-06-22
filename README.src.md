@@ -355,4 +355,14 @@ hello_imgui_democking/
         └── Readme.md
 ````
 
+----
 
+# Alternatives
+
+(OpenFrameworks)[https://openframeworks.cc/] is another alternative in order to quickly start an application under many platforms. It is less lightweight than ImGui + HelloImGui, but offer some native hardware access (camera, accelerometer).
+
+# Developer informations
+
+    * [ ] hello_imgui_add_app
+    * [ ] abstract_runner
+    * [ ] VoidFunction vs virtual functions

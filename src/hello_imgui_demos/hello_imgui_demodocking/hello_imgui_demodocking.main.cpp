@@ -103,7 +103,6 @@ void StatusBarGui(const AppState &appState)
 
 int main(int, char **)
 {
-
     // Our application state
     AppState appState;
 

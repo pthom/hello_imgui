@@ -23,4 +23,4 @@ then you can call `assetFileFullPath("fonts/my_font.ttf")`
 @@md
 */
 std::string assetFileFullPath(const std::string& assetRelativeFilename);
-}
+} // namespace HelloImGui

@@ -13,6 +13,7 @@
 #endif
 
 #include "runner_sdl_opengl3.h"
+#include "hello_imgui/hello_imgui_error.h"
 #include <examples/imgui_impl_opengl3.h>
 #include <examples/imgui_impl_sdl.h>
 
@@ -37,9 +38,9 @@ namespace HelloImGui
     {
         if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
         {
-            std::stringstream msg;
-            msg << "RunnerSdlOpenGl3::Impl_InitBackend error " << SDL_GetError();
-            throw std::runtime_error(msg.str().c_str());
+            HIMG_THROW_STRING(
+                std::string("RunnerSdlOpenGl3::Impl_InitBackend error ")
+                + SDL_GetError());
         }
         SDL_SetEventFilter(HandleAppEvents, this);
     }
@@ -48,7 +49,6 @@ namespace HelloImGui
     {
 #if defined(HELLOIMGUI_USE_GLES3)
         {
-            //test
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_EGL, 3);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
                                 SDL_GL_CONTEXT_PROFILE_ES);
@@ -57,8 +57,6 @@ namespace HelloImGui
         }
 #elif defined(__APPLE__)
         {
-            // GL 3.2 Core + GLSL 150
-            // const char* glsl_version = "#version 150";
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);  // Always required on Mac
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -66,8 +64,6 @@ namespace HelloImGui
         }
 #else
         {
-            // GL 3.0 + GLSL 130
-            // const char* glsl_version = "#version 130";
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -79,13 +75,10 @@ namespace HelloImGui
     std::string RunnerSdlOpenGl3::Impl_GlslVersion()
     {
 #if defined(HELLOIMGUI_USE_GLES3)
-        // GL 3.0 + GLSL 130
         const char* glsl_version = "#version 300 es";
 #elif defined(__APPLE__)
-        // GL 3.2 Core + GLSL 150
         const char* glsl_version = "#version 150";
 #else
-        // GL 3.0 + GLSL 130
         const char* glsl_version = "#version 130";
 #endif
         return glsl_version;
@@ -132,7 +125,7 @@ namespace HelloImGui
 
         mGlContext = SDL_GL_CreateContext(mWindow);
         if (!mGlContext)
-            throw std::runtime_error("RunnerSdlOpenGl3::Impl_CreateWindowAndContext(): Failed to initialize WebGL context!");
+            HIMG_THROW("RunnerSdlOpenGl3::Impl_CreateWindowAndContext(): Failed to initialize WebGL context!");
 
         SDL_GL_MakeCurrent(mWindow, mGlContext);
 #ifndef __EMSCRIPTEN__
@@ -156,14 +149,9 @@ namespace HelloImGui
 #endif
         if (err)
         {
-            throw std::runtime_error("Failed to initialize OpenGL loader!");
+            HIMG_THROW("Failed to initialize OpenGL loader!");
         }
 #endif  // #ifndef __EMSCRIPTEN__
-
-#ifdef GLAD_DEBUG
-        glad_set_pre_callback(glad_pre_call_callback);
-        glad_set_post_callback(glad_post_call_callback);
-#endif
     }
 
     void RunnerSdlOpenGl3::Impl_SetupPlatformRendererBindings()

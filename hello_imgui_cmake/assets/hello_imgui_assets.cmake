@@ -48,6 +48,5 @@ function(hello_imgui_add_local_assets app_name)
         hello_imgui_bundle_assets(${app_name} ${CMAKE_CURRENT_SOURCE_DIR}/assets)
     endif()
     set(HELLOIMGUI_ASSETSDIR ${CMAKE_CURRENT_LIST_DIR}/hello_imgui_assets CACHE STRING "Hello imgui assets path" FORCE)
-
 endfunction()
 

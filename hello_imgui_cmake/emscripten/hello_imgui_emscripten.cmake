@@ -13,7 +13,8 @@ function(hello_imgui_emscripten_add_shell_file app_name)
         )
 endfunction()
 
-# hello_imgui_emscripten_target_compile_options needs fix!!!
+# hello_imgui_emscripten_target_compile_options needs fix!
+# For the moment, these options are global via hello_imgui_emscripten_global_options.cmake
 # function(hello_imgui_emscripten_target_compile_options target_name)
 #     target_compile_options(
 #         ${target_name} 
@@ -25,7 +26,6 @@ endfunction()
 #         "SHELL:-s ALLOW_MEMORY_GROWTH=1"
 #     )
 # endfunction()
-
 
 
 function(hello_imgui_platform_customization app_name)

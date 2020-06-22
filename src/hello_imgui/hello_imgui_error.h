@@ -8,8 +8,8 @@
         throw std::runtime_error(msg); \
     }
 
-#define HIMG_THROW_STRING(msg) \
-    HIMG_THROW((msg.c_str()));
+#define HIMG_THROW_STRING(...) \
+    HIMG_THROW((__VA_ARGS__));
 
 #ifdef __EMSCRIPTEN__
 // Log utilities for emscripten, where the best debug tool is printf

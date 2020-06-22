@@ -11,7 +11,7 @@
 #include <examples/imgui_impl_opengl3.h>
 #include <imgui.h>
 #include <stdexcept>
-
+#include "hello_imgui/hello_imgui_error.h"
 #include "runner_glfw_opengl3.h"
 
 namespace HelloImGui
@@ -25,15 +25,14 @@ namespace HelloImGui
     {
         glfwSetErrorCallback(glfw_error_callback);
         if (!glfwInit())
-            throw std::runtime_error("RunnerGlfwOpenGl3::Impl_InitBackend failed");
+            HIMG_THROW("RunnerGlfwOpenGl3::Impl_InitBackend failed");
     }
 
     void RunnerGlfwOpenGl3::Impl_Select_Gl_Version()
     {
 #if defined(HELLOIMGUI_USE_GLES3)
         {
-            //test
-            throw std::logic_error("RunnerGlfwOpenGl3 needs implementation for GLES !");
+            HIMG_THROW("RunnerGlfwOpenGl3 needs implementation for GLES !");
 //            SDL_GL_SetAttribute(SDL_GL_CONTEXT_EGL, 3);
 //            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
 //                                SDL_GL_CONTEXT_PROFILE_ES);
@@ -101,7 +100,7 @@ namespace HelloImGui
         if (mWindow == NULL)
         {
             glfwTerminate();
-            throw std::runtime_error("RunnerGlfwOpenGl3::Impl_CreateWindowAndContext failed");
+            HIMG_THROW("RunnerGlfwOpenGl3::Impl_CreateWindowAndContext failed");
         }
         glfwMakeContextCurrent(mWindow);
         glfwSwapInterval(1);  // Enable vsync
@@ -110,11 +109,6 @@ namespace HelloImGui
     void RunnerGlfwOpenGl3::Impl_InitGlLoader()
     {
 #ifndef __EMSCRIPTEN__
-        //  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        //    throw std::runtime_error("gladLoadGLLoader: Failed");
-        //  if (!GLAD_GL_VERSION_3_3)
-        //    throw(std::runtime_error("GLAD could not initialize OpenGl 3.3"));
-
         // Initialize OpenGL loader
 #if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
         bool err = gl3wInit() != 0;
@@ -128,14 +122,9 @@ namespace HelloImGui
 #endif
         if (err)
         {
-            throw std::runtime_error("RunnerGlfwOpenGl3::Impl_InitGlLoader(): Failed to initialize OpenGL loader!");
+            HIMG_THROW("RunnerGlfwOpenGl3::Impl_InitGlLoader(): Failed to initialize OpenGL loader!");
         }
 #endif  // #ifndef __EMSCRIPTEN__
-
-#ifdef GLAD_DEBUG
-        glad_set_pre_callback(glad_pre_call_callback);
-        glad_set_post_callback(glad_post_call_callback);
-#endif
     }
 
     void RunnerGlfwOpenGl3::Impl_SetupPlatformRendererBindings()
@@ -183,7 +172,6 @@ namespace HelloImGui
 
     void RunnerGlfwOpenGl3::Impl_Cleanup()
     {
-        // Impl_Cleanup
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();

@@ -1,38 +1,33 @@
-## Misc
-* [ ] my-app: more advanced demo
+# Main
 
 ## Doc
+* [X] Move Android doc
 
-## Windows
-
-
-## Android
-* [ ] cmake adapt (bundle assets, manifest, etc)
-    * See SDL Doc: https://hg.libsdl.org/SDL/file/default/docs/README-android.md
-    * See https://github.com/LaurentGomila/qt-android-cmake.git
-
-## CMake Mobile
-* [X] Factorize embed files
-* [X] Add customizable assets
-* [ ] Icon (done for iOS, but the native way via localassets/ios/icons/
-
+## Publish
 
 ## Features
 * [ ] Docking / External windows ?
 
+
+# Platforms
+
+## CMake / hello_imgui_add_app:
      
 ## iOS
 
 ## Emscripten
-    
-## qtimgui
-* [ ] Issue qtimgui / Win
-    
-## CV 
-* [ ] Camera API ?
-    See https://github.com/necula/native-camera
-    Otherwise, Qt ?
-* [ ] Accel API ?
 
-https://www.netsolutions.com/insights/cross-platform-app-frameworks-in-2019/
-https://dotnet.microsoft.com/learn/xamarin/hello-world-tutorial/next
+
+## Windows
+
+## OSX
+* [ ] Make app package / embed assets ?
+
+## Android
+* [ ] Implement hello_imgui_platform_customization for android
+    (See [Android_status.md](Android_status.md))
+
+## Misc
+* [ ] https://github.com/pthom/hello_imgui_my_app: more advanced demo?
+* [ ] Add issue / qtimgui on Windows (blank window)
+   

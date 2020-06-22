@@ -109,6 +109,8 @@ int main(int, char **)
     // Hello ImGui params (they hold the settings as well as the Gui callbacks)
     HelloImGui::RunnerParams runnerParams;
 
+    runnerParams.appWindowParams.windowTitle = "Hello ImGUI: Advanced docking demo";
+
     // Provide a full screen dock space
     runnerParams.imGuiWindowParams.defaultImGuiWindowType =
         HelloImGui::DefaultImGuiWindowType::ProvideFullScreenDockSpace;

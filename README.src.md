@@ -108,6 +108,8 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 * Glfw3 + OpenGL 3
 * Qt
 
+Adding new backends should be easy: simply add a new derivate of [AbstractRunner](src/hello_imgui/internal/backend_impls/abstract_runner.h).
+
 # Usage instructions and API
 
 _RunnerParams_ contains all the settings and callbacks in order to run an application. 
@@ -174,7 +176,13 @@ Follow the instructiosn for SDL2, but replace HELLOIMGUI_USE_SDL_OPENGL3 by HELL
 
 ### Backend with Qt
 
-Simply pass the option `-DHELLOIMGUI_USE_QT=ON` and specify the path to Qt via CMAKE_PREFIX_PATH.
+Requirements:
+* You need to have Qt >= 5.10 installed
+* The Qt backend uses [qtimgui](https://github.com/seanchas116/qtimgui) , which you need to download into external/qutimgui.
+  You can use the script [tools/qtimgui_download.py](tools/qtimgui_download.py) in order to download it
+  in one step.
+
+Usage: simply pass the option `-DHELLOIMGUI_USE_QT=ON` and specify the path to Qt via CMAKE_PREFIX_PATH.
 
 For example, this line would build with Qt backend for an androïd_armv7 target:
 
@@ -240,36 +248,7 @@ cmake .. \
 
 ### Customizing the iOS build
 
-Simply create a folder named "ios" beside the application 'CMakeLists.txt'
-
-Example of customization:
-````
-YourAppSourceFolder/
-├── CMakeLists.txt                              # The app's CMakeLists
-├── hello_imgui_demodocking.main.cpp            # its source code
-|
-└── ios/                                        # ios/ is where you customize the iOS App
-    |
-    ├── Info.plist                              # If present, this Info.plist will be applied 
-    |                                           # (if not, a default is provided)
-    |                                           # You can there customize the App icon name, etc.
-    |
-    └── icons/                                  # Icons and Launch images placed inside icons/ 
-        ├── Default-375w-812h@3x.disabled.png   # will be placed in the application bundle 
-        ├── Default-568h@2x.png                 # and thus used by the app
-        ├── Default.png
-        ├── Icon.png
-        └── Readme.md
-````
-
-The example [src/hello_imgui_demos/hello_imgui_demodocking](src/hello_imgui_demos/hello_imgui_demodocking) shows some customization.
-
-
-### Embed more files with your iOS application
-
-By default, the iPhone apps will embed the fonts provided in the [hello_imgui_assets](hello_imgui_assets) folder.
-
-[hello_imgui_cmake/ios/hello_imgui_ios.cmake](hello_imgui_cmake/ios/hello_imgui_ios.cmake) provides a function named `hello_imgui_bundle_assets` which helps embedding more assets.
+See [Embed assets and customize apps](#embed_assets_and_customize_apps)
  
 ----
 
@@ -333,10 +312,6 @@ Refer to the [emscripten docs](https://emscripten.org/)
 
 By default, the application will be presented in an empty html page. You can adapt [hello_imgui_cmake/emscripten/runner_emscripten_shell.html](hello_imgui_cmake/emscripten/runner_emscripten_shell.html) if you want.
 
-### Embed more files with your emscripten application
-
-By default, the emscripten apps will embed the fonts provided in the [hello_imgui_assets](hello_imgui_assets) folder, using emscripten `--preload-file` option.
-
 ----
 
 ## Build instructions for Android
@@ -399,28 +374,39 @@ Help would be appreciated!
 
 The principle would be to fill [hello_imgui_cmake/android/hello_imgui_android.cmake](hello_imgui_cmake/android/hello_imgui_android.cmake), with inspiration from [hello_imgui_cmake/ios/hello_imgui_ios.cmake](hello_imgui_cmake/ios/hello_imgui_ios.cmake).
 
-----
+# Embed assets and customize apps
 
-# Developer informations
+## Embed assets
+Anything in the assets/ folder located beside the app's CMakeLists will be embedded
+on mobile devices and emscripten, i.e they will be bundled together with the app; 
+and you can access them via `assetFileFullPath(const std::string& assetRelativeFilename)`.
 
-## Adding backends
+## Customize per platform 
+For iOS, simply create a folder named "ios" beside the application 'CMakeLists.txt'
+There, you can add a custom Info.plist, as well as app icons and launch screens.
 
-Adding new backend should be easy: simply add a new derivate of [AbstractRunner](src/hello_imgui/internal/backend_impls/abstract_runner.h).
-
-
-## Multiplatform cmake in 2 lines
-
-[hello_imgui_cmake/hello_imgui_add_app.cmake](hello_imgui_cmake/hello_imgui_add_app.cmake) is a cmake script that provides `helloimgui_add_app`, a cmake helper function, similar to cmake's "add_executable"
-
-**Usage**
-
-````cmake
-include(hello_imgui_add_app)
-hello_imgui_add_app(my_app my_app.main.cpp)
+## Example of customization:
+````
+hello_imgui_democking/
+├── CMakeLists.txt                              # The app's CMakeLists
+├── hello_imgui_demodocking.main.cpp            # its source code
+|
+├── assets/                                     # Anything in the assets/ folder located
+│   └── fonts/                                  # beside the app's CMakeLists will be embedded
+│       └── Akronim-Regular.ttf                 # on mobile devices and emscripten             
+|
+└── ios/                                        # ios/ is where you customize the iOS App
+    |
+    ├── Info.plist                              # If present, this Info.plist will be applied 
+    |                                           # (if not, a default is provided)
+    |                                           # You can there customize the App icon name, etc.
+    |
+    └── icons/                                  # Icons and Launch images placed inside icons/ 
+        ├── Default-375w-812h@3x.disabled.png   # will be placed in the application bundle 
+        ├── Default-568h@2x.png                 # and thus used by the app
+        ├── Default.png
+        ├── Icon.png
+        └── Readme.md
 ````
 
-**Features**
 
-* It will automaticaly link the exe to hello_imgui library
-* Under iOS it will set the Development Team, add an Info.plist, add icon and LaunchImages
-* It will bundle the assets in the app (fonts)

@@ -197,4 +197,4 @@ void RunnerQt::Impl_SwapBuffers()
 
 }  // namespace HelloImGui
 
-#endif  // #ifdef HELLOIMGUI_USE_SDL_OPENGL3
+#endif  // #ifdef HELLOIMGUI_USE_QT

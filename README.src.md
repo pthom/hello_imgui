@@ -68,6 +68,9 @@ This example showcases various features of _Hello ImGui_.
 
 Source for this example: [src/hello_imgui_demos/hello_imgui_demodocking](src/hello_imgui_demos/hello_imgui_demodocking)
 
+## Example of an app using HelloImGui as a submodule
+
+[hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule in a separate application. 
 
 ## ImGui "classic" demo
 
@@ -77,9 +80,6 @@ This example reproduces ImGui default example.
 
 Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/hello_imgui_demos/hello_imgui_demo_classic)
 
-## Use HelloImGui as a submodule in your own application
-
-[hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule in a separate application. 
 
 
 # Features
@@ -317,62 +317,9 @@ By default, the application will be presented in an empty html page. You can ada
 ## Build instructions for Android
 
 Android support is being developed : as I do not own an Android device, help would be appreciated.
-The Android version uses SDL + OpenGLES3.
+Currently, the code correctly compiles and link for Android; however no apk is currently generated.
 
-### Set Android required environment variables
-
-````bash
-export ANDROID_NDK_HOME=/path/to/AndroidNdk
-export JAVA_HOME=/path/to/jdk8
-````
-
-For example (MacOS):
-````bash
-export ANDROID_NDK_HOME=/Users/Me/Library/Android/sdk/ndk-bundle
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
-````
-
-### Install SDL2 for Android via vcpkg
-
-[tools/android/vcpkg_install_sdl.sh](tools/android/vcpkg_install_sdl.sh) will install sdl for both arm-android
-and arm64-android.
-
-Note: see the [vcpkg doc about android](https://github.com/microsoft/vcpkg/blob/master/docs/users/android.md
-)
-
-`````bash
-./tools/android/vcpkg_install_sdl.sh
-`````
-
-### Run cmake with the android toolchain
-
-[tools/android/cmake_arm64-android.sh](tools/android/cmake_arm64-android.sh) will create a folder "build_arm64-android" and run cmake with the correct toolchains for vcpkg and android (see also [tools/android/_impl_cmake_android.sh](tools/android/_impl_cmake_android.sh)).
-
-````bash
-./tools/android/cmake_arm64-android.sh
-````
-
-You can also create a build for arm-android with:
-````bash
-./tools/android/cmake_arm-android.sh
-````
-
-
-
-### Build for Android
-
-````
-cd build_arm-android
-make -j 4
-````
-
-### Android build status
-
-The Android build is not complete: the application is correctly compiled as a static library, and linked with SDL. However, no apk is produced at the moment. 
-
-Help would be appreciated!
-
-The principle would be to fill [hello_imgui_cmake/android/hello_imgui_android.cmake](hello_imgui_cmake/android/hello_imgui_android.cmake), with inspiration from [hello_imgui_cmake/ios/hello_imgui_ios.cmake](hello_imgui_cmake/ios/hello_imgui_ios.cmake).
+See [Android_status.md](Android_status.md) for more info.
 
 # Embed assets and customize apps
 

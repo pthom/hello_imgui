@@ -90,10 +90,9 @@ include(${CMAKE_CURRENT_LIST_DIR}/../../hello_imgui/helloimgui_add_app_cmake/hel
 helloimgui_add_app(hello_world hello_world.main.cpp)
 ````
 
-_Although this app was extremely simple to write, it will run with no additional modifications (including in the cmake code) on iOS, Android, Linux, Mac, Windows and Emscripten_
+_Although this app was extremely simple to write, it will run with no additional modifications (including in the cmake code) on iOS, Linux, Mac, Windows and Emscripten, and hopefuly soon Android_
 
 Source for this example: [src/hello_imgui_demos/hello_world](src/hello_imgui_demos/hello_world)
-
 
 ## Advanced example with docking support
 

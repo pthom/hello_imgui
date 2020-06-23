@@ -38,12 +38,14 @@ Note: see the [vcpkg doc about android](https://github.com/microsoft/vcpkg/blob/
 [tools/android/cmake_arm64-android.sh](tools/android/cmake_arm64-android.sh) will create a folder "build_arm64-android" and run cmake with the correct toolchains for vcpkg and android (see also [tools/android/_impl_cmake_android.sh](tools/android/_impl_cmake_android.sh)).
 
 ````bash
+mkdir build_arm64-android && cd build_arm64-android
 ./tools/android/cmake_arm64-android.sh
 ````
 
 You can also create a build for arm-android with:
 ````bash
-./tools/android/cmake_arm-android.sh
+mkdir build_arm-android && cd build_arm-android
+../tools/android/cmake_arm-android.sh
 ````
 
 
@@ -77,5 +79,3 @@ Some possible sources for inspiration:
 * [Android Apk](https://github.com/hunter-packages/android-apk) by the former maintainer of [Hunter](https://github.com/cpp-pm/hunter), provides a script that seems promising
 * The [SDL readme about android](https://hg.libsdl.org/SDL/file/default/docs/README-android.md) provides hints about the java code required to run with SDL backend
 * [qt-android-cmake](https://github.com/LaurentGomila/qt-android-cmake) can produce an apk via cmake, but it also require Qt 
-
- 

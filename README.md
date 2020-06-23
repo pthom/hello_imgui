@@ -268,10 +268,11 @@ source tools/ios/set_dev_team.source
 2. Launch cmake using [./tools/ios/cmake_ios_sdl.sh](tools/ios/cmake_ios_sdl.sh):
 
 ````bash
-./tools/ios/cmake_ios_sdl.sh
+mkdir build_ios && cd build_ios_sdl
+../tools/ios/cmake_ios_sdl.sh
 ````
 
-This will create a build directory named "build_ios_sdl/" and then open the project "HelloImGui.xcodeproj".
+This will invoke cmake and then open the project "HelloImGui.xcodeproj".
 
 If you want to run cmake by yourself, here are the required commands:
 `````bash
@@ -302,7 +303,7 @@ See [Embed assets and customize apps](#embed_assets_and_customize_apps)
 You can either install emsdk following [the instruction on the emscripten website](https://emscripten.org/docs/getting_started/downloads.html) or you can use the script [tools/emscripten/cmake_emscripten.sh](tools/emscripten/cmake_emscripten.sh).
 
 `````bash
-./tools/emscripten/cmake_emscripten.sh
+../tools/emscripten/install_emscripten.sh
 `````
 
 This script will download and install emscripten into `~/emsdk`
@@ -325,7 +326,7 @@ cd build_emscripten
 emcmake cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON ..
 `````
 
-Note: the script [tools/emscripten/cmake_emscripten.sh](tools/emscripten/cmake_emscripten.sh) does exactly this.
+Note: the script [tools/emscripten/cmake_emscripten.sh](tools/emscripten/cmake_emscripten.sh) does the cmake part of this.
 
 3. Build
 

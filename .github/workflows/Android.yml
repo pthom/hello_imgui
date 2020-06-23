@@ -46,7 +46,7 @@ jobs:
     - name: Configure & build arm64-android
       run: |
           mkdir build_arm64-android
-          build_arm64-android
+          cd build_arm64-android
           ../tools/android/cmake_arm64-android.sh
           make -j 4
           cd ..

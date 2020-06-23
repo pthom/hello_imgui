@@ -401,6 +401,6 @@ hello_imgui_democking/
 
 # Alternatives
 
-[OpenFrameworks](https://openframeworks.cc/) is another alternative in order to quickly start a C++ application under many platforms. 
+[OpenFrameworks](https://openframeworks.cc/) and [Cinder](https://libcinder.org/) are alternatives in order to quickly start a C++ application under many platforms. 
 
-Being oriented for creative coding, it is much more feature rich, offers some level of native hardware access (camera, accelerometer), but it is also less lightweight than ImGui + HelloImGui, .
+Being oriented for creative coding, they are much more feature rich, offers some level of native hardware access (camera, accelerometer), but they are also less lightweight than ImGui + HelloImGui, .

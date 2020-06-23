@@ -4,3 +4,6 @@
 [submodule "external/ios-cmake"]
 	path = hello_imgui_cmake/ios-cmake
 	url = https://github.com/leetal/ios-cmake.git
+[submodule "hello_imgui_cmake/android/android-apk"]
+	path = hello_imgui_cmake/android/android-apk
+	url = https://github.com/hunter-packages/android-apk

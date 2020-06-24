@@ -28,3 +28,7 @@ if (HELLOIMGUI_BUILD_IMGUI)
             )
     target_include_directories(imgui PUBLIC ${imgui_dir})
 endif()
+
+if (HELLOIMGUI_USE_SDL_OPENGL3 AND ANDROID)
+    add_subdirectory(SDL)
+endif()

@@ -28,15 +28,6 @@ jobs:
 #          which java || true
 #          echo $JAVA_HOME
 
-#    Disabled, there is already a sdk at /usr/local/lib/android
-#    - name: Download Android NDK
-#      run: |
-#          mkdir toolchains
-#          cd toolchains
-#          wget https://dl.google.com/android/repository/android-ndk-r21d-linux-x86_64.zip
-#          unzip android-ndk-r21d-linux-x86_64.zip
-#          cd ..
-
     - name: Install SDL for android via vcpkg
       run: ./tools/sdl_download.sh
 

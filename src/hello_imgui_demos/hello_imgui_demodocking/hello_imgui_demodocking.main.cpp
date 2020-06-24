@@ -124,7 +124,7 @@ int main(int, char **)
             // (which is provided by "Hello ImGui") in two parts.
             { "MainDockSpace", "BottomSpace", ImGuiDir_Down, 0.25 },
             // Then, add a space to the left which occupies a column
-            // whose width is 25% of the app height
+            // whose width is 25% of the app width
             { "MainDockSpace", "LeftSpace", ImGuiDir_Left, 0.25 }
             // We now have three spaces: "MainDockSpace", "BottomSpace", and "LeftSpace"
         };

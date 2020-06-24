@@ -17,6 +17,7 @@ __Online Emscripten/Wasm demos:__
 | Hello, World | Advanced Docking | Classic ImGui Demo
 | --- | --- | --- |
 | [![Hello, World](docs/images/wasm_demos/hello.jpg)][hello-world]  | [![Advanced Docking demo](docs/images/wasm_demos/docking.jpg)][docking]  | [![ImGui classic demo](docs/images/wasm_demos/classic.jpg)][classic]
+| [Code](src/hello_imgui_demos/hello_world/hello_world.main.cpp)|[Code](src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp)|[Code](src/hello_imgui_demos/hello_imgui_demo_classic/hello_imgui_demo_classic.main.cpp)|
 
 [hello-world]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_world/hello_world.html  "Hello world"
 [docking]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html  "Advanced docking demo"

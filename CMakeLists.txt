@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.15)
-cmake_policy(VERSION 3.15)
+cmake_minimum_required(VERSION 3.10)
+# cmake_policy(VERSION 3.15)
 
 project(HelloImGui LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
@@ -45,8 +45,10 @@ add_library(project_properties INTERFACE)
 
 set_project_warnings(project_properties)
 # sanitizer options if supported by compiler
-include(Sanitizers)
-enable_sanitizers(project_properties)
+if(NOT ANDROID)
+    include(Sanitizers) # due to cmake 3.10 limitation
+    enable_sanitizers(project_properties)
+endif()
 
 if (EMSCRIPTEN)
     include(${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_emscripten_global_options.cmake)

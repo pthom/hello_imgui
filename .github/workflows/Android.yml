@@ -38,7 +38,7 @@ jobs:
 #          cd ..
 
     - name: Install SDL for android via vcpkg
-      run: ./tools/android/vcpkg_install_sdl_android.sh
+      run: ./tools/sdl_download.sh
 
 #    - name: Setup interactive tmate session
 #      uses: mxschmitt/action-tmate@v2

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-$THIS_DIR/sdl_download.sh
+$THIS_DIR/../sdl_download.sh
 
 cd $THIS_DIR/../../external
 cd SDL2-2.0.12/Xcode-iOS/SDL

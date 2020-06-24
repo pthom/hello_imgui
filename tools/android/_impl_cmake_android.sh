@@ -28,6 +28,7 @@ export android_toolchain_file=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cm
 export PATH=$JAVA_HOME/bin:$PATH
 
 cmd="cmake \
+    -DCMAKE_TOOLCHAIN_FILE=$android_toolchain_file \
     -DANDROID_ABI=$android_abi \
     -DHELLOIMGUI_USE_SDL_OPENGL3=ON \
     $source_dir

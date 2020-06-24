@@ -29,6 +29,10 @@ if (HELLOIMGUI_BUILD_IMGUI)
     target_include_directories(imgui PUBLIC ${imgui_dir})
 endif()
 
-if (HELLOIMGUI_USE_SDL_OPENGL3 AND ANDROID)
-    add_subdirectory(SDL)
+if (HELLOIMGUI_USE_SDL_OPENGL3)
+    # On desktop (linux, windows, osx) sdl is provided via vcpkg
+    # On iOS, the build is done externally via tools/ios/sdl_compile_ios.sh
+    if (ANDROID)
+        add_subdirectory(SDL)
+    endif()
 endif()

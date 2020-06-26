@@ -109,7 +109,7 @@ macro(apkCMake_fillVariables)
     message(STATUS "    > apkCMake_compileSdkVersion=${apkCMake_compileSdkVersion}")
 
     if (NOT DEFINED apkCMake_minSdkVersion)
-        set(apkCMake_minSdkVersion 16)
+        set(apkCMake_minSdkVersion 21)
     endif()
     message(STATUS "    > apkCMake_minSdkVersion=${apkCMake_minSdkVersion}")
 

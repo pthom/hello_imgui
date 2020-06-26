@@ -1,5 +1,4 @@
-//package org.libsdl.app;
-package ${apkCMake_applicationId};
+package org.libsdl.app;
 
 import java.util.ArrayList;
 import java.util.Collections;

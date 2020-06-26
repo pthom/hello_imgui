@@ -1,5 +1,4 @@
-//package org.libsdl.app;
-package ${apkCMake_applicationId};
+package org.libsdl.app;
 
 import android.hardware.usb.*;
 import android.os.Build;

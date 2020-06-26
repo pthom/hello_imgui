@@ -1,5 +1,4 @@
-//package org.libsdl.app;
-package ${apkCMake_applicationId};
+package org.libsdl.app;
 
 import java.io.IOException;
 import java.io.InputStream;

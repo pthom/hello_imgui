@@ -66,14 +66,13 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
         target_link_options(${target_name} INTERFACE -s USE_SDL=2)
     elseif(ANDROID)
         target_link_libraries(${target_name} PUBLIC SDL2main SDL2-static)
+        target_link_libraries(${target_name} PUBLIC GLESv2)
+        target_compile_definitions(${target_name} PUBLIC IMGUI_IMPL_OPENGL_ES2)
     else()
         find_package(SDL2 CONFIG REQUIRED)
         target_link_libraries(${target_name} PUBLIC SDL2::SDL2main SDL2::SDL2-static)
     endif()
 
-    if(ANDROID)
-        target_link_libraries(${target_name} PUBLIC GLESv3)
-    endif()
 
     target_sources(${target_name} PRIVATE
         ${imgui_examples_dir}/imgui_impl_opengl3.h

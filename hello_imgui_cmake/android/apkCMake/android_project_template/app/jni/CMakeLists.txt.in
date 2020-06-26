@@ -12,6 +12,4 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${HELLOIMGUI_BASEPATH}/hello_imgui_c
 set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE STRING "" FORCE)
 
 add_subdirectory(${HELLOIMGUI_BASEPATH} hello_imgui)
-#add_subdirectory(${HELLOIMGUI_BASEPATH}/external/SDL SDL)
-
 add_subdirectory(${apkCMake_appTargetToEmbedCMakeListsDir} ${apkCMake_appTargetBuildFolder})

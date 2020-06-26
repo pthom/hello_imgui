@@ -3,6 +3,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/android/hello_imgui_android.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/emscripten/hello_imgui_emscripten.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/desktop/hello_imgui_desktop.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/assets/hello_imgui_assets.cmake)
+include(android/apkCMake/apkCMake)
 
 function(hello_imgui_emscripten_add_local_assets app_name)
     if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/assets)
@@ -66,6 +67,13 @@ function(hello_imgui_add_app)
     hello_imgui_emscripten_add_local_assets(${app_name})
 
     hello_imgui_platform_customization(${app_name})
+
+    if (HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT)
+        set(apkCMake_applicationIdUrlPart ${HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART})
+        set(apkCMake_applicationIdNamePart ${HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART})
+        set(apkCMake_abiFilters "'arm64-v8a', 'x86', 'x86_64'")
+        apkCMake_makeAndroidStudioProject(${app_name})
+    endif()
 
     target_link_libraries(${app_name} PRIVATE hello_imgui)
 

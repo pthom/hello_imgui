@@ -36,8 +36,9 @@ jobs:
 
     - name: Configure & build arm64-android
       run: |
-          mkdir build_arm64-android
-          cd build_arm64-android
-          ../tools/android/cmake_arm64-android.sh
-          make -j 4
-          cd ..
+          mkdir build_gradle_project
+          cd build_gradle_project
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          cmake .. -DHELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT=ON
+          cd hello_imgui_demodocking_AndroidStudio
+          ./gradlew build

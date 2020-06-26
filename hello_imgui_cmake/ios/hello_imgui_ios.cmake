@@ -40,7 +40,7 @@ function(hello_imgui_ios_add_info_plist app_name plist_type)
         message("hello_imgui_ios_add_info_plist: ${app_name} found app specific Info.plist")
         set(info_plist_in ${CMAKE_CURRENT_SOURCE_DIR}/ios/Info.plist)
     else()
-        message("2. HELLO_IMGUI_BUNDLE_IDENTIFIER is ${HELLO_IMGUI_BUNDLE_IDENTIFIER}")
+        set(HELLO_IMGUI_CFBundleIdentifier ${HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART}.${HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART})
         set(info_plist_dir_all ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/ios/info_plist)
         set(info_plist_in ${info_plist_dir_all}/${plist_type}/Info.plist.in)
     endif()
@@ -52,9 +52,10 @@ function(hello_imgui_ios_add_info_plist app_name plist_type)
     # in upper and lower case (A–Z, a–z), the dot (“.”), and the hyphen (“-”)
     string(REGEX REPLACE
         "[^a-zA-Z.-]" "-"
-        HELLO_IMGUI_BUNDLE_IDENTIFIER
-        ${HELLO_IMGUI_BUNDLE_IDENTIFIER}
+        HELLO_IMGUI_CFBundleIdentifier
+        ${HELLO_IMGUI_CFBundleIdentifier}
         )
+    message("HELLO_IMGUI_CFBundleIdentifier=${HELLO_IMGUI_CFBundleIdentifier}")
 
     configure_file(${info_plist_in} ${info_plist_configured})
     set_target_properties(${app_name} PROPERTIES

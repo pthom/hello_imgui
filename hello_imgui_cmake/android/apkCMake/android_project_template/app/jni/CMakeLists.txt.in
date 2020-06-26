@@ -9,9 +9,9 @@ project(${apkCMake_cmakeProjectName})
 set(HELLOIMGUI_IN_APKCMAKE_GENERATED_PROJECT ON)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/")
 
-set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
+set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE STRING "" FORCE)
 
 add_subdirectory(${HELLOIMGUI_BASEPATH} hello_imgui)
-add_subdirectory(${HELLOIMGUI_BASEPATH}/external/SDL SDL)
+#add_subdirectory(${HELLOIMGUI_BASEPATH}/external/SDL SDL)
 
 add_subdirectory(${apkCMake_appTargetToEmbedCMakeListsDir} ${apkCMake_appTargetBuildFolder})

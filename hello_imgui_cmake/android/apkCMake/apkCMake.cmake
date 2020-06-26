@@ -22,6 +22,8 @@
 set(apkCMake_defaultProjectTemplateFolder ${CMAKE_CURRENT_LIST_DIR}/android_project_template)
 set(apkCMake_defaultJavaCodeTemplateFolder ${CMAKE_CURRENT_LIST_DIR}/android_javacode_template)
 
+
+
 macro(apkCMake_fillVariables)
     if (NOT DEFINED ANDROID_HOME)
         if (DEFINED ENV{ANDROID_HOME})
@@ -74,11 +76,26 @@ macro(apkCMake_fillVariables)
     message(STATUS "    > apkCMake_ndkDir=${apkCMake_ndkDir}")
 
 
-    if (NOT DEFINED apkCMake_applicationId)
-        message(FATAL_ERROR "Please set apkCMake_applicationId (for example org.acme.my_app)")
+    if (NOT DEFINED apkCMake_applicationIdUrlPart)
+        message(FATAL_ERROR "Please set apkCMake_applicationIdUrlPart (for example com.my_company)")
     endif()
-    message(STATUS "    > apkCMake_applicationId=${apkCMake_applicationId}")
+    message(STATUS "    > apkCMake_applicationIdUrlPart=${apkCMake_applicationIdUrlPart}")
 
+    if (NOT DEFINED apkCMake_applicationIdNamePart)
+        message(FATAL_ERROR "Please set apkCMake_applicationIdNamePart (for example my_app)")
+    endif()
+#    remove_non_alphabetical_chars(apkCMake_applicationIdNamePart)
+    string(REGEX REPLACE
+        "[^a-zA-Z]" ""
+        tmp
+        ${apkCMake_applicationIdNamePart})
+    set(apkCMake_applicationIdNamePart ${tmp})
+    message(STATUS "    > apkCMake_applicationIdNamePart=${apkCMake_applicationIdNamePart}")
+
+    if (NOT DEFINED apkCMake_className)
+        set(apkCMake_className ${apkCMake_applicationIdNamePart})
+    endif()
+    message(STATUS "    > apkCMake_className=${apkCMake_className}")
 
     # apkCMake_compileSdkVersion 26
     # apkCMake_minSdkVersion 16
@@ -147,18 +164,22 @@ function (log_var var_name)
 endfunction()
 
 function (apkCmake_process_applicationId_javaCode)
-    #    message(FATAL_ERROR "apkCMake_applicationId=${apkCMake_applicationId}")
-    string(REPLACE "." "/" apkCMake_javaCodeDestination ${apkCMake_applicationId})
+    string(REPLACE "." "/" apkCMake_javaCodeDestination ${apkCMake_applicationIdUrlPart}.${apkCMake_applicationIdNamePart})
     set(apkCMake_javaCodeDestination ${apkCMake_projectFolder}/app/src/main/java/${apkCMake_javaCodeDestination})
 
     set(apkCMake_javaCodeSource ${apkCMake_javaCodeTemplateFolder})
     log_var(apkCMake_javaCodeDestination)
     log_var(apkCMake_javaCodeSource)
-    file(GLOB java_sources RELATIVE ${apkCMake_javaCodeSource} ${apkCMake_javaCodeSource}/*)
-    foreach(java_source ${java_sources})
-        message("java_source=${java_source}")
-        configure_file(${apkCMake_javaCodeSource}/${java_source} ${apkCMake_javaCodeDestination}/${java_source})
-    endforeach()
+    configure_file(
+        ${apkCMake_javaCodeSource}/apkCMake_className.java.in
+        ${apkCMake_javaCodeDestination}/${apkCMake_className}.java
+    )
+
+    #    file(GLOB java_sources RELATIVE ${apkCMake_javaCodeSource} ${apkCMake_javaCodeSource}/*)
+#    foreach(java_source ${java_sources})
+#        message("java_source=${java_source}")
+#        configure_file(${apkCMake_javaCodeSource}/${java_source} ${apkCMake_javaCodeDestination}/${java_source})
+#    endforeach()
 endfunction()
 
 

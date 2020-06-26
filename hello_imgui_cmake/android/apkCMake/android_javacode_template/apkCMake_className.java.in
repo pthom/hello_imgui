@@ -1,4 +1,4 @@
-package ${apkCMake_applicationId};
+package ${apkCMake_applicationIdUrlPart}.${apkCMake_applicationIdNamePart};
 import org.libsdl.app.SDLActivity;
 
 /**
@@ -7,4 +7,3 @@ import org.libsdl.app.SDLActivity;
 public class ${apkCMake_className} extends SDLActivity
 {
 }
-

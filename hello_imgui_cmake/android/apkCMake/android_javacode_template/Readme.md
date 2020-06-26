@@ -1,6 +1,15 @@
 This code will be placed in the appropriate folder.
 
-For example, if your application id (${apkCMake_applicationId})
-is com.my_company.my_app, then it will be placed int
+You can customize your application id via 
+* ${apkCMake_applicationIdUrlPart}
+* ${apkCMake_applicationIdNamePart}
+* ${apkCMake_className}
 
-app/src/main/java/com/my_company/my_app/
+For example:
+* apkCMake_applicationIdUrlPart=com.my_company
+* apkCMake_applicationIdNamePart=my_app
+* apkCMake_className=MyApp
+
+then a file MyApp.java will be created into 
+
+app/src/main/java/com/my_company/my_app/MyApp.java

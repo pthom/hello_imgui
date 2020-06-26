@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleIdentifier</key>
-    <string>${HELLO_IMGUI_BUNDLE_IDENTIFIER}</string>
+    <string>${HELLO_IMGUI_CFBundleIdentifier}</string>
 
 	<key>CFBundleDisplayName</key>
 	<string>${HELLO_IMGUI_BUNDLE_DISPLAY_NAME}</string>

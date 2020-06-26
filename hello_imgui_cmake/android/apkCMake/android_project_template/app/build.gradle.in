@@ -13,7 +13,7 @@ android {
     defaultConfig {
         if (buildAsApplication) {
             // applicationId "org.libsdl.app"
-            applicationId "${apkCMake_applicationId}"
+            applicationId "${apkCMake_applicationIdUrlPart}.${apkCMake_applicationIdNamePart}"
         }
         // minSdkVersion 16
         minSdkVersion ${apkCMake_minSdkVersion}
@@ -63,7 +63,7 @@ android {
             variant.outputs.each { output ->
                 def outputFile = output.outputFile
                 if (outputFile != null && outputFile.name.endsWith(".aar")) {
-                    def fileName = "${${apkCMake_applicationId}}.aar";
+                    def fileName = "${apkCMake_applicationIdUrlPart}.${apkCMake_applicationIdNamePart}.aar";
                     output.outputFile = new File(outputFile.parent, fileName);
                 }
             }

@@ -28,7 +28,7 @@ import java.util.List;
 public class HIDDeviceManager {
     private static final String TAG = "hidapi";
     //private static final String ACTION_USB_PERMISSION = "org.libsdl.app.USB_PERMISSION";
-    private static final String ACTION_USB_PERMISSION = "${apkCMake_applicationId}.USB_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "${apkCMake_applicationIdUrlPart}.${apkCMake_applicationIdNamePart}.USB_PERMISSION";
 
 
     private static HIDDeviceManager sManager;

@@ -12,12 +12,12 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init --recursive
 
-    - name: Setup ANDROID_NDK_HOME env variable
-      run : |
-        echo "::set-env name=ANDROID_NDK_HOME::/usr/local/lib/android/sdk/ndk-bundle/"
+#    - name: Setup ANDROID_NDK_HOME env variable
+#      run : |
+#        echo "::set-env name=ANDROID_NDK_HOME::/usr/local/lib/android/sdk/ndk-bundle/"
 
-    - name: Check ANDROID_NDK_HOME env variable
-      run : echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
+#    - name: Check ANDROID_NDK_HOME env variable
+#      run : echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
 
 # Disabled, not used until we produce an apk
 #    - name: Install openjdk-8
@@ -28,8 +28,8 @@ jobs:
 #          which java || true
 #          echo $JAVA_HOME
 
-    - name: Install SDL for android via vcpkg
-      run: ./tools/sdl_download.sh
+#    - name: Install SDL for android via vcpkg
+#      run: ./tools/sdl_download.sh
 
 #    - name: Setup interactive tmate session
 #      uses: mxschmitt/action-tmate@v2

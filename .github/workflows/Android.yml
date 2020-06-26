@@ -12,6 +12,9 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init --recursive
 
+    - name: Download SDL
+      run: ./tools/sdl_download.sh
+
 #    - name: Setup ANDROID_NDK_HOME env variable
 #      run : |
 #        echo "::set-env name=ANDROID_NDK_HOME::/usr/local/lib/android/sdk/ndk-bundle/"

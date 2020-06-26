@@ -15,29 +15,10 @@ jobs:
     - name: Download SDL
       run: ./tools/sdl_download.sh
 
-#    - name: Setup ANDROID_NDK_HOME env variable
-#      run : |
-#        echo "::set-env name=ANDROID_NDK_HOME::/usr/local/lib/android/sdk/ndk-bundle/"
-
-#    - name: Check ANDROID_NDK_HOME env variable
-#      run : echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
-
-# Disabled, not used until we produce an apk
-#    - name: Install openjdk-8
-#      run: |
-#          which java || true
-#          echo $JAVA_HOME
-#          sudo apt-get install -y openjdk-8-jdk-headless
-#          which java || true
-#          echo $JAVA_HOME
-
-#    - name: Install SDL for android via vcpkg
-#      run: ./tools/sdl_download.sh
-
 #    - name: Setup interactive tmate session
 #      uses: mxschmitt/action-tmate@v2
 
-    - name: Configure & build arm64-android
+    - name: create android studio project / gradlew build
       run: |
           mkdir build_gradle_project
           cd build_gradle_project

@@ -27,8 +27,9 @@
 * [ ] Implement hello_imgui_platform_customization for android
     (See [Android_status.md](Android_status.md))
 
-rename folders org.libsdl.app
+rename folders org.libsdl.app => apkCMake_applicationId
 
+Voir APP_ABI dans hello_imgui_cmake/android/apkCMake/android_project_template/app/jni/Application.mk
 
 `````bash
 export android-template=external/SDL/android-project

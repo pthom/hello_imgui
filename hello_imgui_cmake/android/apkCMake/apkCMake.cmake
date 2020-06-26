@@ -20,7 +20,7 @@
 # apkCMake_abiFilters 'arm64-v8a' ou 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
 
 set(apkCMake_defaultProjectTemplateFolder ${CMAKE_CURRENT_LIST_DIR}/android_project_template)
-
+set(apkCMake_defaultJavaCodeTemplateFolder ${CMAKE_CURRENT_LIST_DIR}/android_javacode_template)
 
 macro(apkCMake_fillVariables)
     if (NOT DEFINED ANDROID_HOME)
@@ -44,6 +44,11 @@ macro(apkCMake_fillVariables)
         set(apkCMake_projectTemplateFolder ${apkCMake_defaultProjectTemplateFolder})
     endif()
     message(STATUS "    > apkCMake_projectTemplateFolder=${apkCMake_projectTemplateFolder}")
+
+    if (NOT DEFINED apkCMake_javaCodeTemplateFolder)
+        set(apkCMake_javaCodeTemplateFolder ${apkCMake_defaultJavaCodeTemplateFolder})
+    endif()
+    message(STATUS "    > apkCMake_javaCodeTemplateFolder=${apkCMake_projectTemplateFolder}")
 
     if (NOT DEFINED apkCMake_projectFolder)
         set(apkCMake_projectFolder ${CMAKE_BINARY_DIR}/${appTargetToEmbed}_AndroidStudio)
@@ -126,7 +131,7 @@ function(apkCMake_copyDirectoryContent src dst)
     foreach(one_file ${all_files})
         get_filename_component(dirname ${one_file} DIRECTORY)
         get_filename_component(basename ${one_file} NAME)
-        message("dirname=${dirname} basename=${basename}")
+#        message("dirname=${dirname} basename=${basename}")
         file(COPY ${src}/${dirname}/${basename} DESTINATION ${dst}/${dirname})
     endforeach()
 endfunction()
@@ -136,6 +141,26 @@ function (apkCMake_configureFile_InPlace filename)
     configure_file(${filename}.in ${filename})
     file(RENAME ${filename}.in ${filename}.in.done)
 endfunction()
+
+function (log_var var_name)
+    message("${var_name}=${${var_name}}")
+endfunction()
+
+function (apkCmake_process_applicationId_javaCode)
+    #    message(FATAL_ERROR "apkCMake_applicationId=${apkCMake_applicationId}")
+    string(REPLACE "." "/" apkCMake_javaCodeDestination ${apkCMake_applicationId})
+    set(apkCMake_javaCodeDestination ${apkCMake_projectFolder}/app/src/main/java/${apkCMake_javaCodeDestination})
+
+    set(apkCMake_javaCodeSource ${apkCMake_javaCodeTemplateFolder})
+    log_var(apkCMake_javaCodeDestination)
+    log_var(apkCMake_javaCodeSource)
+    file(GLOB java_sources RELATIVE ${apkCMake_javaCodeSource} ${apkCMake_javaCodeSource}/*)
+    foreach(java_source ${java_sources})
+        message("java_source=${java_source}")
+        configure_file(${apkCMake_javaCodeSource}/${java_source} ${apkCMake_javaCodeDestination}/${java_source})
+    endforeach()
+endfunction()
+
 
 function(apkCMake_makeAndroidStudioProject appTargetToEmbed)
     message(STATUS "apkCMake_makeAndroidStudioProject ${appTargetToEmbed}")
@@ -149,5 +174,6 @@ function(apkCMake_makeAndroidStudioProject appTargetToEmbed)
     apkCMake_configureFile_InPlace(${apkCMake_projectFolder}/local.properties)
     apkCMake_configureFile_InPlace(${apkCMake_projectFolder}/build.gradle)
 
+    apkCmake_process_applicationId_javaCode()
     message(STATUS "    ---> Success: please open the project ${apkCMake_projectFolder} with Android Studio!")
 endfunction()

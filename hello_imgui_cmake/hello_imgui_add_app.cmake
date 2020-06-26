@@ -13,7 +13,7 @@ endfunction()
 
 function(set_bundle_variables_defaults app_name)
     if (NOT DEFINED HELLO_IMGUI_BUNDLE_IDENTIFIER)
-        set(HELLO_IMGUI_BUNDLE_IDENTIFIER ${app_name}.helloimgui.com PARENT_SCOPE)
+        set(HELLO_IMGUI_BUNDLE_IDENTIFIER com.helloimgui.${app_name} PARENT_SCOPE)
     endif()
     if (NOT DEFINED HELLO_IMGUI_BUNDLE_DISPLAY_NAME)
         set(HELLO_IMGUI_BUNDLE_DISPLAY_NAME ${app_name} PARENT_SCOPE)

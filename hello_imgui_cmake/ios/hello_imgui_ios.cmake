@@ -53,7 +53,7 @@ function(hello_imgui_ios_add_info_plist app_name plist_type)
     string(REGEX REPLACE
         "[^a-zA-Z.-]" "-"
         HELLO_IMGUI_CFBundleIdentifier
-        ${HELLO_IMGUI_CFBundleIdentifier}
+        "${HELLO_IMGUI_CFBundleIdentifier}"
         )
     message("HELLO_IMGUI_CFBundleIdentifier=${HELLO_IMGUI_CFBundleIdentifier}")
 

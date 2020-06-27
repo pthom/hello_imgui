@@ -8,6 +8,14 @@
         #include <GLES3/gl3.h>
         #include <GLES3/gl2ext.h>
     #endif
+#elif defined(HELLOIMGUI_USE_GLES2)
+    #ifdef IOS
+        #include <OpenGLES/ES2/gl.h>
+        #include <OpenGLES/ES2/glext.h>
+    #else
+        #include <GLES2/gl2.h>
+        #include <GLES2/gl2ext.h>
+    #endif
 #elif defined(HELLOIMGUI_USE_GLAD)
     #include <glad/glad.h>
 #endif
@@ -55,6 +63,14 @@ namespace HelloImGui
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
         }
+#elif defined(HELLOIMGUI_USE_GLES2)
+        {
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_EGL, 2);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                                SDL_GL_CONTEXT_PROFILE_ES);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+        }
 #elif defined(__APPLE__)
         {
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);  // Always required on Mac
@@ -76,6 +92,8 @@ namespace HelloImGui
     {
 #if defined(HELLOIMGUI_USE_GLES3)
         const char* glsl_version = "#version 300 es";
+#elif defined(HELLOIMGUI_USE_GLES2)
+        const char* glsl_version = "#version 200 es";
 #elif defined(__APPLE__)
         const char* glsl_version = "#version 150";
 #else
@@ -108,6 +126,8 @@ namespace HelloImGui
                                    static_cast<int>(windowSize.x),
                                    static_cast<int>(windowSize.y),
                                    window_flags);
+        if (!mWindow)
+            HIMG_THROW("RunnerSdlOpenGl3::Impl_CreateWindowAndContext : SDL_CreateWindow returned NULL");
 
         if (backendWindowParams.fullScreen)
         {
@@ -135,23 +155,22 @@ namespace HelloImGui
 
     void RunnerSdlOpenGl3::Impl_InitGlLoader()
     {
-#ifndef __EMSCRIPTEN__
         // Initialize OpenGL loader
-#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
+#if defined(IMGUI_IMPL_OPENGL_ES3) || defined(IMGUI_IMPL_OPENGL_ES2) || defined(__EMSCRIPTEN__)
+        ; // nothing to do
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
         bool err = gl3wInit() != 0;
+        if (err)
+            HIMG_THROW("Failed to initialize OpenGL loader!");
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
         bool err = glewInit() != GLEW_OK;
+        if (err)
+            HIMG_THROW("Failed to initialize OpenGL loader!");
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
         bool err = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress)) == 0;
-#else
-        bool err = false;  // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is likely to requires some form of
-                           // initialization.
-#endif
         if (err)
-        {
             HIMG_THROW("Failed to initialize OpenGL loader!");
-        }
-#endif  // #ifndef __EMSCRIPTEN__
+#endif
     }
 
     void RunnerSdlOpenGl3::Impl_SetupPlatformRendererBindings()

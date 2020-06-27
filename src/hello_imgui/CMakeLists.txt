@@ -19,6 +19,9 @@ target_link_libraries(${target_name} PUBLIC
 if (IOS OR EMSCRIPTEN)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLES3)
 endif()
+if (ANDROID)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLES2)
+endif()
 
 if (IOS)
     target_compile_definitions(${target_name} PUBLIC IOS)
@@ -60,7 +63,11 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
             "-framework QuartzCore"
             )
 
-        target_compile_definitions(${target_name} PUBLIC IMGUI_IMPL_OPENGL_LOADER_CUSTOM="<OpenGLES/ES3/gl.h>")
+        target_compile_definitions(${target_name}
+            PUBLIC
+            IMGUI_IMPL_OPENGL_LOADER_CUSTOM="<OpenGLES/ES3/gl.h>"
+            IMGUI_IMPL_OPENGL_ES3
+            )
     elseif(EMSCRIPTEN)
         target_compile_options(${target_name} PUBLIC -s USE_SDL=2)
         target_link_options(${target_name} INTERFACE -s USE_SDL=2)
@@ -68,6 +75,7 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
         target_link_libraries(${target_name} PUBLIC SDL2main SDL2)
         target_link_libraries(${target_name} PUBLIC GLESv2)
         target_compile_definitions(${target_name} PUBLIC IMGUI_IMPL_OPENGL_ES2)
+        target_compile_definitions(${target_name} PUBLIC IMGUI_IMPL_OPENGL_LOADER_CUSTOM="<OpenGLES/ES2/gl.h>")
     else()
         find_package(SDL2 CONFIG REQUIRED)
         target_link_libraries(${target_name} PUBLIC SDL2::SDL2main SDL2::SDL2-static)

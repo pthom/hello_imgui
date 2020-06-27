@@ -2,10 +2,6 @@
 
 * [API](#api)
   * [HelloImGui::Run()](#helloimguirun)
-  * [Applications assets](#applications-assets)
-      * [Assets Files structure](#assets-files-structure)
-      * [Load Assets as data buffer](#load-assets-as-data-buffer)
-      * [Get assets path](#get-assets-path)
   * [Runner params](#runner-params)
       * [Diagram](#diagram)
       * [RunnerParams](#runnerparams)
@@ -16,6 +12,10 @@
   * [ImGui window params](#imgui-window-params)
       * [ImGuiWindowParams](#imguiwindowparams)
       * [Default window types](#default-window-types)
+  * [Applications assets](#applications-assets)
+      * [Assets Files structure](#assets-files-structure)
+      * [Load Assets as data buffer](#load-assets-as-data-buffer)
+      * [Get assets path](#get-assets-path)
   * [Docking](#docking)
       * [Docking Params: Example usage](#docking-params-example-usage)
       * [Docking Splits](#docking-splits)
@@ -38,59 +38,6 @@ by runnerParams.
 
 * `HelloImGui::Run(guiFunction, windowSize, windowTitle)`: simple signature 
 in order to start a simple application with ease.
-
-## Applications assets
-
-See [hello_imgui_assets.h](hello_imgui_assets.h).
-
-#### Assets Files structure
-
-
-Assets located beside the application CMakeLists are embedded automatically.
-
-For example, you can have the following project structure:
-````
-my_app/
-├── CMakeLists.txt        # Your app's CMakeLists
-├── assets/               # Its assets: for mobile devices and emscripten
-│   └── fonts/            # they are embeddd automatically by hello_imgui_add_app.cmake
-│       └── my_font.ttf
-├── my_app.main.cpp       # Its source code
-````
-
-Then you can load the asset "fonts/my_font.ttf", on all platforms.
-
-#### Load Assets as data buffer
-
-
-* `AssetFileData LoadAssetFileData(const char *assetPath)` will load an entire asset file into memory.
- This works on all platforms, including android.
- ````cpp
-    struct AssetFileData
-    {
-        void * data = nullptr;
-        size_t dataSize = 0;
-    };
- ````
-* `FreeAssetFileData(AssetFileData * assetFileData)` will free the memory.
-
-  Note about ImGui: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
-  and will free the memory for you.
-
-
-#### Get assets path
-
-  `std::string assetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
-
- This works under all platforms __except Android__.
- For compatibility with Android and other platforms, prefer to use `LoadAssetFileData` whenever possible.
-
-* Under iOS it will give a path in the app bundle (/private/XXX/....)
-* Under emscripten, it will be stored in the virtual filesystem at "/"
-* Under Android, assetFileFullPath is *not* implemented, and will throw an error:
-  assets can be compressed under android, and you cannot use standard file operations!
-  Use LoadAssetFileData instead
-
 
 ## Runner params
 
@@ -275,6 +222,61 @@ In order to change the application window settings, change the _AppWindowsParams
   * _ProvideFullScreenWindow_: a full window is provided in the background
   * _ProvideFullScreenDockSpace_: a full screen dockspace is provided in the background
   * _NoDefaultWindow_: No default window is provided (except for ImGui's default "debug" window)
+
+----
+
+## Applications assets
+
+See [hello_imgui_assets.h](hello_imgui_assets.h).
+
+#### Assets Files structure
+
+
+Assets located beside the application CMakeLists are embedded automatically.
+
+For example, you can have the following project structure:
+````
+my_app/
+├── CMakeLists.txt        # Your app's CMakeLists
+├── assets/               # Its assets: for mobile devices and emscripten
+│   └── fonts/            # they are embedded automatically by hello_imgui_add_app.cmake
+│       └── my_font.ttf
+├── my_app.main.cpp       # Its source code
+````
+
+Then you can load the asset "fonts/my_font.ttf", on all platforms.
+
+#### Load Assets as data buffer
+
+
+* `AssetFileData LoadAssetFileData(const char *assetPath)` will load an entire asset file into memory.
+ This works on all platforms, including android.
+ ````cpp
+    struct AssetFileData
+    {
+        void * data = nullptr;
+        size_t dataSize = 0;
+    };
+ ````
+* `FreeAssetFileData(AssetFileData * assetFileData)` will free the memory.
+
+  Note about ImGui: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
+  and will free the memory for you.
+
+
+#### Get assets path
+
+  `std::string assetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
+
+ This works under all platforms __except Android__.
+ For compatibility with Android and other platforms, prefer to use `LoadAssetFileData` whenever possible.
+
+* Under iOS it will give a path in the app bundle (/private/XXX/....)
+* Under emscripten, it will be stored in the virtual filesystem at "/"
+* Under Android, assetFileFullPath is *not* implemented, and will throw an error:
+  assets can be compressed under android, and you cannot use standard file operations!
+  Use LoadAssetFileData instead
+
 
 ----
 

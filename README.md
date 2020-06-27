@@ -203,7 +203,7 @@ If you intend to use your own SDL installation, simply remove the argument "-DCM
 
 #### Warning: main() signature with SDL
 
-Warning for SDL apps under iOS:
+Warning for SDL apps under iOS and Android:
 
 SDL uses a dirty hack in order to _replace your main() function by its own main() function_,
 which will then call your own main !

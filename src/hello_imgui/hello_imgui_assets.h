@@ -13,7 +13,7 @@ For example, you can have the following project structure:
 my_app/
 ├── CMakeLists.txt        # Your app's CMakeLists
 ├── assets/               # Its assets: for mobile devices and emscripten
-│   └── fonts/            # they are embeddd automatically by hello_imgui_add_app.cmake
+│   └── fonts/            # they are embedded automatically by hello_imgui_add_app.cmake
 │       └── my_font.ttf
 ├── my_app.main.cpp       # Its source code
 ````

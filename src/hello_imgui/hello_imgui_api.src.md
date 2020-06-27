@@ -8,23 +8,6 @@ See [hello_imgui.h](hello_imgui.h).
 
 @import "hello_imgui.h" {md_id=HelloImGui::Run}
 
-## Applications assets
-
-See [hello_imgui_assets.h](hello_imgui_assets.h).
-
-#### Assets Files structure
-
-@import "hello_imgui_assets.h" {md_id=AssetsStructure}
-
-#### Load Assets as data buffer
-
-@import "hello_imgui_assets.h" {md_id=LoadAssetFileData}
-
-#### Get assets path
-
-@import "hello_imgui_assets.h" {md_id=assetFileFullPath}
-
-
 ## Runner params
 
 See [runner_params.h](runner_params.h).
@@ -77,6 +60,25 @@ See [imgui_window_params.h](imgui_window_params.h).
 #### Default window types
 
 @import "imgui_window_params.h" {md_id=DefaultImGuiWindowType}
+
+----
+
+## Applications assets
+
+See [hello_imgui_assets.h](hello_imgui_assets.h).
+
+#### Assets Files structure
+
+@import "hello_imgui_assets.h" {md_id=AssetsStructure}
+
+#### Load Assets as data buffer
+
+@import "hello_imgui_assets.h" {md_id=LoadAssetFileData}
+
+#### Get assets path
+
+@import "hello_imgui_assets.h" {md_id=assetFileFullPath}
+
 
 ----
 

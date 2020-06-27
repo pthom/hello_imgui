@@ -16,12 +16,6 @@ target_link_libraries(${target_name} PUBLIC
     imgui
     )
 
-if (IOS OR EMSCRIPTEN)
-    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLES3)
-endif()
-if (ANDROID)
-    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLES2)
-endif()
 
 if (IOS)
     target_compile_definitions(${target_name} PUBLIC IOS)
@@ -30,6 +24,7 @@ endif()
 
 if (EMSCRIPTEN)
     set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLES3)
 endif()
 
 if (HELLOIMGUI_USE_SDL_OPENGL3)
@@ -67,20 +62,24 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
             PUBLIC
             IMGUI_IMPL_OPENGL_LOADER_CUSTOM="<OpenGLES/ES3/gl.h>"
             IMGUI_IMPL_OPENGL_ES3
+            HELLOIMGUI_USE_GLES3
             )
     elseif(EMSCRIPTEN)
         target_compile_options(${target_name} PUBLIC -s USE_SDL=2)
         target_link_options(${target_name} INTERFACE -s USE_SDL=2)
     elseif(ANDROID)
         target_link_libraries(${target_name} PUBLIC SDL2main SDL2)
-        target_link_libraries(${target_name} PUBLIC GLESv2)
-        target_compile_definitions(${target_name} PUBLIC IMGUI_IMPL_OPENGL_ES2)
-        target_compile_definitions(${target_name} PUBLIC IMGUI_IMPL_OPENGL_LOADER_CUSTOM="<OpenGLES/ES2/gl.h>")
+        target_link_libraries(${target_name} PUBLIC GLESv3)
+        target_compile_definitions(${target_name} PUBLIC
+            IMGUI_IMPL_OPENGL_LOADER_CUSTOM="<OpenGLES/ES3/gl.h>"
+            IMGUI_IMPL_OPENGL_ES3
+            HELLOIMGUI_USE_GLES3
+            )
+        target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_MOBILEDEVICE)
     else()
         find_package(SDL2 CONFIG REQUIRED)
         target_link_libraries(${target_name} PUBLIC SDL2::SDL2main SDL2::SDL2-static)
     endif()
-
 
     target_sources(${target_name} PRIVATE
         ${imgui_examples_dir}/imgui_impl_opengl3.h

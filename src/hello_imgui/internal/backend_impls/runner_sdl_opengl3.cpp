@@ -6,7 +6,7 @@
         #include <OpenGLES/ES3/glext.h>
     #else
         #include <GLES3/gl3.h>
-        #include <GLES3/gl2ext.h>
+        #include <GLES3/gl3ext.h>
     #endif
 #elif defined(HELLOIMGUI_USE_GLES2)
     #ifdef IOS

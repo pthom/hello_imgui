@@ -4,14 +4,11 @@
 namespace HelloImGui
 {
 /**
-@@md#assets
-`std::string assetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
+@@md#AssetsStructure
 
- This works under all platforms except Android. For compatibility with Android and other platforms,
- use `LoadAssetFileData`.
+Assets located beside the application CMakeLists are embedded automatically.
 
-
-For example, if you have the following project structure:
+For example, you can have the following project structure:
 ````
 my_app/
 ├── CMakeLists.txt        # Your app's CMakeLists
@@ -20,20 +17,14 @@ my_app/
 │       └── my_font.ttf
 ├── my_app.main.cpp       # Its source code
 ````
-then you can call `assetFileFullPath("fonts/my_font.ttf")`
 
-* Under iOS it will give a path in the app bundle (/private/XXX/....)
-* Under emscripten, it will be stored in the virtual filesystem at "/"
-* Under Android, assetFileFullPath is *not* implemented, and will throw an error:
-  assets can be compressed under android, and you cannot use standard file operations!
-  Use LoadAssetFileData instead
+Then you can load the asset "fonts/my_font.ttf", on all platforms.
 @@md
 */
-std::string assetFileFullPath(const std::string& assetRelativeFilename);
 
 
 /**
-@@md#AssetFileData
+@@md#LoadAssetFileData
 
 * `AssetFileData LoadAssetFileData(const char *assetPath)` will load an entire asset file into memory.
  This works on all platforms, including android.
@@ -59,6 +50,25 @@ struct AssetFileData
 
 AssetFileData LoadAssetFileData(const char *assetPath);
 void FreeAssetFileData(AssetFileData * assetFileData);
+
+
+
+/**
+@@md#assetFileFullPath
+  `std::string assetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
+
+ This works under all platforms __except Android__.
+ For compatibility with Android and other platforms, prefer to use `LoadAssetFileData` whenever possible.
+
+* Under iOS it will give a path in the app bundle (/private/XXX/....)
+* Under emscripten, it will be stored in the virtual filesystem at "/"
+* Under Android, assetFileFullPath is *not* implemented, and will throw an error:
+  assets can be compressed under android, and you cannot use standard file operations!
+  Use LoadAssetFileData instead
+@@md
+*/
+std::string assetFileFullPath(const std::string& assetRelativeFilename);
+
 
 
 } // namespace HelloImGui

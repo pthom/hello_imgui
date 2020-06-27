@@ -3,8 +3,9 @@
 * [API](#api)
   * [HelloImGui::Run()](#helloimguirun)
   * [Applications assets](#applications-assets)
-      * [Application assets path](#application-assets-path)
-      * [LoadAssetFileData](#loadassetfiledata)
+      * [Assets Files structure](#assets-files-structure)
+      * [Load Assets as data buffer](#load-assets-as-data-buffer)
+      * [Get assets path](#get-assets-path)
   * [Runner params](#runner-params)
       * [Diagram](#diagram)
       * [RunnerParams](#runnerparams)
@@ -40,17 +41,14 @@ in order to start a simple application with ease.
 
 ## Applications assets
 
-See [hello_imgui.h](hello_imgui.h).
+See [hello_imgui_assets.h](hello_imgui_assets.h).
 
-#### Application assets path
-
-`std::string assetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
-
- This works under all platforms except Android. For compatibility with Android and other platforms,
- use `LoadAssetFileData`.
+#### Assets Files structure
 
 
-For example, if you have the following project structure:
+Assets located beside the application CMakeLists are embedded automatically.
+
+For example, you can have the following project structure:
 ````
 my_app/
 ├── CMakeLists.txt        # Your app's CMakeLists
@@ -59,15 +57,10 @@ my_app/
 │       └── my_font.ttf
 ├── my_app.main.cpp       # Its source code
 ````
-then you can call `assetFileFullPath("fonts/my_font.ttf")`
 
-* Under iOS it will give a path in the app bundle (/private/XXX/....)
-* Under emscripten, it will be stored in the virtual filesystem at "/"
-* Under Android, assetFileFullPath is *not* implemented, and will throw an error:
-  assets can be compressed under android, and you cannot use standard file operations!
-  Use LoadAssetFileData instead
+Then you can load the asset "fonts/my_font.ttf", on all platforms.
 
-#### LoadAssetFileData
+#### Load Assets as data buffer
 
 
 * `AssetFileData LoadAssetFileData(const char *assetPath)` will load an entire asset file into memory.
@@ -83,6 +76,20 @@ then you can call `assetFileFullPath("fonts/my_font.ttf")`
 
   Note about ImGui: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
   and will free the memory for you.
+
+
+#### Get assets path
+
+  `std::string assetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
+
+ This works under all platforms __except Android__.
+ For compatibility with Android and other platforms, prefer to use `LoadAssetFileData` whenever possible.
+
+* Under iOS it will give a path in the app bundle (/private/XXX/....)
+* Under emscripten, it will be stored in the virtual filesystem at "/"
+* Under Android, assetFileFullPath is *not* implemented, and will throw an error:
+  assets can be compressed under android, and you cannot use standard file operations!
+  Use LoadAssetFileData instead
 
 
 ## Runner params

@@ -10,15 +10,20 @@ See [hello_imgui.h](hello_imgui.h).
 
 ## Applications assets
 
-See [hello_imgui.h](hello_imgui.h).
+See [hello_imgui_assets.h](hello_imgui_assets.h).
 
-#### Application assets path
+#### Assets Files structure
 
-@import "hello_imgui_assets.h" {md_id=assets}
+@import "hello_imgui_assets.h" {md_id=AssetsStructure}
 
-#### LoadAssetFileData
+#### Load Assets as data buffer
 
-@import "hello_imgui_assets.h" {md_id=AssetFileData}
+@import "hello_imgui_assets.h" {md_id=LoadAssetFileData}
+
+#### Get assets path
+
+@import "hello_imgui_assets.h" {md_id=assetFileFullPath}
+
 
 ## Runner params
 

@@ -291,7 +291,7 @@ cmake .. \
 
 ### Customizing the iOS build
 
-See [Embed assets and customize apps](#embed_assets_and_customize_apps)
+See [Embed assets and customize apps](#embed-assets-and-customize-apps)
  
 ----
 

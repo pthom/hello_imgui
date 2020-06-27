@@ -12,7 +12,13 @@ See [hello_imgui.h](hello_imgui.h).
 
 See [hello_imgui.h](hello_imgui.h).
 
+#### Application assets path
+
 @import "hello_imgui_assets.h" {md_id=assets}
+
+#### LoadAssetFileData
+
+@import "hello_imgui_assets.h" {md_id=AssetFileData}
 
 ## Runner params
 

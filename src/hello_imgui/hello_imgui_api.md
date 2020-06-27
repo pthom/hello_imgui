@@ -3,6 +3,8 @@
 * [API](#api)
   * [HelloImGui::Run()](#helloimguirun)
   * [Applications assets](#applications-assets)
+      * [Application assets path](#application-assets-path)
+      * [LoadAssetFileData](#loadassetfiledata)
   * [Runner params](#runner-params)
       * [Diagram](#diagram)
       * [RunnerParams](#runnerparams)
@@ -40,7 +42,13 @@ in order to start a simple application with ease.
 
 See [hello_imgui.h](hello_imgui.h).
 
+#### Application assets path
+
 `std::string assetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
+
+ This works under all platforms except Android. For compatibility with Android and other platforms,
+ use `LoadAssetFileData`.
+
 
 For example, if you have the following project structure:
 ````
@@ -55,6 +63,27 @@ then you can call `assetFileFullPath("fonts/my_font.ttf")`
 
 * Under iOS it will give a path in the app bundle (/private/XXX/....)
 * Under emscripten, it will be stored in the virtual filesystem at "/"
+* Under Android, assetFileFullPath is *not* implemented, and will throw an error:
+  assets can be compressed under android, and you cannot use standard file operations!
+  Use LoadAssetFileData instead
+
+#### LoadAssetFileData
+
+
+* `AssetFileData LoadAssetFileData(const char *assetPath)` will load an entire asset file into memory.
+ This works on all platforms, including android.
+ ````cpp
+    struct AssetFileData
+    {
+        void * data = nullptr;
+        size_t dataSize = 0;
+    };
+ ````
+* `FreeAssetFileData(AssetFileData * assetFileData)` will free the memory.
+
+  Note about ImGui: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
+  and will free the memory for you.
+
 
 ## Runner params
 

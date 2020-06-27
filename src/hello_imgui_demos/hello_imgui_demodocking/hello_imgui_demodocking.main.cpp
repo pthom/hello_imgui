@@ -34,7 +34,7 @@ void MyLoadFonts()
 
     // Then we load a second font from
     // Since this font is in a local assets/ folder, it was embedded automatically
-    std::string fontFilename = HelloImGui::assetFileFullPath("fonts/Akronim-Regular.ttf");
+    std::string fontFilename = "fonts/Akronim-Regular.ttf";
     gAkronimFont = HelloImGui::LoadFontTTF_WithFontAwesomeIcons(fontFilename, 40.f);
 }
 

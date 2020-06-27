@@ -1,6 +1,7 @@
 #include "hello_imgui/icons_font_awesome.h"
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/hello_imgui.h"
+#include "hello_imgui/hello_imgui_assets.h"
 #include "imgui.h"
 #include <string>
 #include <stdlib.h>
@@ -12,38 +13,33 @@ namespace HelloImGui
 {
 ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize)
 {
-    auto file_exists = [](const std::string &filename) {
-        FILE * f = fopen(filename.c_str(), "r");
-        bool exists = (f != NULL);
-        if (exists)
-            fclose(f);
-        return  exists;
-    };
-
-    if (!file_exists(fontFilename))
-        HIMG_THROW_STRING(std::string("LoadFontTTF, file not found: ") + fontFilename);
-
-    ImFont * font = ImGui::GetIO().Fonts->AddFontFromFileTTF(fontFilename.c_str(), fontSize);
-    if (font == nullptr) {
+    AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());
+    ImFont * font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSize);
+    if (font == nullptr)
         HIMG_THROW_STRING(std::string("Cannot load ") + fontFilename);
-    }
     return font;
-};
+}
 
 ImFont* MergeFontAwesomeToLastFont(float fontSize)
 {
-    static std::string faFile = HelloImGui::assetFileFullPath("fonts/fontawesome-webfont.ttf");
+    static std::string faFile = "fonts/fontawesome-webfont.ttf";
+
+    AssetFileData fontData = LoadAssetFileData(faFile.c_str());
+
     static const ImWchar icon_fa_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
     static ImFontConfig faConfig = [] {
         ImFontConfig config;
         config.MergeMode = true;
         return config;
     }();
-    auto font = ImGui::GetIO().Fonts->AddFontFromFileTTF(faFile.c_str(), fontSize, &faConfig, icon_fa_ranges);
+    auto font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
+        fontData.data, (int)fontData.dataSize, fontSize, &faConfig, icon_fa_ranges);
+
     if (font == nullptr)
         HIMG_THROW_STRING(std::string("Cannot load ") + faFile);
     return font;
 }
+
 
 ImFont* LoadFontTTF_WithFontAwesomeIcons(const std::string & fontFilename, float fontSize)
 {
@@ -59,7 +55,7 @@ namespace ImGuiDefaultSettings
 void LoadDefaultFont_WithFontAwesomeIcons()
 {
     float fontSize = 14.f;
-    std::string fontFilename = assetFileFullPath("fonts/DroidSans.ttf");
+    std::string fontFilename = "fonts/DroidSans.ttf";
     ImFont * font = LoadFontTTF(fontFilename, fontSize);
     (void) font;
     MergeFontAwesomeToLastFont(fontSize);

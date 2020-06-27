@@ -30,7 +30,7 @@ namespace HelloImGui
 
 /**
 @@md#SDLMain
-Warning for SDL apps under iOS:
+Warning for SDL apps under iOS and Android:
 
 SDL uses a dirty hack in order to _replace your main() function by its own main() function_,
 which will then call your own main !
@@ -40,6 +40,6 @@ Please make sure that the signature of your main() function is *exactly*
 and that your main() function returns an int.
 @@md
 */
-#if defined(IOS) && defined(HELLOIMGUI_USE_SDL_OPENGL3)
+#if defined(HELLOIMGUI_USE_SDL_OPENGL3)
 #include <SDL_main.h>
 #endif

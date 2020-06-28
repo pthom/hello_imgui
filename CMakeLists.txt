@@ -19,6 +19,9 @@ else()
     set(need_opengl_loader ON)
 endif()
 option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
+if (HELLOIMGUI_USE_GLAD)
+    add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GLAD HELLOIMGUI_USE_GLAD)
+endif()
 
 #
 # Build options
@@ -45,11 +48,6 @@ include(StaticAnalyzers)
 add_library(project_properties INTERFACE)
 
 set_project_warnings(project_properties)
-# sanitizer options if supported by compiler
-if(NOT ANDROID)
-    include(Sanitizers) # due to cmake 3.10 limitation
-    enable_sanitizers(project_properties)
-endif()
 
 if (EMSCRIPTEN)
     include(${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_emscripten_global_options.cmake)

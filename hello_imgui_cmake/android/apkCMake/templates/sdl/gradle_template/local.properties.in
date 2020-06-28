@@ -5,5 +5,5 @@
 # For customization when using a Version Control System, please read the
 # header note.
 #Wed Jun 24 11:43:58 CEST 2020
-sdk.dir=${apkCMake_sdkDir}
-ndk.dir=${apkCMake_ndkDir}
+sdk.dir=@apkCMake_sdkDir@
+ndk.dir=@apkCMake_ndkDir@

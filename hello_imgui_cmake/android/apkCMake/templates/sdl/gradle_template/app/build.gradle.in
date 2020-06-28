@@ -9,20 +9,20 @@ else {
 
 android {
     // compileSdkVersion 26
-    compileSdkVersion ${apkCMake_compileSdkVersion}
+    compileSdkVersion @apkCMake_compileSdkVersion@
     defaultConfig {
         if (buildAsApplication) {
             // applicationId "org.libsdl.app"
-            applicationId "${apkCMake_applicationIdUrlPart}.${apkCMake_applicationIdNamePart}"
+            applicationId "@apkCMake_applicationIdUrlPart@.@apkCMake_applicationIdNamePart@"
         }
         // minSdkVersion 16
-        minSdkVersion ${apkCMake_minSdkVersion}
+        minSdkVersion @apkCMake_minSdkVersion@
         // targetSdkVersion 26
-        targetSdkVersion ${apkCMake_targetSdkVersion}
+        targetSdkVersion @apkCMake_targetSdkVersion@
         // versionCode 1
-        versionCode ${apkCMake_versionCode}
+        versionCode @apkCMake_versionCode@
         // versionName "1.0"
-        versionName "${apkCMake_versionName}"
+        versionName "@apkCMake_versionName@"
 
         externalNativeBuild {
             // cmake {
@@ -31,8 +31,8 @@ android {
             //    abiFilters 'arm64-v8a'
             //}
             cmake {
-                arguments "-DANDROID_APP_PLATFORM=${apkCMake_androidAppPlatform}", "-DANDROID_STL=c++_static"
-                abiFilters ${apkCMake_abiFilters}
+                arguments "-DANDROID_APP_PLATFORM=@apkCMake_androidAppPlatform@", "-DANDROID_STL=c++_static"
+                abiFilters @apkCMake_abiFilters@
             }
         }
 
@@ -63,7 +63,7 @@ android {
             variant.outputs.each { output ->
                 def outputFile = output.outputFile
                 if (outputFile != null && outputFile.name.endsWith(".aar")) {
-                    def fileName = "${apkCMake_applicationIdUrlPart}.${apkCMake_applicationIdNamePart}.aar";
+                    def fileName = "@apkCMake_applicationIdUrlPart@.@apkCMake_applicationIdNamePart@.aar";
                     output.outputFile = new File(outputFile.parent, fileName);
                 }
             }

@@ -15,7 +15,7 @@ buildscript {
 
 allprojects {
     // buildDir = "../android-project.build/${rootProject.name}/${project.name}"
-    buildDir = "${apkCMake_buildDir}/${rootProject.name}/${project.name}"
+    buildDir = "@apkCMake_buildDir@/${rootProject.name}/${project.name}"
     repositories {
         jcenter()
         google()

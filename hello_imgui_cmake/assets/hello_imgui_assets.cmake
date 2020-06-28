@@ -27,6 +27,20 @@ elseif(IOS)
             )
         endforeach()
     endfunction()
+
+elseif(ANDROID)
+
+    function(hello_imgui_bundle_assets app_name assets_folder)
+        message("hello_imgui_bundle_assets ${app_name} ${assets_folder}")
+        FILE(GLOB children ${assets_folder}/*)
+        # message(FATAL_ERROR "HELLO_IMGUI_ANDROID_ASSETS_FOLDER=${HELLO_IMGUI_ANDROID_ASSETS_FOLDER}")
+        foreach(child ${children})
+            message("    Copying ${child}")
+            FILE(COPY ${child} DESTINATION ${HELLO_IMGUI_ANDROID_ASSETS_FOLDER})
+        endforeach()
+    endfunction()
+
+
 else()
 
     # Bundle assets

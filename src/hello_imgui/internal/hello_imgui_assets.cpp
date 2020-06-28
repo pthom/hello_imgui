@@ -45,20 +45,21 @@ AssetFileData LoadAssetFileData(const char *assetPath)
 {
     AssetFileData r;
     r.data = SDL_LoadFile(assetPath, &r.dataSize);
-    if (!r.data)
-    {
-        std::string otherPath = assetFileFullPath(assetPath);
-        r.data = SDL_LoadFile(otherPath.c_str(), &r.dataSize);
-    }
-    #ifdef _MSC_VER
-      if (!r.data)
-      {
-          std::string otherPath2 = 
-            wai_getExecutableFolder_string() + "/../assets/" + assetPath;
-          r.data = SDL_LoadFile(otherPath2.c_str(), &r.dataSize);
-
-      }
+    #ifndef __ANDROID__
+        if (!r.data)
+        {
+            std::string otherPath = assetFileFullPath(assetPath);
+            r.data = SDL_LoadFile(otherPath.c_str(), &r.dataSize);
+        }
     #endif
+    #ifdef _MSC_VER
+        if (!r.data)
+        {
+            std::string otherPath2 =
+            wai_getExecutableFolder_string() + "/../assets/" + assetPath;
+            r.data = SDL_LoadFile(otherPath2.c_str(), &r.dataSize);
+        }
+#endif
     if (!r.data)
         HIMG_THROW_STRING(std::string("LoadAssetFileData: cannot load ") + assetPath);
     return r;

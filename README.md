@@ -25,7 +25,7 @@ __Online Emscripten/Wasm demos:__
 
 Below, a movie showing Hello ImGui running on 6 platforms:
 
-[![Running on 6 platforms](docs/HelloImGui_6_Platforms.png) ](https://github.com/pthom/hello_imgui/raw/master/docs/HelloImGui_6_Platforms.mp4)
+[![Running on 6 platforms](docs/HelloImGui_6_Platforms.png) ](https://traineq.org/HelloImGui_6_Platforms.mp4)
 
 ----
 

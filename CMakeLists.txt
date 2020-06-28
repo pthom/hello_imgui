@@ -19,9 +19,6 @@ else()
     set(need_opengl_loader ON)
 endif()
 option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
-if (HELLOIMGUI_USE_GLAD)
-    add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GLAD HELLOIMGUI_USE_GLAD)
-endif()
 
 #
 # Build options

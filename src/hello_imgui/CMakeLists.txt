@@ -107,6 +107,6 @@ if (HELLOIMGUI_USE_QT)
 endif()
 
 if (HELLOIMGUI_USE_GLAD)
-    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLAD)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
     target_link_libraries(${target_name} PUBLIC glad)
 endif()

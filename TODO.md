@@ -1,7 +1,8 @@
 # Main
+* [ ] test in external my_app
+* [ ] https://github.com/pthom/hello_imgui_my_app: more advanced demo:
+    assets, customization, etc.
 * [ ] SDL_GL_CreateContext fail with safari / emscripten
-* [ ] test iOS, emscripten, etc
-* [ ] Movie 6 platforms
 
 
 ## Doc
@@ -40,11 +41,9 @@
 * [X] Custom app/src/main/res
 * [X] Auto resize icons ?
 * [X] SDLActivity:getLibraries / add target
-* [ ] doc Android
-* [ ] Merge 
-* [ ] test in external my_app
+* [X] doc Android
+* [X] Merge 
 
 ## Misc
-* [ ] https://github.com/pthom/hello_imgui_my_app: more advanced demo?
 * [ ] Add issue / qtimgui on Windows (blank window)
    

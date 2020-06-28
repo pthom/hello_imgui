@@ -183,6 +183,11 @@ int WAI_PREFIX(getModulePath)(char* out, int capacity, int* dirname_length)
 #endif
 #endif
 
+#if defined(__GNUC__) // || defined(__clang__)
+#pragma GCC diagnostic ignored "-Wcast-align"
+#pragma GCC diagnostic ignored "-Wshorten-64-to-32"
+#endif
+
 WAI_FUNCSPEC
 int WAI_PREFIX(getExecutablePath)(char* out, int capacity, int* dirname_length)
 {

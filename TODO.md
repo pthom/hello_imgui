@@ -33,14 +33,12 @@
 * [X] link SDL and helloimgui in cmakelist
 * [N] apkCmake standalone
 * [X] apkCMake only if android
+* [X] app name and icon
+* [X]   Custom app/src/main/res
+* [ ] Auto resize icons ?
 * [ ] test dans my_app externe
-* [ ] app name and icon
-    Custom app/src/main/res
-    Configure app/src/main/res/values/strings.xml
 * [ ] test iOS, emscripten, etc
 * [ ] doc Android
-* [ ] Implement hello_imgui_platform_customization for android
-    (See [Android_status.md](Android_status.md))
 * [ ] SDLActivity:getLibraries / add target
 
 ## Misc

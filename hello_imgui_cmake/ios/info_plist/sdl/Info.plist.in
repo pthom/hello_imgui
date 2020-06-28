@@ -6,7 +6,7 @@
     <string>${HELLO_IMGUI_CFBundleIdentifier}</string>
 
 	<key>CFBundleDisplayName</key>
-	<string>${HELLO_IMGUI_BUNDLE_DISPLAY_NAME}</string>
+	<string>${HELLO_IMGUI_ICON_DISPLAY_NAME}</string>
 	<key>CFBundleName</key>
 	<string>${HELLO_IMGUI_BUNDLE_NAME}</string>
 	<key>NSHumanReadableCopyright</key>

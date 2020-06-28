@@ -1,4 +1,10 @@
-set(apkCMake_projectTemplateFolder ${CMAKE_CURRENT_LIST_DIR}/templates/sdl)
+if (NOT DEFINED apkCMake_projectTemplateFolder)
+    message(FATAL_ERROR "Please define apkCMake_projectTemplateFolder")
+endif()
+if (NOT DEFINED apkCMake_resTemplateFolder)
+    message(FATAL_ERROR "Please define apkCMake_resTemplateFolder")
+endif()
+
 include(${apkCMake_projectTemplateFolder}/apkCMake_makeSymLinks.cmake)
 
 
@@ -110,6 +116,11 @@ macro(apkCMake_fillVariables appTargetToEmbed)
         "${apkCMake_applicationIdNamePart}")
     apkCMake_logVar(apkCMake_applicationIdNamePart)
 
+    if (NOT DEFINED apkCMake_iconDisplayName)
+        message(FATAL_ERROR "Please set apkCMake_iconDisplayName (for example \"My App\")")
+    endif()
+    apkCMake_logVar(apkCMake_iconDisplayName)
+
     # apkCMake_activityClassName is the name of the main java activity class that will be generated
     if (NOT DEFINED apkCMake_activityClassName)
         set(apkCMake_activityClassName ${apkCMake_applicationIdNamePart})
@@ -135,7 +146,17 @@ endmacro()
 
 function (apkCMake_configureFile_InPlace filename)
     configure_file(${filename}.in ${filename} @ONLY)
-    file(RENAME ${filename}.in ${filename}.in.done)
+    file(REMOVE ${filename}.in)
+endfunction()
+
+
+function(apkCMake_copyDirectoryContent src dst)
+    file(GLOB_RECURSE all_files RELATIVE ${src} ${src}/*)
+    foreach(one_file ${all_files})
+        get_filename_component(dirname ${one_file} DIRECTORY)
+        get_filename_component(basename ${one_file} NAME)
+        file(COPY ${src}/${dirname}/${basename} DESTINATION ${dst}/${dirname})
+    endforeach()
 endfunction()
 
 
@@ -151,6 +172,25 @@ function(apkCMake_copyAndConfigureDirectoryContent src dst)
             apkCMake_configureFile_InPlace(${dst}/${dirname}/${basename_no_in})
         endif()
     endforeach()
+endfunction()
+
+
+function(apkCMake_addResFolder resFolder)
+    set(resOutputFolder ${apkCMake_outputProjectFolder}/app/src/main/res)
+    apkCMake_copyDirectoryContent(${resFolder} ${resOutputFolder})
+endfunction()
+
+
+function(apkCMake_addTemplateResFolder)
+    apkCMake_addResFolder(${apkCMake_resTemplateFolder})
+endfunction()
+
+
+function(apkCMake_addLocalResFolder)
+    if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/android/res)
+        message("hello_imgui_platform_customization: ${app_name} found local res")
+        apkCMake_addResFolder(${CMAKE_CURRENT_SOURCE_DIR}/android/res)
+    endif()
 endfunction()
 
 
@@ -176,5 +216,9 @@ function(apkCMake_makeAndroidStudioProject appTargetToEmbed)
     apkCMake_copyAndConfigureDirectoryContent(${apkCMake_projectTemplateFolder}/gradle_template ${apkCMake_outputProjectFolder})
     apkCmake_processActivityClass()
     apkCMake_makeSymLinks()
+
+    apkCMake_addTemplateResFolder()
+    apkCMake_addLocalResFolder()
+
     message(STATUS "    ---> Success: please open the project ${apkCMake_outputProjectFolder} with Android Studio!")
 endfunction()

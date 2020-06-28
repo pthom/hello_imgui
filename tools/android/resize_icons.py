@@ -50,13 +50,6 @@ your_app/
 │       └── Akronim-Regular.ttf
 ├── hello_imgui_demodocking.main.cpp
 └── ios/
-    ├── Info.plist
-    └── icons/
-        ├── Default-375w-812h@3x.disabled.png
-        ├── Default-568h@2x.png
-        ├── Default.png
-        ├── Icon.png
-        └── Readme.md
 ````
 
 @@md

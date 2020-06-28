@@ -1,5 +1,6 @@
 # Main
 * [ ] SDL_GL_CreateContext fail with safari / emscripten
+* [ ] test iOS, emscripten, etc
 * [ ] Movie 6 platforms
 
 
@@ -36,12 +37,12 @@
 * [N] apkCmake standalone
 * [X] apkCMake only if android
 * [X] app name and icon
-* [X]   Custom app/src/main/res
+* [X] Custom app/src/main/res
 * [X] Auto resize icons ?
-* [ ] test dans my_app externe
-* [ ] test iOS, emscripten, etc
+* [X] SDLActivity:getLibraries / add target
 * [ ] doc Android
-* [ ] SDLActivity:getLibraries / add target
+* [ ] Merge 
+* [ ] test in external my_app
 
 ## Misc
 * [ ] https://github.com/pthom/hello_imgui_my_app: more advanced demo?

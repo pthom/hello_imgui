@@ -57,10 +57,18 @@ __Table of contents__
     * [Install the requirements (emsdk)](#install-the-requirements-emsdk)
     * [Build for emscripten](#build-for-emscripten)
     * [Customizing the emscripten build](#customizing-the-emscripten-build)
-  * [Build instructions for Android](#build-instructions-for-android)
+  * [Build and deploy instructions for Android](#build-and-deploy-instructions-for-android)
+    * [Set Android required environment variables](#set-android-required-environment-variables)
+    * [Run cmake in order to create an Android studio project](#run-cmake-in-order-to-create-an-android-studio-project)
+* [1. first set JAVA_HOME to the correct java version (Android requires exactly jdk8)](#1.-first-set-java_home-to-the-correct-java-version-android-requires-exactly-jdk8)
+* [The path below is for MacOS users, where adoptopenjdk provides the correct version](#the-path-below-is-for-macos-users-where-adoptopenjdk-provides-the-correct-version)
+* [2. Build the project](#2.-build-the-project)
+* [3. Install it on your device](#3.-install-it-on-your-device)
 * [Embed assets and customize apps](#embed-assets-and-customize-apps)
   * [Embed assets](#embed-assets)
   * [Customize per platform](#customize-per-platform)
+      * [iOS](#ios)
+      * [Android](#android)
   * [Example of customization:](#example-of-customization)
       * [Resizing icons for Android](#resizing-icons-for-android)
 * [Alternatives](#alternatives)
@@ -358,49 +366,138 @@ By default, the application will be presented in an empty html page. You can ada
 
 ----
 
-## Build instructions for Android
+## Build and deploy instructions for Android
 
-Android support is being developed : as I do not own an Android device, help would be appreciated.
-Currently, the code correctly compiles and link for Android; however no apk is currently generated.
+The Android version uses SDL + OpenGLES3.
 
-See [Android_status.md](Android_status.md) for more info.
+### Set Android required environment variables
+
+````bash
+export ANDROID_HOME=/path/to/AndroidNdk
+````
+
+For example (MacOS):
+````bash
+export ANDROID_HOME=/Users/Me/Library/Android/sdk
+````
+
+### Run cmake in order to create an Android studio project
+
+The script [tools/android/cmake_arm-android.sh](tools/android/cmake_arm-android.sh)  will invoke cmake with the android toolchain, and also _create an Android Studio project_ which
+is multiarch (arm64-v8a, armeabi-v7a, etc), via the option `-DHELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT=ON`.
+
+
+Run the following commands:
+
+````bash
+mkdir build_android 
+cd build_android
+../tools/android/cmake_arm-android.sh
+````
+
+Your build directory will now look like this:
+````
+build_android/
+├── CMakeCache.txt
+├── ...
+├── hello-imgui-demo-classic_AndroidStudio/
+├── hello_imgui_demo_minimal_AndroidStudio/
+├── hello_imgui_demodocking_AndroidStudio/
+├── hello_world_AndroidStudio/
+├── ...
+````
+
+The folders "xxxx_AndroidStudio" contain Android Studio projects, which you can use to build and debug your app.
+
+You can now open (for example) the project hello_imgui_demodocking_AndroidStudio with Android Studio and run it / debug it.
+
+You can also build the project manually via gradlew like this:
+
+````
+# 1. first set JAVA_HOME to the correct java version (Android requires exactly jdk8)
+# The path below is for MacOS users, where adoptopenjdk provides the correct version
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home 
+
+# 2. Build the project
+cd hello_imgui_demodocking_AndroidStudio
+./gradlew build
+
+# 3. Install it on your device
+./gradlew installDebug
+````
+
+
+----
+
 
 # Embed assets and customize apps
 
 ## Embed assets
 Anything in the assets/ folder located beside the app's CMakeLists will be embedded
-on mobile devices and emscripten, i.e they will be bundled together with the app; 
-and you can access them via `assetFileFullPath(const std::string& assetRelativeFilename)`.
+on mobile devices and emscripten, i.e they will be bundled together with the app; and you can access them via `assetFileFullPath(const std::string& assetRelativeFilename)`.
 
 ## Customize per platform 
-For iOS, simply create a folder named "ios" beside the application 'CMakeLists.txt'
-There, you can add a custom Info.plist, as well as app icons and launch screens.
+
+#### iOS
+For iOS, simply create a folder named "ios" beside the application 'CMakeLists.txt'. There, you can add a custom Info.plist, as well as app icons and launch screens.
+
+#### Android 
+
+For Android, simply create a folder named "android" beside the application 'CMakeLists.txt'. There, you can add a custom "res/" folder, containing your icons and application settings inside "res/values/".
+
 
 ## Example of customization:
 ````
 hello_imgui_democking/
 ├── CMakeLists.txt                              # The app's CMakeLists
 ├── hello_imgui_demodocking.main.cpp            # its source code
-|
+│
+│
 ├── assets/                                     # Anything in the assets/ folder located
 │   └── fonts/                                  # beside the app's CMakeLists will be embedded
 │       └── Akronim-Regular.ttf                 # on mobile devices and emscripten             
-|
+│
+│
+├── android/                                    # android/ is where you customize the Android App
+│   ├── mipmap-source/
+│   │   ├── Readme.md
+│   │   └── ic_launcher.png                     # an icon that helps creating the different sizes
+│   └── res/                                    # anything in the res/ folder will be embedded as a resource
+│       ├── mipmap-hdpi/
+│       │   └── ic_launcher.png                 # icons with different sizes
+│       ├── mipmap-mdpi/
+│       │   └── ic_launcher.png
+│       ├── mipmap-xhdpi/
+│       │   └── ic_launcher.png
+│       ├── mipmap-xxhdpi/
+│       │   └── ic_launcher.png
+│       ├── mipmap-xxxhdpi/
+│       │   └── ic_launcher.png
+│       └── values/
+│           ├── colors.xml                     
+│           ├── strings.xml                    # Customize the application icon label here
+│           └── styles.xml
+│
+│
 └── ios/                                        # ios/ is where you customize the iOS App
-    |
+    │
     ├── Info.plist                              # If present, this Info.plist will be applied 
-    |                                           # (if not, a default is provided)
-    |                                           # You can there customize the App icon name, etc.
-    |
+    │                                           # (if not, a default is provided)
+    │                                           # You can there customize the App icon name, etc.
+    │
     └── icons/                                  # Icons and Launch images placed inside icons/ 
         ├── Default-375w-812h@3x.disabled.png   # will be placed in the application bundle 
         ├── Default-568h@2x.png                 # and thus used by the app
         ├── Default.png
         ├── Icon.png
         └── Readme.md
+
 ````
 
 #### Resizing icons for Android
+
+You can use the script [tools/android/resize_icons.py](tools/android/resize_icons.py) in order 
+to quickly create the icons with all the required sizes.
 
 
 This script will create several android icons with correct size.
@@ -445,13 +542,6 @@ your_app/
 │       └── Akronim-Regular.ttf
 ├── hello_imgui_demodocking.main.cpp
 └── ios/
-    ├── Info.plist
-    └── icons/
-        ├── Default-375w-812h@3x.disabled.png
-        ├── Default-568h@2x.png
-        ├── Default.png
-        ├── Icon.png
-        └── Readme.md
 ````
 
 

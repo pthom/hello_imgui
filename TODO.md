@@ -32,7 +32,8 @@
 * [X] lien pour CMakeLists.txt.in 
 * [X] link SDL and helloimgui in cmakelist
 * [N] apkCmake standalone
-* [ ] apkCMake only if android
+* [X] apkCMake only if android
+* [ ] test dans my_app externe
 * [ ] app name and icon
     Custom app/src/main/res
     Configure app/src/main/res/values/strings.xml

@@ -68,14 +68,15 @@ function(hello_imgui_add_app)
 
     hello_imgui_platform_customization(${app_name})
 
-    if (HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT)
+    target_link_libraries(${app_name} PRIVATE hello_imgui)
+
+    if (ANDROID AND HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT)
         set(apkCMake_applicationIdUrlPart ${HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART})
         set(apkCMake_applicationIdNamePart ${HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART})
         set(apkCMake_abiFilters "'arm64-v8a', 'x86', 'x86_64'")
         apkCMake_makeAndroidStudioProject(${app_name})
     endif()
 
-    target_link_libraries(${app_name} PRIVATE hello_imgui)
 
     message("hello_imgui_add_app
              app_name=${app_name}

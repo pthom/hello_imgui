@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 
-# See https://github.com/microsoft/vcpkg/blob/master/docs/users/android.md
-
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 if [ -z "$ANDROID_NDK_HOME" ]; then
-  echo "Please set env variable ANDROID_NDK_HOME"
-  exit 1
+  if [ ! -z "$ANDROID_HOME" ]; then
+    echo "trying android home"
+    if [ -d $ANDROID_HOME/ndk-bundle ]; then
+      export ANDROID_NDK_HOME=$ANDROID_HOME/ndk-bundle
+    fi
+  fi
 fi
 
-if [ -z "$JAVA_HOME" ]; then
-  echo "Please set env variable JAVA_HOME (jdk version 8 required)"
+if [ -z "$ANDROID_NDK_HOME" ]; then
+  echo "Please set env variable ANDROID_NDK_HOME"
   exit 1
 fi
 
@@ -31,6 +33,7 @@ cmd="cmake \
     -DCMAKE_TOOLCHAIN_FILE=$android_toolchain_file \
     -DANDROID_ABI=$android_abi \
     -DHELLOIMGUI_USE_SDL_OPENGL3=ON \
+    -DHELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT=ON \
     $source_dir
     "
 

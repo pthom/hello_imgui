@@ -23,6 +23,10 @@ __Online Emscripten/Wasm demos:__
 [docking]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html  "Advanced docking demo"
 [classic]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demo_classic/hello-imgui-demo-classic.html  "ImGui classic demo"
 
+Below, a movie showing Hello ImGui running on 6 platforms:
+
+[Hello ImGui running on 6 platforms ![Running on 6 platforms](docs/HelloImGui_6_Platforms.png) ](truc)
+
 ----
 
 __Table of contents__

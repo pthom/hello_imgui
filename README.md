@@ -62,6 +62,7 @@ __Table of contents__
   * [Embed assets](#embed-assets)
   * [Customize per platform](#customize-per-platform)
   * [Example of customization:](#example-of-customization)
+      * [Resizing icons for Android](#resizing-icons-for-android)
 * [Alternatives](#alternatives)
 
 ----
@@ -398,6 +399,62 @@ hello_imgui_democking/
         ├── Icon.png
         └── Readme.md
 ````
+
+#### Resizing icons for Android
+
+
+This script will create several android icons with correct size.
+
+Your app folder should look like this:
+
+````
+your_app/
+├── CMakeLists.txt
+├── android/                  # Run this script from this folder
+│   └── mipmap-source/
+│       └── ic_launcher.png   # Put here a big version of your icon
+├── assets/
+├── hello_imgui_demodocking.main.cpp
+└── ios/
+````
+
+Run this script from the subfolder android/ of your app folder.
+A folder named mipmap-source should be present in it, with an icon ic_launcher.png inside it
+
+
+When running this script, several variations of the icons will be created:
+````
+your_app/
+├── CMakeLists.txt
+├── android/
+│   ├── mipmap-source/
+│   │   └── ic_launcher.png
+│   └── res/
+│       ├── mipmap-hdpi/
+│       │   └── ic_launcher.png
+│       ├── mipmap-mdpi/
+│       │   └── ic_launcher.png
+│       ├── mipmap-xhdpi/
+│       │   └── ic_launcher.png
+│       ├── mipmap-xxhdpi/
+│       │   └── ic_launcher.png
+│       └── mipmap-xxxhdpi/
+│           └── ic_launcher.png
+├── assets/
+│   └── fonts/
+│       └── Akronim-Regular.ttf
+├── hello_imgui_demodocking.main.cpp
+└── ios/
+    ├── Info.plist
+    └── icons/
+        ├── Default-375w-812h@3x.disabled.png
+        ├── Default-568h@2x.png
+        ├── Default.png
+        ├── Icon.png
+        └── Readme.md
+````
+
+
 
 ----
 

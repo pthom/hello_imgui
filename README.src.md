@@ -357,6 +357,11 @@ hello_imgui_democking/
         └── Readme.md
 ````
 
+#### Resizing icons for Android
+
+@import "tools/android/resize_icons.py" {md_id=resize_icons}
+
+
 ----
 
 # Alternatives

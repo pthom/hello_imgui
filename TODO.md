@@ -1,5 +1,7 @@
 # Main
 * [ ] SDL_GL_CreateContext fail with safari / emscripten
+* [ ] Movie 6 platforms
+
 
 ## Doc
 
@@ -35,7 +37,7 @@
 * [X] apkCMake only if android
 * [X] app name and icon
 * [X]   Custom app/src/main/res
-* [ ] Auto resize icons ?
+* [X] Auto resize icons ?
 * [ ] test dans my_app externe
 * [ ] test iOS, emscripten, etc
 * [ ] doc Android

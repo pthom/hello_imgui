@@ -115,7 +115,7 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demodocking](src/hel
 
 ## Example of an app using HelloImGui as a submodule
 
-[hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule in a separate application. 
+[hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule. 
 
 ## ImGui "classic" demo
 
@@ -166,6 +166,9 @@ _RunnerParams_ contains all the settings and callbacks in order to run an applic
 
 
 # Build instructions
+
+> Note: If you want to use HelloImGui in your own application, you may also want to look at [hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app), which is a separate repo that gives a working example on how to use the library as a submodule.
+  
 
 ## Clone the repository
 ````bash

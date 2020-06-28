@@ -362,16 +362,17 @@ You can now open (for example) the project hello_imgui_demodocking_AndroidStudio
 
 You can also build the project manually via gradlew like this:
 
-````
-# 1. first set JAVA_HOME to the correct java version (Android requires exactly jdk8)
-# The path below is for MacOS users, where adoptopenjdk provides the correct version
+````bash
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home 
-
-# 2. Build the project
 cd hello_imgui_demodocking_AndroidStudio
 ./gradlew build
+````
 
-# 3. Install it on your device
+_Note: (you need to first set JAVA_HOME to the correct java version (Android requires exactly jdk8), the path given here is for MacOS users, where adoptopenjdk provides the correct version)_
+
+You can also install the app via command line, like this:
+
+````bash
 ./gradlew installDebug
 ````
 

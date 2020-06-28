@@ -60,10 +60,6 @@ __Table of contents__
   * [Build and deploy instructions for Android](#build-and-deploy-instructions-for-android)
     * [Set Android required environment variables](#set-android-required-environment-variables)
     * [Run cmake in order to create an Android studio project](#run-cmake-in-order-to-create-an-android-studio-project)
-* [1. first set JAVA_HOME to the correct java version (Android requires exactly jdk8)](#1.-first-set-java_home-to-the-correct-java-version-android-requires-exactly-jdk8)
-* [The path below is for MacOS users, where adoptopenjdk provides the correct version](#the-path-below-is-for-macos-users-where-adoptopenjdk-provides-the-correct-version)
-* [2. Build the project](#2.-build-the-project)
-* [3. Install it on your device](#3.-install-it-on-your-device)
 * [Embed assets and customize apps](#embed-assets-and-customize-apps)
   * [Embed assets](#embed-assets)
   * [Customize per platform](#customize-per-platform)
@@ -413,16 +409,17 @@ You can now open (for example) the project hello_imgui_demodocking_AndroidStudio
 
 You can also build the project manually via gradlew like this:
 
-````
-# 1. first set JAVA_HOME to the correct java version (Android requires exactly jdk8)
-# The path below is for MacOS users, where adoptopenjdk provides the correct version
+````bash
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home 
-
-# 2. Build the project
 cd hello_imgui_demodocking_AndroidStudio
 ./gradlew build
+````
 
-# 3. Install it on your device
+_Note: (you need to first set JAVA_HOME to the correct java version (Android requires exactly jdk8), the path given here is for MacOS users, where adoptopenjdk provides the correct version)_
+
+You can also install the app via command line, like this:
+
+````bash
 ./gradlew installDebug
 ````
 

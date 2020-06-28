@@ -322,7 +322,7 @@ The Android version uses SDL + OpenGLES3.
 ### Set Android required environment variables
 
 ````bash
-export ANDROID_HOME=/path/to/AndroidNdk
+export ANDROID_HOME=/path/to/AndroidSdk
 ````
 
 For example (MacOS):
@@ -330,10 +330,12 @@ For example (MacOS):
 export ANDROID_HOME=/Users/Me/Library/Android/sdk
 ````
 
+By default, the scripts will look for Android-ndk inside $ANDROID_HOME/ndk-bundle.
+
 ### Run cmake in order to create an Android studio project
 
 The script [tools/android/cmake_arm-android.sh](tools/android/cmake_arm-android.sh)  will invoke cmake with the android toolchain, and also _create an Android Studio project_ which
-is multiarch (arm64-v8a, armeabi-v7a, etc), via the option `-DHELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT=ON`.
+is multiarch (arm64-v8a, armeabi-v7a, etc), via the option `-DHELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT=ON` (see [tools/android/_impl_cmake_android.sh](tools/android/_impl_cmake_android.sh))
 
 
 Run the following commands:

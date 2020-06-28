@@ -11,5 +11,4 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}/hello_imgui/hell
 
 set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE STRING "" FORCE)
 set(HELLO_IMGUI_ANDROID_ASSETS_FOLDER ${CMAKE_SOURCE_DIR}/../src/main/assets)
-add_subdirectory(hello_imgui)
 add_subdirectory(appDir)

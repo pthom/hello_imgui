@@ -1,9 +1,12 @@
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
 
 #if defined(HELLOIMGUI_USE_GLES3)
-    #ifdef IOS
+    #if defined(IOS)
         #include <OpenGLES/ES3/gl.h>
         #include <OpenGLES/ES3/glext.h>
+    #elif defined(__EMSCRIPTEN__)
+        #include <GLES3/gl3.h>
+        #include <GLES3/gl2ext.h>
     #else
         #include <GLES3/gl3.h>
         #include <GLES3/gl3ext.h>

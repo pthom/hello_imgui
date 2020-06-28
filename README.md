@@ -101,7 +101,7 @@ include(hello_imgui_add_app)
 hello_imgui_add_app(hello_world hello_world.main.cpp)
 ````
 
-_Although this app was extremely simple to write, it will run with no additional modifications (including in the cmake code) on iOS, Linux, Mac, Windows and Emscripten, and hopefuly soon Android_
+_Although this app was extremely simple to write, it will run with no additional modifications (including in the cmake code) on iOS, Android, Linux, Mac, Windows and Emscripten_
 
 Source for this example: [src/hello_imgui_demos/hello_world](src/hello_imgui_demos/hello_world)
 
@@ -145,7 +145,7 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 * OSX
 * iOS
 * emscripten
-* Android : being developed
+* Android
 
 ## Backends 
 * SDL2 + OpenGL 3 or OpenGLES3 for mobile devices

@@ -323,6 +323,14 @@ By default, the application will be presented in an empty html page. You can ada
 
 The Android version uses SDL + OpenGLES3.
 
+### Download SDL 
+
+You need to download SDL manually for Android, like this:
+
+````bash
+./tools/sdl_download.sh
+```` 
+
 ### Set Android required environment variables
 
 ````bash

@@ -62,6 +62,7 @@ __Table of contents__
     * [Build for emscripten](#build-for-emscripten)
     * [Customizing the emscripten build](#customizing-the-emscripten-build)
   * [Build and deploy instructions for Android](#build-and-deploy-instructions-for-android)
+    * [Download SDL](#download-sdl)
     * [Set Android required environment variables](#set-android-required-environment-variables)
     * [Run cmake in order to create an Android studio project](#run-cmake-in-order-to-create-an-android-studio-project)
 * [Embed assets and customize apps](#embed-assets-and-customize-apps)
@@ -369,6 +370,14 @@ By default, the application will be presented in an empty html page. You can ada
 ## Build and deploy instructions for Android
 
 The Android version uses SDL + OpenGLES3.
+
+### Download SDL 
+
+You need to download SDL manually for Android, like this:
+
+````bash
+./tools/sdl_download.sh
+```` 
 
 ### Set Android required environment variables
 

@@ -19,7 +19,6 @@ namespace HelloImGui
         gRunnerEmscripten = this;
         gRunnerEmscripten->Setup();
 
-        int fps = 120;
         emscripten_cancel_main_loop();
 
         SDL_GL_SetSwapInterval(1);  // Enable vsync
@@ -28,7 +27,7 @@ namespace HelloImGui
         // processing events from the browser, and dispatching them.
         // int fps = 0; // 0 <=> let the browser decide. This is the recommended way, see
         // https://emscripten.org/docs/api_reference/emscripten.h.html#browser-execution-environment
-        emscripten_set_main_loop_arg(emscripten_imgui_main_loop, NULL, fps, true);
+        emscripten_set_main_loop_arg(emscripten_imgui_main_loop, NULL, params.fps, true);
     }
 
     void RunnerEmscripten::Impl_SetupImgGuiContext()

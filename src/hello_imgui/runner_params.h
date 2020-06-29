@@ -22,9 +22,10 @@ namespace HelloImGui
     dockable windows content and layout
 * `appShallExit`: _bool, default=false_.
    will be set to true by the app when exiting.
-
    _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
    shall not exit._
+* `fps`: _int, default = 0` when applicable, set the application refresh rate
+   (only used on emscripten for the moment: 0 stands for "let the app or the browser decide")
 @@md
  */
 struct RunnerParams
@@ -34,6 +35,7 @@ struct RunnerParams
     ImGuiWindowParams imGuiWindowParams;
     DockingParams dockingParams;
     bool appShallExit = false;
+    int fps = 0;
 };
 
 }  // namespace HelloImGui

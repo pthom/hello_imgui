@@ -97,14 +97,17 @@ _Members:_
 * `GuiFunction`: _VoidFuntion_. Any function that will render this window's Gui.
 * `isVisible`: _bool, default=true_. Flag that indicates whether this window is visible or not.
 * `canBeClosed`: _bool, default=true_. Flag that indicates whether the user can close this window.
+* `callBeginEnd`: _bool, default=true_. Flag that indicates whether ImGui::Begin and ImGui::End
+   calls should be added automatically (with the given "label"). Set to false if you want to call
+   ImGui::Begin/End yourself
 @@md
 **/
 struct DockableWindow
 {
     DockableWindow(
-        const std::string & label_,
-        const DockSpaceName & dockSpaceName_,
-        const VoidFunction guiFonction_,
+        const std::string & label_ = "",
+        const DockSpaceName & dockSpaceName_ = "",
+        const VoidFunction guiFonction_ = {},
         bool isVisible_ = true,
         bool canBeClosed_ = true)
     : label(label_), dockSpaceName(dockSpaceName_),
@@ -120,6 +123,7 @@ struct DockableWindow
 
     bool isVisible = true;
     bool canBeClosed = true;
+    bool callBeginEnd = true;
 };
 
 /**

@@ -100,6 +100,9 @@ _Members:_
 * `callBeginEnd`: _bool, default=true_. Flag that indicates whether ImGui::Begin and ImGui::End
    calls should be added automatically (with the given "label"). Set to false if you want to call
    ImGui::Begin/End yourself
+* `isAboutWindow`: _bool, default=false_. Flag that indicate whether this window should be opened
+   when the user clicks the menu item "About". The menu item "About" will appear only if one dockable
+   window is marked with this flag.
 @@md
 **/
 struct DockableWindow
@@ -124,6 +127,7 @@ struct DockableWindow
     bool isVisible = true;
     bool canBeClosed = true;
     bool callBeginEnd = true;
+    bool isAboutWindow = false;
 };
 
 /**

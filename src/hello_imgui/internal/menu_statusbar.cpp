@@ -15,12 +15,23 @@ void ShowDefaultAppMenu_QuitZoom(RunnerParams & runnerParams)
     if (appName.empty())
         appName = "App";
 
+    auto& dockableWindows = runnerParams.dockingParams.dockableWindows;
+
+    bool hideMenuBecauseEmpty = false;
+#ifdef HELLOIMGUI_CANNOTQUIT
+    if (! DockingDetails::HasAboutWindow(dockableWindows))
+        hideMenuBecauseEmpty = true;
+#endif
+    if (hideMenuBecauseEmpty)
+        return;
+
     if (ImGui::BeginMenu(appName.c_str()))
     {
-        if (runnerParams.callbacks.ShowAbout)
+        if (DockingDetails::HasAboutWindow(dockableWindows))
         {
-            if (ImGui::MenuItem(runnerParams.aboutWindowTitle().c_str()))
-                runnerParams.imGuiWindowParams.aboutWindow.opened = true;
+            std::string label = DockingDetails::AboutWindowTitle(dockableWindows);
+            if (ImGui::MenuItem(label.c_str()))
+                DockingDetails::ShowAboutWindow(dockableWindows);
             ImGui::Separator();
         }
 

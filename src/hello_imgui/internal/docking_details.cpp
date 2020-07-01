@@ -263,6 +263,26 @@ void CloseWindowOrDock(ImGuiWindowParams& imGuiWindowParams)
         ImGui::End();
 }
 
+bool HasAboutWindow(const std::vector<DockableWindow>& dockableWindows)
+{
+    for (const auto& w: dockableWindows)
+        if (w.isAboutWindow)
+                return true;
+    return false;
+}
+std::string AboutWindowTitle(const std::vector<DockableWindow>& dockableWindows)
+{
+    for (const auto& w: dockableWindows)
+        if (w.isAboutWindow)
+            return w.label;
+    return "About";
+}
+void ShowAboutWindow(std::vector<DockableWindow>& dockableWindows)
+{
+    for (auto& w: dockableWindows)
+        if (w.isAboutWindow)
+            w.isVisible = true;
+}
 
 
 }  // namespace DockingDetails

@@ -103,6 +103,7 @@ _Members:_
 * `isAboutWindow`: _bool, default=false_. Flag that indicate whether this window should be opened
    when the user clicks the menu item "About". The menu item "About" will appear only if one dockable
    window is marked with this flag.
+* `imGuiWindowFlags`: ImGuiWindowFlags, default=0_. Window flags, see enum ImGuiWindowFlags_
 @@md
 **/
 struct DockableWindow
@@ -128,6 +129,7 @@ struct DockableWindow
     bool canBeClosed = true;
     bool callBeginEnd = true;
     bool isAboutWindow = false;
+    ImGuiWindowFlags imGuiWindowFlags = 0;
 };
 
 /**

@@ -64,7 +64,7 @@ struct ImGuiWindowParams
     ImVec4 backgroundColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     bool showMenuBar = false;
-    bool showMenu_App_QuitZoom = true;
+    bool showMenu_App_QuitAbout = true;
     bool showMenu_View = true;
 
     bool showStatusBar = false;

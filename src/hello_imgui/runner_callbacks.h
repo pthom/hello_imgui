@@ -66,7 +66,7 @@ struct MobileCallbacks
     _Notes:_
     * you do not need to call _ImGui::BeginMenuBar_ and _ImGui::EndMenuBar_
     * Some default menus can be provided: see _ImGuiWindowParams_ options 
-      (_showMenuBar, showMenu_App_QuitZoom, showMenu_View_)
+      (_showMenuBar, showMenu_App_QuitAbout, showMenu_View_)
 
 * `ShowStatus`: *VoidFunction, default=empty*.
   A function that will add items to the status bar. Use small items (ImGui::Text for example),

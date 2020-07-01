@@ -91,7 +91,7 @@ See [runner_callbacks.h](runner_callbacks.h).
     _Notes:_
     * you do not need to call _ImGui::BeginMenuBar_ and _ImGui::EndMenuBar_
     * Some default menus can be provided: see _ImGuiWindowParams_ options 
-      (_showMenuBar, showMenu_App_QuitZoom, showMenu_View_)
+      (_showMenuBar, showMenu_App_QuitAbout, showMenu_View_)
 
 * `ShowStatus`: *VoidFunction, default=empty*.
   A function that will add items to the status bar. Use small items (ImGui::Text for example),
@@ -198,7 +198,7 @@ In order to change the application window settings, change the _AppWindowsParams
     Show Menu bar on top of imgui main window
     You can customize the menu via `RunnerCallbacks.ShowMenus()`
 
-  * `showMenu_App_QuitZoom`: _bool, default=true_.
+  * `showMenu_App_QuitAbout`: _bool, default=true_.
     If menu bar is shown, include or not the default app menu (Quit + zoom)
 
   * `showMenu_View`: _bool, default=true_.

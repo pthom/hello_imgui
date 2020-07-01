@@ -9,45 +9,6 @@ namespace HelloImGui
 namespace Menu_StatusBar
 {
 
-void MenuItems_FontScale()
-{
-    float ratio = ImGui::GetIO().FontGlobalScale;
-    char msgCurrentRatio[1000];
-    snprintf(msgCurrentRatio, 1000, "Font Scale: %.1f", ratio);
-    ImGui::MenuItem(msgCurrentRatio, nullptr, false, false);
-
-    bool zoomChanged = false;
-    if (ImGui::MenuItem( "Zoom ++"))
-    {
-        ratio = ratio * 1.2f * 1.2f;
-        zoomChanged = true;
-    }
-    if (ImGui::MenuItem( "Zoom +"))
-    {
-        ratio = ratio * 1.2f;
-        zoomChanged = true;
-    }
-    if (ImGui::MenuItem( "Zoom -"))
-    {
-        ratio = ratio / 1.2f;
-        zoomChanged = true;
-    }
-    if (ImGui::MenuItem(  "Zoom --"))
-    {
-        ratio = ratio / 1.2f / 1.2f;
-        zoomChanged = true;
-    }
-    if (ImGui::MenuItem( "Restore Zoom"))
-    {
-        ratio = 1.f;
-        zoomChanged = true;
-    }
-
-    if (zoomChanged)
-        ImGui::GetIO().FontGlobalScale = ratio;
-
-}
-
 void ShowDefaultAppMenu_QuitZoom(RunnerParams & runnerParams)
 {
     std::string appName = runnerParams.appWindowParams.windowTitle.c_str();
@@ -56,11 +17,14 @@ void ShowDefaultAppMenu_QuitZoom(RunnerParams & runnerParams)
 
     if (ImGui::BeginMenu(appName.c_str()))
     {
-        ImGui::Separator();
-        MenuItems_FontScale();
-        ImGui::Separator();
+        if (runnerParams.callbacks.ShowAbout)
+        {
+            if (ImGui::MenuItem(runnerParams.aboutWindowTitle().c_str()))
+                runnerParams.imGuiWindowParams.aboutWindow.opened = true;
+            ImGui::Separator();
+        }
 
-#ifndef HELLOIMGUI_MOBILEDEVICE
+#ifndef HELLOIMGUI_CANNOTQUIT
         if (ImGui::MenuItem( "Quit"))
             runnerParams.appShallExit = true;
 #endif
@@ -77,7 +41,7 @@ void ShowMenu(RunnerParams & runnerParams)
 
     ImGui::BeginMenuBar();
 
-    if (runnerParams.imGuiWindowParams.showMenu_App_QuitZoom)
+    if (runnerParams.imGuiWindowParams.showMenu_App_QuitAbout)
         ShowDefaultAppMenu_QuitZoom(runnerParams);
 
     if (runnerParams.imGuiWindowParams.showMenu_View)

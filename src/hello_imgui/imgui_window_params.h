@@ -40,8 +40,8 @@ In order to change the application window settings, change the _AppWindowsParams
     Show Menu bar on top of imgui main window
     You can customize the menu via `RunnerCallbacks.ShowMenus()`
 
-  * `showMenu_App_QuitZoom`: _bool, default=true_.
-    If menu bar is shown, include or not the default app menu (Quit + zoom)
+  * `showMenu_App_QuitAbout`: _bool, default=true_.
+    If menu bar is shown, include or not the default app menu (Quit + About)
 
   * `showMenu_View`: _bool, default=true_.
     If menu bar is shown, include or not the default _View_ menu, that enables to change the layout and 

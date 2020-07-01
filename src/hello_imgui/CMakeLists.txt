@@ -20,11 +20,13 @@ target_link_libraries(${target_name} PUBLIC
 if (IOS)
     target_compile_definitions(${target_name} PUBLIC IOS)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_MOBILEDEVICE)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_CANNOTQUIT)
 endif()
 
 if (EMSCRIPTEN)
     set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLES3)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_CANNOTQUIT)
 endif()
 
 if (HELLOIMGUI_USE_SDL_OPENGL3)
@@ -75,6 +77,7 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
             IMGUI_IMPL_OPENGL_ES3
             HELLOIMGUI_USE_GLES3
             )
+        target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_CANNOTQUIT)
         target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_MOBILEDEVICE)
     else()
         find_package(SDL2 CONFIG REQUIRED)

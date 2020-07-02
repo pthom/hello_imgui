@@ -29,6 +29,10 @@ if (EMSCRIPTEN)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_CANNOTQUIT)
 endif()
 
+if (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_HAS_OPENGL)
+endif()
+
 if (HELLOIMGUI_USE_SDL_OPENGL3)
     target_compile_definitions(${target_name} PUBLIC -DHELLOIMGUI_USE_SDL_OPENGL3)
 

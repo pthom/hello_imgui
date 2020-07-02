@@ -149,6 +149,10 @@ void ShowDockableWindows(std::vector<DockableWindow>& dockableWindows)
         {
             if (dockableWindow.callBeginEnd)
             {
+                if (dockableWindow.windowSize.x > 0.f)
+                    ImGui::SetNextWindowSize(dockableWindow.windowSize, dockableWindow.windowSizeCondition);
+                if (dockableWindow.windowPosition.x > 0.f)
+                    ImGui::SetNextWindowPos(dockableWindow.windowPosition, dockableWindow.windowPositionCondition);
                 bool not_collapsed = true;
                 if (dockableWindow.canBeClosed)
                     not_collapsed = ImGui::Begin(dockableWindow.label.c_str(), &dockableWindow.isVisible, dockableWindow.imGuiWindowFlags);

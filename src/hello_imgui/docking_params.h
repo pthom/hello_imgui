@@ -103,7 +103,11 @@ _Members:_
 * `isAboutWindow`: _bool, default=false_. Flag that indicate whether this window should be opened
    when the user clicks the menu item "About". The menu item "About" will appear only if one dockable
    window is marked with this flag.
-* `imGuiWindowFlags`: ImGuiWindowFlags, default=0_. Window flags, see enum ImGuiWindowFlags_
+* `imGuiWindowFlags`: _ImGuiWindowFlags, default=0_. Window flags, see enum ImGuiWindowFlags_
+* `windowSize`: _ImVec2, default=(0.f, 0.f) (i.e let the app decide)_. Window size (unused if docked)
+* `windowSizeCondition`: _ImGuiCond, default=ImGuiCond_FirstUseEver_. When to apply the window size.
+* `windowPos`: _ImVec2, default=(0.f, 0.f) (i.e let the app decide)_. Window position (unused if docked)
+* `windowPosCondition`: _ImGuiCond, default=ImGuiCond_FirstUseEver_. When to apply the window position.
 @@md
 **/
 struct DockableWindow
@@ -130,6 +134,12 @@ struct DockableWindow
     bool callBeginEnd = true;
     bool isAboutWindow = false;
     ImGuiWindowFlags imGuiWindowFlags = 0;
+
+    ImVec2 windowSize = ImVec2(0.f, 0.f);
+    ImGuiCond  windowSizeCondition = ImGuiCond_FirstUseEver;
+
+    ImVec2 windowPosition = ImVec2(0.f, 0.f);
+    ImGuiCond  windowPositionCondition = ImGuiCond_FirstUseEver;
 };
 
 /**

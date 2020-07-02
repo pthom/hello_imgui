@@ -291,4 +291,12 @@ void ShowAboutWindow(std::vector<DockableWindow>& dockableWindows)
 
 }  // namespace DockingDetails
 
+DockableWindow * DockingParams::dockableWindowOfName(const std::string &name)
+{
+    for (auto & dockableWindow: dockableWindows)
+        if (dockableWindow.label == name)
+            return &dockableWindow;
+    return nullptr;
+}
+
 }  // namespace HelloImGui

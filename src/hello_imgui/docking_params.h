@@ -167,5 +167,7 @@ struct DockingParams
 
     // wasDockLayoutApplied is an internal variable
     bool wasDockLayoutApplied = false;
+
+    DockableWindow * dockableWindowOfName(const std::string & name);
 };
 } // namespace HelloImGui

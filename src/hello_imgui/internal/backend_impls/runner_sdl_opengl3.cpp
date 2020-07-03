@@ -36,7 +36,15 @@ namespace HelloImGui
 
     void RunnerSdlOpenGl3::Impl_Select_Gl_Version()
     {
-#if defined(HELLOIMGUI_USE_GLES3)
+#if defined(__EMSCRIPTEN__)
+        /*
+        {
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+        }*/
+#elif defined(HELLOIMGUI_USE_GLES3)
         {
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_EGL, 3);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
@@ -128,10 +136,8 @@ namespace HelloImGui
         if (!mGlContext)
             HIMG_THROW("RunnerSdlOpenGl3::Impl_CreateWindowAndContext(): Failed to initialize WebGL context!");
 
-        SDL_GL_MakeCurrent(mWindow, mGlContext);
-#ifndef __EMSCRIPTEN__
+        SDL_GL_MakeCurrent(mWindow, mGlContext); // KK No
         SDL_GL_SetSwapInterval(1);  // Enable vsync
-#endif
     }
 
     void RunnerSdlOpenGl3::Impl_InitGlLoader()

@@ -11,10 +11,7 @@ endif()
 add_library(${target_name} ${sources})
 
 target_include_directories(${target_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/..)
-target_link_libraries(${target_name} PUBLIC
-    project_properties
-    imgui
-    )
+target_link_libraries(${target_name} PUBLIC imgui)
 
 
 if (IOS)

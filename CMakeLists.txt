@@ -38,13 +38,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${HELLOIMGUI_BASEPATH}/hello_imgui_c
 
 
 include(StandardProjectSettings)
-include(CompilerWarnings)
 include(StaticAnalyzers)
 
-# Link to this library to inherit the properties
-add_library(project_properties INTERFACE)
-
-set_project_warnings(project_properties)
 
 if (EMSCRIPTEN)
     include(${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_emscripten_global_options.cmake)

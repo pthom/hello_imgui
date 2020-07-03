@@ -9,7 +9,7 @@ namespace HelloImGui
 namespace Menu_StatusBar
 {
 
-void ShowDefaultAppMenu_QuitZoom(RunnerParams & runnerParams)
+void ShowDefaultAppMenu_Quit(RunnerParams & runnerParams)
 {
     std::string appName = runnerParams.appWindowParams.windowTitle.c_str();
     if (appName.empty())
@@ -19,22 +19,13 @@ void ShowDefaultAppMenu_QuitZoom(RunnerParams & runnerParams)
 
     bool hideMenuBecauseEmpty = false;
 #ifdef HELLOIMGUI_CANNOTQUIT
-    if (! DockingDetails::HasAboutWindow(dockableWindows))
-        hideMenuBecauseEmpty = true;
+    hideMenuBecauseEmpty = true;
 #endif
     if (hideMenuBecauseEmpty)
         return;
 
     if (ImGui::BeginMenu(appName.c_str()))
     {
-        if (DockingDetails::HasAboutWindow(dockableWindows))
-        {
-            std::string label = DockingDetails::AboutWindowTitle(dockableWindows);
-            if (ImGui::MenuItem(label.c_str()))
-                DockingDetails::ShowAboutWindow(dockableWindows);
-            ImGui::Separator();
-        }
-
 #ifndef HELLOIMGUI_CANNOTQUIT
         if (ImGui::MenuItem( "Quit"))
             runnerParams.appShallExit = true;
@@ -53,7 +44,7 @@ void ShowMenu(RunnerParams & runnerParams)
     ImGui::BeginMenuBar();
 
     if (runnerParams.imGuiWindowParams.showMenu_App_QuitAbout)
-        ShowDefaultAppMenu_QuitZoom(runnerParams);
+        ShowDefaultAppMenu_Quit(runnerParams);
 
     if (runnerParams.imGuiWindowParams.showMenu_View)
         DockingDetails::ShowViewMenu(runnerParams);

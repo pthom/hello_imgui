@@ -100,9 +100,6 @@ _Members:_
 * `callBeginEnd`: _bool, default=true_. Flag that indicates whether ImGui::Begin and ImGui::End
    calls should be added automatically (with the given "label"). Set to false if you want to call
    ImGui::Begin/End yourself
-* `isAboutWindow`: _bool, default=false_. Flag that indicate whether this window should be opened
-   when the user clicks the menu item "About". The menu item "About" will appear only if one dockable
-   window is marked with this flag.
 * `imGuiWindowFlags`: _ImGuiWindowFlags, default=0_. Window flags, see enum ImGuiWindowFlags_
 * `windowSize`: _ImVec2, default=(0.f, 0.f) (i.e let the app decide)_. Window size (unused if docked)
 * `windowSizeCondition`: _ImGuiCond, default=ImGuiCond_FirstUseEver_. When to apply the window size.
@@ -132,7 +129,6 @@ struct DockableWindow
     bool isVisible = true;
     bool canBeClosed = true;
     bool callBeginEnd = true;
-    bool isAboutWindow = false;
     ImGuiWindowFlags imGuiWindowFlags = 0;
 
     ImVec2 windowSize = ImVec2(0.f, 0.f);

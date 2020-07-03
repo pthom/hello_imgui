@@ -16,10 +16,6 @@ void ProvideWindowOrDock(const ImGuiWindowParams& imGuiWindowParams, DockingPara
 void CloseWindowOrDock(ImGuiWindowParams& imGuiWindowParams);
 void ShowViewMenu(RunnerParams & runnerParams);
 void ShowDockableWindows(std::vector<DockableWindow>& dockableWindows);
-
-bool HasAboutWindow(const std::vector<DockableWindow>& dockableWindows);
-void ShowAboutWindow(std::vector<DockableWindow>& dockableWindows);
-std::string AboutWindowTitle(const std::vector<DockableWindow>& dockableWindows);
 }  // namespace DockingDetails
 
 }  // namespace HelloImGui

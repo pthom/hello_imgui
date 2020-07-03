@@ -23,7 +23,7 @@
 
 #define HIMG_LOG_VALUE(...) \
 {\
-    std::cout << "HIMG_LOG_VALUE: " << ##__VA_ARGS__ << "=" << __VA_ARGS__ << "\t\t at " << __FILE__ << ":" << __LINE__ << "\n"; \
+    std::cout << "HIMG_LOG_VALUE: " << #__VA_ARGS__ << "=" << (__VA_ARGS__) << "\t\t at " << __FILE__ << ":" << __LINE__ << "\n"; \
 }
 
 #define HIMG_LOG_POINTER(value) \

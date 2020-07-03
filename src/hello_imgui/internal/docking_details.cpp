@@ -99,15 +99,17 @@ void MenuView_DockableWindows(RunnerParams& runnerParams)
 
     if (ImGui::MenuItem("View All##DSQSDDF"))
         for (auto& dockableWindow: runnerParams.dockingParams.dockableWindows)
-            if (dockableWindow.canBeClosed)
+            if (dockableWindow.canBeClosed && dockableWindow.includeInViewMenu)
                 dockableWindow.isVisible = true;
     if (ImGui::MenuItem("Hide All##DSQSDDF"))
         for (auto& dockableWindow: runnerParams.dockingParams.dockableWindows)
-            if (dockableWindow.canBeClosed)
+            if (dockableWindow.canBeClosed && dockableWindow.includeInViewMenu)
                 dockableWindow.isVisible = false;
 
     for (auto& dockableWindow: runnerParams.dockingParams.dockableWindows)
     {
+        if (!dockableWindow.includeInViewMenu)
+            continue;
         if (dockableWindow.canBeClosed)
         {
             if (ImGui::MenuItem(dockableWindow.label.c_str(), nullptr, dockableWindow.isVisible))

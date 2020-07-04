@@ -27,6 +27,19 @@ Below, a movie showing Hello ImGui running on 6 platforms:
 
 [![Running on 6 platforms](docs/HelloImGui_6_Platforms.png) ](https://traineq.org/HelloImGui_6_Platforms.mp4)
 
+__Applications:__
+
+[ImGui Manual](https://github.com/pthom/imgui_manual) uses Hello ImGui.
+
+Just click on the image below to open it:
+
+[![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)](https://traineq.org/imgui_manual/src/imgui_manual.html)
+
+The video below gives a quick (2 minutes) introduction:
+
+[![video on youtube](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_youtube_demo.png)](https://www.youtube.com/watch?v=MJ5jgoPPjH4)
+
+
 ----
 
 __Table of contents__

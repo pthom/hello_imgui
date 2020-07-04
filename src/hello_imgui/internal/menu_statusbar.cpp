@@ -43,7 +43,7 @@ void ShowMenu(RunnerParams & runnerParams)
 
     ImGui::BeginMenuBar();
 
-    if (runnerParams.imGuiWindowParams.showMenu_App_QuitAbout)
+    if (runnerParams.imGuiWindowParams.showMenu_App)
         ShowDefaultAppMenu_Quit(runnerParams);
 
     if (runnerParams.imGuiWindowParams.showMenu_View)

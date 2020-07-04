@@ -100,12 +100,13 @@ With HelloImGui, the equivalent of the "Hello, World!" can be written with 8 C++
 [__hello_word.main.cpp__](src/hello_imgui_demos/hello_world/hello_world.main.cpp)
 `````cpp
 #include "hello_imgui/hello_imgui.h"
-int main()
+int main(int, char **)
 {
     HelloImGui::Run(
         []{ ImGui::Text("Hello, world!"); }, // Gui code
         { 200.f, 50.f },                     // Window Size
         "Hello!" );                          // Window title
+    return 0;
 }
 `````
 

@@ -40,8 +40,8 @@ In order to change the application window settings, change the _AppWindowsParams
     Show Menu bar on top of imgui main window
     You can customize the menu via `RunnerCallbacks.ShowMenus()`
 
-  * `showMenu_App_QuitAbout`: _bool, default=true_.
-    If menu bar is shown, include or not the default app menu (Quit + About)
+  * `showMenu_App`: _bool, default=true_.
+    If menu bar is shown, include or not the default app menu (with Quit button)
 
   * `showMenu_View`: _bool, default=true_.
     If menu bar is shown, include or not the default _View_ menu, that enables to change the layout and 
@@ -64,7 +64,7 @@ struct ImGuiWindowParams
     ImVec4 backgroundColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     bool showMenuBar = false;
-    bool showMenu_App_QuitAbout = true;
+    bool showMenu_App = true;
     bool showMenu_View = true;
 
     bool showStatusBar = false;

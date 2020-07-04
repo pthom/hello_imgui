@@ -199,8 +199,8 @@ In order to change the application window settings, change the _AppWindowsParams
     Show Menu bar on top of imgui main window
     You can customize the menu via `RunnerCallbacks.ShowMenus()`
 
-  * `showMenu_App_QuitAbout`: _bool, default=true_.
-    If menu bar is shown, include or not the default app menu (Quit + zoom)
+  * `showMenu_App`: _bool, default=true_.
+    If menu bar is shown, include or not the default app menu (with Quit button)
 
   * `showMenu_View`: _bool, default=true_.
     If menu bar is shown, include or not the default _View_ menu, that enables to change the layout and 
@@ -358,6 +358,13 @@ _Members:_
 * `callBeginEnd`: _bool, default=true_. Flag that indicates whether ImGui::Begin and ImGui::End
    calls should be added automatically (with the given "label"). Set to false if you want to call
    ImGui::Begin/End yourself
+* `includeInViewMenu`: _bool, default=true_. Flag that indicates whether this window should be mentioned
+   in the view menu.
+* `imGuiWindowFlags`: _ImGuiWindowFlags, default=0_. Window flags, see enum ImGuiWindowFlags_
+* `windowSize`: _ImVec2, default=(0.f, 0.f) (i.e let the app decide)_. Window size (unused if docked)
+* `windowSizeCondition`: _ImGuiCond, default=ImGuiCond_FirstUseEver_. When to apply the window size.
+* `windowPos`: _ImVec2, default=(0.f, 0.f) (i.e let the app decide)_. Window position (unused if docked)
+* `windowPosCondition`: _ImGuiCond, default=ImGuiCond_FirstUseEver_. When to apply the window position.
 
 #### Docking Params
 

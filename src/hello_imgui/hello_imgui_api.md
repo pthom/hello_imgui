@@ -65,9 +65,10 @@ The diagram below summarize all the possible settings and callbacks (which are e
     dockable windows content and layout
 * `appShallExit`: _bool, default=false_.
    will be set to true by the app when exiting.
-
    _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
    shall not exit._
+* `fps`: _int, default = 0` when applicable, set the application refresh rate
+   (only used on emscripten for the moment: 0 stands for "let the app or the browser decide")
 
 ----
 
@@ -354,6 +355,9 @@ _Members:_
 * `GuiFunction`: _VoidFuntion_. Any function that will render this window's Gui.
 * `isVisible`: _bool, default=true_. Flag that indicates whether this window is visible or not.
 * `canBeClosed`: _bool, default=true_. Flag that indicates whether the user can close this window.
+* `callBeginEnd`: _bool, default=true_. Flag that indicates whether ImGui::Begin and ImGui::End
+   calls should be added automatically (with the given "label"). Set to false if you want to call
+   ImGui::Begin/End yourself
 
 #### Docking Params
 

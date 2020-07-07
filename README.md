@@ -39,6 +39,15 @@ The video below gives a quick (2 minutes) introduction:
 
 [![video on youtube](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_youtube_demo.png)](https://www.youtube.com/watch?v=MJ5jgoPPjH4)
 
+---
+
+__Instant develop__
+
+You can test Hello ImGui 3 minutes, *without even installing anything*! No IDE, no text editor, no library, no compiler is required.
+
+[Test ImGui application instant develop](https://github.com/pthom/hello_imgui_my_app/tree/gitpod#instant-develop)
+
+
 
 ----
 

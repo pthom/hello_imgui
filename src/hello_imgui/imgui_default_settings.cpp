@@ -14,9 +14,15 @@ namespace HelloImGui
 ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize)
 {
     AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());
-    ImFont * font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSize);
+    static ImFontConfig fontConfig = [] {
+        auto r = ImFontConfig();
+        r.FontDataOwnedByAtlas = false;
+        return r;
+    }();
+    ImFont * font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSize, &fontConfig);
     if (font == nullptr)
         HIMG_THROW_STRING(std::string("Cannot load ") + fontFilename);
+    FreeAssetFileData(&fontData);
     return font;
 }
 
@@ -30,6 +36,7 @@ ImFont* MergeFontAwesomeToLastFont(float fontSize)
     static ImFontConfig faConfig = [] {
         ImFontConfig config;
         config.MergeMode = true;
+        config.FontDataOwnedByAtlas = false;
         return config;
     }();
     auto font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
@@ -37,6 +44,7 @@ ImFont* MergeFontAwesomeToLastFont(float fontSize)
 
     if (font == nullptr)
         HIMG_THROW_STRING(std::string("Cannot load ") + faFile);
+    FreeAssetFileData(&fontData);
     return font;
 }
 
@@ -56,9 +64,8 @@ void LoadDefaultFont_WithFontAwesomeIcons()
 {
     float fontSize = 14.f;
     std::string fontFilename = "fonts/DroidSans.ttf";
-    ImFont * font = LoadFontTTF(fontFilename, fontSize);
-    (void) font;
-    MergeFontAwesomeToLastFont(fontSize);
+    ImFont* font = LoadFontTTF_WithFontAwesomeIcons(fontFilename, fontSize);
+    (void)font;
 }
 
 void SetupDefaultImGuiConfig()

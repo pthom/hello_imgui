@@ -147,10 +147,18 @@ void ShowDockableWindows(std::vector<DockableWindow>& dockableWindows)
 {
     for (auto& dockableWindow: dockableWindows)
     {
+        if (dockableWindow.focusWindowAtNextFrame)
+            dockableWindow.isVisible = true;
+
         if (dockableWindow.isVisible)
         {
             if (dockableWindow.callBeginEnd)
             {
+                if (dockableWindow.focusWindowAtNextFrame)
+                {
+                    ImGui::SetNextWindowFocus();
+                    dockableWindow.focusWindowAtNextFrame = false;
+                }
                 if (dockableWindow.windowSize.x > 0.f)
                     ImGui::SetNextWindowSize(dockableWindow.windowSize, dockableWindow.windowSizeCondition);
                 if (dockableWindow.windowPosition.x > 0.f)
@@ -278,5 +286,13 @@ DockableWindow * DockingParams::dockableWindowOfName(const std::string &name)
             return &dockableWindow;
     return nullptr;
 }
+
+void DockingParams::focusDockableWindow(const std::string& windowName)
+{
+    DockableWindow * win = dockableWindowOfName(windowName);
+    IM_ASSERT(win != nullptr);
+    win->focusWindowAtNextFrame = true;
+}
+
 
 }  // namespace HelloImGui

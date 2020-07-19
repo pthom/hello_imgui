@@ -10,13 +10,15 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - uses: lovasoa/setup-emscripten@master
-
       - name: Checkout submodules
         run: git submodule update --init --recursive
 
+      - name: Install emscripten
+        run: external/hello_imgui/tools/emscripten/install_emscripten.sh
+
       - name: Configure
         run: |
+          source ~/emsdk/emsdk_env.sh
           mkdir build-emscripten
           cd build-emscripten
           emcmake cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON

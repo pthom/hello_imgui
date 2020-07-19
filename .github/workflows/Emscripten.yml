@@ -14,7 +14,7 @@ jobs:
         run: git submodule update --init --recursive
 
       - name: Install emscripten
-        run: external/hello_imgui/tools/emscripten/install_emscripten.sh
+        run: ./tools/emscripten/install_emscripten.sh
 
       - name: Configure
         run: |

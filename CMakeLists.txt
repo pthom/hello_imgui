@@ -1,5 +1,8 @@
-cmake_minimum_required(VERSION 3.13)
-# cmake_policy(VERSION 3.15)
+if (EMSCRIPTEN)
+    cmake_minimum_required(VERSION 3.13) # emscripten uses target_link_options (cmake 3.13+)
+else()
+    cmake_minimum_required(VERSION 3.10)
+endif()
 
 project(HelloImGui LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)

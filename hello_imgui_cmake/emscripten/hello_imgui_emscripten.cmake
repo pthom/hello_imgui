@@ -1,10 +1,22 @@
 if (EMSCRIPTEN)
 
 function(hello_imgui_emscripten_add_shell_file app_name)
+    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/shell.emscripten.html)
+        set(shell_template_file ${CMAKE_CURRENT_SOURCE_DIR}/shell.emscripten.html)
+    else()
+        set(shell_template_file ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/shell.emscripten.html)
+    endif()
+
+    set(shell_file ${CMAKE_CURRENT_BINARY_DIR}/shell.emscripten.in.html)
+    configure_file(
+        ${shell_template_file}
+        ${shell_file}
+        @ONLY
+    )
     target_link_options(
         ${app_name} 
         PRIVATE
-        "SHELL:--shell-file ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/runner_emscripten_shell.html"
+        "SHELL:--shell-file ${shell_file}"
     )
     set_target_properties(
         ${app_name} 

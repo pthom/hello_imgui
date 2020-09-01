@@ -187,7 +187,7 @@ int main(int, char **)
         {
             case SDL_KEYDOWN:
                 logger.warning( "SDL_KEYDOWN detected\n" );
-                return true; // if you return true, the event is not processd further
+                return false; // if you return true, the event is not processd further
         }
         return false;
 #else

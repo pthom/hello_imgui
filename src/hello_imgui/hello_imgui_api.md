@@ -365,6 +365,7 @@ _Members:_
 * `windowSizeCondition`: _ImGuiCond, default=ImGuiCond_FirstUseEver_. When to apply the window size.
 * `windowPos`: _ImVec2, default=(0.f, 0.f) (i.e let the app decide)_. Window position (unused if docked)
 * `windowPosCondition`: _ImGuiCond, default=ImGuiCond_FirstUseEver_. When to apply the window position.
+* `focusWindowAtNextFrame`: _bool, default = false_. If set to true this window will be focused at the next frame.
 
 #### Docking Params
 
@@ -379,3 +380,9 @@ _Members:_
   List of the dockable windows, together with their Gui code
 * `resetUserDockLayout`: _bool, default=true_.
   Reset user layout at application startup
+
+ _Helpers:_
+
+ * `DockableWindow * dockableWindowOfName(const std::string & name)`: returns a pointer to a dockable window
+ * `void focusDockableWindow(const std::string& name)`: will focus a dockable window
+

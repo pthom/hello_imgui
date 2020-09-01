@@ -389,10 +389,8 @@ For example, the docking demo will be available at
 
 Refer to the [emscripten docs](https://emscripten.org/)
 
-By default, the application will be presented inside an empty html page. 
-You can adapt this page by modyfing the "shell": copy the file [hello_imgui_cmake/emscripten/shell.emscripten.html](hello_imgui_cmake/emscripten/shell.emscripten.html)
-into your app source dir, and adapt it to your needs. 
- 
+By default, the application will be presented in an empty html page. You can adapt [hello_imgui_cmake/emscripten/runner_emscripten_shell.html](hello_imgui_cmake/emscripten/runner_emscripten_shell.html) if you want.
+
 ----
 
 ## Build and deploy instructions for Android

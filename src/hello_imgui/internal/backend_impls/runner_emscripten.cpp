@@ -1,6 +1,6 @@
 #include "runner_emscripten.h"
 #include <iostream>
-#ifdef __EMSCRIPTEN__
+#ifdef HELLOIMGUI_USE_EMSCRIPTEN_SDL
 
 #include <emscripten.h>
 
@@ -57,4 +57,4 @@ namespace HelloImGui
 
 }  // namespace HelloImGui
 
-#endif  // #ifdef __EMSCRIPTEN__
+#endif  // #ifdef HELLOIMGUI_USE_EMSCRIPTEN_SDL

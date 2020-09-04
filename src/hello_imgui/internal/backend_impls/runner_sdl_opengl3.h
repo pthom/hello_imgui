@@ -8,7 +8,7 @@
 namespace HelloImGui
 {
     class RunnerSdlOpenGl3 : public AbstractRunner
-{
+    {
        public:
         RunnerSdlOpenGl3(RunnerParams & runnerParams) : AbstractRunner(runnerParams) {}
         virtual ~RunnerSdlOpenGl3() = default;

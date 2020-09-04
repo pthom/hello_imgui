@@ -16,6 +16,9 @@ option(HELLOIMGUI_USE_QT "Build HelloImGui for Qt" OFF)
 option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build HelloImGui for SDL+DirectX11" OFF)
 option(HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT "Create Android studio projects in build dir" OFF)
 
+# Sokol interface
+option(HELLOIMGUI_USE_SOKOL "Build HelloImGui for Sokol" OFF)
+
 if (IOS OR EMSCRIPTEN)
     set(need_opengl_loader OFF)
 else()

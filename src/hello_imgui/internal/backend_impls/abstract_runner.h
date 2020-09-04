@@ -8,30 +8,24 @@ namespace HelloImGui
 class AbstractRunner
 {
    public:
-    /// Step 0: Construct a concrete Runner (for example RunnerSdlOpenGl3 or RunnerGlfwOpenGl3)
+    RunnerParams & params;
+
+    /// Step 1: Construct a concrete Runner (for example RunnerSdlOpenGl3 or RunnerGlfwOpenGl3)
     AbstractRunner(RunnerParams &params_) : params(params_) {};
     virtual ~AbstractRunner() = default;
 
-    RunnerParams & params;
-
-    /// Step 4.a: Call Run()
+    /// Step 2: Call Run()
     virtual void Run();
 
-    /// Step 4.b: Or implement your own Run using Setup()/Render()/TearDown()
+    //
+    // End of published API
+    //
+   public:
     void Setup();
     void CreateFramesAndRender(); // Returns true when exit is required by the user
-    void RenderGui();
     void TearDown();
 
-   public:
-    // Events for mobile devices
-    void OnPause();
-    void OnResume();
-    void OnDestroy();
-    void OnLowMemory();
-
-
-   protected:
+protected:
     //
     // The methods Impl_* are astract
     // and shall be overriden in the concrete implementations by derivates
@@ -53,9 +47,6 @@ class AbstractRunner
     virtual void Impl_UpdateAndRenderAdditionalPlatformWindows() = 0;
     virtual void Impl_SwapBuffers() = 0;
     virtual void Impl_Cleanup() = 0;
-
-    //   protected:
-    //    friend void emscripten_imgui_main_loop(void*);
 };
 
 }  // namespace HelloImGui

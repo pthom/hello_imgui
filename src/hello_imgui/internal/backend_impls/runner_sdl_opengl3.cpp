@@ -3,6 +3,7 @@
 #include "hello_imgui/hello_imgui_include_opengl.h"
 #include "runner_sdl_opengl3.h"
 #include "hello_imgui/hello_imgui_error.h"
+#include "hello_imgui/internal/runner_functions.h"
 #include <examples/imgui_impl_opengl3.h>
 #include <examples/imgui_impl_sdl.h>
 
@@ -237,19 +238,19 @@ namespace HelloImGui
                 /* Terminate the app.
                    Shut everything down before returning from this function.
                 */
-                OnDestroy();
+                RunnerFunctions::OnDestroy(params);
                 return true;
             case SDL_APP_LOWMEMORY:
                 /* You will get this when your app is paused and iOS wants more memory.
                    Release as much memory as possible.
                 */
-                OnLowMemory();
+                RunnerFunctions::OnLowMemory(params);
                 return true;
             case SDL_APP_WILLENTERBACKGROUND:
                 /* Prepare your app to go into the background.  Stop loops, etc.
                    This gets called when the user hits the home button, or gets a call.
                 */
-                OnPause();
+                RunnerFunctions::OnPause(params);
                 return true;
             case SDL_APP_DIDENTERBACKGROUND:
                 /* This will get called if the user accepted whatever sent your app to the background.
@@ -257,19 +258,19 @@ namespace HelloImGui
                    When you get this, you have 5 seconds to save all your state or the app will be terminated.
                    Your app is NOT active at this point.
                 */
-                OnPause();
+                RunnerFunctions::OnPause(params);
                 return true;
             case SDL_APP_WILLENTERFOREGROUND:
                 /* This call happens when your app is coming back to the foreground.
                     Restore all your state here.
                 */
-                OnResume();
+                RunnerFunctions::OnResume(params);
                 return true;
             case SDL_APP_DIDENTERFOREGROUND:
                 /* Restart your loops here.
                    Your app is interactive and getting CPU again.
                 */
-                OnResume();
+                RunnerFunctions::OnResume(params);
                 return true;
 #endif // #ifdef HELLOIMGUI_MOBILEDEVICE
             default:

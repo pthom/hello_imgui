@@ -16,7 +16,7 @@ std::unique_ptr<AbstractRunner> FactorRunnerSdlOpenGl3(RunnerParams & params);
 std::unique_ptr<AbstractRunner> FactorRunnerQt(RunnerParams & params);
 #endif
 
-#ifdef __EMSCRIPTEN__
+#ifdef HELLOIMGUI_USE_EMSCRIPTEN_SDL
 std::unique_ptr<AbstractRunner> FactorRunnerEmscripten(RunnerParams & params);
 #endif
 

@@ -1,5 +1,5 @@
 #pragma once
-#ifdef __EMSCRIPTEN__
+#ifdef HELLOIMGUI_USE_EMSCRIPTEN_SDL
 
 #include "hello_imgui/internal/backend_impls/runner_sdl_opengl3.h"
 
@@ -21,4 +21,5 @@ namespace HelloImGui
 
 }  // namespace HelloImGui
 
-#endif  // #ifdef __EMSCRIPTEN__
+#endif  // #ifdef HELLOIMGUI_USE_EMSCRIPTEN_SDL
+

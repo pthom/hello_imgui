@@ -36,3 +36,7 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
         add_subdirectory(SDL)
     endif()
 endif()
+
+add_library(sokol INTERFACE)
+target_include_directories(sokol INTERFACE ${CMAKE_CURRENT_LIST_DIR})
+

@@ -1,6 +1,7 @@
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
 #include "hello_imgui/internal/docking_details.h"
 #include "hello_imgui/internal/menu_statusbar.h"
+#include "hello_imgui/internal/runner_functions.h"
 #include "imgui.h"
 
 namespace HelloImGui
@@ -30,34 +31,9 @@ void AbstractRunner::Setup()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     Impl_SetupImgGuiContext();
-    params.callbacks.SetupImGuiConfig();
-    params.callbacks.SetupImGuiStyle();
     Impl_SetupPlatformRendererBindings();
-    ImGui::GetIO().Fonts->Clear();
-    params.callbacks.LoadAdditionalFonts();
-    ImGui::GetIO().Fonts->Build();
-    DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
 
-    if (params.callbacks.PostInit)
-        params.callbacks.PostInit();
-}
-
-void AbstractRunner::RenderGui()
-{
-    DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams, params.dockingParams);
-
-    if (params.imGuiWindowParams.showMenuBar)
-        Menu_StatusBar::ShowMenu(params);
-
-    if (params.callbacks.ShowGui)
-        params.callbacks.ShowGui();
-
-    DockingDetails::ShowDockableWindows(params.dockingParams.dockableWindows);
-
-    if (params.imGuiWindowParams.showStatusBar)
-        Menu_StatusBar::ShowStatusBar(params);
-
-    DockingDetails::CloseWindowOrDock(params.imGuiWindowParams);
+    RunnerFunctions::PrepareApp(params);
 }
 
 
@@ -70,7 +46,7 @@ void AbstractRunner::CreateFramesAndRender()
     Impl_NewFrame_Backend();
     ImGui::NewFrame();
 
-    RenderGui();
+    RunnerFunctions::RenderGui(params);
 
     ImGui::Render();
     Impl_Frame_3D_ClearColor();
@@ -82,37 +58,6 @@ void AbstractRunner::CreateFramesAndRender()
     Impl_SwapBuffers();
 }
 
-void AbstractRunner::OnPause()
-{
-#ifdef HELLOIMGUI_MOBILEDEVICE
-    if (params.callbacks.mobileCallbacks.OnPause)
-        params.callbacks.mobileCallbacks.OnPause();
-#endif
-}
-
-void AbstractRunner::OnResume()
-{
-#ifdef HELLOIMGUI_MOBILEDEVICE
-    if (params.callbacks.mobileCallbacks.OnResume)
-        params.callbacks.mobileCallbacks.OnResume();
-#endif
-}
-
-void AbstractRunner::OnDestroy()
-{
-#ifdef HELLOIMGUI_MOBILEDEVICE
-    if (params.callbacks.mobileCallbacks.OnDestroy)
-        params.callbacks.mobileCallbacks.OnDestroy();
-#endif
-}
-
-void AbstractRunner::OnLowMemory()
-{
-#ifdef HELLOIMGUI_MOBILEDEVICE
-    if (params.callbacks.mobileCallbacks.OnLowMemory)
-        params.callbacks.mobileCallbacks.OnLowMemory();
-#endif
-}
 
 void AbstractRunner::TearDown()
 {

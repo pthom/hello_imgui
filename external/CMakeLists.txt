@@ -28,7 +28,7 @@ if (HELLOIMGUI_BUILD_IMGUI)
             )
     target_include_directories(imgui PUBLIC ${imgui_dir})
     if (MSVC)
-        hello_imgui_msvc_target_set_folder(imgui hello_imgui/external)
+        hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
     endif()
 endif()
 

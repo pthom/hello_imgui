@@ -7,6 +7,6 @@ set(subdirs
 foreach(target_name ${subdirs})
     add_subdirectory(${target_name})
     if (MSVC)
-        hello_imgui_msvc_target_set_folder(${target_name} hello_imgui/hello_imgui_demos)
+        hello_imgui_msvc_target_set_folder(${target_name} ${HELLOIMGUI_SOLUTIONFOLDER}/hello_imgui_demos)
     endif()
 endforeach()

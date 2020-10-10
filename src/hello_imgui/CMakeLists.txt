@@ -117,5 +117,5 @@ endif()
 
 if (MSVC)
     hello_imgui_msvc_target_group_sources(${target_name})
-    hello_imgui_msvc_target_set_folder(${target_name} hello_imgui)
+    hello_imgui_msvc_target_set_folder(${target_name} ${HELLOIMGUI_SOLUTIONFOLDER})
 endif()

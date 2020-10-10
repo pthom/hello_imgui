@@ -19,5 +19,5 @@ if (library_type STREQUAL SHARED_LIBRARY)
 endif()
 
 if (MSVC)
-    hello_imgui_msvc_target_set_folder(glad hello_imgui/external/OpenGL_Loaders)
+    hello_imgui_msvc_target_set_folder(glad ${HELLOIMGUI_SOLUTIONFOLDER}/external/OpenGL_Loaders)
 endif()

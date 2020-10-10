@@ -34,6 +34,16 @@ else()
     option(HELLOIMGUI_BUILD_DEMOS "Build demos" OFF)
 endif()
 
+#
+# MSVC: Select the solution folder where hello_imgui should be placed
+#
+if (MSVC)
+    if(NOT DEFINED HELLOIMGUI_SOLUTIONFOLDER)
+        set(HELLOIMGUI_SOLUTIONFOLDER hello_imgui)
+    endif()
+endif()
+
+
 set(HELLOIMGUI_BASEPATH ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Hello imgui base path" FORCE)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_LIST_DIR}/cmake/")

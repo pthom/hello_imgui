@@ -6,6 +6,19 @@
 #include "hello_imgui/internal/whereami/whereami_cpp.h"
 #endif
 
+#ifdef _MSC_VER
+#include <sys/types.h>
+#include <sys/stat.h>
+static bool directoryExist(const std::string& dir)
+{
+  struct stat st;
+  if (stat(dir.c_str(), &st) == -1)
+    return false;
+  bool isDir = ((st.st_mode & S_IFMT) == S_IFDIR);
+  return isDir;
+}
+#endif
+
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
 #include "SDL_system.h"
 #endif
@@ -30,6 +43,20 @@ std::string assetFileFullPath(const std::string& assetFilename)
     // You cannot use standard file operations!`
     (void)assetFilename;
     HIMG_THROW("assetFileFullPath does not work on android!");
+#elif defined(_MSC_VER)
+  // For msvc, we have to deal with the fact that the exe could be in a subfolder "Debug" or "Release" of ${CMAKE_CURRENT_BINARY_DIR}
+  // whereas the assets folder is located directly inside ${CMAKE_CURRENT_BINARY_DIR}
+  std::string assetsFolder = wai_getExecutableFolder_string() + "/assets";
+  if (!directoryExist(assetsFolder))
+  {
+      assetsFolder = wai_getExecutableFolder_string() + "/../assets";
+      if (!directoryExist(assetsFolder))
+      {
+          HIMG_THROW_STRING(std::string("Cannot find assets folder"));
+      }
+  }
+  std::string path = assetsFolder + "/" + assetFilename;
+  return path;
 #else
     std::string assetsFolder = wai_getExecutableFolder_string() + "/assets/";
     std::string path = assetsFolder + assetFilename;

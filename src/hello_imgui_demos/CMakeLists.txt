@@ -1,4 +1,12 @@
-add_subdirectory(hello_imgui_demo_minimal)
-add_subdirectory(hello_imgui_demo_classic)
-add_subdirectory(hello_imgui_demodocking)
-add_subdirectory(hello_world)
+set(subdirs 
+    hello_imgui_demo_minimal
+    hello_imgui_demo_classic
+    hello_imgui_demodocking
+    hello_world
+)
+foreach(target_name ${subdirs})
+    add_subdirectory(${target_name})
+    if (MSVC)
+        hello_imgui_msvc_target_set_folder(${target_name} hello_imgui/hello_imgui_demos)
+    endif()
+endforeach()

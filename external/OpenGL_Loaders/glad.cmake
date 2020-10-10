@@ -17,3 +17,7 @@ if (library_type STREQUAL SHARED_LIBRARY)
     target_compile_definitions(glad PRIVATE GLAD_GLAPI_EXPORT)
     target_compile_definitions(glad PUBLIC GLAD_GLAPI_EXPORT PRIVATE GLAD_GLAPI_EXPORT_BUILD)
 endif()
+
+if (MSVC)
+    hello_imgui_msvc_target_set_folder(glad hello_imgui/external/OpenGL_Loaders)
+endif()

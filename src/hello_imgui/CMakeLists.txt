@@ -114,3 +114,8 @@ if (HELLOIMGUI_USE_GLAD)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
     target_link_libraries(${target_name} PUBLIC glad)
 endif()
+
+if (MSVC)
+    hello_imgui_msvc_target_group_sources(${target_name})
+    hello_imgui_msvc_target_set_folder(${target_name} hello_imgui)
+endif()

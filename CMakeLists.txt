@@ -42,6 +42,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${HELLOIMGUI_BASEPATH}/hello_imgui_c
 
 include(StandardProjectSettings)
 include(StaticAnalyzers)
+include(msvc/msvc_target_group)
 
 
 if (EMSCRIPTEN)

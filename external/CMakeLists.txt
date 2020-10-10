@@ -27,6 +27,9 @@ if (HELLOIMGUI_BUILD_IMGUI)
             ${imgui_dir}/imgui.h
             )
     target_include_directories(imgui PUBLIC ${imgui_dir})
+    if (MSVC)
+        hello_imgui_msvc_target_set_folder(imgui hello_imgui/external)
+    endif()
 endif()
 
 if (HELLOIMGUI_USE_SDL_OPENGL3)

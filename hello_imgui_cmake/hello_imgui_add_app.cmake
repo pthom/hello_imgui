@@ -10,7 +10,7 @@ include(android/apkCMake/apkCMake)
 
 function(hello_imgui_emscripten_add_local_assets app_name)
     if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/assets)
-        message("hello_imgui_emscripten_add_local_assets: ${app_name} found local assets")
+        message(VERBOSE "hello_imgui_emscripten_add_local_assets: ${app_name} found local assets")
         hello_imgui_bundle_assets(${app_name} ${CMAKE_CURRENT_SOURCE_DIR}/assets)
     endif()
 endfunction()
@@ -82,7 +82,7 @@ function(hello_imgui_add_app)
     endif()
 
 
-    message("hello_imgui_add_app
+    message(VERBOSE "hello_imgui_add_app
              app_name=${app_name}
              sources=${app_sources}
             ")

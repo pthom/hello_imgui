@@ -43,26 +43,16 @@ function(set_bundle_variables_defaults app_name)
 endfunction()
 
 
-#
-# hello_imgui_add_app is a helper function, similar to cmake's "add_executable"
+# hello_imgui_prepare_app is a helper function, that will prepare an app to be used with hello_imgui
 #
 # Usage:
-# hello_imgui_add_app(app_name file1.cpp file2.cpp ...)
+# hello_imgui_prepare_app(target_name)
 #
 # Features:
-# * It will automaticaly link the exe to hello_imgui library
-function(hello_imgui_add_app)
-    set(args ${ARGN})
-    list(GET args 0 app_name)
-    list(REMOVE_AT args 0)
-    set(app_sources ${args})
-
-    if (ANDROID)
-        add_library(${app_name} SHARED ${app_sources})
-    else()
-        add_executable(${app_name} ${app_sources})
-    endif()
-
+# * It will automaticaly link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
+# * It will embed the assets
+# * It will perform additional customization (app icon and name on mobile platforms, etc)
+function(hello_imgui_prepare_app app_name)
     set_bundle_variables_defaults(${app_name})
 
     set(common_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_assets)
@@ -80,7 +70,29 @@ function(hello_imgui_add_app)
         # set(apkCMake_abiFilters "'arm64-v8a', 'x86', 'x86_64'")
         apkCMake_makeAndroidStudioProject(${app_name})
     endif()
+endfunction()
 
+
+#
+# hello_imgui_add_app is a helper function, similar to cmake's "add_executable"
+#
+# Usage:
+# hello_imgui_add_app(app_name file1.cpp file2.cpp ...)
+#
+# Features: see the doc for hello_imgui_prepare_app, which is called by this function
+function(hello_imgui_add_app)
+    set(args ${ARGN})
+    list(GET args 0 app_name)
+    list(REMOVE_AT args 0)
+    set(app_sources ${args})
+
+    if (ANDROID)
+        add_library(${app_name} SHARED ${app_sources})
+    else()
+        add_executable(${app_name} ${app_sources})
+    endif()
+
+    hello_imgui_prepare_app(${app_name})
 
     message(VERBOSE "hello_imgui_add_app
              app_name=${app_name}

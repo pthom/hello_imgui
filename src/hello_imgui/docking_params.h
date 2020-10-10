@@ -79,6 +79,10 @@ Direction where this dock space should be created
 */
 struct DockingSplit
 {
+    DockingSplit(const DockSpaceName& initialDock_ = {}, const DockSpaceName& newDock_ = {}, 
+                 ImGuiDir_ direction_ = ImGuiDir_Down, float ratio_ = 0.25f) 
+      : initialDock(initialDock_), newDock(newDock_), direction(direction_), ratio(ratio_) {}
+
     DockSpaceName initialDock;
     DockSpaceName newDock;
     ImGuiDir_ direction;

@@ -37,7 +37,7 @@ void ShowDefaultAppMenu_Quit(RunnerParams & runnerParams)
 
 void ShowMenu(RunnerParams & runnerParams)
 {
-    bool hasMenu = ImGui::GetCurrentWindow()->Flags & ImGuiWindowFlags_MenuBar;
+    bool hasMenu = (ImGui::GetCurrentWindow()->Flags & ImGuiWindowFlags_MenuBar) != 0;
     if (!hasMenu)
         return;
 

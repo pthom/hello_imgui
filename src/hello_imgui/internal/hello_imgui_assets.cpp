@@ -86,7 +86,7 @@ AssetFileData LoadAssetFileData(const char *assetPath)
             wai_getExecutableFolder_string() + "/../assets/" + assetPath;
             r.data = SDL_LoadFile(otherPath2.c_str(), &r.dataSize);
         }
-#endif
+    #endif
     if (!r.data)
         HIMG_THROW_STRING(std::string("LoadAssetFileData: cannot load ") + assetPath);
     return r;
@@ -109,7 +109,7 @@ AssetFileData LoadAssetFileData_Impl(const char *assetPath)
     if (!ifs.good())
         return AssetFileData();
 
-    r.dataSize = ifs.tellg();
+    r.dataSize = (std::size_t)ifs.tellg();
     ifs.seekg(0, std::ios::beg);
     r.data = malloc(r.dataSize);
 

@@ -12,6 +12,7 @@
   * [ImGui window params](#imgui-window-params)
       * [ImGuiWindowParams](#imguiwindowparams)
       * [Default window types](#default-window-types)
+      * [Backend Pointers](#backend-pointers)
   * [Applications assets](#applications-assets)
       * [Assets Files structure](#assets-files-structure)
       * [Load Assets as data buffer](#load-assets-as-data-buffer)
@@ -63,6 +64,9 @@ The diagram below summarize all the possible settings and callbacks (which are e
     imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)
 * `dockingParams`: _see [docking_params.h](docking_params.h)_.
     dockable windows content and layout
+* `backendPointers`: _see [backend_pointers.h](backend_pointers.h)_.
+   A struct that contains optional pointers to the backend implementations. These pointers will be filled 
+   when the application starts
 * `appShallExit`: _bool, default=false_.
    will be set to true by the app when exiting.
    _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
@@ -226,6 +230,22 @@ In order to change the application window settings, change the _AppWindowsParams
 
 ----
 
+#### Backend Pointers
+
+**BackendPointers** is a struct that contains optional pointers to the backend implementations (for SDL and GLFW).
+
+These pointers will be filled when the application starts, and you can use them to customize
+your application behavior using the selected backend.
+
+ Members:
+* `glfwWindow`: _void *, default=nullptr_. Pointer to the main GLFW window (of type `GLFWwindow*`)
+  Only filled if the backend is GLFW.
+* `sdlWindow`: _void *, default=nullptr_. Pointer to the main SDL window (of type `SDL_Window*`)
+  Only filled if the backend is SDL (or emscripten + sdl)
+* `sdlGlContext`: _void *, default=nullptr_. Pointer to SDL's GlContext (of type `SDL_GLContext`)
+  Only filled if the backend is SDL (or emscripten + sdl)
+
+----
 ## Applications assets
 
 See [hello_imgui_assets.h](hello_imgui_assets.h).
@@ -277,7 +297,6 @@ Then you can load the asset "fonts/my_font.ttf", on all platforms.
 * Under Android, assetFileFullPath is *not* implemented, and will throw an error:
   assets can be compressed under android, and you cannot use standard file operations!
   Use LoadAssetFileData instead
-
 
 ----
 

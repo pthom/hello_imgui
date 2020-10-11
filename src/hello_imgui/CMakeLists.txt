@@ -94,7 +94,9 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
 endif()
 
 if (HELLOIMGUI_USE_GLFW_OPENGL3)
-    find_package(glfw3 CONFIG REQUIRED)
+    if (NOT TARGET glfw) # if glfw is not built as part of the whole build, find it
+        find_package(glfw3 CONFIG REQUIRED)
+    endif()
     target_compile_definitions(${target_name} PUBLIC -DHELLOIMGUI_USE_GLFW_OPENGL3)
     target_link_libraries(${target_name} PUBLIC glfw)
     target_sources(${target_name} PRIVATE

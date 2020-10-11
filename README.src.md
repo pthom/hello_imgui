@@ -47,15 +47,13 @@ You can test Hello ImGui 3 minutes, *without even installing anything*! No IDE, 
 
 [Test ImGui application instant develop](https://github.com/pthom/hello_imgui_my_app/tree/gitpod#instant-develop)
 
-
-
-----
+---;
 
 __Table of contents__
 
 [TOC]
 
-----
+---;
 
 # Examples
 
@@ -107,8 +105,6 @@ This example reproduces ImGui default example.
 
 Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/hello_imgui_demos/hello_imgui_demo_classic)
 
-
-
 # Features
 
 * Docking support (based on ImGui [docking branch](https://github.com/ocornut/imgui/tree/docking))
@@ -119,10 +115,10 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 * Mobile apps specific callbacks (OnPause, OnResume, OnLowMemory)
 * Mobile apps customization (icon, embedded files, etc)
 
-
 # Supported platforms and backends
 
 ## Platforms
+
 * Windows
 * Linux
 * OSX
@@ -130,7 +126,8 @@ Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/he
 * emscripten
 * Android
 
-## Backends 
+## Backends
+
 * SDL2 + OpenGL 3 or OpenGLES3 for mobile devices
 * Glfw3 + OpenGL 3
 * Qt
@@ -145,14 +142,12 @@ _RunnerParams_ contains all the settings and callbacks in order to run an applic
 
 ![a](src/hello_imgui/doc_src/hello_imgui_diagram.png)
 
-
-
 # Build instructions
 
 > Note: If you want to use HelloImGui in your own application, you may also want to look at [hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app), which is a separate repo that gives a working example on how to use the library as a submodule.
   
-
 ## Clone the repository
+
 ````bash
 git clone https://github.com/pthom/hello_imgui.git
 cd hello_imgui
@@ -164,6 +159,7 @@ git submodule update --init
 ### Select your backend
 
 Several cmake options are provided: you need to select at least one backend:
+
 ````cmake
 option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
 option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
@@ -207,6 +203,7 @@ Follow the instructiosn for SDL2, but replace HELLOIMGUI_USE_SDL_OPENGL3 by HELL
 ### Backend with Qt
 
 Requirements:
+
 * You need to have Qt >= 5.10 installed
 * The Qt backend uses [qtimgui](https://github.com/seanchas116/qtimgui) , which you need to download into external/qutimgui.
   You can use the script [tools/qtimgui_download.py](tools/qtimgui_download.py) in order to download it
@@ -220,7 +217,7 @@ For example, this line would build with Qt backend for an androïd_armv7 target:
 cmake -DCMAKE_PREFIX_PATH=/path/to/Qt/5.12.8/clang_64 -DHELLOIMGUI_USE_QT=ON
 ````
 
-----
+---;
 
 ## Build instructions for iOS
 
@@ -264,6 +261,7 @@ mkdir build_ios && cd build_ios_sdl
 This will invoke cmake and then open the project "HelloImGui.xcodeproj".
 
 If you want to run cmake by yourself, here are the required commands:
+
 `````bash
 mkdir build_ios_sdl
 cd build_ios_sdl
@@ -281,7 +279,7 @@ cmake .. \
 
 See [Embed assets and customize apps](#embed-assets-and-customize-apps)
  
-----
+---;
 
 ## Build instructions for emscripten
 
@@ -345,7 +343,7 @@ By default, the application will be presented inside an empty html page.
 You can adapt this page by modyfing the "shell": copy the file [hello_imgui_cmake/emscripten/shell.emscripten.html](hello_imgui_cmake/emscripten/shell.emscripten.html)
 into your app source dir, and adapt it to your needs. 
  
-----
+---;
 
 ## Build and deploy instructions for Android
 
@@ -357,7 +355,7 @@ You need to download SDL manually for Android, like this:
 
 ````bash
 ./tools/sdl_download.sh
-```` 
+````
 
 ### Set Android required environment variables
 
@@ -366,6 +364,7 @@ export ANDROID_HOME=/path/to/AndroidSdk
 ````
 
 For example (MacOS):
+
 ````bash
 export ANDROID_HOME=/Users/Me/Library/Android/sdk
 ````
@@ -381,12 +380,13 @@ is multiarch (arm64-v8a, armeabi-v7a, etc), via the option `-DHELLOIMGUI_CREATE_
 Run the following commands:
 
 ````bash
-mkdir build_android 
+mkdir build_android
 cd build_android
 ../tools/android/cmake_arm-android.sh
 ````
 
 Your build directory will now look like this:
+
 ````
 build_android/
 ├── CMakeCache.txt
@@ -418,27 +418,28 @@ You can also install the app via command line, like this:
 ./gradlew installDebug
 ````
 
-
-----
-
+---;
 
 # Embed assets and customize apps
 
 ## Embed assets
+
 Anything in the assets/ folder located beside the app's CMakeLists will be embedded
 on mobile devices and emscripten, i.e they will be bundled together with the app; and you can access them via `assetFileFullPath(const std::string& assetRelativeFilename)`.
 
 ## Customize per platform 
 
-#### iOS
+### iOS
+
 For iOS, simply create a folder named "ios" beside the application 'CMakeLists.txt'. There, you can add a custom Info.plist, as well as app icons and launch screens.
 
-#### Android 
+### Android 
 
 For Android, simply create a folder named "android" beside the application 'CMakeLists.txt'. There, you can add a custom "res/" folder, containing your icons and application settings inside "res/values/".
 
 
 ## Example of customization:
+
 ````
 hello_imgui_democking/
 ├── CMakeLists.txt                              # The app's CMakeLists
@@ -466,7 +467,7 @@ hello_imgui_democking/
 │       ├── mipmap-xxxhdpi/
 │       │   └── ic_launcher.png
 │       └── values/
-│           ├── colors.xml                     
+│           ├── colors.xml
 │           ├── strings.xml                    # Customize the application icon label here
 │           └── styles.xml
 │
@@ -486,15 +487,14 @@ hello_imgui_democking/
 
 ````
 
-#### Resizing icons for Android
+### Resizing icons for Android
 
 You can use the script [tools/android/resize_icons.py](tools/android/resize_icons.py) in order 
 to quickly create the icons with all the required sizes.
 
 @import "tools/android/resize_icons.py" {md_id=resize_icons}
 
-
-----
+---;
 
 # Alternatives
 

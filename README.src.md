@@ -167,7 +167,7 @@ option(HELLOIMGUI_USE_QT "Build HelloImGui for Qt" OFF)
 option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build HelloImGui for SDL+DirectX11" OFF)
 ````
 
-_"HELLOIMGUI_USE_SDL_OPENGL3" is the preferred backend, since it works under all platforms (windows, linux, osx, android, emscripten, iOS). On Mobile platforms, it will use OpenGLES3._ : use it with `cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON`
+"HELLOIMGUI_USE_SDL_OPENGL3" is the preferred backend, since it works under all platforms (windows, linux, osx, android, emscripten, iOS). On Mobile platforms, it will use OpenGLES3. Use it with `cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON`
 
 ### Plug your backend
 

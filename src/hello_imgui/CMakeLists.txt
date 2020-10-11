@@ -81,8 +81,12 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
         target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_CANNOTQUIT)
         target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_MOBILEDEVICE)
     else()
-        find_package(SDL2 CONFIG REQUIRED)
-        target_link_libraries(${target_name} PUBLIC SDL2::SDL2main SDL2::SDL2-static)
+        if (NOT TARGET SDL2-static) # if SDL is not built as part of the whole build, find it
+            find_package(SDL2 CONFIG REQUIRED)
+            target_link_libraries(${target_name} PUBLIC SDL2::SDL2main SDL2::SDL2-static)
+        else()
+            target_link_libraries(${target_name} PUBLIC SDL2-static)
+        endif()
     endif()
 
     target_sources(${target_name} PRIVATE

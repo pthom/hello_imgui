@@ -125,3 +125,7 @@ if (MSVC)
     hello_imgui_msvc_target_group_sources(${target_name})
     hello_imgui_msvc_target_set_folder(${target_name} ${HELLOIMGUI_SOLUTIONFOLDER})
 endif()
+
+if (UNIX)
+    target_link_libraries(hello_imgui PUBLIC stdc++)
+endif()

@@ -167,11 +167,30 @@ option(HELLOIMGUI_USE_QT "Build HelloImGui for Qt" OFF)
 option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build HelloImGui for SDL+DirectX11" OFF)
 ````
 
-_"HELLOIMGUI_USE_SDL_OPENGL3" is the preferred backend, since it works under all platforms (windows, linux, osx, android, emscripten, iOS). On Mobile platforms, it will use OpenGLES3._
+_"HELLOIMGUI_USE_SDL_OPENGL3" is the preferred backend, since it works under all platforms (windows, linux, osx, android, emscripten, iOS). On Mobile platforms, it will use OpenGLES3._ : use it with `cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON`
 
 ### Plug your backend
 
-#### Option 1: plug SDL or Glfw3 via vcpkg
+#### Option 1: plug your backend manually
+
+You can install your backend by any mean (global install, Conan, submodule, etc). 
+
+Before adding the hello_imgui directory (`add_subdirectory(hello_imgui)`), just make 
+sure that your backend is available, and select it via one of the variables HELLOIMGUI_USE_SDL_OPENGL3, 
+HELLOIMGUI_USE_GLFW_OPENGL3, or HELLOIMGUI_USE_QT).
+
+For example, the cmake script below works for the GLFW backend:
+
+````cmake
+  # Here, glfw was added as a submodule into a folder "glfw"
+  add_subdirectory(glfw) 
+  # We instruct HelloImgui to use glfw
+  set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
+  # And add HelloImGui
+  add_subdirectory(hello_imgui)
+````
+
+#### Option 2: plug SDL or Glfw3 via vcpkg
 
 [Vcpkg](https://github.com/Microsoft/vcpkg) is a C++ Library Manager for Windows, Linux, and MacOS (support for iOS and Android is coming).
 
@@ -193,25 +212,6 @@ make -j4
 ````
 (Use `-DHELLOIMGUI_USE_GLFW_OPENGL3=ON` for glfw)
 
-
-#### Option 2: plug your backend manually
-
-You can install your backend by any mean (global install, Conan, submodule, etc). 
-
-Before adding the helloimgui directory (`add_subdirectory(hello_imgui)`), just make 
-sure that your backend is available, and select it via one of the variables HELLOIMGUI_USE_SDL_OPENGL3, 
-HELLOIMGUI_USE_GLFW_OPENGL3, or HELLOIMGUI_USE_QT).
-
-For example, the cmake script below works for the GLFW backend:
-
-````cmake
-  # Here, glfw was added as a submodule into a folder "glfw"
-  add_subdirectory(glfw) 
-  # We instruct HelloImgui to use glfw
-  set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
-  # And add HelloImGui
-  add_subdirectory(hello_imgui)
-````
 
 ### SDL Backend Warning for main() signature
 

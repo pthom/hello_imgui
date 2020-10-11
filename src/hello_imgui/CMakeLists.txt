@@ -126,6 +126,6 @@ if (MSVC)
     hello_imgui_msvc_target_set_folder(${target_name} ${HELLOIMGUI_SOLUTIONFOLDER})
 endif()
 
-if (UNIX)
+if (UNIX AND NOT EMSCRIPTEN)
     target_link_libraries(hello_imgui PUBLIC stdc++)
 endif()

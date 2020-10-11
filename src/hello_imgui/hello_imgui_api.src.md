@@ -63,6 +63,11 @@ See [imgui_window_params.h](imgui_window_params.h).
 
 ----
 
+#### Backend Pointers
+
+@import "backend_pointers.h" {md_id=BackendPointers}
+
+----
 ## Applications assets
 
 See [hello_imgui_assets.h](hello_imgui_assets.h).
@@ -78,7 +83,6 @@ See [hello_imgui_assets.h](hello_imgui_assets.h).
 #### Get assets path
 
 @import "hello_imgui_assets.h" {md_id=assetFileFullPath}
-
 
 ----
 

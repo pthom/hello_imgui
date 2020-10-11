@@ -89,6 +89,8 @@ namespace HelloImGui
         {
             mWindow = glfwCreateWindow(
                 (int)windowSize.x, (int)windowSize.y, backendWindowParams.windowTitle.c_str(), NULL, NULL);
+            if (params.appWindowParams.maximized)
+              glfwMaximizeWindow(mWindow);
         }
         if (windowPosition.x >= -10000.f)
             glfwSetWindowPos(mWindow, (int)windowPosition.x, (int)windowPosition.y);
@@ -100,6 +102,8 @@ namespace HelloImGui
         }
         glfwMakeContextCurrent(mWindow);
         glfwSwapInterval(1);  // Enable vsync
+
+        params.backendPointers.glfwWindow = mWindow;
     }
 
     void RunnerGlfwOpenGl3::Impl_InitGlLoader()

@@ -138,6 +138,9 @@ namespace HelloImGui
 
         SDL_GL_MakeCurrent(mWindow, mGlContext); // KK No
         SDL_GL_SetSwapInterval(1);  // Enable vsync
+
+        params.backendPointers.sdlGlContext = mWindow;
+        params.backendPointers.sdlGlContext = mGlContext;
     }
 
     void RunnerSdlOpenGl3::Impl_InitGlLoader()
@@ -230,9 +233,9 @@ namespace HelloImGui
 
     bool RunnerSdlOpenGl3::priv_HandleMobileDeviceEvent(unsigned int sdl_EventType)
     {
+#ifdef HELLOIMGUI_MOBILEDEVICE
         switch(sdl_EventType)
         {
-#ifdef HELLOIMGUI_MOBILEDEVICE
             case SDL_APP_TERMINATING:
                 /* Terminate the app.
                    Shut everything down before returning from this function.
@@ -271,11 +274,13 @@ namespace HelloImGui
                 */
                 OnResume();
                 return true;
-#endif // #ifdef HELLOIMGUI_MOBILEDEVICE
             default:
                 /* No special processing, add it to the event queue */
                 return false;
         }
+#else // #ifdef HELLOIMGUI_MOBILEDEVICE
+      return false;
+#endif
     }
 
 

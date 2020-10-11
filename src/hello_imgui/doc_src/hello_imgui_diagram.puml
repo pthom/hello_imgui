@@ -13,6 +13,7 @@ class RunnerParams <struct> {
     AppWindowParams appWindowParams;
     ImGuiWindowParams imGuiWindowParams;
     DockingParams dockingParams;
+    BackendPointers backendPointers;
     bool appShallExit = false;
 }
 
@@ -72,6 +73,15 @@ class ImGuiWindowParams <struct> {
     bool configWindowsMoveFromTitleBarOnly = true;
 }
 
+class BackendPointers <struct> {
+  ---
+  Output structure: filled by HelloImGui
+  ---
+  void* glfwWindow;
+  void* sdlWindow;
+  void* sdlGlContext;
+}
+
 class DockingParams <struct> {
     vector<DockingSplit> dockingSplits;
 
@@ -100,6 +110,7 @@ class DockingSplit <struct> {
 RunnerParams *-- RunnerCallbacks
 RunnerParams *-- AppWindowParams
 RunnerParams *-- ImGuiWindowParams
+RunnerParams *-- BackendPointers
 RunnerParams *-- DockingParams
 DockingParams *-- DockableWindow : vector
 DockingParams *-- DockingSplit : vector

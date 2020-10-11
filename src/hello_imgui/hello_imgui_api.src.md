@@ -63,7 +63,7 @@ See [imgui_window_params.h](imgui_window_params.h).
 
 ----
 
-#### Backend Pointers
+## Backend Pointers
 
 @import "backend_pointers.h" {md_id=BackendPointers}
 

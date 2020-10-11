@@ -188,13 +188,11 @@ You can then build HelloImgui, using the following instructions:
 ````bash
 mkdir build
 cd build
-
-# Select on of the two lines below depending on your backend
-cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake  -DHELLOIMGUI_USE_SDL_OPENGL3=ON ..
-cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake  -DHELLOIMGUI_USE_GLFW_OPENGL3=ON ..
-
+cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake -DHELLOIMGUI_USE_SDL_OPENGL3=ON ..
 make -j4
 ````
+(Use `-DHELLOIMGUI_USE_GLFW_OPENGL3=ON` for glfw)
+
 
 #### Option 2: plug your backend manually
 

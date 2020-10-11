@@ -70,7 +70,6 @@ __Table of contents__
     * [Select your backend](#select-your-backend)
     * [Plug your backend](#plug-your-backend)
       * [Option 1: plug SDL or Glfw3 via vcpkg](#option-1-plug-sdl-or-glfw3-via-vcpkg)
-* [Select on of the two lines below depending on your backend](#select-on-of-the-two-lines-below-depending-on-your-backend)
       * [Option 2: plug your backend manually](#option-2-plug-your-backend-manually)
     * [SDL Backend Warning for main() signature](#sdl-backend-warning-for-main-signature)
     * [Backend with Qt](#backend-with-qt)
@@ -230,13 +229,11 @@ You can then build HelloImgui, using the following instructions:
 ````bash
 mkdir build
 cd build
-
-# Select on of the two lines below depending on your backend
-cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake  -DHELLOIMGUI_USE_SDL_OPENGL3=ON ..
-cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake  -DHELLOIMGUI_USE_GLFW_OPENGL3=ON ..
-
+cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake -DHELLOIMGUI_USE_SDL_OPENGL3=ON ..
 make -j4
 ````
+(Use `-DHELLOIMGUI_USE_GLFW_OPENGL3=ON` for glfw)
+
 
 #### Option 2: plug your backend manually
 

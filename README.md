@@ -47,7 +47,7 @@ You can test Hello ImGui 3 minutes, *without even installing anything*! No IDE, 
 
 [Test ImGui application instant develop](https://github.com/pthom/hello_imgui_my_app/tree/gitpod#instant-develop)
 
----;
+---
 
 __Table of contents__
 
@@ -95,7 +95,7 @@ __Table of contents__
     * [Resizing icons for Android](#resizing-icons-for-android)
 * [Alternatives](#alternatives)
 
----;
+---
 
 # Examples
 
@@ -285,7 +285,7 @@ For example, this line would build with Qt backend for an androïd_armv7 target:
 cmake -DCMAKE_PREFIX_PATH=/path/to/Qt/5.12.8/clang_64 -DHELLOIMGUI_USE_QT=ON
 ````
 
----;
+---
 
 ## Build instructions for iOS
 
@@ -347,7 +347,7 @@ cmake .. \
 
 See [Embed assets and customize apps](#embed-assets-and-customize-apps)
  
----;
+---
 
 ## Build instructions for emscripten
 
@@ -411,7 +411,7 @@ By default, the application will be presented inside an empty html page.
 You can adapt this page by modyfing the "shell": copy the file [hello_imgui_cmake/emscripten/shell.emscripten.html](hello_imgui_cmake/emscripten/shell.emscripten.html)
 into your app source dir, and adapt it to your needs. 
  
----;
+---
 
 ## Build and deploy instructions for Android
 
@@ -486,7 +486,7 @@ You can also install the app via command line, like this:
 ./gradlew installDebug
 ````
 
----;
+---
 
 # Embed assets and customize apps
 
@@ -606,7 +606,7 @@ your_app/
 ````
 
 
----;
+---
 
 # Alternatives
 

@@ -15,8 +15,6 @@ void ShowDefaultAppMenu_Quit(RunnerParams & runnerParams)
     if (appName.empty())
         appName = "App";
 
-    auto& dockableWindows = runnerParams.dockingParams.dockableWindows;
-
     bool hideMenuBecauseEmpty = false;
 #ifdef HELLOIMGUI_CANNOTQUIT
     hideMenuBecauseEmpty = true;

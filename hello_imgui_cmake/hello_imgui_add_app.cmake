@@ -6,7 +6,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/assets/hello_imgui_assets.cmake)
 
 set(apkCMake_projectTemplateFolder ${CMAKE_CURRENT_LIST_DIR}/android/apkCMake/templates/sdl)
 set(apkCMake_resTemplateFolder ${CMAKE_CURRENT_LIST_DIR}/android/res)
-include(android/apkCMake/apkCMake)
+include(${CMAKE_CURRENT_LIST_DIR}/android/apkCMake/apkCMake.cmake)
 
 function(hello_imgui_emscripten_add_local_assets app_name)
     if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/assets)

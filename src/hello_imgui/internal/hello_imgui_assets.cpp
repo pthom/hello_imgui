@@ -26,8 +26,10 @@ static bool directoryExist(const std::string& dir)
 #include "hello_imgui/hello_imgui_error.h"
 #include <fstream>
 
+
 namespace HelloImGui
 {
+  std::string gAssetsSubfolderFolderName = "assets";
 
 /// Access font files in application bundle or assets/fonts/
 std::string assetFileFullPath(const std::string& assetFilename)
@@ -46,10 +48,10 @@ std::string assetFileFullPath(const std::string& assetFilename)
 #elif defined(_MSC_VER)
   // For msvc, we have to deal with the fact that the exe could be in a subfolder "Debug" or "Release" of ${CMAKE_CURRENT_BINARY_DIR}
   // whereas the assets folder is located directly inside ${CMAKE_CURRENT_BINARY_DIR}
-  std::string assetsFolder = wai_getExecutableFolder_string() + "/assets";
+  std::string assetsFolder = wai_getExecutableFolder_string() + "/" + gAssetsSubfolderFolderName;
   if (!directoryExist(assetsFolder))
   {
-      assetsFolder = wai_getExecutableFolder_string() + "/../assets";
+      assetsFolder = wai_getExecutableFolder_string() + "/../" + gAssetsSubfolderFolderName;
       if (!directoryExist(assetsFolder))
       {
           HIMG_THROW_STRING(std::string("Cannot find assets folder"));

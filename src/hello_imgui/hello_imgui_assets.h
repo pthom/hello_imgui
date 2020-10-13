@@ -70,5 +70,6 @@ void FreeAssetFileData(AssetFileData * assetFileData);
 std::string assetFileFullPath(const std::string& assetRelativeFilename);
 
 
+extern std::string gAssetsSubfolderFolderName;  // "assets" by default
 
 } // namespace HelloImGui

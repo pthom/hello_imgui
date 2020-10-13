@@ -38,13 +38,12 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
 
         string(REGEX MATCH "SIMULATOR.*" is_simulator ${PLATFORM})
         if (is_simulator)
-            target_link_directories(${target_name} PUBLIC "${HELLOIMGUI_BASEPATH}/external/SDL/Xcode-iOS/SDL/build/Release-iphonesimulator")
+            set(sdl_lib_dir "${HELLOIMGUI_BASEPATH}/external/SDL/Xcode-iOS/SDL/build/Release-iphonesimulator")
         else()
-            target_link_directories(${target_name} PUBLIC "${HELLOIMGUI_BASEPATH}/external/SDL/Xcode-iOS/SDL/build/Release-iphoneos")
+            set(sdl_lib_dir "${HELLOIMGUI_BASEPATH}/external/SDL/Xcode-iOS/SDL/build/Release-iphoneos")
         endif()
 
-        target_link_directories(${target_name} PUBLIC "${HELLOIMGUI_BASEPATH}/external/SDL/Xcode-iOS/SDL/build/Release-iphoneos")
-        target_link_libraries(${target_name} PUBLIC SDL2)
+        target_link_libraries(${target_name} PUBLIC ${sdl_lib_dir}/libSDL2.a)
         target_link_libraries(${target_name} PUBLIC
             "-framework Foundation"
             "-framework AVFoundation"

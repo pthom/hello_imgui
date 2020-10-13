@@ -4,6 +4,7 @@
 #include "hello_imgui/hello_imgui_assets.h"
 #include "imgui.h"
 #include <string>
+#include <map>
 #include <stdlib.h>
 #ifdef IOS
 #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
@@ -11,14 +12,25 @@
 
 namespace HelloImGui
 {
-ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize)
+ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange)
 {
     AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());
-    static ImFontConfig fontConfig = [] {
-        auto r = ImFontConfig();
-        r.FontDataOwnedByAtlas = false;
-        return r;
-    }();
+
+    auto makeFontConfig = [useFullGlyphRange]() {
+      auto r = ImFontConfig();
+      r.FontDataOwnedByAtlas = false;
+      if (useFullGlyphRange)
+      {
+        static ImWchar glyphRange[3] = { 0x20, 0xFFFF, 0 };
+        r.GlyphRanges = glyphRange;
+      }
+      return r;
+    };
+
+    static std::map<std::string, ImFontConfig> allFontConfigs;
+    allFontConfigs[fontFilename] = makeFontConfig();
+    auto& fontConfig = allFontConfigs.at(fontFilename);
+
     ImFont * font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSize, &fontConfig);
     if (font == nullptr)
         HIMG_THROW_STRING(std::string("Cannot load ") + fontFilename);
@@ -49,9 +61,9 @@ ImFont* MergeFontAwesomeToLastFont(float fontSize)
 }
 
 
-ImFont* LoadFontTTF_WithFontAwesomeIcons(const std::string & fontFilename, float fontSize)
+ImFont* LoadFontTTF_WithFontAwesomeIcons(const std::string & fontFilename, float fontSize, bool useFullGlyphRange)
 {
-    ImFont *font = LoadFontTTF(fontFilename, fontSize);
+    ImFont *font = LoadFontTTF(fontFilename, fontSize, useFullGlyphRange);
     font = MergeFontAwesomeToLastFont(fontSize);
     return font;
 }
@@ -64,7 +76,7 @@ void LoadDefaultFont_WithFontAwesomeIcons()
 {
     float fontSize = 14.f;
     std::string fontFilename = "fonts/DroidSans.ttf";
-    ImFont* font = LoadFontTTF_WithFontAwesomeIcons(fontFilename, fontSize);
+    ImFont* font = LoadFontTTF_WithFontAwesomeIcons(fontFilename, fontSize, false);
     (void)font;
 }
 

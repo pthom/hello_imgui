@@ -2,8 +2,8 @@
 #include <string>
 namespace HelloImGui
 {
-ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize);
-ImFont* LoadFontTTF_WithFontAwesomeIcons(const std::string & fontFilename, float fontSize);
+ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange = false);
+ImFont* LoadFontTTF_WithFontAwesomeIcons(const std::string & fontFilename, float fontSize, bool useFullGlyphRange = false);
 
 namespace ImGuiDefaultSettings
 {

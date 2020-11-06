@@ -82,7 +82,7 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
     else()
         if (NOT TARGET SDL2-static) # if SDL is not built as part of the whole build, find it
             find_package(SDL2 CONFIG REQUIRED)
-            target_link_libraries(${target_name} PUBLIC SDL2::SDL2)
+            target_link_libraries(${target_name} PUBLIC SDL2::SDL2 SDL2::SDL2main)
         else()
             target_link_libraries(${target_name} PUBLIC SDL2-static)
         endif()

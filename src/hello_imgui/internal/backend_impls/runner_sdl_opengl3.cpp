@@ -3,8 +3,8 @@
 #include "hello_imgui/hello_imgui_include_opengl.h"
 #include "runner_sdl_opengl3.h"
 #include "hello_imgui/hello_imgui_error.h"
-#include <examples/imgui_impl_opengl3.h>
-#include <examples/imgui_impl_sdl.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_sdl.h>
 
 #include <SDL.h>
 #include <SDL_main.h>

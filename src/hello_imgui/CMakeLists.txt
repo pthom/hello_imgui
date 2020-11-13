@@ -18,6 +18,10 @@ if (IOS)
     target_compile_definitions(${target_name} PUBLIC IOS)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_MOBILEDEVICE)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_CANNOTQUIT)
+
+    # this is a hack because imgui_impl_opengl3.cpp does not include <TargetConditional.h>
+    # and thus TARGET_OS_IOS is not found as it should be
+    target_compile_definitions(${target_name} PRIVATE TARGET_OS_IOS)
 endif()
 
 if (EMSCRIPTEN)

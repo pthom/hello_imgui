@@ -139,7 +139,7 @@ namespace HelloImGui
         SDL_GL_MakeCurrent(mWindow, mGlContext); // KK No
         SDL_GL_SetSwapInterval(1);  // Enable vsync
 
-        params.backendPointers.sdlGlContext = mWindow;
+        params.backendPointers.sdlWindow = mWindow;
         params.backendPointers.sdlGlContext = mGlContext;
     }
 
@@ -281,6 +281,11 @@ namespace HelloImGui
 #else // #ifdef HELLOIMGUI_MOBILEDEVICE
       return false;
 #endif
+    }
+
+    void RunnerSdlOpenGl3screenshot()
+    {
+
     }
 
 

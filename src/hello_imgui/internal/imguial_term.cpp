@@ -215,7 +215,7 @@ void ImGuiAl::Crt::draw(ImVec2 const& size, const std::function<bool(Info const&
     });
 
     if (_scrollToBottom) {
-        ImGui::SetScrollHere();
+        ImGui::SetScrollHereY();
         _scrollToBottom = false;
     }
 

@@ -130,5 +130,5 @@ if (MSVC)
 endif()
 
 if (UNIX AND NOT EMSCRIPTEN)
-    target_link_libraries(hello_imgui PUBLIC stdc++)
+    target_link_libraries(hello_imgui PUBLIC stdc++ dl)
 endif()

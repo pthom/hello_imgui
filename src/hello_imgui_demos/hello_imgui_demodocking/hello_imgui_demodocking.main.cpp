@@ -18,7 +18,7 @@ struct AppState
         Launched
     };
     float rocket_progress = 0.f;
-    RocketState rocketState;
+    RocketState rocketState = RocketState::Init;
 };
 
 // MyLoadFonts: demonstrate

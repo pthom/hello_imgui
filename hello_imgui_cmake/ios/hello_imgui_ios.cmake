@@ -55,8 +55,8 @@ function(hello_imgui_ios_add_info_plist app_name plist_type)
         HELLO_IMGUI_CFBundleIdentifier
         "${HELLO_IMGUI_CFBundleIdentifier}"
         )
-    string(TOLOWER ${HELLO_IMGUI_CFBundleIdentifier} HELLO_IMGUI_CFBundleIdentifier)
-    # message("HELLO_IMGUI_CFBundleIdentifier=${HELLO_IMGUI_CFBundleIdentifier}")
+    string(TOLOWER "${HELLO_IMGUI_CFBundleIdentifier}" HELLO_IMGUI_CFBundleIdentifier)
+    message(VERBOSE "HELLO_IMGUI_CFBundleIdentifier=${HELLO_IMGUI_CFBundleIdentifier}")
 
     configure_file(${info_plist_in} ${info_plist_configured})
     set_target_properties(${app_name} PROPERTIES

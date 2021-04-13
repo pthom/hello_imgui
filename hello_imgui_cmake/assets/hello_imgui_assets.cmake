@@ -86,6 +86,7 @@ function(hello_imgui_bundle_assets app_name)
     set(local_assets_folder ${CMAKE_CURRENT_SOURCE_DIR}/assets)
 
     set(common_assets_folder_copy ${CMAKE_CURRENT_BINARY_DIR}/tmp/common_assets)
+    file(REMOVE_RECURSE ${common_assets_folder_copy})
     hello_imgui_copy_folder1_files_missing_from_folder2(
         ${common_assets_folder} ${local_assets_folder} ${common_assets_folder_copy})
 

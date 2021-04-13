@@ -1,8 +1,18 @@
+function(hello_imgui_file_glob_recurse_relative out_file_list folder)
+    FILE(GLOB_RECURSE files_fullpath ${folder}/*)
+    set(files_relativepath "")
+    foreach(file_fullpath ${files_fullpath})
+        string(REPLACE ${folder}/ "" file_relativepath ${file_fullpath})
+        list(APPEND files_relative_path ${file_relativepath})
+    endforeach()
+    set(${out_file_list} ${files_relative_path} PARENT_SCOPE)
+endfunction()
+
 
 if (EMSCRIPTEN)
 
     # Bundle assets / emscripten version
-    function(hello_imgui_bundle_assets app_name assets_folder)
+    function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
         target_link_options(
             ${app_name}
             PRIVATE
@@ -13,7 +23,7 @@ if (EMSCRIPTEN)
 elseif(IOS)
 
     # Bundle assets / iOS version
-    function(hello_imgui_bundle_assets app_name assets_folder)
+    function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
         FILE(GLOB_RECURSE assets ${assets_folder}/*.*)
         target_sources(${app_name} PRIVATE ${assets})
         foreach(asset ${assets})
@@ -30,10 +40,9 @@ elseif(IOS)
 
 elseif(ANDROID)
 
-    function(hello_imgui_bundle_assets app_name assets_folder)
-        message("hello_imgui_bundle_assets ${app_name} ${assets_folder}")
+    function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
+        message(VERBOSE "hello_imgui_bundle_assets_from_folder ${app_name} ${assets_folder}")
         FILE(GLOB children ${assets_folder}/*)
-        # message(FATAL_ERROR "HELLO_IMGUI_ANDROID_ASSETS_FOLDER=${HELLO_IMGUI_ANDROID_ASSETS_FOLDER}")
         if (DEFINED HELLO_IMGUI_ANDROID_ASSETS_FOLDER)
             foreach(child ${children})
                 message(VERBOSE "    Copying ${child}")
@@ -46,8 +55,8 @@ elseif(ANDROID)
 else()
 
     # Bundle assets
-    function(hello_imgui_bundle_assets app_name assets_folder)
-        message(VERBOSE "hello_imgui_bundle_assets ${app_name} ${assets_folder}")
+    function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
+        message(VERBOSE "hello_imgui_bundle_assets_from_folder ${app_name} ${assets_folder}")
         FILE(GLOB children ${assets_folder}/*)
         foreach(child ${children})
             message(VERBOSE "    Copying ${child}")
@@ -58,11 +67,32 @@ else()
 endif()
 
 
-function(hello_imgui_add_local_assets app_name)
-    if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/assets)
-        message(VERBOSE "hello_imgui_emscripten_add_local_assets: ${app_name} found local assets")
-        hello_imgui_bundle_assets(${app_name} ${CMAKE_CURRENT_SOURCE_DIR}/assets)
-    endif()
-    set(HELLOIMGUI_ASSETSDIR ${CMAKE_CURRENT_LIST_DIR}/hello_imgui_assets CACHE STRING "Hello imgui assets path" FORCE)
+function(hello_imgui_copy_folder1_files_missing_from_folder2 folder_src_1 folder_src_2 folder_dst)
+    hello_imgui_file_glob_recurse_relative(files1 ${folder_src_1})
+    hello_imgui_file_glob_recurse_relative(files2 ${folder_src_2})
+
+    foreach(file1 ${files1})
+        list(FIND files2 ${file1} index)
+        if (${index} EQUAL -1)
+            get_filename_component(file1_dir ${file1} DIRECTORY)
+            FILE(COPY ${folder_src_1}/${file1} DESTINATION ${folder_dst}/${file1_dir})
+        endif()
+    endforeach()
 endfunction()
 
+
+function(hello_imgui_bundle_assets app_name)
+    set(common_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_assets)
+    set(local_assets_folder ${CMAKE_CURRENT_SOURCE_DIR}/assets)
+
+    set(common_assets_folder_copy ${CMAKE_CURRENT_BINARY_DIR}/tmp/common_assets)
+    hello_imgui_copy_folder1_files_missing_from_folder2(
+        ${common_assets_folder} ${local_assets_folder} ${common_assets_folder_copy})
+
+    hello_imgui_bundle_assets_from_folder(${app_name} ${common_assets_folder_copy})
+    
+    if (IS_DIRECTORY ${local_assets_folder})
+        message(VERBOSE "hello_imgui_bundle_assets: ${app_name} found local assets")
+        hello_imgui_bundle_assets_from_folder(${app_name} ${local_assets_folder})
+    endif()
+endfunction()

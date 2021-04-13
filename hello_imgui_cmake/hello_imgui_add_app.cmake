@@ -8,13 +8,6 @@ set(apkCMake_projectTemplateFolder ${CMAKE_CURRENT_LIST_DIR}/android/apkCMake/te
 set(apkCMake_resTemplateFolder ${CMAKE_CURRENT_LIST_DIR}/android/res)
 include(${CMAKE_CURRENT_LIST_DIR}/android/apkCMake/apkCMake.cmake)
 
-function(hello_imgui_emscripten_add_local_assets app_name)
-    if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/assets)
-        message(VERBOSE "hello_imgui_emscripten_add_local_assets: ${app_name} found local assets")
-        hello_imgui_bundle_assets(${app_name} ${CMAKE_CURRENT_SOURCE_DIR}/assets)
-    endif()
-endfunction()
-
 function(set_bundle_variables_defaults app_name)
     if (NOT DEFINED HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART)
         set(HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART com.helloimgui PARENT_SCOPE)
@@ -54,11 +47,7 @@ endfunction()
 # * It will perform additional customization (app icon and name on mobile platforms, etc)
 function(hello_imgui_prepare_app app_name)
     set_bundle_variables_defaults(${app_name})
-
-    set(common_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_assets)
-    hello_imgui_bundle_assets(${app_name} ${common_assets_folder})
-    hello_imgui_emscripten_add_local_assets(${app_name})
-
+    hello_imgui_bundle_assets(${app_name})
     hello_imgui_platform_customization(${app_name})
 
     target_link_libraries(${app_name} PRIVATE hello_imgui)

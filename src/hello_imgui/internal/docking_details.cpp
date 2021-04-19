@@ -189,7 +189,10 @@ void ImplProvideFullScreenImGuiWindow(const ImGuiWindowParams& imGuiWindowParams
         winSize.y -= 30.f;
     ImGui::SetNextWindowSize(winSize);
     ImGuiWindowFlags windowFlags =
-        ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoBringToFrontOnFocus;
+          ImGuiWindowFlags_NoTitleBar 
+        | ImGuiWindowFlags_NoResize 
+        | ImGuiWindowFlags_NoCollapse
+        | ImGuiWindowFlags_NoBringToFrontOnFocus;
     if (imGuiWindowParams.showMenuBar)
         windowFlags |= ImGuiWindowFlags_MenuBar;
     ImGui::Begin("Main window (title bar invisible)", nullptr, windowFlags);

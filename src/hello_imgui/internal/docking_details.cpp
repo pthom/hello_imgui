@@ -180,25 +180,7 @@ void ShowDockableWindows(std::vector<DockableWindow>& dockableWindows)
     }
 }
 
-
-void ImplProvideFullScreenImGuiWindow(const ImGuiWindowParams& imGuiWindowParams)
-{
-    ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImVec2 winSize = ImGui::GetIO().DisplaySize;
-    if (imGuiWindowParams.showStatusBar)
-        winSize.y -= 30.f;
-    ImGui::SetNextWindowSize(winSize);
-    ImGuiWindowFlags windowFlags =
-          ImGuiWindowFlags_NoTitleBar 
-        | ImGuiWindowFlags_NoResize 
-        | ImGuiWindowFlags_NoCollapse
-        | ImGuiWindowFlags_NoBringToFrontOnFocus;
-    if (imGuiWindowParams.showMenuBar)
-        windowFlags |= ImGuiWindowFlags_MenuBar;
-    ImGui::Begin("Main window (title bar invisible)", nullptr, windowFlags);
-}
-
-void ImplProvideFullScreenDockSpace(const ImGuiWindowParams& imGuiWindowParams)
+void DoCreateFullScreenImGuiWindow(const ImGuiWindowParams& imGuiWindowParams, bool useDocking)
 {
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->Pos);
@@ -208,7 +190,8 @@ void ImplProvideFullScreenDockSpace(const ImGuiWindowParams& imGuiWindowParams)
         viewportSize.y -= 30.f;
     ImGui::SetNextWindowSize(viewportSize);
     ImGui::SetNextWindowViewport(viewport->ID);
-    ImGui::SetNextWindowBgAlpha(0.0f);
+    if (useDocking)
+        ImGui::SetNextWindowBgAlpha(0.0f);
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
     window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
@@ -221,14 +204,24 @@ void ImplProvideFullScreenDockSpace(const ImGuiWindowParams& imGuiWindowParams)
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     static bool p_open = true;
-    ImGui::Begin("MainDockSpace", &p_open, window_flags);
+    std::string windowTitle = useDocking ? "MainDockSpace" : "Main window (title bar invisible)";
+    ImGui::Begin(windowTitle.c_str(), &p_open, window_flags);
     ImGui::PopStyleVar(3);
+}
 
+
+void ImplProvideFullScreenImGuiWindow(const ImGuiWindowParams& imGuiWindowParams)
+{
+    DoCreateFullScreenImGuiWindow(imGuiWindowParams, false);
+}
+
+void ImplProvideFullScreenDockSpace(const ImGuiWindowParams& imGuiWindowParams)
+{
+    DoCreateFullScreenImGuiWindow(imGuiWindowParams, true);
     ImGuiID mainDockspaceId = ImGui::GetID("MainDockSpace");
     ImGuiDockNodeFlags dockspace_flags =
         ImGuiDockNodeFlags_PassthruCentralNode;  // ImGuiDockNodeFlags_PassthruDockspace;
     ImGui::DockSpace(mainDockspaceId, ImVec2(0.0f, 0.0f), dockspace_flags);
-
     gImGuiSplitIDs["MainDockSpace"] = mainDockspaceId;
 }
 

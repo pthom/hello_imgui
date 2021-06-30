@@ -7,7 +7,24 @@
 
 # Hello, Dear ImGui
 
-_HelloImGui_ is a library that enables to write  multiplatform Gui apps for Windows, Mac, Linux, iOS, Android, emscripten; with the simplicity of a "Hello World" app!
+_HelloImGui_ is a library that enables to write  multiplatform Gui apps for Windows, Mac, Linux, iOS, Android, emscripten; with the simplicity of a "Hello World" app:
+
+> hello_world.cpp
+````cpp
+#include "hello_imgui/hello_imgui.h"
+int main(int , char *[]) {
+    HelloImGui::Run(
+        []{ ImGui::Text("Hello, world!"); }, // Gui code
+        { 200.f, 50.f },                     // Window Size
+        "Hello!" );                          // Window title
+    return 0;
+}
+````
+> CMakeLists.txt:
+````cmake
+include(hello_imgui_add_app)
+hello_imgui_add_app(hello_world hello_world.main.cpp)
+````
 
 It is based on [Dear ImGui](https://github.com/ocornut/imgui), a Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
 
@@ -17,7 +34,7 @@ __Online Emscripten/Wasm demos:__
 | Hello, World | Advanced Docking | Classic ImGui Demo
 | --- | --- | --- |
 | [![Hello, World](docs/images/wasm_demos/hello.jpg)][hello-world]  | [![Advanced Docking demo](docs/images/wasm_demos/docking.jpg)][docking]  | [![ImGui classic demo](docs/images/wasm_demos/classic.jpg)][classic]
-| [Code](src/hello_imgui_demos/hello_world/hello_world.main.cpp)|[Code](src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp)|[Code](src/hello_imgui_demos/hello_imgui_demo_classic/hello_imgui_demo_classic.main.cpp)|
+|[Code](src/hello_imgui_demos/hello_world/hello_world.main.cpp)|[Code](src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp)|[Code](src/hello_imgui_demos/hello_imgui_demo_classic/hello_imgui_demo_classic.main.cpp)|
 
 [hello-world]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_world/hello_world.html  "Hello world"
 [docking]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html  "Advanced docking demo"

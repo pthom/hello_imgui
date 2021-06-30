@@ -9,7 +9,7 @@
 
 _HelloImGui_ is a library that enables to write  multiplatform Gui apps for Windows, Mac, Linux, iOS, Android, emscripten; with the simplicity of a "Hello World" app:
 
-> hello_world.cpp
+> hello_world.main.cpp
 ````cpp
 #include "hello_imgui/hello_imgui.h"
 int main(int , char *[]) {

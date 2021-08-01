@@ -22,6 +22,8 @@
       * [Docking Splits](#docking-splits)
       * [Dockable window](#dockable-window)
       * [Docking Params](#docking-params)
+  * [Display images](#display-images)
+      * [HelloImGui::ImageFromAsset](#helloimguiimagefromasset)
 
 # API
 
@@ -408,4 +410,33 @@ _Members:_
 
  * `DockableWindow * dockableWindowOfName(const std::string & name)`: returns a pointer to a dockable window
  * `void focusDockableWindow(const std::string& name)`: will focus a dockable window
+
+
+----
+
+## Display images
+
+#### HelloImGui::ImageFromAsset
+
+
+* `HelloImGui::ImageFromAsset(const char *assetPath, size, ...)`: will display a static image from the assets.
+* `bool HelloImGui::ImageButtonFromAsset(const char *assetPath, size, ...)`: will display a button using an image from the assets.
+
+Images are loaded when first displayed, and then cached (they will be freed just before the application exits).
+
+For example, given this files structure:
+````
+├── CMakeLists.txt
+├── assets/
+│   └── my_image.jpg
+└── my_app.main.cpp
+````
+
+then, you can display "my_image.jpg", using:
+
+````cpp
+HelloImGui::ImageFromAsset("my_image.jpg");
+````
+
+*Note: HelloImGui::ImageFromAsset only works with OpenGL backends. It will throw an exception on other backends*
 

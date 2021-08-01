@@ -1,6 +1,7 @@
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
 #include "hello_imgui/internal/docking_details.h"
 #include "hello_imgui/internal/menu_statusbar.h"
+#include "hello_imgui/image_from_asset.h"
 #include "imgui.h"
 
 namespace HelloImGui
@@ -116,6 +117,8 @@ void AbstractRunner::OnLowMemory()
 
 void AbstractRunner::TearDown()
 {
+    HelloImGui::internal::Free_ImageFromAssetMap();
+
     if (params.callbacks.BeforeExit)
         params.callbacks.BeforeExit();
     Impl_Cleanup();

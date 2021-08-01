@@ -9,21 +9,42 @@
 
 _HelloImGui_ is a library that enables to write  multiplatform Gui apps for Windows, Mac, Linux, iOS, Android, emscripten; with the simplicity of a "Hello World" app:
 
-> hello_world.main.cpp
+<img src="docs/images/hello_globe.jpg" width="150">
+
+The "hello, globe" app shown here is composed with three simple files:   
+
+````
+└── hello_globe.main.cpp   // main file, see below
+├── CMakeLists.txt         // 2 lines of cmake, for all platforms!
+├── assets/
+│   └── world.jpg          // assets are embedded automatically!
+````
+
+> hello_globe.main.cpp
 ````cpp
 #include "hello_imgui/hello_imgui.h"
-int main(int , char *[]) {
-    HelloImGui::Run(
-        []{ ImGui::Text("Hello, world!"); }, // Gui code
-        { 200.f, 50.f },                     // Window Size
-        "Hello!" );                          // Window title
+int main(int , char *[])
+{
+    HelloImGui::RunnerParams runnerParams;      // runnerParams will contains all the application params and callbacks
+    runnerParams.callbacks.ShowGui =            // ShowGui contains a lambda function with the Gui code
+        [&runnerParams]{
+            ImGui::Text("Hello, ");                    // Display a simple label
+            HelloImGui::ImageFromAsset("world.jpg");   // Display a static image, taken from assets/world.jpg,
+                                                       // assets are embedded automatically into the app (for *all* platforms)
+            if (ImGui::Button("Bye!"))                 // Display a button
+                runnerParams.appShallExit = true;      // ... and immediately handle its action if it is clicked!
+        };
+    runnerParams.appWindowParams.windowTitle = "Hello, globe!";
+    runnerParams.appWindowParams.windowSize = {180.f, 210.f};
+    HelloImGui::Run(runnerParams);
     return 0;
 }
 ````
+
 > CMakeLists.txt:
 ````cmake
 include(hello_imgui_add_app)
-hello_imgui_add_app(hello_world hello_world.main.cpp)
+hello_imgui_add_app(hello_globe hello_globe.main.cpp)
 ````
 
 It is based on [Dear ImGui](https://github.com/ocornut/imgui), a Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.

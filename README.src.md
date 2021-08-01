@@ -7,28 +7,62 @@
 
 # Hello, Dear ImGui
 
-_HelloImGui_ is a library that enables to write  multiplatform Gui apps for Windows, Mac, Linux, iOS, Android, emscripten; with the simplicity of a "Hello World" app:
+_HelloImGui_ is a library that enables to write  multiplatform Gui apps for Windows, Mac, Linux, iOS, Android, emscripten; with the simplicity of a "Hello World" app.
 
-> hello_world.main.cpp
+<img src="docs/images/hello_globe.jpg" width="150">
+
+The "Hello, globe" app shown here is composed with three simple files:
+
+````
+└── hello_globe.main.cpp   // main file, see below
+├── CMakeLists.txt         // 2 lines of cmake, for all platforms!
+├── assets/
+│   └── world.jpg          // assets are embedded automatically, even on mobile platforms!
+````
+
+> hello_globe.main.cpp
 ````cpp
 #include "hello_imgui/hello_imgui.h"
-int main(int , char *[]) {
-    HelloImGui::Run(
-        []{ ImGui::Text("Hello, world!"); }, // Gui code
-        { 200.f, 50.f },                     // Window Size
-        "Hello!" );                          // Window title
+int main(int , char *[])
+{
+    HelloImGui::RunnerParams runnerParams;      // runnerParams will contains all the application params and callbacks
+    runnerParams.callbacks.ShowGui =            // ShowGui contains a lambda function with the Gui code
+        [&runnerParams]{
+            ImGui::Text("Hello, ");                    // Display a simple label
+            HelloImGui::ImageFromAsset("world.jpg");   // Display a static image, taken from assets/world.jpg,
+                                                       // assets are embedded automatically into the app (for *all* platforms)
+            if (ImGui::Button("Bye!"))                 // Display a button
+                runnerParams.appShallExit = true;      // ... and immediately handle its action if it is clicked!
+        };
+    runnerParams.appWindowParams.windowTitle = "Hello, globe!";
+    runnerParams.appWindowParams.windowSize = {180.f, 210.f};
+    HelloImGui::Run(runnerParams);
     return 0;
 }
 ````
+
 > CMakeLists.txt:
 ````cmake
 include(hello_imgui_add_app)
-hello_imgui_add_app(hello_world hello_world.main.cpp)
+hello_imgui_add_app(hello_globe hello_globe.main.cpp)
 ````
 
-It is based on [Dear ImGui](https://github.com/ocornut/imgui), a Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
+HelloImGui is based on [Dear ImGui](https://github.com/ocornut/imgui), a Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
 
-__Online Emscripten/Wasm demos:__
+__Truly multiplatform__
+
+HelloImGui target desktop platforms (Linux, OSX, Windows), but also mobile platforms (iOS and Android), 
+as well as the web browser (via wasm/emscripten).
+
+The movie belows showing Hello ImGui running on 6 platforms!
+
+[![Running on 6 platforms](docs/HelloImGui_6_Platforms.png) ](https://traineq.org/HelloImGui_6_Platforms.mp4)
+
+
+__Online interactive demos:__
+
+Since HelloImGui also compile to wasm, applications created with it can be displayed in a browser. 
+Click on the images below to run the demonstrations. 
 
 
 | Hello, World | Advanced Docking | Classic ImGui Demo
@@ -40,37 +74,13 @@ __Online Emscripten/Wasm demos:__
 [docking]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html  "Advanced docking demo"
 [classic]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demo_classic/hello-imgui-demo-classic.html  "ImGui classic demo"
 
-Below, a movie showing Hello ImGui running on 6 platforms:
 
-[![Running on 6 platforms](docs/HelloImGui_6_Platforms.png) ](https://traineq.org/HelloImGui_6_Platforms.mp4)
-
-__Applications:__
-
-[ImGui Manual](https://github.com/pthom/imgui_manual) uses Hello ImGui.
-
-Just click on the image below to open it:
-
-[![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)](https://traineq.org/imgui_manual/src/imgui_manual.html)
-
-The video below gives a quick (2 minutes) introduction:
-
-[![video on youtube](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_youtube_demo.png)](https://www.youtube.com/watch?v=MJ5jgoPPjH4)
-
----
-
-__Instant develop__
-
-You can test Hello ImGui 3 minutes, *without even installing anything*! No IDE, no text editor, no library, no compiler is required.
-
-[Test ImGui application instant develop](https://github.com/pthom/hello_imgui_my_app/tree/gitpod#instant-develop)
-
----
-
+-------------------
 __Table of contents__
 
 [TOC]
 
----
+--------------------
 
 # Examples
 
@@ -121,6 +131,25 @@ This example reproduces ImGui default example.
 <img src=https://i.gyazo.com/6f12592e43590d98aa0d992aaffe685f.gif height=100> [Online demo][classic]
 
 Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/hello_imgui_demos/hello_imgui_demo_classic)
+
+## Experiment with HelloImGui instantly in a sandbox
+
+You can test Hello ImGui 3 minutes, *without even installing anything*! No IDE, no text editor, no library, no compiler is required.
+
+[Test ImGui application instant develop](https://github.com/pthom/hello_imgui_my_app/tree/gitpod#instant-develop)
+
+
+# ImGui Manual
+
+[ImGui Manual](https://github.com/pthom/imgui_manual) is an interactive manual for [Dear ImGui](https://github.com/ocornut/imgui), which uses Hello ImGui.
+
+Just click on the image below to open it:
+
+[![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)](https://pthom.github.io/imgui_manual_online/)
+
+
+---
+
 
 # Features
 

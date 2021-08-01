@@ -105,3 +105,13 @@ See [docking_params.h](docking_params.h).
 #### Docking Params
 
 @import "docking_params.h" {md_id=DockingParams}
+
+----
+
+## Display images
+
+#### HelloImGui::ImageFromAsset
+
+See [image_from_asset.h](image_from_asset.h).
+
+@import "image_from_asset.h" {md_id=HelloImGui::ImageFromAsset}

@@ -73,6 +73,7 @@ ImageGlPtr ImageGl::FactorImage(const char *assetPath)
 {
     return std::unique_ptr<ImageGl>( new ImageGl(assetPath) );
 }
-}
+
+} // namespace HelloImGui
 
 #endif // #ifdef HELLOIMGUI_HAS_OPENGL

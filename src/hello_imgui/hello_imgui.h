@@ -3,6 +3,7 @@
 #include "hello_imgui/hello_imgui_error.h"
 #include "hello_imgui/icons_font_awesome.h"
 #include "hello_imgui/image_gl.h"
+#include "hello_imgui/image_from_asset.h"
 #include "hello_imgui/runner_params.h"
 #include <string>
 /**

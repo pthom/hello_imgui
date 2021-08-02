@@ -49,7 +49,7 @@ hello_imgui_add_app(hello_globe hello_globe.main.cpp)
 
 HelloImGui is based on [Dear ImGui](https://github.com/ocornut/imgui), a Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
 
-__Truly multiplatform__
+__Truly multiplatform (desktop and mobile)__
 
 HelloImGui target desktop platforms (Linux, OSX, Windows), but also mobile platforms (iOS and Android), 
 as well as the web browser (via wasm/emscripten).
@@ -59,10 +59,10 @@ The movie belows showing Hello ImGui running on 6 platforms!
 [![Running on 6 platforms](docs/HelloImGui_6_Platforms.png) ](https://traineq.org/HelloImGui_6_Platforms.mp4)
 
 
-__Online interactive demos:__
+__Online interactive demos applications:__
 
 Since HelloImGui also compile to wasm, applications created with it can be displayed in a browser. 
-Click on the images below to run the demonstrations. 
+Click on the images below to run the demonstration applications. 
 
 
 | Hello, World | Advanced Docking | Classic ImGui Demo
@@ -75,6 +75,12 @@ Click on the images below to run the demonstrations.
 [classic]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demo_classic/hello-imgui-demo-classic.html  "ImGui classic demo"
 
 
+__Online interactive development platform__
+
+You can test developping with Hello ImGui in 1 minute, *without even installing anything*, thanks to [Gitpod.io](https://gitpod.io)'s online development platform : [demo](https://www.youtube.com/watch?v=1cgemZQ2CMc) (youtube video, 58 seconds).
+
+> [Open Hello ImGui inside Gitpod](https://gitpod.io/#https://github.com/pthom/hello_imgui/)
+
 -------------------
 __Table of contents__
 
@@ -86,7 +92,6 @@ __Table of contents__
   * [Advanced example with docking support](#advanced-example-with-docking-support)
   * [Example of an app using HelloImGui as a submodule](#example-of-an-app-using-helloimgui-as-a-submodule)
   * [ImGui "classic" demo](#imgui-classic-demo)
-  * [Experiment with HelloImGui instantly in a sandbox](#experiment-with-helloimgui-instantly-in-a-sandbox)
 * [ImGui Manual](#imgui-manual)
 * [Features](#features)
 * [Supported platforms and backends](#supported-platforms-and-backends)
@@ -174,12 +179,6 @@ This example reproduces ImGui default example.
 <img src=https://i.gyazo.com/6f12592e43590d98aa0d992aaffe685f.gif height=100> [Online demo][classic]
 
 Source for this example: [src/hello_imgui_demos/hello_imgui_demo_classic](src/hello_imgui_demos/hello_imgui_demo_classic)
-
-## Experiment with HelloImGui instantly in a sandbox
-
-You can test Hello ImGui 3 minutes, *without even installing anything*! No IDE, no text editor, no library, no compiler is required.
-
-[Test ImGui application instant develop](https://github.com/pthom/hello_imgui_my_app/tree/gitpod#instant-develop)
 
 
 # ImGui Manual

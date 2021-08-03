@@ -8,6 +8,7 @@ ports:
 vscode:
   extensions:
     - ms-vscode.cmake-tools
+    - webfreak.debug
 
 tasks:
   - before: cp -R tools/gitpod/.vscode . # apply specific vscode settings for gitpod

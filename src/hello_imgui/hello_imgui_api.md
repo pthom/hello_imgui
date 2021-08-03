@@ -12,18 +12,18 @@
   * [ImGui window params](#imgui-window-params)
       * [ImGuiWindowParams](#imguiwindowparams)
       * [Default window types](#default-window-types)
-  * [Backend Pointers](#backend-pointers)
-  * [Applications assets](#applications-assets)
-      * [Assets Files structure](#assets-files-structure)
-      * [Load Assets as data buffer](#load-assets-as-data-buffer)
-      * [Get assets path](#get-assets-path)
   * [Docking](#docking)
       * [Docking Params: Example usage](#docking-params-example-usage)
       * [Docking Splits](#docking-splits)
       * [Dockable window](#dockable-window)
       * [Docking Params](#docking-params)
+  * [Applications assets](#applications-assets)
+      * [Assets Files structure](#assets-files-structure)
+      * [Load Assets as data buffer](#load-assets-as-data-buffer)
+      * [Get assets path](#get-assets-path)
   * [Display images](#display-images)
       * [HelloImGui::ImageFromAsset](#helloimguiimagefromasset)
+  * [Backend Pointers](#backend-pointers)
 
 # API
 
@@ -236,83 +236,26 @@ In order to change the application window settings, change the _AppWindowsParams
 
 ----
 
-## Backend Pointers
-
-**BackendPointers** is a struct that contains optional pointers to the backend implementations (for SDL and GLFW).
-
-These pointers will be filled when the application starts, and you can use them to customize
-your application behavior using the selected backend.
-
- Members:
-* `glfwWindow`: _void *, default=nullptr_. Pointer to the main GLFW window (of type `GLFWwindow*`).
-  Only filled if the backend is GLFW.
-* `sdlWindow`: _void *, default=nullptr_. Pointer to the main SDL window (of type `SDL_Window*`).
-  Only filled if the backend is SDL (or emscripten + sdl)
-* `sdlGlContext`: _void *, default=nullptr_. Pointer to SDL's GlContext (of type `SDL_GLContext`).
-  Only filled if the backend is SDL (or emscripten + sdl)
-
-----
-## Applications assets
-
-See [hello_imgui_assets.h](hello_imgui_assets.h).
-
-#### Assets Files structure
-
-
-Assets located beside the application CMakeLists are embedded automatically.
-
-For example, you can have the following project structure:
-````
-my_app/
-├── CMakeLists.txt        # Your app's CMakeLists
-├── assets/               # Its assets: for mobile devices and emscripten
-│   └── fonts/            # they are embedded automatically by hello_imgui_add_app.cmake
-│       └── my_font.ttf
-├── my_app.main.cpp       # Its source code
-````
-
-Then you can load the asset "fonts/my_font.ttf", on all platforms.
-
-#### Load Assets as data buffer
-
-
-* `AssetFileData LoadAssetFileData(const char *assetPath)` will load an entire asset file into memory.
- This works on all platforms, including android.
- ````cpp
-    struct AssetFileData
-    {
-        void * data = nullptr;
-        size_t dataSize = 0;
-    };
- ````
-* `FreeAssetFileData(AssetFileData * assetFileData)` will free the memory.
-
-  Note about ImGui: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
-  and will free the memory for you.
-
-
-#### Get assets path
-
-  `std::string assetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
-
- This works under all platforms __except Android__.
- For compatibility with Android and other platforms, prefer to use `LoadAssetFileData` whenever possible.
-
-* Under iOS it will give a path in the app bundle (/private/XXX/....)
-* Under emscripten, it will be stored in the virtual filesystem at "/"
-* Under Android, assetFileFullPath is *not* implemented, and will throw an error:
-  assets can be compressed under android, and you cannot use standard file operations!
-  Use LoadAssetFileData instead
-
-----
-
 ## Docking
 
 See [docking_params.h](docking_params.h).
 
+
+HelloImGui facilitates the use of dockable windows (based on ImGui [docking branch](https://github.com/ocornut/imgui/tree/docking)).
+
+You can easily specify the default layout of the dockable windows, as well as their GUI code.
+HelloImGui will then provide a "View" menu with options in order to show/hide the dockable windows, and to restore the default layout
+
+![demo docking](../../docs/images/docking.gif)
+
+Source for this example: [src/hello_imgui_demos/hello_imgui_demodocking](../../src/hello_imgui_demos/hello_imgui_demodocking)
+
+This is done via the `DockingParams` struct: its member `dockingSplits` specifies the layout, 
+and its member `dockableWindows` specifies the list of dockable windows, along with their default location, 
+and their code (given by lambdas). See doc below for more details.
+
 #### Docking Params: Example usage
 
-**Docking params: Example usage**
 
 ````cpp
 HelloImGui::RunnerParams runnerParams;
@@ -348,6 +291,7 @@ runnerParams.imGuiWindowParams.showStatusBar = true;
 
 HelloImGui::Run(runnerParams);
 ````
+
 
 #### Docking Splits
 
@@ -414,6 +358,60 @@ _Members:_
 
 ----
 
+## Applications assets
+
+See [hello_imgui_assets.h](hello_imgui_assets.h).
+
+#### Assets Files structure
+
+
+Assets located beside the application CMakeLists are embedded automatically.
+
+For example, you can have the following project structure:
+````
+my_app/
+├── CMakeLists.txt        # Your app's CMakeLists
+├── assets/               # Its assets: for mobile devices and emscripten
+│   └── fonts/            # they are embedded automatically by hello_imgui_add_app.cmake
+│       └── my_font.ttf
+├── my_app.main.cpp       # Its source code
+````
+
+Then you can load the asset "fonts/my_font.ttf", on all platforms.
+
+#### Load Assets as data buffer
+
+
+* `AssetFileData LoadAssetFileData(const char *assetPath)` will load an entire asset file into memory.
+ This works on all platforms, including android.
+ ````cpp
+    struct AssetFileData
+    {
+        void * data = nullptr;
+        size_t dataSize = 0;
+    };
+ ````
+* `FreeAssetFileData(AssetFileData * assetFileData)` will free the memory.
+
+  Note about ImGui: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
+  and will free the memory for you.
+
+
+#### Get assets path
+
+  `std::string assetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
+
+ This works under all platforms __except Android__.
+ For compatibility with Android and other platforms, prefer to use `LoadAssetFileData` whenever possible.
+
+* Under iOS it will give a path in the app bundle (/private/XXX/....)
+* Under emscripten, it will be stored in the virtual filesystem at "/"
+* Under Android, assetFileFullPath is *not* implemented, and will throw an error:
+  assets can be compressed under android, and you cannot use standard file operations!
+  Use LoadAssetFileData instead
+
+----
+
 ## Display images
 
 #### HelloImGui::ImageFromAsset
@@ -441,3 +439,20 @@ HelloImGui::ImageFromAsset("my_image.jpg");
 ````
 
 *Note: HelloImGui::ImageFromAsset only works with OpenGL backends. It will throw an exception on other backends*
+
+## Backend Pointers
+
+**BackendPointers** is a struct that contains optional pointers to the backend implementations (for SDL and GLFW).
+
+These pointers will be filled when the application starts, and you can use them to customize
+your application behavior using the selected backend.
+
+ Members:
+* `glfwWindow`: _void *, default=nullptr_. Pointer to the main GLFW window (of type `GLFWwindow*`).
+  Only filled if the backend is GLFW.
+* `sdlWindow`: _void *, default=nullptr_. Pointer to the main SDL window (of type `SDL_Window*`).
+  Only filled if the backend is SDL (or emscripten + sdl)
+* `sdlGlContext`: _void *, default=nullptr_. Pointer to SDL's GlContext (of type `SDL_GLContext`).
+  Only filled if the backend is SDL (or emscripten + sdl)
+
+----

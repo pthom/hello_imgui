@@ -63,32 +63,11 @@ See [imgui_window_params.h](imgui_window_params.h).
 
 ----
 
-## Backend Pointers
-
-@import "backend_pointers.h" {md_id=BackendPointers}
-
-----
-## Applications assets
-
-See [hello_imgui_assets.h](hello_imgui_assets.h).
-
-#### Assets Files structure
-
-@import "hello_imgui_assets.h" {md_id=AssetsStructure}
-
-#### Load Assets as data buffer
-
-@import "hello_imgui_assets.h" {md_id=LoadAssetFileData}
-
-#### Get assets path
-
-@import "hello_imgui_assets.h" {md_id=assetFileFullPath}
-
-----
-
 ## Docking
 
 See [docking_params.h](docking_params.h).
+
+@import "docking_params.h" {md_id=DockingIntro}
 
 #### Docking Params: Example usage
 
@@ -108,6 +87,24 @@ See [docking_params.h](docking_params.h).
 
 ----
 
+## Applications assets
+
+See [hello_imgui_assets.h](hello_imgui_assets.h).
+
+#### Assets Files structure
+
+@import "hello_imgui_assets.h" {md_id=AssetsStructure}
+
+#### Load Assets as data buffer
+
+@import "hello_imgui_assets.h" {md_id=LoadAssetFileData}
+
+#### Get assets path
+
+@import "hello_imgui_assets.h" {md_id=assetFileFullPath}
+
+----
+
 ## Display images
 
 #### HelloImGui::ImageFromAsset
@@ -115,3 +112,9 @@ See [docking_params.h](docking_params.h).
 See [image_from_asset.h](image_from_asset.h).
 
 @import "image_from_asset.h" {md_id=HelloImGui::ImageFromAsset}
+
+## Backend Pointers
+
+@import "backend_pointers.h" {md_id=BackendPointers}
+
+----

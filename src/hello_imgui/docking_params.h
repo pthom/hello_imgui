@@ -10,8 +10,25 @@
 namespace HelloImGui
 {
 /**
+@@md#DockingIntro
+
+HelloImGui facilitates the use of dockable windows (based on ImGui [docking branch](https://github.com/ocornut/imgui/tree/docking)).
+
+You can easily specify the default layout of the dockable windows, as well as their GUI code.
+HelloImGui will then provide a "View" menu with options in order to show/hide the dockable windows, and to restore the default layout
+
+![demo docking](../../docs/images/docking.gif)
+
+Source for this example: [src/hello_imgui_demos/hello_imgui_demodocking](../../src/hello_imgui_demos/hello_imgui_demodocking)
+
+This is done via the `DockingParams` struct: its member `dockingSplits` specifies the layout, 
+and its member `dockableWindows` specifies the list of dockable windows, along with their default location, 
+and their code (given by lambdas). See doc below for more details.
+@@md
+
+
+Docking params: Example usage
 @@md#DockingExample
-**Docking params: Example usage**
 
 ````cpp
 HelloImGui::RunnerParams runnerParams;
@@ -47,14 +64,13 @@ runnerParams.imGuiWindowParams.showStatusBar = true;
 
 HelloImGui::Run(runnerParams);
 ````
+
 @@md
 */
 
-/**
-@@md
-A DockSpaceName is a simple string that identifies a zone on the screen where windows can be docked.
-@@md
-*/
+/*****************************************************************************/
+
+//A DockSpaceName is a simple string that identifies a zone on the screen where windows can be docked.
 using DockSpaceName = std::string;
 
 /**

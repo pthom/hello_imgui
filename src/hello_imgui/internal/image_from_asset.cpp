@@ -9,30 +9,39 @@ namespace HelloImGui
 {
 std::unordered_map<std::string, ImageGlPtr> gImageFromAssetMap;
 
-void ImageFromAsset(const char *assetPath, const ImVec2 &size, const ImVec2 &uv0, const ImVec2 &uv1,
-                    const ImVec4 &tint_col, const ImVec4 &border_col)
+void _LoadImageGl(const char *assetPath)
 {
     if (gImageFromAssetMap.find(assetPath) == gImageFromAssetMap.end())
         gImageFromAssetMap[assetPath] = ImageGl::FactorImage(assetPath);
+}
 
+void ImageFromAsset(const char *assetPath, const ImVec2 &size, const ImVec2 &uv0, const ImVec2 &uv1,
+                    const ImVec4 &tint_col, const ImVec4 &border_col)
+{
+    _LoadImageGl(assetPath);
     gImageFromAssetMap.at(assetPath)->Draw(size, uv0, uv1, tint_col, border_col);
 }
 
 bool ImageButtonFromAsset(const char *assetPath, const ImVec2 &size, const ImVec2 &uv0, const ImVec2 &uv1,
                           int frame_padding, const ImVec4 &bg_col, const ImVec4 &tint_col)
 {
-    if (gImageFromAssetMap.find(assetPath) == gImageFromAssetMap.end())
-        gImageFromAssetMap[assetPath] = ImageGl::FactorImage(assetPath);
-
+    _LoadImageGl(assetPath);
     return gImageFromAssetMap.at(assetPath)->DrawButton(size, uv0, uv1, frame_padding, bg_col, tint_col);
 }
+
+ImTextureID ImTextureIdFromAsset(const char *assetPath)
+{
+    _LoadImageGl(assetPath);
+    return gImageFromAssetMap.at(assetPath)->imTextureId;
+}
+
 
 namespace internal
 {
     void Free_ImageFromAssetMap()
     {
-        for (auto &image : gImageFromAssetMap)
-            image.second.reset();
+        // this function is called  by HelloImGui during the application's TearDown
+        // and will clear all asset images textures when the OpenGL context is still valid.
         gImageFromAssetMap.clear();
     }
 }
@@ -51,6 +60,11 @@ void ImageFromAsset(const char *assetPath, const ImVec2& size, const ImVec2& uv0
 bool ImageButtonFromAsset(const char *assetPath, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, int frame_padding, const ImVec4& bg_col, const ImVec4& tint_col)
 {
     throw std::runtime_error("ImageButtonFromAsset is only available with OpenGL backends at this time, sorry!")
+}
+
+ImTextureID ImTextureIDFromAsset(const char *assetPath)
+{
+    throw std::runtime_error("ImTextureIDFromAsset is only available with OpenGL backends at this time, sorry!")
 }
 
 namespace internal

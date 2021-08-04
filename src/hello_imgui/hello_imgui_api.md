@@ -421,6 +421,7 @@ See [image_from_asset.h](image_from_asset.h).
 
 * `HelloImGui::ImageFromAsset(const char *assetPath, size, ...)`: will display a static image from the assets.
 * `bool HelloImGui::ImageButtonFromAsset(const char *assetPath, size, ...)`: will display a button using an image from the assets.
+* `ImTextureID HelloImGui::ImTextureIdFromAsset(const char *assetPath)`: will return a texture ID for an image loaded from the assets.
 
 Images are loaded when first displayed, and then cached (they will be freed just before the application exits).
 

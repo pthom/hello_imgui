@@ -194,7 +194,7 @@ namespace HelloImGui
 
     void RunnerSdlOpenGl3::Impl_NewFrame_3D() { ImGui_ImplOpenGL3_NewFrame(); }
 
-    void RunnerSdlOpenGl3::Impl_NewFrame_Backend() { ImGui_ImplSDL2_NewFrame(mWindow); }
+    void RunnerSdlOpenGl3::Impl_NewFrame_Backend() { ImGui_ImplSDL2_NewFrame(); }
 
     void RunnerSdlOpenGl3::Impl_Frame_3D_ClearColor()
     {

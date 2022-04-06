@@ -1,7 +1,7 @@
 set(target_name hello_imgui)
 message(STATUS "Library ${target_name}")
 
-set(imgui_backends_dir ${CMAKE_CURRENT_LIST_DIR}/../../external/imgui/backends)
+set(imgui_backends_dir ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends)
 
 if (APPLE)
     file(GLOB_RECURSE sources *.h *.cpp *.c *.mm)

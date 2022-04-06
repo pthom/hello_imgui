@@ -40,8 +40,11 @@ option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 #
 # Build options
 #
+option(HELLOIMGUI_BUILD_IMGUI "Build imgui using sources provided in external/imgui" ON)
+set(HELLOIMGUI_IMGUI_SOURCE_DIR "external/imgui" CACHE STRING "Source dir of imgui")
+
 option(HELLOIMGUI_BUILD_DOCS "Build docs" OFF)
-option(HELLOIMGUI_BUILD_IMGUI "Use imgui sources provided in external/imgui" ON)
+
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
     option(HELLOIMGUI_BUILD_DEMOS "Build demos" ON)
 else()

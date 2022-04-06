@@ -56,11 +56,15 @@ else()
 
     # Bundle assets
     function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
+        # Warning: RUNTIME_OUTPUT_DIRECTORY can vary between Debug/Release configs
+        # cf https://cmake.org/cmake/help/latest/prop_tgt/RUNTIME_OUTPUT_DIRECTORY_CONFIG.html
+        get_property(runtime_output_directory TARGET ${app_name} PROPERTY RUNTIME_OUTPUT_DIRECTORY)
+
         message(VERBOSE "hello_imgui_bundle_assets_from_folder ${app_name} ${assets_folder}")
         FILE(GLOB children ${assets_folder}/*)
         foreach(child ${children})
-            message(VERBOSE "    Copying ${child}")
-            FILE(COPY ${child} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/assets/)
+            message(VERBOSE "    Copying ${child} DESTINATION ${runtime_output_directory}/assets/")
+            FILE(COPY ${child} DESTINATION ${runtime_output_directory}/assets/)
         endforeach()
     endfunction()
 

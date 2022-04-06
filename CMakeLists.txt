@@ -41,7 +41,7 @@ option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 # Build options
 #
 option(HELLOIMGUI_BUILD_IMGUI "Build imgui using sources provided in external/imgui" ON)
-set(HELLOIMGUI_IMGUI_SOURCE_DIR "external/imgui" CACHE STRING "Source dir of imgui")
+set(HELLOIMGUI_IMGUI_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/external/imgui" CACHE STRING "Source dir of imgui")
 
 option(HELLOIMGUI_BUILD_DOCS "Build docs" OFF)
 

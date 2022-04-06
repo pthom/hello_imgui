@@ -60,7 +60,7 @@ else()
         # cf https://cmake.org/cmake/help/latest/prop_tgt/RUNTIME_OUTPUT_DIRECTORY_CONFIG.html
         get_property(runtime_output_directory TARGET ${app_name} PROPERTY RUNTIME_OUTPUT_DIRECTORY)
         if ("${runtime_output_directory}" STREQUAL "")
-            message(WARNING "hello_imgui_bundle_assets_from_folder: runtime_output_directory is empty.
+            message(VERBOSE "hello_imgui_bundle_assets_from_folder: runtime_output_directory is empty.
                              using instead CMAKE_CURRENT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}")
             set(runtime_output_directory ${CMAKE_CURRENT_BINARY_DIR})
         endif()

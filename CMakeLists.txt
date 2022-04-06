@@ -23,6 +23,13 @@ if (NOT (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3 OR HELLOIMGUI
     ")
 endif()
 
+# Advanced option: use powersave mode for imgui: see PR https://github.com/ocornut/imgui/pull/4076
+# This PR was adapted to imgui docking version of March 2022 here: https://github.com/pthom/imgui/tree/docking_powersave
+# only use if your version of imgui has this mode!
+option(HELLOIMGUI_USE_POWERSAVE "Use power save mode for imgui" OFF)
+mark_as_advanced(HELLOIMGUI_USE_POWERSAVE)
+
+
 if (IOS OR EMSCRIPTEN)
     set(need_opengl_loader OFF)
 else()

@@ -135,6 +135,9 @@ namespace HelloImGui
 
     bool RunnerGlfwOpenGl3::Impl_PollEvents()
     {
+#ifdef HELLOIMGUI_USE_POWERSAVE
+        ImGui_ImplGlfw_WaitForEvent(mWindow);
+#endif
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants
         // to use your inputs.

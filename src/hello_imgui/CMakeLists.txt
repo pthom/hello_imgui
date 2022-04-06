@@ -10,6 +10,10 @@ else()
 endif()
 add_library(${target_name} ${sources})
 
+if (HELLOIMGUI_USE_POWERSAVE AND NOT EMSCRIPTEN)
+    target_compile_definitions(${target_name} PRIVATE HELLOIMGUI_USE_POWERSAVE)
+endif()
+
 target_include_directories(${target_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_link_libraries(${target_name} PUBLIC imgui)
 

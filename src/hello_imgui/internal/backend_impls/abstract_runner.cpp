@@ -33,6 +33,9 @@ void AbstractRunner::Setup()
     Impl_SetupImgGuiContext();
     params.callbacks.SetupImGuiConfig();
     params.callbacks.SetupImGuiStyle();
+#ifdef HELLOIMGUI_USE_POWERSAVE
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_EnablePowerSavingMode;
+#endif
     Impl_SetupPlatformRendererBindings();
     ImGui::GetIO().Fonts->Clear();
     params.callbacks.LoadAdditionalFonts();

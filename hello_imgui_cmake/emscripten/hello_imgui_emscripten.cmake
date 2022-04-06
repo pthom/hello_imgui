@@ -18,6 +18,11 @@ function(hello_imgui_emscripten_add_shell_file app_name)
         PRIVATE
         "SHELL:--shell-file ${shell_file}"
     )
+    set_target_properties(${app_name}
+        PROPERTIES LINK_FLAGS
+        "-s USE_SDL=2 -s USE_WEBGL2=1 -s FULL_ES3=1 -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1"
+        )
+
     set_target_properties(
         ${app_name} 
         PROPERTIES

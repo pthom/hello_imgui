@@ -54,22 +54,45 @@ elseif(ANDROID)
 
 else()
 
-    # Bundle assets
-    function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
+    function(copy_asset_post_build target_name src dst)
         # Warning: RUNTIME_OUTPUT_DIRECTORY can vary between Debug/Release configs
         # cf https://cmake.org/cmake/help/latest/prop_tgt/RUNTIME_OUTPUT_DIRECTORY_CONFIG.html
         get_property(runtime_output_directory TARGET ${app_name} PROPERTY RUNTIME_OUTPUT_DIRECTORY)
         if ("${runtime_output_directory}" STREQUAL "")
-            message(VERBOSE "hello_imgui_bundle_assets_from_folder: runtime_output_directory is empty.
-                             using instead CMAKE_CURRENT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}")
-            set(runtime_output_directory ${CMAKE_CURRENT_BINARY_DIR})
+            set(real_output_directory ${CMAKE_CURRENT_BINARY_DIR})
+        else()
+            set(real_output_directory ${runtime_output_directory}/${CMAKE_CFG_INTDIR})
         endif()
 
+        message("copy_asset_post_build ${target_name} ${src} real_output_directory/${dst}")
+
+        if (IS_DIRECTORY ${src})
+            FILE(GLOB_RECURSE all_files ${src}/*)
+            get_filename_component(dir_name ${src} NAME)
+            add_custom_command(
+                TARGET ${target_name} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E make_directory ${real_output_directory}/${dst}/${dir_name}
+                )                
+            foreach(file ${all_files})
+                add_custom_command(
+                    TARGET ${target_name} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy ${file} ${real_output_directory}/${dst}/${dir_name}/
+                    )                
+            endforeach(file)            
+        else()
+            add_custom_command(
+                TARGET ${target_name} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy ${src} ${real_output_directory}/${dst}
+                )
+        endif()
+    endfunction()
+
+    # Bundle assets
+    function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
         message(VERBOSE "hello_imgui_bundle_assets_from_folder ${app_name} ${assets_folder}")
         FILE(GLOB children ${assets_folder}/*)
         foreach(child ${children})
-            message(VERBOSE "    Copying ${child} DESTINATION ${runtime_output_directory}/assets/")
-            FILE(COPY ${child} DESTINATION ${runtime_output_directory}/assets/)
+            copy_asset_post_build(${app_name} ${child} assets/)
         endforeach()
     endfunction()
 

@@ -7,7 +7,14 @@ function(hello_imgui_emscripten_add_shell_file app_name)
         set(shell_template_file ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/shell.emscripten.html)
     endif()
 
-    set(shell_file ${CMAKE_CURRENT_BINARY_DIR}/shell.emscripten.in.html)
+    get_property(runtime_output_directory TARGET ${app_name} PROPERTY RUNTIME_OUTPUT_DIRECTORY)
+    if ("${runtime_output_directory}" STREQUAL "")
+        set(real_output_directory ${CMAKE_CURRENT_BINARY_DIR})
+    else()
+        set(real_output_directory ${runtime_output_directory})
+    endif()
+
+    set(shell_file ${real_output_directory}/shell.emscripten.in.html)
     configure_file(
         ${shell_template_file}
         ${shell_file}

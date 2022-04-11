@@ -1,7 +1,6 @@
 # See https://github.com/jgehrcke/github-repo-stats
 # GitHub Action for advanced repository traffic analysis and reporting  beyond 14 days
 on:
-  push:
   schedule:
     # Run this once per day, towards the end of the day for keeping the most
     # recent data point most meaningful (hours are interpreted in UTC).

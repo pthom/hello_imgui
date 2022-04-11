@@ -18,4 +18,5 @@ jobs:
         with:
           repository: pthom/hello_imgui
           databranch: github-repo-stats
-          ghtoken: ${{ secrets.ghrs_github_api_token }}
+    permissions:
+      actions: write

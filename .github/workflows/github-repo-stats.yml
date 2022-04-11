@@ -20,3 +20,5 @@ jobs:
           databranch: github-repo-stats
     permissions:
       actions: write
+      contents: write
+      

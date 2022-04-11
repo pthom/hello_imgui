@@ -1,2 +1,0 @@
-include(hello_imgui_add_app)
-hello_imgui_add_app(hello_imgui_demodocking hello_imgui_demodocking.main.cpp)

@@ -96,7 +96,7 @@ function(link_sdl target)
     endif()
 
     if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-        target_link_libraries(${target} PUBLIC Xext)
+        target_link_libraries(${target} PUBLIC Xext X11)
     endif()
 endfunction()
 

@@ -434,15 +434,17 @@ You need to download SDL manually for Android, like this:
 
 ````bash
 export ANDROID_HOME=/path/to/AndroidSdk
+export ANDROID_NDK_HOME=/path/to/AndroidNdk
 ````
 
 For example (MacOS):
 
 ````bash
 export ANDROID_HOME=/Users/Me/Library/Android/sdk
+export ANDROID_NDK_HOME=/Users/Me//Library/Android/sdk/ndk/21.3.6528147
 ````
 
-By default, the scripts will look for Android-ndk inside $ANDROID_HOME/ndk-bundle.
+If `ANDROID_NDK_HOME` is unset, by default, the scripts will look for Android-ndk inside `$ANDROID_HOME/ndk-bundle`.
 
 ### Run cmake in order to create an Android studio project
 

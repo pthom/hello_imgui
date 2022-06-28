@@ -5,10 +5,10 @@ import sys
 
 
 def parse_header_line(header_line):
-    level = len(header_line.split(' ')[0])
-    title = header_line[level + 1:].rstrip()
+    level = len(header_line.split(" ")[0])
+    title = header_line[level + 1 :].rstrip()
     anchor_title = title.lower().replace(" ", "-")
-    ignored_chars = [":", "+", ",", "!", "\"", "(", ")"]
+    ignored_chars = [":", "+", ",", "!", '"', "(", ")"]
     for ignored_char in ignored_chars:
         anchor_title = anchor_title.replace(ignored_char, "")
     return level, title, anchor_title
@@ -32,18 +32,15 @@ def toc_link():
 def is_header_line(line):
     return line.startswith("#") and not (line.startswith("#include"))
 
+
 def make_toc(file):
     with open(file, "r") as f:
         lines = f.readlines()
     header_lines = [line[:-1] for line in lines if is_header_line(line)]
-    toc =  "<span id=\"TOC\"/></span>\n\n"
+    toc = '<span id="TOC"/></span>\n\n'
     for header_line in header_lines:
         level, title, anchor_title = parse_header_line(header_line)
-        toc = toc + "{}* [{}]({})\n".format( 
-            repeat("  ", level - 1),  
-            title,
-            "#" + anchor_title
-            )
+        toc = toc + "{}* [{}]({})\n".format(repeat("  ", level - 1), title, "#" + anchor_title)
     return toc
 
 
@@ -51,6 +48,7 @@ def is_md_block_start(line, md_id):
     # @@md#DockingParams
     result = line.strip().startswith(f"@@md#{md_id}")
     return result
+
 
 def is_md_block_end(line):
     result = line.strip().startswith("@@md")
@@ -77,8 +75,9 @@ def parse_import_line(line):
     """
     @import "app_window_params.h" {md_id=DockingParams}
     """
+
     def get_string_between(s, after_what, before_what):
-        end = s[s.index(after_what) + len(after_what):]
+        end = s[s.index(after_what) + len(after_what) :]
         middle = end[0 : end.index(before_what)]
         return middle
 

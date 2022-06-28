@@ -7,7 +7,7 @@ def run(cmd):
     subprocess.check_call(cmd, shell=True)
 
 
-this_dir=os.path.dirname(os.path.realpath(__file__))
+this_dir = os.path.dirname(os.path.realpath(__file__))
 os.chdir(this_dir + "/../external")
 if not os.path.isdir("qtimgui"):
     run("git clone https://github.com/seanchas116/qtimgui.git")

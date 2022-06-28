@@ -5,7 +5,7 @@ import os
 import sys
 from PIL import Image
 
-doc_String="""
+doc_String = """
 @@md#resize_icons
 
 This script will create several android icons with correct size.
@@ -55,15 +55,17 @@ your_app/
 @@md
 """
 
-SOURCE_ICON="mipmap-source/ic_launcher.png"
+SOURCE_ICON = "mipmap-source/ic_launcher.png"
 
 if not os.path.isfile(SOURCE_ICON):
-    print("""
+    print(
+        """
     This script will create several android icons with correct size.
     Please run it from the subfolder android/res of your app folder.
     A folder named mipmap-source should be present in it, with an 
     icon ic_launcher.png inside it
-    """)
+    """
+    )
     sys.exit(1)
 
 
@@ -72,7 +74,7 @@ icons_folders_and_size = {
     "mipmap-mdpi": 48,
     "mipmap-xhdpi": 96,
     "mipmap-xxhdpi": 144,
-    "mipmap-xxxhdpi": 192
+    "mipmap-xxxhdpi": 192,
 }
 
 

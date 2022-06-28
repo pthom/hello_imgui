@@ -1,0 +1,43 @@
+# Temporarily disabled because google once again changed the build process and broke builds that worked previously
+#
+# Will be fixed later...
+
+#org.gradle.process.internal.ExecException: A problem occurred starting process
+#  'command '/usr/local/lib/android/sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android-strip''
+
+
+#name: Android
+#
+#on:
+#  push:
+#  pull_request:
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@master
+#    - name: Checkout submodules
+#      run: git submodule update --init --recursive
+#
+#    - name: Download SDL
+#      run: ./tools/sdl_download.sh
+#
+##    - name: Setup interactive tmate session
+##      uses: mxschmitt/action-tmate@v2
+#
+#    - name: invoke cmake to create gradle / android studio project
+#      # This will create the project
+#      # build_android/hello_imgui_demodocking_AndroidStudio
+#      run: |
+#          export ANDROID_HOME=/usr/local/lib/android/sdk
+#          mkdir build_android
+#          cd build_android
+#          ../tools/android/cmake_arm-android.sh
+#
+#    - name: gradlew build
+#      # This will build for all android architectures
+#      run: |
+#          export ANDROID_HOME=/usr/local/lib/android/sdk
+#          cd build_android/hello_imgui_demodocking_AndroidStudio
+#          ./gradlew build

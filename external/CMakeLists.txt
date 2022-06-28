@@ -15,7 +15,13 @@ if (HELLOIMGUI_USE_GLAD)
 endif()
 
 # imgui is built by default
-# You can use your own (but make sure that a target named imgui is available)
+# You can use your own :
+# In this case, make sure that a target named imgui is available
+# and add this code to your CMakeLists:
+#
+#     set(HELLOIMGUI_BUILD_IMGUI OFF CACHE BOOL "" FORCE)
+#     set(HELLOIMGUI_IMGUI_SOURCE_DIR "path/to/your/imgui" CACHE STRING "" FORCE)
+#
 if (HELLOIMGUI_BUILD_IMGUI)
     set(imgui_dir ${CMAKE_CURRENT_LIST_DIR}/imgui)
     add_library(imgui

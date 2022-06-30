@@ -24,7 +24,7 @@ endif()
 #
 if (HELLOIMGUI_BUILD_IMGUI)
     set(imgui_dir ${CMAKE_CURRENT_LIST_DIR}/imgui)
-    add_library(imgui
+    set(imgui_sources
         ${imgui_dir}/imconfig.h
         ${imgui_dir}/imgui.cpp
         ${imgui_dir}/imgui.h
@@ -34,6 +34,11 @@ if (HELLOIMGUI_BUILD_IMGUI)
         ${imgui_dir}/imgui_tables.cpp
         ${imgui_dir}/imgui_widgets.cpp
         )
+    if (HELLO_IMGUI_IMGUI_SHARED)
+        add_library(imgui SHARED ${imgui_sources})
+    else()
+        add_library(imgui ${imgui_sources})
+    endif()
     target_include_directories(imgui PUBLIC ${imgui_dir})
     if (MSVC)
         hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)

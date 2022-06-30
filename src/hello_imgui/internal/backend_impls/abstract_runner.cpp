@@ -4,6 +4,10 @@
 #include "hello_imgui/image_from_asset.h"
 #include "imgui.h"
 
+#include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
+#include "imgui_internal.h"
+
+
 namespace HelloImGui
 {
 
@@ -29,7 +33,15 @@ void AbstractRunner::Setup()
     Impl_CreateWindowAndContext();
     Impl_InitGlLoader();
     IMGUI_CHECKVERSION();
+
+#ifdef HELLO_IMGUI_IMGUI_SHARED
+    auto ctx = ImGui::CreateContext();
+    GImGui = ctx;
+    ImGui::SetCurrentContext(ctx);
+#else
     ImGui::CreateContext();
+#endif
+
     Impl_SetupImgGuiContext();
     params.callbacks.SetupImGuiConfig();
     params.callbacks.SetupImGuiStyle();

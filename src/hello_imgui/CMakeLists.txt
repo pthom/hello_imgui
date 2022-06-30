@@ -17,6 +17,11 @@ endif()
 target_include_directories(${target_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_link_libraries(${target_name} PUBLIC imgui)
 
+if (HELLO_IMGUI_IMGUI_SHARED)
+    target_compile_definitions(${target_name} PRIVATE GImGui=GImGuiFromHelloImGui)
+    target_compile_definitions(${target_name} PRIVATE HELLO_IMGUI_IMGUI_SHARED)
+endif()
+
 
 if (IOS)
     target_compile_definitions(${target_name} PUBLIC IOS)

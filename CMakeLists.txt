@@ -23,6 +23,13 @@ if (NOT (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3 OR HELLOIMGUI
     ")
 endif()
 
+# Advanced option: use imgui as a shared library: in this case, HelloImGui and ImGui possess each a different
+# copy of the global GImGui, and it needs to be synchronized accross DLL boundaries
+# (see comment inside imgui.cpp at the line `ImGuiContext*   GImGui = NULL`)
+option(HELLO_IMGUI_IMGUI_SHARED "Use imgui as a shared library" OFF)
+mark_as_advanced(HELLO_IMGUI_IMGUI_SHARED)
+
+
 # Advanced option: use powersave mode for imgui: see PR https://github.com/ocornut/imgui/pull/4076
 # This PR was adapted to imgui docking version of March 2022 here: https://github.com/pthom/imgui/tree/docking_powersave
 # only use if your version of imgui has this mode!

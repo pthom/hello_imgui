@@ -1,7 +1,10 @@
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/internal/docking_details.h"
+
 #include "imgui.h"
+#include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
 #include "imgui_internal.h"
+
 #include <string>
 
 namespace HelloImGui

@@ -31,9 +31,16 @@ namespace HelloImGui
 {
   std::string gAssetsSubfolderFolderName = "assets";
 
+  std::string gOverrideAssetsFolder = "";
+
 /// Access font files in application bundle or assets/fonts/
 std::string assetFileFullPath(const std::string& assetFilename)
 {
+    if (!gOverrideAssetsFolder.empty())
+    {
+        std::string path = gOverrideAssetsFolder + "/" + assetFilename;
+        return path;
+    }
 #if defined(IOS)
     std::string path = getAppleBundleResourcePath(assetFilename.c_str());
         return path;
@@ -62,7 +69,6 @@ std::string assetFileFullPath(const std::string& assetFilename)
 #else
     std::string assetsFolder = wai_getExecutableFolder_string() + "/assets/";
     std::string path = assetsFolder + assetFilename;
-    return path;
 #endif
 }
 
@@ -143,6 +149,10 @@ void FreeAssetFileData(AssetFileData * assetFileData)
     assetFileData = nullptr;
 }
 
+void overrideAssetsFolder(const char* folder)
+{
+    gOverrideAssetsFolder = folder;
+}
 
 #endif // #ifdef HELLOIMGUI_USE_SDL_OPENGL3
 

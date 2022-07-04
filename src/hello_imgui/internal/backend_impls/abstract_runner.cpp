@@ -25,6 +25,10 @@ void AbstractRunner::Run()
     TearDown();
 }
 
+#ifdef HELLO_IMGUI_IMGUI_SHARED
+static void*   MyMallocWrapper(size_t size, void* user_data)    { IM_UNUSED(user_data); return malloc(size); }
+static void    MyFreeWrapper(void* ptr, void* user_data)        { IM_UNUSED(user_data); free(ptr); }
+#endif
 
 void AbstractRunner::Setup()
 {
@@ -38,6 +42,7 @@ void AbstractRunner::Setup()
     auto ctx = ImGui::CreateContext();
     GImGui = ctx;
     ImGui::SetCurrentContext(ctx);
+    ImGui::SetAllocatorFunctions(MyMallocWrapper, MyFreeWrapper);
 #else
     ImGui::CreateContext();
 #endif

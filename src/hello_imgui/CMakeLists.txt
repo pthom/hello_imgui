@@ -177,6 +177,6 @@ endif()
 
 
 # install
-install(TARGETS ${target_name} DESTINATION .)
+install(TARGETS ${target_name} DESTINATION ./lib/)
 file(GLOB headers *.h)
 install(FILES ${headers} DESTINATION ./include/hello_imgui/)

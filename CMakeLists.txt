@@ -92,3 +92,5 @@ if (HELLOIMGUI_BUILD_DOCS)
         COMMENT "Generating md doc files"
     )
 endif()
+
+install(FILES README.md DESTINATION .)

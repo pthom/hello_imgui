@@ -21,3 +21,5 @@ endif()
 if (MSVC)
     hello_imgui_msvc_target_set_folder(glad ${HELLOIMGUI_SOLUTIONFOLDER}/external/OpenGL_Loaders)
 endif()
+
+install(TARGETS glad DESTINATION ./lib/)

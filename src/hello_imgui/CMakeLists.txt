@@ -10,12 +10,14 @@ else()
 endif()
 add_library(${target_name} ${sources})
 
+
 if (HELLOIMGUI_USE_POWERSAVE AND NOT EMSCRIPTEN)
     target_compile_definitions(${target_name} PRIVATE HELLOIMGUI_USE_POWERSAVE)
 endif()
 
 target_include_directories(${target_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_link_libraries(${target_name} PUBLIC imgui)
+
 
 if (HELLO_IMGUI_IMGUI_SHARED)
     target_compile_definitions(${target_name} PRIVATE GImGui=GImGuiFromHelloImGui)
@@ -164,6 +166,17 @@ if (MSVC)
     hello_imgui_msvc_target_set_folder(${target_name} ${HELLOIMGUI_SOLUTIONFOLDER})
 endif()
 
+
+# OS specific link options
 if (UNIX AND NOT EMSCRIPTEN)
     target_link_libraries(hello_imgui PUBLIC stdc++ dl)
 endif()
+if (APPLE)
+    target_link_libraries(${target_name} PUBLIC "-framework Foundation")
+endif()
+
+
+# install
+install(TARGETS ${target_name} DESTINATION .)
+file(GLOB headers *.h)
+install(FILES ${headers} DESTINATION ./include/hello_imgui/)

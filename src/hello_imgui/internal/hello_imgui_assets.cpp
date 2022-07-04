@@ -69,6 +69,7 @@ std::string assetFileFullPath(const std::string& assetFilename)
 #else
     std::string assetsFolder = wai_getExecutableFolder_string() + "/assets/";
     std::string path = assetsFolder + assetFilename;
+    return path;
 #endif
 }
 

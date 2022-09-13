@@ -155,6 +155,11 @@ void overrideAssetsFolder(const char* folder)
     gOverrideAssetsFolder = folder;
 }
 
+void setAssetsFolder(const char* folder)
+{
+    gOverrideAssetsFolder = folder;
+}
+
 #endif // #ifdef HELLOIMGUI_USE_SDL_OPENGL3
 
 

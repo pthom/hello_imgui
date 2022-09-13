@@ -78,5 +78,6 @@ extern std::string gAssetsSubfolderFolderName;  // "assets" by default
 // Advanced: forces the assets folder location
 // (when using this, automatic assets installation on mobile platforms may not work)
 void overrideAssetsFolder(const char* folder);
+void setAssetsFolder(const char* folder);
 
 } // namespace HelloImGui

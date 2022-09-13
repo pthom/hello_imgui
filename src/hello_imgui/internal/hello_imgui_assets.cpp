@@ -25,6 +25,7 @@ static bool directoryExist(const std::string& dir)
 
 #include "hello_imgui/hello_imgui_error.h"
 #include <fstream>
+#include <sstream>
 
 
 namespace HelloImGui
@@ -134,13 +135,16 @@ AssetFileData LoadAssetFileData_Impl(const char *assetPath)
 AssetFileData LoadAssetFileData(const char *assetPath)
 {
     AssetFileData r = LoadAssetFileData_Impl(assetPath);
+    std::string fullPath = assetFileFullPath(assetPath);
+    if (!r.data)
+        r = LoadAssetFileData_Impl(fullPath.c_str());
     if (!r.data)
     {
-        std::string otherPath = assetFileFullPath(assetPath);
-        r = LoadAssetFileData_Impl(otherPath.c_str());
+        std::stringstream msg;
+        msg << "LoadAssetFileData: cannot load " << assetPath << " (also tried " << fullPath << ")\n";
+        msg << "(you can call HelloImGui::setAssetsFolder() to change the assets default location.";
+        HIMG_THROW_STRING(msg.str());
     }
-    if (!r.data)
-        HIMG_THROW_STRING(std::string("LoadAssetFileData: cannot load ") + assetPath);
     return r;
 }
 

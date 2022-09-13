@@ -8,16 +8,18 @@
 #include <string>
 /**
 @@md#HelloImGui::Run
-__HelloImGui::Run()__ will run an application with a single call.
 
-Two signatures are provided:
+    __HelloImGui::Run()__ will run an application with a single call.
 
-* `HelloImGui::Run(RunnerParams &)`: full signature, the most customizable version.
-   Runs an application whose params and Gui are provided
-by runnerParams.
+    Two signatures are provided:
 
-* `HelloImGui::Run(guiFunction, windowSize, windowTitle)`: simple signature 
-in order to start a simple application with ease.
+    * `HelloImGui::Run(RunnerParams &)`: full signature, the most customizable version.
+       Runs an application whose params and Gui are provided
+    by runnerParams.
+
+    * `HelloImGui::Run(guiFunction, windowSize, windowTitle)`: simple signature
+    in order to start a simple application with ease.
+
 @@md
 */
 namespace HelloImGui
@@ -32,14 +34,16 @@ namespace HelloImGui
 
 /**
 @@md#SDLMain
-Warning for SDL apps under iOS and Android:
 
-SDL uses a dirty hack in order to _replace your main() function by its own main() function_,
-which will then call your own main !
+    Warning for SDL apps under iOS and Android:
 
-Please make sure that the signature of your main() function is *exactly*
-    `int main(int argc, char **argv)`
-and that your main() function returns an int.
+    SDL uses a dirty hack in order to _replace your main() function by its own main() function_,
+    which will then call your own main !
+
+    Please make sure that the signature of your main() function is *exactly*
+        `int main(int argc, char **argv)`
+    and that your main() function returns an int.
+
 @@md
 */
 #if defined(HELLOIMGUI_USE_SDL_OPENGL3)

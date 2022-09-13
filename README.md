@@ -264,14 +264,16 @@ make -j4
 
 ### SDL Backend Warning for main() signature
 
-Warning for SDL apps under iOS and Android:
 
-SDL uses a dirty hack in order to _replace your main() function by its own main() function_,
-which will then call your own main !
+    Warning for SDL apps under iOS and Android:
 
-Please make sure that the signature of your main() function is *exactly*
-    `int main(int argc, char **argv)`
-and that your main() function returns an int.
+    SDL uses a dirty hack in order to _replace your main() function by its own main() function_,
+    which will then call your own main !
+
+    Please make sure that the signature of your main() function is *exactly*
+        `int main(int argc, char **argv)`
+    and that your main() function returns an int.
+
 
 ### Backend with Qt
 

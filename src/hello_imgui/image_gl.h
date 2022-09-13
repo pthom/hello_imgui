@@ -8,17 +8,18 @@
 /**
 @@md#HelloImGui::ImageGl
 
-Image loading utilities, based on stb_image. They work *only with OpenGL backends*.
+    Image loading utilities, based on stb_image. They work *only with OpenGL backends*.
 
-* `ImageGl::ImageGlPtr FactorImage(const char *assetPath)`: will load an image from an asset
- and return a unique_ptr<ImageGl>, which you can display with the Draw() or DrawButton() methods.
-*  `ImageGl::Draw(...)` and `ImageGl::DrawButton(...)` will draw the image. They have the same
- behavior as ImGui::Image (except that the size can be inferred from the loaded image size)
+    * `ImageGl::ImageGlPtr FactorImage(const char *assetPath)`: will load an image from an asset
+     and return a unique_ptr<ImageGl>, which you can display with the Draw() or DrawButton() methods.
+    *  `ImageGl::Draw(...)` and `ImageGl::DrawButton(...)` will draw the image. They have the same
+     behavior as ImGui::Image (except that the size can be inferred from the loaded image size)
 
-_Note: Since ImageGl is not copiable, it has a private constructor; and you should use it via ImageGlPtr_
-````cpp
-using ImageGlPtr = std::unique_ptr<ImageGl>;
-````
+    _Note: Since ImageGl is not copiable, it has a private constructor; and you should use it via ImageGlPtr_
+    ````cpp
+    using ImageGlPtr = std::unique_ptr<ImageGl>;
+    ````
+
 @@md
 */
 namespace HelloImGui

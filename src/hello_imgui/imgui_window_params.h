@@ -59,6 +59,8 @@ enum class DefaultImGuiWindowType
       * `configWindowsMoveFromTitleBarOnly`: _bool, default=true_.
         Make windows only movable from the title bar
 
+      * `enableViewports`: _bool, default=false_. Enable multiple viewports (i.e multiple native windows)
+        If true, you can drag windows outside out the main window in order to put their content into new native windows.
 @@md
  */
 struct ImGuiWindowParams
@@ -75,6 +77,8 @@ struct ImGuiWindowParams
     bool showStatus_Fps = true;
 
     bool configWindowsMoveFromTitleBarOnly = true;
+
+    bool enableViewports = false;
 };
 
 }  // namespace HelloImGui

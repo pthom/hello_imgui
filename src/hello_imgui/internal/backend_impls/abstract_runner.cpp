@@ -49,6 +49,12 @@ void AbstractRunner::Setup()
 
     Impl_SetupImgGuiContext();
     params.callbacks.SetupImGuiConfig();
+    if (params.imGuiWindowParams.enableViewports)
+    {
+#ifndef __EMSCRIPTEN__
+        ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+#endif
+    }
     params.callbacks.SetupImGuiStyle();
 #ifdef HELLOIMGUI_USE_POWERSAVE
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_EnablePowerSavingMode;

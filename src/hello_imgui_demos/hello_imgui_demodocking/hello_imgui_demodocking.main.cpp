@@ -1,5 +1,4 @@
 #include "hello_imgui/hello_imgui.h"
-#include "hello_imgui/widgets/logger.h"
 
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
 #include <SDL.h>
@@ -100,70 +99,51 @@ void StatusBarGui(const AppState &appState)
     }
 }
 
+// Example of an optional native event callback for the backend (implemented here only for SDL)
+bool NativeBackendEventCallback(void * event)
+{
+#ifdef HELLOIMGUI_USE_SDL_OPENGL3
+    SDL_Event*  sdlEvent = (SDL_Event *)event;
+        switch( sdlEvent->type)
+        {
+            case SDL_KEYDOWN:
+                HelloImGui::Log(HelloImGui::LogLevel::Warning, "It SDL_KEYDOWN detected");
+                return false; // if you return true, the event is not processd further
+        }
+        return false;
+#else
+    return false;
+#endif
+};
+
 
 int main(int, char **)
 {
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Part 1: Define the application state, fill the status and menu bars, and load additional font
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     // Our application state
     AppState appState;
 
     // Hello ImGui params (they hold the settings as well as the Gui callbacks)
     HelloImGui::RunnerParams runnerParams;
 
-    runnerParams.appWindowParams.windowTitle = "Hello ImGUI: Advanced docking demo";
+    runnerParams.appWindowParams.windowTitle = "Docking demo";
 
-    // Provide a full screen dock space
-    runnerParams.imGuiWindowParams.defaultImGuiWindowType =
-        HelloImGui::DefaultImGuiWindowType::ProvideFullScreenDockSpace;
-
-    // Define the docking splits, i.e the way the screen space is split in different
-    // target zones for the dockable windows
-    runnerParams.dockingParams.dockingSplits =
-        {
-            // First, add a space named "BottomSpace" whose height is 25% of the app height
-            // This will split the preexisting default dockspace "MainDockSpace"
-            // (which is provided by "Hello ImGui") in two parts.
-            { "MainDockSpace", "BottomSpace", ImGuiDir_Down, 0.25 },
-            // Then, add a space to the left which occupies a column
-            // whose width is 25% of the app width
-            { "MainDockSpace", "LeftSpace", ImGuiDir_Left, 0.25 }
-            // We now have three spaces: "MainDockSpace", "BottomSpace", and "LeftSpace"
-        };
-
-    // Define our dockable windows :
-    //  - Each window provide a Gui callback
-    runnerParams.dockingParams.dockableWindows =
-        {
-            // A Command panel named "Commands" will be placed in "LeftSpace".
-            // Its Gui is provided by a lambda that calls "CommandGui"
-            {"Commands", "LeftSpace", [&]() { CommandGui(appState); }},
-
-            // A Log  window named "Logs" will be placed in "BottomSpace"
-            // It uses HelloImGui::Widgets::Logger
-            {"Logs", "BottomSpace", HelloImGui::LogGui},
-
-            // A Window named "Dear ImGui Demo" will be placed in "MainDockSpace".
-            // Its Gui function is *not* provided here.
-            // This way, we can define the Gui of this window elsewhere: as long
-            // as we create a window named "Dear ImGui Demo", it will be placed
-            // in "MainDockSpace".
-            {"Dear ImGui Demo", "MainDockSpace", {}},
-        };
-
-    // We use the default Menu and status bar of Hello ImGui
+    //
+    // Status bar
+    //
+    // We use the default status bar of Hello ImGui
     runnerParams.imGuiWindowParams.showStatusBar = true;
+    // uncomment next line in order to hide the FPS in the status bar
+    // runnerParams.imGuiWindowParams.showStatus_Fps = false;
+    runnerParams.callbacks.ShowStatus = [&appState] { StatusBarGui(appState); };
 
-    // runnerParams.callbacks.ShowGui is the default Gui callback
-    runnerParams.callbacks.ShowGui = []() {
-        // We call ImGui::ShowDemoWindow, which will create a window named "Dear ImGui Demo".
-        // It will automatically be placed in "MainDockSpace"
-        ImGui::ShowDemoWindow();
-    };
-
-    // Custom load fonts
-    runnerParams.callbacks.LoadAdditionalFonts = MyLoadFonts;
-
-    // Menu bar: we use the default menu of Hello ImGui,
-    // to which we add some more items
+    //
+    // Menu bar
+    //
+    // We use the default menu of Hello ImGui, to which we add some more items
     runnerParams.imGuiWindowParams.showMenuBar = true;
     runnerParams.callbacks.ShowMenus = []() {
         if (ImGui::BeginMenu("My Menu"))
@@ -174,39 +154,83 @@ int main(int, char **)
         }
     };
 
-    // Example of native SDL events handling
-    runnerParams.callbacks.AnyBackendEventCallback = [](void * event) {
-#ifdef HELLOIMGUI_USE_SDL_OPENGL3
-        SDL_Event*  sdlEvent = (SDL_Event *)event;
-        switch( sdlEvent->type)
-        {
-            case SDL_KEYDOWN:
-                HelloImGui::Log(HelloImGui::LogLevel::Warning, "It SDL_KEYDOWN detected");
-                return false; // if you return true, the event is not processd further
-        }
-        return false;
-#else
-        return false;
-#endif
-    };
+    // Custom load fonts
+    runnerParams.callbacks.LoadAdditionalFonts = MyLoadFonts;
 
-    // Status bar:
-    runnerParams.imGuiWindowParams.showStatusBar = true;
-    // uncomment next line in order to hide the FPS in the status bar
-    // runnerParams.imGuiWindowParams.showStatus_Fps = false;
-    runnerParams.callbacks.ShowStatus = [&appState] { StatusBarGui(appState); };
+    // optional native events handling
+    runnerParams.callbacks.AnyBackendEventCallback = NativeBackendEventCallback;
 
-    // In this demo, we also demonstrate multiple viewports (i.e multiple native windows)
-    // you can drag the inner windows outside out the main window in order to create another native window
-    runnerParams.callbacks.SetupImGuiConfig = [] {
-        ImGuiIO& io = ImGui::GetIO();
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-#ifndef __EMSCRIPTEN__
-        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-#endif
-    };
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Part 2: Define the application layout and windows
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Then, we run the app
+    //
+    //    2.1 Define the docking splits,
+    //    i.e. the way the screen space is split in different target zones for the dockable windows
+    //     We want to split "MainDockSpace" (which is provided automatically) into three zones, like this:
+    //
+    //    ___________________________________________
+    //    |        |                                |
+    //    | Left   |                                |
+    //    | Space  |    MainDockSpace               |
+    //    |        |                                |
+    //    |        |                                |
+    //    |        |                                |
+    //    -------------------------------------------
+    //    |     BottomSpace                         |
+    //    -------------------------------------------
+    //
+
+    // First, tell HelloImGui that we want full screen dock space (this will create "MainDockSpace")
+    runnerParams.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::ProvideFullScreenDockSpace;
+    // In this demo, we also demonstrate multiple viewports.
+    // you can drag windows outside out the main window in order to put their content into new native windows
+    runnerParams.imGuiWindowParams.enableViewports = true;
+
+    // Then, add a space named "BottomSpace" whose height is 25% of the app height.
+    // This will split the preexisting default dockspace "MainDockSpace" in two parts.
+    HelloImGui::DockingSplit splitMainBottom;
+    splitMainBottom.initialDock = "MainDockSpace";
+    splitMainBottom.newDock = "BottomSpace";
+    splitMainBottom.direction = ImGuiDir_Down;
+    splitMainBottom.ratio = 0.25f;
+
+    // Then, add a space to the left which occupies a column whose width is 25% of the app width
+    HelloImGui::DockingSplit splitMainLeft;
+    splitMainLeft.initialDock = "MainDockSpace";
+    splitMainLeft.newDock = "LeftSpace";
+    splitMainLeft.direction = ImGuiDir_Left;
+    splitMainLeft.ratio = 0.25f;
+
+    // Finally, transmit these splits to HelloImGui
+    runnerParams.dockingParams.dockingSplits = { splitMainBottom, splitMainLeft };
+
+    //
+    // 2.1 Define our dockable windows : each window provide a Gui callback, and will be displayed
+    //     in a docking split.
+    //
+
+    // A Command panel named "Commands" will be placed in "LeftSpace". Its Gui is provided calls "CommandGui"
+    HelloImGui::DockableWindow commandsWindow;
+    commandsWindow.label = "Commands";
+    commandsWindow.dockSpaceName = "LeftSpace";
+    commandsWindow.GuiFonction = [&appState]() { CommandGui(appState); };
+    // A Log  window named "Logs" will be placed in "BottomSpace". It uses the HelloImGui logger gui
+    HelloImGui::DockableWindow logsWindow;
+    logsWindow.label = "Logs";
+    logsWindow.dockSpaceName = "BottomSpace";
+    logsWindow.GuiFonction = HelloImGui::LogGui;
+    // A Window named "Dear ImGui Demo" will be placed in "MainDockSpace"
+    HelloImGui::DockableWindow demoWindow;
+    demoWindow.label = "Dear ImGui Demo";
+    demoWindow.dockSpaceName = "MainDockSpace";
+    demoWindow.GuiFonction = [] { ImGui::ShowDemoWindow(); };
+    // Finally, transmit these window to HelloImGui
+    runnerParams.dockingParams.dockableWindows = { commandsWindow, logsWindow, demoWindow };
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Part 3: Run the app
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     HelloImGui::Run(runnerParams);
     return 0;
 }

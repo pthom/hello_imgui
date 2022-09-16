@@ -12,6 +12,9 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init --recursive
 
+    - name: Setup interactive tmate session
+      uses: mxschmitt/action-tmate@v3
+
     - name: Install sdl and glfw via vcpkg
       run: |
          python tools/vcpkg_install_third_parties.py

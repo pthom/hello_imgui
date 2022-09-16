@@ -16,6 +16,9 @@ jobs:
     - name: Install sdl and glfw via vcpkg
       run: python tools/vcpkg_install_third_parties.py
 
+    - name: Setup interactive tmate session
+      uses: mxschmitt/action-tmate@v2
+
     - name: Configure
       run: |
           mkdir build

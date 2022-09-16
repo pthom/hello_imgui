@@ -13,11 +13,11 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init --recursive
 
-    - name: Install sdl and glfw via vcpkg
-      run: python tools/vcpkg_install_third_parties.py
+    - name: Install sdl and glfw via vcpkg # Note: Github CI provides a preinstallev vcpkg at /usr/local/share/vcpkg
+      run: vcpkg install glfw3 sdl2
 
-    - name: Setup interactive tmate session
-      uses: mxschmitt/action-tmate@v2
+#    - name: Setup interactive tmate session
+#      uses: mxschmitt/action-tmate@v2
 
     - name: Configure
       run: |
@@ -25,7 +25,7 @@ jobs:
           cd build
           cmake \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
+                -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake \
                 -DHELLOIMGUI_USE_SDL_OPENGL3=ON  \
                 -DHELLOIMGUI_USE_GLFW_OPENGL3=ON \
                 -DHELLOIMGUI_USE_GLAD=ON         \

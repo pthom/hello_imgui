@@ -40,7 +40,7 @@ void MyLoadFonts()
 
 
 // CommandGui: the widgets on the left panel
-void CommandGui(AppState & state, HelloImGui::Widgets::Logger & logger)
+void CommandGui(AppState & state)
 {
     ImGui::TextWrapped("The font below was loaded from the application assets folder"\
         "(those files are embedded automatically).");
@@ -51,12 +51,12 @@ void CommandGui(AppState & state, HelloImGui::Widgets::Logger & logger)
 
     // Edit 1 float using a slider from 0.0f to 1.0f
     if (ImGui::SliderFloat("float", &state.f, 0.0f, 1.0f))
-        logger.warning("state.f was changed to %f", state.f);
+        HelloImGui::Log(HelloImGui::LogLevel::Warning, "state.f was changed to %f", state.f);
 
     // Buttons return true when clicked (most widgets return true when edited/activated)
     if (ImGui::Button("Button")) {
         state.counter++;
-        logger.info("Button was pressed", state.f);
+        HelloImGui::Log(HelloImGui::LogLevel::Info, "Button was pressed", state.f);
     }
     ImGui::SameLine();
     ImGui::Text("counter = %d", state.counter);
@@ -67,7 +67,7 @@ void CommandGui(AppState & state, HelloImGui::Widgets::Logger & logger)
             if (ImGui::Button(ICON_FA_ROCKET " Launch rocket"))
             {
                 state.rocketState = AppState::RocketState::Preparing;
-                logger.warning("Rocket is being prepared");
+                HelloImGui::Log(HelloImGui::LogLevel::Warning, "Rocket is being prepared");
             }
             break;
         case AppState::RocketState::Preparing:
@@ -76,7 +76,7 @@ void CommandGui(AppState & state, HelloImGui::Widgets::Logger & logger)
             if (state.rocket_progress >= 1.f)
             {
                 state.rocketState = AppState::RocketState::Launched;
-                logger.warning("Rocket was launched!");
+                HelloImGui::Log(HelloImGui::LogLevel::Warning, "Rocket was launched!");
             }
             break;
         case AppState::RocketState::Launched:
@@ -129,22 +129,17 @@ int main(int, char **)
             // We now have three spaces: "MainDockSpace", "BottomSpace", and "LeftSpace"
         };
 
-    // HelloImGui::Widgets::Logger is a Dockable Window, with the title "Logs"
-    // and placed in the dockspace "BottomSpace"
-    // (see src/hello_imgui/widgets/logger.h)
-    HelloImGui::Widgets::Logger logger("Logs", "BottomSpace");
-
     // Define our dockable windows :
     //  - Each window provide a Gui callback
     runnerParams.dockingParams.dockableWindows =
         {
             // A Command panel named "Commands" will be placed in "LeftSpace".
             // Its Gui is provided by a lambda that calls "CommandGui"
-            {"Commands", "LeftSpace", [&]() { CommandGui(appState, logger); }},
+            {"Commands", "LeftSpace", [&]() { CommandGui(appState); }},
 
             // A Log  window named "Logs" will be placed in "BottomSpace"
             // It uses HelloImGui::Widgets::Logger
-            logger,
+            {"Logs", "BottomSpace", HelloImGui::LogGui},
 
             // A Window named "Dear ImGui Demo" will be placed in "MainDockSpace".
             // Its Gui function is *not* provided here.
@@ -170,23 +165,23 @@ int main(int, char **)
     // Menu bar: we use the default menu of Hello ImGui,
     // to which we add some more items
     runnerParams.imGuiWindowParams.showMenuBar = true;
-    runnerParams.callbacks.ShowMenus = [&logger]() {
+    runnerParams.callbacks.ShowMenus = []() {
         if (ImGui::BeginMenu("My Menu"))
         {
             if (ImGui::MenuItem("Test me"))
-                logger.warning("It works");
+                HelloImGui::Log(HelloImGui::LogLevel::Debug, "It works");
             ImGui::EndMenu();
         }
     };
 
     // Example of native SDL events handling
-    runnerParams.callbacks.AnyBackendEventCallback = [&logger](void * event) {
+    runnerParams.callbacks.AnyBackendEventCallback = [](void * event) {
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
         SDL_Event*  sdlEvent = (SDL_Event *)event;
         switch( sdlEvent->type)
         {
             case SDL_KEYDOWN:
-                logger.warning( "SDL_KEYDOWN detected\n" );
+                HelloImGui::Log(HelloImGui::LogLevel::Warning, "It SDL_KEYDOWN detected");
                 return false; // if you return true, the event is not processd further
         }
         return false;

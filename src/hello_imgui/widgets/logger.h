@@ -2,6 +2,7 @@
 #include "hello_imgui/docking_params.h"
 #include "hello_imgui/internal/imguial_term.h"
 
+// This header is deprecated! Prefer to use hello_imgui_logger.h!
 namespace HelloImGui
 {
 namespace Widgets

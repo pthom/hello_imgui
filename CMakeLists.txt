@@ -88,7 +88,7 @@ add_subdirectory(src)
 
 if (HELLOIMGUI_BUILD_DOCS)
     add_custom_target(hello_imgui_build_doc ALL
-        ${CMAKE_SOURCE_DIR}/tools/doc/process_md_docs.py
+        ${PROJECT_SOURCE_DIR}/tools/doc/process_md_docs.py
         COMMENT "Generating md doc files"
     )
 endif()

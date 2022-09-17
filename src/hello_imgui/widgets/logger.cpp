@@ -8,7 +8,7 @@ Logger::Logger(std::string label_, DockSpaceName dockSpaceName_)
     : DockableWindow(label_, dockSpaceName_, {})
     , log_(logBuffer_, maxBufferSize)
 {
-    this->GuiFonction = [this]() {
+    this->GuiFunction = [this]() {
         log_.draw();
     };
 }

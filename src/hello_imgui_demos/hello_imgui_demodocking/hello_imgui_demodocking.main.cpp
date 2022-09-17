@@ -221,17 +221,17 @@ int main(int, char **)
     HelloImGui::DockableWindow commandsWindow;
     commandsWindow.label = "Commands";
     commandsWindow.dockSpaceName = "LeftSpace";
-    commandsWindow.GuiFonction = [&appState]() { CommandGui(appState); };
+    commandsWindow.GuiFunction = [&appState]() { CommandGui(appState); };
     // A Log  window named "Logs" will be placed in "BottomSpace". It uses the HelloImGui logger gui
     HelloImGui::DockableWindow logsWindow;
     logsWindow.label = "Logs";
     logsWindow.dockSpaceName = "BottomSpace";
-    logsWindow.GuiFonction = HelloImGui::LogGui;
+    logsWindow.GuiFunction = HelloImGui::LogGui;
     // A Window named "Dear ImGui Demo" will be placed in "MainDockSpace"
     HelloImGui::DockableWindow demoWindow;
     demoWindow.label = "Dear ImGui Demo";
     demoWindow.dockSpaceName = "MainDockSpace";
-    demoWindow.GuiFonction = [] { ImGui::ShowDemoWindow(); };
+    demoWindow.GuiFunction = [] { ImGui::ShowDemoWindow(); };
     // Finally, transmit these windows to HelloImGui
     runnerParams.dockingParams.dockableWindows = { commandsWindow, logsWindow, demoWindow };
 

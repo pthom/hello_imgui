@@ -95,7 +95,7 @@ class DockingParams <struct> {
 class DockableWindow <struct> {
     string label;
     DockSpaceName dockSpaceName;
-    VoidFunction GuiFonction = {};
+    VoidFunction GuiFunction = {};
     bool isVisible = true;
     bool canBeClosed = true;
 }

@@ -145,15 +145,15 @@ struct DockableWindow
         bool isVisible_ = true,
         bool canBeClosed_ = true)
     : label(label_), dockSpaceName(dockSpaceName_),
-          GuiFonction(guiFonction_),
+      GuiFunction(guiFonction_),
       isVisible(isVisible_),
-          canBeClosed(canBeClosed_) {}
+      canBeClosed(canBeClosed_) {}
 
     std::string label;
 
     DockSpaceName dockSpaceName;
 
-    VoidFunction GuiFonction = {};
+    VoidFunction GuiFunction = {};
 
     bool isVisible = true;
     bool canBeClosed = true;

@@ -41,11 +41,18 @@ void MyLoadFonts()
 // CommandGui: the widgets on the left panel
 void CommandGui(AppState & state)
 {
-    ImGui::TextWrapped("The font below was loaded from the application assets folder"\
-        "(those files are embedded automatically).");
     ImGui::PushFont(gAkronimFont);
-    ImGui::TextWrapped("Hello, Dear ImGui! " ICON_FA_SMILE);
+    ImGui::Text("Hello  " ICON_FA_SMILE);
+    HelloImGui::ImageFromAsset("world.jpg");
     ImGui::PopFont();
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip(
+            "The custom font and the globe image below were loaded \n"
+            "from the application assets folder\n"\
+            "(those files are embedded automatically).");
+    }
+
     ImGui::Separator();
 
     // Edit 1 float using a slider from 0.0f to 1.0f
@@ -225,7 +232,7 @@ int main(int, char **)
     demoWindow.label = "Dear ImGui Demo";
     demoWindow.dockSpaceName = "MainDockSpace";
     demoWindow.GuiFonction = [] { ImGui::ShowDemoWindow(); };
-    // Finally, transmit these window to HelloImGui
+    // Finally, transmit these windows to HelloImGui
     runnerParams.dockingParams.dockableWindows = { commandsWindow, logsWindow, demoWindow };
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

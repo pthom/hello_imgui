@@ -5,7 +5,7 @@
 #include "hello_imgui/image_gl.h"
 #include "hello_imgui/image_from_asset.h"
 #include "hello_imgui/runner_params.h"
-#include "hello_imgui_logger.h"
+#include "hello_imgui/hello_imgui_logger.h"
 #include <string>
 /**
 @@md#HelloImGui::Run

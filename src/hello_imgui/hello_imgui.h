@@ -10,18 +10,21 @@
 /**
 @@md#HelloImGui::Run
 
-    __HelloImGui::Run()__ will run an application with a single call.
+__HelloImGui::Run()__ will run an application with a single call.
 
-    Two signatures are provided:
+Two signatures are provided:
 
-    * `HelloImGui::Run(RunnerParams &)`: full signature, the most customizable version.
-       Runs an application whose params and Gui are provided
-    by runnerParams.
+* `HelloImGui::Run(RunnerParams &)`: full signature, the most customizable version.
+   Runs an application whose params and Gui are provided
+by runnerParams.
 
-    * `HelloImGui::Run(guiFunction, windowSize, windowTitle)`: simple signature
-    in order to start a simple application with ease.
+* `HelloImGui::Run(guiFunction, windowSize, windowTitle)`: simple signature
+in order to start a simple application with ease.
 
-@@md
+__HelloImGui::GetRunnerParams()__ is a convenience function that will return
+the runnerParams of the current application.
+
+ @@md
 */
 namespace HelloImGui
 {

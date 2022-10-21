@@ -34,6 +34,8 @@ namespace HelloImGui
         ImVec2 windowSize = ImVec2(800.f, 600.f),
         std::string windowTitle = ""
         );
+
+    RunnerParams* GetRunnerParams();
 }
 
 /**

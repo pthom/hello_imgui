@@ -3,9 +3,13 @@
 
 namespace HelloImGui
 {
+RunnerParams* gLastRunnerParams = nullptr;
+
+
 void Run(RunnerParams& runnerParams)
 {
     auto runner = FactorRunner(runnerParams);
+    gLastRunnerParams = &runnerParams;
     runner->Run();
 }
 
@@ -15,8 +19,16 @@ void Run(VoidFunction guiFonction, ImVec2 windowSize, std::string windowTitle)
     runnerParams.callbacks.ShowGui = guiFonction;
     runnerParams.appWindowParams.windowSize = windowSize;
     runnerParams.appWindowParams.windowTitle = windowTitle;
-
+    gLastRunnerParams = &runnerParams;
     auto runner = FactorRunner(runnerParams);
     runner->Run();
 }
+
+RunnerParams* GetRunnerParams()
+{
+    if (gLastRunnerParams == nullptr)
+        throw std::runtime_error("HelloImGui::GetRunnerParams() would return null. Did you call HelloImGui::Run()?");
+    return gLastRunnerParams;
+}
+
 }  // namespace HelloImGui

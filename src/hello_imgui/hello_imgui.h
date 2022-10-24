@@ -30,7 +30,7 @@ namespace HelloImGui
 {
     void Run(RunnerParams & runnerParams);
 
-    void Run(VoidFunction guiFonction,
+    void Run(VoidFunction guiFunction,
         ImVec2 windowSize = ImVec2(800.f, 600.f),
         std::string windowTitle = ""
         );

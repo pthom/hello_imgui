@@ -13,10 +13,10 @@ void Run(RunnerParams& runnerParams)
     runner->Run();
 }
 
-void Run(VoidFunction guiFonction, ImVec2 windowSize, std::string windowTitle)
+void Run(VoidFunction guiFunction, ImVec2 windowSize, std::string windowTitle)
 {
     RunnerParams runnerParams;
-    runnerParams.callbacks.ShowGui = guiFonction;
+    runnerParams.callbacks.ShowGui = guiFunction;
     runnerParams.appWindowParams.windowSize = windowSize;
     runnerParams.appWindowParams.windowTitle = windowTitle;
     gLastRunnerParams = &runnerParams;

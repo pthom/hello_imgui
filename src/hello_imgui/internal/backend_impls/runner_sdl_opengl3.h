@@ -30,7 +30,7 @@ namespace HelloImGui
         void Impl_Cleanup() override;
         void Impl_SwapBuffers() override;
 
-       public:
+    public:
         bool priv_HandleMobileDeviceEvent(unsigned int sdl_EventType);
 
        private:

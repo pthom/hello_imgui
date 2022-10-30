@@ -74,6 +74,10 @@ namespace HelloImGui
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
         }
 #endif
+
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
     }
 
     std::string RunnerSdlOpenGl3::Impl_GlslVersion()
@@ -92,9 +96,6 @@ namespace HelloImGui
 
     void RunnerSdlOpenGl3::Impl_CreateWindowAndContext()
     {
-        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
 #ifndef __EMSCRIPTEN__
         const auto &backendWindowParams = params.appWindowParams;
@@ -130,7 +131,6 @@ namespace HelloImGui
         mWindow = SDL_CreateWindow(
             backendWindowParams.windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
 #endif
-
         mGlContext = SDL_GL_CreateContext(mWindow);
         if (!mGlContext)
             HIMG_THROW("RunnerSdlOpenGl3::Impl_CreateWindowAndContext(): Failed to initialize WebGL context!");
@@ -290,7 +290,6 @@ namespace HelloImGui
     {
 
     }
-
 
 }  // namespace HelloImGui
 

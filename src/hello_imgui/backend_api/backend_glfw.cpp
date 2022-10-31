@@ -139,12 +139,6 @@ namespace BackendApi
         return shouldClose;
     }
 
-    void BackendGlfw::SwapWindow(IBackendWindow *window)
-    {
-        auto glfwWindow = GetGlfwWindow(window);
-        glfwSwapBuffers(glfwWindow);
-    }
-
     void BackendGlfw::RaiseWindow(IBackendWindow *window)
     {
         auto glfwWindow = GetGlfwWindow(window);

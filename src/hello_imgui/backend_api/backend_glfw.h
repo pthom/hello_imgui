@@ -51,7 +51,6 @@ namespace BackendApi
 
         void WaitForEvent(IBackendWindow *window, int timeOutMilliseconds) override;
         void PollEvents(IBackendWindow *window, const AnyEventCallback &anyEventCallback) override;
-        void SwapWindow(IBackendWindow *window) override;
     };
 
 #endif // #ifdef BACKEND_API_USE_GLFW

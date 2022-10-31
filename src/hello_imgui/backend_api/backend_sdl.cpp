@@ -131,14 +131,9 @@ namespace BackendApi
         return GetBackendSdlWindow(window)->mShouldWindowClose;
     }
 
-    void BackendSdl::SwapWindow(IBackendWindow *window)
-    {
-        SDL_GL_SwapWindow(GetSdlWindow(window));
-    }
-
     void BackendSdl::RaiseWindow(IBackendWindow *window)
     {
-// Despite those efforts, the app does not come to the front under MacOS
+        // Despite those efforts, the app does not come to the front under MacOS
         auto sdlWindow = GetSdlWindow(window);
         SDL_ShowWindow(sdlWindow);
         SDL_FlashWindow(sdlWindow, SDL_FLASH_UNTIL_FOCUSED);
@@ -151,8 +146,7 @@ namespace BackendApi
         int x, y, w, h;
         SDL_GetWindowSize(sdlWindow, &w, &h);
         SDL_GetWindowPosition(sdlWindow, &x, &y);
-        ScreenBounds r{{x, y},
-                       {w, h}};
+        ScreenBounds r{{x, y}, {w, h}};
         return r;
     }
 

@@ -2,6 +2,7 @@
 #include "hello_imgui/backend_api/screen_bounds.h"
 
 #include <string>
+#include <iostream>
 
 
 #define BACKEND_THROW_IMPL(msg) \
@@ -75,9 +76,7 @@ using AnyEventCallback = std::function<bool(void * backendEvent)>
 **/
     using AnyEventCallback = std::function<bool(void *backendEvent)>;
 
-
-    bool EventCallback_NoOp(void * /*backendEvent*/)
-    { return false; }
+    bool EventCallback_NoOp(void *backendEvent);
 
 
     // Container for pointers to SDLWindow, GLFWwindow, etc.
@@ -111,8 +110,6 @@ using AnyEventCallback = std::function<bool(void * backendEvent)>
         virtual bool IsWindowIconified(IBackendWindow *window) = 0;
 
         virtual bool ShouldWindowClose(IBackendWindow *window) = 0;
-
-        virtual void SwapWindow(IBackendWindow *window) = 0;
 
         virtual void RaiseWindow(IBackendWindow *window) = 0;
 

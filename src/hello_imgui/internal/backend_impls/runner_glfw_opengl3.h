@@ -30,7 +30,7 @@ class RunnerGlfwOpenGl3 : public AbstractRunner
         void Impl_Cleanup() override;
         void Impl_SwapBuffers() override;
 
-       private:
+    private:
         GLFWwindow* mWindow = nullptr;
     };
 

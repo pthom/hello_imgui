@@ -100,8 +100,8 @@ namespace HelloImGui
             glfwTerminate();
             HIMG_THROW("RunnerGlfwOpenGl3::Impl_CreateWindowAndContext failed");
         }
-        glfwMakeContextCurrent(mWindow);
-        glfwSwapInterval(1);  // Enable vsync
+        glfwMakeContextCurrent(mWindow); // OpenGl!
+        glfwSwapInterval(1);  // Enable vsync (openGL only, not vulkan)
 
         params.backendPointers.glfwWindow = mWindow;
     }
@@ -117,7 +117,7 @@ namespace HelloImGui
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
         bool err = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) == 0;
 #else
-        bool err = false;  // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is likely to requires
+         bool err = false;  // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is likely to requires
                            // some form of initialization.
 #endif
         if (err)

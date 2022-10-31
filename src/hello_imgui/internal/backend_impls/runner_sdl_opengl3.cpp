@@ -170,10 +170,6 @@ namespace HelloImGui
 
     bool RunnerSdlOpenGl3::Impl_PollEvents()
     {
-#ifdef HELLOIMGUI_USE_POWERSAVE
-        ImGui_ImplSDL2_WaitForEvent(mWindow);
-#endif
-
         SDL_Event event;
         bool exitRequired = false;
         while (SDL_PollEvent(&event))

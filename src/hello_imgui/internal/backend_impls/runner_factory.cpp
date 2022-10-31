@@ -51,7 +51,7 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 #ifdef HELLOIMGUI_USE_QT
     return FactorRunnerQt(params);
 #endif
-    throw std::logic_error("HelloImGui::FactorRunner no bakend selected!");
+    throw std::logic_error("HelloImGui::FactorRunner no backend selected!");
 }
 
 }  // namespace HelloImGui

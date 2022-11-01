@@ -58,12 +58,12 @@ namespace BackendApi
         // * high-DPI support (e.g. iOS and macOS)
         bool allowHighDpi = true;
 
-        Backend3dMode backend3DMode;
+        Backend3dMode backend3DMode = Backend3dMode::OpenGl;
 
         bool borderless = false;
         bool resizable = false;
 
-        WindowVisibility windowVisibility;
+        WindowVisibility windowVisibility = WindowVisibility::Standard;
     };
 
 
@@ -80,12 +80,7 @@ using AnyEventCallback = std::function<bool(void * backendEvent)>
 
 
     // Container for pointers to SDLWindow, GLFWwindow, etc.
-    class IBackendWindow
-    {
-    public:
-        virtual ~IBackendWindow()
-        {}
-    };
+    using WindowPointer = void *;
 
 
     class IBackend
@@ -95,9 +90,7 @@ using AnyEventCallback = std::function<bool(void * backendEvent)>
 
         virtual void DeInit() = 0;
 
-        virtual IBackendWindow *CreateWindow(WindowOptions &info) = 0;
-
-        virtual void DestroyWindow(IBackendWindow *window) = 0;
+        virtual WindowPointer CreateWindow(WindowOptions &info) = 0;
 
         virtual size_t GetNbMonitors() = 0;
 
@@ -107,20 +100,13 @@ using AnyEventCallback = std::function<bool(void * backendEvent)>
         //for example on a Mac with a Retina display.
         virtual ScreenBounds GetOneMonitorWorkArea(int monitorIndex) = 0;
 
-        virtual bool IsWindowIconified(IBackendWindow *window) = 0;
+        virtual bool IsWindowIconified(WindowPointer window) = 0;
 
-        virtual bool ShouldWindowClose(IBackendWindow *window) = 0;
+        virtual void RaiseWindow(WindowPointer window) = 0;
 
-        virtual void RaiseWindow(IBackendWindow *window) = 0;
+        virtual ScreenBounds GetWindowBounds(WindowPointer window) = 0;
 
-        virtual ScreenBounds GetWindowBounds(IBackendWindow *window) = 0;
-
-        virtual void SetWindowBounds(IBackendWindow *window, ScreenBounds windowBounds) = 0;
-
-        virtual void WaitForEvent(IBackendWindow *window, int timeOutMilliseconds) = 0;
-
-        virtual void
-        PollEvents(IBackendWindow *window, const AnyEventCallback &anyEventCallback = EventCallback_NoOp) = 0;
+        virtual void SetWindowBounds(WindowPointer window, ScreenBounds windowBounds) = 0;
 
         // Screenshot!
 

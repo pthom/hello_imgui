@@ -12,45 +12,22 @@
 
 namespace BackendApi
 {
-    class BackendGlfwWindow: public IBackendWindow
-    {
-    public:
-        GLFWwindow *mWindow;
-        BackendGlfwWindow(GLFWwindow *window): mWindow(window) {}
-        ~BackendGlfwWindow() {}
-    };
-
-
-    static void glfw_error_callback(int error, const char* description)
-    {
-        fprintf(stderr, "Glfw Error %d: %s\n", error, description);
-    }
-
-
     class BackendGlfw: public IBackend
     {
-        BackendGlfwWindow* GetBackendGlfwWindow(IBackendWindow *bw);
-        GLFWwindow* GetGlfwWindow(IBackendWindow *bw);
-
     public:
         void Init() override;
         void DeInit() override;
 
-        IBackendWindow* CreateWindow(WindowOptions &info) override;
-        void DestroyWindow(IBackendWindow *window) override;
+        WindowPointer CreateWindow(WindowOptions &info) override;
 
         size_t GetNbMonitors() override;
         ScreenBounds GetOneMonitorWorkArea(int monitorIndex) override;
 
-        bool IsWindowIconified(IBackendWindow *window) override;
-        bool ShouldWindowClose(IBackendWindow *window) override;
-        void RaiseWindow(IBackendWindow *window) override;
+        bool IsWindowIconified(WindowPointer window) override;
+        void RaiseWindow(WindowPointer window) override;
 
-        ScreenBounds GetWindowBounds(IBackendWindow *window) override;
-        void SetWindowBounds(IBackendWindow *window, ScreenBounds windowBounds) override;
-
-        void WaitForEvent(IBackendWindow *window, int timeOutMilliseconds) override;
-        void PollEvents(IBackendWindow *window, const AnyEventCallback &anyEventCallback) override;
+        ScreenBounds GetWindowBounds(WindowPointer window) override;
+        void SetWindowBounds(WindowPointer window, ScreenBounds windowBounds) override;
     };
 
 #endif // #ifdef BACKEND_API_USE_GLFW

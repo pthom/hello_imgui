@@ -18,47 +18,24 @@
 
 namespace BackendApi
 {
-    class BackendSdlWindow : public IBackendWindow
-    {
-    public:
-        SDL_Window *mWindow;
-        bool mShouldWindowClose = false;
-
-        BackendSdlWindow(SDL_Window *window) : mWindow(window)
-        {}
-
-        ~BackendSdlWindow()
-        {}
-    };
-
-
     class BackendSdl : public IBackend
     {
-    private:
-        BackendSdlWindow *GetBackendSdlWindow(IBackendWindow *bw);
-        SDL_Window *GetSdlWindow(IBackendWindow *bw);
-
     public:
         void Init() override;
 
         void DeInit() override;
 
-        IBackendWindow *CreateWindow(WindowOptions &info) override;
-        void DestroyWindow(IBackendWindow *window) override;
+        WindowPointer CreateWindow(WindowOptions &info) override;
 
         size_t GetNbMonitors() override;
         ScreenBounds GetOneMonitorWorkArea(int monitorIndex) override;
 
-        bool IsWindowIconified(IBackendWindow *window) override;
-        bool ShouldWindowClose(IBackendWindow *window) override;
+        bool IsWindowIconified(WindowPointer window) override;
 
-        void RaiseWindow(IBackendWindow *window) override;
+        void RaiseWindow(WindowPointer window) override;
 
-        ScreenBounds GetWindowBounds(IBackendWindow *window) override;
-        void SetWindowBounds(IBackendWindow *window, ScreenBounds windowBounds) override;
-
-        void WaitForEvent(IBackendWindow *window, int timeOutMilliseconds) override;
-        void PollEvents(IBackendWindow *bw, const AnyEventCallback &anyEventCallback = EventCallback_NoOp) override;
+        ScreenBounds GetWindowBounds(WindowPointer window) override;
+        void SetWindowBounds(WindowPointer window, ScreenBounds windowBounds) override;
     };
 } // namespace BackendApi
 

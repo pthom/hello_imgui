@@ -1,22 +1,8 @@
 #include "hello_imgui/backend_api/backend_sdl.h"
-
+#include <SDL.h>
 
 namespace BackendApi
 {
-
-    BackendSdlWindow *BackendSdl::GetBackendSdlWindow(IBackendWindow *bw)
-    {
-        BackendSdlWindow *backendSdlWindow = dynamic_cast<BackendSdlWindow *>(bw);
-        return backendSdlWindow;
-    }
-
-    SDL_Window *BackendSdl::GetSdlWindow(IBackendWindow *bw)
-    {
-        BackendSdlWindow *backendSdlWindow = dynamic_cast<BackendSdlWindow *>(bw);
-        return backendSdlWindow->mWindow;
-    }
-
-
     void BackendSdl::Init()
     {
         if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
@@ -28,7 +14,7 @@ namespace BackendApi
         SDL_Quit();
     }
 
-    IBackendWindow* BackendSdl::CreateWindow(WindowOptions &info)
+    WindowPointer BackendSdl::CreateWindow(WindowOptions &info)
     {
         int window_flags = 0;
 
@@ -86,20 +72,12 @@ namespace BackendApi
                                        windowBounds.size[0], windowBounds.size[1],
                                        window_flags);
         if (!window)
-            BACKEND_THROW("RunnerSdlOpenGl3::Impl_CreateWindowAndContext : SDL_CreateWindow returned NULL");
+            BACKEND_THROW("BackendSdl::CreateWindow : SDL_CreateWindow returned NULL");
 
         SDL_GetWindowPosition(window, &windowBounds.position[0], &windowBounds.position[1]);
         SDL_GetWindowSize(window, &windowBounds.size[0], &windowBounds.size[1]);
 
-
-        return new BackendSdlWindow(window);
-    }
-
-    void BackendSdl::DestroyWindow(IBackendWindow *window)
-    {
-        auto sdlWindow = GetSdlWindow(window);
-        SDL_DestroyWindow(sdlWindow);
-        delete (window);
+        return (void *)(window);
     }
 
     size_t BackendSdl::GetNbMonitors()
@@ -119,30 +97,25 @@ namespace BackendApi
         return r;
     }
 
-    bool BackendSdl::IsWindowIconified(IBackendWindow *window)
+    bool BackendSdl::IsWindowIconified(WindowPointer window)
     {
-        auto window_flags = SDL_GetWindowFlags(GetSdlWindow(window));
+        auto window_flags = SDL_GetWindowFlags((SDL_Window *)(window));
         bool window_is_hidden = (window_flags & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED)) > 0;
         return window_is_hidden;
     }
 
-    bool BackendSdl::ShouldWindowClose(IBackendWindow *window)
-    {
-        return GetBackendSdlWindow(window)->mShouldWindowClose;
-    }
-
-    void BackendSdl::RaiseWindow(IBackendWindow *window)
+    void BackendSdl::RaiseWindow(WindowPointer window)
     {
         // Despite those efforts, the app does not come to the front under MacOS
-        auto sdlWindow = GetSdlWindow(window);
+        auto sdlWindow = (SDL_Window *)(window);
         SDL_ShowWindow(sdlWindow);
         SDL_FlashWindow(sdlWindow, SDL_FLASH_UNTIL_FOCUSED);
         SDL_RaiseWindow(sdlWindow);
     }
 
-    ScreenBounds BackendSdl::GetWindowBounds(IBackendWindow *window)
+    ScreenBounds BackendSdl::GetWindowBounds(WindowPointer window)
     {
-        auto sdlWindow = GetSdlWindow(window);
+        auto sdlWindow = (SDL_Window *)(window);
         int x, y, w, h;
         SDL_GetWindowSize(sdlWindow, &w, &h);
         SDL_GetWindowPosition(sdlWindow, &x, &y);
@@ -150,9 +123,9 @@ namespace BackendApi
         return r;
     }
 
-    void BackendSdl::SetWindowBounds(IBackendWindow *window, ScreenBounds windowBounds)
+    void BackendSdl::SetWindowBounds(WindowPointer window, ScreenBounds windowBounds)
     {
-        auto sdlWindow = GetSdlWindow(window);
+        auto sdlWindow = (SDL_Window *)(window);
 
         // Size
         SDL_SetWindowSize(sdlWindow, windowBounds.size[0], windowBounds.size[1]);
@@ -165,41 +138,5 @@ namespace BackendApi
         else
             SDL_SetWindowPosition(sdlWindow, windowBounds.position[0], windowBounds.position[1]);
     }
-
-    void BackendSdl::WaitForEvent(IBackendWindow *window, int timeOutMilliseconds)
-    {
-        //if (timeOutMilliseconds <= 0)  // This is done by SDL
-        //    return;
-        SDL_WaitEventTimeout(nullptr, timeOutMilliseconds);
-    }
-
-    void BackendSdl::PollEvents(IBackendWindow *bw, const AnyEventCallback &anyEventCallback)
-    {
-        SDL_Window *sdlWindow = GetSdlWindow(bw);
-        auto sdlWindowId = SDL_GetWindowID(sdlWindow);
-
-        SDL_Event event;
-        bool exitRequired = false;
-        while (SDL_PollEvent(&event))
-        {
-            if (event.window.windowID != sdlWindowId)
-                continue;
-            if (anyEventCallback)
-            {
-                if (anyEventCallback(&event))
-                    continue;
-            }
-            if (event.type == SDL_QUIT)
-                exitRequired = true;
-            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE)
-            {
-                exitRequired = true;
-            }
-        }
-
-        if (exitRequired)
-            GetBackendSdlWindow(bw)->mShouldWindowClose = true;
-    }
-
 
 } // namespace BackendApi

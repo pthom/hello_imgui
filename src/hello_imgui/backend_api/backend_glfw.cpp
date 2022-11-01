@@ -3,17 +3,11 @@
 
 namespace BackendApi
 {
-    BackendGlfwWindow* BackendGlfw::GetBackendGlfwWindow(IBackendWindow *bw)
+    static void glfw_error_callback(int error, const char* description)
     {
-        BackendGlfwWindow *backendGlfwWindow = dynamic_cast<BackendGlfwWindow *>(bw);
-        return backendGlfwWindow;
+        fprintf(stderr, "Glfw Error %d: %s\n", error, description);
     }
 
-    GLFWwindow* BackendGlfw::GetGlfwWindow(IBackendWindow *bw)
-    {
-        BackendGlfwWindow *backendGlfwWindow = dynamic_cast<BackendGlfwWindow *>(bw);
-        return backendGlfwWindow->mWindow;
-    }
 
     void BackendGlfw::Init()
     {
@@ -27,7 +21,7 @@ namespace BackendApi
         glfwTerminate();
     }
 
-    IBackendWindow* BackendGlfw::CreateWindow(WindowOptions &info)
+    WindowPointer BackendGlfw::CreateWindow(WindowOptions &info)
     {
         GLFWwindow *noWindowSharedResources = nullptr;
         GLFWmonitor *monitor = nullptr;
@@ -93,15 +87,7 @@ namespace BackendApi
         else if (info.windowVisibility == WindowVisibility::Maximized)
             glfwMaximizeWindow(window);
 
-        auto r = new BackendGlfwWindow(window);
-        return r;
-    }
-
-    void BackendGlfw::DestroyWindow(IBackendWindow *window)
-    {
-        auto glfwWindow = GetGlfwWindow(window);
-        glfwDestroyWindow(glfwWindow);
-        delete (window);
+        return (void *)(window);
     }
 
     size_t BackendGlfw::GetNbMonitors()
@@ -124,54 +110,35 @@ namespace BackendApi
         return r;
     }
 
-    bool BackendGlfw::IsWindowIconified(IBackendWindow *window)
+    bool BackendGlfw::IsWindowIconified(WindowPointer window)
     {
-        auto glfwWindow = GetGlfwWindow(window);
+        auto glfwWindow = (GLFWwindow *)(window);
         bool iconified = glfwGetWindowAttrib(glfwWindow, GLFW_ICONIFIED) != 0;
         bool hidden = (glfwGetWindowAttrib(glfwWindow, GLFW_VISIBLE) == 0);
         return (iconified || hidden);
     }
 
-    bool BackendGlfw::ShouldWindowClose(IBackendWindow *window)
+    void BackendGlfw::RaiseWindow(WindowPointer window)
     {
-        auto glfwWindow = GetGlfwWindow(window);
-        bool shouldClose = (glfwWindowShouldClose(glfwWindow) != 0);
-        return shouldClose;
-    }
-
-    void BackendGlfw::RaiseWindow(IBackendWindow *window)
-    {
-        auto glfwWindow = GetGlfwWindow(window);
+        auto glfwWindow = (GLFWwindow *)(window);
         glfwShowWindow(glfwWindow);
         glfwFocusWindow(glfwWindow);
         glfwRequestWindowAttention(glfwWindow);
     }
 
-    ScreenBounds BackendGlfw::GetWindowBounds(IBackendWindow *window)
+    ScreenBounds BackendGlfw::GetWindowBounds(WindowPointer window)
     {
         ScreenBounds windowBounds;
-        auto glfwWindow = GetGlfwWindow(window);
+        auto glfwWindow = (GLFWwindow *)(window);
         glfwGetWindowPos(glfwWindow, &windowBounds.position[0], &windowBounds.position[1]);
         glfwGetWindowSize(glfwWindow, &windowBounds.size[0], &windowBounds.size[1]);
         return windowBounds;
     }
 
-    void BackendGlfw::SetWindowBounds(IBackendWindow *window, ScreenBounds windowBounds)
+    void BackendGlfw::SetWindowBounds(WindowPointer window, ScreenBounds windowBounds)
     {
-        auto glfwWindow = GetGlfwWindow(window);
+        auto glfwWindow = (GLFWwindow *)(window);
         glfwSetWindowPos(glfwWindow, windowBounds.position[0], windowBounds.position[1]);
         glfwSetWindowSize(glfwWindow, windowBounds.size[0], windowBounds.size[1]);
     }
-
-    void BackendGlfw::WaitForEvent(IBackendWindow *window, int timeOutMilliseconds)
-    {
-        if (timeOutMilliseconds > 0)
-            glfwWaitEventsTimeout(timeOutMilliseconds);
-    }
-
-    void BackendGlfw::PollEvents(IBackendWindow *window, const AnyEventCallback &anyEventCallback)
-    {
-        glfwPollEvents();
-    }
-
 } // namespace BackendApi

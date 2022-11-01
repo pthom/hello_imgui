@@ -6,10 +6,4 @@
 
 namespace BackendApi
 {
-    void IOpenGlSetup::ClearColor(ScreenSize windowSize, float r, float g, float b, float a)
-    {
-        glViewport(0, 0, windowSize[0], windowSize[1]);
-        glClearColor(r, g, b, a);
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
 } // namespace BackendApi

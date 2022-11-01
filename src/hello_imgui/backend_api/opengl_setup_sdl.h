@@ -14,8 +14,6 @@ namespace BackendApi
         void SelectOpenGlVersion() override;
         void InitGlLoader() override;
         std::string GlslVersion()  override;
-
-        virtual void SwapBuffer(void* window) override;
     };
 } // namespace BackendApi
 

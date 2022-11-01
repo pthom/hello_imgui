@@ -72,11 +72,6 @@ namespace BackendApi
 #endif
         return glsl_version;
     }
-
-    void OpenGlSetupGlfw::SwapBuffer(void *window)
-    {
-        glfwSwapBuffers(static_cast<GLFWwindow *>(window));
-    }
 } // namespace BackendApi
 
 #endif // #if defined(IMGUI_BACKEND_USE_SDL) && defined(IMGUI_BACKEND_USE_OPENGL)

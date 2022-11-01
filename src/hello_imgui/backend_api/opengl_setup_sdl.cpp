@@ -55,7 +55,6 @@ namespace BackendApi
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-
     }
 
     void OpenGlSetupSdl::InitGlLoader()
@@ -90,11 +89,6 @@ namespace BackendApi
         const char* glsl_version = "#version 130";
 #endif
         return glsl_version;
-    }
-
-    void OpenGlSetupSdl::SwapBuffer(void *window)
-    {
-        SDL_GL_SwapWindow(static_cast<SDL_Window *>(window));
     }
 } // namespace BackendApi
 

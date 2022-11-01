@@ -1,12 +1,19 @@
 @startuml
 namespace HelloImGui {
 
-enum _ <functions>{
+class _ <free functions>{
     + void Run(RunnerParams &)
-    + void Run(VoidFunction, windowSize, title)
+    + void Run(VoidFunction gui, windowSize, title)
 }
 
-_ --> RunnerParams: use
+_ --> RunnerParams: uses
+
+enum BackendType <enum>{
+    FirstAvailable,
+    Sdl,
+    Glfw,
+    Qt
+}
 
 class RunnerParams <struct> {
     RunnerCallbacks callbacks;
@@ -14,6 +21,7 @@ class RunnerParams <struct> {
     ImGuiWindowParams imGuiWindowParams;
     DockingParams dockingParams;
     BackendPointers backendPointers;
+    BackendType backendType = FirstAvailable;
     bool appShallExit = false;
 }
 
@@ -51,13 +59,84 @@ class MobileCallbacks <struct>{
 }
 RunnerCallbacks *-- MobileCallbacks
 
-class AppWindowParams <struct> {
-    std::string windowTitle = "";
-    ImVec2 windowSize = {800.f, 600.f};
-    bool maximized = false;
-    bool fullScreen = false;
-    ImVec2 windowPosition = {-11000.f, -1.f};
+enum FullScreenMode <enum>{
+    NoFullScreen,
+    // Full screen with specified resolution
+    FullScreen,
+    // Full screen with current resolution
+    FullScreenDesktopResolution,
+    // Fake full screen, maximized window
+    // on the selected monitor
+    FullMonitorWorkArea
 }
+
+enum WindowSizeState <enum>{
+    Standard,
+    Minimized,
+    Maximized
+}
+
+class WindowSize <struct>{
+    // used if fullScreenMode==NoFullScreen
+    // and autoSize==false
+    ScreenSize size = ScreenSize{100, 100};
+
+    // If true, adapt the app window size
+    // to the widgets present in the window
+    bool autoSize = false;
+
+    fullScreenMode = NoFullScreen;
+}
+
+WindowSize *-- FullScreenMode
+
+enum WindowPositionMode <enum>{
+    OsDefault,
+    MonitorCenter,
+    FromCoords,
+}
+
+class WindowPosition <struct>{
+    windowPositionMode;
+    // used if windowPositionMode==FromCoords
+    position = {0, 0};
+}
+
+WindowPosition *-- WindowPositionMode
+
+class WindowGeometry <struct>{
+    WindowSize windowSize;
+    WindowPosition windowPosition;
+    ---
+    // used if full screen,
+    // or if windowPositionMode==MonitorCenter
+    int monitorIdx = 0;
+}
+
+WindowGeometry *-- WindowPosition
+WindowGeometry *-- WindowSize
+
+class WindowAppearance <struct>{
+    bool borderless = false;
+    bool resizable = false;
+    WindowSizeState windowSizeState = Standard;
+}
+
+WindowAppearance *-- WindowSizeState
+
+class AppWindowParams <struct>{
+    string windowTitle;
+    ---
+    WindowGeometry windowGeometry;
+    // if true, then save & restore from last run
+    bool restorePreviousGeometry;
+    ---
+    WindowAppearance windowAppearance;
+}
+
+AppWindowParams *-- WindowGeometry
+AppWindowParams *-- WindowAppearance
+
 
 class ImGuiWindowParams <struct> {
     defaultImGuiWindowType = ProvideFullScreenWindow;
@@ -107,7 +186,7 @@ class DockingSplit <struct> {
     float ratio = 0.25f;
 }
 
-
+RunnerParams *-- BackendType
 RunnerParams *-- RunnerCallbacks
 RunnerParams *-- AppWindowParams
 RunnerParams *-- ImGuiWindowParams

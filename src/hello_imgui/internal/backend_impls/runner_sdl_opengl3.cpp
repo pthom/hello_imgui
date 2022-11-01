@@ -94,7 +94,7 @@ namespace HelloImGui
         return glsl_version;
     }
 
-    void RunnerSdlOpenGl3::Impl_CreateWindowAndContext()
+    void RunnerSdlOpenGl3::Impl_CreateWindow()
     {
 
 #ifndef __EMSCRIPTEN__
@@ -131,16 +131,22 @@ namespace HelloImGui
         mWindow = SDL_CreateWindow(
             backendWindowParams.windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
 #endif
+
+        params.backendPointers.sdlWindow = mWindow;
+    }
+
+    void RunnerSdlOpenGl3::Impl_CreateGlContext()
+    {
         mGlContext = SDL_GL_CreateContext(mWindow);
         if (!mGlContext)
-            HIMG_THROW("RunnerSdlOpenGl3::Impl_CreateWindowAndContext(): Failed to initialize WebGL context!");
+        HIMG_THROW("RunnerSdlOpenGl3::Impl_CreateWindowAndContext(): Failed to initialize WebGL context!");
 
         SDL_GL_MakeCurrent(mWindow, mGlContext); // KK No
         SDL_GL_SetSwapInterval(1);  // Enable vsync
 
-        params.backendPointers.sdlWindow = mWindow;
         params.backendPointers.sdlGlContext = mGlContext;
     }
+
 
     void RunnerSdlOpenGl3::Impl_InitGlLoader()
     {
@@ -280,11 +286,6 @@ namespace HelloImGui
 #else // #ifdef HELLOIMGUI_MOBILEDEVICE
       return false;
 #endif
-    }
-
-    void RunnerSdlOpenGl3screenshot()
-    {
-
     }
 
 }  // namespace HelloImGui

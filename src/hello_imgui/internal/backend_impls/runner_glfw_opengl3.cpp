@@ -66,7 +66,7 @@ namespace HelloImGui
         return glsl_version;
     }
 
-    void RunnerGlfwOpenGl3::Impl_CreateWindowAndContext()
+    void RunnerGlfwOpenGl3::Impl_CreateWindow()
     {
         const AppWindowParams& backendWindowParams = params.appWindowParams;
         ImVec2 windowSize = backendWindowParams.windowSize;
@@ -98,13 +98,17 @@ namespace HelloImGui
         if (mWindow == NULL)
         {
             glfwTerminate();
-            HIMG_THROW("RunnerGlfwOpenGl3::Impl_CreateWindowAndContext failed");
+            HIMG_THROW("RunnerGlfwOpenGl3::Impl_CreateWindow failed");
         }
-        glfwMakeContextCurrent(mWindow); // OpenGl!
-        glfwSwapInterval(1);  // Enable vsync (openGL only, not vulkan)
-
         params.backendPointers.glfwWindow = mWindow;
     }
+
+    void RunnerGlfwOpenGl3::Impl_CreateGlContext()
+    {
+        glfwMakeContextCurrent(mWindow); // OpenGl!
+        glfwSwapInterval(1);  // Enable vsync (openGL only, not vulkan)
+    }
+
 
     void RunnerGlfwOpenGl3::Impl_InitGlLoader()
     {

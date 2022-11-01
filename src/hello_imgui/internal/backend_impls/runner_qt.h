@@ -21,7 +21,8 @@ class RunnerQt : public AbstractRunner
     void Impl_InitBackend() override;
     void Impl_Select_Gl_Version() override;
     std::string Impl_GlslVersion() override;
-    void Impl_CreateWindowAndContext() override;
+    void Impl_CreateWindow() override;
+    void Impl_CreateGlContext() override;
     void Impl_InitGlLoader() override;
     void Impl_SetupPlatformRendererBindings() override;
 

@@ -149,7 +149,11 @@ std::string RunnerQt::Impl_GlslVersion()
     HIMG_THROW("RunnerQt::Impl_GlslVersion should not be called");
 }
 
-void RunnerQt::Impl_CreateWindowAndContext()
+void RunnerQt::Impl_CreateWindow()
+{
+}
+
+void RunnerQt::Impl_CreateGlContext()
 {
 }
 

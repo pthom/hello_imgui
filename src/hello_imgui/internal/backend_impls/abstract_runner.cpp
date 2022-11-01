@@ -34,7 +34,8 @@ void AbstractRunner::Setup()
 {
     Impl_InitBackend();
     Impl_Select_Gl_Version();
-    Impl_CreateWindowAndContext();
+    Impl_CreateWindow();
+    Impl_CreateGlContext();
     Impl_InitGlLoader();
     IMGUI_CHECKVERSION();
 

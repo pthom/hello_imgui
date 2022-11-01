@@ -40,7 +40,8 @@ class AbstractRunner
     virtual void Impl_Select_Gl_Version() = 0;
     virtual std::string Impl_GlslVersion() = 0;
 
-    virtual void Impl_CreateWindowAndContext() = 0;
+    virtual void Impl_CreateWindow() = 0;
+    virtual void Impl_CreateGlContext() = 0;
     virtual void Impl_InitGlLoader() = 0;
     virtual void Impl_SetupPlatformRendererBindings() = 0;
     virtual void Impl_SetupImgGuiContext() {}

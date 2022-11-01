@@ -1,23 +1,20 @@
-#include "hello_imgui/backend_api/backend_api.h"
+#pragma once
+#ifdef HELLOIMGUI_USE_GLFW
+
+#include "backend_window_helper.h"
 #include <memory>
 #include <iostream>
 
-#define BACKEND_API_USE_GLFW
-
-
-#ifdef BACKEND_API_USE_GLFW
-
-#include <GLFW/glfw3.h>
+#include "GLFW/glfw3.h"
 
 
 namespace BackendApi
 {
-    class BackendGlfw: public IBackend
+    class GlfwWindowHelper: public IBackendWindowHelper
     {
+        // Note: this is a fake class, it has no member
+        // It is only a class in order to enforce a consistent API between backends.
     public:
-        void Init() override;
-        void DeInit() override;
-
         WindowPointer CreateWindow(WindowOptions &info) override;
 
         size_t GetNbMonitors() override;
@@ -29,7 +26,6 @@ namespace BackendApi
         ScreenBounds GetWindowBounds(WindowPointer window) override;
         void SetWindowBounds(WindowPointer window, ScreenBounds windowBounds) override;
     };
-
-#endif // #ifdef BACKEND_API_USE_GLFW
 }
 
+#endif // #ifdef HELLOIMGUI_USE_GLFW

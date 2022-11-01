@@ -1,5 +1,5 @@
 #pragma once
-#include "hello_imgui/backend_api/screen_bounds.h"
+#include "screen_bounds.h"
 
 #include <string>
 #include <iostream>
@@ -67,29 +67,15 @@ namespace BackendApi
     };
 
 
-/**
-**AnyEventCallback** can hold any bool(void *) function.
-It is designed to handle callbacks for a specific backend.
-````cpp
-using AnyEventCallback = std::function<bool(void * backendEvent)>
-````
-**/
-    using AnyEventCallback = std::function<bool(void *backendEvent)>;
-
-    bool EventCallback_NoOp(void *backendEvent);
-
-
     // Container for pointers to SDLWindow, GLFWwindow, etc.
     using WindowPointer = void *;
 
 
-    class IBackend
+    class IBackendWindowHelper
     {
+        // Note: this is a fake class, it has no member
+        // It is only a class in order to enforce a consistent API between backends.
     public:
-        virtual void Init() = 0;
-
-        virtual void DeInit() = 0;
-
         virtual WindowPointer CreateWindow(WindowOptions &info) = 0;
 
         virtual size_t GetNbMonitors() = 0;

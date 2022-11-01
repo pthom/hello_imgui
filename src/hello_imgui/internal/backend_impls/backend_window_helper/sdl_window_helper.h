@@ -1,4 +1,7 @@
-#include "hello_imgui/backend_api/backend_api.h"
+#pragma once
+#ifdef HELLOIMGUI_USE_SDL
+
+#include "internal/backend_impls/backend_window_helper/backend_window_helper.h"
 
 #include <cmath>
 #include <string>
@@ -6,25 +9,17 @@
 #include <iostream>
 
 
-#define BACKEND_API_USE_SDL
-#define BACKEND_API_USE_GLFW
-
-
-#ifdef BACKEND_API_USE_SDL
-
 #include "SDL.h"
 #include "SDL_main.h"
 
 
 namespace BackendApi
 {
-    class BackendSdl : public IBackend
+    class SdlWindowHelper : public IBackendWindowHelper
     {
+        // Note: this is a fake class, it has no member
+        // It is only a class in order to enforce a consistent API between backends.
     public:
-        void Init() override;
-
-        void DeInit() override;
-
         WindowPointer CreateWindow(WindowOptions &info) override;
 
         size_t GetNbMonitors() override;
@@ -39,4 +34,4 @@ namespace BackendApi
     };
 } // namespace BackendApi
 
-#endif // #ifdef BACKEND_API_USE_SDL
+#endif // #ifdef HELLOIMGUI_USE_SDL

@@ -1,20 +1,11 @@
-#include "hello_imgui/backend_api/backend_sdl.h"
-#include <SDL.h>
+#ifdef HELLOIMGUI_USE_SDL
+
+#include "sdl_window_helper.h"
+#include "SDL.h"
 
 namespace BackendApi
 {
-    void BackendSdl::Init()
-    {
-        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
-            BACKEND_THROW(std::string("RunnerSdlOpenGl3::Impl_InitBackend error ") + SDL_GetError());
-    }
-
-    void BackendSdl::DeInit()
-    {
-        SDL_Quit();
-    }
-
-    WindowPointer BackendSdl::CreateWindow(WindowOptions &info)
+    WindowPointer SdlWindowHelper::CreateWindow(WindowOptions &info)
     {
         int window_flags = 0;
 
@@ -80,13 +71,13 @@ namespace BackendApi
         return (void *)(window);
     }
 
-    size_t BackendSdl::GetNbMonitors()
+    size_t SdlWindowHelper::GetNbMonitors()
     {
         int nbMonitors = SDL_GetNumVideoDisplays();
         return nbMonitors;
     }
 
-    ScreenBounds BackendSdl::GetOneMonitorWorkArea(int monitorIndex)
+    ScreenBounds SdlWindowHelper::GetOneMonitorWorkArea(int monitorIndex)
     {
         assert(monitorIndex >= 0);
         assert(monitorIndex < GetNbMonitors());
@@ -97,14 +88,14 @@ namespace BackendApi
         return r;
     }
 
-    bool BackendSdl::IsWindowIconified(WindowPointer window)
+    bool SdlWindowHelper::IsWindowIconified(WindowPointer window)
     {
         auto window_flags = SDL_GetWindowFlags((SDL_Window *)(window));
         bool window_is_hidden = (window_flags & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED)) > 0;
         return window_is_hidden;
     }
 
-    void BackendSdl::RaiseWindow(WindowPointer window)
+    void SdlWindowHelper::RaiseWindow(WindowPointer window)
     {
         // Despite those efforts, the app does not come to the front under MacOS
         auto sdlWindow = (SDL_Window *)(window);
@@ -113,7 +104,7 @@ namespace BackendApi
         SDL_RaiseWindow(sdlWindow);
     }
 
-    ScreenBounds BackendSdl::GetWindowBounds(WindowPointer window)
+    ScreenBounds SdlWindowHelper::GetWindowBounds(WindowPointer window)
     {
         auto sdlWindow = (SDL_Window *)(window);
         int x, y, w, h;
@@ -123,7 +114,7 @@ namespace BackendApi
         return r;
     }
 
-    void BackendSdl::SetWindowBounds(WindowPointer window, ScreenBounds windowBounds)
+    void SdlWindowHelper::SetWindowBounds(WindowPointer window, ScreenBounds windowBounds)
     {
         auto sdlWindow = (SDL_Window *)(window);
 
@@ -140,3 +131,5 @@ namespace BackendApi
     }
 
 } // namespace BackendApi
+
+#endif // #ifdef HELLOIMGUI_USE_SDL

@@ -1,4 +1,5 @@
-#include "hello_imgui/backend_api/backend_glfw.h"
+#ifdef HELLOIMGUI_USE_GLFW
+#include "glfw_window_helper.h"
 
 
 namespace BackendApi
@@ -9,19 +10,7 @@ namespace BackendApi
     }
 
 
-    void BackendGlfw::Init()
-    {
-        glfwSetErrorCallback(glfw_error_callback);
-        if (!glfwInit())
-        BACKEND_THROW("BackendGlfw::Init glfwInit failed");
-    }
-
-    void BackendGlfw::DeInit()
-    {
-        glfwTerminate();
-    }
-
-    WindowPointer BackendGlfw::CreateWindow(WindowOptions &info)
+    WindowPointer GlfwWindowHelper::CreateWindow(WindowOptions &info)
     {
         GLFWwindow *noWindowSharedResources = nullptr;
         GLFWmonitor *monitor = nullptr;
@@ -90,7 +79,7 @@ namespace BackendApi
         return (void *)(window);
     }
 
-    size_t BackendGlfw::GetNbMonitors()
+    size_t GlfwWindowHelper::GetNbMonitors()
     {
         int nbMonitors;
         auto monitors = glfwGetMonitors(&nbMonitors);
@@ -98,7 +87,7 @@ namespace BackendApi
         return nbMonitors;
     }
 
-    ScreenBounds BackendGlfw::GetOneMonitorWorkArea(int monitorIndex)
+    ScreenBounds GlfwWindowHelper::GetOneMonitorWorkArea(int monitorIndex)
     {
         int nbMonitors;
         auto monitors = glfwGetMonitors(&nbMonitors);
@@ -110,7 +99,7 @@ namespace BackendApi
         return r;
     }
 
-    bool BackendGlfw::IsWindowIconified(WindowPointer window)
+    bool GlfwWindowHelper::IsWindowIconified(WindowPointer window)
     {
         auto glfwWindow = (GLFWwindow *)(window);
         bool iconified = glfwGetWindowAttrib(glfwWindow, GLFW_ICONIFIED) != 0;
@@ -118,7 +107,7 @@ namespace BackendApi
         return (iconified || hidden);
     }
 
-    void BackendGlfw::RaiseWindow(WindowPointer window)
+    void GlfwWindowHelper::RaiseWindow(WindowPointer window)
     {
         auto glfwWindow = (GLFWwindow *)(window);
         glfwShowWindow(glfwWindow);
@@ -126,7 +115,7 @@ namespace BackendApi
         glfwRequestWindowAttention(glfwWindow);
     }
 
-    ScreenBounds BackendGlfw::GetWindowBounds(WindowPointer window)
+    ScreenBounds GlfwWindowHelper::GetWindowBounds(WindowPointer window)
     {
         ScreenBounds windowBounds;
         auto glfwWindow = (GLFWwindow *)(window);
@@ -135,10 +124,11 @@ namespace BackendApi
         return windowBounds;
     }
 
-    void BackendGlfw::SetWindowBounds(WindowPointer window, ScreenBounds windowBounds)
+    void GlfwWindowHelper::SetWindowBounds(WindowPointer window, ScreenBounds windowBounds)
     {
         auto glfwWindow = (GLFWwindow *)(window);
         glfwSetWindowPos(glfwWindow, windowBounds.position[0], windowBounds.position[1]);
         glfwSetWindowSize(glfwWindow, windowBounds.size[0], windowBounds.size[1]);
     }
 } // namespace BackendApi
+#endif // #ifdef HELLOIMGUI_USE_GLFW

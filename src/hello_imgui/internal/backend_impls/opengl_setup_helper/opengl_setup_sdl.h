@@ -1,8 +1,8 @@
 #pragma once
+#ifdef HELLOIMGUI_USE_SDL
 
-#include "hello_imgui/backend_api/opengl_setup_api.h"
+#include "opengl_setup_api.h"
 
-#if defined(IMGUI_BACKEND_USE_SDL) && defined(IMGUI_BACKEND_USE_OPENGL)
 
 namespace BackendApi
 {
@@ -17,4 +17,4 @@ namespace BackendApi
     };
 } // namespace BackendApi
 
-#endif // #if defined(IMGUI_BACKEND_USE_SDL) && defined(IMGUI_BACKEND_USE_OPENGLK)
+#endif // #ifdef HELLOIMGUI_USE_SDL

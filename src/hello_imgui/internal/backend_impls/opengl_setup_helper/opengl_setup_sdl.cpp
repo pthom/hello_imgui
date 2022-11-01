@@ -1,10 +1,10 @@
-#if defined(IMGUI_BACKEND_USE_SDL) && defined(IMGUI_BACKEND_USE_OPENGL)
+#ifdef HELLOIMGUI_USE_SDL
 
-#include "hello_imgui/backend_api/opengl_setup_sdl.h"
+#include "opengl_setup_sdl.h"
 #include "hello_imgui/hello_imgui_include_opengl.h"
-#include "hello_imgui/backend_api/backend_api.h"
+#include "internal/backend_impls/backend_window_helper/backend_window_helper.h"
 
-#include <SDL.h>
+#include "SDL.h"
 
 
 namespace BackendApi
@@ -92,4 +92,4 @@ namespace BackendApi
     }
 } // namespace BackendApi
 
-#endif // #if defined(IMGUI_BACKEND_USE_SDL) && defined(IMGUI_BACKEND_USE_OPENGL)
+#endif // #ifdef HELLOIMGUI_USE_SDL

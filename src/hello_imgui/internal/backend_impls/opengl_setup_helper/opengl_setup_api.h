@@ -1,5 +1,5 @@
 #pragma once
-#include "hello_imgui/backend_api/screen_bounds.h"
+#include "internal/backend_impls/backend_window_helper/screen_bounds.h"
 
 #include <string>
 

@@ -41,10 +41,6 @@ if (EMSCRIPTEN)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_CANNOTQUIT)
 endif()
 
-if (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3)
-    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_HAS_OPENGL)
-endif()
-
 
 function(link_sdl_ios_manually_compiled target)
     target_include_directories(${target} PUBLIC "${HELLOIMGUI_BASEPATH}/external/SDL/include/")
@@ -109,7 +105,6 @@ endfunction()
 
 
 if (HELLOIMGUI_USE_SDL_OPENGL3)
-    target_compile_definitions(${target_name} PUBLIC -DHELLOIMGUI_USE_SDL_OPENGL3)
     link_sdl(${target_name})
 
     if (IOS)
@@ -141,7 +136,6 @@ if (HELLOIMGUI_USE_GLFW_OPENGL3)
     if (NOT TARGET glfw) # if glfw is not built as part of the whole build, find it
         find_package(glfw3 CONFIG REQUIRED)
     endif()
-    target_compile_definitions(${target_name} PUBLIC -DHELLOIMGUI_USE_GLFW_OPENGL3)
     target_link_libraries(${target_name} PUBLIC glfw)
     target_sources(${target_name} PRIVATE
         ${imgui_backends_dir}/imgui_impl_opengl3.h
@@ -176,6 +170,19 @@ if (UNIX AND NOT EMSCRIPTEN AND NOT APPLE)
 endif()
 if (APPLE)
     target_link_libraries(${target_name} PUBLIC "-framework Foundation")
+endif()
+
+
+# Compile definitions
+if (HELLOIMGUI_USE_SDL_OPENGL3)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_SDL_OPENGL3)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_SDL)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_HAS_OPENGL)
+endif()
+if (HELLOIMGUI_USE_GLFW_OPENGL3)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLFW_OPENGL3)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLFW)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_HAS_OPENGL)
 endif()
 
 

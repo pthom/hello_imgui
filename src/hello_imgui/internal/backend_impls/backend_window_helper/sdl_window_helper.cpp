@@ -3,70 +3,74 @@
 #include "sdl_window_helper.h"
 #include "SDL.h"
 
-namespace BackendApi
+namespace HelloImGui { namespace BackendApi
 {
-    WindowPointer SdlWindowHelper::CreateWindow(WindowOptions &info)
+    WindowPointer SdlWindowHelper::CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions)
     {
         int window_flags = 0;
 
-        ScreenBounds &windowBounds = info.windowBounds;
+        ScreenSize& windowSize = info.windowGeometry.windowSize.size;
+        ScreenPosition & windowPosition = info.windowGeometry.windowPosition.position;
+        auto fullScreenMode = info.windowGeometry.windowSize.fullScreenMode;
 
-        if (info.fullScreenMode == FullScreenMode::FullMonitorWorkArea)
+        if (fullScreenMode == FullScreenMode::FullMonitorWorkArea)
         {
-            auto monitorBounds = GetOneMonitorWorkArea(info.monitorIdx);
-            windowBounds = monitorBounds;
+            auto monitorBounds = GetOneMonitorWorkArea(info.windowGeometry.monitorIdx);
+            windowSize = monitorBounds.size;
+            info.windowGeometry.windowPosition.position = monitorBounds.position;
         }
-        else if (info.fullScreenMode == FullScreenMode::FullScreen)
+        else if (fullScreenMode == FullScreenMode::FullScreen)
             window_flags |= SDL_WINDOW_FULLSCREEN;
-        else if (info.fullScreenMode == FullScreenMode::FullScreenDesktopResolution)
+        else if (fullScreenMode == FullScreenMode::FullScreenDesktopResolution)
             window_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
-        if (info.backend3DMode == Backend3dMode::OpenGl)
+        auto backend3DMode = backendOptions.backend3DMode;
+        if (backend3DMode == Backend3dMode::OpenGl)
             window_flags |= SDL_WINDOW_OPENGL;
-        else if (info.backend3DMode == Backend3dMode::Metal)
+        else if (backend3DMode == Backend3dMode::Metal)
             window_flags |= SDL_WINDOW_METAL;
-        else if (info.backend3DMode == Backend3dMode::Vulkan)
+        else if (backend3DMode == Backend3dMode::Vulkan)
             window_flags |= SDL_WINDOW_VULKAN;
-        else if (info.backend3DMode == Backend3dMode::No3d)
+        else if (backend3DMode == Backend3dMode::No3d)
             {}
         else
             BACKEND_THROW("Unsupported backend3DMode");
 
-        if (info.allowHighDpi)
+        if (backendOptions.allowHighDpi)
             window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
-        if (info.borderless)
+        if (info.windowAppearance.borderless)
             window_flags |= SDL_WINDOW_BORDERLESS;
 
-        if (info.resizable)
+        if (info.windowAppearance.resizable)
             window_flags |= SDL_WINDOW_RESIZABLE;
 
-        if (info.windowSizeState == WindowSizeState::Standard)
+        if (info.windowAppearance.windowSizeState == WindowSizeState::Standard)
             {}
-        else if (info.windowSizeState == WindowSizeState::Minimized)
+        else if (info.windowAppearance.windowSizeState == WindowSizeState::Minimized)
             window_flags |= SDL_WINDOW_MINIMIZED;
-        else if (info.windowSizeState == WindowSizeState::Maximized)
+        else if (info.windowAppearance.windowSizeState == WindowSizeState::Maximized)
             window_flags |= SDL_WINDOW_MAXIMIZED;
 
         int window_pos[2];
         for (auto dim: Range2)
         {
-            if (windowBounds.position[dim] == WindowPositionUnspecified)
+            if (windowPosition[dim] == WindowPositionUnspecified)
                 window_pos[dim] = SDL_WINDOWPOS_UNDEFINED;
-            else if (windowBounds.position[dim] == WindowPositionCentered)
+            else if (windowPosition[dim] == WindowPositionCentered)
                 window_pos[dim] = SDL_WINDOWPOS_CENTERED;
             else
-                window_pos[dim] = windowBounds.position[dim];
+                window_pos[dim] = windowPosition[dim];
         }
         auto window = SDL_CreateWindow(info.windowTitle.c_str(),
                                        window_pos[0], window_pos[1],
-                                       windowBounds.size[0], windowBounds.size[1],
+                                       windowSize[0], windowSize[1],
                                        window_flags);
         if (!window)
             BACKEND_THROW("BackendSdl::CreateWindow : SDL_CreateWindow returned NULL");
 
-        SDL_GetWindowPosition(window, &windowBounds.position[0], &windowBounds.position[1]);
-        SDL_GetWindowSize(window, &windowBounds.size[0], &windowBounds.size[1]);
+        SDL_GetWindowPosition(window, &windowPosition[0], &windowPosition[1]);
+        SDL_GetWindowSize(window, &windowSize[0], &windowSize[1]);
 
         return (void *)(window);
     }
@@ -130,6 +134,6 @@ namespace BackendApi
             SDL_SetWindowPosition(sdlWindow, windowBounds.position[0], windowBounds.position[1]);
     }
 
-} // namespace BackendApi
+}} // namespace HelloImGui { namespace BackendApi
 
 #endif // #ifdef HELLOIMGUI_USE_SDL

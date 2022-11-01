@@ -1,8 +1,9 @@
 #pragma once
-#include "screen_bounds.h"
+#include "hello_imgui/app_window_params.h"
 
 #include <string>
 #include <iostream>
+#include <optional>
 
 
 #define BACKEND_THROW_IMPL(msg) \
@@ -14,17 +15,8 @@
 #define BACKEND_THROW(...) BACKEND_THROW_IMPL((__VA_ARGS__));
 
 
-namespace BackendApi
+namespace HelloImGui { namespace BackendApi
 {
-    enum class FullScreenMode
-    {
-        NoFullScreen,
-        FullScreen,                    // Full screen with specified resolution
-        FullScreenDesktopResolution,   // Full screen with current desktop mode & resolution
-        FullMonitorWorkArea            // Fake full screen, maximized window on the selected monitor
-    };
-
-
     enum class Backend3dMode
     {
         No3d,
@@ -35,35 +27,14 @@ namespace BackendApi
     };
 
 
-    enum class WindowSizeState
+    struct BackendOptions
     {
-        Standard,
-        Minimized,
-        Maximized
-    };
-
-
-    struct WindowOptions
-    {
-        std::string windowTitle = "";
-
-        // If windowBound.windowPosition
-        ScreenBounds windowBounds = {};
-
-        FullScreenMode fullScreenMode = FullScreenMode::NoFullScreen;
-        int monitorIdx = 0; // Will be used in full screen mode, or if windowBounds.Position is unspecified
-
         // If the window is created with the `allowHighDpi` flag, its size
         // * in pixels may differ from its size in screen coordinates on platforms with
         // * high-DPI support (e.g. iOS and macOS)
         bool allowHighDpi = true;
 
         Backend3dMode backend3DMode = Backend3dMode::OpenGl;
-
-        bool borderless = false;
-        bool resizable = false;
-
-        WindowSizeState windowSizeState = WindowSizeState::Standard;
     };
 
 
@@ -76,7 +47,7 @@ namespace BackendApi
         // Note: this is a fake class, it has no member
         // It is only a class in order to enforce a consistent API between backends.
     public:
-        virtual WindowPointer CreateWindow(WindowOptions &info) = 0;
+        virtual WindowPointer CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions) = 0;
 
         virtual size_t GetNbMonitors() = 0;
 
@@ -97,4 +68,4 @@ namespace BackendApi
         // Screenshot!
 
     };
-}
+}} // namespace HelloImGui { namespace BackendApi

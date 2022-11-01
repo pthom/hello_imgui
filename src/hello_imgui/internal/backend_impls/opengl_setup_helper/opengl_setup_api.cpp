@@ -4,6 +4,6 @@
 #include <string>
 
 
-namespace BackendApi
+namespace HelloImGui { namespace BackendApi
 {
-} // namespace BackendApi
+}} // namespace HelloImGui { namespace BackendApi

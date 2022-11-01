@@ -8,14 +8,14 @@
 #include "GLFW/glfw3.h"
 
 
-namespace BackendApi
+namespace HelloImGui { namespace BackendApi
 {
     class GlfwWindowHelper: public IBackendWindowHelper
     {
         // Note: this is a fake class, it has no member
         // It is only a class in order to enforce a consistent API between backends.
     public:
-        WindowPointer CreateWindow(WindowOptions &info) override;
+        WindowPointer CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions) override;
 
         size_t GetNbMonitors() override;
         ScreenBounds GetOneMonitorWorkArea(int monitorIndex) override;
@@ -26,6 +26,6 @@ namespace BackendApi
         ScreenBounds GetWindowBounds(WindowPointer window) override;
         void SetWindowBounds(WindowPointer window, ScreenBounds windowBounds) override;
     };
-}
+}} // namespace HelloImGui { namespace BackendApi
 
 #endif // #ifdef HELLOIMGUI_USE_GLFW

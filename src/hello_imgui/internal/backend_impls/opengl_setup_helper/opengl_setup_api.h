@@ -1,10 +1,10 @@
 #pragma once
-#include "internal/backend_impls/backend_window_helper/screen_bounds.h"
+#include "hello_imgui/screen_bounds.h"
 
 #include <string>
 
 
-namespace BackendApi
+namespace HelloImGui { namespace BackendApi
 {
     class IOpenGlSetup
     {
@@ -16,4 +16,4 @@ namespace BackendApi
         virtual void InitGlLoader() = 0;
         virtual std::string GlslVersion() = 0;
     };
-} // namespace BackendApi
+}} // namespace HelloImGui { namespace BackendApi

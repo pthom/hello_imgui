@@ -1,6 +1,6 @@
 #include "backend_window_helper.h"
 
 
-namespace BackendApi
+namespace HelloImGui { namespace BackendApi
 {
-}
+}}

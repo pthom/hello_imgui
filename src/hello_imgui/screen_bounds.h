@@ -2,7 +2,7 @@
 
 #include <array>
 
-namespace BackendApi
+namespace HelloImGui
 {
     using ScreenPosition = std::array<int, 2>;
     using ScreenSize = std::array<int, 2>;

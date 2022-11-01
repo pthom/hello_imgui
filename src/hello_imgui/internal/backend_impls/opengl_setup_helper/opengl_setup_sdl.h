@@ -4,7 +4,7 @@
 #include "opengl_setup_api.h"
 
 
-namespace BackendApi
+namespace HelloImGui { namespace BackendApi
 {
     class OpenGlSetupSdl: public IOpenGlSetup
     {
@@ -15,6 +15,6 @@ namespace BackendApi
         void InitGlLoader() override;
         std::string GlslVersion()  override;
     };
-} // namespace BackendApi
+}} // namespace HelloImGui { namespace BackendApi
 
 #endif // #ifdef HELLOIMGUI_USE_SDL

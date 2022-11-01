@@ -7,9 +7,8 @@
 #include "SDL.h"
 
 
-namespace BackendApi
+namespace HelloImGui { namespace BackendApi
 {
-
     void OpenGlSetupSdl::SelectOpenGlVersion()
     {
 #if defined(__EMSCRIPTEN__)
@@ -90,6 +89,6 @@ namespace BackendApi
 #endif
         return glsl_version;
     }
-} // namespace BackendApi
+}} // namespace HelloImGui { namespace BackendApi
 
 #endif // #ifdef HELLOIMGUI_USE_SDL

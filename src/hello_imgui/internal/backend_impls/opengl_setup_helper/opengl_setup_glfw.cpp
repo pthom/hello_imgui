@@ -6,7 +6,7 @@
 #include "GLFW/glfw3.h"
 
 
-namespace BackendApi
+namespace HelloImGui { namespace BackendApi
 {
 
     void OpenGlSetupGlfw::SelectOpenGlVersion()
@@ -71,6 +71,6 @@ namespace BackendApi
 #endif
         return glsl_version;
     }
-} // namespace BackendApi
+}} // namespace HelloImGui { namespace BackendApi
 
 #endif // #ifdef HELLOIMGUI_USE_GLFW

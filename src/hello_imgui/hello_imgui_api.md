@@ -75,6 +75,9 @@ The diagram below summarize all the possible settings and callbacks (which are e
 * `backendPointers`: _see [backend_pointers.h](backend_pointers.h)_.
    A struct that contains optional pointers to the backend implementations. These pointers will be filled
    when the application starts
+* `backendType`: _enum BackendType, default=BackendType::FirstAvailable_
+  Select the wanted backend type between `Sdl`, `Glfw` and `Qt`. Only useful when multiple backend are compiled
+  and available.
 * `appShallExit`: _bool, default=false_.
    will be set to true by the app when exiting.
    _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps

@@ -41,11 +41,11 @@ namespace BackendApi
         if (info.resizable)
             window_flags |= SDL_WINDOW_RESIZABLE;
 
-        if (info.windowVisibility == WindowVisibility::Standard)
+        if (info.windowSizeState == WindowSizeState::Standard)
             {}
-        else if (info.windowVisibility == WindowVisibility::Minimized)
+        else if (info.windowSizeState == WindowSizeState::Minimized)
             window_flags |= SDL_WINDOW_MINIMIZED;
-        else if (info.windowVisibility == WindowVisibility::Maximized)
+        else if (info.windowSizeState == WindowSizeState::Maximized)
             window_flags |= SDL_WINDOW_MAXIMIZED;
 
         int window_pos[2];

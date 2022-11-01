@@ -71,9 +71,9 @@ namespace BackendApi
         if (window == nullptr)
         BACKEND_THROW("BackendGlfw::CreateWindow / glfwCreateWindow failed");
 
-        if (info.windowVisibility == WindowVisibility::Minimized)
+        if (info.windowSizeState == WindowSizeState::Minimized)
             glfwIconifyWindow(window);
-        else if (info.windowVisibility == WindowVisibility::Maximized)
+        else if (info.windowSizeState == WindowSizeState::Maximized)
             glfwMaximizeWindow(window);
 
         return (void *)(window);

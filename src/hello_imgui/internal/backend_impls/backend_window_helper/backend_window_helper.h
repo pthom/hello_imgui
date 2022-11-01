@@ -35,7 +35,7 @@ namespace BackendApi
     };
 
 
-    enum class WindowVisibility
+    enum class WindowSizeState
     {
         Standard,
         Minimized,
@@ -63,7 +63,7 @@ namespace BackendApi
         bool borderless = false;
         bool resizable = false;
 
-        WindowVisibility windowVisibility = WindowVisibility::Standard;
+        WindowSizeState windowSizeState = WindowSizeState::Standard;
     };
 
 

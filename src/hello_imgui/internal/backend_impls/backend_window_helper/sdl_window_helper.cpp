@@ -9,15 +9,15 @@ namespace HelloImGui { namespace BackendApi
     {
         int window_flags = 0;
 
-        ScreenSize& windowSize = info.windowGeometry.windowSize.size;
-        ScreenPosition & windowPosition = info.windowGeometry.windowPosition.position;
-        auto fullScreenMode = info.windowGeometry.windowSize.fullScreenMode;
+        ScreenSize& windowSize = info.windowGeometry.size;
+        ScreenPosition & windowPosition = info.windowGeometry.position;
+        auto fullScreenMode = info.windowGeometry.fullScreenMode;
 
         if (fullScreenMode == FullScreenMode::FullMonitorWorkArea)
         {
             auto monitorBounds = GetOneMonitorWorkArea(info.windowGeometry.monitorIdx);
             windowSize = monitorBounds.size;
-            info.windowGeometry.windowPosition.position = monitorBounds.position;
+            info.windowGeometry.position = monitorBounds.position;
         }
         else if (fullScreenMode == FullScreenMode::FullScreen)
             window_flags |= SDL_WINDOW_FULLSCREEN;
@@ -39,17 +39,17 @@ namespace HelloImGui { namespace BackendApi
         if (backendOptions.allowHighDpi)
             window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
-        if (info.windowAppearance.borderless)
+        if (info.borderless)
             window_flags |= SDL_WINDOW_BORDERLESS;
 
-        if (info.windowAppearance.resizable)
+        if (info.resizable)
             window_flags |= SDL_WINDOW_RESIZABLE;
 
-        if (info.windowAppearance.windowSizeState == WindowSizeState::Standard)
+        if (info.windowSizeState == WindowSizeState::Standard)
             {}
-        else if (info.windowAppearance.windowSizeState == WindowSizeState::Minimized)
+        else if (info.windowSizeState == WindowSizeState::Minimized)
             window_flags |= SDL_WINDOW_MINIMIZED;
-        else if (info.windowAppearance.windowSizeState == WindowSizeState::Maximized)
+        else if (info.windowSizeState == WindowSizeState::Maximized)
             window_flags |= SDL_WINDOW_MAXIMIZED;
 
         int window_pos[2];

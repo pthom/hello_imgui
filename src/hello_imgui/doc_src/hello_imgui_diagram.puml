@@ -1,7 +1,7 @@
 @startuml
 namespace HelloImGui {
 
-class _ <free functions>{
+class _ <free functions> {
     + void Run(RunnerParams &)
     + void Run(VoidFunction gui, windowSize, title)
 }
@@ -9,181 +9,171 @@ class _ <free functions>{
 _ --> RunnerParams: uses
 
 enum BackendType <enum>{
-    FirstAvailable,
-    Sdl,
-    Glfw,
-    Qt
+    + FirstAvailable
+    + Sdl
+    + Glfw
+    + Qt
 }
 
 class RunnerParams <struct> {
-    RunnerCallbacks callbacks;
-    AppWindowParams appWindowParams;
-    ImGuiWindowParams imGuiWindowParams;
-    DockingParams dockingParams;
-    BackendPointers backendPointers;
-    BackendType backendType = FirstAvailable;
-    bool appShallExit = false;
+    + RunnerCallbacks callbacks
+    + AppWindowParams appWindowParams
+    + ImGuiWindowParams imGuiWindowParams
+    + DockingParams dockingParams
+    + BackendPointers backendPointers
+    + BackendType backendType = FirstAvailable
+    + bool appShallExit = false
 }
 
 class RunnerCallbacks <struct> {
     ---
-    VoidFunction ShowGui = {};
-    VoidFunction ShowMenus = {};
-    VoidFunction ShowStatus = {};
-    VoidFunction PostInit = {};
-    VoidFunction BeforeExit = {};
+    + VoidFunction ShowGui = {}
+    + VoidFunction ShowMenus = {}
+    + VoidFunction ShowStatus = {}
+    + VoidFunction PostInit = {}
+    + VoidFunction BeforeExit = {}
 
+    + AnyBackendEventCallback = {}
     //Handle any backend event (e.g.SDL_Event)
-    AnyBackendEventCallback = {};
 
-    VoidFunction LoadAdditionalFonts =
-       LoadDefaultFont_WithFontAwesomeIcons;
+    + VoidFunction LoadAdditionalFonts =
+       LoadDefaultFont_WithFontAwesomeIcons
 
-    VoidFunction SetupImGuiConfig = 
-      SetupDefaultImGuiConfig;
+    + VoidFunction SetupImGuiConfig =
+      SetupDefaultImGuiConfig
 
-    VoidFunction SetupImGuiStyle = 
-      SetupDefaultImGuiStyle;
+    + VoidFunction SetupImGuiStyle =
+      SetupDefaultImGuiStyle
 
-    mobileCallbacks;
+    + mobileCallbacks
 }
 
 class MobileCallbacks <struct>{
     ---
     Only available on mobile devices
     ---
-    VoidFunction OnDestroy = {};
-    VoidFunction OnLowMemory = {};
-    VoidFunction OnPause = {};
-    VoidFunction OnResume = {};
+    + VoidFunction OnDestroy = {}
+    + VoidFunction OnLowMemory = {}
+    + VoidFunction OnPause = {}
+    + VoidFunction OnResume = {}
 }
 RunnerCallbacks *-- MobileCallbacks
 
 enum FullScreenMode <enum>{
-    NoFullScreen,
+    + NoFullScreen
+    + FullScreen
     // Full screen with specified resolution
-    FullScreen,
+    + FullScreenDesktopResolution
     // Full screen with current resolution
-    FullScreenDesktopResolution,
+    + FullMonitorWorkArea
     // Fake full screen, maximized window
     // on the selected monitor
-    FullMonitorWorkArea
 }
 
 enum WindowSizeState <enum>{
-    Standard,
-    Minimized,
-    Maximized
+    + Standard,
+    + Minimized,
+    + Maximized
 }
 
-class WindowSize <struct>{
-    // used if fullScreenMode==NoFullScreen
-    // and autoSize==false
-    ScreenSize size = ScreenSize{100, 100};
 
-    // If true, adapt the app window size
-    // to the widgets present in the window
-    bool autoSize = false;
-
-    fullScreenMode = NoFullScreen;
-}
-
-WindowSize *-- FullScreenMode
 
 enum WindowPositionMode <enum>{
-    OsDefault,
-    MonitorCenter,
-    FromCoords,
+    + OsDefault,
+    + MonitorCenter,
+    + FromCoords,
 }
 
-class WindowPosition <struct>{
-    windowPositionMode;
-    // used if windowPositionMode==FromCoords
-    position = {0, 0};
-}
 
-WindowPosition *-- WindowPositionMode
 
 class WindowGeometry <struct>{
-    WindowSize windowSize;
-    WindowPosition windowPosition;
-    ---
+    + size = ScreenSize{100, 100}
+    // used if fullScreenMode==NoFullScreen
+    // and sizeAuto==false
+
+    + bool sizeAuto = false
+    // If true, adapt the app window size
+    // to the presented widgets
+
+    + fullScreenMode = NoFullScreen
+
+    + WindowPositionMode positionMode
+
+    + position = ScreenPosition{0, 0}
+    // used if windowPositionMode==FromCoords
+
+    + int monitorIdx = 0
     // used if full screen,
-    // or if windowPositionMode==MonitorCenter
-    int monitorIdx = 0;
+    // or if positionMode==MonitorCenter
 }
 
-WindowGeometry *-- WindowPosition
-WindowGeometry *-- WindowSize
+WindowGeometry *-- FullScreenMode
+WindowGeometry *-- WindowPositionMode
 
-class WindowAppearance <struct>{
-    bool borderless = false;
-    bool resizable = false;
-    WindowSizeState windowSizeState = Standard;
-}
 
-WindowAppearance *-- WindowSizeState
 
 class AppWindowParams <struct>{
-    string windowTitle;
+    + windowTitle
     ---
-    WindowGeometry windowGeometry;
+    + windowGeometry
+    + bool restorePreviousGeometry
     // if true, then save & restore from last run
-    bool restorePreviousGeometry;
     ---
-    WindowAppearance windowAppearance;
+    + bool borderless = false
+    + bool resizable = false
+    + windowSizeState = Standard
 }
 
 AppWindowParams *-- WindowGeometry
-AppWindowParams *-- WindowAppearance
+AppWindowParams *-- WindowSizeState
 
 
 class ImGuiWindowParams <struct> {
-    defaultImGuiWindowType = ProvideFullScreenWindow;
+    + defaultImGuiWindowType = ProvideFullScreenWindow
 
-    ImVec4 backgroundColor;
+    + ImVec4 backgroundColor
 
-    bool showMenuBar = false;
-    bool showMenu_App = true;
-    bool showMenu_View = true;
+    + bool showMenuBar = false
+    + bool showMenu_App = true
+    + bool showMenu_View = true
 
-    bool showStatusBar = false;
-    bool showStatus_Fps = true;
+    + bool showStatusBar = false
+    + bool showStatus_Fps = true
 
-    bool configWindowsMoveFromTitleBarOnly = true;
+    + bool configWindowsMoveFromTitleBarOnly = true
 }
 
 class BackendPointers <struct> {
   ---
   Output structure: filled by HelloImGui
   ---
-  void* glfwWindow;
-  void* sdlWindow;
-  void* sdlGlContext;
+  + void* glfwWindow
+  + void* sdlWindow
+  + void* sdlGlContext
 }
 
 class DockingParams <struct> {
-    vector<DockingSplit> dockingSplits;
+    + vector<DockingSplit> dockingSplits
 
-    vector<DockableWindow> dockableWindows;
+    + vector<DockableWindow> dockableWindows
 
-    bool resetUserDockLayout = true;
-    bool wasDockLayoutApplied = false;
+    + bool resetUserDockLayout = true
+    + bool wasDockLayoutApplied = false
 }
 
 class DockableWindow <struct> {
-    string label;
-    DockSpaceName dockSpaceName;
-    VoidFunction GuiFunction = {};
-    bool isVisible = true;
-    bool canBeClosed = true;
+    + string label
+    + DockSpaceName dockSpaceName
+    + VoidFunction GuiFunction = {}
+    + bool isVisible = true
+    + bool canBeClosed = true
 }
 
 class DockingSplit <struct> {
-    DockSpaceName initialDock;
-    DockSpaceName newDock;
-    ImGuiDir_ direction;
-    float ratio = 0.25f;
+    + DockSpaceName initialDock
+    + DockSpaceName newDock
+    + ImGuiDir_ direction
+    + float ratio = 0.25f
 }
 
 RunnerParams *-- BackendType

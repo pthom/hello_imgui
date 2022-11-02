@@ -11,7 +11,7 @@ int main(int , char *[])
                 runnerParams.appShallExit = true;      // ... and immediately handle its action if it is clicked!
         };
     runnerParams.appWindowParams.windowTitle = "Hello, globe!";
-    runnerParams.appWindowParams.windowSize = {180.f, 210.f};
+    runnerParams.appWindowParams.windowGeometry.size = {180, 210};
     HelloImGui::Run(runnerParams);
     return 0;
 }

@@ -15,14 +15,14 @@ namespace HelloImGui { namespace BackendApi
         GLFWwindow *noWindowSharedResources = nullptr;
         GLFWmonitor *monitor = nullptr;
 
-        auto fullScreenMode = info.windowGeometry.windowSize.fullScreenMode;
-        auto &windowSize = info.windowGeometry.windowSize.size;
+        auto fullScreenMode = info.windowGeometry.fullScreenMode;
+        auto &windowSize = info.windowGeometry.size;
 
         if (fullScreenMode == FullScreenMode::FullMonitorWorkArea)
         {
             auto monitorBounds = GetOneMonitorWorkArea(info.windowGeometry.monitorIdx);
             windowSize = monitorBounds.size;
-            info.windowGeometry.windowPosition.position = monitorBounds.position;
+            info.windowGeometry.position = monitorBounds.position;
         } else if (fullScreenMode == FullScreenMode::FullScreenDesktopResolution)
         {
             int nbMonitors;
@@ -57,12 +57,12 @@ namespace HelloImGui { namespace BackendApi
 
         // info.allowHighDpi: not handled
 
-        if (info.windowAppearance.borderless)
+        if (info.borderless)
             glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         else
             glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
 
-        if (info.windowAppearance.resizable)
+        if (info.resizable)
             glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         else
             glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -76,9 +76,9 @@ namespace HelloImGui { namespace BackendApi
         if (window == nullptr)
         BACKEND_THROW("BackendGlfw::CreateWindow / glfwCreateWindow failed");
 
-        if (info.windowAppearance.windowSizeState == WindowSizeState::Minimized)
+        if (info.windowSizeState == WindowSizeState::Minimized)
             glfwIconifyWindow(window);
-        else if (info.windowAppearance.windowSizeState == WindowSizeState::Maximized)
+        else if (info.windowSizeState == WindowSizeState::Maximized)
             glfwMaximizeWindow(window);
 
         return (void *)(window);

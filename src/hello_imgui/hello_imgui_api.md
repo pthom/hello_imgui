@@ -188,16 +188,20 @@ See [app_window_params.h](app_window_params.h).
 
 
 __AppWindowParams__ is a struct that defines the application window display params.
+See [doc_src/hello_imgui_diagram.png](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png)
+for details.
 
 Members:
 * `windowTitle`: _string, default=""_. Title of the application window
 * `windowGeometry`: _WindowGeometry_
   Enables to precisely set the window geometry (position, monitor, size, full screen, fake full screen, etc.)
    _Note: on a mobile device, the application will always be full screen._
-  See [doc_src/hello_imgui_diagram.png](doc_src/hello_imgui_diagram.png) for details.
 * `restorePreviousGeometry`: _bool, default=false_.
   If true, then save & restore windowGeometry from last run
-* `windowAppearance`: _WindowAppearance_: set window decoration, and status (resizable, minimized, etc)
+
+* `borderless`: _bool, default = false_.
+* `resizable`: _bool, default = false_.
+* `windowSizeState`: _WindowSizeState, default = Standard_ (minimized, maximized or standard)
 
 
 ----

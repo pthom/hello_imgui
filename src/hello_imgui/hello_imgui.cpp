@@ -17,7 +17,7 @@ void Run(VoidFunction guiFunction, ImVec2 windowSize, std::string windowTitle)
 {
     RunnerParams runnerParams;
     runnerParams.callbacks.ShowGui = guiFunction;
-    runnerParams.appWindowParams.windowSize = windowSize;
+    runnerParams.appWindowParams.windowGeometry.size = {(int)windowSize.x, (int)windowSize.y};
     runnerParams.appWindowParams.windowTitle = windowTitle;
     gLastRunnerParams = &runnerParams;
     auto runner = FactorRunner(runnerParams);

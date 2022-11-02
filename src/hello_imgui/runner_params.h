@@ -48,7 +48,7 @@ enum class BackendType
 struct RunnerParams
 {
     RunnerCallbacks callbacks;
-    AppWindowParamsOld appWindowParams;
+    AppWindowParams appWindowParams;
     ImGuiWindowParams imGuiWindowParams;
     DockingParams dockingParams;
     BackendPointers backendPointers;

@@ -2,7 +2,7 @@
 
 int main(int , char *[]) {
     HelloImGui::RunnerParams params;
-    params.appWindowParams.windowSize = {1280.f, 720.f};
+    params.appWindowParams.windowGeometry.size = {1280, 720};
     params.appWindowParams.windowTitle = "Dear ImGui example with 'Hello ImGui'";
     params.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::NoDefaultWindow;
 

@@ -3,8 +3,13 @@
 #include "hello_imgui/hello_imgui_include_opengl.h"
 #include "runner_sdl_opengl3.h"
 #include "hello_imgui/hello_imgui_error.h"
+#include "backend_window_helper/sdl_window_helper.h"
+#include "internal/backend_impls/opengl_setup_helper/opengl_setup_sdl.h"
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_sdl.h>
+
+
+
 
 #include <SDL.h>
 #include <SDL_main.h>
@@ -12,6 +17,10 @@
 
 namespace HelloImGui
 {
+    BackendApi::OpenGlSetupSdl gOpenGlSetupSdl;
+    BackendApi::SdlWindowHelper gSdlWindowHelper;
+
+
     int HandleAppEvents(void *runnerSdlOpenGl3_void, SDL_Event *event)
     {
         RunnerSdlOpenGl3 * runnerSdlOpenGl3 = (RunnerSdlOpenGl3 *)(runnerSdlOpenGl3_void);
@@ -35,103 +44,19 @@ namespace HelloImGui
 
     void RunnerSdlOpenGl3::Impl_Select_Gl_Version()
     {
-#if defined(__EMSCRIPTEN__)
-        /*
-        {
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-        }*/
-#elif defined(HELLOIMGUI_USE_GLES3)
-        {
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_EGL, 3);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                                SDL_GL_CONTEXT_PROFILE_ES);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-        }
-#elif defined(HELLOIMGUI_USE_GLES2)
-        {
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_EGL, 2);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                                SDL_GL_CONTEXT_PROFILE_ES);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-        }
-#elif defined(__APPLE__)
-        {
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);  // Always required on Mac
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-        }
-#else
-        {
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-        }
-#endif
-
-        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+        gOpenGlSetupSdl.SelectOpenGlVersion();
     }
 
     std::string RunnerSdlOpenGl3::Impl_GlslVersion()
     {
-#if defined(HELLOIMGUI_USE_GLES3)
-        const char* glsl_version = "#version 300 es";
-#elif defined(HELLOIMGUI_USE_GLES2)
-        const char* glsl_version = "#version 200 es";
-#elif defined(__APPLE__)
-        const char* glsl_version = "#version 150";
-#else
-        const char* glsl_version = "#version 130";
-#endif
-        return glsl_version;
+        return gOpenGlSetupSdl.GlslVersion();
     }
 
     void RunnerSdlOpenGl3::Impl_CreateWindow()
     {
+        BackendApi::BackendOptions backendOptions;
 
-#ifndef __EMSCRIPTEN__
-        const auto &backendWindowParams = params.appWindowParams;
-        ImVec2 windowPosition = backendWindowParams.windowPosition;
-        ImVec2 windowSize = backendWindowParams.windowSize;
-        SDL_WindowFlags window_flags =
-            (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-        int xPos = SDL_WINDOWPOS_CENTERED, yPos = SDL_WINDOWPOS_CENTERED;
-        if (windowPosition.x >= -10000.f)
-        {
-            xPos = static_cast<int>(windowPosition.x);
-            yPos = static_cast<int>(windowPosition.y);
-        }
-        mWindow = SDL_CreateWindow(backendWindowParams.windowTitle.c_str(),
-                                   xPos,
-                                   yPos,
-                                   static_cast<int>(windowSize.x),
-                                   static_cast<int>(windowSize.y),
-                                   window_flags);
-        if (!mWindow)
-            HIMG_THROW("RunnerSdlOpenGl3::Impl_CreateWindowAndContext : SDL_CreateWindow returned NULL");
-
-        if (backendWindowParams.fullScreen)
-        {
-            SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN);
-        }
-#else
-        const auto &backendWindowParams = params.appWindowParams;
-        SDL_DisplayMode current;
-        SDL_GetCurrentDisplayMode(0, &current);
-        SDL_WindowFlags window_flags =
-            (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-        mWindow = SDL_CreateWindow(
-            backendWindowParams.windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
-#endif
-
+        mWindow = static_cast<SDL_Window*>(gSdlWindowHelper.CreateWindow(params.appWindowParams, backendOptions));
         params.backendPointers.sdlWindow = mWindow;
     }
 
@@ -139,33 +64,17 @@ namespace HelloImGui
     {
         mGlContext = SDL_GL_CreateContext(mWindow);
         if (!mGlContext)
-        HIMG_THROW("RunnerSdlOpenGl3::Impl_CreateWindowAndContext(): Failed to initialize WebGL context!");
+        	HIMG_THROW("RunnerSdlOpenGl3::Impl_CreateGlContext(): Failed to initialize Gl context!");
 
         SDL_GL_MakeCurrent(mWindow, mGlContext); // KK No
         SDL_GL_SetSwapInterval(1);  // Enable vsync
-
         params.backendPointers.sdlGlContext = mGlContext;
     }
 
 
     void RunnerSdlOpenGl3::Impl_InitGlLoader()
     {
-        // Initialize OpenGL loader
-#if defined(IMGUI_IMPL_OPENGL_ES3) || defined(IMGUI_IMPL_OPENGL_ES2) || defined(__EMSCRIPTEN__)
-        ; // nothing to do
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-        bool err = gl3wInit() != 0;
-        if (err)
-            HIMG_THROW("Failed to initialize OpenGL loader!");
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-        bool err = glewInit() != GLEW_OK;
-        if (err)
-            HIMG_THROW("Failed to initialize OpenGL loader!");
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-        bool err = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress)) == 0;
-        if (err)
-            HIMG_THROW("Failed to initialize OpenGL loader!");
-#endif
+        gOpenGlSetupSdl.InitGlLoader();
     }
 
     void RunnerSdlOpenGl3::Impl_SetupPlatformRendererBindings()

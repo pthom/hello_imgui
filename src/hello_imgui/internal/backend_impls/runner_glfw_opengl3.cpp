@@ -9,9 +9,17 @@
 #include <stdexcept>
 #include "hello_imgui/hello_imgui_error.h"
 #include "runner_glfw_opengl3.h"
+#include "backend_window_helper/glfw_window_helper.h"
+#include "opengl_setup_helper/opengl_setup_glfw.h"
+
+
 
 namespace HelloImGui
 {
+    BackendApi::GlfwWindowHelper gWindowHelper;
+    BackendApi::OpenGlSetupGlfw gOpenGlHelper;
+
+
     static void glfw_error_callback(int error, const char* description)
     {
         fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -26,80 +34,19 @@ namespace HelloImGui
 
     void RunnerGlfwOpenGl3::Impl_Select_Gl_Version()
     {
-#if defined(HELLOIMGUI_USE_GLES3)
-        {
-            HIMG_THROW("RunnerGlfwOpenGl3 needs implementation for GLES !");
-//            SDL_GL_SetAttribute(SDL_GL_CONTEXT_EGL, 3);
-//            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-//                                SDL_GL_CONTEXT_PROFILE_ES);
-//            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-//            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-        }
-#elif defined(__APPLE__)
-        {
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
-        }
-#else
-        {
-            // GL 3.2+
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
-        }
-#endif
+        gOpenGlHelper.SelectOpenGlVersion();
     }
 
     std::string RunnerGlfwOpenGl3::Impl_GlslVersion()
     {
-#if defined(HELLOIMGUI_USE_GLES3)
-        const char* glsl_version = "#version 300es";
-#elif defined(__APPLE__)
-        const char* glsl_version = "#version 150";
-#else
-        // GLSL 130
-        const char* glsl_version = "#version 130";
-#endif
-        return glsl_version;
+        return gOpenGlHelper.GlslVersion();
     }
 
     void RunnerGlfwOpenGl3::Impl_CreateWindow()
     {
-        const AppWindowParams& backendWindowParams = params.appWindowParams;
-        ImVec2 windowSize = backendWindowParams.windowSize;
-        ImVec2 windowPosition = backendWindowParams.windowPosition;
+        BackendApi::BackendOptions backendOptions;
 
-        // Check if full screen mode is requested
-        if (backendWindowParams.fullScreen)
-        {
-            GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-            const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-            glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-            glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-            glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-            glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-            mWindow = glfwCreateWindow(
-                mode->width, mode->height, backendWindowParams.windowTitle.c_str(),
-                monitor, nullptr);
-        }
-        else
-        {
-            mWindow = glfwCreateWindow(
-                (int)windowSize.x, (int)windowSize.y, backendWindowParams.windowTitle.c_str(), NULL, NULL);
-            if (params.appWindowParams.maximized)
-              glfwMaximizeWindow(mWindow);
-        }
-        if (windowPosition.x >= -10000.f)
-            glfwSetWindowPos(mWindow, (int)windowPosition.x, (int)windowPosition.y);
-
-        if (mWindow == NULL)
-        {
-            glfwTerminate();
-            HIMG_THROW("RunnerGlfwOpenGl3::Impl_CreateWindow failed");
-        }
+        mWindow = static_cast<GLFWwindow*>(gWindowHelper.CreateWindow(params.appWindowParams, backendOptions));
         params.backendPointers.glfwWindow = mWindow;
     }
 
@@ -112,23 +59,7 @@ namespace HelloImGui
 
     void RunnerGlfwOpenGl3::Impl_InitGlLoader()
     {
-#ifndef __EMSCRIPTEN__
-        // Initialize OpenGL loader
-#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-        bool err = gl3wInit() != 0;
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-        bool err = glewInit() != GLEW_OK;
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-        bool err = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) == 0;
-#else
-         bool err = false;  // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is likely to requires
-                           // some form of initialization.
-#endif
-        if (err)
-        {
-            HIMG_THROW("RunnerGlfwOpenGl3::Impl_InitGlLoader(): Failed to initialize OpenGL loader!");
-        }
-#endif  // #ifndef __EMSCRIPTEN__
+        gOpenGlHelper.InitGlLoader();
     }
 
     void RunnerGlfwOpenGl3::Impl_SetupPlatformRendererBindings()

@@ -67,5 +67,16 @@ namespace HelloImGui { namespace BackendApi
 
         // Screenshot!
 
+        //
+        //  Concrete methods below
+        //
+        struct SearchForMonitorResult
+        {
+            int monitorIdx;
+            std::optional<ScreenPosition> newPosition;
+        };
+        SearchForMonitorResult SearchForMonitor(const WindowGeometry& geometry);
+
+        void EnsureWindowFitsMonitor(WindowPointer window, int idxMonitor, FullScreenMode fullScreenMode);
     };
 }} // namespace HelloImGui { namespace BackendApi

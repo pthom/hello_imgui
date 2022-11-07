@@ -7,15 +7,28 @@ namespace HelloImGui { namespace BackendApi
 {
     WindowPointer SdlWindowHelper::CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions)
     {
+        auto searchMonitorResult = SearchForMonitor(info.windowGeometry);
+        int realMonitorIdx = searchMonitorResult.monitorIdx;
+        if (searchMonitorResult.newPosition.has_value())
+            info.windowGeometry.position = searchMonitorResult.newPosition.value();
+
         int window_flags = 0;
 
         int nbMonitors = GetNbMonitors();
-        int monitorIdx = info.windowGeometry.monitorIdx;
-        assert((monitorIdx >= 0) && (monitorIdx < nbMonitors));
+        assert((realMonitorIdx >= 0) && (realMonitorIdx < nbMonitors));
 
         ScreenSize& windowSize = info.windowGeometry.size;
         ScreenPosition & windowPosition = info.windowGeometry.position;
         WindowPositionMode positionMode = info.windowGeometry.positionMode;
+
+        // Reduce size if too big compared to the monitor
+        if (! info.windowGeometry.sizeAuto)
+        {
+            auto workArea = GetOneMonitorWorkArea(realMonitorIdx);
+            ForDim2(dim)
+                if (windowSize[dim] > workArea.size[dim])
+                    windowSize[dim] = workArea.size[dim];
+        }
 
         auto fullScreenMode = info.windowGeometry.fullScreenMode;
 
@@ -29,7 +42,7 @@ namespace HelloImGui { namespace BackendApi
         }
         else if ( (positionMode == WindowPositionMode::MonitorCenter) && (fullScreenMode==FullScreenMode::NoFullScreen))
         {
-            auto workArea = GetOneMonitorWorkArea(monitorIdx);
+            auto workArea = GetOneMonitorWorkArea(realMonitorIdx);
             ForDim2(dim)
                 window_pos_sdl[dim] = workArea.Center()[dim] - windowSize[dim] / 2;
         }
@@ -51,8 +64,8 @@ namespace HelloImGui { namespace BackendApi
 
         if ((fullScreenMode == FullScreenMode::FullScreenDesktopResolution) ||(fullScreenMode==FullScreenMode::FullScreen))
         {
-            window_pos_sdl[0] = SDL_WINDOWPOS_CENTERED_DISPLAY(monitorIdx);
-            window_pos_sdl[1] = SDL_WINDOWPOS_CENTERED_DISPLAY(monitorIdx);
+            window_pos_sdl[0] = SDL_WINDOWPOS_CENTERED_DISPLAY(realMonitorIdx);
+            window_pos_sdl[1] = SDL_WINDOWPOS_CENTERED_DISPLAY(realMonitorIdx);
         }
 
         auto backend3DMode = backendOptions.backend3DMode;
@@ -89,6 +102,8 @@ namespace HelloImGui { namespace BackendApi
                                        window_flags);
         if (!window)
             BACKEND_THROW("BackendSdl::CreateWindow : SDL_CreateWindow returned NULL");
+
+        EnsureWindowFitsMonitor(window, realMonitorIdx, fullScreenMode);
 
         SDL_GetWindowPosition(window, &windowPosition[0], &windowPosition[1]);
         SDL_GetWindowSize(window, &windowSize[0], &windowSize[1]);

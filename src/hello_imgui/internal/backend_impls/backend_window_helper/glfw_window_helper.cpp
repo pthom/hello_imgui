@@ -9,29 +9,41 @@ namespace HelloImGui { namespace BackendApi
         fprintf(stderr, "Glfw Error %d: %s\n", error, description);
     }
 
-
     WindowPointer GlfwWindowHelper::CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions)
     {
+        auto searchMonitorResult = SearchForMonitor(info.windowGeometry);
+        int realMonitorIdx = searchMonitorResult.monitorIdx;
+        if (searchMonitorResult.newPosition.has_value())
+            info.windowGeometry.position = searchMonitorResult.newPosition.value();
+
+
         GLFWwindow *noWindowSharedResources = nullptr;
         GLFWmonitor *monitor = nullptr;
-
-        int nbMonitors;
-        auto monitors = glfwGetMonitors(&nbMonitors);
-        int monitorIdx = info.windowGeometry.monitorIdx;
-        assert((monitorIdx >= 0) && (monitorIdx < nbMonitors));
 
         auto fullScreenMode = info.windowGeometry.fullScreenMode;
         auto &windowSize = info.windowGeometry.size;
         ScreenPosition & windowPosition = info.windowGeometry.position;
+
+        // Reduce size if too big compared to the monitor
+        if (! info.windowGeometry.sizeAuto)
+        {
+            auto workArea = GetOneMonitorWorkArea(realMonitorIdx);
+            ForDim2(dim)
+                if (windowSize[dim] > workArea.size[dim])
+                    windowSize[dim] = workArea.size[dim];
+        }
 
         if (fullScreenMode == FullScreenMode::FullMonitorWorkArea)
         {
             auto monitorBounds = GetOneMonitorWorkArea(info.windowGeometry.monitorIdx);
             windowSize = monitorBounds.size;
             info.windowGeometry.position = monitorBounds.position;
-        } else if (fullScreenMode == FullScreenMode::FullScreenDesktopResolution)
+        }
+        else if (fullScreenMode == FullScreenMode::FullScreenDesktopResolution)
         {
-            monitor = monitors[monitorIdx];
+            int nbMonitors;
+            auto monitors = glfwGetMonitors(&nbMonitors);
+            monitor = monitors[realMonitorIdx];
 
             const GLFWvidmode *mode = glfwGetVideoMode(monitor);
             glfwWindowHint(GLFW_RED_BITS, mode->redBits);
@@ -45,7 +57,7 @@ namespace HelloImGui { namespace BackendApi
         {
             int nbMonitors;
             auto monitors = glfwGetMonitors(&nbMonitors);
-            monitor = monitors[monitorIdx];
+            monitor = monitors[realMonitorIdx];
         } else if (fullScreenMode == FullScreenMode::NoFullScreen)
             {}
         else
@@ -91,7 +103,7 @@ namespace HelloImGui { namespace BackendApi
         }
         else if ( (positionMode == WindowPositionMode::MonitorCenter) && (fullScreenMode==FullScreenMode::NoFullScreen))
         {
-            auto workArea = GetOneMonitorWorkArea(monitorIdx);
+            auto workArea = GetOneMonitorWorkArea(realMonitorIdx);
             ScreenPosition centeredPosition;
             ForDim2(dim)
                 centeredPosition[dim] = workArea.Center()[dim] - windowSize[dim] / 2;
@@ -99,6 +111,8 @@ namespace HelloImGui { namespace BackendApi
             // We need to set the size again, in case we changed monitor
             glfwSetWindowSize(window, windowSize[0], windowSize[1]);
         }
+
+        EnsureWindowFitsMonitor(window, realMonitorIdx, fullScreenMode);
 
         glfwGetWindowSize(window, &windowSize[0], &windowSize[1]);
         glfwGetWindowPos(window, &windowPosition[0], &windowPosition[1]);

@@ -68,7 +68,7 @@ struct WindowGeometry
     // used if windowPositionMode==FromCoords
     ScreenPosition position = ScreenPosition{0, 0};
 
-    // used if full screen, or if positionMode==MonitorCenter
+    // used if positionMode!=FromCoords
     int monitorIdx = 0;
 };
 

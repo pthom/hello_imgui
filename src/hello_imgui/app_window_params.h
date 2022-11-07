@@ -82,7 +82,7 @@ struct AppWindowParams
     bool restorePreviousGeometry;
 
     bool borderless = false;
-    bool resizable = false;
+    bool resizable = true;
     WindowSizeState windowSizeState = WindowSizeState::Standard;
 };
 

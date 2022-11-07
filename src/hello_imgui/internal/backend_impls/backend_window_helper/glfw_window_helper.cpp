@@ -28,7 +28,7 @@ namespace HelloImGui { namespace BackendApi
             int nbMonitors;
             auto monitors = glfwGetMonitors(&nbMonitors);
             int monitorIdx = info.windowGeometry.monitorIdx;
-            assert((monitorIdx > 0) && (monitorIdx < nbMonitors));
+            assert((monitorIdx >= 0) && (monitorIdx < nbMonitors));
             monitor = monitors[monitorIdx];
 
             const GLFWvidmode *mode = glfwGetVideoMode(monitor);
@@ -44,7 +44,7 @@ namespace HelloImGui { namespace BackendApi
             int nbMonitors;
             auto monitors = glfwGetMonitors(&nbMonitors);
             int monitorIdx = info.windowGeometry.monitorIdx;
-            assert((monitorIdx > 0) && (monitorIdx < nbMonitors));
+            assert((monitorIdx >= 0) && (monitorIdx < nbMonitors));
             monitor = monitors[monitorIdx];
         } else if (fullScreenMode == FullScreenMode::NoFullScreen)
             {}
@@ -74,7 +74,7 @@ namespace HelloImGui { namespace BackendApi
             noWindowSharedResources
         );
         if (window == nullptr)
-        BACKEND_THROW("BackendGlfw::CreateWindow / glfwCreateWindow failed");
+            BACKEND_THROW("BackendGlfw::CreateWindow / glfwCreateWindow failed");
 
         if (info.windowSizeState == WindowSizeState::Minimized)
             glfwIconifyWindow(window);

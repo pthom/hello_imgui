@@ -9,20 +9,51 @@ namespace HelloImGui { namespace BackendApi
     {
         int window_flags = 0;
 
+        int nbMonitors = GetNbMonitors();
+        int monitorIdx = info.windowGeometry.monitorIdx;
+        assert((monitorIdx >= 0) && (monitorIdx < nbMonitors));
+
         ScreenSize& windowSize = info.windowGeometry.size;
         ScreenPosition & windowPosition = info.windowGeometry.position;
+        WindowPositionMode positionMode = info.windowGeometry.positionMode;
+
         auto fullScreenMode = info.windowGeometry.fullScreenMode;
+
+        int window_pos_sdl[2];
+        ForDim2(dim)
+            window_pos_sdl[dim] = SDL_WINDOWPOS_UNDEFINED;
+        if (positionMode == WindowPositionMode::FromCoords)
+        {
+            ForDim2(dim)
+                window_pos_sdl[dim] = windowPosition[dim];
+        }
+        else if ( (positionMode == WindowPositionMode::MonitorCenter) && (fullScreenMode==FullScreenMode::NoFullScreen))
+        {
+            auto workArea = GetOneMonitorWorkArea(monitorIdx);
+            ForDim2(dim)
+                window_pos_sdl[dim] = workArea.Center()[dim] - windowSize[dim] / 2;
+        }
 
         if (fullScreenMode == FullScreenMode::FullMonitorWorkArea)
         {
             auto monitorBounds = GetOneMonitorWorkArea(info.windowGeometry.monitorIdx);
             windowSize = monitorBounds.size;
             info.windowGeometry.position = monitorBounds.position;
+            window_pos_sdl[0] = info.windowGeometry.position[0];
+            window_pos_sdl[1] = info.windowGeometry.position[1];
         }
         else if (fullScreenMode == FullScreenMode::FullScreen)
             window_flags |= SDL_WINDOW_FULLSCREEN;
         else if (fullScreenMode == FullScreenMode::FullScreenDesktopResolution)
+        {
             window_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+        }
+
+        if ((fullScreenMode == FullScreenMode::FullScreenDesktopResolution) ||(fullScreenMode==FullScreenMode::FullScreen))
+        {
+            window_pos_sdl[0] = SDL_WINDOWPOS_CENTERED_DISPLAY(monitorIdx);
+            window_pos_sdl[1] = SDL_WINDOWPOS_CENTERED_DISPLAY(monitorIdx);
+        }
 
         auto backend3DMode = backendOptions.backend3DMode;
         if (backend3DMode == Backend3dMode::OpenGl)
@@ -52,18 +83,8 @@ namespace HelloImGui { namespace BackendApi
         else if (info.windowSizeState == WindowSizeState::Maximized)
             window_flags |= SDL_WINDOW_MAXIMIZED;
 
-        int window_pos[2];
-        for (auto dim: Range2)
-        {
-            if (windowPosition[dim] == WindowPositionUnspecified)
-                window_pos[dim] = SDL_WINDOWPOS_UNDEFINED;
-            else if (windowPosition[dim] == WindowPositionCentered)
-                window_pos[dim] = SDL_WINDOWPOS_CENTERED;
-            else
-                window_pos[dim] = windowPosition[dim];
-        }
         auto window = SDL_CreateWindow(info.windowTitle.c_str(),
-                                       window_pos[0], window_pos[1],
+                                       window_pos_sdl[0], window_pos_sdl[1],
                                        windowSize[0], windowSize[1],
                                        window_flags);
         if (!window)
@@ -71,6 +92,9 @@ namespace HelloImGui { namespace BackendApi
 
         SDL_GetWindowPosition(window, &windowPosition[0], &windowPosition[1]);
         SDL_GetWindowSize(window, &windowSize[0], &windowSize[1]);
+
+        printf("Final window size: %ix%i\n", windowSize[0], windowSize[1]);
+        printf("Final window position: %ix%i\n", windowPosition[0], windowPosition[1]);
 
         return (void *)(window);
     }
@@ -126,12 +150,7 @@ namespace HelloImGui { namespace BackendApi
         SDL_SetWindowSize(sdlWindow, windowBounds.size[0], windowBounds.size[1]);
 
         // Position
-        if (windowBounds.position[0] == WindowPositionCentered)
-            {}
-        else if (windowBounds.position[0] == WindowPositionUnspecified)
-            {}
-        else
-            SDL_SetWindowPosition(sdlWindow, windowBounds.position[0], windowBounds.position[1]);
+        SDL_SetWindowPosition(sdlWindow, windowBounds.position[0], windowBounds.position[1]);
     }
 
 }} // namespace HelloImGui { namespace BackendApi

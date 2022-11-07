@@ -15,8 +15,14 @@ namespace HelloImGui { namespace BackendApi
         GLFWwindow *noWindowSharedResources = nullptr;
         GLFWmonitor *monitor = nullptr;
 
+        int nbMonitors;
+        auto monitors = glfwGetMonitors(&nbMonitors);
+        int monitorIdx = info.windowGeometry.monitorIdx;
+        assert((monitorIdx >= 0) && (monitorIdx < nbMonitors));
+
         auto fullScreenMode = info.windowGeometry.fullScreenMode;
         auto &windowSize = info.windowGeometry.size;
+        ScreenPosition & windowPosition = info.windowGeometry.position;
 
         if (fullScreenMode == FullScreenMode::FullMonitorWorkArea)
         {
@@ -25,10 +31,6 @@ namespace HelloImGui { namespace BackendApi
             info.windowGeometry.position = monitorBounds.position;
         } else if (fullScreenMode == FullScreenMode::FullScreenDesktopResolution)
         {
-            int nbMonitors;
-            auto monitors = glfwGetMonitors(&nbMonitors);
-            int monitorIdx = info.windowGeometry.monitorIdx;
-            assert((monitorIdx >= 0) && (monitorIdx < nbMonitors));
             monitor = monitors[monitorIdx];
 
             const GLFWvidmode *mode = glfwGetVideoMode(monitor);
@@ -43,8 +45,6 @@ namespace HelloImGui { namespace BackendApi
         {
             int nbMonitors;
             auto monitors = glfwGetMonitors(&nbMonitors);
-            int monitorIdx = info.windowGeometry.monitorIdx;
-            assert((monitorIdx >= 0) && (monitorIdx < nbMonitors));
             monitor = monitors[monitorIdx];
         } else if (fullScreenMode == FullScreenMode::NoFullScreen)
             {}
@@ -80,6 +80,31 @@ namespace HelloImGui { namespace BackendApi
             glfwIconifyWindow(window);
         else if (info.windowSizeState == WindowSizeState::Maximized)
             glfwMaximizeWindow(window);
+
+
+        WindowPositionMode positionMode = info.windowGeometry.positionMode;
+        if ( (positionMode == WindowPositionMode::FromCoords) || (fullScreenMode == FullScreenMode::FullMonitorWorkArea))
+        {
+            glfwSetWindowPos(window, windowPosition[0], windowPosition[1]);
+            // We need to set the size again, in case we changed monitor
+            glfwSetWindowSize(window, windowSize[0], windowSize[1]);
+        }
+        else if ( (positionMode == WindowPositionMode::MonitorCenter) && (fullScreenMode==FullScreenMode::NoFullScreen))
+        {
+            auto workArea = GetOneMonitorWorkArea(monitorIdx);
+            ScreenPosition centeredPosition;
+            ForDim2(dim)
+                centeredPosition[dim] = workArea.Center()[dim] - windowSize[dim] / 2;
+            glfwSetWindowPos(window, centeredPosition[0], centeredPosition[1]);
+            // We need to set the size again, in case we changed monitor
+            glfwSetWindowSize(window, windowSize[0], windowSize[1]);
+        }
+
+        glfwGetWindowSize(window, &windowSize[0], &windowSize[1]);
+        glfwGetWindowPos(window, &windowPosition[0], &windowPosition[1]);
+
+        printf("Final window size: %ix%i\n", windowSize[0], windowSize[1]);
+        printf("Final window position: %ix%i\n", windowPosition[0], windowPosition[1]);
 
         return (void *)(window);
     }

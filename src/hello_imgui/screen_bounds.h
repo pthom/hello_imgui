@@ -7,15 +7,11 @@ namespace HelloImGui
     using ScreenPosition = std::array<int, 2>;
     using ScreenSize = std::array<int, 2>;
 
-
-    constexpr int WindowPositionUnspecified = -1000000;
-    constexpr int WindowPositionCentered = -3000000;
-
-    constexpr std::array<int, 2> Range2 = {0, 1};
+#define ForDim2(dim) for (size_t dim = 0; dim < 2; dim += 1)
 
     struct ScreenBounds
     {
-        ScreenPosition position = {WindowPositionUnspecified, WindowPositionUnspecified};
+        ScreenPosition position = {0, 0};
         ScreenSize size = {100, 100};
 
         ScreenPosition TopLeftCorner() { return position; }
@@ -23,7 +19,7 @@ namespace HelloImGui
         ScreenPosition Center() { return { position[0] + size[0] / 2, position[1] + size[1] / 2 }; }
 
         bool Contains(ScreenPosition pixel) {
-            for (int dim : Range2) {
+            ForDim2(dim) {
                 if (pixel[dim] < TopLeftCorner()[dim])
                     return false;
                 if (pixel[dim] >= BottomRightCorner()[dim])
@@ -50,7 +46,7 @@ namespace HelloImGui
                     return 0;
             };
             int distance = 0;
-            for (int dim : Range2)
+            ForDim2(dim)
                 distance += distFromInterval(TopLeftCorner()[dim], BottomRightCorner()[dim], point[dim]);
             return distance;
         }
@@ -59,7 +55,7 @@ namespace HelloImGui
         {
             auto &self = *this;
             ScreenBounds windowBoundsNew = windowBoundsOriginal;
-            for (int dim: Range2)
+            ForDim2(dim)
             {
                 // if window is to the left or to the top, move it
                 if (windowBoundsNew.position[dim] < self.position[dim])
@@ -77,7 +73,7 @@ namespace HelloImGui
         bool operator==(const ScreenBounds& other)
         {
             auto &self = *this;
-            for (int dim: Range2)
+            ForDim2(dim)
             {
                 if (self.size[dim] != other.size[dim])
                     return false;

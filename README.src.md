@@ -87,10 +87,10 @@ Since HelloImGui also compile to wasm, applications created with it can be displ
 Click on the images below to run the demonstration applications. 
 
 
-| Hello, World | Advanced Docking | Classic ImGui Demo | ImGui Manual
+| Hello, World | Advanced Docking | Classic ImGui Demo | ImGui Manual|
 | --- | --- | --- | --- |
-| [![Hello, World](docs/images/wasm_demos/hello.jpg)][hello-world]  | [![Advanced Docking demo](docs/images/wasm_demos/docking.jpg)][docking]  | [![ImGui classic demo](docs/images/wasm_demos/classic.jpg)][classic] | [![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)][manual_online]
-|[Code](src/hello_imgui_demos/hello_world)|[Code](src/hello_imgui_demos/hello_imgui_demodocking)|[Code](src/hello_imgui_demos/hello_imgui_demo_classic)| ImGui Manual is a fully interactive manual for ImGui. [Code](https://github.com/pthom/imgui_manual)
+| [![Hello, World](docs/images/wasm_demos/hello.jpg)][hello-world]  | [![Advanced Docking demo](docs/images/wasm_demos/docking.jpg)][docking]  | [![ImGui classic demo](docs/images/wasm_demos/classic.jpg)][classic] | [![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)][manual_online]|
+|[Code](src/hello_imgui_demos/hello_world)|[Code](src/hello_imgui_demos/hello_imgui_demodocking)|[Code](src/hello_imgui_demos/hello_imgui_demo_classic)| ImGui Manual is a fully interactive manual for ImGui. [Code](https://github.com/pthom/imgui_manual)|
 
 [hello-world]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_world/hello_world.html  "Hello world"
 [docking]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html  "Advanced docking demo"
@@ -251,55 +251,43 @@ cmake -DCMAKE_PREFIX_PATH=/path/to/Qt/5.12.8/clang_64 -DHELLOIMGUI_USE_QT=ON
 
 This project uses the [ios-cmake](https://github.com/leetal/ios-cmake) toolchain which is a submodule in the folder [hello_imgui_cmake/ios-cmake](hello_imgui_cmake/ios-cmake).
 
-### Install requirements
-
-1. First, you need to download and compile SDL
-
-Launch [tools/ios/sdl_compile_ios.sh](tools/ios/sdl_compile_ios.sh), which will download and compile SDL for iOS and the simulator, into the folder "external/SDL"
+1. First, you need to download SDL : launch [tools/sdl_download.sh](tools/sdl_download.sh), which will download SDL into a symlink inside "external/SDL"
 
 ````bash
-./tools/ios/sdl_compile_ios.sh
+.tools/sdl_download.sh
 ````
 
+Alternatively, download [SDL2-2.24.2.tar.gz](https://www.libsdl.org/release/SDL2-2.24.2.tar.gz) and extract it into external/SDL.
 
-2. Set your development team Id inside [tools/ios/set_dev_team.source](tools/ios/set_dev_team.source)
+2. Launch cmake with correct team and bundle url parts:
 
-Edit the file and replace the id with your own team id.
-````bash
-export CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM="0123456789"
-````
-
-### Build for iOS
-
-1. **Source** tools/ios/set_dev_team.source in order to add the CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM environment variable
-
-````bash
-source tools/ios/set_dev_team.source
-````
-
-2. Launch cmake using [./tools/ios/cmake_ios_sdl.sh](tools/ios/cmake_ios_sdl.sh):
-
-````bash
-mkdir build_ios && cd build_ios_sdl
-../tools/ios/cmake_ios_sdl.sh
-````
-
-This will invoke cmake and then open the project "HelloImGui.xcodeproj".
-
-If you want to run cmake by yourself, here are the required commands:
-
+Adapt the command below, by:
+* adding your own development team Id after `-DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=` , 
+* setting HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART (for example `-DHELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART=com.org_name_or_email`)
+* setting the correct platform (-DPLATFORM): see https://github.com/leetal/ios-cmake (-DPLATFORM=OS64COMBINED will build for iOS and its simulator).
 `````bash
 mkdir build_ios_sdl
 cd build_ios_sdl
-export CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=YourTeamIdHere
 cmake .. \
   -GXcode \
   -DCMAKE_TOOLCHAIN_FILE=../hello_imgui_cmake/ios-cmake/ios.toolchain.cmake \
   -DHELLOIMGUI_USE_SDL_OPENGL3=ON \
-  -DPLATFORM=OS64 \
-  -DENABLE_BITCODE=OFF \
-  .. \
+  -DPLATFORM=OS64COMBINED \
+  -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=... \
+  -DHELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART=... \
+  ..
 `````
+
+_Notes about apps bundle identifiers: each app built for iOS needs to have a unique Bundle identifier (this is required by Apple). 
+When using HelloImGui, this ID is a concatenation of HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART and HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART, which
+you can specify as cmake arguments via the command line (by default HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART will be the name of the app
+given to `hello_imgui_add_app`)
+
+See [hello_imgui_cmake/ios/hello_imgui_ios.cmake](hello_imgui_cmake/ios/hello_imgui_ios.cmake):
+````
+  set(HELLO_IMGUI_BUNDLE_IDENTIFIER ${HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART}.${HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART})
+````
+and [hello_imgui_cmake/ios/info_plist/sdl/Info.plist.in](hello_imgui_cmake/ios/info_plist/sdl/Info.plist.in).
 
 ### Customizing the iOS build
 

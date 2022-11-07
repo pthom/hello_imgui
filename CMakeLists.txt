@@ -93,4 +93,6 @@ if (HELLOIMGUI_BUILD_DOCS)
     )
 endif()
 
-install(FILES README.md DESTINATION .)
+if (NOT IOS AND NOT ANDROID)
+    install(FILES README.md DESTINATION .)
+endif()

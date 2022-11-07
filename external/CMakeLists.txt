@@ -49,7 +49,7 @@ endif()
 if (HELLOIMGUI_USE_SDL_OPENGL3)
     # On desktop (linux, windows, osx) sdl is provided via vcpkg
     # On iOS, the build is done externally via tools/ios/sdl_compile_ios.sh
-    if (ANDROID)
+    if (ANDROID OR IOS)
         add_subdirectory(SDL)
     endif()
 endif()

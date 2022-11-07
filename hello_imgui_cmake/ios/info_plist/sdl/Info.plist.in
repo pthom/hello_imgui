@@ -3,20 +3,25 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleIdentifier</key>
-    <string>${HELLO_IMGUI_CFBundleIdentifier}</string>
+    <string>${HELLO_IMGUI_BUNDLE_IDENTIFIER}</string>
+
+	<key>CFBundleName</key>
+	<string>${HELLO_IMGUI_BUNDLE_NAME}</string>
 
 	<key>CFBundleDisplayName</key>
 	<string>${HELLO_IMGUI_ICON_DISPLAY_NAME}</string>
-	<key>CFBundleName</key>
-	<string>${HELLO_IMGUI_BUNDLE_NAME}</string>
-	<key>NSHumanReadableCopyright</key>
-	<string>${HELLO_IMGUI_BUNDLE_COPYRIGHT}</string>
 
 	<key>CFBundleExecutable</key>
 	<string>${HELLO_IMGUI_BUNDLE_EXECUTABLE}</string>
 
+	<key>CFBundleShortVersionString</key>
+	<string>${HELLO_IMGUI_BUNDLE_VERSION}</string>
+
 	<key>CFBundleVersion</key>
 	<string>${HELLO_IMGUI_BUNDLE_VERSION}</string>
+
+	<key>NSHumanReadableCopyright</key>
+	<string>${HELLO_IMGUI_BUNDLE_COPYRIGHT}</string>
 
 	<key>CFBundleIconFile</key>
 	<string>${HELLO_IMGUI_BUNDLE_ICON_FILE}</string>

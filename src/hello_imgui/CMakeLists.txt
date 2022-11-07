@@ -42,38 +42,10 @@ if (EMSCRIPTEN)
 endif()
 
 
-function(link_sdl_ios_manually_compiled target)
-    target_include_directories(${target} PUBLIC "${HELLOIMGUI_BASEPATH}/external/SDL/include/")
-
-    string(REGEX MATCH "SIMULATOR.*" is_simulator ${PLATFORM})
-    if (is_simulator)
-        set(sdl_lib_dir "${HELLOIMGUI_BASEPATH}/external/SDL/Xcode-iOS/SDL/build/Release-iphonesimulator")
-    else()
-        set(sdl_lib_dir "${HELLOIMGUI_BASEPATH}/external/SDL/Xcode-iOS/SDL/build/Release-iphoneos")
-    endif()
-
-    target_link_libraries(${target} PUBLIC ${sdl_lib_dir}/libSDL2.a)
-    target_link_libraries(${target} PUBLIC
-        "-framework Foundation"
-        "-framework AVFoundation"
-        "-framework AudioToolbox"
-        "-framework CoreBluetooth"
-        "-framework CoreGraphics"
-        "-framework CoreMedia"
-        "-framework CoreMotion"
-        "-framework CoreVideo"
-        "-framework GameController"
-        "-framework Metal"
-        "-framework OpenGLES"
-        "-framework UIKit"
-        "-framework QuartzCore"
-        )
-endfunction()
-
-
 function(link_sdl target)
     if (IOS)
-        link_sdl_ios_manually_compiled(${target})
+        target_link_libraries(${target} PUBLIC SDL2-static SDL2main)
+        target_link_libraries(${target} PUBLIC "-framework OpenGLES")
     elseif(EMSCRIPTEN)
         target_compile_options(${target} PUBLIC -s USE_SDL=2)
         target_link_options(${target} INTERFACE -s USE_SDL=2)
@@ -187,6 +159,8 @@ endif()
 
 
 # install
-install(TARGETS ${target_name} DESTINATION ./lib/)
-file(GLOB headers *.h)
-install(FILES ${headers} DESTINATION ./include/hello_imgui/)
+if (NOT IOS AND NOT ANDROID)
+    install(TARGETS ${target_name} DESTINATION ./lib/)
+    file(GLOB headers *.h)
+    install(FILES ${headers} DESTINATION ./include/hello_imgui/)
+endif()

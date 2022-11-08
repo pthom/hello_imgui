@@ -2,8 +2,11 @@
 namespace HelloImGui {
 
 class _ <free functions> {
+    ----
     + void Run(RunnerParams &)
     + void Run(VoidFunction gui, windowSize, title)
+    + void Run_AutoSize(
+        guiFunction, windowTitle, restoreLastWindowGeometry = true)
 }
 
 _ --> RunnerParams: uses

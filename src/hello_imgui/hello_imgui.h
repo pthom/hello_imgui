@@ -12,7 +12,7 @@
 
 __HelloImGui::Run()__ will run an application with a single call.
 
-Two signatures are provided:
+Three signatures are provided:
 
 * `HelloImGui::Run(RunnerParams &)`: full signature, the most customizable version.
    Runs an application whose params and Gui are provided

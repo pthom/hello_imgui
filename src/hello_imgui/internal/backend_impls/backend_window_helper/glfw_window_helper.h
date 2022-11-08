@@ -22,6 +22,8 @@ namespace HelloImGui { namespace BackendApi
         void SetWindowBounds(WindowPointer window, ScreenBounds windowBounds) override;
 
         void WaitForEventTimeout(double timeout_seconds) override;
+
+        virtual float GetWindowDpiScaleFactor(WindowPointer window) override;
     };
 }} // namespace HelloImGui { namespace BackendApi
 

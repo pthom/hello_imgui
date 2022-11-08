@@ -115,6 +115,17 @@ void AbstractRunner::Setup()
     ImGui::CreateContext();
 #endif
 
+    // High DPI handling on windows & linux
+    // cf https://github.com/pthom/imgui_bundle/issues/7
+    {
+        float scaleFactor = mBackendWindowHelper->GetWindowDpiScaleFactor(mWindow);
+        if (scaleFactor > 1.f)
+        {
+            ImGuiStyle& style = ImGui::GetStyle();
+            style.ScaleAllSizes(scaleFactor);
+        }
+    }
+
     Impl_SetupImgGuiContext();
     params.callbacks.SetupImGuiConfig();
     if (params.imGuiWindowParams.enableViewports)

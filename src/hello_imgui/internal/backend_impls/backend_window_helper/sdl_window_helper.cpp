@@ -171,6 +171,11 @@ namespace HelloImGui { namespace BackendApi
         SDL_WaitEventTimeout(NULL, timeout_ms);
     }
 
+    float SdlWindowHelper::GetWindowDpiScaleFactor(WindowPointer window)
+    {
+        return 1.f;
+    }
+
     }} // namespace HelloImGui { namespace BackendApi
 
 #endif // #ifdef HELLOIMGUI_USE_SDL

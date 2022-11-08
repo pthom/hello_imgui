@@ -83,6 +83,12 @@ namespace HelloImGui { namespace BackendApi
         else
             glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
+
+        // GLFW_SCALE_TO_MONITOR specified whether the window content area should be resized based on the monitor content scale
+        // of any monitor it is placed on. This includes the initial placement when the window is created
+        // See https://github.com/pthom/imgui_bundle/issues/7
+        glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+
         auto window = glfwCreateWindow(
             windowSize[0], windowSize[1],
             info.windowTitle.c_str(),
@@ -176,6 +182,16 @@ namespace HelloImGui { namespace BackendApi
     void GlfwWindowHelper::WaitForEventTimeout(double timeout_seconds)
     {
         glfwWaitEventsTimeout(timeout_seconds);
+    }
+
+    float GlfwWindowHelper::GetWindowDpiScaleFactor(WindowPointer window)
+    {
+        float xscale, yscale;
+        glfwGetWindowContentScale((GLFWwindow *) window, &xscale, &yscale);
+        if (xscale > yscale)
+            return xscale;
+        else
+            return yscale;
     }
 }} // namespace HelloImGui { namespace BackendApi
 #endif // #ifdef HELLOIMGUI_USE_GLFW

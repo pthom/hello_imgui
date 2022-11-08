@@ -186,12 +186,16 @@ namespace HelloImGui { namespace BackendApi
 
     float GlfwWindowHelper::GetWindowDpiScaleFactor(WindowPointer window)
     {
+#ifdef __APPLE__
+        return 1.f;
+#else
         float xscale, yscale;
         glfwGetWindowContentScale((GLFWwindow *) window, &xscale, &yscale);
         if (xscale > yscale)
             return xscale;
         else
             return yscale;
+#endif
     }
 }} // namespace HelloImGui { namespace BackendApi
 #endif // #ifdef HELLOIMGUI_USE_GLFW

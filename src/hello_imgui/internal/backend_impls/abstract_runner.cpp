@@ -42,7 +42,7 @@ void AbstractRunner::Run()
             mGeometryHelper->WriteLastRunWindowBounds(mBackendWindowHelper->GetWindowBounds(mWindow));
         TearDown();
     }
-    catch(std::exception& e)
+    catch(std::exception&)
     {
         // Late handling of user exceptions: TearDown backend and rethrow
         TearDown();
@@ -143,6 +143,7 @@ void AbstractRunner::Setup()
 
     if (params.callbacks.PostInit)
         params.callbacks.PostInit();
+
 }
 
 void AbstractRunner::RenderGui(int idxFrame)

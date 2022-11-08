@@ -46,11 +46,11 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 #ifdef __EMSCRIPTEN__
         return FactorRunnerEmscripten(params);
 #endif
-#ifdef HELLOIMGUI_USE_SDL_OPENGL3
-        return FactorRunnerSdlOpenGl3(params);
-#endif
 #ifdef HELLOIMGUI_USE_GLFW_OPENGL3
         return FactorRunnerGlfwOpenGl3(params);
+#endif
+#ifdef HELLOIMGUI_USE_SDL_OPENGL3
+        return FactorRunnerSdlOpenGl3(params);
 #endif
 #ifdef HELLOIMGUI_USE_QT
         return FactorRunnerQt(params);

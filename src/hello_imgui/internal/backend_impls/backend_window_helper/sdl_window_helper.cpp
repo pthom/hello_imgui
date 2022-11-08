@@ -6,24 +6,24 @@
 
 namespace HelloImGui { namespace BackendApi
 {
-    WindowPointer SdlWindowHelper::CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions)
+    WindowPointer SdlWindowHelper::CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions)
     {
-        auto searchMonitorResult = SearchForMonitor(GetMonitorsWorkAreas(), info.windowGeometry);
+        auto searchMonitorResult = SearchForMonitor(GetMonitorsWorkAreas(), appWindowParams);
         int realMonitorIdx = searchMonitorResult.monitorIdx;
         if (searchMonitorResult.newPosition.has_value())
-            info.windowGeometry.position = searchMonitorResult.newPosition.value();
+            appWindowParams.windowGeometry.position = searchMonitorResult.newPosition.value();
 
         int window_flags = 0;
 
         auto monitorsWorksAreas = GetMonitorsWorkAreas();
         assert((realMonitorIdx >= 0) && (realMonitorIdx < monitorsWorksAreas.size()));
 
-        ScreenSize& windowSize = info.windowGeometry.size;
-        ScreenPosition & windowPosition = info.windowGeometry.position;
-        WindowPositionMode positionMode = info.windowGeometry.positionMode;
+        ScreenSize& windowSize = appWindowParams.windowGeometry.size;
+        ScreenPosition & windowPosition = appWindowParams.windowGeometry.position;
+        WindowPositionMode positionMode = appWindowParams.windowGeometry.positionMode;
 
         // Reduce size if too big compared to the monitor
-        if (! info.windowGeometry.sizeAuto)
+        if (! appWindowParams.windowGeometry.sizeAuto)
         {
             auto workArea = monitorsWorksAreas[realMonitorIdx];
             ForDim2(dim)
@@ -31,7 +31,7 @@ namespace HelloImGui { namespace BackendApi
                     windowSize[dim] = workArea.size[dim];
         }
 
-        auto fullScreenMode = info.windowGeometry.fullScreenMode;
+        auto fullScreenMode = appWindowParams.windowGeometry.fullScreenMode;
 
         int window_pos_sdl[2];
         ForDim2(dim)
@@ -50,11 +50,11 @@ namespace HelloImGui { namespace BackendApi
 
         if (fullScreenMode == FullScreenMode::FullMonitorWorkArea)
         {
-            auto monitorBounds = monitorsWorksAreas[info.windowGeometry.monitorIdx];
+            auto monitorBounds = monitorsWorksAreas[appWindowParams.windowGeometry.monitorIdx];
             windowSize = monitorBounds.size;
-            info.windowGeometry.position = monitorBounds.position;
-            window_pos_sdl[0] = info.windowGeometry.position[0];
-            window_pos_sdl[1] = info.windowGeometry.position[1];
+            appWindowParams.windowGeometry.position = monitorBounds.position;
+            window_pos_sdl[0] = appWindowParams.windowGeometry.position[0];
+            window_pos_sdl[1] = appWindowParams.windowGeometry.position[1];
         }
         else if (fullScreenMode == FullScreenMode::FullScreen)
             window_flags |= SDL_WINDOW_FULLSCREEN;
@@ -84,20 +84,20 @@ namespace HelloImGui { namespace BackendApi
         if (backendOptions.allowHighDpi)
             window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
-        if (info.borderless)
+        if (appWindowParams.borderless)
             window_flags |= SDL_WINDOW_BORDERLESS;
 
-        if (info.resizable)
+        if (appWindowParams.resizable)
             window_flags |= SDL_WINDOW_RESIZABLE;
 
-        if (info.windowGeometry.windowSizeState == WindowSizeState::Standard)
+        if (appWindowParams.windowGeometry.windowSizeState == WindowSizeState::Standard)
             {}
-        else if (info.windowGeometry.windowSizeState == WindowSizeState::Minimized)
+        else if (appWindowParams.windowGeometry.windowSizeState == WindowSizeState::Minimized)
             window_flags |= SDL_WINDOW_MINIMIZED;
-        else if (info.windowGeometry.windowSizeState == WindowSizeState::Maximized)
+        else if (appWindowParams.windowGeometry.windowSizeState == WindowSizeState::Maximized)
             window_flags |= SDL_WINDOW_MAXIMIZED;
 
-        auto window = SDL_CreateWindow(info.windowTitle.c_str(),
+        auto window = SDL_CreateWindow(appWindowParams.windowTitle.c_str(),
                                        window_pos_sdl[0], window_pos_sdl[1],
                                        windowSize[0], windowSize[1],
                                        window_flags);

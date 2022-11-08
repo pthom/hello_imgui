@@ -11,25 +11,25 @@ namespace HelloImGui { namespace BackendApi
         fprintf(stderr, "Glfw Error %d: %s\n", error, description);
     }
 
-    WindowPointer GlfwWindowHelper::CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions)
+    WindowPointer GlfwWindowHelper::CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions)
     {
-        auto searchMonitorResult = SearchForMonitor(GetMonitorsWorkAreas(), info.windowGeometry);
+        auto searchMonitorResult = SearchForMonitor(GetMonitorsWorkAreas(), appWindowParams);
         int realMonitorIdx = searchMonitorResult.monitorIdx;
         if (searchMonitorResult.newPosition.has_value())
-            info.windowGeometry.position = searchMonitorResult.newPosition.value();
+            appWindowParams.windowGeometry.position = searchMonitorResult.newPosition.value();
 
 
         GLFWwindow *noWindowSharedResources = nullptr;
         GLFWmonitor *monitor = nullptr;
 
-        auto fullScreenMode = info.windowGeometry.fullScreenMode;
-        auto &windowSize = info.windowGeometry.size;
-        ScreenPosition & windowPosition = info.windowGeometry.position;
+        auto fullScreenMode = appWindowParams.windowGeometry.fullScreenMode;
+        auto &windowSize = appWindowParams.windowGeometry.size;
+        ScreenPosition & windowPosition = appWindowParams.windowGeometry.position;
 
         auto monitorsWorkAreas = GetMonitorsWorkAreas();
 
         // Reduce size if too big compared to the monitor
-        if (! info.windowGeometry.sizeAuto)
+        if (! appWindowParams.windowGeometry.sizeAuto)
         {
             auto workArea = monitorsWorkAreas[realMonitorIdx];
             ForDim2(dim)
@@ -39,9 +39,9 @@ namespace HelloImGui { namespace BackendApi
 
         if (fullScreenMode == FullScreenMode::FullMonitorWorkArea)
         {
-            auto monitorBounds = monitorsWorkAreas[info.windowGeometry.monitorIdx];
+            auto monitorBounds = monitorsWorkAreas[appWindowParams.windowGeometry.monitorIdx];
             windowSize = monitorBounds.size;
-            info.windowGeometry.position = monitorBounds.position;
+            appWindowParams.windowGeometry.position = monitorBounds.position;
         }
         else if (fullScreenMode == FullScreenMode::FullScreenDesktopResolution)
         {
@@ -73,12 +73,12 @@ namespace HelloImGui { namespace BackendApi
 
         // info.allowHighDpi: not handled
 
-        if (info.borderless)
+        if (appWindowParams.borderless)
             glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         else
             glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
 
-        if (info.resizable)
+        if (appWindowParams.resizable)
             glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         else
             glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -91,20 +91,20 @@ namespace HelloImGui { namespace BackendApi
 
         auto window = glfwCreateWindow(
             windowSize[0], windowSize[1],
-            info.windowTitle.c_str(),
+            appWindowParams.windowTitle.c_str(),
             monitor,  // monitor
             noWindowSharedResources
         );
         if (window == nullptr)
             BACKEND_THROW("BackendGlfw::CreateWindow / glfwCreateWindow failed");
 
-        if (info.windowGeometry.windowSizeState == WindowSizeState::Minimized)
+        if (appWindowParams.windowGeometry.windowSizeState == WindowSizeState::Minimized)
             glfwIconifyWindow(window);
-        else if (info.windowGeometry.windowSizeState == WindowSizeState::Maximized)
+        else if (appWindowParams.windowGeometry.windowSizeState == WindowSizeState::Maximized)
             glfwMaximizeWindow(window);
 
 
-        WindowPositionMode positionMode = info.windowGeometry.positionMode;
+        WindowPositionMode positionMode = appWindowParams.windowGeometry.positionMode;
         if ( (positionMode == WindowPositionMode::FromCoords) || (fullScreenMode == FullScreenMode::FullMonitorWorkArea))
         {
             glfwSetWindowPos(window, windowPosition[0], windowPosition[1]);

@@ -32,6 +32,6 @@ namespace HelloImGui
         int monitorIdx;
         std::optional<ScreenPosition> newPosition;
     };
-    SearchForMonitorResult SearchForMonitor(const std::vector<ScreenBounds>& monitorsWorkAreas, const WindowGeometry& geometry);
+    SearchForMonitorResult SearchForMonitor(const std::vector<ScreenBounds>& monitorsWorkAreas, const AppWindowParams& appWindowParams);
 
 }

@@ -208,16 +208,20 @@ namespace HelloImGui
 
 
     SearchForMonitorResult SearchForMonitor(
-        const std::vector<ScreenBounds>& monitorsWorkAreas, const WindowGeometry& geometry)
+        const std::vector<ScreenBounds>& monitorsWorkAreas, const AppWindowParams& appWindowParams)
     {
         SearchForMonitorResult r;
+
+        const auto& geometry = appWindowParams.windowGeometry;
+
+        bool isAnyFullScreen = (geometry.fullScreenMode != HelloImGui::FullScreenMode::NoFullScreen);
 
         //
         // Search for corresponding monitor
         // - Will set r.monitorIdx
         // - May set r.newPosition if out of bounds
         //
-        if (geometry.positionMode != WindowPositionMode::FromCoords)
+        if (isAnyFullScreen || (geometry.positionMode != WindowPositionMode::FromCoords))
         {
             r.monitorIdx = geometry.monitorIdx;
             assert((r.monitorIdx >= 0) && (r.monitorIdx < monitorsWorkAreas.size()));

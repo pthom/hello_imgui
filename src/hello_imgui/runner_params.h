@@ -40,9 +40,14 @@ enum class BackendType
    will be set to true by the app when exiting.
    _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
    shall not exit._
-* `fps`: _int, default = 0` when applicable, set the application refresh rate
-   (only used on emscripten for the moment: 0 stands for "let the app or the browser decide")
-
+* `fpsIdle`: _float, default=4`
+  ImGui applications can consume a lot of CPU, since they update the screen very frequently.
+  In order to reduce the CPU usage, the FPS is reduced when no user interaction is detected.
+  This is ok most of the time but if you are displaying animated widgets (for example a live video),
+  you may want to ask for a faster refresh: either increase fpsIdle, or set it to 0 for maximum refresh speed.
+  (you can change this value during the execution depending on your application refresh needs)
+* `emscripten_fps`: _int, default = 0` set the application refresh rate
+   (only used on emscripten: 0 stands for "let the app or the browser decide")
 @@md
  */
 struct RunnerParams
@@ -54,6 +59,9 @@ struct RunnerParams
     BackendPointers backendPointers;
     BackendType backendType = BackendType::FirstAvailable;
     bool appShallExit = false;
+
+    float fpsIdle = 4.f;
+
     int emscripten_fps = 0;
 };
 

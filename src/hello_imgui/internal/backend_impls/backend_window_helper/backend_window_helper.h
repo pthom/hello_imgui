@@ -65,6 +65,8 @@ namespace HelloImGui { namespace BackendApi
 
         virtual void SetWindowBounds(WindowPointer window, ScreenBounds windowBounds) = 0;
 
+        virtual void WaitForEventTimeout(double timeout_seconds) = 0;
+
         // Screenshot!
     };
 }} // namespace HelloImGui { namespace BackendApi

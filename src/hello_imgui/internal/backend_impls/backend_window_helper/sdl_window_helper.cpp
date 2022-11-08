@@ -165,6 +165,12 @@ namespace HelloImGui { namespace BackendApi
         SDL_SetWindowPosition(sdlWindow, windowBounds.position[0], windowBounds.position[1]);
     }
 
-}} // namespace HelloImGui { namespace BackendApi
+    void SdlWindowHelper::WaitForEventTimeout(double timeout_seconds)
+    {
+        int timeout_ms = (int)(timeout_seconds * 1000.);
+        SDL_WaitEventTimeout(NULL, timeout_ms);
+    }
+
+    }} // namespace HelloImGui { namespace BackendApi
 
 #endif // #ifdef HELLOIMGUI_USE_SDL

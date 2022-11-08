@@ -23,6 +23,7 @@ class RunnerParams <struct> {
     + BackendPointers backendPointers
     + BackendType backendType = FirstAvailable
     + bool appShallExit = false
+    + float fpsIdle = 4
 }
 
 class RunnerCallbacks <struct> {

@@ -172,5 +172,10 @@ namespace HelloImGui { namespace BackendApi
         glfwSetWindowPos(glfwWindow, windowBounds.position[0], windowBounds.position[1]);
         glfwSetWindowSize(glfwWindow, windowBounds.size[0], windowBounds.size[1]);
     }
+
+    void GlfwWindowHelper::WaitForEventTimeout(double timeout_seconds)
+    {
+        glfwWaitEventsTimeout(timeout_seconds);
+    }
 }} // namespace HelloImGui { namespace BackendApi
 #endif // #ifdef HELLOIMGUI_USE_GLFW

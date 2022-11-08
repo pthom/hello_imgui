@@ -30,6 +30,8 @@ namespace HelloImGui { namespace BackendApi
 
         ScreenBounds GetWindowBounds(WindowPointer window) override;
         void SetWindowBounds(WindowPointer window, ScreenBounds windowBounds) override;
+
+        void WaitForEventTimeout(double timeout_seconds) override;
     };
 }} // namespace HelloImGui { namespace BackendApi
 

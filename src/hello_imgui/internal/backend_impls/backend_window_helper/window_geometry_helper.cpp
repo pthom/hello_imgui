@@ -122,10 +122,10 @@ namespace HelloImGui
         {
             if (realWindowSizeAfterAutoSize.has_value())
                 return realWindowSizeAfterAutoSize.value();
-            if (!mGeometry.sizeAuto)
-                return mGeometry.size;
             if (mRestoreLast && windowBoundsLastRun.has_value())
                 return windowBoundsLastRun->size;
+            if (!mGeometry.sizeAuto)
+                return mGeometry.size;
 
             return ScreenSize{150, 150};
         };

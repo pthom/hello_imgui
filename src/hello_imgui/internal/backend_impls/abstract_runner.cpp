@@ -22,7 +22,9 @@ void AbstractRunner::Run()
     int frameIdx = 0;
 #ifdef HELLOIMGUI_MOBILEDEVICE
     while (true)
+    {
         CreateFramesAndRender(frameIdx);
+    }
 #else
     try
     {
@@ -33,6 +35,7 @@ void AbstractRunner::Run()
                 ForceWindowPositionOrSize();
 
             CreateFramesAndRender(frameIdx);
+
             frameIdx += 1;
         }
         if (params.appWindowParams.restorePreviousGeometry)
@@ -160,6 +163,13 @@ void AbstractRunner::RenderGui(int idxFrame)
 
 void AbstractRunner::CreateFramesAndRender(int idxFrame)
 {
+    assert(params.fpsIdle >= 0.f);
+    if (params.fpsIdle > 0.f)
+    {
+        double waitTimeout = 1. / (double) params.fpsIdle;
+        mBackendWindowHelper->WaitForEventTimeout(waitTimeout);
+    }
+
     if (Impl_PollEvents())
         params.appShallExit = true;
 

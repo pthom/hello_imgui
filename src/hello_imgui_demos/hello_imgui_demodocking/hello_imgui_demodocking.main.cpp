@@ -137,6 +137,8 @@ int main(int, char **)
     HelloImGui::RunnerParams runnerParams;
 
     runnerParams.appWindowParams.windowTitle = "Docking demo";
+    runnerParams.appWindowParams.windowGeometry.size = {800, 600};
+    runnerParams.appWindowParams.restorePreviousGeometry = true;
 
     //
     // Status bar

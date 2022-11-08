@@ -56,7 +56,7 @@ enum class WindowPositionMode
 struct WindowGeometry
 {
     // used if fullScreenMode==NoFullScreen and sizeAuto==false
-    ScreenSize size = ScreenSize{100, 100};
+    ScreenSize size = ScreenSize{800, 600};
 
     // If true, adapt the app window size to the presented widgets
     bool sizeAuto = false;

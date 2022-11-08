@@ -37,17 +37,17 @@ enum class BackendType
   Select the wanted backend type between `Sdl`, `Glfw` and `Qt`. Only useful when multiple backend are compiled
   and available.
 * `appShallExit`: _bool, default=false_.
-   will be set to true by the app when exiting.
+   Will be set to true by the app when exiting.
    _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
    shall not exit._
-* `fpsIdle`: _float, default=4`
+* `fpsIdle`: _float, default=4_.
   ImGui applications can consume a lot of CPU, since they update the screen very frequently.
   In order to reduce the CPU usage, the FPS is reduced when no user interaction is detected.
   This is ok most of the time but if you are displaying animated widgets (for example a live video),
-  you may want to ask for a faster refresh: either increase fpsIdle, or set it to 0 for maximum refresh speed.
+  you may want to ask for a faster refresh: either increase fpsIdle, or set it to 0 for maximum refresh speed
   (you can change this value during the execution depending on your application refresh needs)
-* `emscripten_fps`: _int, default = 0` set the application refresh rate
-   (only used on emscripten: 0 stands for "let the app or the browser decide")
+* `emscripten_fps`: _int, default = 0_.
+  Set the application refresh rate (only used on emscripten: 0 stands for "let the app or the browser decide")
 @@md
  */
 struct RunnerParams

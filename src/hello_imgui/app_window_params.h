@@ -3,27 +3,6 @@
 #include "hello_imgui/screen_bounds.h"
 #include <string>
 
-/**
-@@md#AppWindowParams
-
-__AppWindowParams__ is a struct that defines the application window display params.
-See [doc_src/hello_imgui_diagram.png](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png)
-for details.
-
-Members:
-* `windowTitle`: _string, default=""_. Title of the application window
-* `windowGeometry`: _WindowGeometry_
-  Enables to precisely set the window geometry (position, monitor, size, full screen, fake full screen, etc.)
-   _Note: on a mobile device, the application will always be full screen._
-* `restorePreviousGeometry`: _bool, default=false_.
-  If true, then save & restore windowGeometry from last run
-
-* `borderless`: _bool, default = false_.
-* `resizable`: _bool, default = false_.
-* `windowSizeState`: _WindowSizeState, default = Standard_ (minimized, maximized or standard)
-
-@@md
-**/
 
 
 namespace HelloImGui
@@ -53,6 +32,42 @@ enum class WindowPositionMode
 };
 
 
+/**
+@@md#WindowGeometry
+
+__WindowGeometry__ is a struct that defines the window geometry.
+
+Members:
+* `size`: _int[2], default="{800, 600}"_. Size of the application window
+  used if fullScreenMode==NoFullScreen and sizeAuto==false
+* `sizeAuto`: _bool, default=false_
+  If true, adapt the app window size to the presented widgets
+* `fullScreenMode`: _FullScreenMode, default=NoFullScreen_.
+   You can choose between several full screen modes:
+   ````cpp
+        NoFullScreen,
+        FullScreen,                    // Full screen with specified resolution
+        FullScreenDesktopResolution,   // Full screen with current desktop mode & resolution
+        FullMonitorWorkArea            // Fake full screen, maximized window on the selected monitor
+    ````
+* `positionMode`: _WindowPositionMode, default = OsDefault_.
+   You can choose between several window position modes:
+   ````cpp
+        OsDefault,
+        MonitorCenter,
+        FromCoords,
+    ````
+* `monitorIdx`: _int, default = 0_.
+  used if positionMode==MonitorCenter or if fullScreenMode!=NoFullScreen
+* `windowSizeState`: _WindowSizeState, default=Standard_
+   You can choose between several window size states:
+   ````cpp
+        Standard,
+        Minimized,
+        Maximized
+    ````
+@@md
+**/
 struct WindowGeometry
 {
     // used if fullScreenMode==NoFullScreen and sizeAuto==false
@@ -75,6 +90,26 @@ struct WindowGeometry
 };
 
 
+/**
+@@md#AppWindowParams
+
+__AppWindowParams__ is a struct that defines the application window display params.
+See [doc_src/hello_imgui_diagram.png](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png)
+for details.
+
+Members:
+* `windowTitle`: _string, default=""_. Title of the application window
+* `windowGeometry`: _WindowGeometry_
+  Enables to precisely set the window geometry (position, monitor, size, full screen, fake full screen, etc.)
+   _Note: on a mobile device, the application will always be full screen._
+* `restorePreviousGeometry`: _bool, default=false_.
+  If true, then save & restore windowGeometry from last run (the geometry will be written in imgui_app_window.ini)
+
+* `borderless`: _bool, default = false_.
+* `resizable`: _bool, default = false_.
+
+@@md
+**/
 struct AppWindowParams
 {
     std::string windowTitle;

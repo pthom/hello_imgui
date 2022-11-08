@@ -113,12 +113,14 @@ __Table of contents__
 # Features
 
 * Truly multiplatform (including mobile platforms)
-* Setup a project with 2 CMake lines
+* Set up a project with 2 CMake lines
+* Power Save mode: reduce FPS when application is idle
+* Precise window geometry handling: autosize app window, select monitor, fullscreen, save & restore window position and size
+* Easy docking setup, with a "View" menu with options in order to show/hide the dockable windows, and to restore the default layout.
 * Embed assets with no code (on all platforms)
 * Mobile apps specific callbacks (OnPause, OnResume, OnLowMemory), and customization (icon, embedded files, etc)
 * Additional widgets: status bar, log widget
-* Zoom (especialy useful for mobile devices)
-* Easy docking setup, with a "View" menu with options in order to show/hide the dockable windows, and to restore the default layout. 
+* Zoom (especially useful for mobile devices)
 
 ![demo docking](docs/images/docking.gif)
 

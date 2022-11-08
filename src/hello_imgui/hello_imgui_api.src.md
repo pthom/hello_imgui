@@ -45,7 +45,13 @@ See [runner_callbacks.h](runner_callbacks.h).
 
 See [app_window_params.h](app_window_params.h).
 
+### AppWindowParams
+
 @import "app_window_params.h" {md_id=AppWindowParams}
+
+### WindowGeometry
+
+@import "app_window_params.h" {md_id=WindowGeometry}
 
 ----
 

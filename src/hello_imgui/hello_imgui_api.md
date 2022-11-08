@@ -9,6 +9,8 @@
       * [RunnerCallbacks](#runnercallbacks)
       * [MobileCallbacks](#mobilecallbacks)
   * [Application window params](#application-window-params)
+    * [AppWindowParams](#appwindowparams)
+    * [WindowGeometry](#windowgeometry)
   * [ImGui window params](#imgui-window-params)
       * [ImGuiWindowParams](#imguiwindowparams)
       * [Default window types](#default-window-types)
@@ -79,17 +81,17 @@ The diagram below summarize all the possible settings and callbacks (which are e
   Select the wanted backend type between `Sdl`, `Glfw` and `Qt`. Only useful when multiple backend are compiled
   and available.
 * `appShallExit`: _bool, default=false_.
-   will be set to true by the app when exiting.
+   Will be set to true by the app when exiting.
    _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
    shall not exit._
-* `fpsIdle`: _float, default=4`
+* `fpsIdle`: _float, default=4_.
   ImGui applications can consume a lot of CPU, since they update the screen very frequently.
   In order to reduce the CPU usage, the FPS is reduced when no user interaction is detected.
   This is ok most of the time but if you are displaying animated widgets (for example a live video),
-  you may want to ask for a faster refresh: either increase fpsIdle, or set it to 0 for maximum refresh speed.
+  you may want to ask for a faster refresh: either increase fpsIdle, or set it to 0 for maximum refresh speed
   (you can change this value during the execution depending on your application refresh needs)
-* `emscripten_fps`: _int, default = 0` set the application refresh rate
-   (only used on emscripten: 0 stands for "let the app or the browser decide")
+* `emscripten_fps`: _int, default = 0_.
+  Set the application refresh rate (only used on emscripten: 0 stands for "let the app or the browser decide")
 
 ----
 
@@ -191,6 +193,8 @@ using AnyEventCallback = std::function<bool(void * backendEvent)>
 
 See [app_window_params.h](app_window_params.h).
 
+### AppWindowParams
+
 
 __AppWindowParams__ is a struct that defines the application window display params.
 See [doc_src/hello_imgui_diagram.png](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png)
@@ -202,12 +206,46 @@ Members:
   Enables to precisely set the window geometry (position, monitor, size, full screen, fake full screen, etc.)
    _Note: on a mobile device, the application will always be full screen._
 * `restorePreviousGeometry`: _bool, default=false_.
-  If true, then save & restore windowGeometry from last run
+  If true, then save & restore windowGeometry from last run (the geometry will be written in imgui_app_window.ini)
 
 * `borderless`: _bool, default = false_.
 * `resizable`: _bool, default = false_.
-* `windowSizeState`: _WindowSizeState, default = Standard_ (minimized, maximized or standard)
 
+
+### WindowGeometry
+
+
+__WindowGeometry__ is a struct that defines the window geometry.
+
+Members:
+* `size`: _int[2], default="{800, 600}"_. Size of the application window
+  used if fullScreenMode==NoFullScreen and sizeAuto==false
+* `sizeAuto`: _bool, default=false_
+  If true, adapt the app window size to the presented widgets
+* `fullScreenMode`: _FullScreenMode, default=NoFullScreen_.
+   You can choose between several full screen modes:
+   ````cpp
+        NoFullScreen,
+        FullScreen,                    // Full screen with specified resolution
+        FullScreenDesktopResolution,   // Full screen with current desktop mode & resolution
+        FullMonitorWorkArea            // Fake full screen, maximized window on the selected monitor
+    ````
+* `positionMode`: _WindowPositionMode, default = OsDefault_.
+   You can choose between several window position modes:
+   ````cpp
+        OsDefault,
+        MonitorCenter,
+        FromCoords,
+    ````
+* `monitorIdx`: _int, default = 0_.
+  used if positionMode==MonitorCenter or if fullScreenMode!=NoFullScreen
+* `windowSizeState`: _WindowSizeState, default=Standard_
+   You can choose between several window size states:
+   ````cpp
+        Standard,
+        Minimized,
+        Maximized
+    ````
 
 ----
 

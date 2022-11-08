@@ -22,7 +22,7 @@ void AbstractRunner::Run()
     int frameIdx = 0;
 #ifdef HELLOIMGUI_MOBILEDEVICE
     while (true)
-        CreateFramesAndRender();
+        CreateFramesAndRender(frameIdx);
 #else
     try
     {

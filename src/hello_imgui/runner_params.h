@@ -54,7 +54,7 @@ struct RunnerParams
     BackendPointers backendPointers;
     BackendType backendType = BackendType::FirstAvailable;
     bool appShallExit = false;
-    int fps = 0;
+    int emscripten_fps = 0;
 };
 
 }  // namespace HelloImGui

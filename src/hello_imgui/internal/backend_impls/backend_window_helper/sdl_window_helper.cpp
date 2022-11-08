@@ -173,6 +173,8 @@ namespace HelloImGui { namespace BackendApi
 
     float SdlWindowHelper::GetWindowDpiScaleFactor(WindowPointer window)
     {
+        // SDL does not support HighDPI
+        // See https://github.com/libsdl-org/SDL/issues/2119
         return 1.f;
     }
 

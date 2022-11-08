@@ -18,11 +18,13 @@ Three signatures are provided:
    Runs an application whose params and Gui are provided
 by runnerParams.
 
-* `HelloImGui::Run(guiFunction, windowSize, windowTitle)`: signature in order to start a simple application with ease.
+* `HelloImGui::Run(guiFunction, windowSize, windowTitle, fpsIdle=4)`: signature in order to start a simple application with ease.
+  `fpsIdle` enables to set the app FPS when it is idle (set it to 0 for maximum FPS).
 
-* `HelloImGui::Run_AutoSize(guiFunction, windowTitle, restoreLastWindowGeometry = true)`: signature
+* `HelloImGui::Run_AutoSize(guiFunction, windowTitle, restoreLastWindowGeometry = true, fpsIdle=4)`: signature
 in order to start a simple application, where the window size can be set automatically from the widgets,
- and where the previous position size & position can be restored upon next launch.
+ and where the previous position size & position can be restored upon next launch. `fpsIdle` enables to set
+ the app FPS when it is idle (set it to 0 for maximum FPS).
 
 __HelloImGui::GetRunnerParams()__ is a convenience function that will return
 the runnerParams of the current application.
@@ -35,13 +37,15 @@ namespace HelloImGui
 
     void Run(VoidFunction guiFunction,
         ImVec2 windowSize = ImVec2(800.f, 600.f),
-        std::string windowTitle = ""
+        std::string windowTitle = "",
+        float fpsIdle = 4.f
         );
 
     void Run_AutoSize(VoidFunction guiFunction,
              std::string windowTitle = "",
              bool restoreLastWindowGeometry = true,
-             ImVec2 windowSize = ImVec2(0.f, 0.f)
+             ImVec2 windowSize = ImVec2(0.f, 0.f),
+             float fpsIdle = 4.f
              );
 
     RunnerParams* GetRunnerParams();

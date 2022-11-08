@@ -13,12 +13,13 @@ void Run(RunnerParams& runnerParams)
     runner->Run();
 }
 
-void Run(VoidFunction guiFunction, ImVec2 windowSize, std::string windowTitle)
+void Run(VoidFunction guiFunction, ImVec2 windowSize, std::string windowTitle, float fpsIdle)
 {
     RunnerParams runnerParams;
     runnerParams.callbacks.ShowGui = guiFunction;
     runnerParams.appWindowParams.windowGeometry.size = {(int)windowSize.x, (int)windowSize.y};
     runnerParams.appWindowParams.windowTitle = windowTitle;
+    runnerParams.fpsIdle = fpsIdle;
 
     gLastRunnerParams = &runnerParams;
     auto runner = FactorRunner(runnerParams);
@@ -29,7 +30,8 @@ void Run(VoidFunction guiFunction, ImVec2 windowSize, std::string windowTitle)
 void Run_AutoSize(VoidFunction guiFunction,
          std::string windowTitle,
          bool restoreLastWindowGeometry,
-         ImVec2 windowSize
+         ImVec2 windowSize,
+        float fpsIdle
 )
 {
     RunnerParams runnerParams;
@@ -43,6 +45,7 @@ void Run_AutoSize(VoidFunction guiFunction,
         runnerParams.appWindowParams.windowGeometry.sizeAuto = true;
 
     runnerParams.appWindowParams.restorePreviousGeometry = restoreLastWindowGeometry;
+    runnerParams.fpsIdle = fpsIdle;
 
     gLastRunnerParams = &runnerParams;
     auto runner = FactorRunner(runnerParams);

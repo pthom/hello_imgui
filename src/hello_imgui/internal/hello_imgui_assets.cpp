@@ -74,6 +74,15 @@ std::string assetFileFullPath(const std::string& assetFilename)
 #endif
 }
 
+void overrideAssetsFolder(const char* folder)
+{
+    gOverrideAssetsFolder = folder;
+}
+
+void setAssetsFolder(const char* folder)
+{
+    gOverrideAssetsFolder = folder;
+}
 
 
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
@@ -152,16 +161,6 @@ void FreeAssetFileData(AssetFileData * assetFileData)
 {
     free(assetFileData->data);
     assetFileData = nullptr;
-}
-
-void overrideAssetsFolder(const char* folder)
-{
-    gOverrideAssetsFolder = folder;
-}
-
-void setAssetsFolder(const char* folder)
-{
-    gOverrideAssetsFolder = folder;
 }
 
 #endif // #ifdef HELLOIMGUI_USE_SDL_OPENGL3

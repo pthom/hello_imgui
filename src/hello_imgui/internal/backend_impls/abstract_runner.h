@@ -65,7 +65,7 @@ private:
     void ForceWindowPositionOrSize();
 
 protected:
-    BackendApi::WindowPointer mWindow;
+    BackendApi::WindowPointer mWindow = nullptr;
     std::unique_ptr<BackendApi::IBackendWindowHelper> mBackendWindowHelper;
 private:
     std::unique_ptr<WindowGeometryHelper> mGeometryHelper;

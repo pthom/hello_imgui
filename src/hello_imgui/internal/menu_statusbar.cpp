@@ -59,7 +59,7 @@ void ShowMenu(RunnerParams & runnerParams)
 
 void ShowStatusBar(const RunnerParams & params)
 {
-    float statusWindowHeight = ImGui::GetFrameHeight() * 1.2;
+    float statusWindowHeight = ImGui::GetFrameHeight() * 1.2f;
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + viewport->Size.y - statusWindowHeight));
     ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, statusWindowHeight));

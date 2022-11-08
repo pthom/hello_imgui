@@ -8,9 +8,6 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_sdl.h>
 
-
-
-
 #include <SDL.h>
 #include <SDL_main.h>
 #include <sstream>
@@ -18,7 +15,6 @@
 namespace HelloImGui
 {
     BackendApi::OpenGlSetupSdl gOpenGlSetupSdl;
-    BackendApi::SdlWindowHelper gSdlWindowHelper;
 
 
     int HandleAppEvents(void *runnerSdlOpenGl3_void, SDL_Event *event)
@@ -28,6 +24,11 @@ namespace HelloImGui
             return 0;
         else
             return 1;
+    }
+
+    RunnerSdlOpenGl3::RunnerSdlOpenGl3(RunnerParams & runnerParams) : AbstractRunner(runnerParams)
+    {
+        mBackendWindowHelper = std::make_unique<BackendApi::SdlWindowHelper>();
     }
 
 
@@ -56,17 +57,17 @@ namespace HelloImGui
     {
         BackendApi::BackendOptions backendOptions;
 
-        mWindow = static_cast<SDL_Window*>(gSdlWindowHelper.CreateWindow(params.appWindowParams, backendOptions));
+        mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
         params.backendPointers.sdlWindow = mWindow;
     }
 
     void RunnerSdlOpenGl3::Impl_CreateGlContext()
     {
-        mGlContext = SDL_GL_CreateContext(mWindow);
+        mGlContext = SDL_GL_CreateContext((SDL_Window *)mWindow);
         if (!mGlContext)
         	HIMG_THROW("RunnerSdlOpenGl3::Impl_CreateGlContext(): Failed to initialize Gl context!");
 
-        SDL_GL_MakeCurrent(mWindow, mGlContext); // KK No
+        SDL_GL_MakeCurrent((SDL_Window *)mWindow, mGlContext); // KK No
         SDL_GL_SetSwapInterval(1);  // Enable vsync
         params.backendPointers.sdlGlContext = mGlContext;
     }
@@ -79,7 +80,7 @@ namespace HelloImGui
 
     void RunnerSdlOpenGl3::Impl_SetupPlatformRendererBindings()
     {
-        ImGui_ImplSDL2_InitForOpenGL(mWindow, mGlContext);
+        ImGui_ImplSDL2_InitForOpenGL((SDL_Window *)mWindow, mGlContext);
         ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
     }
 
@@ -98,7 +99,7 @@ namespace HelloImGui
             if (event.type == SDL_QUIT)
                 exitRequired = true;
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE &&
-                event.window.windowID == SDL_GetWindowID(mWindow))
+                event.window.windowID == SDL_GetWindowID((SDL_Window *)mWindow))
             {
                 exitRequired = true;
             }
@@ -137,11 +138,11 @@ namespace HelloImGui
         ImGui::DestroyContext();
 
         SDL_GL_DeleteContext(mGlContext);
-        SDL_DestroyWindow(mWindow);
+        SDL_DestroyWindow((SDL_Window *)mWindow);
         SDL_Quit();
     }
 
-    void RunnerSdlOpenGl3::Impl_SwapBuffers() { SDL_GL_SwapWindow(mWindow); }
+    void RunnerSdlOpenGl3::Impl_SwapBuffers() { SDL_GL_SwapWindow((SDL_Window *)mWindow); }
 
 
 

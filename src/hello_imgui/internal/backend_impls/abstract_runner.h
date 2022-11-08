@@ -1,5 +1,10 @@
 #pragma once
 #include "hello_imgui/runner_params.h"
+#include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
+#include "hello_imgui/internal/backend_impls/backend_window_helper/window_geometry_helper.h"
+#include "hello_imgui/internal/backend_impls/backend_window_helper/window_autosize_helper.h"
+
+#include <memory>
 
 namespace HelloImGui
 {
@@ -9,7 +14,7 @@ class AbstractRunner
 {
    public:
     /// Step 0: Construct a concrete Runner (for example RunnerSdlOpenGl3 or RunnerGlfwOpenGl3)
-    AbstractRunner(RunnerParams &params_) : params(params_) {};
+    AbstractRunner(RunnerParams &params_);
     virtual ~AbstractRunner() = default;
 
     RunnerParams & params;
@@ -19,8 +24,8 @@ class AbstractRunner
 
     /// Step 4.b: Or implement your own Run using Setup()/Render()/TearDown()
     void Setup();
-    void CreateFramesAndRender(); // Returns true when exit is required by the user
-    void RenderGui();
+    void CreateFramesAndRender(int idxFrame);
+    void RenderGui(int idxFrame);
     void TearDown();
 
    public:
@@ -55,8 +60,16 @@ class AbstractRunner
     virtual void Impl_SwapBuffers() = 0;
     virtual void Impl_Cleanup() = 0;
 
-    //   protected:
-    //    friend void emscripten_imgui_main_loop(void*);
+private:
+    void PrepareAutoSize();
+    void ForceWindowPositionOrSize();
+
+protected:
+    BackendApi::WindowPointer mWindow;
+    std::unique_ptr<BackendApi::IBackendWindowHelper> mBackendWindowHelper;
+private:
+    std::unique_ptr<WindowGeometryHelper> mGeometryHelper;
+    std::unique_ptr<WindowAutoSizeHelper> mAutoSizeHelper;
 };
 
 }  // namespace HelloImGui

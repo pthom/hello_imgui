@@ -10,7 +10,7 @@ namespace HelloImGui
 class RunnerGlfwOpenGl3 : public AbstractRunner
 {
        public:
-        RunnerGlfwOpenGl3(RunnerParams & runnerParams) : AbstractRunner(runnerParams) {}
+        RunnerGlfwOpenGl3(RunnerParams & runnerParams);
         virtual ~RunnerGlfwOpenGl3() = default;
 
        protected:
@@ -30,9 +30,6 @@ class RunnerGlfwOpenGl3 : public AbstractRunner
         void Impl_UpdateAndRenderAdditionalPlatformWindows() override;
         void Impl_Cleanup() override;
         void Impl_SwapBuffers() override;
-
-    private:
-        GLFWwindow* mWindow = nullptr;
     };
 
 }  // namespace HelloImGui

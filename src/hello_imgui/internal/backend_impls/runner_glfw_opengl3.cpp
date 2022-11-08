@@ -16,13 +16,18 @@
 
 namespace HelloImGui
 {
-    BackendApi::GlfwWindowHelper gWindowHelper;
     BackendApi::OpenGlSetupGlfw gOpenGlHelper;
 
 
     static void glfw_error_callback(int error, const char* description)
     {
         fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+    }
+
+    RunnerGlfwOpenGl3::RunnerGlfwOpenGl3(RunnerParams & runnerParams)
+        : AbstractRunner(runnerParams)
+    {
+        mBackendWindowHelper = std::make_unique<BackendApi::GlfwWindowHelper>();
     }
 
     void RunnerGlfwOpenGl3::Impl_InitBackend()
@@ -46,13 +51,13 @@ namespace HelloImGui
     {
         BackendApi::BackendOptions backendOptions;
 
-        mWindow = static_cast<GLFWwindow*>(gWindowHelper.CreateWindow(params.appWindowParams, backendOptions));
+        mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
         params.backendPointers.glfwWindow = mWindow;
     }
 
     void RunnerGlfwOpenGl3::Impl_CreateGlContext()
     {
-        glfwMakeContextCurrent(mWindow); // OpenGl!
+        glfwMakeContextCurrent((GLFWwindow *) mWindow); // OpenGl!
         glfwSwapInterval(1);  // Enable vsync (openGL only, not vulkan)
     }
 
@@ -64,7 +69,7 @@ namespace HelloImGui
 
     void RunnerGlfwOpenGl3::Impl_SetupPlatformRendererBindings()
     {
-        ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
+        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow *)mWindow, true);
         ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
     }
 
@@ -81,7 +86,7 @@ namespace HelloImGui
         // application. Generally you may always pass all inputs to dear imgui, and hide them from your
         // application based on those two flags.
         glfwPollEvents();
-        bool exitRequired = (glfwWindowShouldClose(mWindow) != 0);
+        bool exitRequired = (glfwWindowShouldClose((GLFWwindow *)mWindow) != 0);
         return exitRequired;
     }
 
@@ -114,11 +119,11 @@ namespace HelloImGui
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
 
-        glfwDestroyWindow(mWindow);
+        glfwDestroyWindow((GLFWwindow *)mWindow);
         glfwTerminate();
     }
 
-    void RunnerGlfwOpenGl3::Impl_SwapBuffers() { glfwSwapBuffers(mWindow); }
+    void RunnerGlfwOpenGl3::Impl_SwapBuffers() { glfwSwapBuffers((GLFWwindow *)mWindow); }
 
 }  // namespace HelloImGui
 #endif  // #ifdef HELLOIMGUI_USE_GLFW_OPENGL3

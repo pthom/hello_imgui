@@ -11,7 +11,9 @@ namespace HelloImGui
     void emscripten_imgui_main_loop(void* arg)
     {
         (void) arg;
-        gRunnerEmscripten->CreateFramesAndRender();
+        static int idxFrame = 0;
+        gRunnerEmscripten->CreateFramesAndRender(idxFrame);
+        idxFrame += 1;
     }
 
     void RunnerEmscripten::Run()

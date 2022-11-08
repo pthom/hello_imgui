@@ -1,5 +1,7 @@
 #ifdef HELLOIMGUI_USE_GLFW
 #include "glfw_window_helper.h"
+#include "window_geometry_helper.h"
+#include "GLFW/glfw3.h"
 
 
 namespace HelloImGui { namespace BackendApi
@@ -11,7 +13,7 @@ namespace HelloImGui { namespace BackendApi
 
     WindowPointer GlfwWindowHelper::CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions)
     {
-        auto searchMonitorResult = SearchForMonitor(info.windowGeometry);
+        auto searchMonitorResult = SearchForMonitor(GetMonitorsWorkAreas(), info.windowGeometry);
         int realMonitorIdx = searchMonitorResult.monitorIdx;
         if (searchMonitorResult.newPosition.has_value())
             info.windowGeometry.position = searchMonitorResult.newPosition.value();
@@ -24,10 +26,12 @@ namespace HelloImGui { namespace BackendApi
         auto &windowSize = info.windowGeometry.size;
         ScreenPosition & windowPosition = info.windowGeometry.position;
 
+        auto monitorsWorkAreas = GetMonitorsWorkAreas();
+
         // Reduce size if too big compared to the monitor
         if (! info.windowGeometry.sizeAuto)
         {
-            auto workArea = GetOneMonitorWorkArea(realMonitorIdx);
+            auto workArea = monitorsWorkAreas[realMonitorIdx];
             ForDim2(dim)
                 if (windowSize[dim] > workArea.size[dim])
                     windowSize[dim] = workArea.size[dim];
@@ -35,7 +39,7 @@ namespace HelloImGui { namespace BackendApi
 
         if (fullScreenMode == FullScreenMode::FullMonitorWorkArea)
         {
-            auto monitorBounds = GetOneMonitorWorkArea(info.windowGeometry.monitorIdx);
+            auto monitorBounds = monitorsWorkAreas[info.windowGeometry.monitorIdx];
             windowSize = monitorBounds.size;
             info.windowGeometry.position = monitorBounds.position;
         }
@@ -88,9 +92,9 @@ namespace HelloImGui { namespace BackendApi
         if (window == nullptr)
             BACKEND_THROW("BackendGlfw::CreateWindow / glfwCreateWindow failed");
 
-        if (info.windowSizeState == WindowSizeState::Minimized)
+        if (info.windowGeometry.windowSizeState == WindowSizeState::Minimized)
             glfwIconifyWindow(window);
-        else if (info.windowSizeState == WindowSizeState::Maximized)
+        else if (info.windowGeometry.windowSizeState == WindowSizeState::Maximized)
             glfwMaximizeWindow(window);
 
 
@@ -103,7 +107,7 @@ namespace HelloImGui { namespace BackendApi
         }
         else if ( (positionMode == WindowPositionMode::MonitorCenter) && (fullScreenMode==FullScreenMode::NoFullScreen))
         {
-            auto workArea = GetOneMonitorWorkArea(realMonitorIdx);
+            auto workArea = monitorsWorkAreas[realMonitorIdx];
             ScreenPosition centeredPosition;
             ForDim2(dim)
                 centeredPosition[dim] = workArea.Center()[dim] - windowSize[dim] / 2;
@@ -112,34 +116,28 @@ namespace HelloImGui { namespace BackendApi
             glfwSetWindowSize(window, windowSize[0], windowSize[1]);
         }
 
-        EnsureWindowFitsMonitor(window, realMonitorIdx, fullScreenMode);
-
         glfwGetWindowSize(window, &windowSize[0], &windowSize[1]);
         glfwGetWindowPos(window, &windowPosition[0], &windowPosition[1]);
 
-        printf("Final window size: %ix%i\n", windowSize[0], windowSize[1]);
-        printf("Final window position: %ix%i\n", windowPosition[0], windowPosition[1]);
+        // printf("Final window size: %ix%i\n", windowSize[0], windowSize[1]);
+        // printf("Final window position: %ix%i\n", windowPosition[0], windowPosition[1]);
 
         return (void *)(window);
     }
 
-    size_t GlfwWindowHelper::GetNbMonitors()
+    std::vector<ScreenBounds> GlfwWindowHelper::GetMonitorsWorkAreas()
     {
         int nbMonitors;
         auto monitors = glfwGetMonitors(&nbMonitors);
-        (void) monitors;
-        return nbMonitors;
-    }
-
-    ScreenBounds GlfwWindowHelper::GetOneMonitorWorkArea(int monitorIndex)
-    {
-        int nbMonitors;
-        auto monitors = glfwGetMonitors(&nbMonitors);
-        assert((monitorIndex >= 0) && (monitorIndex < nbMonitors));
-        int x, y, w, h;
-        glfwGetMonitorWorkarea(monitors[monitorIndex], &x, &y, &w, &h);
-        auto r = ScreenBounds{{x, y},
-                              {w, h}};
+        std::vector<ScreenBounds> r;
+        for (int i =0; i < nbMonitors; ++i)
+        {
+            int x, y, w, h;
+            glfwGetMonitorWorkarea(monitors[i], &x, &y, &w, &h);
+            auto b = ScreenBounds{{x, y},
+                                  {w, h}};
+            r.push_back(b);
+        }
         return r;
     }
 

@@ -63,13 +63,15 @@ struct WindowGeometry
 
     FullScreenMode fullScreenMode = FullScreenMode::NoFullScreen;
 
-    WindowPositionMode positionMode;
+    WindowPositionMode positionMode = WindowPositionMode::OsDefault;
 
     // used if windowPositionMode==FromCoords
     ScreenPosition position = ScreenPosition{0, 0};
 
-    // used if positionMode!=FromCoords
+    // used if positionMode==MonitorCenter or if fullScreenMode!=NoFullScreen
     int monitorIdx = 0;
+
+    WindowSizeState windowSizeState = WindowSizeState::Standard;
 };
 
 
@@ -83,7 +85,6 @@ struct AppWindowParams
 
     bool borderless = false;
     bool resizable = true;
-    WindowSizeState windowSizeState = WindowSizeState::Standard;
 };
 
 }  // namespace HelloImGui

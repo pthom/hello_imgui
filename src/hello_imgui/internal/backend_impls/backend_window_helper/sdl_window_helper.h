@@ -22,8 +22,7 @@ namespace HelloImGui { namespace BackendApi
     public:
         WindowPointer CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions) override;
 
-        size_t GetNbMonitors() override;
-        ScreenBounds GetOneMonitorWorkArea(int monitorIndex) override;
+        std::vector<ScreenBounds> GetMonitorsWorkAreas() override;
 
         bool IsWindowIconified(WindowPointer window) override;
 

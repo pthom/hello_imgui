@@ -1,21 +1,22 @@
 #ifdef HELLOIMGUI_USE_SDL
 
 #include "sdl_window_helper.h"
+#include "window_geometry_helper.h"
 #include "SDL.h"
 
 namespace HelloImGui { namespace BackendApi
 {
     WindowPointer SdlWindowHelper::CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions)
     {
-        auto searchMonitorResult = SearchForMonitor(info.windowGeometry);
+        auto searchMonitorResult = SearchForMonitor(GetMonitorsWorkAreas(), info.windowGeometry);
         int realMonitorIdx = searchMonitorResult.monitorIdx;
         if (searchMonitorResult.newPosition.has_value())
             info.windowGeometry.position = searchMonitorResult.newPosition.value();
 
         int window_flags = 0;
 
-        int nbMonitors = GetNbMonitors();
-        assert((realMonitorIdx >= 0) && (realMonitorIdx < nbMonitors));
+        auto monitorsWorksAreas = GetMonitorsWorkAreas();
+        assert((realMonitorIdx >= 0) && (realMonitorIdx < monitorsWorksAreas.size()));
 
         ScreenSize& windowSize = info.windowGeometry.size;
         ScreenPosition & windowPosition = info.windowGeometry.position;
@@ -24,7 +25,7 @@ namespace HelloImGui { namespace BackendApi
         // Reduce size if too big compared to the monitor
         if (! info.windowGeometry.sizeAuto)
         {
-            auto workArea = GetOneMonitorWorkArea(realMonitorIdx);
+            auto workArea = monitorsWorksAreas[realMonitorIdx];
             ForDim2(dim)
                 if (windowSize[dim] > workArea.size[dim])
                     windowSize[dim] = workArea.size[dim];
@@ -42,14 +43,14 @@ namespace HelloImGui { namespace BackendApi
         }
         else if ( (positionMode == WindowPositionMode::MonitorCenter) && (fullScreenMode==FullScreenMode::NoFullScreen))
         {
-            auto workArea = GetOneMonitorWorkArea(realMonitorIdx);
+            auto workArea = monitorsWorksAreas[realMonitorIdx];
             ForDim2(dim)
                 window_pos_sdl[dim] = workArea.Center()[dim] - windowSize[dim] / 2;
         }
 
         if (fullScreenMode == FullScreenMode::FullMonitorWorkArea)
         {
-            auto monitorBounds = GetOneMonitorWorkArea(info.windowGeometry.monitorIdx);
+            auto monitorBounds = monitorsWorksAreas[info.windowGeometry.monitorIdx];
             windowSize = monitorBounds.size;
             info.windowGeometry.position = monitorBounds.position;
             window_pos_sdl[0] = info.windowGeometry.position[0];
@@ -89,11 +90,11 @@ namespace HelloImGui { namespace BackendApi
         if (info.resizable)
             window_flags |= SDL_WINDOW_RESIZABLE;
 
-        if (info.windowSizeState == WindowSizeState::Standard)
+        if (info.windowGeometry.windowSizeState == WindowSizeState::Standard)
             {}
-        else if (info.windowSizeState == WindowSizeState::Minimized)
+        else if (info.windowGeometry.windowSizeState == WindowSizeState::Minimized)
             window_flags |= SDL_WINDOW_MINIMIZED;
-        else if (info.windowSizeState == WindowSizeState::Maximized)
+        else if (info.windowGeometry.windowSizeState == WindowSizeState::Maximized)
             window_flags |= SDL_WINDOW_MAXIMIZED;
 
         auto window = SDL_CreateWindow(info.windowTitle.c_str(),
@@ -103,31 +104,27 @@ namespace HelloImGui { namespace BackendApi
         if (!window)
             BACKEND_THROW("BackendSdl::CreateWindow : SDL_CreateWindow returned NULL");
 
-        EnsureWindowFitsMonitor(window, realMonitorIdx, fullScreenMode);
-
         SDL_GetWindowPosition(window, &windowPosition[0], &windowPosition[1]);
         SDL_GetWindowSize(window, &windowSize[0], &windowSize[1]);
 
-        printf("Final window size: %ix%i\n", windowSize[0], windowSize[1]);
-        printf("Final window position: %ix%i\n", windowPosition[0], windowPosition[1]);
+        // printf("Final window size: %ix%i\n", windowSize[0], windowSize[1]);
+        // printf("Final window position: %ix%i\n", windowPosition[0], windowPosition[1]);
 
         return (void *)(window);
     }
 
-    size_t SdlWindowHelper::GetNbMonitors()
+    std::vector<ScreenBounds> SdlWindowHelper::GetMonitorsWorkAreas()
     {
         int nbMonitors = SDL_GetNumVideoDisplays();
-        return nbMonitors;
-    }
-
-    ScreenBounds SdlWindowHelper::GetOneMonitorWorkArea(int monitorIndex)
-    {
-        assert(monitorIndex >= 0);
-        assert(monitorIndex < GetNbMonitors());
-        SDL_Rect rect;
-        SDL_GetDisplayUsableBounds(monitorIndex, &rect);
-        ScreenBounds r{{rect.x, rect.y},
-                       {rect.w, rect.h}};
+        std::vector<ScreenBounds> r;
+        for (size_t i = 0; i < nbMonitors; ++i)
+        {
+            SDL_Rect rect;
+            SDL_GetDisplayUsableBounds(i, &rect);
+            ScreenBounds b{{rect.x, rect.y},
+                           {rect.w, rect.h}};
+            r.push_back(b);
+        }
         return r;
     }
 

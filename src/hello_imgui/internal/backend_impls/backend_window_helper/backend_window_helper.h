@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <optional>
+#include <vector>
 
 
 #define BACKEND_THROW_IMPL(msg) \
@@ -47,15 +48,14 @@ namespace HelloImGui { namespace BackendApi
         // Note: this is a fake class, it has no member
         // It is only a class in order to enforce a consistent API between backends.
     public:
+        virtual ~IBackendWindowHelper() = default;
         virtual WindowPointer CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions) = 0;
 
-        virtual size_t GetNbMonitors() = 0;
-
-        //The area of a monitor not occupied by global task bars or menu bars is the work area.
-        //This is specified in screen coordinates.
-        //Pixels and screen coordinates may map 1:1 on your machine, but they won't on every other machine,
-        //for example on a Mac with a Retina display.
-        virtual ScreenBounds GetOneMonitorWorkArea(int monitorIndex) = 0;
+        // The area of a monitor not occupied by global task bars or menu bars is the work area.
+        // This is specified in screen coordinates.
+        // Pixels and screen coordinates may map 1:1 on your machine, but they won't on every other machine,
+        // for example on a Mac with a Retina display.
+        virtual std::vector<ScreenBounds> GetMonitorsWorkAreas() = 0;
 
         virtual bool IsWindowIconified(WindowPointer window) = 0;
 
@@ -66,17 +66,5 @@ namespace HelloImGui { namespace BackendApi
         virtual void SetWindowBounds(WindowPointer window, ScreenBounds windowBounds) = 0;
 
         // Screenshot!
-
-        //
-        //  Concrete methods below
-        //
-        struct SearchForMonitorResult
-        {
-            int monitorIdx;
-            std::optional<ScreenPosition> newPosition;
-        };
-        SearchForMonitorResult SearchForMonitor(const WindowGeometry& geometry);
-
-        void EnsureWindowFitsMonitor(WindowPointer window, int idxMonitor, FullScreenMode fullScreenMode);
     };
 }} // namespace HelloImGui { namespace BackendApi

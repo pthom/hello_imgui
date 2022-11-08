@@ -3,14 +3,14 @@
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
 
 #include <SDL.h>
-#include <functional>
+
 
 namespace HelloImGui
 {
     class RunnerSdlOpenGl3 : public AbstractRunner
 {
        public:
-        RunnerSdlOpenGl3(RunnerParams & runnerParams) : AbstractRunner(runnerParams) {}
+        RunnerSdlOpenGl3(RunnerParams & runnerParams);
         virtual ~RunnerSdlOpenGl3() = default;
 
        protected:
@@ -35,7 +35,6 @@ namespace HelloImGui
         bool priv_HandleMobileDeviceEvent(unsigned int sdl_EventType);
 
        private:
-        SDL_Window* mWindow = nullptr;
         SDL_GLContext mGlContext = nullptr;
     };
 

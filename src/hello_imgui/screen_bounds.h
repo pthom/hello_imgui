@@ -14,11 +14,11 @@ namespace HelloImGui
         ScreenPosition position = {0, 0};
         ScreenSize size = {100, 100};
 
-        ScreenPosition TopLeftCorner() { return position; }
-        ScreenPosition BottomRightCorner() { return { position[0] + size[0], position[1] + size[1] }; }
-        ScreenPosition Center() { return { position[0] + size[0] / 2, position[1] + size[1] / 2 }; }
+        ScreenPosition TopLeftCorner() const{ return position; }
+        ScreenPosition BottomRightCorner() const{ return { position[0] + size[0], position[1] + size[1] }; }
+        ScreenPosition Center() const{ return { position[0] + size[0] / 2, position[1] + size[1] / 2 }; }
 
-        bool Contains(ScreenPosition pixel) {
+        bool Contains(ScreenPosition pixel) const{
             ForDim2(dim) {
                 if (pixel[dim] < TopLeftCorner()[dim])
                     return false;
@@ -28,14 +28,14 @@ namespace HelloImGui
             return true;
         }
 
-        ScreenPosition WinPositionCentered(ScreenSize windowSize) {
+        ScreenPosition WinPositionCentered(ScreenSize windowSize) const {
             return {
                 Center()[0] - windowSize[0] / 2,
                 Center()[1] - windowSize[1] / 2
             };
         }
 
-        int DistanceFromPixel(ScreenPosition point)
+        int DistanceFromPixel(ScreenPosition point) const
         {
             auto distFromInterval = [](int a, int b, int x) {
                 if (x < a)
@@ -51,7 +51,7 @@ namespace HelloImGui
             return distance;
         }
 
-        ScreenBounds EnsureWindowFitsThisMonitor(ScreenBounds windowBoundsOriginal)
+        ScreenBounds EnsureWindowFitsThisMonitor(ScreenBounds windowBoundsOriginal) const
         {
             auto &self = *this;
             ScreenBounds windowBoundsNew = windowBoundsOriginal;
@@ -70,7 +70,7 @@ namespace HelloImGui
             return windowBoundsNew;
         }
 
-        bool operator==(const ScreenBounds& other)
+        bool operator==(const ScreenBounds& other) const
         {
             auto &self = *this;
             ForDim2(dim)

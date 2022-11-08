@@ -11,18 +11,41 @@
 namespace HelloImGui
 {
 
+AbstractRunner::AbstractRunner(RunnerParams &params_)
+    : params(params_)
+{};
+
 void AbstractRunner::Run()
 {
     Setup();
 
+    int frameIdx = 0;
 #ifdef HELLOIMGUI_MOBILEDEVICE
     while (true)
         CreateFramesAndRender();
 #else
-    while (!params.appShallExit)
-        CreateFramesAndRender();
+    try
+    {
+        while (!params.appShallExit)
+        {
+
+            if (frameIdx == 1)
+                ForceWindowPositionOrSize();
+
+            CreateFramesAndRender(frameIdx);
+            frameIdx += 1;
+        }
+        if (params.appWindowParams.restorePreviousGeometry)
+            mGeometryHelper->WriteLastRunWindowBounds(mBackendWindowHelper->GetWindowBounds(mWindow));
+        TearDown();
+    }
+    catch(std::exception& e)
+    {
+        // Late handling of user exceptions: TearDown backend and rethrow
+        TearDown();
+        throw;
+    }
 #endif
-    TearDown();
 }
 
 #ifdef HELLO_IMGUI_IMGUI_SHARED
@@ -30,11 +53,52 @@ static void*   MyMallocWrapper(size_t size, void* user_data)    { IM_UNUSED(user
 static void    MyFreeWrapper(void* ptr, void* user_data)        { IM_UNUSED(user_data); free(ptr); }
 #endif
 
+void AbstractRunner::PrepareAutoSize()
+{
+    std::optional<ScreenSize> yetUnknownRealWindowSizeAfterAutoSize = std::nullopt;
+    mGeometryHelper = std::make_unique<WindowGeometryHelper>(params.appWindowParams.windowGeometry, params.appWindowParams.restorePreviousGeometry);
+    mAutoSizeHelper = std::make_unique<WindowAutoSizeHelper>(*mGeometryHelper);
+    auto windowBounds = mGeometryHelper->AppWindowBoundsInitial(mBackendWindowHelper->GetMonitorsWorkAreas(), yetUnknownRealWindowSizeAfterAutoSize);
+    if (mGeometryHelper->ReadLastRunWindowBounds().has_value())
+        params.appWindowParams.windowGeometry.positionMode = WindowPositionMode::FromCoords;
+    params.appWindowParams.windowGeometry.position = windowBounds.position;
+    params.appWindowParams.windowGeometry.size = windowBounds.size;
+}
+
+void AbstractRunner::ForceWindowPositionOrSize()
+{
+    // This is done at the second frame, once we know the size of all the widgets
+    if (mAutoSizeHelper->WantAutoSize())
+    {
+        // The window was resized by mAutoSizeHelper
+        // We should now recenter the window if needed and ensure it fits on the monitor
+        auto realWindowSizeAfterAutoSize = mBackendWindowHelper->GetWindowBounds(mWindow).size;
+        auto windowBounds = mGeometryHelper->AppWindowBoundsInitial(
+            mBackendWindowHelper->GetMonitorsWorkAreas(), realWindowSizeAfterAutoSize);
+        mBackendWindowHelper->SetWindowBounds(mWindow, windowBounds);
+    }
+    /*
+        if not self.window_geometry_helper.want_autosize() and not self.imgui_app_params.app_window_full_screen:
+            # The window was not resized
+            # However, we forcefully set its position once again, since some backends ignore
+            # it position at window creation time (SDL)
+            real_window_size_after_auto_size = self.backend.get_window_size()
+            window_bounds = self.window_geometry_helper.app_window_bounds_initial(
+                self.all_monitors_work_areas, real_window_size_after_auto_size)
+            self.backend.set_window_position(window_bounds.window_position)
+     */
+    mAutoSizeHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow);
+}
+
+
 void AbstractRunner::Setup()
 {
     Impl_InitBackend();
     Impl_Select_Gl_Version();
+
+    PrepareAutoSize();
     Impl_CreateWindow();
+
     Impl_CreateGlContext();
     Impl_InitGlLoader();
     IMGUI_CHECKVERSION();
@@ -70,7 +134,7 @@ void AbstractRunner::Setup()
         params.callbacks.PostInit();
 }
 
-void AbstractRunner::RenderGui()
+void AbstractRunner::RenderGui(int idxFrame)
 {
     DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams, params.dockingParams);
 
@@ -78,7 +142,15 @@ void AbstractRunner::RenderGui()
         Menu_StatusBar::ShowMenu(params);
 
     if (params.callbacks.ShowGui)
+    {
+        if (idxFrame == 0)
+            mAutoSizeHelper->BeginMeasureSize(mBackendWindowHelper.get(), mWindow);
+
         params.callbacks.ShowGui();
+
+        if (idxFrame == 0)
+            mAutoSizeHelper->EndMeasureSize(mBackendWindowHelper.get(), mWindow);
+    }
 
     DockingDetails::ShowDockableWindows(params.dockingParams.dockableWindows);
 
@@ -89,7 +161,7 @@ void AbstractRunner::RenderGui()
 }
 
 
-void AbstractRunner::CreateFramesAndRender()
+void AbstractRunner::CreateFramesAndRender(int idxFrame)
 {
     if (Impl_PollEvents())
         params.appShallExit = true;
@@ -98,7 +170,7 @@ void AbstractRunner::CreateFramesAndRender()
     Impl_NewFrame_Backend();
     ImGui::NewFrame();
 
-    RenderGui();
+    RenderGui(idxFrame);
 
     ImGui::Render();
     Impl_Frame_3D_ClearColor();

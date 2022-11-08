@@ -30,13 +30,6 @@ option(HELLO_IMGUI_IMGUI_SHARED "Use imgui as a shared library" OFF)
 mark_as_advanced(HELLO_IMGUI_IMGUI_SHARED)
 
 
-# Advanced option: use powersave mode for imgui: see PR https://github.com/ocornut/imgui/pull/4076
-# This PR was adapted to imgui docking version of March 2022 here: https://github.com/pthom/imgui/tree/docking_powersave
-# only use if your version of imgui has this mode!
-option(HELLOIMGUI_USE_POWERSAVE "Use power save mode for imgui" OFF)
-mark_as_advanced(HELLOIMGUI_USE_POWERSAVE)
-
-
 if (IOS OR EMSCRIPTEN)
     set(need_opengl_loader OFF)
 else()

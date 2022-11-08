@@ -56,16 +56,10 @@ void ShowMenu(RunnerParams & runnerParams)
     ImGui::EndMenuBar();
 }
 
-void ShowStatus_Fps()
-{
-    ImGui::SameLine(ImGui::GetIO().DisplaySize.x - 90.f);
-    ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-}
 
 void ShowStatusBar(const RunnerParams & params)
 {
-    float statusWindowHeight = 30.f;
-
+    float statusWindowHeight = ImGui::GetFrameHeight() * 1.2;
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + viewport->Size.y - statusWindowHeight));
     ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, statusWindowHeight));
@@ -78,7 +72,10 @@ void ShowStatusBar(const RunnerParams & params)
         params.callbacks.ShowStatus();
 
     if (params.imGuiWindowParams.showStatus_Fps)
-        ShowStatus_Fps();
+    {
+        ImGui::SameLine(ImGui::GetIO().DisplaySize.x - 5.f * ImGui::GetFontSize());
+        ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+    }
 
     ImGui::End();
 }

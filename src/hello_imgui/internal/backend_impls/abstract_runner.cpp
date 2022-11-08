@@ -119,6 +119,7 @@ void AbstractRunner::Setup()
     // cf https://github.com/pthom/imgui_bundle/issues/7
     {
         float scaleFactor = mBackendWindowHelper->GetWindowDpiScaleFactor(mWindow);
+        params.appWindowParams.outWindowDpiFactor = scaleFactor;
         if (scaleFactor > 1.f)
         {
             ImGuiStyle& style = ImGui::GetStyle();

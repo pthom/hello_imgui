@@ -22,7 +22,8 @@ ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFu
         config.GlyphRanges = glyphRange;
     }
 
-    ImFont * font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSize, &config);
+    float fontSizeDpi = HelloImGui::GetRunnerParams()->appWindowParams.outWindowDpiFactor * fontSize;
+    ImFont * font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSizeDpi, &config);
     if (font == nullptr)
         HIMG_THROW_STRING(std::string("Cannot load ") + fontFilename);
     FreeAssetFileData(&fontData);
@@ -45,8 +46,9 @@ ImFont* MergeFontAwesomeToLastFont(float fontSize, ImFontConfig config)
     static const ImWchar icon_fa_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
     config.MergeMode = true;
     config.FontDataOwnedByAtlas = false;
+    float fontSizeDpi = HelloImGui::GetRunnerParams()->appWindowParams.outWindowDpiFactor * fontSize;
     auto font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
-        fontData.data, (int)fontData.dataSize, fontSize, &config, icon_fa_ranges);
+        fontData.data, (int)fontData.dataSize, fontSizeDpi, &config, icon_fa_ranges);
 
     if (font == nullptr)
         HIMG_THROW_STRING(std::string("Cannot load ") + faFile);

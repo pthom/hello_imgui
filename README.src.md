@@ -10,12 +10,11 @@
 _HelloImGui_ is a library that enables to write  multiplatform Gui apps for Windows, Mac, Linux, iOS, Android, emscripten; with the simplicity of a "Hello World" app. It is based on [Dear ImGui](https://github.com/ocornut/imgui), a Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
 
 
-A hello world app can be written in one single call: just write a lambda that contains the GUI code, and specify the window size and title.
+A hello world app can be written in one single call: just write a lambda that contains the GUI code, and specify the window title.
 ````cpp
-HelloImGui::Run(
+HelloImGui::Run_AutoSize(
     []{ ImGui::Text("Hello, world!"); }, // GUI code: this lambda will display a single label
-    { 200.f, 50.f },                     // window size
-    "Hello!" );                          // window title
+    "Hello!" );                          // window title (the window size will be computed automatically from the widgets)
 `````
 
 
@@ -56,7 +55,7 @@ int main(int , char *[])
     };
     // Set the app windows parameters
     runnerParams.appWindowParams.windowTitle = "Hello, globe!";
-    runnerParams.appWindowParams.windowSize = {180.f, 210.f};
+    runnerParams.appWindowParams.windowGeometry.size = {180, 210};
 
     // Run the app
     HelloImGui::Run(runnerParams);

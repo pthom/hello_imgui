@@ -18,8 +18,11 @@ Two signatures are provided:
    Runs an application whose params and Gui are provided
 by runnerParams.
 
-* `HelloImGui::Run(guiFunction, windowSize, windowTitle)`: simple signature
-in order to start a simple application with ease.
+* `HelloImGui::Run(guiFunction, windowSize, windowTitle)`: signature in order to start a simple application with ease.
+
+* `HelloImGui::Run_AutoSize(guiFunction, windowTitle, restoreLastWindowGeometry = true)`: signature
+in order to start a simple application, where the window size can be set automatically from the widgets,
+ and where the previous position size & position can be restored upon next launch.
 
 __HelloImGui::GetRunnerParams()__ is a convenience function that will return
 the runnerParams of the current application.
@@ -34,6 +37,12 @@ namespace HelloImGui
         ImVec2 windowSize = ImVec2(800.f, 600.f),
         std::string windowTitle = ""
         );
+
+    void Run_AutoSize(VoidFunction guiFunction,
+             std::string windowTitle = "",
+             bool restoreLastWindowGeometry = true,
+             ImVec2 windowSize = ImVec2(0.f, 0.f)
+             );
 
     RunnerParams* GetRunnerParams();
 }

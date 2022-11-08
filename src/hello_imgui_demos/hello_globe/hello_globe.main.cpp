@@ -9,9 +9,14 @@ int main(int , char *[])
                                                        // assets are embedded automatically into the app (for *all* platforms)
             if (ImGui::Button("Bye!"))                 // Display a button
                 runnerParams.appShallExit = true;      // ... and immediately handle its action if it is clicked!
+
+            float fps = ImGui::GetIO().Framerate;
+            ImGui::Text("FPS: %.2f", fps);
         };
+
     runnerParams.appWindowParams.windowTitle = "Hello, globe!";
-    runnerParams.appWindowParams.windowGeometry.size = {180, 210};
+    runnerParams.appWindowParams.windowGeometry.size = {180, 220};
+    runnerParams.appWindowParams.restorePreviousGeometry = false;
     HelloImGui::Run(runnerParams);
     return 0;
 }

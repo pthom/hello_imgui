@@ -19,6 +19,31 @@ void Run(VoidFunction guiFunction, ImVec2 windowSize, std::string windowTitle)
     runnerParams.callbacks.ShowGui = guiFunction;
     runnerParams.appWindowParams.windowGeometry.size = {(int)windowSize.x, (int)windowSize.y};
     runnerParams.appWindowParams.windowTitle = windowTitle;
+
+    gLastRunnerParams = &runnerParams;
+    auto runner = FactorRunner(runnerParams);
+    runner->Run();
+}
+
+
+void Run_AutoSize(VoidFunction guiFunction,
+         std::string windowTitle,
+         bool restoreLastWindowGeometry,
+         ImVec2 windowSize
+)
+{
+    RunnerParams runnerParams;
+
+    runnerParams.appWindowParams.windowTitle = windowTitle;
+    runnerParams.callbacks.ShowGui = guiFunction;
+
+    if ((windowSize.x > 0.f) || (windowSize.y > 0.f))
+        runnerParams.appWindowParams.windowGeometry.size = {(int)windowSize.x, (int)windowSize.y};
+    else
+        runnerParams.appWindowParams.windowGeometry.sizeAuto = true;
+
+    runnerParams.appWindowParams.restorePreviousGeometry = restoreLastWindowGeometry;
+
     gLastRunnerParams = &runnerParams;
     auto runner = FactorRunner(runnerParams);
     runner->Run();

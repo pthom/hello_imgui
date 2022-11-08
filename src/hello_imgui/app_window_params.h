@@ -104,7 +104,6 @@ Members:
    _Note: on a mobile device, the application will always be full screen._
 * `restorePreviousGeometry`: _bool, default=false_.
   If true, then save & restore windowGeometry from last run (the geometry will be written in imgui_app_window.ini)
-
 * `borderless`: _bool, default = false_.
 * `resizable`: _bool, default = false_.
 
@@ -115,8 +114,9 @@ struct AppWindowParams
     std::string windowTitle;
 
     WindowGeometry windowGeometry;
+
     // if true, then save & restore from last run
-    bool restorePreviousGeometry;
+    bool restorePreviousGeometry = false;
 
     bool borderless = false;
     bool resizable = true;

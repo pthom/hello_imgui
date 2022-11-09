@@ -38,14 +38,14 @@ namespace HelloImGui
     void Run(VoidFunction guiFunction,
         ImVec2 windowSize = ImVec2(800.f, 600.f),
         std::string windowTitle = "",
-        float fpsIdle = 4.f
+        float fpsIdle = 10.f
         );
 
     void Run_AutoSize(VoidFunction guiFunction,
              std::string windowTitle = "",
              bool restoreLastWindowGeometry = true,
              ImVec2 windowSize = ImVec2(0.f, 0.f),
-             float fpsIdle = 4.f
+             float fpsIdle = 10.f
              );
 
     RunnerParams* GetRunnerParams();

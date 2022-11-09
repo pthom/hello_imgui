@@ -89,6 +89,23 @@ namespace HelloImGui { namespace BackendApi
         // See https://github.com/pthom/imgui_bundle/issues/7
         glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 
+        //
+        // When high dpi, make the window bigger at creation, so that window sizes are consistent across platforms
+        // after creation
+        //
+        {
+            GLFWmonitor* dpiMonitor = (monitor == nullptr) ? glfwGetPrimaryMonitor() : monitor;
+            float scaleFactor;
+            glfwGetMonitorContentScale(dpiMonitor, &scaleFactor, NULL);
+            if (scaleFactor > 1.f)
+            {
+#ifndef __APPLE__
+                ForDim2(dim)
+                    windowSize[dim] *= (int)(scaleFactor * (float)windowSize[dim]);
+#endif
+            }
+        }
+
         auto window = glfwCreateWindow(
             windowSize[0], windowSize[1],
             appWindowParams.windowTitle.c_str(),

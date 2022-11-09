@@ -4,12 +4,18 @@ namespace HelloImGui {
 class _ <free functions> {
     ----
     + void Run(RunnerParams &)
-    + void Run(VoidFunction gui, windowSize, title)
-    + void Run_AutoSize(
-        guiFunction, windowTitle, restoreLastWindowGeometry = true)
+    + void Run(SimpleRunnerParams &)
+    + Run(
+        guiFunction,
+        windowTitle,
+        windowSizeAuto=false,
+        restoreLastWindowGeometry=false,
+        windowSize=(800,600),
+        fpsIdle=10)
 }
 
-_ --> RunnerParams: uses
+_ --> SimpleRunnerParams: uses
+_ --> RunnerParams: or uses
 
 enum BackendType <enum>{
     + FirstAvailable
@@ -28,6 +34,21 @@ class RunnerParams <struct> {
     + bool appShallExit = false
     + float fpsIdle = 10
 }
+
+class SimpleRunnerParams <struct> {
+    + VoidFunction guiFunction
+    + string windowTitle = "";
+    ---
+    + ScreenSize windowSize = {800, 600}
+    + bool windowSizeAuto = false
+    + bool windowRestorePreviousGeometry = false
+    ---
+    + float fpsIdle = 10.f;
+    ---
+    + RunnerParams ToRunnerParams()
+}
+
+SimpleRunnerParams ..> RunnerParams: ToRunnerParams()
 
 class RunnerCallbacks <struct> {
     ---

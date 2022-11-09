@@ -7,6 +7,6 @@ int main(int, char *[]) {
         ImGui::SliderInt(ICON_FA_FILE_CODE " C++ lines", &nb_cpp, 0, 100);
         ImGui::InputInt( ICON_FA_FILE_CODE " Cmake lines", &nb_cmake);
     };
-    HelloImGui::Run(showGui, {320.f, 120.f}, "Hello, Dear ImGui!");
+    HelloImGui::Run(showGui, "Hello, Dear ImGui!", true);
     return 0;
 }

@@ -21,6 +21,10 @@ The diagram below summarize all the possible settings and callbacks (which are e
 
 #### RunnerParams
 
+##### Simple runner params
+@import "runner_params.h" {md_id=SimpleRunnerParams}
+
+##### Full params
 @import "runner_params.h" {md_id=RunnerParams}
 
 ----

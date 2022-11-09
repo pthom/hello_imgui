@@ -1,8 +1,10 @@
 #include "hello_imgui/hello_imgui.h"
 int main(int , char *[])
 {
-    HelloImGui::Run_AutoSize(
+    HelloImGui::Run(
         []{ ImGui::Text("Hello, world!"); }, // Gui code
-        "Hello!" );                          // Window title
+        "Hello!",                            // Window title
+        true                                 // Window size auto
+    );
     return 0;
 }

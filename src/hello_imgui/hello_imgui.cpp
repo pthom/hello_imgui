@@ -13,43 +13,29 @@ void Run(RunnerParams& runnerParams)
     runner->Run();
 }
 
-void Run(VoidFunction guiFunction, ImVec2 windowSize, std::string windowTitle, float fpsIdle)
+void Run(const SimpleRunnerParams& simpleRunnerParams)
 {
-    RunnerParams runnerParams;
-    runnerParams.callbacks.ShowGui = guiFunction;
-    runnerParams.appWindowParams.windowGeometry.size = {(int)windowSize.x, (int)windowSize.y};
-    runnerParams.appWindowParams.windowTitle = windowTitle;
-    runnerParams.fpsIdle = fpsIdle;
-
-    gLastRunnerParams = &runnerParams;
-    auto runner = FactorRunner(runnerParams);
-    runner->Run();
+    RunnerParams fullParams = simpleRunnerParams.ToRunnerParams();
+    Run(fullParams);
 }
 
-
-void Run_AutoSize(VoidFunction guiFunction,
-         std::string windowTitle,
-         bool restoreLastWindowGeometry,
-         ImVec2 windowSize,
-        float fpsIdle
+void Run(
+    const VoidFunction& guiFunction,
+    const std::string& windowTitle,
+    bool windowSizeAuto,
+    bool windowRestorePreviousGeometry,
+    const ScreenSize& windowSize,
+    float fpsIdle
 )
 {
-    RunnerParams runnerParams;
-
-    runnerParams.appWindowParams.windowTitle = windowTitle;
-    runnerParams.callbacks.ShowGui = guiFunction;
-
-    if ((windowSize.x > 0.f) || (windowSize.y > 0.f))
-        runnerParams.appWindowParams.windowGeometry.size = {(int)windowSize.x, (int)windowSize.y};
-    else
-        runnerParams.appWindowParams.windowGeometry.sizeAuto = true;
-
-    runnerParams.appWindowParams.restorePreviousGeometry = restoreLastWindowGeometry;
-    runnerParams.fpsIdle = fpsIdle;
-
-    gLastRunnerParams = &runnerParams;
-    auto runner = FactorRunner(runnerParams);
-    runner->Run();
+    SimpleRunnerParams params;
+    params.guiFunction = guiFunction;
+    params.windowTitle = windowTitle;
+    params.windowSizeAuto = windowSizeAuto;
+    params.windowRestorePreviousGeometry = windowRestorePreviousGeometry;
+    params.windowSize = windowSize;
+    params.fpsIdle = fpsIdle;
+    Run(params);
 }
 
 RunnerParams* GetRunnerParams()

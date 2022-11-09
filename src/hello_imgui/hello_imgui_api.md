@@ -5,6 +5,8 @@
   * [Runner params](#runner-params)
       * [Diagram](#diagram)
       * [RunnerParams](#runnerparams)
+        * [Simple runner params](#simple-runner-params)
+        * [Full params](#full-params)
   * [Runner callbacks](#runner-callbacks)
       * [RunnerCallbacks](#runnercallbacks)
       * [MobileCallbacks](#mobilecallbacks)
@@ -39,19 +41,14 @@ __HelloImGui::Run()__ will run an application with a single call.
 Three signatures are provided:
 
 * `HelloImGui::Run(RunnerParams &)`: full signature, the most customizable version.
-   Runs an application whose params and Gui are provided
-by runnerParams.
+   Runs an application whose params and Gui are provided by runnerParams.
 
-* `HelloImGui::Run(guiFunction, windowSize, windowTitle, fpsIdle=4)`: signature in order to start a simple application with ease.
-  `fpsIdle` enables to set the app FPS when it is idle (set it to 0 for maximum FPS).
+* `HelloImGui::Run(const SimpleRunnerParams&)`:
+   Runs an application, using simpler params.
 
-* `HelloImGui::Run_AutoSize(guiFunction, windowTitle, restoreLastWindowGeometry = true, fpsIdle=4)`: signature
-in order to start a simple application, where the window size can be set automatically from the widgets,
- and where the previous position size & position can be restored upon next launch. `fpsIdle` enables to set
- the app FPS when it is idle (set it to 0 for maximum FPS).
+* `HelloImGui::Run(guiFunction, windowTitle, windowSize, windowSizeAuto=false, restoreLastWindowGeometry=false, fpsIdle=10)`
 
-__HelloImGui::GetRunnerParams()__ is a convenience function that will return
-the runnerParams of the current application.
+__HelloImGui::GetRunnerParams()__ is a convenience function that will return the runnerParams of the current application.
 
 
 ## Runner params
@@ -67,6 +64,25 @@ The diagram below summarize all the possible settings and callbacks (which are e
 
 #### RunnerParams
 
+##### Simple runner params
+
+**RunnerParams** is a struct that contains simpler params adapted for simple uses
+
+ Members:
+* `guiFunction`: _VoidFunction_.
+   Function that renders the Gui.
+* `windowTitle`: _string, default=""_.
+   Title of the application window
+* `windowSizeAuto`: _bool, default=false_.
+   If true, the size of the window will be computed from its widgets.
+* `windowRestorePreviousGeometry`: _bool, default=true_.
+   If true, restore the size and position of the window between runs.
+* `windowSize`: _ScreenSize, default={800, 600}_.
+   Size of the window
+* `fpsIdle`: _float, default=10_.
+   FPS of the application when idle (set to 0 for full speed).
+
+##### Full params
 
 **RunnerParams** is a struct that contains all the settings and callbacks needed to run an application.
 

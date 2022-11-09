@@ -5,6 +5,7 @@
 #include "hello_imgui/docking_params.h"
 #include "hello_imgui/backend_pointers.h"
 
+
 namespace HelloImGui
 {
 
@@ -63,6 +64,41 @@ struct RunnerParams
     float fpsIdle = 10.f;
 
     int emscripten_fps = 0;
+};
+
+
+/**
+ @@md#SimpleRunnerParams
+
+**RunnerParams** is a struct that contains simpler params adapted for simple uses
+
+ Members:
+* `guiFunction`: _VoidFunction_.
+   Function that renders the Gui.
+* `windowTitle`: _string, default=""_.
+   Title of the application window
+* `windowSizeAuto`: _bool, default=false_.
+   If true, the size of the window will be computed from its widgets.
+* `windowRestorePreviousGeometry`: _bool, default=true_.
+   If true, restore the size and position of the window between runs.
+* `windowSize`: _ScreenSize, default={800, 600}_.
+   Size of the window
+* `fpsIdle`: _float, default=10_.
+   FPS of the application when idle (set to 0 for full speed).
+@@md
+ */
+struct SimpleRunnerParams
+{
+    VoidFunction guiFunction;
+    std::string windowTitle = "";
+
+    bool windowSizeAuto = false;
+    bool windowRestorePreviousGeometry = false;
+    ScreenSize windowSize = {800, 600};
+
+    float fpsIdle = 10.f;
+
+    RunnerParams ToRunnerParams() const;
 };
 
 }  // namespace HelloImGui

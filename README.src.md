@@ -11,9 +11,11 @@ _HelloImGui_ is a library that enables to write  multiplatform Gui apps for Wind
 
 A hello world app can be written in one single call: just write a lambda that contains the GUI code, and specify the window title.
 ````cpp
-HelloImGui::Run_AutoSize(
-    []{ ImGui::Text("Hello, world!"); }, // GUI code: this lambda will display a single label
-    "Hello!" );                          // window title (the window size will be computed automatically from the widgets)
+HelloImGui::Run(
+    []{ ImGui::Text("Hello, world!"); }, // Gui code
+    "Hello!",                            // Window title
+    true                                 // Window size auto
+);
 `````
 
 
@@ -33,32 +35,31 @@ A slightly more complex multiplatform app, including assets and callbacks is als
 > hello_globe.main.cpp
 ````cpp
 #include "hello_imgui/hello_imgui.h"
+
 int main(int , char *[])
 {
-    // Instantiate RunnerParams which will contains all the application params and callbacks
-    HelloImGui::RunnerParams runnerParams;
+    HelloImGui::SimpleRunnerParams runnerParams;      // runnerParams will contains all the application params and callbacks
+    runnerParams.guiFunction =                        // guiFunction contains a lambda function with the Gui code
+        [&runnerParams]{
 
-    // ShowGui contains a function with the Gui code
-    runnerParams.callbacks.ShowGui = [&runnerParams] {
-        // Display a simple label
-        ImGui::Text("Hello, ");
-        // Display a static image, taken from assets/world.jpg,
-        // assets are embedded automatically into the app (for *all* platforms)
-        HelloImGui::ImageFromAsset("world.jpg");   
+            ImGui::Text("Hello, ");                    // Display a simple label
+            HelloImGui::ImageFromAsset("world.jpg");   // Display a static image, taken from assets/world.jpg,
+                                                       // assets are embedded automatically into the app (for *all* platforms)
 
-        // Display a button
-        if (ImGui::Button("Bye!"))
-            // ... and immediately handle its action if it is clicked!
-            // here, the flag appShallExit will tell HelloImGui to end the app. 
-            runnerParams.appShallExit = true;
-    };
-    // Set the app windows parameters
-    runnerParams.appWindowParams.windowTitle = "Hello, globe!";
-    runnerParams.appWindowParams.windowGeometry.size = {180, 210};
+            if (ImGui::Button("Bye!"))                 // Display a button
+                // ... and immediately handle its action if it is clicked!
+                HelloImGui::GetRunnerParams()->appShallExit = true;
 
-    // Run the app
+            float fps = ImGui::GetIO().Framerate;
+            ImGui::Text("FPS: %.2f", fps);
+        };
+
+    runnerParams.windowTitle = "Hello, globe!";
+    runnerParams.windowSize = {180, 220};
+    runnerParams.windowRestorePreviousGeometry = false;
     HelloImGui::Run(runnerParams);
     return 0;
+}
 }
 ````
 

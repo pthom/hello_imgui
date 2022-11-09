@@ -89,7 +89,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
    Will be set to true by the app when exiting.
    _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
    shall not exit._
-* `fpsIdle`: _float, default=4_.
+* `fpsIdle`: _float, default=10_.
   ImGui applications can consume a lot of CPU, since they update the screen very frequently.
   In order to reduce the CPU usage, the FPS is reduced when no user interaction is detected.
   This is ok most of the time but if you are displaying animated widgets (for example a live video),

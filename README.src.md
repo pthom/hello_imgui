@@ -2,7 +2,6 @@
 ![Windows](https://github.com/pthom/hello_imgui/workflows/Windows/badge.svg)
 ![MacOS](https://github.com/pthom/hello_imgui/workflows/MacOS/badge.svg)
 ![iOS](https://github.com/pthom/hello_imgui/workflows/iOS/badge.svg)
-![Android](https://github.com/pthom/hello_imgui/workflows/Android/badge.svg)
 ![Emscripten](https://github.com/pthom/hello_imgui/workflows/Emscripten/badge.svg)
 
 # Hello, Dear ImGui
@@ -148,7 +147,6 @@ _RunnerParams_ contains all the settings and callbacks in order to run an applic
 
 * SDL2 + OpenGL 3 or OpenGLES3 for mobile devices
 * Glfw3 + OpenGL 3
-* Qt
 
 Adding new backends should be easy: simply add a new derivate of [AbstractRunner](src/hello_imgui/internal/backend_impls/abstract_runner.h).
 
@@ -174,7 +172,6 @@ Several cmake options are provided: you need to select at least one backend:
 ````cmake
 option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
 option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
-option(HELLOIMGUI_USE_QT "Build HelloImGui for Qt" OFF)
 ````
 
 "HELLOIMGUI_USE_SDL_OPENGL3" is the preferred backend, since it works under all platforms (windows, linux, osx, android, emscripten, iOS). On Mobile platforms, it will use OpenGLES3. Use it with `cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON`
@@ -187,7 +184,7 @@ You can install your backend by any mean (global install, Conan, submodule, etc)
 
 Before adding the hello_imgui directory (`add_subdirectory(hello_imgui)`), just make 
 sure that your backend is available, and select it via one of the variables HELLOIMGUI_USE_SDL_OPENGL3, 
-HELLOIMGUI_USE_GLFW_OPENGL3, or HELLOIMGUI_USE_QT).
+HELLOIMGUI_USE_GLFW_OPENGL3).
 
 For example, the cmake script below works for the GLFW backend:
 
@@ -228,6 +225,8 @@ make -j4
 @import "src/hello_imgui/hello_imgui.h" {md_id=SDLMain}
 
 ### Backend with Qt
+
+_Note: the Qt backend is not actively maintained_
 
 Requirements:
 
@@ -363,6 +362,8 @@ into your app source dir, and adapt it to your needs.
 ## Build and deploy instructions for Android
 
 The Android version uses SDL + OpenGLES3.
+
+_Note: The Android version is currently not actively maintained._
 
 ### Download SDL 
 

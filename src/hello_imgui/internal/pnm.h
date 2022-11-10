@@ -27,9 +27,9 @@
 #error "pnm++ is a library for C++."
 #endif
 
-#if __cplusplus < 201103L
-#error "pnm++ requires C++11 or later."
-#endif
+//#if __cplusplus < 201103L
+//#error "pnm++ requires C++11 or later."
+//#endif
 
 #include <cctype>
 #include <type_traits>

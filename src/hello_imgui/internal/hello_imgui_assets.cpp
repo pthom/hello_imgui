@@ -6,18 +6,6 @@
 #include "hello_imgui/internal/whereami/whereami_cpp.h"
 #endif
 
-#ifdef _MSC_VER
-#include <sys/types.h>
-#include <sys/stat.h>
-static bool directoryExist(const std::string& dir)
-{
-  struct stat st;
-  if (stat(dir.c_str(), &st) == -1)
-    return false;
-  bool isDir = ((st.st_mode & S_IFMT) == S_IFDIR);
-  return isDir;
-}
-#endif
 
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
 #include "SDL_system.h"
@@ -27,7 +15,37 @@ static bool directoryExist(const std::string& dir)
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <filesystem>
+#include <stdio.h>
+
+#ifdef _WIN32
+#include <direct.h>
+#else
+#include <unistd.h>
+#endif
+
+namespace FileUtils
+{
+    bool IsRegularFile(const std::string& filename)
+    {
+        FILE *f = fopen(filename.c_str(), "r");
+        bool found = (f != NULL);
+        if (f)
+            fclose(f);
+        return found;
+    }
+
+    std::string GetCurrentDirectory()
+    {
+        char buffer[2000];
+#ifdef _WIN32
+        _getcwd(buffer, 2000);
+#else
+        getcwd(buffer, 2000);
+#endif
+        std::string r = buffer;
+        return r;
+    }
+}
 
 
 namespace HelloImGui
@@ -77,7 +95,7 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
     // 3. Search inside a subfolder of the current working directory
     #if !defined(HELLOIMGUI_MOBILEDEVICE)
     {
-        r.push_back({std::filesystem::current_path().string() +  "/" + gAssetsSubfolderFolderName, "current_folder/assets"});
+        r.push_back({FileUtils::GetCurrentDirectory() +  "/" + gAssetsSubfolderFolderName, "current_folder/assets"});
     }
     #endif
 
@@ -97,7 +115,7 @@ std::string assetFileFullPath(const std::string& assetFilename)
 {
 #if defined(IOS)
     std::string path = getAppleBundleResourcePath(assetFilename.c_str());
-    if (! std::filesystem::is_regular_file(path))
+    if (! FileUtils::IsRegularFile(path))
         return  "";
     return path;
 #elif defined(__ANDROID__)
@@ -110,7 +128,7 @@ std::string assetFileFullPath(const std::string& assetFilename)
     for (auto assetsFolder: possibleAssetsFolders)
     {
         std::string path = assetsFolder.folder + "/" + assetFilename;
-        if (std::filesystem::is_regular_file(path))
+        if (FileUtils::IsRegularFile(path))
             return path;
     }
     // Display nice message on error

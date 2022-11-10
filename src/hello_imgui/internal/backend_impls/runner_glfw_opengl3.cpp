@@ -1,6 +1,7 @@
 #ifdef HELLOIMGUI_USE_GLFW_OPENGL3
 
 #include "hello_imgui/hello_imgui_include_opengl.h"
+#include "hello_imgui/hello_imgui.h"
 
 #include <GLFW/glfw3.h>
 #include <backends/imgui_impl_glfw.h>
@@ -11,8 +12,7 @@
 #include "runner_glfw_opengl3.h"
 #include "backend_window_helper/glfw_window_helper.h"
 #include "opengl_setup_helper/opengl_setup_glfw.h"
-
-
+#include "opengl_setup_helper/opengl_screenshot.h"
 
 namespace HelloImGui
 {
@@ -121,6 +121,11 @@ namespace HelloImGui
     }
 
     void RunnerGlfwOpenGl3::Impl_SwapBuffers() { glfwSwapBuffers((GLFWwindow *)mWindow); }
+
+    ImageBuffer RunnerGlfwOpenGl3::Impl_ScreenshotRgb()
+    {
+        return OpenglScreenshotRgb();
+    }
 
 }  // namespace HelloImGui
 #endif  // #ifdef HELLOIMGUI_USE_GLFW_OPENGL3

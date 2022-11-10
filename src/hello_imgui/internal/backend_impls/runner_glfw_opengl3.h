@@ -30,7 +30,9 @@ class RunnerGlfwOpenGl3 : public AbstractRunner
         void Impl_UpdateAndRenderAdditionalPlatformWindows() override;
         void Impl_Cleanup() override;
         void Impl_SwapBuffers() override;
-    };
+
+        ImageBuffer Impl_ScreenshotRgb() override;
+};
 
 }  // namespace HelloImGui
 #endif  // #ifdef HELLOIMGUI_USE_GLFW_OPENGL3

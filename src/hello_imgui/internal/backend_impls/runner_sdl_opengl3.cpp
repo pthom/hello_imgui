@@ -5,6 +5,7 @@
 #include "hello_imgui/hello_imgui_error.h"
 #include "backend_window_helper/sdl_window_helper.h"
 #include "internal/backend_impls/opengl_setup_helper/opengl_setup_sdl.h"
+#include "opengl_setup_helper/opengl_screenshot.h"
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_sdl.h>
 
@@ -196,6 +197,11 @@ namespace HelloImGui
 #else // #ifdef HELLOIMGUI_MOBILEDEVICE
       return false;
 #endif
+    }
+
+    ImageBuffer RunnerSdlOpenGl3::Impl_ScreenshotRgb()
+    {
+        return OpenglScreenshotRgb();
     }
 
 }  // namespace HelloImGui

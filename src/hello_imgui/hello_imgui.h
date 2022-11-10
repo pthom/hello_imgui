@@ -7,6 +7,11 @@
 #include "hello_imgui/runner_params.h"
 #include "hello_imgui/hello_imgui_logger.h"
 #include <string>
+
+#include <cstddef>
+#include <cstdint>
+
+
 /**
 @@md#HelloImGui::Run
 
@@ -24,7 +29,7 @@ Three signatures are provided:
 
 __HelloImGui::GetRunnerParams()__ is a convenience function that will return the runnerParams of the current application.
 
- @@md
+@@md
 */
 namespace HelloImGui
 {
@@ -44,17 +49,38 @@ namespace HelloImGui
     RunnerParams* GetRunnerParams();
 }
 
+
+namespace HelloImGui
+{
+/**
+@@md#HelloImGui::AppWindowScreenshotRgb
+
+ AppWindowScreenshotRgb returns a screenshot of the app window
+ (under the form of a RGB buffer)
+
+@@md
+*/
+    struct ImageBuffer
+    {
+        std::size_t width = 0, height = 0;
+        std::vector<uint8_t> bufferRgb;
+    };
+
+    ImageBuffer AppWindowScreenshotRgb();
+}
+
+
 /**
 @@md#SDLMain
 
-    Warning for SDL apps under iOS and Android:
+Warning for SDL apps under iOS and Android:
 
-    SDL uses a dirty hack in order to _replace your main() function by its own main() function_,
-    which will then call your own main !
+SDL uses a dirty hack in order to _replace your main() function by its own main() function_,
+which will then call your own main !
 
-    Please make sure that the signature of your main() function is *exactly*
-        `int main(int argc, char **argv)`
-    and that your main() function returns an int.
+Please make sure that the signature of your main() function is *exactly*
+    `int main(int argc, char **argv)`
+and that your main() function returns an int.
 
 @@md
 */

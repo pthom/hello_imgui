@@ -4,13 +4,13 @@
 namespace HelloImGui
 {
 RunnerParams* gLastRunnerParams = nullptr;
-
+std::unique_ptr<AbstractRunner> gLastRunner;
 
 void Run(RunnerParams& runnerParams)
 {
-    auto runner = FactorRunner(runnerParams);
+    gLastRunner = FactorRunner(runnerParams);
     gLastRunnerParams = &runnerParams;
-    runner->Run();
+    gLastRunner->Run();
 }
 
 void Run(const SimpleRunnerParams& simpleRunnerParams)
@@ -43,6 +43,13 @@ RunnerParams* GetRunnerParams()
     if (gLastRunnerParams == nullptr)
         throw std::runtime_error("HelloImGui::GetRunnerParams() would return null. Did you call HelloImGui::Run()?");
     return gLastRunnerParams;
+}
+
+
+ImageBuffer AppWindowScreenshotRgb()
+{
+    auto r = gLastRunner->ScreenshotRgb();
+    return r;
 }
 
 }  // namespace HelloImGui

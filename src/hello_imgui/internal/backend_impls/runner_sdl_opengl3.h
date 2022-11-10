@@ -31,6 +31,7 @@ namespace HelloImGui
         void Impl_Cleanup() override;
         void Impl_SwapBuffers() override;
 
+        ImageBuffer Impl_ScreenshotRgb() override;
     public:
         bool priv_HandleMobileDeviceEvent(unsigned int sdl_EventType);
 

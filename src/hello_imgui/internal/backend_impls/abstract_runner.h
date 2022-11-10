@@ -1,4 +1,5 @@
 #pragma once
+#include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/runner_params.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/window_geometry_helper.h"
@@ -8,7 +9,6 @@
 
 namespace HelloImGui
 {
-
 
 class AbstractRunner
 {
@@ -35,6 +35,7 @@ class AbstractRunner
     void OnDestroy();
     void OnLowMemory();
 
+    ImageBuffer ScreenshotRgb() { return Impl_ScreenshotRgb(); }
 
    protected:
     //
@@ -59,6 +60,8 @@ class AbstractRunner
     virtual void Impl_UpdateAndRenderAdditionalPlatformWindows() = 0;
     virtual void Impl_SwapBuffers() = 0;
     virtual void Impl_Cleanup() = 0;
+
+    virtual ImageBuffer Impl_ScreenshotRgb() { return ImageBuffer{}; }
 
 private:
     void PrepareAutoSize();

@@ -112,7 +112,9 @@ namespace HelloImGui
         //
         // Standard windowed mode
         //
-        auto windowBoundsLastRun = WindowGeometryHelper::ReadLastRunWindowBounds();
+        std::optional<ScreenBounds> windowBoundsLastRun;
+        if (mRestoreLast)
+          windowBoundsLastRun = WindowGeometryHelper::ReadLastRunWindowBounds();
 
         // Window Size
         auto computeSize = [&]() -> ScreenSize

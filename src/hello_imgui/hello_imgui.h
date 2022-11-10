@@ -6,6 +6,7 @@
 #include "hello_imgui/image_from_asset.h"
 #include "hello_imgui/runner_params.h"
 #include "hello_imgui/hello_imgui_logger.h"
+#include "hello_imgui/hello_imgui_screenshot.h"
 #include <string>
 
 #include <cstddef>
@@ -48,27 +49,6 @@ namespace HelloImGui
 
     RunnerParams* GetRunnerParams();
 }
-
-
-namespace HelloImGui
-{
-/**
-@@md#HelloImGui::AppWindowScreenshotRgb
-
- AppWindowScreenshotRgb returns a screenshot of the app window
- (under the form of a RGB buffer)
-
-@@md
-*/
-    struct ImageBuffer
-    {
-        std::size_t width = 0, height = 0;
-        std::vector<uint8_t> bufferRgb;
-    };
-
-    ImageBuffer AppWindowScreenshotRgb();
-}
-
 
 /**
 @@md#SDLMain

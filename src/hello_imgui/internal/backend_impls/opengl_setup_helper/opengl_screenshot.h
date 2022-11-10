@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hello_imgui/hello_imgui.h"
+#include "hello_imgui/hello_imgui_screenshot.h"
 
 
 namespace HelloImGui

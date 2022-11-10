@@ -10,6 +10,9 @@
 
 namespace HelloImGui
 {
+// Encapsulated inside hello_imgui_screenshot.cpp
+void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
+
 
 AbstractRunner::AbstractRunner(RunnerParams &params_)
     : params(params_)
@@ -38,6 +41,13 @@ void AbstractRunner::Run()
 
             frameIdx += 1;
         }
+
+        // Store screenshot before exiting
+        {
+            ImageBuffer b = ScreenshotRgb();
+            setFinalAppWindowScreenshotRgbBuffer(b);
+        }
+
         if (params.appWindowParams.restorePreviousGeometry)
             mGeometryHelper->WriteLastRunWindowBounds(mBackendWindowHelper->GetWindowBounds(mWindow));
         TearDown();

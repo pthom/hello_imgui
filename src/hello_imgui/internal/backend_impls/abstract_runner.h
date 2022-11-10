@@ -1,6 +1,6 @@
 #pragma once
-#include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/runner_params.h"
+#include "hello_imgui/hello_imgui_screenshot.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/window_geometry_helper.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/window_autosize_helper.h"

@@ -45,11 +45,9 @@ RunnerParams* GetRunnerParams()
     return gLastRunnerParams;
 }
 
-
-ImageBuffer AppWindowScreenshotRgb()
+AbstractRunner *GetRunner()
 {
-    auto r = gLastRunner->ScreenshotRgb();
-    return r;
+    return gLastRunner.get();
 }
 
 }  // namespace HelloImGui

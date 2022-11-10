@@ -61,7 +61,7 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
         r.push_back({gOverrideAssetsFolder, "folder provided by HelloImGui::setAssetsFolder()"});
 
     // 2. Search inside a subfolder of the exe
-    #if !defined(HELLOIMGUI_MOBILEDEVICE)
+    #if !defined(HELLOIMGUI_MOBILEDEVICE) && !defined(__EMSCRIPTEN__)
     {
         r.push_back({wai_getExecutableFolder_string() + "/" + gAssetsSubfolderFolderName, "exe_folder/assets"});
         #ifdef _MSC_VER

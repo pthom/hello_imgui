@@ -18,6 +18,7 @@ namespace HelloImGui
 
         size_t bufferSize= r.width * r.height * depth;
         r.bufferRgb.resize(bufferSize);
+        glPixelStorei(GL_PACK_ALIGNMENT, 1);
         glReadPixels(
             glDimensions[0], glDimensions[1],
             glDimensions[2], glDimensions[3],

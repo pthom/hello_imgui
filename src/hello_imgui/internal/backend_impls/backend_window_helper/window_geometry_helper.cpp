@@ -172,37 +172,28 @@ namespace HelloImGui
 
     std::optional<ScreenBounds> WindowGeometryHelper::ReadLastRunWindowBounds()
     {
-        static std::optional<ScreenBounds> staticResult;
-        static bool wasStaticResultComputed = false;
-
-        if (!wasStaticResultComputed)
+        std::ifstream is(APP_WINDOW_POS_INI_FILE);
+        if (is.is_open())
         {
-            wasStaticResultComputed = true;
-
-            std::ifstream is(APP_WINDOW_POS_INI_FILE);
-            if (is.is_open())
+            ScreenBounds r;
+            std::string line;
+            while (is)
             {
-                ScreenBounds r;
-                std::string line;
-                while (is)
-                {
-                    std::getline(is, line);
+                std::getline(is, line);
 
-                    auto pos = parseSizeLine(line, "WindowPosition");
-                    if (pos.has_value())
-                        r.position = pos.value();
+                auto pos = parseSizeLine(line, "WindowPosition");
+                if (pos.has_value())
+                    r.position = pos.value();
 
-                    auto size = parseSizeLine(line, "WindowSize");
-                    if (size.has_value())
-                        r.size = size.value();
-                }
-                staticResult = r;
+                auto size = parseSizeLine(line, "WindowSize");
+                if (size.has_value())
+                    r.size = size.value();
             }
-            else
-                staticResult = std::nullopt;
-        }
 
-        return staticResult;
+            return r;
+        }
+        else
+            return std::nullopt;
     }
 
 

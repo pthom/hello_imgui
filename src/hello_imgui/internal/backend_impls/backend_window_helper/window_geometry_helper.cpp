@@ -11,9 +11,6 @@ namespace
 {
     const char* APP_WINDOW_POS_INI_FILE = "imgui_app_window.ini";
 
-    //
-    // ... Where we are forced to reinvent string wheels, such as in every C++ program ever
-    //
     std::vector<std::string> splitString(const std::string& s, char delimiter)
     {
         std::vector<std::string> tokens;

@@ -26,53 +26,15 @@ static bool directoryExist(const std::string& dir)
 #include "hello_imgui/hello_imgui_error.h"
 #include <fstream>
 #include <sstream>
+#include <vector>
+#include <filesystem>
 
 
 namespace HelloImGui
 {
-  std::string gAssetsSubfolderFolderName = "assets";
+std::string gAssetsSubfolderFolderName = "assets";
 
-  std::string gOverrideAssetsFolder = "";
-
-/// Access font files in application bundle or assets/fonts/
-std::string assetFileFullPath(const std::string& assetFilename)
-{
-    if (!gOverrideAssetsFolder.empty())
-    {
-        std::string path = gOverrideAssetsFolder + "/" + assetFilename;
-        return path;
-    }
-#if defined(IOS)
-    std::string path = getAppleBundleResourcePath(assetFilename.c_str());
-        return path;
-#elif defined(__EMSCRIPTEN__)
-    std::string path = std::string("/") + assetFilename;
-        return path;
-#elif defined(__ANDROID__)
-    // Under android, assets can be compressed
-    // You cannot use standard file operations!`
-    (void)assetFilename;
-    HIMG_THROW("assetFileFullPath does not work on android!");
-#elif defined(_MSC_VER)
-  // For msvc, we have to deal with the fact that the exe could be in a subfolder "Debug" or "Release" of ${CMAKE_CURRENT_BINARY_DIR}
-  // whereas the assets folder is located directly inside ${CMAKE_CURRENT_BINARY_DIR}
-  std::string assetsFolder = wai_getExecutableFolder_string() + "/" + gAssetsSubfolderFolderName;
-  if (!directoryExist(assetsFolder))
-  {
-      assetsFolder = wai_getExecutableFolder_string() + "/../" + gAssetsSubfolderFolderName;
-      if (!directoryExist(assetsFolder))
-      {
-          HIMG_THROW_STRING(std::string("Cannot find assets folder"));
-      }
-  }
-  std::string path = assetsFolder + "/" + assetFilename;
-  return path;
-#else
-    std::string assetsFolder = wai_getExecutableFolder_string() + "/assets/";
-    std::string path = assetsFolder + assetFilename;
-    return path;
-#endif
-}
+std::string gOverrideAssetsFolder = "";
 
 void overrideAssetsFolder(const char* folder)
 {
@@ -84,31 +46,120 @@ void setAssetsFolder(const char* folder)
     gOverrideAssetsFolder = folder;
 }
 
+struct AssetFolderWithDesignation
+{
+    std::string folder;
+    std::string designation;
+};
+
+std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
+{
+    std::vector<AssetFolderWithDesignation> r;
+
+    // 1. Search inside gOverrideAssetsFolder set by setAssetsFolder()
+    if (! gOverrideAssetsFolder.empty())
+        r.push_back({gOverrideAssetsFolder, "folder provided by HelloImGui::setAssetsFolder()"});
+
+    // 2. Search inside a subfolder of the exe
+    #if !defined(HELLOIMGUI_MOBILEDEVICE)
+    {
+        r.push_back({wai_getExecutableFolder_string() + "/" + gAssetsSubfolderFolderName, "exe_folder/assets"});
+        #ifdef _MSC_VER
+        {
+            // For msvc, we have to deal with the fact that the exe could be in a subfolder "Debug" or "Release" of ${CMAKE_CURRENT_BINARY_DIR}
+            // whereas the assets folder is located directly inside ${CMAKE_CURRENT_BINARY_DIR}
+            r.push_back({wai_getExecutableFolder_string() + "/../" + gAssetsSubfolderFolderName, "exe_folder/../assets"});
+        }
+        #endif
+    }
+    #endif
+
+    // 3. Search inside a subfolder of the current working directory
+    #if !defined(HELLOIMGUI_MOBILEDEVICE)
+    {
+        r.push_back({std::filesystem::current_path().string() +  "/" + gAssetsSubfolderFolderName, "current_folder/assets"});
+    }
+    #endif
+
+    // 3. For emscripten, search at "/"
+    #ifdef __EMSCRIPTEN__
+    {
+        r.push_back({"/", "root folder for emscripten"});
+        r.push_back({"/" + gAssetsSubfolderFolderName , "root assets folder for emscripten"});
+    }
+    #endif
+
+    return r;
+}
+
+/// Access font files in application bundle or assets/fonts/
+std::string assetFileFullPath(const std::string& assetFilename)
+{
+#if defined(IOS)
+    std::string path = getAppleBundleResourcePath(assetFilename.c_str());
+    if (! std::filesystem::is_regular_file(path))
+        return  "";
+    return path;
+#elif defined(__ANDROID__)
+    // Under android, assets can be compressed
+    // You cannot use standard file operations!`
+    (void)assetFilename;
+    HIMG_THROW("assetFileFullPath does not work on android!");
+#else
+    auto possibleAssetsFolders = computePossibleAssetsFolders();
+    for (auto assetsFolder: possibleAssetsFolders)
+    {
+        std::string path = assetsFolder.folder + "/" + assetFilename;
+        if (std::filesystem::is_regular_file(path))
+            return path;
+    }
+    // Display nice message on error
+    {
+        std::string errorMessage;
+        errorMessage += "assetFileFullPath(" + assetFilename + ") failed!\n";
+        errorMessage += "    Tried the following assets folders:\n";
+        for (auto assetsFolder: possibleAssetsFolders)
+        {
+            errorMessage += "        " + assetsFolder.designation + ":\n";
+            errorMessage += "            " + assetsFolder.folder + "\n";
+        }
+        errorMessage += "    (you can call HelloImGui::setAssetsFolder() to set the default search location)\n";
+        HIMG_THROW_STRING(errorMessage);
+    }
+#endif
+}
+
 
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
 
 AssetFileData LoadAssetFileData(const char *assetPath)
 {
-    AssetFileData r;
-    r.data = SDL_LoadFile(assetPath, &r.dataSize);
-    #ifndef __ANDROID__
+    #ifdef __ANDROID__
+    {
+        AssetFileData r;
+        testedPaths.push_back(assetPath);
+        r.data = SDL_LoadFile(assetPath, &r.dataSize);
         if (!r.data)
+            HIMG_THROW_STRING(std::string("LoadAssetFileData: cannot load ") + assetPath);
+
+        return r;
+    }
+    #else
+    {
+        std::string assetFullPath = assetFileFullPath(assetPath);
+
+        AssetFileData r;
+        r.data = SDL_LoadFile(assetFullPath.c_str(), &r.dataSize);
+        if (! r.data)
         {
-            std::string otherPath = assetFileFullPath(assetPath);
-            r.data = SDL_LoadFile(otherPath.c_str(), &r.dataSize);
+            std::string errorMessage = std::string("LoadAssetFileData(") + assetPath + ")\n";
+            errorMessage += "==> SDL_LoadFile(" + assetFullPath + ") failed !!!!\n";
+            HIMG_THROW_STRING(errorMessage);
         }
+
+        return r;
+    }
     #endif
-    #ifdef _MSC_VER
-        if (!r.data)
-        {
-            std::string otherPath2 =
-            wai_getExecutableFolder_string() + "/../assets/" + assetPath;
-            r.data = SDL_LoadFile(otherPath2.c_str(), &r.dataSize);
-        }
-    #endif
-    if (!r.data)
-        HIMG_THROW_STRING(std::string("LoadAssetFileData: cannot load ") + assetPath);
-    return r;
 }
 
 void FreeAssetFileData(AssetFileData * assetFileData)
@@ -143,10 +194,8 @@ AssetFileData LoadAssetFileData_Impl(const char *assetPath)
 
 AssetFileData LoadAssetFileData(const char *assetPath)
 {
-    AssetFileData r = LoadAssetFileData_Impl(assetPath);
     std::string fullPath = assetFileFullPath(assetPath);
-    if (!r.data)
-        r = LoadAssetFileData_Impl(fullPath.c_str());
+    AssetFileData r = LoadAssetFileData_Impl(fullPath.c_str());
     if (!r.data)
     {
         std::stringstream msg;

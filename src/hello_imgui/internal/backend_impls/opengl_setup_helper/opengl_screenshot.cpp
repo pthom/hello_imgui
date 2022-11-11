@@ -28,7 +28,7 @@ namespace HelloImGui
         // Invert rows, since OpenGL (0,0) is at the bottomLeft
         for(std::size_t y = 0; y <= r.height / 2; ++y)
         {
-            int yd = r.height - y;
+            int yd = r.height - 1 - y;
             for(std::size_t x = 0; x < r.width * depth; ++x)
             {
                 std::swap(r.bufferRgb[y * r.width * depth + x], r.bufferRgb[yd * r.width * depth + x]);

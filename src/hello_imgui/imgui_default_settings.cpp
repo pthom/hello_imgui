@@ -10,6 +10,10 @@
 #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
 #endif
 
+#ifdef HELLOIMGUI_MACOS
+#import <AppKit/NSScreen.h>
+#endif
+
 namespace HelloImGui
 {
 ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange, ImFontConfig config)
@@ -23,6 +27,22 @@ ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFu
     }
 
     float fontSizeDpi = HelloImGui::GetRunnerParams()->appWindowParams.outWindowDpiFactor * fontSize;
+
+#ifdef HELLOIMGUI_MACOS
+    {
+        // Crisp fonts on MacOS:
+        // cf https://github.com/ocornut/imgui/issues/5301
+        // Issue with MacOS is that it pretends screen has 2x less pixels
+        // than it actually does. This simplifies application development in most cases,
+        // but in our case we happen to render fonts at 1x scale while screen renders at 2x scale.
+        // You can cheat a little:
+        CGFloat scale = NSScreen.mainScreen.backingScaleFactor;
+        ImFontConfig cfg;
+        fontSizeDpi *= scale;
+        ImGui::GetIO().FontGlobalScale = 1.0f / scale;
+    }
+#endif
+
     ImFont * font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSizeDpi, &config);
     if (font == nullptr)
         HIMG_THROW_STRING(std::string("Cannot load ") + fontFilename);

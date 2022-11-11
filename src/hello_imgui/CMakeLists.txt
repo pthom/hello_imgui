@@ -20,6 +20,11 @@ if (HELLO_IMGUI_IMGUI_SHARED)
     target_compile_definitions(${target_name} PRIVATE HELLO_IMGUI_IMGUI_SHARED)
 endif()
 
+if(APPLE AND NOT IOS)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_MACOS)
+    enable_language(OBJC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -x objective-c++")
+endif()
 
 if (IOS)
     target_compile_definitions(${target_name} PUBLIC IOS)

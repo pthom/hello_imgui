@@ -1,8 +1,5 @@
 #include "hello_imgui/imgui_theme.h"
 
-//#include <vector>
-
-
 namespace ImGuiTheme
 {
     namespace ThemeTweakImpl

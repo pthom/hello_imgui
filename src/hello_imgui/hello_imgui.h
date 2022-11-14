@@ -6,6 +6,7 @@
 #include "hello_imgui/image_from_asset.h"
 #include "hello_imgui/runner_params.h"
 #include "hello_imgui/hello_imgui_logger.h"
+#include "hello_imgui/imgui_theme.h"
 #include <string>
 
 #include <cstddef>

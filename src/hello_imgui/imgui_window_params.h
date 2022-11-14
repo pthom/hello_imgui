@@ -1,6 +1,9 @@
 #pragma once
 #include "imgui.h"
 #include <functional>
+#include <string>
+#include "hello_imgui/imgui_theme.h"
+
 
 namespace HelloImGui
 {
@@ -61,6 +64,10 @@ In order to change the application window settings, change the _AppWindowsParams
 
   * `enableViewports`: _bool, default=false_. Enable multiple viewports (i.e multiple native windows)
     If true, you can drag windows outside out the main window in order to put their content into new native windows.
+
+  * `themeName`: _string, default="ImGuiColorsDark"_.
+    Change the ImGui theme. Several themes are available, you can query the list by calling
+    HelloImGui::AvailableThemes()
 @@md
  */
 struct ImGuiWindowParams
@@ -79,6 +86,8 @@ struct ImGuiWindowParams
     bool configWindowsMoveFromTitleBarOnly = true;
 
     bool enableViewports = false;
+
+    ImGuiTheme::ImGuiTweakedTheme tweakedTheme;
 };
 
 }  // namespace HelloImGui

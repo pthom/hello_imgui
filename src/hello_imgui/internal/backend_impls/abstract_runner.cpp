@@ -2,6 +2,7 @@
 #include "hello_imgui/internal/docking_details.h"
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/image_from_asset.h"
+#include "hello_imgui/hello_imgui_theme.h"
 #include "imgui.h"
 
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
@@ -22,6 +23,7 @@ void AbstractRunner::Run()
 {
     Setup();
 
+    auto originalStyle = ImGui::GetStyle();
     int frameIdx = 0;
 #ifdef HELLOIMGUI_MOBILEDEVICE
     while (true)
@@ -33,7 +35,6 @@ void AbstractRunner::Run()
     {
         while (!params.appShallExit)
         {
-
             if (frameIdx == 1)
                 ForceWindowPositionOrSize();
 
@@ -179,6 +180,8 @@ void AbstractRunner::RenderGui(int idxFrame)
 
     if (params.imGuiWindowParams.showStatusBar)
         Menu_StatusBar::ShowStatusBar(params);
+
+    Theme_WindowGui(params.imGuiWindowParams.tweakedTheme);
 
     DockingDetails::CloseWindowOrDock(params.imGuiWindowParams);
 }

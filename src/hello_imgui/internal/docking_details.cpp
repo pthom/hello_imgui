@@ -1,11 +1,13 @@
 #include "hello_imgui/internal/docking_details.h"
 #include "imgui.h"
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
+#include "hello_imgui/hello_imgui_theme.h"
 #include "imgui_internal.h"
 #include <map>
 
 namespace HelloImGui
 {
+void _Themes_MenuGui(RunnerParams& runnerParams); // see hello_imgui_themes.cpp
 
 std::map<DockSpaceName, ImGuiID> gImGuiSplitIDs;
 
@@ -121,11 +123,8 @@ void MenuView_DockableWindows(RunnerParams& runnerParams)
             ImGui::MenuItem(dockableWindow.label.c_str(), nullptr, dockableWindow.isVisible, false);
         }
     }
-
-    ImGui::Separator();
-    MenuItems_FontScale();
-    ImGui::Separator();
 }
+
 
 void ShowViewMenu(RunnerParams & runnerParams)
 {
@@ -133,6 +132,10 @@ void ShowViewMenu(RunnerParams & runnerParams)
     if (ImGui::BeginMenu("View##kdsflmkdflm"))
     {
         MenuView_DockableWindows(runnerParams);
+        ImGui::Separator();
+        Theme_MenuGui(runnerParams.imGuiWindowParams.tweakedTheme);
+        ImGui::Separator();
+        MenuItems_FontScale();
         ImGui::Separator();
 
         if (ImGui::MenuItem("View Status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatusBar))

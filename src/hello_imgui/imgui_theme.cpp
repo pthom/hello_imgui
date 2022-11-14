@@ -2,7 +2,8 @@
 
 //
 // Theme tweak utilities for ImGui.
-// Reuse and adaptation of imgui_theme.h and imgui_theme.cpp file is granted for other projects.
+// Reuse and adaptation of imgui_theme.h and imgui_theme.cpp file is granted for other projects
+// provided the origin of those files is stated in the copied version.
 // Some themes were adapted by themes posted by ImGui users at https://github.com/ocornut/imgui/issues/707
 //
 
@@ -68,23 +69,41 @@ namespace ImGuiTheme
         ImGuiCol_ gBgColors[] = {
             ImGuiCol_WindowBg,
             ImGuiCol_ChildBg,
-            ImGuiCol_PopupBg,
+            ImGuiCol_PopupBg
         };
 
-        bool _IsBgColor(ImGuiCol_ col)
+        ImGuiCol_ gTextColors[] = {
+            ImGuiCol_Text,
+            ImGuiCol_TextDisabled,
+        };
+
+        enum class ColorCategory
         {
+            ColorBg,
+            ColorFront,
+            ColorText,
+            ColorFrameBg
+        };
+
+        ColorCategory _GetColorCategory(ImGuiCol_ col)
+        {
+            if (col == ImGuiCol_FrameBg)
+                return ColorCategory::ColorFrameBg;
             for (size_t i = 0; i < IM_ARRAYSIZE(gBgColors); ++i)
                 if (col == gBgColors[i])
-                    return true;
-            return false;
+                    return ColorCategory::ColorBg;
+            for (size_t i = 0; i < IM_ARRAYSIZE(gTextColors); ++i)
+                if (col == gTextColors[i])
+                    return ColorCategory::ColorText;
+            return ColorCategory::ColorFront;
         }
 
-        void _ApplyValueMultiplier(ImGuiStyle& style, float value_multiplier, ImGuiStyle& reference_style, bool flagBgColors)
+        void _ApplyValueMultiplier(ImGuiStyle& style, float value_multiplier, ImGuiStyle& reference_style, ColorCategory category)
         {
             for (int i = 0; i < ImGuiCol_COUNT; ++i)
             {
                 ImGuiCol_ colEnum = (ImGuiCol_) i;
-                if (_IsBgColor(colEnum) == flagBgColors)
+                if (_GetColorCategory(colEnum) == category)
                 {
                     ImVec4 &col = style.Colors[i];
                     const ImVec4 &col_ref = reference_style.Colors[i];
@@ -101,14 +120,23 @@ namespace ImGuiTheme
 
         void ApplyValueMultiplierFront(ImGuiStyle& style, float value_multiplier, ImGuiStyle& reference_style)
         {
-            _ApplyValueMultiplier(style, value_multiplier, reference_style, false);
+            _ApplyValueMultiplier(style, value_multiplier, reference_style, ColorCategory::ColorFront);
         }
 
         void ApplyValueMultiplierBg(ImGuiStyle& style, float value_multiplier, ImGuiStyle& reference_style)
         {
-            _ApplyValueMultiplier(style, value_multiplier, reference_style, true);
+            _ApplyValueMultiplier(style, value_multiplier, reference_style, ColorCategory::ColorBg);
         }
 
+        void ApplyValueMultiplierText(ImGuiStyle& style, float value_multiplier, ImGuiStyle& reference_style)
+        {
+            _ApplyValueMultiplier(style, value_multiplier, reference_style, ColorCategory::ColorText);
+        }
+
+        void ApplyValueMultiplierFrameBg(ImGuiStyle& style, float value_multiplier, ImGuiStyle& reference_style)
+        {
+            _ApplyValueMultiplier(style, value_multiplier, reference_style, ColorCategory::ColorFrameBg);
+        }
 
         void ApplyHue(ImGuiStyle& style, float hue)
         {
@@ -292,7 +320,7 @@ namespace ImGuiTheme
             style.Colors[ImGuiCol_CheckMark] = ImVec4(0.3098039329051971f, 0.6235294342041016f, 0.9333333373069763f, 1.0f);
             style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.239215686917305f, 0.5215686559677124f, 0.8784313797950745f, 1.0f);
             style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.2588235437870026f, 0.5882353186607361f, 0.9803921580314636f, 1.0f);
-            style.Colors[ImGuiCol_Button] = ImVec4(0.1529411822557449f, 0.1725490242242813f, 0.2117647081613541f, 0.501960813999176f);
+            style.Colors[ImGuiCol_Button] = ImVec4(0.3529411822557449f, 0.4125490242242813f, 0.4417647081613541f, 0.501960813999176f);
             style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.1529411822557449f, 0.1725490242242813f, 0.2117647081613541f, 1.0f);
             style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.3098039329051971f, 0.6235294342041016f, 0.9333333373069763f, 1.0f);
             style.Colors[ImGuiCol_Header] = ImVec4(0.1529411822557449f, 0.1725490242242813f, 0.2117647081613541f, 1.0f);
@@ -549,7 +577,7 @@ namespace ImGuiTheme
             style.FramePadding = ImVec2(5.0f, 1.0f);
             style.FrameRounding = 3.0f;
             style.FrameBorderSize = 1.0f;
-            style.ItemSpacing = ImVec2(7.0f, 1.0f);
+            style.ItemSpacing = ImVec2(7.0f, 3.0f);
             style.ItemInnerSpacing = ImVec2(1.0f, 1.0f);
             style.CellPadding = ImVec2(4.0f, 2.0f);
             style.IndentSpacing = 6.0f;
@@ -619,6 +647,12 @@ namespace ImGuiTheme
             style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.800000011920929f, 0.800000011920929f, 0.800000011920929f, 0.2000000029802322f);
             style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.800000011920929f, 0.800000011920929f, 0.800000011920929f, 0.3499999940395355f);
 
+            ThemeTweakImpl::ApplyHue(style, 0.853f);
+            ThemeTweakImpl::ApplyValueMultiplierFront(style, 0.971f, style);
+            ThemeTweakImpl::ApplyValueMultiplierBg(style, 0.969f, style);
+            ThemeTweakImpl::ApplyValueMultiplierText(style, 0.937f, style);
+            style.Colors[ImGuiCol_WindowBg] = ImVec4(0.1294117718935013f, 0.1372549086809158f, 0.168627455830574f, 1.0f);
+
             return style;
         }
 
@@ -627,42 +661,12 @@ namespace ImGuiTheme
             float hue=-1.f,
             float saturation_multiplier=1.f,
             float value_multiplier_front=1.f,
-            float value_multiplier_bg=1.f
+            float value_multiplier_bg=1.f,
+            float alpha_bg_transparency=1.f
             )
         {
             // Darcula style by ice1000 from ImThemes
             ImGuiStyle style;
-
-            style.Alpha = 1.0f;
-            style.DisabledAlpha = 0.6000000238418579f;
-            style.WindowPadding = ImVec2(8.0f, 8.0f);
-            style.WindowRounding = 5.300000190734863f;
-            style.WindowBorderSize = 1.0f;
-            style.WindowMinSize = ImVec2(32.0f, 32.0f);
-            style.WindowTitleAlign = ImVec2(0.0f, 0.5f);
-            style.WindowMenuButtonPosition = ImGuiDir_Left;
-            style.ChildRounding = 0.0f;
-            style.ChildBorderSize = 1.0f;
-            style.PopupRounding = 0.0f;
-            style.PopupBorderSize = 1.0f;
-            style.FramePadding = ImVec2(4.0f, 3.0f);
-            style.FrameRounding = 2.299999952316284f;
-            style.FrameBorderSize = 1.0f;
-            style.ItemSpacing = ImVec2(8.0f, 6.5f);
-            style.ItemInnerSpacing = ImVec2(4.0f, 4.0f);
-            style.CellPadding = ImVec2(4.0f, 2.0f);
-            style.IndentSpacing = 21.0f;
-            style.ColumnsMinSpacing = 6.0f;
-            style.ScrollbarSize = 14.0f;
-            style.ScrollbarRounding = 5.0f;
-            style.GrabMinSize = 10.0f;
-            style.GrabRounding = 2.299999952316284f;
-            style.TabRounding = 4.0f;
-            style.TabBorderSize = 0.0f;
-            style.TabMinWidthForCloseButton = 0.0f;
-            style.ColorButtonPosition = ImGuiDir_Right;
-            style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
-            style.SelectableTextAlign = ImVec2(0.0f, 0.0f);
 
             style.Colors[ImGuiCol_Text] = ImVec4(0.7333333492279053f, 0.7333333492279053f, 0.7333333492279053f, 1.0f);
             style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.3450980484485626f, 0.3450980484485626f, 0.3450980484485626f, 1.0f);
@@ -724,7 +728,27 @@ namespace ImGuiTheme
             ThemeTweakImpl::ApplyValueMultiplierFront(style, value_multiplier_front, style);
             ThemeTweakImpl::ApplyValueMultiplierBg(style, value_multiplier_bg, style);
             ThemeTweakImpl::ApplySaturationMultiplier(style, saturation_multiplier, style);
+            ThemeTweakImpl::ApplyAlphaMultiplier(style, alpha_bg_transparency, style);
 
+            return style;
+        }
+
+        ImGuiStyle DarculaDarker()
+        {
+            float rounding = 3.f;
+            float hue = 0.61f;
+            float alpha_multiplier_bg_transparency = 0.92f;
+            float saturation_multiplier = 0.993f;
+            float value_multiplier_front = 0.981f;
+            float value_multiplier_bg = 0.585f;
+
+            ImGuiStyle style = Darcula(
+                rounding,
+                hue, saturation_multiplier,
+                value_multiplier_front,
+                value_multiplier_bg,
+                alpha_multiplier_bg_transparency);
+            ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, 0.39f, style);
             return style;
         }
 
@@ -821,6 +845,7 @@ namespace ImGuiTheme
             ImGuiStyle style = ShadesOfGray();
             ThemeTweakImpl::ApplyValueMultiplierFront(style, 0.94f, style);
             ThemeTweakImpl::ApplyValueMultiplierBg(style, 7.f, style);
+            ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, 0.91f, style);
             return style;
         }
 
@@ -829,6 +854,7 @@ namespace ImGuiTheme
             ImGuiStyle style = SoDark(0.548f);
             ThemeTweakImpl::ApplyValueMultiplierFront(style, 1.356f, style);
             ThemeTweakImpl::ApplyValueMultiplierBg(style, 0.f, style);
+            ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, 1.12f, style);
             return style;
         }
     } // namespace ThemesImpl
@@ -851,9 +877,10 @@ namespace ImGuiTheme
         {ImGuiTheme_MicrosoftStyle,        "MicrosoftStyle",      ThemesImpl::MicrosoftStyle()},
         {ImGuiTheme_Cherry,                "Cherry",              ThemesImpl::Cherry()},
         {ImGuiTheme_Darcula,               "Darcula",             ThemesImpl::Darcula()},
+        {ImGuiTheme_DarculaDarker,         "DarculaDarker",       ThemesImpl::DarculaDarker()},
         {ImGuiTheme_LightRounded,          "LightRounded",        ThemesImpl::LightRounded()},
         {ImGuiTheme_SoDark_AccentBlue,     "SoDark_AccentBlue",   ThemesImpl::SoDark(0.548f)},
-        {ImGuiTheme_SoDark_AccentYellow,   "SoDark_AccentYellow", ThemesImpl::SoDark(0.2f)},
+        {ImGuiTheme_SoDark_AccentYellow,   "SoDark_AccentYellow", ThemesImpl::SoDark(0.163f)},
         {ImGuiTheme_SoDark_AccentRed,      "SoDark_AccentRed",    ThemesImpl::SoDark(0.f)},
         {ImGuiTheme_BlackIsBlack,          "BlackIsBlack",        ThemesImpl::BlackIsBlack()},
         {ImGuiTheme_WhiteIsWhite,          "WhiteIsWhite",        ThemesImpl::WhiteIsWhite()},
@@ -906,6 +933,10 @@ namespace ImGuiTheme
             ThemeTweakImpl::ApplyValueMultiplierFront(style, tweaks.ValueMultiplierFront, reference_style);
         if (tweaks.ValueMultiplierBg >= 0.f)
             ThemeTweakImpl::ApplyValueMultiplierBg(style, tweaks.ValueMultiplierBg, reference_style);
+        if (tweaks.ValueMultiplierText >= 0.f)
+            ThemeTweakImpl::ApplyValueMultiplierText(style, tweaks.ValueMultiplierText, reference_style);
+        if (tweaks.ValueMultiplierFrameBg >= 0.f)
+            ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, tweaks.ValueMultiplierFrameBg, reference_style);
 
         return style;
     }
@@ -1043,6 +1074,38 @@ namespace ImGuiTheme
                 else
                     tweaks->ValueMultiplierBg = -1.f;
             }
+            // ValueMultiplierText
+            {
+                bool active = tweaks->ValueMultiplierText >= 0;
+                if (ImGui::Checkbox("Value multiplier / texts", &active))
+                    changed = true;
+
+                if (active)
+                {
+                    if (tweaks->ValueMultiplierText < 0.f)
+                        tweaks->ValueMultiplierText = 1.f;
+                    if (ImGui::SliderFloat("Value multiplier texts", &tweaks->ValueMultiplierText, 0.f, 10.f))
+                        changed = true;
+                }
+                else
+                    tweaks->ValueMultiplierText = -1.f;
+            }
+            // ValueMultiplierFrameBg
+            {
+                bool active = tweaks->ValueMultiplierFrameBg >= 0;
+                if (ImGui::Checkbox("Value multiplier / FrameBg", &active))
+                    changed = true;
+
+                if (active)
+                {
+                    if (tweaks->ValueMultiplierFrameBg < 0.f)
+                        tweaks->ValueMultiplierFrameBg = 1.f;
+                    if (ImGui::SliderFloat("Value multiplier FrameBg", &tweaks->ValueMultiplierFrameBg, 0.f, 10.f))
+                        changed = true;
+                }
+                else
+                    tweaks->ValueMultiplierFrameBg = -1.f;
+            }
 
         }
         return changed;
@@ -1086,10 +1149,11 @@ namespace ImGuiTheme
         float hue,
         float saturation_multiplier,
         float value_multiplier_front,
-        float value_multiplier_bg
+        float value_multiplier_bg,
+        float alpha_bg_transparency
     )
     {
-        return ThemesImpl::Darcula(rounding, hue, saturation_multiplier, value_multiplier_front, value_multiplier_bg);
+        return ThemesImpl::Darcula(rounding, hue, saturation_multiplier, value_multiplier_front, value_multiplier_bg, alpha_bg_transparency);
     }
 
 } // namespace ImGuiTheme

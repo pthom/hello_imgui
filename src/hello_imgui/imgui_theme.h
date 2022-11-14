@@ -3,7 +3,8 @@
 
 //
 // Theme tweak utilities for ImGui.
-// Reuse and adaptation of imgui_theme.h and imgui_theme.cpp file is granted for other projects.
+// Reuse and adaptation of imgui_theme.h and imgui_theme.cpp file is granted for other projects,
+// provided the origin of those files is stated in the copied version
 // Some themes were adapted by themes posted by ImGui users at https://github.com/ocornut/imgui/issues/707
 //
 
@@ -21,6 +22,7 @@ namespace ImGuiTheme
         ImGuiTheme_MicrosoftStyle,
         ImGuiTheme_Cherry,
         ImGuiTheme_Darcula,
+        ImGuiTheme_DarculaDarker,
         ImGuiTheme_LightRounded,
         ImGuiTheme_SoDark_AccentBlue,
         ImGuiTheme_SoDark_AccentYellow,
@@ -50,15 +52,20 @@ namespace ImGuiTheme
         float Hue = -1.f;
         // Multiply the saturation of all widgets (gray widgets will remain gray, since their saturation is zero). If < 0, this is ignored.
         float SaturationMultiplier = -1.f;
-        // Multiply the value of all front widgets. If < 0, this is ignored.
+        // Multiply the value (luminance) of all front widgets. If < 0, this is ignored.
         float ValueMultiplierFront = -1.f;
-        // Multiply the value of all backgrounds. If < 0, this is ignored.
+        // Multiply the value (luminance) of all backgrounds. If < 0, this is ignored.
         float ValueMultiplierBg = -1.f;
+        // Multiply the value (luminance) of text. If < 0, this is ignored.
+        float ValueMultiplierText = -1.f;
+        // Multiply the value (luminance) of FrameBg. If < 0, this is ignored.
+        // (Background of checkbox, radio button, plot, slider, text input)
+        float ValueMultiplierFrameBg = -1.f;
     };
 
     struct ImGuiTweakedTheme
     {
-        ImGuiTheme_ Theme = ImGuiTheme_ImGuiColorsDark;
+        ImGuiTheme_ Theme = ImGuiTheme_DarculaDarker;
         ImGuiThemeTweaks Tweaks = {};
     };
 
@@ -76,7 +83,8 @@ namespace ImGuiTheme
         float hue=-1.f,
         float saturation_multiplier=1.f,
         float value_multiplier_front=1.f,
-        float value_multiplier_bg=1.f
+        float value_multiplier_bg=1.f,
+        float alpha_bg_transparency=1.f
     );
 
 

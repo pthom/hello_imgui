@@ -153,6 +153,8 @@ void AbstractRunner::Setup()
     ImGui::GetIO().Fonts->Build();
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
 
+    ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
+
     if (params.callbacks.PostInit)
         params.callbacks.PostInit();
 

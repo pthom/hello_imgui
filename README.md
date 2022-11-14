@@ -16,6 +16,21 @@ _See ImGuiBundle  [C++ demos](https://github.com/pthom/imgui_bundle/tree/main/de
 
 ---
 
+__Features__
+
+* Truly multiplatform (including mobile platforms)
+* Set up a project with 2 CMake lines
+* Power Save mode: reduce FPS when application is idle
+* Precise [theme tweaking](https://www.youtube.com/watch?v=Hhartw0cUjg) 
+* Precise window geometry handling: autosize app window, select monitor, fullscreen, save & restore window position and size
+* Easy docking setup, with a "View" menu with options in order to show/hide the dockable windows, and to restore the default layout.
+* Embed assets with no code (on all platforms)
+* Mobile apps specific callbacks (OnPause, OnResume, OnLowMemory), and customization (icon, embedded files, etc)
+* Additional widgets: status bar, log widget
+* Zoom (especially useful for mobile devices)
+
+---
+
 A hello world app can be written in one single call: just write a lambda that contains the GUI code, and specify the window title.
 ````cpp
 HelloImGui::Run(
@@ -115,7 +130,6 @@ __Table of contents__
 <span id="TOC"/></span>
 
 * [Hello, Dear ImGui](#hello-dear-imgui)
-* [Features](#features)
 * [Usage instructions and API](#usage-instructions-and-api)
 * [Supported platforms and backends](#supported-platforms-and-backends)
   * [Platforms](#platforms)
@@ -153,18 +167,6 @@ __Table of contents__
 * [Alternatives](#alternatives)
 
 --------------------
-
-# Features
-
-* Truly multiplatform (including mobile platforms)
-* Set up a project with 2 CMake lines
-* Power Save mode: reduce FPS when application is idle
-* Precise window geometry handling: autosize app window, select monitor, fullscreen, save & restore window position and size
-* Easy docking setup, with a "View" menu with options in order to show/hide the dockable windows, and to restore the default layout.
-* Embed assets with no code (on all platforms)
-* Mobile apps specific callbacks (OnPause, OnResume, OnLowMemory), and customization (icon, embedded files, etc)
-* Additional widgets: status bar, log widget
-* Zoom (especially useful for mobile devices)
 
 ![demo docking](docs/images/docking.gif)
 

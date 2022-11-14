@@ -1,5 +1,11 @@
 #include "hello_imgui/imgui_theme.h"
 
+//
+// Theme tweak utilities for ImGui.
+// Reuse and adaptation of imgui_theme.h and imgui_theme.cpp file is granted for other projects.
+// Some themes were adapted by themes posted by ImGui users at https://github.com/ocornut/imgui/issues/707
+//
+
 namespace ImGuiTheme
 {
     namespace ThemeTweakImpl

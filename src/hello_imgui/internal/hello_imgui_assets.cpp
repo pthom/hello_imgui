@@ -40,7 +40,8 @@ namespace FileUtils
 #ifdef _WIN32
         _getcwd(buffer, 2000);
 #else
-        getcwd(buffer, 2000);
+        char *b = getcwd(buffer, 2000);
+        (void)b;
 #endif
         std::string r = buffer;
         return r;

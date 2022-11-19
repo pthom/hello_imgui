@@ -116,6 +116,9 @@ if (HELLOIMGUI_USE_GLFW_OPENGL3)
         ${imgui_backends_dir}/imgui_impl_glfw.h
         ${imgui_backends_dir}/imgui_impl_glfw.cpp
         )
+    if (APPLE AND NOT IOS) # If mac
+        target_link_libraries(${target_name} PUBLIC "-framework AppKit")
+    endif()
 endif()
 
 if (HELLOIMGUI_USE_QT)

@@ -8,7 +8,7 @@
 
 _HelloImGui_ is a library that enables to write  multiplatform Gui apps for Windows, Mac, Linux, iOS, Android, emscripten; with the simplicity of a "Hello World" app. It is based on [Dear ImGui](https://github.com/ocornut/imgui), a Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
 
-__Features__
+## Features
 
 * [Truly multiplatform](https://traineq.org/HelloImGui_6_Platforms.mp4) (Linux, Windows, MacOS, iOS, Android, emscripten)
 * Set up a project in 5 minutes
@@ -16,12 +16,12 @@ __Features__
 * Precise [theme tweaking](https://www.youtube.com/watch?v=Hhartw0cUjg)
 * Precise window geometry handling: autosize app window, select monitor, fullscreen, save & restore window position and size
 * Easy docking setup, with a "View" menu with options in order to show/hide the dockable windows, and to restore the default layout.
-* Embed assets with no code (on all platforms)
+* Embed assets on all platforms
 * Mobile apps specific callbacks (OnPause, OnResume, OnLowMemory), and customization (icon, embedded files, etc)
 * Additional widgets: status bar, log widget
 
 
-__Get started in 5 minutes__
+## Get started in 5 minutes
 
 A hello world app can be written in one single call: just write a lambda that contains the GUI code, and specify the window title.
 ````cpp
@@ -30,25 +30,24 @@ HelloImGui::Run(
     "Hello!",                            // Window title
     true                                 // Window size auto
 );
-`````
+````
 
 If you intend to build an application for Windows, MacOS or Linux, the easiest way to use HelloImGui is to follow the instructions inside [_example_integration](_example_integration).
 
-It describes how to easily integrate HelloImGui to your own project, so that it builds with no extra step other than to copy a small [CMakeLists.txt](example_integration/CMakeLists.txt) file. No manual download or git clone is required!
+It describes how to easily integrate HelloImGui to your own project, so that it builds with no extra step other than to copy a small [CMakeLists.txt](_example_integration/CMakeLists.txt) file. No manual download or git clone is required!
 
 
-__Need more widgets, or want to use this with python?__
+## Need more widgets, or want to use this with python?
 
 HelloImGui is also available inside [ImGuiBundle](https://github.com/pthom/imgui_bundle), where it is provided with lots of additional widgets ([imgui](https://github.com/ocornut/imgui.git), [implot](https://github.com/epezent/implot), [imgui-node-editor](https://github.com/thedmd/imgui-node-editor), [ImFileDialog](https://github.com/pthom/ImFileDialog.git), [ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit), [imgui_md](https://github.com/mekhontsev/imgui_md.git)), as well as complete python bindings.
 
 See ImGuiBundle  [C++ demos](https://github.com/pthom/imgui_bundle/tree/main/demos_cpp) and [Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos).
 
 
-__Online interactive example applications__
+## Online interactive example applications__
 
 [ImGui Manual](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html), an interactive manual for ImGui is developed with HelloImGui.
 
-Since HelloImGui also compile to wasm, applications created with it can be displayed in a browser. 
 Click on the images below to run the demonstration applications. 
 
 
@@ -63,12 +62,21 @@ Click on the images below to run the demonstration applications.
 [manual_online]: https://pthom.github.io/imgui_manual_online/  "ImGui Manual"
 
 
-__Automatic assets inclusion on all platforms__
+# Usage instructions and API
 
-A slightly more complex multiplatform app, including assets and callbacks is also extremely simple to write. The "Hello Globe" app shown below is composed with three simple files. It will run with no additional modifications (including in the cmake code) on iOS, Android, Linux, Mac, Windows and Emscripten_
+_RunnerParams_ contains all the settings and callbacks in order to run an application.
+
+[![a](src/hello_imgui/doc_src/hello_imgui_diagram.png)](src/hello_imgui/hello_imgui_api.md)
+
+* See how to setup an application [in the API Doc](src/hello_imgui/hello_imgui_api.md)
+* More details about the [docking API](src/hello_imgui/hello_imgui_api.md#docking)
+
+
+## Demo - handle events and include assets:
 
 <img src="docs/images/hello_globe.jpg" width="150">
 
+Including assets is simple. This "Hello Globe" app is composed with three simple files.
 
 ````
 └── hello_globe.main.cpp   // main file, see below
@@ -78,47 +86,32 @@ A slightly more complex multiplatform app, including assets and callbacks is als
 ````
 (Anything in the assets/ folder located beside the app's CMakeLists will be embedded on mobile devices and emscripten, i.e they will be bundled together with the app).
 
+Dear ImGui uses the Immediate Gui paradigm: each button, each widget returns true if the user interacted with it.
+
 > hello_globe.main.cpp
 ````cpp
 #include "hello_imgui/hello_imgui.h"
-
 int main(int , char *[])
 {
-    HelloImGui::SimpleRunnerParams runnerParams;      // runnerParams will contains all the application params and callbacks
-    runnerParams.guiFunction =                        // guiFunction contains a lambda function with the Gui code
-        [&runnerParams]{
-
-            ImGui::Text("Hello, ");                    // Display a simple label
-            HelloImGui::ImageFromAsset("world.jpg");   // Display a static image, taken from assets/world.jpg,
-                                                       // assets are embedded automatically into the app (for *all* platforms)
-
-            if (ImGui::Button("Bye!"))                 // Display a button
-                // ... and immediately handle its action if it is clicked!
-                HelloImGui::GetRunnerParams()->appShallExit = true;
-
-            float fps = ImGui::GetIO().Framerate;
-            ImGui::Text("FPS: %.2f", fps);
-        };
-
-    runnerParams.windowTitle = "Hello, globe!";
-    runnerParams.windowSize = {180, 220};
-    runnerParams.windowRestorePreviousGeometry = false;
-    HelloImGui::Run(runnerParams);
+    auto guiFunction = []() {
+        ImGui::Text("Hello, ");                    // Display a simple label
+        HelloImGui::ImageFromAsset("world.jpg");   // Display a static image
+        if (ImGui::Button("Bye!"))                 // Display a button
+            // and immediately handle its action if it is clicked!
+            HelloImGui::GetRunnerParams()->appShallExit = true;
+     };
+    HelloImGui::Run(guiFunction, "Hello, globe", true);
     return 0;
-}
 }
 ````
 
+The CMakeLists fits in two lines, and will work on Linux, Mac, Windows, iOS and Emscripten_
 > CMakeLists.txt:
 > hello_imgui_add_app will create the app and embed all its assets, for all platforms.
 ````cmake
 include(hello_imgui_add_app)
 hello_imgui_add_app(hello_globe hello_globe.main.cpp)
 ````
-
-__Online interactive development platform__
-
-You can test developping with Hello ImGui in 1 minute, *without even installing anything*, thanks to [Gitpod.io](https://gitpod.io)'s online development platform: [Open Hello ImGui inside Gitpod](https://gitpod.io/#https://github.com/pthom/hello_imgui/) (58 seconds [demo video](https://www.youtube.com/watch?v=1cgemZQ2CMc) on youtube)
 
 
 -------------------
@@ -127,7 +120,12 @@ __Table of contents__
 <span id="TOC"/></span>
 
 * [Hello, Dear ImGui](#hello-dear-imgui)
+  * [Features](#features)
+  * [Get started in 5 minutes](#get-started-in-5-minutes)
+  * [Need more widgets, or want to use this with python?](#need-more-widgets-or-want-to-use-this-with-python?)
+  * [Online interactive example applications__](#online-interactive-example-applications__)
 * [Usage instructions and API](#usage-instructions-and-api)
+  * [Demo - handle events and include assets:](#demo---handle-events-and-include-assets)
 * [Supported platforms and backends](#supported-platforms-and-backends)
   * [Platforms](#platforms)
   * [Backends](#backends)
@@ -161,18 +159,9 @@ __Table of contents__
   * [CatSight](#catsight)
   * [Example of an app using HelloImGui as a submodule](#example-of-an-app-using-helloimgui-as-a-submodule)
 * [Alternatives](#alternatives)
+* [Online interactive development platform](#online-interactive-development-platform)
 
 --------------------
-
-
-# Usage instructions and API
-
-_RunnerParams_ contains all the settings and callbacks in order to run an application. 
-
-[![a](src/hello_imgui/doc_src/hello_imgui_diagram.png)](src/hello_imgui/hello_imgui_api.md)
-
-* See how to setup an application [in the API Doc](src/hello_imgui/hello_imgui_api.md)
-* More details about the [docking API](src/hello_imgui/hello_imgui_api.md#docking)
 
 
 # Supported platforms and backends
@@ -613,3 +602,7 @@ Just click on the image below to open it:
 Being oriented for creative coding, they are much more feature rich, offers some level of native hardware access (camera, accelerometer), but they are also less lightweight than ImGui + HelloImGui.
 
 [sokol_app](https://github.com/floooh/sokol#sokol_apph) is a minimal cross-platform application-wrapper library.
+
+# Online interactive development platform
+
+You can test developping with Hello ImGui in 1 minute, *without even installing anything*, thanks to [Gitpod.io](https://gitpod.io)'s online development platform: [Open Hello ImGui inside Gitpod](https://gitpod.io/#https://github.com/pthom/hello_imgui/) (58 seconds [demo video](https://www.youtube.com/watch?v=1cgemZQ2CMc) on youtube)

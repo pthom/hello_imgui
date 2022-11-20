@@ -8,28 +8,20 @@
 
 _HelloImGui_ is a library that enables to write  multiplatform Gui apps for Windows, Mac, Linux, iOS, Android, emscripten; with the simplicity of a "Hello World" app. It is based on [Dear ImGui](https://github.com/ocornut/imgui), a Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
 
----
-
-_Note: HelloImGui is also available inside [ImGuiBundle](https://github.com/pthom/imgui_bundle), where it is provided with lots of additional widgets ([imgui](https://github.com/ocornut/imgui.git), [implot](https://github.com/epezent/implot), [imgui-node-editor](https://github.com/thedmd/imgui-node-editor), [ImFileDialog](https://github.com/pthom/ImFileDialog.git), [ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit), [imgui_md](https://github.com/mekhontsev/imgui_md.git)), as well as complete python bindings._
-
-_See ImGuiBundle  [C++ demos](https://github.com/pthom/imgui_bundle/tree/main/demos_cpp) and [Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos)._ 
-
----
-
 __Features__
 
-* Truly multiplatform (including mobile platforms)
-* Set up a project with 2 CMake lines
+* [Truly multiplatform](https://traineq.org/HelloImGui_6_Platforms.mp4) (Linux, Windows, MacOS, iOS, Android, emscripten)
+* Set up a project in 5 minutes
 * Power Save mode: reduce FPS when application is idle
-* Precise [theme tweaking](https://www.youtube.com/watch?v=Hhartw0cUjg) 
+* Precise [theme tweaking](https://www.youtube.com/watch?v=Hhartw0cUjg)
 * Precise window geometry handling: autosize app window, select monitor, fullscreen, save & restore window position and size
 * Easy docking setup, with a "View" menu with options in order to show/hide the dockable windows, and to restore the default layout.
 * Embed assets with no code (on all platforms)
 * Mobile apps specific callbacks (OnPause, OnResume, OnLowMemory), and customization (icon, embedded files, etc)
 * Additional widgets: status bar, log widget
-* Zoom (especially useful for mobile devices)
 
----
+
+__Get started in 5 minutes__
 
 A hello world app can be written in one single call: just write a lambda that contains the GUI code, and specify the window title.
 ````cpp
@@ -40,17 +32,38 @@ HelloImGui::Run(
 );
 `````
 
-__Quick and easy integration into your project__
+If you intend to build an application for Windows, MacOS or Linux, the easiest way to use HelloImGui is to follow the instructions inside [_example_integration](_example_integration).
 
-If you intend to build an application for Windows, MacOS or Linux, the easiest way to use HelloImGui is to follow
-the instructions inside [_example_integration](_example_integration).
+It describes how to easily integrate HelloImGui to your own project, so that it builds with no extra step other than to copy a small [CMakeLists.txt](example_integration/CMakeLists.txt) file. No manual download or git clone is required!
 
-It describes how to easily integrate HelloImGui to your own project, so that it builds with no extra step other than to
-copy a small [CMakeLists.txt](example_integration/CMakeLists.txt) file.
 
-No manual download or git clone is required!
+__Need more widgets, or want to use this with python?__
 
-__Docking support and theming__
+HelloImGui is also available inside [ImGuiBundle](https://github.com/pthom/imgui_bundle), where it is provided with lots of additional widgets ([imgui](https://github.com/ocornut/imgui.git), [implot](https://github.com/epezent/implot), [imgui-node-editor](https://github.com/thedmd/imgui-node-editor), [ImFileDialog](https://github.com/pthom/ImFileDialog.git), [ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit), [imgui_md](https://github.com/mekhontsev/imgui_md.git)), as well as complete python bindings.
+
+See ImGuiBundle  [C++ demos](https://github.com/pthom/imgui_bundle/tree/main/demos_cpp) and [Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos).
+
+
+__Online interactive example applications__
+
+[ImGui Manual](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html), an interactive manual for ImGui is developed with HelloImGui.
+
+Since HelloImGui also compile to wasm, applications created with it can be displayed in a browser. 
+Click on the images below to run the demonstration applications. 
+
+
+| Hello, World | Advanced Docking | Classic ImGui Demo | ImGui Manual|
+| --- | --- | --- | --- |
+| [![Hello, World](docs/images/wasm_demos/hello.jpg)][hello-world]  | [![Advanced Docking demo](docs/images/wasm_demos/docking.jpg)][docking]  | [![ImGui classic demo](docs/images/wasm_demos/classic.jpg)][classic] | [![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)][manual_online]|
+|[Code](src/hello_imgui_demos/hello_world)|[Code](src/hello_imgui_demos/hello_imgui_demodocking)|[Code](src/hello_imgui_demos/hello_imgui_demo_classic)| ImGui Manual is a fully interactive manual for ImGui. [Code](https://github.com/pthom/imgui_manual)|
+
+[hello-world]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_world/hello_world.html  "Hello world"
+[docking]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html  "Advanced docking demo"
+[classic]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demo_classic/hello-imgui-demo-classic.html  "ImGui classic demo"
+[manual_online]: https://pthom.github.io/imgui_manual_online/  "ImGui Manual"
+
+
+__Automatic assets inclusion on all platforms__
 
 A slightly more complex multiplatform app, including assets and callbacks is also extremely simple to write. The "Hello Globe" app shown below is composed with three simple files. It will run with no additional modifications (including in the cmake code) on iOS, Android, Linux, Mac, Windows and Emscripten_
 
@@ -103,33 +116,6 @@ include(hello_imgui_add_app)
 hello_imgui_add_app(hello_globe hello_globe.main.cpp)
 ````
 
-__Truly multiplatform (desktop and mobile)__
-
-HelloImGui target desktop platforms (Linux, OSX, Windows), but also mobile platforms (iOS and Android), 
-as well as the web browser (via wasm/emscripten).
-
-The movie belows showing Hello ImGui running on 6 platforms!
-
-[![Running on 6 platforms](docs/HelloImGui_6_Platforms.png) ](https://traineq.org/HelloImGui_6_Platforms.mp4)
-
-
-__Online interactive example applications__
-
-Since HelloImGui also compile to wasm, applications created with it can be displayed in a browser. 
-Click on the images below to run the demonstration applications. 
-
-
-| Hello, World | Advanced Docking | Classic ImGui Demo | ImGui Manual|
-| --- | --- | --- | --- |
-| [![Hello, World](docs/images/wasm_demos/hello.jpg)][hello-world]  | [![Advanced Docking demo](docs/images/wasm_demos/docking.jpg)][docking]  | [![ImGui classic demo](docs/images/wasm_demos/classic.jpg)][classic] | [![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)][manual_online]|
-|[Code](src/hello_imgui_demos/hello_world)|[Code](src/hello_imgui_demos/hello_imgui_demodocking)|[Code](src/hello_imgui_demos/hello_imgui_demo_classic)| ImGui Manual is a fully interactive manual for ImGui. [Code](https://github.com/pthom/imgui_manual)|
-
-[hello-world]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_world/hello_world.html  "Hello world"
-[docking]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html  "Advanced docking demo"
-[classic]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demo_classic/hello-imgui-demo-classic.html  "ImGui classic demo"
-[manual_online]: https://pthom.github.io/imgui_manual_online/  "ImGui Manual"
-
-
 __Online interactive development platform__
 
 You can test developping with Hello ImGui in 1 minute, *without even installing anything*, thanks to [Gitpod.io](https://gitpod.io)'s online development platform: [Open Hello ImGui inside Gitpod](https://gitpod.io/#https://github.com/pthom/hello_imgui/) (58 seconds [demo video](https://www.youtube.com/watch?v=1cgemZQ2CMc) on youtube)
@@ -178,7 +164,6 @@ __Table of contents__
 
 --------------------
 
-![demo docking](docs/images/docking.gif)
 
 # Usage instructions and API
 

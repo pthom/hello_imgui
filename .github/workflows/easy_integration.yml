@@ -1,0 +1,39 @@
+name: "EasyIntegration"
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+      - main
+      - dev
+
+jobs:
+  build:
+    name: EasyIntegration
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest, macos-latest, ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+
+    - name: Install glfw requirements (ubuntu)
+      if: ${{ matrix.platform == 'ubuntu-latest' }}
+      run: sudo apt-get update && sudo apt-get install -y libxrandr-dev xorg-dev libxinerama-dev
+
+#    - name: Setup interactive tmate session
+#      uses: mxschmitt/action-tmate@v3
+
+    - name: Build _example_integration
+      run: |
+        cd _example_integration
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        cmake --build . --config Release

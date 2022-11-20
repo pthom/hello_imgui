@@ -4,26 +4,23 @@
 ![iOS](https://github.com/pthom/hello_imgui/workflows/iOS/badge.svg)
 ![Emscripten](https://github.com/pthom/hello_imgui/workflows/Emscripten/badge.svg)
 
-# Hello, Dear ImGui
+# Hello ImGui
 
-_HelloImGui_ is a library that enables to write  multiplatform Gui apps for Windows, Mac, Linux, iOS, Android, emscripten; with the simplicity of a "Hello World" app. It is based on [Dear ImGui](https://github.com/ocornut/imgui), a Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
+Hello ImGui is a library that enables quickly write multiplatform apps with the simplicity of a "Hello World" app. It is based on [Dear ImGui](https://github.com/ocornut/imgui).
 
 ## Features
 
-* [Truly multiplatform](https://traineq.org/HelloImGui_6_Platforms.mp4) (Linux, Windows, MacOS, iOS, Android, emscripten)
 * Set up a project in 5 minutes
-* Power Save mode: reduce FPS when application is idle
-* Precise [theme tweaking](https://www.youtube.com/watch?v=Hhartw0cUjg)
-* Precise window geometry handling: autosize app window, select monitor, fullscreen, save & restore window position and size
-* Easy docking setup, with a "View" menu with options in order to show/hide the dockable windows, and to restore the default layout.
 * Embed assets on all platforms
-* Mobile apps specific callbacks (OnPause, OnResume, OnLowMemory), and customization (icon, embedded files, etc)
-* Additional widgets: status bar, log widget
+* Power Save mode: reduce FPS when application is idle
+* [theme tweaking](https://www.youtube.com/watch?v=Hhartw0cUjg)
+* Window geometry utilities (autosize, restore window position)
+* [Truly multiplatform](https://traineq.org/HelloImGui_6_Platforms.mp4) (Linux, Windows, MacOS, iOS, Android, emscripten)
 
 
 ## Get started in 5 minutes
 
-A hello world app can be written in one single call: just write a lambda that contains the GUI code, and specify the window title.
+The code for a hello world app is extremely short:
 ````cpp
 HelloImGui::Run(
     []{ ImGui::Text("Hello, world!"); }, // Gui code
@@ -32,44 +29,14 @@ HelloImGui::Run(
 );
 ````
 
-If you intend to build an application for Windows, MacOS or Linux, the easiest way to use HelloImGui is to follow the instructions inside [_example_integration](_example_integration).
-
-It describes how to easily integrate HelloImGui to your own project, so that it builds with no extra step other than to copy a small [CMakeLists.txt](_example_integration/CMakeLists.txt) file. No manual download or git clone is required!
+[_example_integration](_example_integration) shows how to integrate this into your project in a few minutes.
 
 
 ## Need more widgets, or want to use this with python?
 
-HelloImGui is also available inside [ImGuiBundle](https://github.com/pthom/imgui_bundle), where it is provided with lots of additional widgets ([imgui](https://github.com/ocornut/imgui.git), [implot](https://github.com/epezent/implot), [imgui-node-editor](https://github.com/thedmd/imgui-node-editor), [ImFileDialog](https://github.com/pthom/ImFileDialog.git), [ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit), [imgui_md](https://github.com/mekhontsev/imgui_md.git)), as well as complete python bindings.
+[ImGuiBundle](https://github.com/pthom/imgui_bundle) is based on HelloImGui and provides lots of additional widgets ([imgui](https://github.com/ocornut/imgui.git), [implot](https://github.com/epezent/implot), [imgui-node-editor](https://github.com/thedmd/imgui-node-editor), [ImFileDialog](https://github.com/pthom/ImFileDialog.git), [ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit), [imgui_md](https://github.com/mekhontsev/imgui_md.git)), as well as complete python bindings.
 
-See ImGuiBundle  [C++ demos](https://github.com/pthom/imgui_bundle/tree/main/demos_cpp) and [Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos).
-
-
-## Online interactive example applications__
-
-[ImGui Manual](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html), an interactive manual for ImGui is developed with HelloImGui.
-
-Click on the images below to run the demonstration applications. 
-
-
-| Hello, World | Advanced Docking | Classic ImGui Demo | ImGui Manual|
-| --- | --- | --- | --- |
-| [![Hello, World](docs/images/wasm_demos/hello.jpg)][hello-world]  | [![Advanced Docking demo](docs/images/wasm_demos/docking.jpg)][docking]  | [![ImGui classic demo](docs/images/wasm_demos/classic.jpg)][classic] | [![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)][manual_online]|
-|[Code](src/hello_imgui_demos/hello_world)|[Code](src/hello_imgui_demos/hello_imgui_demodocking)|[Code](src/hello_imgui_demos/hello_imgui_demo_classic)| ImGui Manual is a fully interactive manual for ImGui. [Code](https://github.com/pthom/imgui_manual)|
-
-[hello-world]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_world/hello_world.html  "Hello world"
-[docking]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html  "Advanced docking demo"
-[classic]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demo_classic/hello-imgui-demo-classic.html  "ImGui classic demo"
-[manual_online]: https://pthom.github.io/imgui_manual_online/  "ImGui Manual"
-
-
-# Usage instructions and API
-
-_RunnerParams_ contains all the settings and callbacks in order to run an application.
-
-[![a](src/hello_imgui/doc_src/hello_imgui_diagram.png)](src/hello_imgui/hello_imgui_api.md)
-
-* See how to setup an application [in the API Doc](src/hello_imgui/hello_imgui_api.md)
-* More details about the [docking API](src/hello_imgui/hello_imgui_api.md#docking)
+See ImGuiBundle's  [C++ demos](https://github.com/pthom/imgui_bundle/tree/main/demos_cpp) and [Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos).
 
 
 ## Demo - handle events and include assets:
@@ -107,11 +74,37 @@ int main(int , char *[])
 
 The CMakeLists fits in two lines, and will work on Linux, Mac, Windows, iOS and Emscripten_
 > CMakeLists.txt:
-> hello_imgui_add_app will create the app and embed all its assets, for all platforms.
 ````cmake
 include(hello_imgui_add_app)
 hello_imgui_add_app(hello_globe hello_globe.main.cpp)
 ````
+
+
+# Full usage instructions and API
+
+_RunnerParams_ contains all the settings and callbacks in order to run an application.
+
+[![a](src/hello_imgui/doc_src/hello_imgui_diagram.png)](src/hello_imgui/hello_imgui_api.md)
+
+* See how to setup an application [in the API Doc](src/hello_imgui/hello_imgui_api.md)
+* More details about the [docking API](src/hello_imgui/hello_imgui_api.md#docking)
+
+
+## Online interactive example applications
+
+Click on the images below to run the demonstration applications.
+
+| Hello, World | Advanced Docking | Classic ImGui Demo | ImGui Manual|
+| --- | --- | --- | --- |
+| [![Hello, World](docs/images/wasm_demos/hello.jpg)][hello-world]  | [![Advanced Docking demo](docs/images/wasm_demos/docking.jpg)][docking]  | [![ImGui classic demo](docs/images/wasm_demos/classic.jpg)][classic] | [![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)][manual_online]|
+|[Code](src/hello_imgui_demos/hello_world)|[Code](src/hello_imgui_demos/hello_imgui_demodocking)|[Code](src/hello_imgui_demos/hello_imgui_demo_classic)| ImGui Manual is a fully interactive manual for ImGui. [Code](https://github.com/pthom/imgui_manual)|
+
+[hello-world]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_world/hello_world.html  "Hello world"
+[docking]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html  "Advanced docking demo"
+[classic]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demo_classic/hello-imgui-demo-classic.html  "ImGui classic demo"
+[manual_online]: https://pthom.github.io/imgui_manual_online/  "ImGui Manual"
+
+Also, [ImGui Manual](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html), an interactive manual for ImGui is developed with HelloImGui.
 
 
 -------------------
@@ -119,17 +112,17 @@ __Table of contents__
 
 <span id="TOC"/></span>
 
-* [Hello, Dear ImGui](#hello-dear-imgui)
+* [Hello ImGui](#hello-imgui)
   * [Features](#features)
   * [Get started in 5 minutes](#get-started-in-5-minutes)
   * [Need more widgets, or want to use this with python?](#need-more-widgets-or-want-to-use-this-with-python?)
-  * [Online interactive example applications__](#online-interactive-example-applications__)
-* [Usage instructions and API](#usage-instructions-and-api)
   * [Demo - handle events and include assets:](#demo---handle-events-and-include-assets)
-* [Supported platforms and backends](#supported-platforms-and-backends)
-  * [Platforms](#platforms)
-  * [Backends](#backends)
+* [Full usage instructions and API](#full-usage-instructions-and-api)
+  * [Online interactive example applications](#online-interactive-example-applications)
 * [Complete build instructions](#complete-build-instructions)
+  * [Supported platforms and backends](#supported-platforms-and-backends)
+    * [Platforms](#platforms)
+    * [Backends](#backends)
   * [Clone the repository](#clone-the-repository)
   * [Build instructions for desktop platforms (Linux, MacOS, Windows)](#build-instructions-for-desktop-platforms-linux-macos-windows)
     * [Select your backend](#select-your-backend)
@@ -163,10 +156,11 @@ __Table of contents__
 
 --------------------
 
+# Complete build instructions
 
-# Supported platforms and backends
+## Supported platforms and backends
 
-## Platforms
+### Platforms
 
 * Windows
 * Linux
@@ -175,14 +169,11 @@ __Table of contents__
 * emscripten
 * Android
 
-## Backends
+### Backends
 
 * SDL2 + OpenGL 3 or OpenGLES3 for mobile devices
 * Glfw3 + OpenGL 3
 
-
-# Complete build instructions
-  
 ## Clone the repository
 
 ````bash

@@ -11,6 +11,15 @@ project(HelloImGui LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 ###############################################################################
+# hello_imgui_add_app location
+###############################################################################
+# In order to use `hello_imgui_add_app`, just write
+#    list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
+# somewhere before calling `hello_imgui_add_app`
+set(HELLOIMGUI_CMAKE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/hello_imgui_cmake CACHE STRING "" FORCE)
+list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
+
+###############################################################################
 # HelloImGui Build options
 ###############################################################################
 
@@ -105,7 +114,6 @@ endif()
 
 
 set(HELLOIMGUI_BASEPATH ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Hello imgui base path" FORCE)
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/" CACHE STRING "" FORCE)
 
 
 include(cmake/StandardProjectSettings.cmake)

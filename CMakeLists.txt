@@ -84,20 +84,30 @@ option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 
 if (HELLOIMGUI_WITH_GLFW)
     set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
-    include(FetchContent)
-    FetchContent_Declare(glfw
-        GIT_REPOSITORY    https://github.com/glfw/glfw.git
-        GIT_TAG           3.3.8
-        )
+    if (NOT TARGET glfw)
+        include(FetchContent)
+        Set(FETCHCONTENT_QUIET FALSE)
+        FetchContent_Declare(glfw
+            GIT_REPOSITORY    https://github.com/glfw/glfw.git
+            GIT_TAG           3.3.8
+            GIT_PROGRESS TRUE
+            )
+        set(need_fetch_make_available_glfw ON)
+    endif()
 endif()
 
 if (HELLOIMGUI_WITH_SDL)
     set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
-    include(FetchContent)
-    FetchContent_Declare(sdl
-        GIT_REPOSITORY    https://github.com/libsdl-org/SDL.git
-        GIT_TAG           release-2.24.2
-        )
+    if (NOT TARGET sdl)
+        include(FetchContent)
+        Set(FETCHCONTENT_QUIET FALSE)
+        FetchContent_Declare(sdl
+            GIT_REPOSITORY    https://github.com/libsdl-org/SDL.git
+            GIT_TAG           release-2.24.2
+            GIT_PROGRESS TRUE
+            )
+        set(need_fetch_make_available_sdl ON)
+    endif()
 endif()
 
 if (NOT (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3 OR HELLOIMGUI_USE_QT OR HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT))
@@ -131,6 +141,7 @@ include(msvc/msvc_target_group)
 if (EMSCRIPTEN)
     include(${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_emscripten_global_options.cmake)
 endif()
+
 
 add_subdirectory(external)
 add_subdirectory(src)

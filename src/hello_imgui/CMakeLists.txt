@@ -44,7 +44,7 @@ endif()
 
 
 function(link_sdl target)
-    if (HELLOIMGUI_WITH_SDL)
+    if (need_fetch_make_available_sdl)
         FetchContent_MakeAvailable(sdl)
     endif()
 
@@ -110,7 +110,7 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
 endif()
 
 if (HELLOIMGUI_USE_GLFW_OPENGL3)
-    if (HELLOIMGUI_WITH_GLFW)
+    if (need_fetch_make_available_glfw)
         set(GLFW_BUILD_EXAMPLES OFF)
         set(GLFW_BUILD_TESTS OFF)
         set(GLFW_BUILD_DOCS OFF)

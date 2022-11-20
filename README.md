@@ -13,7 +13,7 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 * Set up a project in 5 minutes
 * Embed assets on all platforms
 * Power Save mode: reduce FPS when application is idle
-* [theme tweaking](https://www.youtube.com/watch?v=Hhartw0cUjg)
+* [Theme tweaking](https://www.youtube.com/watch?v=Hhartw0cUjg)
 * Window geometry utilities (autosize, restore window position)
 * [Truly multiplatform](https://traineq.org/HelloImGui_6_Platforms.mp4) (Linux, Windows, MacOS, iOS, Android, emscripten)
 
@@ -43,16 +43,17 @@ See ImGuiBundle's  [C++ demos](https://github.com/pthom/imgui_bundle/tree/main/d
 
 <img src="docs/images/hello_globe.jpg" width="150">
 
-Including assets is simple. This "Hello Globe" app is composed with three simple files.
-
+#### include assets
+Anything in the assets/ folder located beside the app's CMakeLists will be embedded in the app:
 ````
-└── hello_globe.main.cpp   // main file, see below
-├── CMakeLists.txt         // 2 lines of cmake, for all platforms!
+└── hello_globe.main.cpp
+├── CMakeLists.txt
 ├── assets/
-│   └── world.jpg          // assets are embedded automatically, even on mobile platforms!
+│   └── world.jpg
 ````
-(Anything in the assets/ folder located beside the app's CMakeLists will be embedded on mobile devices and emscripten, i.e they will be bundled together with the app).
+(even on iOS and emscripten).
 
+#### handle events
 Dear ImGui uses the Immediate Gui paradigm: each button, each widget returns true if the user interacted with it.
 
 > hello_globe.main.cpp
@@ -82,12 +83,9 @@ hello_imgui_add_app(hello_globe hello_globe.main.cpp)
 
 # Full usage instructions and API
 
-_RunnerParams_ contains all the settings and callbacks in order to run an application.
-
+* [Full API doc](src/hello_imgui/hello_imgui_api.md)
 [![a](src/hello_imgui/doc_src/hello_imgui_diagram.png)](src/hello_imgui/hello_imgui_api.md)
-
-* See how to setup an application [in the API Doc](src/hello_imgui/hello_imgui_api.md)
-* More details about the [docking API](src/hello_imgui/hello_imgui_api.md#docking)
+* [Docking API](src/hello_imgui/hello_imgui_api.md#docking)
 
 
 ## Online interactive example applications
@@ -117,6 +115,8 @@ __Table of contents__
   * [Get started in 5 minutes](#get-started-in-5-minutes)
   * [Need more widgets, or want to use this with python?](#need-more-widgets-or-want-to-use-this-with-python?)
   * [Demo - handle events and include assets:](#demo---handle-events-and-include-assets)
+      * [include assets](#include-assets)
+      * [handle events](#handle-events)
 * [Full usage instructions and API](#full-usage-instructions-and-api)
   * [Online interactive example applications](#online-interactive-example-applications)
 * [Complete build instructions](#complete-build-instructions)
@@ -166,8 +166,8 @@ __Table of contents__
 * Linux
 * OSX
 * iOS
-* emscripten
-* Android
+* Emscripten
+* Android (poorly supported)
 
 ### Backends
 

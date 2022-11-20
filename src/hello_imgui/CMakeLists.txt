@@ -44,7 +44,14 @@ endif()
 
 
 function(link_sdl target)
-    if (IOS)
+    if (HELLOIMGUI_WITH_SDL)
+        ExternalProject_Get_Property(sdl_external INSTALL_DIR)
+        add_dependencies(${target_name} sdl_external)
+        target_include_directories(${target_name} PUBLIC ${INSTALL_DIR}/include/SDL2 ${INSTALL_DIR}/include)
+        target_link_directories(${target_name} PUBLIC ${INSTALL_DIR}/lib)
+        target_link_libraries(${target_name} PUBLIC SDL2 SDL2main)
+        set(helloimgui_sdl_static ON)
+    elseif(IOS)
         target_link_libraries(${target} PUBLIC SDL2-static SDL2main)
         target_link_libraries(${target} PUBLIC "-framework OpenGLES")
     elseif(EMSCRIPTEN)
@@ -74,6 +81,18 @@ function(link_sdl target)
     if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
         target_link_libraries(${target} PUBLIC Xext X11)
     endif()
+
+    if(helloimgui_sdl_static)
+        if (APPLE AND NOT IOS) # If Mac
+            target_link_libraries(${target_name} PUBLIC
+                "-framework CoreAudio -framework AudioToolbox"
+                "-framework CoreHaptics -framework CoreVideo -framework ForceFeedback"
+                "-framework GameController -framework Carbon -framework Metal"
+                "iconv"
+                )
+        endif()
+    endif()
+
 endfunction()
 
 
@@ -106,19 +125,29 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
 endif()
 
 if (HELLOIMGUI_USE_GLFW_OPENGL3)
-    if (NOT TARGET glfw) # if glfw is not built as part of the whole build, find it
-        find_package(glfw3 CONFIG REQUIRED)
+    if (HELLOIMGUI_WITH_GLFW)
+        ExternalProject_Get_Property(glfw_external INSTALL_DIR)
+        add_dependencies(${target_name} glfw_external)
+        target_include_directories(${target_name} PRIVATE ${INSTALL_DIR}/include)
+        target_link_directories(${target_name} PUBLIC ${INSTALL_DIR}/lib)
+        target_link_libraries(${target_name} PUBLIC glfw3)
+    else()
+        if (NOT TARGET glfw) # if glfw is not built as part of the whole build, find it
+            find_package(glfw3 CONFIG REQUIRED)
+        endif()
+        target_link_libraries(${target_name} PUBLIC glfw)
     endif()
-    target_link_libraries(${target_name} PUBLIC glfw)
+
     target_sources(${target_name} PRIVATE
         ${imgui_backends_dir}/imgui_impl_opengl3.h
         ${imgui_backends_dir}/imgui_impl_opengl3.cpp
         ${imgui_backends_dir}/imgui_impl_glfw.h
         ${imgui_backends_dir}/imgui_impl_glfw.cpp
         )
-    if (APPLE AND NOT IOS) # If mac
-        target_link_libraries(${target_name} PUBLIC "-framework AppKit")
-    endif()
+endif()
+
+if (APPLE AND NOT IOS) # If mac
+    target_link_libraries(${target_name} PUBLIC "-framework AppKit -framework IOKit")
 endif()
 
 if (HELLOIMGUI_USE_QT)

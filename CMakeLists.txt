@@ -14,7 +14,8 @@ set(CMAKE_CXX_STANDARD 17)
 # hello_imgui_add_app location
 ###############################################################################
 # In order to use `hello_imgui_add_app`, just write
-#    list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
+#     list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
+#     include(hello_imgui_add_app)
 # somewhere before calling `hello_imgui_add_app`
 set(HELLOIMGUI_CMAKE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/hello_imgui_cmake CACHE STRING "" FORCE)
 list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
@@ -46,15 +47,22 @@ option(HELLOIMGUI_BUILD_IMGUI "Build imgui using sources provided in external/im
 set(HELLOIMGUI_IMGUI_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/external/imgui" CACHE STRING "Source dir of imgui")
 
 #------------------------------------------------------------------------------
-# Build options / HelloImGui
+# Common build options / HelloImGui
 #------------------------------------------------------------------------------
-option(HELLOIMGUI_BUILD_DOCS "Build docs" OFF)
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
     option(HELLOIMGUI_BUILD_DEMOS "Build demos" ON)
 else()
     option(HELLOIMGUI_BUILD_DEMOS "Build demos" OFF)
 endif()
+
+#------------------------------------------------------------------------------
+# Advanced build options / HelloImGui
+#------------------------------------------------------------------------------
+option(HELLOIMGUI_BUILD_DOCS "Build docs" OFF)
+mark_as_advanced(HELLOIMGUI_BUILD_DOCS)
+
 option(HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT "Create Android studio projects in build dir" OFF)
+mark_as_advanced(HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT)
 
 # Advanced option: use imgui as a shared library: in this case, HelloImGui and ImGui possess each a different
 # copy of the global GImGui, and it needs to be synchronized accross DLL boundaries
@@ -100,7 +108,6 @@ if (NOT (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3 OR HELLOIMGUI
         -DHELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT=ON
     ")
 endif()
-
 
 
 #

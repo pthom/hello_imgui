@@ -15,7 +15,7 @@ FetchContent_Declare(
     hello_imgui
     GIT_REPOSITORY https://github.com/pthom/hello_imgui.git
     # Enter the desired git tag below
-    # GIT_TAG
+    # GIT_TAG 0.8.0
 )
 FetchContent_MakeAvailable(hello_imgui)
 # Make cmake function `hello_imgui_add_app` available

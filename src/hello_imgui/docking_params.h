@@ -99,8 +99,8 @@ Direction where this dock space should be created
 */
 struct DockingSplit
 {
-    DockingSplit(const DockSpaceName& initialDock_ = {}, const DockSpaceName& newDock_ = {}, 
-                 ImGuiDir_ direction_ = ImGuiDir_Down, float ratio_ = 0.25f) 
+    DockingSplit(const DockSpaceName& initialDock_ = "", const DockSpaceName& newDock_ = "",
+                 ImGuiDir_ direction_ = ImGuiDir_Down, float ratio_ = 0.25f)
       : initialDock(initialDock_), newDock(newDock_), direction(direction_), ratio(ratio_) {}
 
     DockSpaceName initialDock;
@@ -141,11 +141,11 @@ struct DockableWindow
     DockableWindow(
         const std::string & label_ = "",
         const DockSpaceName & dockSpaceName_ = "",
-        const VoidFunction guiFonction_ = {},
+        const VoidFunction guiFunction_ = VoidFunction(),
         bool isVisible_ = true,
         bool canBeClosed_ = true)
     : label(label_), dockSpaceName(dockSpaceName_),
-      GuiFunction(guiFonction_),
+      GuiFunction(guiFunction_),
       isVisible(isVisible_),
       canBeClosed(canBeClosed_) {}
 

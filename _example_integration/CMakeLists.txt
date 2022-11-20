@@ -1,0 +1,33 @@
+cmake_minimum_required(VERSION 3.12)
+project(helloworld_with_helloimgui)
+set(CMAKE_CXX_STANDARD 11)
+
+
+##########################################################
+# Prepare hello_imgui during configure time
+##########################################################
+# Select your backend
+set(HELLOIMGUI_WITH_SDL OFF CACHE BOOL "" FORCE)
+set(HELLOIMGUI_WITH_GLFW ON CACHE BOOL "" FORCE)
+# Download hello_imgui
+include(FetchContent)
+FetchContent_Declare(
+    hello_imgui
+    GIT_REPOSITORY https://github.com/pthom/hello_imgui.git
+    # Enter the desired git tag below
+    # GIT_TAG
+)
+FetchContent_MakeAvailable(hello_imgui)
+# Make cmake function `hello_imgui_add_app` available
+list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
+include(hello_imgui_add_app)
+
+
+##########################################################
+# Build your app
+##########################################################
+# Call hello_imgui_add_app
+hello_imgui_add_app(hello_world hello_world.main.cpp)
+
+# Now you can build your app with
+#     mkdir build && cd build && cmake .. && cmake --build .

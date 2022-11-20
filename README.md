@@ -40,6 +40,17 @@ HelloImGui::Run(
 );
 `````
 
+__Quick and easy integration into your project__
+
+If you intend to build an application for Windows, MacOS or Linux, the easiest way to use HelloImGui is to follow
+the instructions inside [_example_integration](_example_integration).
+
+It describes how to easily integrate HelloImGui to your own project, so that it builds with no extra step other than to
+copy a small [CMakeLists.txt](example_integration/CMakeLists.txt) file.
+
+No manual download or git clone is required!
+
+__Docking support and theming__
 
 A slightly more complex multiplatform app, including assets and callbacks is also extremely simple to write. The "Hello Globe" app shown below is composed with three simple files. It will run with no additional modifications (including in the cmake code) on iOS, Android, Linux, Mac, Windows and Emscripten_
 
@@ -134,7 +145,7 @@ __Table of contents__
 * [Supported platforms and backends](#supported-platforms-and-backends)
   * [Platforms](#platforms)
   * [Backends](#backends)
-* [Build instructions](#build-instructions)
+* [Complete build instructions](#complete-build-instructions)
   * [Clone the repository](#clone-the-repository)
   * [Build instructions for desktop platforms (Linux, MacOS, Windows)](#build-instructions-for-desktop-platforms-linux-macos-windows)
     * [Select your backend](#select-your-backend)
@@ -142,7 +153,6 @@ __Table of contents__
       * [Option 1: plug your backend manually](#option-1-plug-your-backend-manually)
       * [Option 2: plug SDL or Glfw3 via vcpkg](#option-2-plug-sdl-or-glfw3-via-vcpkg)
     * [SDL Backend Warning for main() signature](#sdl-backend-warning-for-main-signature)
-    * [Backend with Qt](#backend-with-qt)
   * [Build instructions for iOS](#build-instructions-for-ios)
     * [Customizing the iOS build](#customizing-the-ios-build)
   * [Build instructions for emscripten](#build-instructions-for-emscripten)
@@ -196,12 +206,8 @@ _RunnerParams_ contains all the settings and callbacks in order to run an applic
 * SDL2 + OpenGL 3 or OpenGLES3 for mobile devices
 * Glfw3 + OpenGL 3
 
-Adding new backends should be easy: simply add a new derivate of [AbstractRunner](src/hello_imgui/internal/backend_impls/abstract_runner.h).
 
-
-# Build instructions
-
-> Note: If you want to use HelloImGui in your own application, you may also want to look at [hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app), which is a separate repo that gives a working example on how to use the library as a submodule.
+# Complete build instructions
   
 ## Clone the repository
 
@@ -281,26 +287,6 @@ Please make sure that the signature of your main() function is *exactly*
 and that your main() function returns an int.
 
 
-### Backend with Qt
-
-_Note: the Qt backend is not actively maintained_
-
-Requirements:
-
-* You need to have Qt >= 5.10 installed
-* The Qt backend uses [qtimgui](https://github.com/seanchas116/qtimgui) , which you need to download into external/qutimgui.
-  You can use the script [tools/qtimgui_download.py](tools/qtimgui_download.py) in order to download it
-  in one step.
-
-Usage: simply pass the option `-DHELLOIMGUI_USE_QT=ON` and specify the path to Qt via CMAKE_PREFIX_PATH.
-
-For example, this line would build with Qt backend for an androïd_armv7 target:
-
-````bash
-cmake -DCMAKE_PREFIX_PATH=/path/to/Qt/5.12.8/clang_64 -DHELLOIMGUI_USE_QT=ON
-````
-
----
 
 ## Build instructions for iOS
 

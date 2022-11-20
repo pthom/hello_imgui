@@ -18,8 +18,7 @@ set(CMAKE_CXX_STANDARD 17)
 # Options / Backend selection
 #------------------------------------------------------------------------------
 # Backend selection with automatic backend compilation
-# (if you set any of those options, the corresponding backend will be automatically
-#  downloaded and compiled as a static library at build time)
+# (if you set any of those options, the corresponding backend will be automatically downloaded at build time)
 option(HELLOIMGUI_WITH_GLFW "Add GLFW+OpenGl3 support (glfw will be automatically compiled via ExternalProject_Add)" OFF)
 option(HELLOIMGUI_WITH_SDL "Add SDL+OpenGl3 support (SDL will be automatically compiled via ExternalProject_Add)" OFF)
 
@@ -68,31 +67,19 @@ option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 
 if (HELLOIMGUI_WITH_GLFW)
     set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
-
-    include(ExternalProject)
-    ExternalProject_Add(glfw_external
+    include(FetchContent)
+    FetchContent_Declare(glfw
         GIT_REPOSITORY    https://github.com/glfw/glfw.git
         GIT_TAG           3.3.8
-        STEP_TARGETS   build
-        DOWNLOAD_NO_PROGRESS OFF
-        CMAKE_ARGS
-            -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-            -DBUILD_SHARED_LIBS=OFF
         )
 endif()
 
 if (HELLOIMGUI_WITH_SDL)
     set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
-
-    include(ExternalProject)
-    ExternalProject_Add(sdl_external
+    include(FetchContent)
+    FetchContent_Declare(sdl
         GIT_REPOSITORY    https://github.com/libsdl-org/SDL.git
         GIT_TAG           release-2.24.2
-        STEP_TARGETS   build
-        DOWNLOAD_NO_PROGRESS OFF
-        CMAKE_ARGS
-            -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-            -DBUILD_SHARED_LIBS=OFF
         )
 endif()
 

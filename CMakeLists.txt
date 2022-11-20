@@ -118,13 +118,12 @@ endif()
 
 
 set(HELLOIMGUI_BASEPATH ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Hello imgui base path" FORCE)
-
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_LIST_DIR}/cmake/")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/" PARENT_SCOPE)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/")
 
 
-include(StandardProjectSettings)
-include(StaticAnalyzers)
+include(cmake/StandardProjectSettings.cmake)
+include(cmake/StaticAnalyzers.cmake)
 include(msvc/msvc_target_group)
 
 

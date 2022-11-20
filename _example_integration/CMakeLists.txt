@@ -11,9 +11,11 @@ set(HELLOIMGUI_WITH_SDL OFF CACHE BOOL "" FORCE)
 set(HELLOIMGUI_WITH_GLFW ON CACHE BOOL "" FORCE)
 # Download hello_imgui
 include(FetchContent)
+Set(FETCHCONTENT_QUIET FALSE)
 FetchContent_Declare(
     hello_imgui
     GIT_REPOSITORY https://github.com/pthom/hello_imgui.git
+    GIT_PROGRESS TRUE
     # Enter the desired git tag below
     # GIT_TAG 0.8.0
 )

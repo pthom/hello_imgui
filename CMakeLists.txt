@@ -18,7 +18,8 @@ set(CMAKE_CXX_STANDARD 17)
 # Options / Backend selection
 #------------------------------------------------------------------------------
 # Backend selection with automatic backend compilation
-# (if you set any of those options, the corresponding backend will be downloaded and compiled automatically at build time)
+# (if you set any of those options, the corresponding backend will be automatically
+#  downloaded and compiled as a static library at build time)
 option(HELLOIMGUI_WITH_GLFW "Add GLFW+OpenGl3 support (glfw will be automatically compiled via ExternalProject_Add)" OFF)
 option(HELLOIMGUI_WITH_SDL "Add SDL+OpenGl3 support (SDL will be automatically compiled via ExternalProject_Add)" OFF)
 
@@ -134,6 +135,7 @@ endif()
 add_subdirectory(external)
 add_subdirectory(src)
 
+# Install
 install(DIRECTORY hello_imgui_cmake DESTINATION .)
 install(DIRECTORY hello_imgui_assets DESTINATION .)
 

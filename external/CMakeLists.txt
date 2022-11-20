@@ -24,16 +24,7 @@ endif()
 #
 if (HELLOIMGUI_BUILD_IMGUI)
     set(imgui_dir ${CMAKE_CURRENT_LIST_DIR}/imgui)
-    set(imgui_sources
-        ${imgui_dir}/imconfig.h
-        ${imgui_dir}/imgui.cpp
-        ${imgui_dir}/imgui.h
-        ${imgui_dir}/imgui_demo.cpp
-        ${imgui_dir}/imgui_draw.cpp
-        ${imgui_dir}/imgui_internal.h
-        ${imgui_dir}/imgui_tables.cpp
-        ${imgui_dir}/imgui_widgets.cpp
-        )
+    file(GLOB imgui_sources ${imgui_dir}/*.h ${imgui_dir}/*.cpp)
     if (HELLO_IMGUI_IMGUI_SHARED)
         add_library(imgui SHARED ${imgui_sources})
         install(TARGETS imgui DESTINATION ./lib/)
@@ -44,6 +35,12 @@ if (HELLOIMGUI_BUILD_IMGUI)
     if (MSVC)
         hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
     endif()
+
+    # Install
+    install(FILES ${imgui_sources} DESTINATION imgui)
+    install(DIRECTORY ${imgui_dir}/backends DESTINATION imgui)
+    install(DIRECTORY ${imgui_dir}/misc/cpp DESTINATION imgui/misc)
+    install(DIRECTORY ${imgui_dir}/misc/freetype DESTINATION imgui/misc)
 endif()
 
 if (HELLOIMGUI_USE_SDL_OPENGL3)

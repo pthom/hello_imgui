@@ -23,6 +23,9 @@ using AnyEventCallback = std::function<bool(void * backendEvent)>
 using VoidFunction = std::function<void(void)>;
 using AnyEventCallback = std::function<bool(void * backendEvent)>;
 
+inline VoidFunction EmptyVoidFunction() { return {}; }
+inline AnyEventCallback EmptyEventCallback() {return {}; }
+
 /**
 @@md#MobileCallbacks
 
@@ -47,10 +50,10 @@ using AnyEventCallback = std::function<bool(void * backendEvent)>;
  */
 struct MobileCallbacks
 {
-    VoidFunction OnDestroy = {};
-    VoidFunction OnLowMemory = {};
-    VoidFunction OnPause = {};
-    VoidFunction OnResume = {};
+    VoidFunction OnDestroy = EmptyVoidFunction();
+    VoidFunction OnLowMemory = EmptyVoidFunction();
+    VoidFunction OnPause = EmptyVoidFunction();
+    VoidFunction OnResume = EmptyVoidFunction();
 };
 
 /**
@@ -110,13 +113,13 @@ Notes:
  */
 struct RunnerCallbacks
 {
-    VoidFunction ShowGui = {};
-    VoidFunction ShowMenus = {};
-    VoidFunction ShowStatus = {};
-    VoidFunction PostInit = {};
-    VoidFunction BeforeExit = {};
+    VoidFunction ShowGui = EmptyVoidFunction();
+    VoidFunction ShowMenus = EmptyVoidFunction();
+    VoidFunction ShowStatus = EmptyVoidFunction();
+    VoidFunction PostInit = EmptyVoidFunction();
+    VoidFunction BeforeExit = EmptyVoidFunction();
 
-    AnyEventCallback AnyBackendEventCallback = {};
+    AnyEventCallback AnyBackendEventCallback = EmptyEventCallback();
 
     VoidFunction LoadAdditionalFonts = ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons;
     VoidFunction SetupImGuiConfig = ImGuiDefaultSettings::SetupDefaultImGuiConfig;

@@ -32,9 +32,6 @@ enum class WindowPositionMode
 };
 
 
-constexpr ScreenSize DefaultScreenSize = {800, 600};
-constexpr ScreenPosition DefaultScreenPosition = {40, 40};
-
 /**
 @@md#WindowGeometry
 
@@ -74,7 +71,7 @@ Members:
 struct WindowGeometry
 {
     // used if fullScreenMode==NoFullScreen and sizeAuto==false, default=(800, 600)
-    ScreenSize size = DefaultScreenSize;
+    ScreenSize size = DefaultWindowSize;
 
     // If true, adapt the app window size to the presented widgets
     bool sizeAuto = false;

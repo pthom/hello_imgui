@@ -61,12 +61,14 @@ namespace ImGuiTheme
         // Multiply the value (luminance) of FrameBg. If < 0, this is ignored.
         // (Background of checkbox, radio button, plot, slider, text input)
         float ValueMultiplierFrameBg = -1.f;
+
+        ImGuiThemeTweaks() {}
     };
 
     struct ImGuiTweakedTheme
     {
         ImGuiTheme_ Theme = ImGuiTheme_DarculaDarker;
-        ImGuiThemeTweaks Tweaks = {};
+        ImGuiThemeTweaks Tweaks = ImGuiThemeTweaks();
     };
 
     ImGuiStyle TweakedThemeThemeToStyle(const ImGuiTweakedTheme& tweaked_theme);

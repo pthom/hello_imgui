@@ -94,7 +94,7 @@ struct SimpleRunnerParams
 
     bool windowSizeAuto = false;
     bool windowRestorePreviousGeometry = false;
-    ScreenSize windowSize = {800, 600};
+    ScreenSize windowSize = DefaultWindowSize;
 
     float fpsIdle = 10.f;
 

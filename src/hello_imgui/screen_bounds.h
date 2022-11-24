@@ -9,12 +9,15 @@ namespace HelloImGui
     using ScreenPosition = std::array<int, 2>;
     using ScreenSize = std::array<int, 2>;
 
+    constexpr ScreenPosition DefaultScreenPosition = {0, 0};
+    constexpr ScreenSize DefaultWindowSize = {100, 100};
+
 #define ForDim2(dim) for (size_t dim = 0; dim < 2; dim += 1)
 
     struct ScreenBounds
     {
-        ScreenPosition position = {0, 0};
-        ScreenSize size = {100, 100};
+        ScreenPosition position = DefaultScreenPosition;
+        ScreenSize size = DefaultWindowSize;
 
         ScreenPosition TopLeftCorner() const{ return position; }
         ScreenPosition BottomRightCorner() const{ return { position[0] + size[0], position[1] + size[1] }; }

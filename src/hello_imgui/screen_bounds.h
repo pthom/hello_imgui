@@ -10,7 +10,7 @@ namespace HelloImGui
     using ScreenSize = std::array<int, 2>;
 
     constexpr ScreenPosition DefaultScreenPosition = {0, 0};
-    constexpr ScreenSize DefaultWindowSize = {100, 100};
+    constexpr ScreenSize DefaultWindowSize = {800, 600};
 
 #define ForDim2(dim) for (size_t dim = 0; dim < 2; dim += 1)
 

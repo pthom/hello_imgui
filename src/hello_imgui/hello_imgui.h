@@ -34,8 +34,6 @@ __HelloImGui::GetRunnerParams()__ is a convenience function that will return the
 */
 namespace HelloImGui
 {
-    constexpr ScreenSize DefaultWindowSize = {800, 600};
-
     void Run(RunnerParams & runnerParams);
 
     void Run(const SimpleRunnerParams& simpleParams);

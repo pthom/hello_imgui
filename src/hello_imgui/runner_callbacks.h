@@ -1,5 +1,4 @@
 #pragma once
-#include "hello_imgui/imgui_default_settings.h"
 #include <functional>
 
 namespace HelloImGui
@@ -25,7 +24,13 @@ using AnyEventCallback = std::function<bool(void * backendEvent)>;
 
 inline VoidFunction EmptyVoidFunction() { return {}; }
 inline AnyEventCallback EmptyEventCallback() {return {}; }
+}
 
+
+#include "hello_imgui/imgui_default_settings.h"
+
+namespace HelloImGui
+{
 /**
 @@md#MobileCallbacks
 
@@ -121,9 +126,9 @@ struct RunnerCallbacks
 
     AnyEventCallback AnyBackendEventCallback = EmptyEventCallback();
 
-    VoidFunction LoadAdditionalFonts = ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons;
-    VoidFunction SetupImGuiConfig = ImGuiDefaultSettings::SetupDefaultImGuiConfig;
-    VoidFunction SetupImGuiStyle = ImGuiDefaultSettings::SetupDefaultImGuiStyle;
+    VoidFunction LoadAdditionalFonts = ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons();
+    VoidFunction SetupImGuiConfig = ImGuiDefaultSettings::SetupDefaultImGuiConfig();
+    VoidFunction SetupImGuiStyle = ImGuiDefaultSettings::SetupDefaultImGuiStyle();
 
 #ifdef HELLOIMGUI_MOBILEDEVICE
     MobileCallbacks mobileCallbacks;

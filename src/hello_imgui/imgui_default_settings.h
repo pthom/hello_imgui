@@ -1,5 +1,7 @@
 #pragma once
+#include "hello_imgui/runner_callbacks.h"
 #include <string>
+
 namespace HelloImGui
 {
 ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange = false, ImFontConfig config = ImFontConfig());
@@ -8,8 +10,8 @@ ImFont* MergeFontAwesomeToLastFont(float fontSize, ImFontConfig config = ImFontC
 
 namespace ImGuiDefaultSettings
 {
-void LoadDefaultFont_WithFontAwesomeIcons();
-void SetupDefaultImGuiConfig();
-void SetupDefaultImGuiStyle();
+VoidFunction LoadDefaultFont_WithFontAwesomeIcons();
+VoidFunction SetupDefaultImGuiConfig();
+VoidFunction SetupDefaultImGuiStyle();
 }  // namespace ImGuiDefaultSettings
 }  // namespace HelloImGui

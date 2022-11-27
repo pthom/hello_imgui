@@ -153,7 +153,7 @@ struct DockableWindow
 
     DockSpaceName dockSpaceName;
 
-    VoidFunction GuiFunction = {};
+    VoidFunction GuiFunction = EmptyVoidFunction();
 
     bool isVisible = true;
     bool canBeClosed = true;

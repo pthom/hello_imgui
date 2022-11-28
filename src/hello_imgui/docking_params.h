@@ -141,7 +141,7 @@ struct DockableWindow
     DockableWindow(
         const std::string & label_ = "",
         const DockSpaceName & dockSpaceName_ = "",
-        const VoidFunction guiFunction_ = VoidFunction(),
+        const VoidFunction guiFunction_ = EmptyVoidFunction(),
         bool isVisible_ = true,
         bool canBeClosed_ = true)
     : label(label_), dockSpaceName(dockSpaceName_),

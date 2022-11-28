@@ -89,7 +89,7 @@ struct RunnerParams
  */
 struct SimpleRunnerParams
 {
-    VoidFunction guiFunction;
+    VoidFunction guiFunction = EmptyVoidFunction();
     std::string windowTitle = "";
 
     bool windowSizeAuto = false;

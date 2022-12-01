@@ -45,9 +45,17 @@ RunnerParams* GetRunnerParams()
     return gLastRunnerParams;
 }
 
+// Private API, used internally by AppWindowScreenshotRgbBuffer()
 AbstractRunner *GetRunner()
 {
     return gLastRunner.get();
+}
+
+// Private API, not mentioned in headers!
+std::string GlslVersion()
+{
+    std::string r = GetRunner()->Impl_GlslVersion();
+    return r;
 }
 
 }  // namespace HelloImGui

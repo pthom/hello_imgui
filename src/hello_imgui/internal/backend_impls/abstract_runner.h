@@ -38,6 +38,8 @@ class AbstractRunner
     ImageBuffer ScreenshotRgb() { return Impl_ScreenshotRgb(); }
 
    protected:
+    friend std::string GlslVersion();
+
     //
     // The methods Impl_* are astract
     // and shall be overriden in the concrete implementations by derivates

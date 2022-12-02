@@ -748,7 +748,7 @@ namespace ImGuiTheme
                 value_multiplier_front,
                 value_multiplier_bg,
                 alpha_multiplier_bg_transparency);
-            ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, 0.39f, style);
+            ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, 2.5f, style);
             return style;
         }
 

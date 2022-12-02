@@ -29,7 +29,7 @@ ImFont * gAkronimFont = nullptr;
 void MyLoadFonts()
 {
     // First, we load the default fonts (the font that was loaded first is the default font)
-    HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons();
+    HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons()();
 
     // Then we load a second font from
     // Since this font is in a local assets/ folder, it was embedded automatically
@@ -138,7 +138,7 @@ int main(int, char **)
 
     runnerParams.appWindowParams.windowTitle = "Docking demo";
     runnerParams.appWindowParams.windowGeometry.size = {800, 600};
-    runnerParams.appWindowParams.restorePreviousGeometry = true;
+    // runnerParams.appWindowParams.restorePreviousGeometry = true;
 
     //
     // Status bar

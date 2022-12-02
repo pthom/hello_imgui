@@ -60,7 +60,7 @@ void overrideAssetsFolder(const char* folder)
     gOverrideAssetsFolder = folder;
 }
 
-void setAssetsFolder(const char* folder)
+void SetAssetsFolder(const char* folder)
 {
     gOverrideAssetsFolder = folder;
 }
@@ -75,9 +75,9 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
 {
     std::vector<AssetFolderWithDesignation> r;
 
-    // 1. Search inside gOverrideAssetsFolder set by setAssetsFolder()
+    // 1. Search inside gOverrideAssetsFolder set by SetAssetsFolder()
     if (! gOverrideAssetsFolder.empty())
-        r.push_back({gOverrideAssetsFolder, "folder provided by HelloImGui::setAssetsFolder()"});
+        r.push_back({gOverrideAssetsFolder, "folder provided by HelloImGui::SetAssetsFolder()"});
 
     // 2. Search inside a subfolder of the exe
     #if !defined(HELLOIMGUI_MOBILEDEVICE) && !defined(__EMSCRIPTEN__)
@@ -142,7 +142,7 @@ std::string assetFileFullPath(const std::string& assetFilename)
             errorMessage += "        " + assetsFolder.designation + ":\n";
             errorMessage += "            " + assetsFolder.folder + "\n";
         }
-        errorMessage += "    (you can call HelloImGui::setAssetsFolder() to set the default search location)\n";
+        errorMessage += "    (you can call HelloImGui::SetAssetsFolder() to set the default search location)\n";
         HIMG_THROW_STRING(errorMessage);
     }
 #endif
@@ -219,7 +219,7 @@ AssetFileData LoadAssetFileData(const char *assetPath)
     {
         std::stringstream msg;
         msg << "LoadAssetFileData: cannot load " << assetPath << " (also tried " << fullPath << ")\n";
-        msg << "(you can call HelloImGui::setAssetsFolder() to change the assets default location.";
+        msg << "(you can call HelloImGui::SetAssetsFolder() to change the assets default location.";
         HIMG_THROW_STRING(msg.str());
     }
     return r;

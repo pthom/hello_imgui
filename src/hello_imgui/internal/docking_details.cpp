@@ -191,7 +191,8 @@ void DoCreateFullScreenImGuiWindow(const ImGuiWindowParams& imGuiWindowParams, b
 
     ImVec2 viewportSize = viewport->Size;
     if (imGuiWindowParams.showStatusBar)
-        viewportSize.y -= 30.f;
+        viewportSize.y -= ImGui::GetFrameHeight() * 1.35f;
+
     ImGui::SetNextWindowSize(viewportSize);
     ImGui::SetNextWindowViewport(viewport->ID);
     if (useDocking)

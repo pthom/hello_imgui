@@ -53,17 +53,20 @@ elseif(ANDROID)
 
 
 else()
-
-    function(_do_copy_asset target_name src dst)
-        # Warning: RUNTIME_OUTPUT_DIRECTORY can vary between Debug/Release configs
+	function(get_real_output_directory app_name r)
+        # Warning: RUNTIME_OUTPUT_DIRECTORY is stable, but RUNTIME_OUTPUT_DIRECTORY_CONFIG can vary between Debug/Release configs
         # cf https://cmake.org/cmake/help/latest/prop_tgt/RUNTIME_OUTPUT_DIRECTORY_CONFIG.html
         get_property(runtime_output_directory TARGET ${app_name} PROPERTY RUNTIME_OUTPUT_DIRECTORY)
         if ("${runtime_output_directory}" STREQUAL "")
-            set(real_output_directory ${CMAKE_CURRENT_BINARY_DIR})
+            set(${r} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
         else()
-            set(real_output_directory ${runtime_output_directory})
+			set(${r} ${runtime_output_directory} PARENT_SCOPE)
         endif()
+	endfunction()
 
+    function(_do_copy_asset app_name src dst)
+		get_real_output_directory(${app_name} real_output_directory)
+		
         FILE(COPY "${src}" DESTINATION "${real_output_directory}/${dst}")
         message(VERBOSE "_do_copy_asset=> FILE(COPY ${src} DESTINATION ${real_output_directory}/${dst})")
 
@@ -117,4 +120,11 @@ function(hello_imgui_bundle_assets app_name)
         message(VERBOSE "hello_imgui_bundle_assets: ${app_name} found local assets")
         hello_imgui_bundle_assets_from_folder(${app_name} ${local_assets_folder})
     endif()
+
+    if (WIN32)
+		# Fix msvc quirk: set the debugger working dir to the exe dir!
+		get_real_output_directory(${app_name} app_output_dir)
+		set_target_properties(${app_name} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${app_output_dir})
+	endif()
+
 endfunction()

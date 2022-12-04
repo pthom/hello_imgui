@@ -53,7 +53,7 @@ elseif(ANDROID)
 
 
 else()
-	function(get_real_output_directory app_name r)
+	function(hello_imgui_get_real_output_directory app_name r)
         # Warning: RUNTIME_OUTPUT_DIRECTORY is stable, but RUNTIME_OUTPUT_DIRECTORY_CONFIG can vary between Debug/Release configs
         # cf https://cmake.org/cmake/help/latest/prop_tgt/RUNTIME_OUTPUT_DIRECTORY_CONFIG.html
         get_property(runtime_output_directory TARGET ${app_name} PROPERTY RUNTIME_OUTPUT_DIRECTORY)
@@ -65,7 +65,7 @@ else()
 	endfunction()
 
     function(_do_copy_asset app_name src dst)
-		get_real_output_directory(${app_name} real_output_directory)
+		hello_imgui_get_real_output_directory(${app_name} real_output_directory)
 		
         FILE(COPY "${src}" DESTINATION "${real_output_directory}/${dst}")
         message(VERBOSE "_do_copy_asset=> FILE(COPY ${src} DESTINATION ${real_output_directory}/${dst})")
@@ -123,7 +123,7 @@ function(hello_imgui_bundle_assets app_name)
 
     if (WIN32)
 		# Fix msvc quirk: set the debugger working dir to the exe dir!
-		get_real_output_directory(${app_name} app_output_dir)
+		hello_imgui_get_real_output_directory(${app_name} app_output_dir)
 		set_target_properties(${app_name} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${app_output_dir})
 	endif()
 

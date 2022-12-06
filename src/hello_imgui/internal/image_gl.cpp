@@ -33,7 +33,7 @@ ImageGl::ImageGl(const char *assetPath)
                  image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
 
     this->imageSize = ImVec2((float)image_width, (float) image_height);
-    this->imTextureId = (void*)(intptr_t)textureId_Gl;
+    this->imTextureId = (ImTextureID)(intptr_t)textureId_Gl;
 }
 
 ImageGl::~ImageGl()

@@ -83,9 +83,30 @@ hello_imgui_add_app(hello_globe hello_globe.main.cpp)
 
 # Full usage instructions and API
 
-* [Full API doc](src/hello_imgui/hello_imgui_api.md)
+HelloImGui is extremely easy to use: there is **one** main function in the API, with three overloads.
+
+
+__HelloImGui::Run()__ will run an application with a single call.
+
+Three signatures are provided:
+
+* `HelloImGui::Run(RunnerParams &)`: full signature, the most customizable version.
+   Runs an application whose params and Gui are provided by runnerParams.
+
+* `HelloImGui::Run(const SimpleRunnerParams&)`:
+   Runs an application, using simpler params.
+
+* `HelloImGui::Run(guiFunction, windowTitle, windowSize, windowSizeAuto=false, restoreLastWindowGeometry=false, fpsIdle=10)`
+
+__HelloImGui::GetRunnerParams()__ is a convenience function that will return the runnerParams of the current application.
+
+
+Although the API is extremely simple, it is highly customizable, and you can set many options by filling the elements in the `RunnerParams` struct, or in the simpler  `SimpleRunnerParams`, or even by giving a subset of params to `HelloImGui::Run`.
+
+Click on the image below to access the [full API doc](src/hello_imgui/hello_imgui_api.md)
 [![a](src/hello_imgui/doc_src/hello_imgui_diagram.png)](src/hello_imgui/hello_imgui_api.md)
-* [Docking API](src/hello_imgui/hello_imgui_api.md#docking)
+
+More info about the [docking API](src/hello_imgui/hello_imgui_api.md#docking).
 
 
 ## Online interactive example applications

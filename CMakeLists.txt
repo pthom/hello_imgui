@@ -84,7 +84,7 @@ option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 
 if (HELLOIMGUI_WITH_GLFW)
     set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
-    if (NOT TARGET glfw)
+    if (NOT TARGET glfw AND NOT EMSCRIPTEN)
         include(FetchContent)
         Set(FETCHCONTENT_QUIET FALSE)
         FetchContent_Declare(glfw
@@ -98,7 +98,7 @@ endif()
 
 if (HELLOIMGUI_WITH_SDL)
     set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
-    if (NOT TARGET sdl)
+    if (NOT TARGET sdl AND NOT EMSCRIPTEN)
         include(FetchContent)
         Set(FETCHCONTENT_QUIET FALSE)
         FetchContent_Declare(sdl

@@ -330,7 +330,7 @@ See [Embed assets and customize apps](#embed-assets-and-customize-apps)
 
 ### Install the requirements (emsdk)
 
-You can either install emsdk following [the instruction on the emscripten website](https://emscripten.org/docs/getting_started/downloads.html) or you can use the script [tools/emscripten/cmake_emscripten.sh](tools/emscripten/cmake_emscripten.sh).
+You can either install emsdk following [the instruction on the emscripten website](https://emscripten.org/docs/getting_started/downloads.html) or you can use the script [tools/emscripten/install_emscripten.sh](tools/emscripten/install_emscripten.sh).
 
 `````bash
 ../tools/emscripten/install_emscripten.sh
@@ -353,7 +353,7 @@ source ~/emsdk/emsdk_env.sh
 `````bash
 mkdir build_emscripten
 cd build_emscripten
-emcmake cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON ..
+emcmake cmake ..
 `````
 
 Note: the script [tools/emscripten/cmake_emscripten.sh](tools/emscripten/cmake_emscripten.sh) does the cmake part of this.

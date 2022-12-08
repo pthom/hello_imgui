@@ -38,6 +38,7 @@ endif()
 
 if (EMSCRIPTEN)
     set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
+    set(HELLOIMGUI_USE_GLFW_OPENGL3 OFF)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_USE_GLES3)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_CANNOTQUIT)
 endif()

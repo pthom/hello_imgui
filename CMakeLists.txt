@@ -147,8 +147,10 @@ add_subdirectory(external)
 add_subdirectory(src)
 
 # Install
-install(DIRECTORY hello_imgui_cmake DESTINATION .)
-install(DIRECTORY hello_imgui_assets DESTINATION .)
+if(PROJECT_IS_TOP_LEVEL)
+    install(DIRECTORY hello_imgui_cmake DESTINATION .)
+    install(DIRECTORY hello_imgui_assets DESTINATION .)
+endif()
 
 if (HELLOIMGUI_BUILD_DOCS)
     add_custom_target(hello_imgui_build_doc ALL

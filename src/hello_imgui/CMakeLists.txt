@@ -177,7 +177,7 @@ endif()
 
 
 # install
-if (NOT IOS AND NOT ANDROID)
+if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
     install(TARGETS ${target_name} DESTINATION ./lib/)
     file(GLOB headers *.h)
     install(FILES ${headers} DESTINATION ./include/hello_imgui/)

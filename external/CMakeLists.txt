@@ -37,10 +37,12 @@ if (HELLOIMGUI_BUILD_IMGUI)
     endif()
 
     # Install
-    install(FILES ${imgui_sources} DESTINATION imgui)
-    install(DIRECTORY ${imgui_dir}/backends DESTINATION imgui)
-    install(DIRECTORY ${imgui_dir}/misc/cpp DESTINATION imgui/misc)
-    install(DIRECTORY ${imgui_dir}/misc/freetype DESTINATION imgui/misc)
+    if(PROJECT_IS_TOP_LEVEL)
+        install(FILES ${imgui_sources} DESTINATION imgui)
+        install(DIRECTORY ${imgui_dir}/backends DESTINATION imgui)
+        install(DIRECTORY ${imgui_dir}/misc/cpp DESTINATION imgui/misc)
+        install(DIRECTORY ${imgui_dir}/misc/freetype DESTINATION imgui/misc)
+    endif()
 endif()
 
 if (HELLOIMGUI_USE_SDL_OPENGL3)

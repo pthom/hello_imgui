@@ -4,6 +4,8 @@
 #include "hello_imgui/hello_imgui_theme.h"
 #include "imgui_internal.h"
 #include <map>
+#include <cassert>
+
 
 namespace HelloImGui
 {

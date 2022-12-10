@@ -1,5 +1,6 @@
 #include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/internal/backend_impls/runner_factory.h"
+#include "imgui_internal.h"
 
 namespace HelloImGui
 {
@@ -44,6 +45,14 @@ RunnerParams* GetRunnerParams()
         throw std::runtime_error("HelloImGui::GetRunnerParams() would return null. Did you call HelloImGui::Run()?");
     return gLastRunnerParams;
 }
+
+float EmSize()
+{
+    IM_ASSERT(GImGui != NULL); // EmSize can only be called after ImGui context was created!
+    float r = ImGui::GetFontSize() / ImGui::GetIO().FontGlobalScale;
+    return r;
+}
+
 
 // Private API, used internally by AppWindowScreenshotRgbBuffer()
 AbstractRunner *GetRunner()

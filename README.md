@@ -100,6 +100,11 @@ Three signatures are provided:
 
 __HelloImGui::GetRunnerParams()__ is a convenience function that will return the runnerParams of the current application.
 
+__HelloImGui::EmSize()__ returns the visible font size on the screen. For reproducible results, even on HighDPI screens,
+ always scale your widgets and windows relatively to this size. It is somewhat comparable to the
+ [em CSS Unit](https://lyty.dev/css/css-unit.html).
+_EmSize() = ImGui::GetFontSize() / ImGui::GetIO().FontGlobalScale_ (on MacOS FontGlobalScale can be = 2.0).
+
 
 Although the API is extremely simple, it is highly customizable, and you can set many options by filling the elements in the `RunnerParams` struct, or in the simpler  `SimpleRunnerParams`, or even by giving a subset of params to `HelloImGui::Run`.
 

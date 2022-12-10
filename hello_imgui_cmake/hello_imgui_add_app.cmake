@@ -87,3 +87,20 @@ function(hello_imgui_add_app)
              sources=${app_sources}
             ")
 endfunction()
+
+
+#
+# hello_imgui_get_all_subdirs_targets returns the recursive list of all targets
+# under a given directory
+#
+function (hello_imgui_get_all_subdirs_targets out_var current_dir)
+    get_property(targets DIRECTORY ${current_dir} PROPERTY BUILDSYSTEM_TARGETS)
+    get_property(subdirs DIRECTORY ${current_dir} PROPERTY SUBDIRECTORIES)
+
+    foreach(subdir ${subdirs})
+        hello_imgui_get_all_subdirs_targets(subdir_targets ${subdir})
+        list(APPEND targets ${subdir_targets})
+    endforeach()
+
+    set(${out_var} ${targets} PARENT_SCOPE)
+endfunction()

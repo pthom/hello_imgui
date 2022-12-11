@@ -179,7 +179,7 @@ namespace ImGuiTheme
         ImGuiStyle SoDark(float hue)
         {
             ImGuiStyle style;
-            ImVec4* colors = style.Colors;
+            auto colors = style.Colors;
             colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
             colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
             colors[ImGuiCol_WindowBg]               = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);

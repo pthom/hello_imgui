@@ -49,8 +49,22 @@ RunnerParams* GetRunnerParams()
 float EmSize()
 {
     IM_ASSERT(GImGui != NULL); // EmSize can only be called after ImGui context was created!
-    float r = ImGui::GetFontSize() / ImGui::GetIO().FontGlobalScale;
+    float r = ImGui::GetFontSize();
     return r;
+}
+
+ImVec2 EmVec2(float x, float y)
+{
+    IM_ASSERT(GImGui != NULL);
+    float k = ImGui::GetFontSize();
+    return ImVec2(k * x, k * y);
+}
+
+ImVec2 EmVec2(ImVec2 v)
+{
+    IM_ASSERT(GImGui != NULL);
+    float k = ImGui::GetFontSize();
+    return ImVec2(k * v.x, k * v.y);
 }
 
 

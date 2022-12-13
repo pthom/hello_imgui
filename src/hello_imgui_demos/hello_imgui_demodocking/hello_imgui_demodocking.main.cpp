@@ -102,7 +102,7 @@ void StatusBarGui(const AppState &appState)
     if (appState.rocketState == AppState::RocketState::Preparing) {
         ImGui::Text("Rocket completion: ");
         ImGui::SameLine();
-        ImGui::ProgressBar(appState.rocket_progress, ImVec2(100.f, 15.f));
+        ImGui::ProgressBar(appState.rocket_progress, HelloImGui::EmVec2(12.f, 1.f));
     }
 }
 

@@ -73,8 +73,9 @@ void ShowStatusBar(const RunnerParams & params)
 
     if (params.imGuiWindowParams.showStatus_Fps)
     {
-        ImGui::SameLine(ImGui::GetIO().DisplaySize.x - 5.f * ImGui::GetFontSize());
-        ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+        ImGui::SameLine(ImGui::GetIO().DisplaySize.x - 7.f * ImGui::GetFontSize());
+        const char* idlingInfo = params.isIdling ? " (Idling)" : "";
+        ImGui::Text("FPS: %.1f%s", ImGui::GetIO().Framerate, idlingInfo);
     }
 
     ImGui::End();

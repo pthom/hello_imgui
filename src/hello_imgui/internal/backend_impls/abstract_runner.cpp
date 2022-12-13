@@ -10,6 +10,36 @@
 
 #include <cassert>
 
+
+namespace
+{
+    class ClockSeconds_
+    {
+        // Typical C++ shamanic incantations to get a time in seconds
+    private:
+        using Clock = std::chrono::high_resolution_clock;
+        using second = std::chrono::duration<double, std::ratio<1>>;
+        std::chrono::time_point<Clock> mStart;
+
+    public:
+        ClockSeconds_() : mStart(Clock::now()) {}
+
+        double elapsed() const
+        {
+            return std::chrono::duration_cast<second>
+                (Clock::now() - mStart).count();
+        }
+    };
+
+    double ClockSeconds()
+    {
+        static ClockSeconds_ watch;
+        return watch.elapsed();
+    }
+
+}
+
+
 namespace HelloImGui
 {
 // Encapsulated inside hello_imgui_screenshot.cpp
@@ -193,10 +223,18 @@ void AbstractRunner::RenderGui(int idxFrame)
 void AbstractRunner::CreateFramesAndRender(int idxFrame)
 {
     assert(params.fpsIdle >= 0.f);
+
+    params.isIdling = false;
     if (params.fpsIdle > 0.f)
     {
+        double beforeWait = ClockSeconds();
         double waitTimeout = 1. / (double) params.fpsIdle;
         mBackendWindowHelper->WaitForEventTimeout(waitTimeout);
+
+        double afterWait = ClockSeconds();
+        double waitDuration = (afterWait - beforeWait);
+        double waitIdleExpected = 1. / params.fpsIdle;
+        params.isIdling = (waitDuration > waitIdleExpected * 0.9);
     }
 
     if (Impl_PollEvents())

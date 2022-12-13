@@ -42,6 +42,21 @@ ImageGl::~ImageGl()
     glDeleteTextures(1, &textureId_Gl);
 }
 
+
+ImVec2 ImageProportionalSize(const ImVec2& askedSize, const ImVec2& imageSize)
+{
+    ImVec2 r(askedSize);
+
+    if ((r.x == 0.f) && (r.y == 0.f))
+        r = imageSize;
+    else if (r.y == 0.f)
+        r.y = imageSize.y / imageSize.x * r.x;
+    else if (r.x == 0.f)
+        r.y = imageSize.x / imageSize.y * r.y;
+    return r;
+}
+
+
 void ImageGl::Draw(
     const ImVec2& size,
     const ImVec2& uv0,
@@ -49,10 +64,8 @@ void ImageGl::Draw(
     const ImVec4& tint_col,
     const ImVec4& border_col)
 {
-    ImVec2 size_(size);
-    if (size.x == 0.f)
-        size_ = this->imageSize;
-    ImGui::Image(this->imTextureId, size_, uv0, uv1, tint_col, border_col);
+    ImVec2 displayedSize = ImageProportionalSize(size, this->imageSize);
+    ImGui::Image(this->imTextureId, displayedSize, uv0, uv1, tint_col, border_col);
 }
 
 bool ImageGl::DrawButton(
@@ -63,10 +76,8 @@ bool ImageGl::DrawButton(
     const ImVec4& bg_col,
     const ImVec4& tint_col)
 {
-    ImVec2 size_(size);
-    if (size.x == 0.f)
-        size_ = this->imageSize;
-    return ImGui::ImageButton(this->imTextureId, size_, uv0, uv1, frame_padding, bg_col, tint_col);
+    ImVec2 displayedSize = ImageProportionalSize(size, this->imageSize);
+    return ImGui::ImageButton(this->imTextureId, displayedSize, uv0, uv1, frame_padding, bg_col, tint_col);
 }
 
 ImageGlPtr ImageGl::FactorImage(const char *assetPath)

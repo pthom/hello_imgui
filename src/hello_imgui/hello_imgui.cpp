@@ -53,6 +53,11 @@ float EmSize()
     return r;
 }
 
+float EmSize(float nbLines)
+{
+    return ImGui::GetFontSize() * nbLines;
+}
+
 ImVec2 EmVec2(float x, float y)
 {
     IM_ASSERT(GImGui != NULL);

@@ -105,6 +105,8 @@ __HelloImGui::EmSize()__ returns the visible font size on the screen. For reprod
  [em CSS Unit](https://lyty.dev/css/css-unit.html).
 _EmSize() = ImGui::GetFontSize() / ImGui::GetIO().FontGlobalScale_ (on MacOS FontGlobalScale can be = 2.0).
 
+__HelloImGui::EmSize(nbLines)__ returns a size corresponding to nbLines text lines
+
 
 Although the API is extremely simple, it is highly customizable, and you can set many options by filling the elements in the `RunnerParams` struct, or in the simpler  `SimpleRunnerParams`, or even by giving a subset of params to `HelloImGui::Run`.
 

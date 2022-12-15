@@ -58,14 +58,14 @@ float EmSize(float nbLines)
     return ImGui::GetFontSize() * nbLines;
 }
 
-ImVec2 EmVec2(float x, float y)
+ImVec2 EmToVec2(float x, float y)
 {
     IM_ASSERT(GImGui != NULL);
     float k = ImGui::GetFontSize();
     return ImVec2(k * x, k * y);
 }
 
-ImVec2 EmVec2(ImVec2 v)
+ImVec2 EmToVec2(ImVec2 v)
 {
     IM_ASSERT(GImGui != NULL);
     float k = ImGui::GetFontSize();

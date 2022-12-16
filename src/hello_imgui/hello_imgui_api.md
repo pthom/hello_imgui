@@ -57,7 +57,7 @@ _EmSize() = ImGui::GetFontSize() / ImGui::GetIO().FontGlobalScale_ (on MacOS Fon
 
 __HelloImGui::EmSize(nbLines)__ returns a size corresponding to nbLines text lines
 
- __HelloImGui::EmToVec2(x, y)__ returns an ImVec2 that you can use to size or place your widgets in a DPI independent way
+__HelloImGui::EmToVec2(x, y)__ returns an ImVec2 that you can use to size or place your widgets in a DPI independent way
 
 
 ## Runner params

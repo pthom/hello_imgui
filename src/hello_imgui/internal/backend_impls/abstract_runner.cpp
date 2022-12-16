@@ -159,15 +159,12 @@ void AbstractRunner::Setup()
 #endif
 
     // High DPI handling on windows & linux
+    // Part 1: store scale factor, so that font size is multiplied by this factor when loading
+    // (this is for windows High DPI screen. On Mac Retina screen, macOS "hides" the DPI, and we are using virtual pixels)
     // cf https://github.com/pthom/imgui_bundle/issues/7
     {
         float scaleFactor = mBackendWindowHelper->GetWindowDpiScaleFactor(mWindow);
         params.appWindowParams.outWindowDpiFactor = scaleFactor;
-        if (scaleFactor > 1.f)
-        {
-            ImGuiStyle& style = ImGui::GetStyle();
-            style.ScaleAllSizes(scaleFactor);
-        }
     }
 
     Impl_SetupImgGuiContext();
@@ -190,6 +187,13 @@ void AbstractRunner::Setup()
     if (params.callbacks.PostInit)
         params.callbacks.PostInit();
 
+    // High DPI handling on windows & linux
+    // Part 2: resize ImGui style
+    if (params.appWindowParams.outWindowDpiFactor > 1.f)
+    {
+        ImGuiStyle& style = ImGui::GetStyle();
+        style.ScaleAllSizes(params.appWindowParams.outWindowDpiFactor);
+    }
 }
 
 void AbstractRunner::RenderGui(int idxFrame)

@@ -98,6 +98,16 @@ namespace ImGuiTheme
             return ColorCategory::ColorFront;
         }
 
+        static ImVec4 _ColorValueMultiply(ImVec4 col, float value_multiplier)
+        {
+            float h, s, v;
+            ImGui::ColorConvertRGBtoHSV(col.x, col.y, col.z, h, s, v);
+            v = v * value_multiplier;
+            ImVec4 r = col;
+            ImGui::ColorConvertHSVtoRGB(h, s, v, r.x, r.y, r.z);
+            return r;
+        }
+
         void _ApplyValueMultiplier(ImGuiStyle& style, float value_multiplier, ImGuiStyle& reference_style, ColorCategory category)
         {
             for (int i = 0; i < ImGuiCol_COUNT; ++i)
@@ -749,6 +759,8 @@ namespace ImGuiTheme
                 value_multiplier_bg,
                 alpha_multiplier_bg_transparency);
             ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, 2.5f, style);
+            style.Colors[ImGuiCol_Header] =
+                ThemeTweakImpl::_ColorValueMultiply(style.Colors[ImGuiCol_Header], 1.4f);
             return style;
         }
 

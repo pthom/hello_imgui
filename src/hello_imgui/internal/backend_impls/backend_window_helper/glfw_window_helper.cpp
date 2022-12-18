@@ -142,6 +142,11 @@ namespace HelloImGui { namespace BackendApi
             glfwGetMonitorWorkarea(monitors[i], &x, &y, &w, &h);
             auto bounds = ScreenBounds{{x, y},
                                   {w, h}};
+#ifdef _WIN32
+            // Hack because glfw and sdl behave differently on window position
+            bounds.position[1] += 12; 
+            bounds.size[1] -= 12;
+#endif
             r.push_back(bounds);
         }
         return r;

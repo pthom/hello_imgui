@@ -24,6 +24,8 @@ list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
 # HelloImGui Build options
 ###############################################################################
 
+option(HELLOIMGUI_WIN32_EXECUTABLE "Under windows, hello_imgui_add_app will create apps without console, with main() as the entry point" ON)
+
 #------------------------------------------------------------------------------
 # Options / Backend selection
 #------------------------------------------------------------------------------

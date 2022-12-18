@@ -80,6 +80,11 @@ function(hello_imgui_add_app)
         add_executable(${app_name} ${app_sources})
     endif()
 
+    if (WIN32 AND HELLOIMGUI_WIN32_EXECUTABLE)
+        # Make this an app without console, and force it to use main() as the entry point, not WinMain()
+        target_link_options(${app_name} PRIVATE /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup)
+    endif()
+
     hello_imgui_prepare_app(${app_name})
 
     message(VERBOSE "hello_imgui_add_app

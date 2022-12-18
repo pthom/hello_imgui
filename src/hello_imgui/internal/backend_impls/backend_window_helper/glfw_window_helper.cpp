@@ -140,9 +140,9 @@ namespace HelloImGui { namespace BackendApi
         {
             int x, y, w, h;
             glfwGetMonitorWorkarea(monitors[i], &x, &y, &w, &h);
-            auto b = ScreenBounds{{x, y},
+            auto bounds = ScreenBounds{{x, y},
                                   {w, h}};
-            r.push_back(b);
+            r.push_back(bounds);
         }
         return r;
     }

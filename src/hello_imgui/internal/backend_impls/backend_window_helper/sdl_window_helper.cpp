@@ -4,6 +4,8 @@
 #include "window_geometry_helper.h"
 #include "SDL.h"
 
+#include <cassert>
+
 namespace HelloImGui { namespace BackendApi
 {
     WindowPointer SdlWindowHelper::CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions)

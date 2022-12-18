@@ -95,6 +95,12 @@ namespace HelloImGui
     void WindowAutoSizeHelper::EnsureWindowFitsMonitor(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window)
     {
         auto currentMonitorWorkArea = GetCurrentMonitorWorkArea(backendWindowHelper, window);
+
+        #ifdef _WIN32
+        currentMonitorWorkArea.position[1] += 35;  // Because windows are unmovable if their top edge if out of screen
+        currentMonitorWorkArea.size[1] -= 35;  // Because the windows start bar is huge and not handled by glfwGetMonitorWorkarea
+        #endif
+
         auto currentWindowBounds = backendWindowHelper->GetWindowBounds(window);
         auto currentWindowBoundsNew = currentMonitorWorkArea.EnsureWindowFitsThisMonitor(currentWindowBounds);
         if ( !(currentWindowBoundsNew == currentWindowBounds))

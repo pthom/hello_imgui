@@ -52,7 +52,7 @@ ImVec2 ImageProportionalSize(const ImVec2& askedSize, const ImVec2& imageSize)
     else if (r.y == 0.f)
         r.y = imageSize.y / imageSize.x * r.x;
     else if (r.x == 0.f)
-        r.y = imageSize.x / imageSize.y * r.y;
+        r.x = imageSize.x / imageSize.y * r.y;
     return r;
 }
 

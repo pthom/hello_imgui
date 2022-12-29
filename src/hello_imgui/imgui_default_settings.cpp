@@ -16,6 +16,24 @@
 
 namespace HelloImGui
 {
+
+float macOS_BackingScaleFactor()
+{
+#ifndef HELLOIMGUI_MACOS
+    return 1.f;
+#else
+    // Crisp fonts on MacOS:
+    // cf https://github.com/ocornut/imgui/issues/5301
+    // Issue with MacOS is that it pretends screen has 2x less pixels
+    // than it actually does. This simplifies application development in most cases,
+    // but in our case we happen to render fonts at 1x scale while screen renders at 2x scale.
+    // You can cheat a little:
+    CGFloat scale = NSScreen.mainScreen.backingScaleFactor;
+    ImGui::GetIO().FontGlobalScale = 1.0f / scale;
+    return scale;
+#endif
+}
+
 ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange, ImFontConfig config)
 {
     AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());
@@ -27,21 +45,7 @@ ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFu
     }
 
     float fontSizeDpi = HelloImGui::GetRunnerParams()->appWindowParams.outWindowDpiFactor * fontSize;
-
-#ifdef HELLOIMGUI_MACOS
-    {
-        // Crisp fonts on MacOS:
-        // cf https://github.com/ocornut/imgui/issues/5301
-        // Issue with MacOS is that it pretends screen has 2x less pixels
-        // than it actually does. This simplifies application development in most cases,
-        // but in our case we happen to render fonts at 1x scale while screen renders at 2x scale.
-        // You can cheat a little:
-        CGFloat scale = NSScreen.mainScreen.backingScaleFactor;
-        ImFontConfig cfg;
-        fontSizeDpi *= scale;
-        ImGui::GetIO().FontGlobalScale = 1.0f / scale;
-    }
-#endif
+    fontSizeDpi *= macOS_BackingScaleFactor();
 
     ImFont * font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSizeDpi, &config);
     if (font == nullptr)
@@ -67,6 +71,8 @@ ImFont* MergeFontAwesomeToLastFont(float fontSize, ImFontConfig config)
     config.MergeMode = true;
     config.FontDataOwnedByAtlas = false;
     float fontSizeDpi = HelloImGui::GetRunnerParams()->appWindowParams.outWindowDpiFactor * fontSize;
+    fontSizeDpi *= macOS_BackingScaleFactor();
+
     auto font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
         fontData.data, (int)fontData.dataSize, fontSizeDpi, &config, icon_fa_ranges);
 

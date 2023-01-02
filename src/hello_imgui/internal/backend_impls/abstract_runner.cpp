@@ -160,8 +160,10 @@ void AbstractRunner::Setup()
 
     // High DPI handling on windows & linux
     // Part 1: store scale factor, so that font size is multiplied by this factor when loading
-    // (this is for windows High DPI screen. On Mac Retina screen, macOS "hides" the DPI, and we are using virtual pixels)
-    // cf https://github.com/pthom/imgui_bundle/issues/7
+    // (this is for windows High DPI screen.     // cf https://github.com/pthom/imgui_bundle/issues/7 )
+    //
+    // Note: On Mac Retina screen, macOS "hides" the DPI, and we are using virtual pixels)
+    //       => see macOS_BackingScaleFactor inside imgui_default_settings.cpp
     {
         float scaleFactor = mBackendWindowHelper->GetWindowDpiScaleFactor(mWindow);
         params.appWindowParams.outWindowDpiFactor = scaleFactor;

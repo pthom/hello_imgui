@@ -1,5 +1,6 @@
 #include "hello_imgui/hello_imgui_logger.h"
 #include "hello_imgui/internal/imguial_term.h"
+#include "hello_imgui/hello_imgui.h"
 
 namespace HelloImGui
 {
@@ -36,9 +37,11 @@ void LogClear()
     InternalLogBuffer::gLog.clear();
 }
 
-void LogGui()
+void LogGui(ImVec2 size)
 {
-    InternalLogBuffer::gLog.draw();
+    if (size.y == 0.f)
+        size.y = HelloImGui::EmSize(5.f);
+    InternalLogBuffer::gLog.draw(size);
 }
 
 }  // namespace HelloImGui

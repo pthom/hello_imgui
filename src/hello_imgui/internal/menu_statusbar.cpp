@@ -3,6 +3,7 @@
 
 #include "imgui.h"
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
+#include "hello_imgui/hello_imgui.h"
 #include "imgui_internal.h"
 
 #include <string>
@@ -75,7 +76,7 @@ void ShowStatusBar(const RunnerParams & params)
     {
         ImGui::SameLine(ImGui::GetIO().DisplaySize.x - 7.f * ImGui::GetFontSize());
         const char* idlingInfo = params.isIdling ? " (Idling)" : "";
-        ImGui::Text("FPS: %.1f%s", ImGui::GetIO().Framerate, idlingInfo);
+        ImGui::Text("FPS: %.1f%s", HelloImGui::FrameRate(), idlingInfo);
     }
 
     ImGui::End();

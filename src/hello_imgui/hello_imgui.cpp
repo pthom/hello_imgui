@@ -1,6 +1,9 @@
 #include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/internal/backend_impls/runner_factory.h"
 #include "imgui_internal.h"
+#include <deque>
+#include <chrono>
+
 
 namespace HelloImGui
 {
@@ -84,6 +87,58 @@ std::string GlslVersion()
 {
     std::string r = GetRunner()->Impl_GlslVersion();
     return r;
+}
+
+
+namespace ChronoShenanigans
+{
+    class ClockSeconds_
+    {
+    private:
+        using Clock = std::chrono::high_resolution_clock;
+        using second = std::chrono::duration<float, std::ratio<1>>;
+        std::chrono::time_point<Clock> mStart;
+
+    public:
+        ClockSeconds_() : mStart(Clock::now()) {}
+
+        float elapsed() const
+        {
+            return std::chrono::duration_cast<second>
+                (Clock::now() - mStart).count();
+        }
+    };
+
+    float ClockSeconds()
+    {
+        static ClockSeconds_ watch;
+        return watch.elapsed();
+    }
+
+}
+
+float FrameRate(float durationForMean)
+{
+    static std::deque<float> times;
+    float now = ChronoShenanigans::ClockSeconds();
+    times.push_back(now);
+    if (times.size() <= 1)
+        return 0.f;
+
+    while (true)
+    {
+        float firstTime = times.front();
+        float age = now - firstTime;
+        if ((age > durationForMean) && (times.size() >= 3))
+            times.pop_front();
+        else
+            break;
+    }
+
+    float totalTime = times.back() - times.front();
+    int nbFrames = times.size();
+    float fps = 1. / (totalTime / (float) (nbFrames - 1));
+    return fps;
 }
 
 }  // namespace HelloImGui

@@ -39,8 +39,6 @@ void LogClear()
 
 void LogGui(ImVec2 size)
 {
-    if (size.y == 0.f)
-        size.y = HelloImGui::EmSize(5.f);
     InternalLogBuffer::gLog.draw(size);
 }
 

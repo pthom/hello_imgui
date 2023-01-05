@@ -65,6 +65,11 @@ void SetAssetsFolder(const char* folder)
     gOverrideAssetsFolder = folder;
 }
 
+void SetAssetsFolder(const std::string& folder)
+{
+    SetAssetsFolder(folder.c_str());
+}
+
 struct AssetFolderWithDesignation
 {
     std::string folder;

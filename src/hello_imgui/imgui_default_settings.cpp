@@ -19,7 +19,7 @@ namespace HelloImGui
 
 float macOS_BackingScaleFactor()
 {
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
     // increase the loaded font size, to make it crisper
     float scale = 1.6f;
     ImGui::GetIO().FontGlobalScale = 1.0f / scale; // But resize it before display

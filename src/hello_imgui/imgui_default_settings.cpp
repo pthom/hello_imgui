@@ -24,7 +24,7 @@ float macOS_BackingScaleFactor()
     float scale = 1.6f;
     ImGui::GetIO().FontGlobalScale = 1.0f / scale; // But resize it before display
     return scale;
-#elif not defined(HELLOIMGUI_MACOS)
+#elif ! defined(HELLOIMGUI_MACOS)
     return 1.f;
 #else
     // Crisp fonts on MacOS:

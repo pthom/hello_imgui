@@ -35,7 +35,11 @@ namespace HelloImGui
 
     void RunnerSdlOpenGl3::Impl_InitBackend()
     {
-        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
+        auto flags = SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER;
+#ifdef __EMSCRIPTEN__
+        flags = SDL_INIT_VIDEO | SDL_INIT_TIMER;
+#endif
+        if (SDL_Init(flags) != 0)
         {
             HIMG_THROW_STRING(
                 std::string("RunnerSdlOpenGl3::Impl_InitBackend error ")

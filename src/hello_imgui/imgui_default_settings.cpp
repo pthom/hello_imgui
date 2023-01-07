@@ -21,7 +21,7 @@ float macOS_BackingScaleFactor()
 {
 #ifdef __EMSCRIPTEN__
     // increase the loaded font size, to make it crisper
-    float scale = 1.6f;
+    float scale = 2.f;
     ImGui::GetIO().FontGlobalScale = 1.0f / scale; // But resize it before display
     return scale;
 #elif ! defined(HELLOIMGUI_MACOS)

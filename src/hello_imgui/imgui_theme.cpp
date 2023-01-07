@@ -1120,6 +1120,13 @@ namespace ImGuiTheme
             }
 
         }
+
+        ImGui::TextWrapped(R"(
+Note:
+   This theme tweaks window is a part of HelloImGuI, but can be reused: see
+    https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/imgui_theme.h
+            )");
+
         return changed;
     }
 

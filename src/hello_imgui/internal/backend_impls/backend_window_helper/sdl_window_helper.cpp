@@ -2,9 +2,18 @@
 
 #include "sdl_window_helper.h"
 #include "window_geometry_helper.h"
+#include "hello_imgui/internal/backend_impls/backend_window_helper/win32_dpi_awareness.h"
 #include "SDL.h"
 
+#ifdef _WIN32
+#include "SDL_syswm.h"
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+#endif
+
 #include <cassert>
+
 
 namespace HelloImGui { namespace BackendApi
 {
@@ -177,11 +186,32 @@ namespace HelloImGui { namespace BackendApi
         SDL_WaitEventTimeout(NULL, timeout_ms);
     }
 
+    #ifdef _WIN32
+    HWND SdlWindowToHwnd(WindowPointer window) 
+    {
+        HWND win32Window;
+        SDL_Window *sdlwindow = (SDL_Window *)window;
+        SDL_SysWMinfo info;
+        SDL_VERSION(&info.version);
+        bool success = SDL_GetWindowWMInfo(sdlwindow, &info);
+        return info.info.win.window;
+    }
+    #endif
+    
     float SdlWindowHelper::GetWindowDpiScaleFactor(WindowPointer window)
     {
         // SDL does not support HighDPI
         // See https://github.com/libsdl-org/SDL/issues/2119
+
+        // We have to implement manual workarounds for windows
+        #ifdef _WIN32
+        int dpi = GetDpiForWindow(SdlWindowToHwnd(window));
+        float dpiScale = dpi / 96.f;
+        return dpiScale;
+        #else
         return 1.f;
+        #endif
+
     }
 
     }} // namespace HelloImGui { namespace BackendApi

@@ -19,6 +19,11 @@ namespace HelloImGui { namespace BackendApi
 {
     WindowPointer SdlWindowHelper::CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions)
     {
+#ifdef _WIN32
+        if (backendOptions.sdlWin32DpiAware)
+            Internal::ImGui_ImplWin32_EnableDpiAwareness();
+#endif
+
         auto searchMonitorResult = SearchForMonitor(GetMonitorsWorkAreas(), appWindowParams);
         int realMonitorIdx = searchMonitorResult.monitorIdx;
         if (searchMonitorResult.newPosition.has_value())

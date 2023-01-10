@@ -36,9 +36,6 @@ namespace HelloImGui
 
     void RunnerSdlOpenGl3::Impl_InitBackend()
     {
-        #ifdef _WIN32
-        Internal::ImGui_ImplWin32_EnableDpiAwareness();
-        #endif
         auto flags = SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER;
 #ifdef __EMSCRIPTEN__
         flags = SDL_INIT_VIDEO | SDL_INIT_TIMER;

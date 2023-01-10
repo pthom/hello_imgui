@@ -30,6 +30,9 @@ namespace HelloImGui { namespace BackendApi
 
     struct BackendOptions
     {
+        #ifdef _WIN32
+        bool sdlWin32DpiAware = true;
+        #endif
         Backend3dMode backend3DMode = Backend3dMode::OpenGl;
     };
 

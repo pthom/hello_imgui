@@ -30,11 +30,6 @@ namespace HelloImGui { namespace BackendApi
 
     struct BackendOptions
     {
-        // If the window is created with the `allowHighDpi` flag, its size
-        // * in pixels may differ from its size in screen coordinates on platforms with
-        // * high-DPI support (e.g. iOS and macOS)
-        bool allowHighDpi = true;
-
         Backend3dMode backend3DMode = Backend3dMode::OpenGl;
     };
 

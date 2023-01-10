@@ -83,8 +83,12 @@ namespace HelloImGui { namespace BackendApi
         else
             BACKEND_THROW("Unsupported backend3DMode");
 
-        if (backendOptions.allowHighDpi)
-            window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+        // If the window is created with the SDL_WINDOW_ALLOW_HIGHDPI flag,
+        // its size in pixels may differ from its size in screen coordinates on platforms with high-DPI support
+        // (e.g. iOS and macOS).
+#ifdef __APPLE__
+        window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+#endif
 
         if (appWindowParams.borderless)
             window_flags |= SDL_WINDOW_BORDERLESS;

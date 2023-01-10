@@ -71,8 +71,6 @@ namespace HelloImGui { namespace BackendApi
 
         // info.backend3DMode: not handled here
 
-        // info.allowHighDpi: not handled
-
         if (appWindowParams.borderless)
             glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         else

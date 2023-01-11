@@ -9,8 +9,15 @@ namespace HelloImGui
     using ScreenPosition = std::array<int, 2>;
     using ScreenSize = std::array<int, 2>;
 
+    // Note: note related to DPI and high resolution screens:
+    // ScreenPosition ans ScreenSize are in "Screen Coordinates":
+    // Screen coordinates *might* differ from real pixel on high dpi screens; but this depends on the OS.
+    // - For example, on apple a retina screenpixel size 3456x2052 might be seen as 1728x1026 in
+    // ScreenCoordinates
+    // - Under windows, ScreenCoordinates correspond to pixels, even on high density screens
     constexpr ScreenPosition DefaultScreenPosition = {0, 0};
     constexpr ScreenSize DefaultWindowSize = {800, 600};
+
 
 #define ForDim2(dim) for (size_t dim = 0; dim < 2; dim += 1)
 

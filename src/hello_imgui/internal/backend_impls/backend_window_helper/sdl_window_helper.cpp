@@ -34,8 +34,8 @@ namespace HelloImGui { namespace BackendApi
         auto monitorsWorksAreas = GetMonitorsWorkAreas();
         assert((realMonitorIdx >= 0) && (realMonitorIdx < monitorsWorksAreas.size()));
 
-        PixelCoordinates &windowSize = appWindowParams.windowGeometry.size;
-        PixelCoordinates &windowPosition = appWindowParams.windowGeometry.position;
+        ScreenSize &windowSize = appWindowParams.windowGeometry.size;
+        ScreenPosition &windowPosition = appWindowParams.windowGeometry.position;
         WindowPositionMode positionMode = appWindowParams.windowGeometry.positionMode;
 
         // Reduce size if too big compared to the monitor

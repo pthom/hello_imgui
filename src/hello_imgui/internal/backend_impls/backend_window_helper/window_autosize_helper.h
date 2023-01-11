@@ -18,12 +18,13 @@ namespace HelloImGui
         void EndMeasureSize(BackendApi::IBackendWindowHelper* helper, BackendApi::WindowPointer window);
         void EnsureWindowFitsMonitor(BackendApi::IBackendWindowHelper* helper, BackendApi::WindowPointer window);
         bool WantAutoSize();
+        ScreenBounds GetCurrentMonitorWorkArea(BackendApi::IBackendWindowHelper* backendWindowHelper,
+                                               BackendApi::WindowPointer window);
 
     private:
         void _ForceWindowSize(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window);
 
         int GetMonitorIndexFromWindowPosition(BackendApi::IBackendWindowHelper *backendWindowHelper, const ScreenPosition& windowPosition);
-        ScreenBounds GetCurrentMonitorWorkArea(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window);
 
     };
 }

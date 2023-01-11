@@ -3,6 +3,7 @@
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/image_from_asset.h"
 #include "hello_imgui/hello_imgui_theme.h"
+#include "hello_imgui/internal/backend_impls/backend_window_helper/window_autosize_helper.h"
 #include "imgui.h"
 
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
@@ -68,7 +69,7 @@ void AbstractRunner::Run()
         while (!params.appShallExit)
         {
             if (frameIdx == 1)
-                ForceWindowPositionOrSize();
+                UpdateWindowGeometryOnSecondFrame();
 
             CreateFramesAndRender(frameIdx);
 
@@ -111,7 +112,7 @@ void AbstractRunner::PrepareAutoSize()
     params.appWindowParams.windowGeometry.size = windowBounds.size;
 }
 
-void AbstractRunner::ForceWindowPositionOrSize()
+void AbstractRunner::FinishAutoSize_IfRequired()
 {
     // This is done at the second frame, once we know the size of all the widgets
     if (mAutoSizeHelper->WantAutoSize())
@@ -123,16 +124,65 @@ void AbstractRunner::ForceWindowPositionOrSize()
             mBackendWindowHelper->GetMonitorsWorkAreas(), realWindowSizeAfterAutoSize);
         mBackendWindowHelper->SetWindowBounds(mWindow, windowBounds);
     }
-    /*
-        if not self.window_geometry_helper.want_autosize() and not self.imgui_app_params.app_window_full_screen:
-            # The window was not resized
-            # However, we forcefully set its position once again, since some backends ignore
-            # it position at window creation time (SDL)
-            real_window_size_after_auto_size = self.backend.get_window_size()
-            window_bounds = self.window_geometry_helper.app_window_bounds_initial(
-                self.all_monitors_work_areas, real_window_size_after_auto_size)
-            self.backend.set_window_position(window_bounds.window_position)
-     */
+}
+
+bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi() 
+{
+    bool shallSizeRelativeTo96Ppi;
+    {
+        bool doRestorePreviousGeometry = (params.appWindowParams.restorePreviousGeometry &&
+                                          mGeometryHelper->ReadLastRunWindowBounds().has_value());
+
+        bool isWindowPpiRelativeSize = (params.appWindowParams.windowGeometry.windowSizeMeasureMode ==
+                                        HelloImGui::WindowSizeMeasureMode::RelativeTo96Ppi);
+
+        bool isStandardSizeMode = params.appWindowParams.windowGeometry.windowSizeState == HelloImGui::WindowSizeState::Standard;
+
+        shallSizeRelativeTo96Ppi =
+            isStandardSizeMode && isWindowPpiRelativeSize && !doRestorePreviousGeometry;
+    }
+    return shallSizeRelativeTo96Ppi;
+}
+
+
+void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
+{
+    if (ShallSizeWindowRelativeTo96Ppi())
+    {
+        float scaleFactor = mBackendWindowHelper->GetWindowDpiScaleFactor(mWindow);
+        if (scaleFactor != 1.f)
+        {
+            auto bounds = mBackendWindowHelper->GetWindowBounds(mWindow);
+
+            // update size
+            bounds.size = {(int)((float)bounds.size[0] * scaleFactor),
+                           (int)((float)bounds.size[1] * scaleFactor)};
+
+            // update position
+            if (   (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::MonitorCenter)
+                || (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::OsDefault))
+            {
+                WindowAutoSizeHelper helper(*mGeometryHelper);
+                auto monitorBounds = (helper.GetCurrentMonitorWorkArea(mBackendWindowHelper.get(), mWindow));
+                ForDim2(dim)
+                    bounds.position[dim] =
+                        monitorBounds.Center()[dim] - bounds.size[dim] / 2;
+            }
+            else if (params.appWindowParams.windowGeometry.positionMode ==
+                     HelloImGui::WindowPositionMode::FromCoords)
+            {
+                ForDim2(dim) 
+                    bounds.position[dim] = (int)((float)bounds.position[dim] * scaleFactor);
+            }
+            mBackendWindowHelper->SetWindowBounds(mWindow, bounds);
+        }
+    }
+}
+
+void AbstractRunner::UpdateWindowGeometryOnSecondFrame()
+{
+    FinishAutoSize_IfRequired();
+    MakeWindowSizeRelativeTo96Ppi_IfRequired();
     mAutoSizeHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow);
 }
 

@@ -32,6 +32,24 @@ enum class WindowPositionMode
 };
 
 
+enum class WindowSizeMeasureMode
+{
+    // ScreenCoords: measure window size in screen coords.
+    //     Note: screen coordinates *might* differ from real pixel on high dpi screens; but this depends on the OS.
+    //         - For example, on apple a retina screenpixel size 3456x2052 might be seen as 1728x1026 in screen
+    //           coordinates
+    //         - Under windows, and if the application is DPI aware, ScreenCoordinates correspond to real pixels, 
+    //           even on high density screens
+    ScreenCoords,
+
+    // RelativeTo96Ppi enables to give screen size that are independant from the screen density.
+    // For example, a window size expressed as 800x600 will correspond to a size
+    //    800x600 (in screen coords) if the monitor dpi is 96
+    //    1600x120 (in screen coords) if the monitor dpi is 192
+    RelativeTo96Ppi
+};
+
+
 /**
 @@md#WindowGeometry
 
@@ -66,11 +84,19 @@ Members:
         Minimized,
         Maximized
     ````
+* `windowSizeMeasureMode`: _WindowSizeMeasureMode_, default=RelativeTo96Ppi
+  how the window size is specified:
+  * RelativeTo96Ppi enables to give screen size that are independant from the screen density.
+     For example, a window size expressed as 800x600 will correspond to a size
+        - 800x600 (in screen coords) if the monitor dpi is 96
+        - 1600x120 (in screen coords) if the monitor dpi is 192
+  * ScreenCoords: measure window size in screen coords
+    (Note: screen coordinates might differ from real pixels on high dpi screen)
 @@md
 **/
 struct WindowGeometry
 {
-    // used if fullScreenMode==NoFullScreen and sizeAuto==false, default=(800, 600)
+    // used if fullScreenMode==NoFullScreen and sizeAuto==false. Value=(800, 600)
     ScreenSize size = DefaultWindowSize;
 
     // If true, adapt the app window size to the presented widgets
@@ -87,6 +113,8 @@ struct WindowGeometry
     int monitorIdx = 0;
 
     WindowSizeState windowSizeState = WindowSizeState::Standard;
+
+    WindowSizeMeasureMode windowSizeMeasureMode = WindowSizeMeasureMode::RelativeTo96Ppi;
 };
 
 

@@ -67,7 +67,10 @@ class AbstractRunner
 
 private:
     void PrepareAutoSize();
-    void ForceWindowPositionOrSize();
+    void UpdateWindowGeometryOnSecondFrame();
+    void FinishAutoSize_IfRequired();
+    void MakeWindowSizeRelativeTo96Ppi_IfRequired();
+    bool ShallSizeWindowRelativeTo96Ppi();
 
 protected:
     BackendApi::WindowPointer mWindow = nullptr;

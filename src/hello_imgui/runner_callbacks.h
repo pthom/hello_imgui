@@ -126,9 +126,9 @@ struct RunnerCallbacks
 
     AnyEventCallback AnyBackendEventCallback = EmptyEventCallback();
 
-    VoidFunction LoadAdditionalFonts = ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons();
-    VoidFunction SetupImGuiConfig = ImGuiDefaultSettings::SetupDefaultImGuiConfig();
-    VoidFunction SetupImGuiStyle = ImGuiDefaultSettings::SetupDefaultImGuiStyle();
+    VoidFunction LoadAdditionalFonts = (VoidFunction)(ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons);
+    VoidFunction SetupImGuiConfig = (VoidFunction)(ImGuiDefaultSettings::SetupDefaultImGuiConfig);
+    VoidFunction SetupImGuiStyle = (VoidFunction)(ImGuiDefaultSettings::SetupDefaultImGuiStyle);
 
 #ifdef HELLOIMGUI_MOBILEDEVICE
     MobileCallbacks mobileCallbacks;

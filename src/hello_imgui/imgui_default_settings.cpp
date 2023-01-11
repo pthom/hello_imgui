@@ -64,52 +64,43 @@ namespace ImGuiDefaultSettings
 {
 
 
-VoidFunction LoadDefaultFont_WithFontAwesomeIcons()
+void LoadDefaultFont_WithFontAwesomeIcons()
 {
-    auto f = []() {
-        float fontSize = 14.f;
-        std::string fontFilename = "fonts/DroidSans.ttf";
-        ImFont* font = LoadFontTTF_WithFontAwesomeIcons(fontFilename, fontSize, false);
-        (void)font;
-    };
-    return f;
+    float fontSize = 14.f;
+    std::string fontFilename = "fonts/DroidSans.ttf";
+    ImFont* font = LoadFontTTF_WithFontAwesomeIcons(fontFilename, fontSize, false);
+    (void)font;
 }
 
-VoidFunction SetupDefaultImGuiConfig()
+void SetupDefaultImGuiConfig()
 {
-    auto f = []() {
-        // Setup Dear ImGui context
-        ImGuiIO& io = ImGui::GetIO();
-        (void)io;
-        // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-        // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable Docking
-        // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+    // Setup Dear ImGui context
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable Docking
+    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
 
-        // io.ConfigViewportsNoAutoMerge = true;
-        // io.ConfigViewportsNoTaskBarIcon = true;
-    };
-    return f;
+    // io.ConfigViewportsNoAutoMerge = true;
+    // io.ConfigViewportsNoTaskBarIcon = true;
 }
 
-VoidFunction SetupDefaultImGuiStyle()
+void SetupDefaultImGuiStyle()
 {
-    auto f = []() {
-        auto& io = ImGui::GetIO();
-        // Setup Dear ImGui style
-        ImGui::StyleColorsDark();
-        // ImGui::StyleColorsClassic();
+    auto& io = ImGui::GetIO();
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    // ImGui::StyleColorsClassic();
 
-        // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows
-        // can look identical to regular ones.
-        ImGuiStyle& style = ImGui::GetStyle();
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            style.WindowRounding = 0.0f;
-            style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-        }
-    };
-    return f;
+    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows
+    // can look identical to regular ones.
+    ImGuiStyle& style = ImGui::GetStyle();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
 }
 
 }  // namespace ImGuiDefaultSettings

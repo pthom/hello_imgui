@@ -10,8 +10,8 @@ ImFont* MergeFontAwesomeToLastFont(float fontSize, ImFontConfig config = ImFontC
 
 namespace ImGuiDefaultSettings
 {
-VoidFunction LoadDefaultFont_WithFontAwesomeIcons();
-VoidFunction SetupDefaultImGuiConfig();
-VoidFunction SetupDefaultImGuiStyle();
+void LoadDefaultFont_WithFontAwesomeIcons();
+void SetupDefaultImGuiConfig();
+void SetupDefaultImGuiStyle();
 }  // namespace ImGuiDefaultSettings
 }  // namespace HelloImGui

@@ -82,10 +82,10 @@ namespace HelloImGui { namespace BackendApi
             glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 
-        // When high dpi, make the window bigger at creation, so that window sizes are consistent across
-        // platforms after creation
-        glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
-
+        // GLFW_SCALE_TO_MONITOR is set to false: we set manually the window size in screen coordinates,
+        // then AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired() may resize the window at the second frame
+        // (depending on the monitor on which it is placed)
+        glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_FALSE);
 
         auto window = glfwCreateWindow(
             windowSize[0], windowSize[1],

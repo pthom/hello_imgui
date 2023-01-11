@@ -10,34 +10,10 @@
 #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
 #endif
 
-#ifdef HELLOIMGUI_MACOS
-#import <AppKit/NSScreen.h>
-#endif
 
 namespace HelloImGui
 {
 
-float macOS_BackingScaleFactor()
-{
-#ifdef __EMSCRIPTEN__
-    // increase the loaded font size, to make it crisper
-    float scale = 2.f;
-    ImGui::GetIO().FontGlobalScale = 1.0f / scale; // But resize it before display
-    return scale;
-#elif ! defined(HELLOIMGUI_MACOS)
-    return 1.f;
-#else
-    // Crisp fonts on MacOS:
-    // cf https://github.com/ocornut/imgui/issues/5301
-    // Issue with MacOS is that it pretends screen has 2x less pixels
-    // than it actually does. This simplifies application development in most cases,
-    // but in our case we happen to render fonts at 1x scale while screen renders at 2x scale.
-    // You can cheat a little:
-    CGFloat scale = NSScreen.mainScreen.backingScaleFactor;
-    ImGui::GetIO().FontGlobalScale = 1.0f / scale;
-    return scale;
-#endif
-}
 
 ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange, ImFontConfig config)
 {
@@ -49,10 +25,8 @@ ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFu
         config.GlyphRanges = glyphRange;
     }
 
-    float fontSizeDpi = HelloImGui::GetRunnerParams()->appWindowParams.outWindowDpiFactor * fontSize;
-    fontSizeDpi *= macOS_BackingScaleFactor();
-
-    ImFont * font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSizeDpi, &config);
+    float fontSizeAdjusted = HelloImGui::DpiFontLoadingFactor() * fontSize;
+    ImFont * font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSizeAdjusted, &config);
     if (font == nullptr)
         HIMG_THROW_STRING(std::string("Cannot load ") + fontFilename);
     FreeAssetFileData(&fontData);
@@ -75,11 +49,10 @@ ImFont* MergeFontAwesomeToLastFont(float fontSize, ImFontConfig config)
     static const ImWchar icon_fa_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
     config.MergeMode = true;
     config.FontDataOwnedByAtlas = false;
-    float fontSizeDpi = HelloImGui::GetRunnerParams()->appWindowParams.outWindowDpiFactor * fontSize;
-    fontSizeDpi *= macOS_BackingScaleFactor();
+    float fontSizeAdjusted = HelloImGui::DpiFontLoadingFactor() * fontSize;
 
     auto font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
-        fontData.data, (int)fontData.dataSize, fontSizeDpi, &config, icon_fa_ranges);
+        fontData.data, (int)fontData.dataSize, fontSizeAdjusted, &config, icon_fa_ranges);
 
     if (font == nullptr)
         HIMG_THROW_STRING(std::string("Cannot load ") + faFile);

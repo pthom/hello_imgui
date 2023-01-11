@@ -7,6 +7,7 @@
 #include "hello_imgui/runner_params.h"
 #include "hello_imgui/hello_imgui_logger.h"
 #include "hello_imgui/imgui_theme.h"
+#include "hello_imgui/dpi_aware.h"
 #include <string>
 
 #include <cstddef>

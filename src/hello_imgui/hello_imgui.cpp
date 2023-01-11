@@ -77,7 +77,7 @@ ImVec2 EmToVec2(ImVec2 v)
 
 
 // Private API, used internally by AppWindowScreenshotRgbBuffer()
-AbstractRunner *GetRunner()
+AbstractRunner *GetAbstractRunner()
 {
     return gLastRunner.get();
 }
@@ -85,7 +85,7 @@ AbstractRunner *GetRunner()
 // Private API, not mentioned in headers!
 std::string GlslVersion()
 {
-    std::string r = GetRunner()->Impl_GlslVersion();
+    std::string r = GetAbstractRunner()->Impl_GlslVersion();
     return r;
 }
 

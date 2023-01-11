@@ -258,12 +258,6 @@ Members:
 * `borderless`: _bool, default = false_.
 * `resizable`: _bool, default = false_.
 
-Output Member:
-* `outWindowDpiFactor`: _float, default = 1_.
-   This value is filled by HelloImGui during the window initialisation. On Windows and Linux, it can be > 1
-   on high resolution monitors (on MacOS, the scaling is handled by the system).
-   When loading fonts, their size should be multiplied by this factor.
-
 ### WindowGeometry
 
 
@@ -298,6 +292,15 @@ Members:
         Minimized,
         Maximized
     ````
+* `windowSizeMeasureMode`: _WindowSizeMeasureMode_, default=RelativeTo96Ppi
+  how the window size is specified:
+  * RelativeTo96Ppi enables to give screen size that are independant from the screen density.
+     For example, a window size expressed as 800x600 will correspond to a size
+        - 800x600 (in screen coords) if the monitor dpi is 96
+        - 1600x120 (in screen coords) if the monitor dpi is 192
+      (this works with Glfw. With SDL, it only works under windows)
+  * ScreenCoords: measure window size in screen coords
+    (Note: screen coordinates might differ from real pixels on high dpi screen)
 
 ----
 

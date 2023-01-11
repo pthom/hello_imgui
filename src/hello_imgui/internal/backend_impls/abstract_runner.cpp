@@ -12,6 +12,10 @@
 #include <chrono>
 #include <cassert>
 
+#ifdef HELLOIMGUI_MACOS
+#import <AppKit/NSScreen.h>
+#endif
+
 
 namespace
 {
@@ -56,7 +60,6 @@ void AbstractRunner::Run()
 {
     Setup();
 
-    auto originalStyle = ImGui::GetStyle();
     int frameIdx = 0;
 #ifdef HELLOIMGUI_MOBILEDEVICE
     while (true)
@@ -69,7 +72,7 @@ void AbstractRunner::Run()
         while (!params.appShallExit)
         {
             if (frameIdx == 1)
-                UpdateWindowGeometryOnSecondFrame();
+                FinishWindowSetupOnSecondFrame();
 
             CreateFramesAndRender(frameIdx);
 
@@ -144,12 +147,47 @@ bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi()
     return shallSizeRelativeTo96Ppi;
 }
 
+void InitImGuiFontGlobalScale()
+{
+    float fontSizeIncreaseFactor = 1.f;
+
+#ifdef __EMSCRIPTEN__ \
+// increase the loaded font size, to make it crisper
+    fontSizeIncreaseFactor = 2.f;
+#endif
+#ifdef HELLOIMGUI_MACOS
+    // Crisp fonts on MacOS:
+    // cf https://github.com/ocornut/imgui/issues/5301
+    // Issue with MacOS is that it pretends screen has 2x less pixels
+    // than it actually does. This simplifies application development in most cases,
+    // but in our case we happen to render fonts at 1x scale while screen renders at 2x scale.
+    // You can cheat a little:
+    fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
+#endif
+
+    ImGui::GetIO().FontGlobalScale = 1.0f / fontSizeIncreaseFactor;
+}
+
+float AbstractRunner::DpiWindowFactor()
+{
+    return mBackendWindowHelper->GetWindowDpiScaleFactor(mWindow);
+}
+
+
+// If we want a font to visually render like a font size of 14,
+// we need to multiply its size by this factor
+float AbstractRunner::DpiFontLoadingFactor()
+{
+    float k = DpiWindowFactor() * 1.f / ImGui::GetIO().FontGlobalScale;
+    return k;
+}
+
 
 void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
 {
     if (ShallSizeWindowRelativeTo96Ppi())
     {
-        float scaleFactor = mBackendWindowHelper->GetWindowDpiScaleFactor(mWindow);
+        float scaleFactor = DpiWindowFactor();
         if (scaleFactor != 1.f)
         {
             auto bounds = mBackendWindowHelper->GetWindowBounds(mWindow);
@@ -179,11 +217,26 @@ void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
     }
 }
 
-void AbstractRunner::UpdateWindowGeometryOnSecondFrame()
+// This will
+// - finish Autosize window (reduce its size if too big, etc)
+// - change its size if we want a size relative to 96ppi
+// - make sure the windows fits the monitor
+// - rescale the imgui style
+void AbstractRunner::FinishWindowSetupOnSecondFrame()
 {
     FinishAutoSize_IfRequired();
     MakeWindowSizeRelativeTo96Ppi_IfRequired();
     mAutoSizeHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow);
+
+    // High DPI handling on windows & linux
+    {
+        float dpiScale = DpiWindowFactor();
+        if ( dpiScale > 1.f)
+        {
+            ImGuiStyle& style = ImGui::GetStyle();
+            style.ScaleAllSizes(dpiScale);
+        }
+    }
 }
 
 
@@ -207,18 +260,7 @@ void AbstractRunner::Setup()
 #else
     ImGui::CreateContext();
 #endif
-
-    // High DPI handling on windows & linux
-    // Part 1: store scale factor, so that font size is multiplied by this factor when loading
-    // (this is for windows High DPI screen.     // cf https://github.com/pthom/imgui_bundle/issues/7 )
-    //
-    // Note: On Mac Retina screen, macOS "hides" the DPI, and we are using virtual pixels)
-    //       => see macOS_BackingScaleFactor inside imgui_default_settings.cpp
-    {
-        float scaleFactor = mBackendWindowHelper->GetWindowDpiScaleFactor(mWindow);
-        params.appWindowParams.outWindowDpiFactor = scaleFactor;
-    }
-
+    InitImGuiFontGlobalScale();
     Impl_SetupImgGuiContext();
     params.callbacks.SetupImGuiConfig();
     if (params.imGuiWindowParams.enableViewports)
@@ -238,14 +280,6 @@ void AbstractRunner::Setup()
 
     if (params.callbacks.PostInit)
         params.callbacks.PostInit();
-
-    // High DPI handling on windows & linux
-    // Part 2: resize ImGui style
-    if (params.appWindowParams.outWindowDpiFactor > 1.f)
-    {
-        ImGuiStyle& style = ImGui::GetStyle();
-        style.ScaleAllSizes(params.appWindowParams.outWindowDpiFactor);
-    }
 }
 
 void AbstractRunner::RenderGui(int idxFrame)

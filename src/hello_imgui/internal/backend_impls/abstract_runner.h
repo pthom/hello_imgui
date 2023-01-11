@@ -35,7 +35,17 @@ class AbstractRunner
     void OnDestroy();
     void OnLowMemory();
 
+    // For jupyter notebook, which displays a screenshot post execution
     ImageBuffer ScreenshotRgb() { return Impl_ScreenshotRgb(); }
+
+    //
+    // Dpi related methods
+    //
+    // DpiWindowFactor() returns `pixelPerInch(currentScreen) / 96`
+    float DpiWindowFactor();
+    // If we want a font to visually render like a font size of 14 we need to multiply its size by this factor
+    float DpiFontLoadingFactor();
+
 
    protected:
     friend std::string GlslVersion();
@@ -67,7 +77,7 @@ class AbstractRunner
 
 private:
     void PrepareAutoSize();
-    void UpdateWindowGeometryOnSecondFrame();
+    void FinishWindowSetupOnSecondFrame();
     void FinishAutoSize_IfRequired();
     void MakeWindowSizeRelativeTo96Ppi_IfRequired();
     bool ShallSizeWindowRelativeTo96Ppi();

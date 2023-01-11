@@ -4,11 +4,11 @@
 
 namespace HelloImGui
 {
-    AbstractRunner *GetRunner();
+    AbstractRunner *GetAbstractRunner();
 
     ImageBuffer AppWindowScreenshotRgbBuffer()
     {
-        auto r = GetRunner()->ScreenshotRgb();
+        auto r = GetAbstractRunner()->ScreenshotRgb();
         return r;
     }
 

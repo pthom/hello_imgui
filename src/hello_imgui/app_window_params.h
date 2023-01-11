@@ -135,12 +135,6 @@ Members:
   If true, then save & restore windowGeometry from last run (the geometry will be written in imgui_app_window.ini)
 * `borderless`: _bool, default = false_.
 * `resizable`: _bool, default = false_.
-
-Output Member:
-* `outWindowDpiFactor`: _float, default = 1_.
-   This value is filled by HelloImGui during the window initialisation. On Windows and Linux, it can be > 1
-   on high resolution monitors (on MacOS, the scaling is handled by the system).
-   When loading fonts, their size should be multiplied by this factor.
 @@md
 **/
 struct AppWindowParams
@@ -154,8 +148,6 @@ struct AppWindowParams
 
     bool borderless = false;
     bool resizable = true;
-
-    float outWindowDpiFactor = 1.;
 };
 
 }  // namespace HelloImGui

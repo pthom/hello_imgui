@@ -90,6 +90,7 @@ Members:
      For example, a window size expressed as 800x600 will correspond to a size
         - 800x600 (in screen coords) if the monitor dpi is 96
         - 1600x120 (in screen coords) if the monitor dpi is 192
+      (this works with Glfw. With SDL, it only works under windows)
   * ScreenCoords: measure window size in screen coords
     (Note: screen coordinates might differ from real pixels on high dpi screen)
 @@md

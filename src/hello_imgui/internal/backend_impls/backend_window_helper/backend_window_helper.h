@@ -30,9 +30,10 @@ namespace HelloImGui { namespace BackendApi
 
     struct BackendOptions
     {
-        #ifdef _WIN32
-        bool sdlWin32DpiAware = true;
-        #endif
+        // this will enable dpi awareness under windows, and set the window flag SDL_WINDOW_ALLOW_HIGHDPI
+        // (note: glfw is dpi aware by default)
+        bool dpiAwareSdl = true; 
+
         Backend3dMode backend3DMode = Backend3dMode::OpenGl;
     };
 

@@ -20,7 +20,7 @@ namespace HelloImGui { namespace BackendApi
     WindowPointer SdlWindowHelper::CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions)
     {
 #ifdef _WIN32
-        if (backendOptions.sdlWin32DpiAware)
+        if (backendOptions.dpiAwareSdl)
             Internal::ImGui_ImplWin32_EnableDpiAwareness();
 #endif
 
@@ -34,8 +34,8 @@ namespace HelloImGui { namespace BackendApi
         auto monitorsWorksAreas = GetMonitorsWorkAreas();
         assert((realMonitorIdx >= 0) && (realMonitorIdx < monitorsWorksAreas.size()));
 
-        ScreenSize& windowSize = appWindowParams.windowGeometry.size;
-        ScreenPosition & windowPosition = appWindowParams.windowGeometry.position;
+        PixelCoordinates &windowSize = appWindowParams.windowGeometry.size;
+        PixelCoordinates &windowPosition = appWindowParams.windowGeometry.position;
         WindowPositionMode positionMode = appWindowParams.windowGeometry.positionMode;
 
         // Reduce size if too big compared to the monitor
@@ -100,9 +100,8 @@ namespace HelloImGui { namespace BackendApi
         // If the window is created with the SDL_WINDOW_ALLOW_HIGHDPI flag,
         // its size in pixels may differ from its size in screen coordinates on platforms with high-DPI support
         // (e.g. iOS and macOS).
-#ifdef __APPLE__
-        window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
-#endif
+        if (backendOptions.dpiAwareSdl)
+            window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
         if (appWindowParams.borderless)
             window_flags |= SDL_WINDOW_BORDERLESS;

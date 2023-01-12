@@ -31,15 +31,6 @@ Three signatures are provided:
 
 __HelloImGui::GetRunnerParams()__ is a convenience function that will return the runnerParams of the current application.
 
-__HelloImGui::EmSize()__ returns the visible font size on the screen. For reproducible results, even on HighDPI screens,
- always scale your widgets and windows relatively to this size. It is somewhat comparable to the
- [em CSS Unit](https://lyty.dev/css/css-unit.html).
-_EmSize() = ImGui::GetFontSize() / ImGui::GetIO().FontGlobalScale_ (on MacOS FontGlobalScale can be = 2.0).
-
-__HelloImGui::EmSize(nbLines)__ returns a size corresponding to nbLines text lines
-
-__HelloImGui::EmToVec2(x, y)__ returns an ImVec2 that you can use to size or place your widgets in a DPI independent way
-
 @@md
 */
 namespace HelloImGui
@@ -58,19 +49,6 @@ namespace HelloImGui
     );
 
     RunnerParams* GetRunnerParams();
-
-    // __HelloImGui::EmSize()__ returns the visible font size on the screen. For good results on HighDPI screens, always scale your
-    // widgets and windows relatively to this size.
-    // It is somewhat comparable to the [em CSS Unit](https://lyty.dev/css/css-unit.html).
-    // EmSize() = ImGui::GetFontSize()
-    float EmSize();
-
-    // __HelloImGui::EmSize(nbLines)__ returns a size corresponding to nbLines text lines
-    float EmSize(float nbLines);
-
-    // __HelloImGui::EmToVec2()__ returns an ImVec2 that you can use to size or place your widgets in a DPI independent way
-    ImVec2 EmToVec2(float x, float y);
-    ImVec2 EmToVec2(ImVec2 v);
 
     // Returns the current FrameRate. May differ from ImGui::GetIO().FrameRate,
     // since one can choose the duration for the calculation of the mean value of the fps

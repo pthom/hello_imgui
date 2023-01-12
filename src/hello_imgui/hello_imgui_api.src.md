@@ -95,6 +95,12 @@ See [docking_params.h](docking_params.h).
 
 @import "docking_params.h" {md_id=DockingParams}
 
+---
+
+## Handling screen with high DPI: items positioning and font loading
+
+@import "dpi_aware.h" {md_id=Dpi}
+
 ----
 
 ## Applications assets

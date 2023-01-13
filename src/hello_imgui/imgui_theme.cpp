@@ -961,8 +961,8 @@ namespace ImGuiTheme
     bool _ShowThemeSelector(ImGuiTheme_* theme)
     {
         bool changed = false;
-
-        if (ImGui::BeginListBox("Available_themes"))
+        ImVec2 listboxSize =  ImVec2(0.f, ImGuiTheme_Count * (ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.y) );
+        if (ImGui::BeginListBox("Available_themes", listboxSize))
         {
             for (int i = 0; i < ImGuiTheme_Count; ++i)
             {

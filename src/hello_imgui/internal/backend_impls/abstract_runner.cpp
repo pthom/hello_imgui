@@ -152,8 +152,8 @@ void InitImGuiFontGlobalScale()
     float fontSizeIncreaseFactor = 1.f;
 
 #ifdef __EMSCRIPTEN__ \
-// increase the loaded font size, to make it crisper
-    fontSizeIncreaseFactor = 2.f;
+    // increase the loaded font size, to make it crisper
+    fontSizeIncreaseFactor = 1.7f;
 #endif
 #ifdef HELLOIMGUI_MACOS
     // Crisp fonts on MacOS:

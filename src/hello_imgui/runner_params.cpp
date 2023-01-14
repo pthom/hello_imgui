@@ -15,7 +15,8 @@ namespace HelloImGui
 
         r.appWindowParams.windowTitle = self.windowTitle;
 
-        r.fpsIdle = self.fpsIdle;
+        r.fpsIdling.fpsIdle = self.fpsIdle;
+        r.fpsIdling.enableIdling = self.enableIdling;
 
         return r;
     }

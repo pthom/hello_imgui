@@ -313,19 +313,19 @@ void AbstractRunner::RenderGui(int idxFrame)
 
 void AbstractRunner::CreateFramesAndRender(int idxFrame)
 {
-    assert(params.fpsIdle >= 0.f);
+    assert(params.fpsIdling.fpsIdle >= 0.f);
 
-    params.isIdling = false;
-    if (params.fpsIdle > 0.f)
+    params.fpsIdling.isIdling = false;
+    if ((params.fpsIdling.fpsIdle > 0.f) && params.fpsIdling.enableIdling)
     {
         double beforeWait = ClockSeconds();
-        double waitTimeout = 1. / (double) params.fpsIdle;
+        double waitTimeout = 1. / (double) params.fpsIdling.fpsIdle;
         mBackendWindowHelper->WaitForEventTimeout(waitTimeout);
 
         double afterWait = ClockSeconds();
         double waitDuration = (afterWait - beforeWait);
-        double waitIdleExpected = 1. / params.fpsIdle;
-        params.isIdling = (waitDuration > waitIdleExpected * 0.9);
+        double waitIdleExpected = 1. / params.fpsIdling.fpsIdle;
+        params.fpsIdling.isIdling = (waitDuration > waitIdleExpected * 0.9);
     }
 
     if (Impl_PollEvents())

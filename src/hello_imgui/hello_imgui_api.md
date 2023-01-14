@@ -7,6 +7,7 @@
       * [RunnerParams](#runnerparams)
         * [Simple runner params](#simple-runner-params)
         * [Full params](#full-params)
+      * [Fps Idling](#fps-idling)
   * [Runner callbacks](#runner-callbacks)
       * [RunnerCallbacks](#runnercallbacks)
       * [MobileCallbacks](#mobilecallbacks)
@@ -80,7 +81,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
    If true, restore the size and position of the window between runs.
 * `windowSize`: _ScreenSize, default={800, 600}_.
    Size of the window
-* `fpsIdle`: _float, default=10_.
+* `fpsIdle`: _float, default=3_.
    FPS of the application when idle (set to 0 for full speed).
 
 For example, this is sufficient to run an application:
@@ -122,16 +123,26 @@ int main(){
    Will be set to true by the app when exiting.
    _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
    shall not exit._
+* `fpsIdling`: _FpsIdling_. Idling parameters (set fpsIdling.enableIdling to false to disable Idling)
+* `emscripten_fps`: _int, default = 0_.
+  Set the application refresh rate (only used on emscripten: 0 stands for "let the app or the browser decide")
+
+#### Fps Idling
+
+**FpsIdling** is a struct that contains Fps Idling parameters
+
 * `fpsIdle`: _float, default=10_.
   ImGui applications can consume a lot of CPU, since they update the screen very frequently.
   In order to reduce the CPU usage, the FPS is reduced when no user interaction is detected.
   This is ok most of the time but if you are displaying animated widgets (for example a live video),
   you may want to ask for a faster refresh: either increase fpsIdle, or set it to 0 for maximum refresh speed
   (you can change this value during the execution depending on your application refresh needs)
+* `enableIdling`: _bool, default=true_.
+  Set this to false to disable idling (this can be changed dynamically during execution)
 * `isIdling`: bool (dynamically updated during execution)
   This bool will be updated during the application execution, and will be set to true when it is idling.
-* `emscripten_fps`: _int, default = 0_.
-  Set the application refresh rate (only used on emscripten: 0 stands for "let the app or the browser decide")
+
+See [runner_params.h](runner_params.h).
 
 ----
 

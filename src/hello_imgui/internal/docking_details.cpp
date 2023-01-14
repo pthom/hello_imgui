@@ -148,18 +148,9 @@ void ShowViewMenu(RunnerParams & runnerParams)
             if (ImGui::MenuItem("FPS in status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatus_Fps))
                 runnerParams.imGuiWindowParams.showStatus_Fps = ! runnerParams.imGuiWindowParams.showStatus_Fps;
 
-            bool idleActive = runnerParams.fpsIdle > 0.f;
-            if (ImGui::MenuItem("Reduce FPS when app is idle (inactive)", nullptr, idleActive))
-            {
-                idleActive = !idleActive;
-                if (idleActive)
-                    runnerParams.fpsIdle = 10.f;
-                else
-                    runnerParams.fpsIdle = 0.f;
-            }
+            ImGui::MenuItem("Enable Idling", nullptr, &runnerParams.fpsIdling.enableIdling);
             ImGui::EndMenu();
         }
-
 
         ImGui::EndMenu();
     }

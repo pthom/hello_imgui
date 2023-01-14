@@ -58,7 +58,7 @@ void ShowMenu(RunnerParams & runnerParams)
 }
 
 
-void ShowStatusBar(const RunnerParams & params)
+void ShowStatusBar(RunnerParams & params)
 {
     float statusWindowHeight = ImGui::GetFrameHeight() * 1.4f;
     ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -74,8 +74,16 @@ void ShowStatusBar(const RunnerParams & params)
 
     if (params.imGuiWindowParams.showStatus_Fps)
     {
-        ImGui::SameLine(ImGui::GetIO().DisplaySize.x - 7.f * ImGui::GetFontSize());
-        const char* idlingInfo = params.isIdling ? " (Idling)" : "";
+        float dy = ImGui::GetFontSize() * 0.15f;
+
+        ImGui::SameLine(ImGui::GetIO().DisplaySize.x - 14.f * ImGui::GetFontSize());
+
+        const char* idlingInfo = params.fpsIdling.isIdling ? " (Idling)" : "";
+
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - dy); // The checkbox seems visually misaligned, let's fix this
+        ImGui::Checkbox("Enable idling", &params.fpsIdling.enableIdling);
+        ImGui::SameLine();
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - dy);
         ImGui::Text("FPS: %.1f%s", HelloImGui::FrameRate(), idlingInfo);
     }
 

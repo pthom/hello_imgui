@@ -18,6 +18,30 @@ enum class BackendType
 };
 
 /**
+ @@md#FpsIdling
+
+**FpsIdling** is a struct that contains Fps Idling parameters
+
+* `fpsIdle`: _float, default=10_.
+  ImGui applications can consume a lot of CPU, since they update the screen very frequently.
+  In order to reduce the CPU usage, the FPS is reduced when no user interaction is detected.
+  This is ok most of the time but if you are displaying animated widgets (for example a live video),
+  you may want to ask for a faster refresh: either increase fpsIdle, or set it to 0 for maximum refresh speed
+  (you can change this value during the execution depending on your application refresh needs)
+* `enableIdling`: _bool, default=true_.
+  Set this to false to disable idling (this can be changed dynamically during execution)
+* `isIdling`: bool (dynamically updated during execution)
+  This bool will be updated during the application execution, and will be set to true when it is idling.
+@@md
+*/
+struct FpsIdling
+{
+    float fpsIdle = 3.f;
+    bool  enableIdling = true;
+    bool  isIdling = false;
+};
+
+/**
  @@md#RunnerParams
 
 **RunnerParams** is a struct that contains all the settings and callbacks needed to run an application.
@@ -41,14 +65,7 @@ enum class BackendType
    Will be set to true by the app when exiting.
    _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
    shall not exit._
-* `fpsIdle`: _float, default=10_.
-  ImGui applications can consume a lot of CPU, since they update the screen very frequently.
-  In order to reduce the CPU usage, the FPS is reduced when no user interaction is detected.
-  This is ok most of the time but if you are displaying animated widgets (for example a live video),
-  you may want to ask for a faster refresh: either increase fpsIdle, or set it to 0 for maximum refresh speed
-  (you can change this value during the execution depending on your application refresh needs)
-* `isIdling`: bool (dynamically updated during execution)
-  This bool will be updated during the application execution, and will be set to true when it is idling.
+* `fpsIdling`: _FpsIdling_. Idling parameters (set fpsIdling.enableIdling to false to disable Idling)
 * `emscripten_fps`: _int, default = 0_.
   Set the application refresh rate (only used on emscripten: 0 stands for "let the app or the browser decide")
 @@md
@@ -61,11 +78,9 @@ struct RunnerParams
     DockingParams dockingParams;
     BackendPointers backendPointers;
     BackendType backendType = BackendType::FirstAvailable;
+    FpsIdling fpsIdling;
+
     bool appShallExit = false;
-
-    float fpsIdle = 10.f;
-    bool  isIdling = false;
-
     int emscripten_fps = 0;
 };
 
@@ -86,7 +101,7 @@ struct RunnerParams
    If true, restore the size and position of the window between runs.
 * `windowSize`: _ScreenSize, default={800, 600}_.
    Size of the window
-* `fpsIdle`: _float, default=10_.
+* `fpsIdle`: _float, default=3_.
    FPS of the application when idle (set to 0 for full speed).
 
 For example, this is sufficient to run an application:
@@ -115,7 +130,8 @@ struct SimpleRunnerParams
     bool windowRestorePreviousGeometry = false;
     ScreenSize windowSize = DefaultWindowSize;
 
-    float fpsIdle = 10.f;
+    float fpsIdle = 3.f;
+    bool  enableIdling = true;
 
     RunnerParams ToRunnerParams() const;
 };

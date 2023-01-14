@@ -27,6 +27,11 @@ The diagram below summarize all the possible settings and callbacks (which are e
 ##### Full params
 @import "runner_params.h" {md_id=RunnerParams}
 
+#### Fps Idling
+@import "runner_params.h" {md_id=FpsIdling}
+
+See [runner_params.h](runner_params.h).
+
 ----
 
 ## Runner callbacks

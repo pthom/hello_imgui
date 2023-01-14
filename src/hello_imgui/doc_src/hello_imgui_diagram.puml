@@ -24,6 +24,13 @@ enum BackendType <enum>{
     + Qt
 }
 
+class FpsIdling<struct> {
+    float fpsIdle = 3.f
+    bool  enableIdling = true
+    bool  isIdling = false
+}
+
+
 class RunnerParams <struct> {
     + RunnerCallbacks callbacks
     + AppWindowParams appWindowParams
@@ -31,8 +38,8 @@ class RunnerParams <struct> {
     + DockingParams dockingParams
     + BackendPointers backendPointers
     + BackendType backendType = FirstAvailable
+    + FpsIdling fpsIdling
     + bool appShallExit = false
-    + float fpsIdle = 10
 }
 
 class SimpleRunnerParams <struct> {
@@ -43,7 +50,8 @@ class SimpleRunnerParams <struct> {
     + bool windowSizeAuto = false
     + bool windowRestorePreviousGeometry = false
     ---
-    + float fpsIdle = 10.f;
+    + float fpsIdle = 3
+    + bool enableIdling = true
     ---
     + RunnerParams ToRunnerParams()
 }
@@ -201,6 +209,7 @@ class DockingSplit <struct> {
     + float ratio = 0.25f
 }
 
+RunnerParams *-- FpsIdling
 RunnerParams *-- BackendType
 RunnerParams *-- RunnerCallbacks
 RunnerParams *-- AppWindowParams

@@ -22,7 +22,7 @@ enum class BackendType
 
 **FpsIdling** is a struct that contains Fps Idling parameters
 
-* `fpsIdle`: _float, default=10_.
+* `fpsIdle`: _float, default=9_.
   ImGui applications can consume a lot of CPU, since they update the screen very frequently.
   In order to reduce the CPU usage, the FPS is reduced when no user interaction is detected.
   This is ok most of the time but if you are displaying animated widgets (for example a live video),
@@ -36,7 +36,7 @@ enum class BackendType
 */
 struct FpsIdling
 {
-    float fpsIdle = 3.f;
+    float fpsIdle = 9.f;
     bool  enableIdling = true;
     bool  isIdling = false;
 };
@@ -101,7 +101,7 @@ struct RunnerParams
    If true, restore the size and position of the window between runs.
 * `windowSize`: _ScreenSize, default={800, 600}_.
    Size of the window
-* `fpsIdle`: _float, default=3_.
+* `fpsIdle`: _float, default=9_.
    FPS of the application when idle (set to 0 for full speed).
 
 For example, this is sufficient to run an application:
@@ -130,7 +130,7 @@ struct SimpleRunnerParams
     bool windowRestorePreviousGeometry = false;
     ScreenSize windowSize = DefaultWindowSize;
 
-    float fpsIdle = 3.f;
+    float fpsIdle = 9.f;
     bool  enableIdling = true;
 
     RunnerParams ToRunnerParams() const;

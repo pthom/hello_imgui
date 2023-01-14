@@ -25,7 +25,7 @@ enum BackendType <enum>{
 }
 
 class FpsIdling<struct> {
-    float fpsIdle = 3.f
+    float fpsIdle = 9
     bool  enableIdling = true
     bool  isIdling = false
 }
@@ -50,7 +50,7 @@ class SimpleRunnerParams <struct> {
     + bool windowSizeAuto = false
     + bool windowRestorePreviousGeometry = false
     ---
-    + float fpsIdle = 3
+    + float fpsIdle = 9
     + bool enableIdling = true
     ---
     + RunnerParams ToRunnerParams()

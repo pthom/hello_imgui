@@ -153,7 +153,7 @@ void InitImGuiFontGlobalScale()
 
 #ifdef __EMSCRIPTEN__ \
     // increase the loaded font size, to make it crisper
-    fontSizeIncreaseFactor = 1.7f;
+    fontSizeIncreaseFactor = 1.5f;
 #endif
 #ifdef HELLOIMGUI_MACOS
     // Crisp fonts on MacOS:
@@ -164,7 +164,6 @@ void InitImGuiFontGlobalScale()
     // You can cheat a little:
     fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
 #endif
-
     ImGui::GetIO().FontGlobalScale = 1.0f / fontSizeIncreaseFactor;
 }
 
@@ -274,6 +273,9 @@ void AbstractRunner::Setup()
     ImGui::GetIO().Fonts->Clear();
     params.callbacks.LoadAdditionalFonts();
     ImGui::GetIO().Fonts->Build();
+
+    //bool b = ImGui::GetIO().Fonts->IsBuilt();
+
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
 
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);

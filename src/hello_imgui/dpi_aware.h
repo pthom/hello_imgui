@@ -71,7 +71,6 @@ namespace HelloImGui
     ImVec2 EmToVec2(float x, float y);
     ImVec2 EmToVec2(ImVec2 v);
 
-
     // Multiply font sizes by this factor when loading fonts manually with ImGui::GetIO().Fonts->AddFont...
     // (HelloImGui::LoadFontTTF does this by default)
     float DpiFontLoadingFactor();

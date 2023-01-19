@@ -53,7 +53,6 @@ namespace ImGuiTheme
         {
             for (int i = 0; i < ImGuiCol_COUNT; ++i)
             {
-                ImGuiCol_ colEnum = (ImGuiCol_) i;
                 ImVec4 &col = io_style.Colors[i];
                 const ImVec4 &col_ref = reference_style.Colors[i];
 

@@ -78,6 +78,7 @@ class AbstractRunner
 private:
     void PrepareAutoSize();
     void FinishWindowSetupOnSecondFrame();
+    void ReloadFontIfFailed();
     void FinishAutoSize_IfRequired();
     void MakeWindowSizeRelativeTo96Ppi_IfRequired();
     bool ShallSizeWindowRelativeTo96Ppi();
@@ -88,6 +89,7 @@ protected:
 private:
     std::unique_ptr<WindowGeometryHelper> mGeometryHelper;
     std::unique_ptr<WindowAutoSizeHelper> mAutoSizeHelper;
+    bool mPotentialFontLoadingError = false;
 };
 
 }  // namespace HelloImGui

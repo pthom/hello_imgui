@@ -16,6 +16,10 @@
 #import <AppKit/NSScreen.h>
 #endif
 
+#ifdef HELLOIMGUI_HAS_OPENGL
+#include "hello_imgui/hello_imgui_include_opengl.h"
+#include "backends/imgui_impl_opengl3.h"
+#endif
 
 namespace
 {
@@ -56,30 +60,64 @@ AbstractRunner::AbstractRunner(RunnerParams &params_)
     : params(params_)
 {};
 
+// Advanced: ImGui_ImplOpenGL3_CreateFontsTexture might cause an OpenGl error when the font texture is too big
+// We detect it soon after calling ImGui::NewFrame by setting mPotentialFontLoadingError.
+// In that case, we try to set FontGlobalScale to 1 if it is < 1 (i.e stop increasing the font
+// size for a crisper rendering) and try to reload the fonts.
+// This only works if the user provided callback LoadAdditionalFonts() uses DpiFontLoadingFactor()
+// to multiply its font size.
+void AbstractRunner::ReloadFontIfFailed()
+{
+    if (mPotentialFontLoadingError)
+    {
+        fprintf(stderr, "Detected a potential font loading error! You might try to reduce the number of loaded fonts and/or their size!\n");
+#ifdef HELLOIMGUI_HAS_OPENGL
+        if (ImGui::GetIO().FontGlobalScale < 1.f)
+        {
+            fprintf(stderr,
+                    "Trying to solve the font loading error by changing ImGui::GetIO().FontGlobalScale from %f to 1.f! Font rendering might be less crisp...\n",
+                    ImGui::GetIO().FontGlobalScale
+                    );
+            ImGui::GetIO().FontGlobalScale = 1.f;
+            ImGui::GetIO().Fonts->Clear();
+            params.callbacks.LoadAdditionalFonts();
+            ImGui::GetIO().Fonts->Build();
+            ImGui_ImplOpenGL3_CreateFontsTexture();
+        }
+#endif
+    }
+}
+
 void AbstractRunner::Run()
 {
     Setup();
 
-    int frameIdx = 0;
+    int idxFrame = 0;
 #ifdef HELLOIMGUI_MOBILEDEVICE
     while (true)
     {
-        CreateFramesAndRender(frameIdx);
+        CreateFramesAndRender(idxFrame);
+        if (idxFrame == 0)
+            ReloadFontIfFailed();
+
+        idxFrame += 1;
     }
 #else
     try
     {
         while (!params.appShallExit)
         {
-            if (frameIdx == 1)
+            if (idxFrame == 1)
                 FinishWindowSetupOnSecondFrame();
 
-            CreateFramesAndRender(frameIdx);
+            CreateFramesAndRender(idxFrame);
+            if (idxFrame == 0)
+                ReloadFontIfFailed();
 
-            frameIdx += 1;
+            idxFrame += 1;
         }
 
-        // Store screenshot before exiting
+        // Store screenshot before exiting (only if appShallExit ?)
         {
             ImageBuffer b = ScreenshotRgb();
             setFinalAppWindowScreenshotRgbBuffer(b);
@@ -274,8 +312,6 @@ void AbstractRunner::Setup()
     params.callbacks.LoadAdditionalFonts();
     ImGui::GetIO().Fonts->Build();
 
-    //bool b = ImGui::GetIO().Fonts->IsBuilt();
-
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
 
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
@@ -336,6 +372,18 @@ void AbstractRunner::CreateFramesAndRender(int idxFrame)
     Impl_NewFrame_3D();
     Impl_NewFrame_Backend();
     ImGui::NewFrame();
+
+    // Fight against potential font loading issue:
+    // Fonts are transferred to the GPU one the first call to ImGui::NewFrame()
+    // We might detect an OpenGL error if the font texture was too big for the GPU
+    {
+        mPotentialFontLoadingError = false;
+#ifdef HELLOIMGUI_HAS_OPENGL
+        auto error = glGetError();
+        if (error != 0)
+            mPotentialFontLoadingError = true;
+#endif
+    }
 
     RenderGui(idxFrame);
 

@@ -515,8 +515,8 @@ Instead you can:
 ### How to load fonts for a crisp font rendering and a correct size
 
 HelloImGui provides `HelloImGui::DpiFontLoadingFactor()` which corresponds to:
-    `DpiWindowFactor() * 1.f / ImGui::GetIO().FontGlobalScale`
-              where DpiWindowFactor() is equal to `CurrentScreenPixelPerInch / 96`
+    `DpiWindowSizeFactor() * 1.f / ImGui::GetIO().FontGlobalScale`
+              where DpiWindowSizeFactor() is equal to `CurrentScreenPixelPerInch / 96` under windows and linux, 1 under macOS
 
 ==> When loading fonts, multiply their size by this factor!
 

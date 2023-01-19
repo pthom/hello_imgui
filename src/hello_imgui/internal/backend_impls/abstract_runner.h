@@ -41,8 +41,9 @@ class AbstractRunner
     //
     // Dpi related methods
     //
-    // DpiWindowFactor() returns `pixelPerInch(currentScreen) / 96`
-    float DpiWindowFactor();
+    // DpiWindowSizeFactor() is the factor by which window size should be multiplied to get a similar visible size on different OSes.
+    // It returns ApplicationScreenPixelPerInch / 96  under windows and linux. Under macOS, it will return 1.
+    float DpiWindowSizeFactor();
     // If we want a font to visually render like a font size of 14 we need to multiply its size by this factor
     float DpiFontLoadingFactor();
 

@@ -33,7 +33,7 @@ namespace HelloImGui { namespace BackendApi
 
         void WaitForEventTimeout(double timeout_seconds) override;
 
-        virtual float GetWindowDpiScaleFactor(WindowPointer window) override;
+        virtual float GetWindowSizeDpiScaleFactor(WindowPointer window) override;
     };
 }} // namespace HelloImGui { namespace BackendApi
 

@@ -187,7 +187,7 @@ namespace HelloImGui { namespace BackendApi
         glfwWaitEventsTimeout(timeout_seconds);
     }
 
-    float GlfwWindowHelper::GetWindowDpiScaleFactor(WindowPointer window)
+    float GlfwWindowHelper::GetWindowSizeDpiScaleFactor(WindowPointer window)
     {
 #ifdef __APPLE__
         return 1.f;

@@ -205,9 +205,9 @@ void InitImGuiFontGlobalScale()
     ImGui::GetIO().FontGlobalScale = 1.0f / fontSizeIncreaseFactor;
 }
 
-float AbstractRunner::DpiWindowFactor()
+float AbstractRunner::DpiWindowSizeFactor()
 {
-    return mBackendWindowHelper->GetWindowDpiScaleFactor(mWindow);
+    return mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
 }
 
 
@@ -215,7 +215,7 @@ float AbstractRunner::DpiWindowFactor()
 // we need to multiply its size by this factor
 float AbstractRunner::DpiFontLoadingFactor()
 {
-    float k = DpiWindowFactor() * 1.f / ImGui::GetIO().FontGlobalScale;
+    float k = DpiWindowSizeFactor() * 1.f / ImGui::GetIO().FontGlobalScale;
     return k;
 }
 
@@ -224,7 +224,7 @@ void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
 {
     if (ShallSizeWindowRelativeTo96Ppi())
     {
-        float scaleFactor = DpiWindowFactor();
+        float scaleFactor = DpiWindowSizeFactor();
         if (scaleFactor != 1.f)
         {
             auto bounds = mBackendWindowHelper->GetWindowBounds(mWindow);
@@ -267,7 +267,7 @@ void AbstractRunner::FinishWindowSetupOnSecondFrame()
 
     // High DPI handling on windows & linux
     {
-        float dpiScale = DpiWindowFactor();
+        float dpiScale = DpiWindowSizeFactor();
         if ( dpiScale > 1.f)
         {
             ImGuiStyle& style = ImGui::GetStyle();

@@ -35,11 +35,11 @@ namespace HelloImGui
     }
 
 
-    float DpiWindowFactor()
+    float DpiWindowSizeFactor()
     {
         auto runner = GetAbstractRunner();
         IM_ASSERT(runner != nullptr);
-        float dpiFactor = runner->DpiWindowFactor();
+        float dpiFactor = runner->DpiWindowSizeFactor();
         return dpiFactor;
     }
 

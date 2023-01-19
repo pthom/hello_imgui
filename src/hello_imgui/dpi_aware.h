@@ -19,8 +19,8 @@ Instead you can:
 ### How to load fonts for a crisp font rendering and a correct size
 
 HelloImGui provides `HelloImGui::DpiFontLoadingFactor()` which corresponds to:
-    `DpiWindowFactor() * 1.f / ImGui::GetIO().FontGlobalScale`
-              where DpiWindowFactor() is equal to `CurrentScreenPixelPerInch / 96`
+    `DpiWindowSizeFactor() * 1.f / ImGui::GetIO().FontGlobalScale`
+              where DpiWindowSizeFactor() is equal to `CurrentScreenPixelPerInch / 96` under windows and linux, 1 under macOS
 
 ==> When loading fonts, multiply their size by this factor!
 
@@ -75,7 +75,7 @@ namespace HelloImGui
     // (HelloImGui::LoadFontTTF does this by default)
     float DpiFontLoadingFactor();
 
-    // DpiWindowFactor() returns ApplicationScreenPixelPerInch / 96  under windows and linux.
-    // Under macOS, it will return 1.
-    float DpiWindowFactor();
+    // DpiWindowSizeFactor() is the factor by which window size should be multiplied to get a similar visible size on different OSes.
+    // It returns ApplicationScreenPixelPerInch / 96  under windows and linux. Under macOS, it will return 1.
+    float DpiWindowSizeFactor();
 }

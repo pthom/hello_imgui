@@ -66,7 +66,7 @@ namespace HelloImGui { namespace BackendApi
 
         virtual void WaitForEventTimeout(double timeout_seconds) = 0;
 
-        virtual float GetWindowDpiScaleFactor(WindowPointer window) = 0;
+        virtual float GetWindowSizeDpiScaleFactor(WindowPointer window) = 0;
         // Screenshot!
     };
 }} // namespace HelloImGui { namespace BackendApi

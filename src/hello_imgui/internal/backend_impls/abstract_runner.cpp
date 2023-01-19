@@ -307,7 +307,16 @@ void AbstractRunner::Setup()
 #endif
     }
     params.callbacks.SetupImGuiStyle();
+
+    // This should be done before Impl_SetupPlatformRendererBindings()
+    // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks
+    // will chain the user callbacks with ImGui callbacks; and PostInit()
+    // is a good place for the user to install callbacks
+    if (params.callbacks.PostInit)
+        params.callbacks.PostInit();
+
     Impl_SetupPlatformRendererBindings();
+
     ImGui::GetIO().Fonts->Clear();
     params.callbacks.LoadAdditionalFonts();
     ImGui::GetIO().Fonts->Build();
@@ -315,9 +324,6 @@ void AbstractRunner::Setup()
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
 
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
-
-    if (params.callbacks.PostInit)
-        params.callbacks.PostInit();
 }
 
 void AbstractRunner::RenderGui(int idxFrame)

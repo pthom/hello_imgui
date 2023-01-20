@@ -314,7 +314,95 @@ void ImGuiAl::Log::error(char const* const format, va_list args) {
     vprintf(format, args);
 }
 
-int ImGuiAl::Log::draw(ImVec2 const& size) {
+// Utilities to find colors that contrast well with the background (WindowBg color)
+namespace AutomatiColors
+{
+    enum class LogColorClass { Debug_Blue, Info_Green, Warning_Yellow, Error_Red };
+
+    enum class LogColorState { Button, ButtonHovered, Text };
+
+    float logColorClassHue(LogColorClass c, LogColorState state)
+    {
+        constexpr float hBlue = 130.f / 255.f, hGreen = 94.f / 255.f,
+                        hRed = 0.f, hYellow = 42.f / 255.f;
+        constexpr float hBlueHovered = 117. / 255.f, hGreenHovered = 56.f / 255.f,
+                        hRedHovered = 228.f / 255.f, hYellowHovered = 36.f / 255.f;
+        if (state == LogColorState::ButtonHovered)
+        {
+            if (c == LogColorClass::Info_Green)
+                return hGreenHovered;
+            else if (c == LogColorClass::Warning_Yellow)
+                return hYellowHovered;
+            else if (c == LogColorClass::Error_Red)
+                return hRedHovered;
+            else
+                return hBlueHovered;
+        }
+        else
+        {
+            if (c == LogColorClass::Info_Green)
+                return hGreen;
+            else if (c == LogColorClass::Warning_Yellow)
+                return hYellow;
+            else if (c == LogColorClass::Error_Red)
+                return hRed;
+            else
+                return hBlue;
+        }
+    }
+
+    ImU32 makeColor(LogColorClass logColorClass, LogColorState logColorState, float windowBgHsv_Value)
+    {
+        float wantedHue = logColorClassHue(logColorClass, logColorState);
+
+        float adaptedValue = 1.f;
+        if (windowBgHsv_Value < 0.8f)
+            adaptedValue = 0.9f;
+        else
+            adaptedValue = 0.6f;
+
+        float resultHsv[3] = { wantedHue, 1.f, adaptedValue };
+
+        float resultRgb[3];
+        ImGui::ColorConvertHSVtoRGB(resultHsv[0], resultHsv[1], resultHsv[2], resultRgb[0], resultRgb[1], resultRgb[2]);
+
+        ImVec4 r { resultRgb[0], resultRgb[1], resultRgb[2], 1.f };
+        return ImGui::GetColorU32(r);
+    }
+}
+
+void ImGuiAl::Log::setColorsAutoFromWindowBg()
+{
+    ImVec4 windowBgColor = ImGui::GetStyle().Colors[ImGuiCol_WindowBg];
+    float windowBgHsv[3];
+    ImGui::ColorConvertRGBtoHSV(windowBgColor.x, windowBgColor.y, windowBgColor.z, windowBgHsv[0], windowBgHsv[1], windowBgHsv[2]);
+    float windowBgHsv_Value = windowBgHsv[2];
+
+    using namespace AutomatiColors;
+
+    _debugButtonColor = makeColor(LogColorClass::Debug_Blue, LogColorState::Button, windowBgHsv_Value);
+    _debugButtonHoveredColor = makeColor(LogColorClass::Debug_Blue, LogColorState::ButtonHovered, windowBgHsv_Value);
+    _debugTextColor = makeColor(LogColorClass::Debug_Blue, LogColorState::Text, windowBgHsv_Value);
+
+    _infoButtonColor = makeColor(LogColorClass::Info_Green, LogColorState::Button, windowBgHsv_Value);
+    _infoButtonHoveredColor = makeColor(LogColorClass::Info_Green, LogColorState::ButtonHovered, windowBgHsv_Value);
+    _infoTextColor = makeColor(LogColorClass::Info_Green, LogColorState::Text, windowBgHsv_Value);
+
+    _warningButtonColor = makeColor(LogColorClass::Warning_Yellow, LogColorState::Button, windowBgHsv_Value);
+    _warningButtonHoveredColor = makeColor(LogColorClass::Warning_Yellow, LogColorState::ButtonHovered, windowBgHsv_Value);
+    _warningTextColor = makeColor(LogColorClass::Warning_Yellow, LogColorState::Text, windowBgHsv_Value);
+
+    _errorButtonColor = makeColor(LogColorClass::Error_Red, LogColorState::Button, windowBgHsv_Value);
+    _errorButtonHoveredColor = makeColor(LogColorClass::Error_Red, LogColorState::ButtonHovered, windowBgHsv_Value);
+    _errorTextColor = makeColor(LogColorClass::Error_Red, LogColorState::Text, windowBgHsv_Value);
+}
+
+
+int ImGuiAl::Log::draw(ImVec2 const& size)
+{
+    if (_useAutomaticColors)
+        setColorsAutoFromWindowBg();
+
     int action = 0;
 
     for (unsigned i = 0; _actions != nullptr && _actions[i] != nullptr; i++) {
@@ -327,7 +415,11 @@ int ImGuiAl::Log::draw(ImVec2 const& size) {
         }
     }
 
+
     if ((_filterHeaderLabel != nullptr && ImGui::CollapsingHeader(_filterHeaderLabel)) || _showFilters) {
+
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 0.2f, 0.2f, 1.f));
+
         ImGui::PushStyleColor(ImGuiCol_Button, _debugButtonColor);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, _debugButtonHoveredColor);
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, _debugTextColor);
@@ -377,6 +469,7 @@ int ImGuiAl::Log::draw(ImVec2 const& size) {
             _level = Level::Error;
             scrollToBottom();
         }
+        ImGui::PopStyleColor();
 
         ImGui::SameLine();
         ImGui::Checkbox(_cumulativeLabel, &_cumulative);
@@ -396,6 +489,7 @@ int ImGuiAl::Log::draw(ImVec2 const& size) {
 
         return show;
     });
+
 
     return action;
 }

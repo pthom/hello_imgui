@@ -142,6 +142,7 @@ class Log : protected Crt {
     void setFilterLabel(char const* const label);
     void setFilterHeaderLabel(char const* const label);
     void setActions(char const* actions[]);
+    void setColorsAutoFromWindowBg();
 
    protected:
     ImU32 _debugTextColor;
@@ -159,6 +160,7 @@ class Log : protected Crt {
     ImU32 _errorTextColor;
     ImU32 _errorButtonColor;
     ImU32 _errorButtonHoveredColor;
+    bool  _useAutomaticColors = true;
 
     char const* _debugLabel;
     char const* _infoLabel;

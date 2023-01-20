@@ -32,7 +32,7 @@ and their code (given by lambdas). See doc below for more details.
 
 Docking params: Example usage
 
-````cpp
+```cpp
 HelloImGui::RunnerParams runnerParams;
 runnerParams.imGuiWindowParams.defaultImGuiWindowType =
     HelloImGui::DefaultImGuiWindowType::ProvideFullScreenDockSpace;
@@ -65,7 +65,7 @@ runnerParams.imGuiWindowParams.showMenuBar = true;
 runnerParams.imGuiWindowParams.showStatusBar = true;
 
 HelloImGui::Run(runnerParams);
-````
+```
 
 @@md
 */

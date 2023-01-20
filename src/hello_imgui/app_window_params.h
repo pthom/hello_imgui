@@ -62,28 +62,28 @@ Members:
   If true, adapt the app window size to the presented widgets
 * `fullScreenMode`: _FullScreenMode, default=NoFullScreen_.
    You can choose between several full screen modes:
-   ````cpp
+   ```cpp
         NoFullScreen,
         FullScreen,                    // Full screen with specified resolution
         FullScreenDesktopResolution,   // Full screen with current desktop mode & resolution
         FullMonitorWorkArea            // Fake full screen, maximized window on the selected monitor
-    ````
+    ```
 * `positionMode`: _WindowPositionMode, default = OsDefault_.
    You can choose between several window position modes:
-   ````cpp
+   ```cpp
         OsDefault,
         MonitorCenter,
         FromCoords,
-    ````
+    ```
 * `monitorIdx`: _int, default = 0_.
   used if positionMode==MonitorCenter or if fullScreenMode!=NoFullScreen
 * `windowSizeState`: _WindowSizeState, default=Standard_
    You can choose between several window size states:
-   ````cpp
+   ```cpp
         Standard,
         Minimized,
         Maximized
-    ````
+    ```
 * `windowSizeMeasureMode`: _WindowSizeMeasureMode_, default=RelativeTo96Ppi
   how the window size is specified:
   * RelativeTo96Ppi enables to give screen size that are independant from the screen density.

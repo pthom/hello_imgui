@@ -21,13 +21,13 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 ## Get started in 5 minutes
 
 The code for a hello world app is extremely short:
-````cpp
+```cpp
 HelloImGui::Run(
     []{ ImGui::Text("Hello, world!"); }, // Gui code
     "Hello!",                            // Window title
     true                                 // Window size auto
 );
-````
+```
 
 [_example_integration](_example_integration) shows how to integrate this into your project in a few minutes.
 
@@ -45,19 +45,19 @@ See ImGuiBundle's  [C++ demos](https://github.com/pthom/imgui_bundle/tree/main/d
 
 #### include assets
 Anything in the assets/ folder located beside the app's CMakeLists will be embedded in the app:
-````
+```
 └── hello_globe.main.cpp
 ├── CMakeLists.txt
 ├── assets/
 │   └── world.jpg
-````
+```
 (even on iOS and emscripten).
 
 #### handle events
 Dear ImGui uses the Immediate Gui paradigm: each button, each widget returns true if the user interacted with it.
 
 > hello_globe.main.cpp
-````cpp
+```cpp
 #include "hello_imgui/hello_imgui.h"
 int main(int , char *[])
 {
@@ -71,14 +71,14 @@ int main(int , char *[])
     HelloImGui::Run(guiFunction, "Hello, globe", true);
     return 0;
 }
-````
+```
 
 The CMakeLists fits in two lines, and will work on Linux, Mac, Windows, iOS and Emscripten_
 > CMakeLists.txt:
-````cmake
+```cmake
 include(hello_imgui_add_app)
 hello_imgui_add_app(hello_globe hello_globe.main.cpp)
-````
+```
 
 
 # Full usage instructions and API
@@ -197,11 +197,11 @@ __Table of contents__
 
 ## Clone the repository
 
-````bash
+```bash
 git clone https://github.com/pthom/hello_imgui.git
 cd hello_imgui
 git submodule update --init
-````
+```
 
 ## Build instructions for desktop platforms (Linux, MacOS, Windows)
 
@@ -209,10 +209,10 @@ git submodule update --init
 
 Several cmake options are provided: you need to select at least one backend:
 
-````cmake
+```cmake
 option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
 option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
-````
+```
 
 "HELLOIMGUI_USE_SDL_OPENGL3" is the preferred backend, since it works under all platforms (windows, linux, osx, android, emscripten, iOS). On Mobile platforms, it will use OpenGLES3. Use it with `cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON`
 
@@ -228,14 +228,14 @@ HELLOIMGUI_USE_GLFW_OPENGL3).
 
 For example, the cmake script below works for the GLFW backend:
 
-````cmake
+```cmake
   # Here, glfw was added as a submodule into a folder "glfw"
   add_subdirectory(glfw) 
   # We instruct HelloImgui to use glfw
   set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
   # And add HelloImGui
   add_subdirectory(hello_imgui)
-````
+```
 
 #### Option 2: plug SDL or Glfw3 via vcpkg
 
@@ -243,20 +243,20 @@ For example, the cmake script below works for the GLFW backend:
 
 If you intend to use SDL of glfw, you can have them installed automatically via Vcpkg: simply run this command:
 
-````bash
+```bash
 ./tools/vcpkg_install_third_parties.py
-````
+```
 
 This script will download and build vcpkg, then install sdl2 and Glfw3 into `hello_imgui/vcpkg/`
 
 You can then build HelloImgui, using the following instructions:
 
-````bash
+```bash
 mkdir build
 cd build
 cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake -DHELLOIMGUI_USE_SDL_OPENGL3=ON ..
 make -j4
-````
+```
 (Use `-DHELLOIMGUI_USE_GLFW_OPENGL3=ON` for glfw)
 
 
@@ -282,9 +282,9 @@ This project uses the [ios-cmake](https://github.com/leetal/ios-cmake) toolchain
 
 1. First, you need to download SDL : launch [tools/sdl_download.sh](tools/sdl_download.sh), which will download SDL into a symlink inside "external/SDL"
 
-````bash
+```bash
 .tools/sdl_download.sh
-````
+```
 
 Alternatively, download [SDL2-2.24.2.tar.gz](https://www.libsdl.org/release/SDL2-2.24.2.tar.gz) and extract it into external/SDL.
 
@@ -294,7 +294,7 @@ Adapt the command below, by:
 * adding your own development team Id after `-DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=` , 
 * setting HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART (for example `-DHELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART=com.org_name_or_email`)
 * setting the correct platform (-DPLATFORM): see https://github.com/leetal/ios-cmake (-DPLATFORM=OS64COMBINED will build for iOS and its simulator).
-`````bash
+````bash
 mkdir build_ios_sdl
 cd build_ios_sdl
 cmake .. \
@@ -305,7 +305,7 @@ cmake .. \
   -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=... \
   -DHELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART=... \
   ..
-`````
+````
 
 _Notes about apps bundle identifiers: each app built for iOS needs to have a unique Bundle identifier (this is required by Apple). 
 When using HelloImGui, this ID is a concatenation of HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART and HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART, which
@@ -313,9 +313,9 @@ you can specify as cmake arguments via the command line (by default HELLO_IMGUI_
 given to `hello_imgui_add_app`)
 
 See [hello_imgui_cmake/ios/hello_imgui_ios.cmake](hello_imgui_cmake/ios/hello_imgui_ios.cmake):
-````
+```
   set(HELLO_IMGUI_BUNDLE_IDENTIFIER ${HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART}.${HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART})
-````
+```
 and [hello_imgui_cmake/ios/info_plist/sdl/Info.plist.in](hello_imgui_cmake/ios/info_plist/sdl/Info.plist.in).
 
 ### Customizing the iOS build
@@ -332,9 +332,9 @@ See [Embed assets and customize apps](#embed-assets-and-customize-apps)
 
 You can either install emsdk following [the instruction on the emscripten website](https://emscripten.org/docs/getting_started/downloads.html) or you can use the script [tools/emscripten/install_emscripten.sh](tools/emscripten/install_emscripten.sh).
 
-`````bash
+````bash
 ../tools/emscripten/install_emscripten.sh
-`````
+````
 
 This script will download and install emscripten into `~/emsdk`
 
@@ -344,34 +344,34 @@ This script will download and install emscripten into `~/emsdk`
 
 You need to **source** the script ~/emsdk/emsdk_env.sh
 
-````bash
+```bash
 source ~/emsdk/emsdk_env.sh
-````
+```
 
 2. Run cmake, using "emcmake":
 
-`````bash
+````bash
 mkdir build_emscripten
 cd build_emscripten
 emcmake cmake ..
-`````
+````
 
 Note: the script [tools/emscripten/cmake_emscripten.sh](tools/emscripten/cmake_emscripten.sh) does the cmake part of this.
 
 3. Build
 
-````bash
+```bash
 make -j 4
-````
+```
 
 4. Test your emscripten application
 
 You will need a web server. Python provides a basic web server that is easy to usen which you can launch like this:
 
-`````bash
+````bash
 cd build_emscripten
 python3 -m http.server
-`````
+````
 
 Open a browser, and navigate to [http://localhost:8000](http://localhost:8000).
 
@@ -398,23 +398,23 @@ _Note: The Android version is currently not actively maintained._
 
 You need to download SDL manually for Android, like this:
 
-````bash
+```bash
 ./tools/sdl_download.sh
-````
+```
 
 ### Set Android required environment variables
 
-````bash
+```bash
 export ANDROID_HOME=/path/to/AndroidSdk
 export ANDROID_NDK_HOME=/path/to/AndroidNdk
-````
+```
 
 For example (MacOS):
 
-````bash
+```bash
 export ANDROID_HOME=/Users/Me/Library/Android/sdk
 export ANDROID_NDK_HOME=/Users/Me//Library/Android/sdk/ndk/21.3.6528147
-````
+```
 
 If `ANDROID_NDK_HOME` is unset, by default, the scripts will look for Android-ndk inside `$ANDROID_HOME/ndk-bundle`.
 
@@ -426,15 +426,15 @@ is multiarch (arm64-v8a, armeabi-v7a, etc), via the option `-DHELLOIMGUI_CREATE_
 
 Run the following commands:
 
-````bash
+```bash
 mkdir build_android
 cd build_android
 ../tools/android/cmake_arm-android.sh
-````
+```
 
 Your build directory will now look like this:
 
-````
+```
 build_android/
 ├── CMakeCache.txt
 ├── ...
@@ -443,7 +443,7 @@ build_android/
 ├── hello_imgui_demodocking_AndroidStudio/
 ├── hello_world_AndroidStudio/
 ├── ...
-````
+```
 
 The folders "xxxx_AndroidStudio" contain Android Studio projects, which you can use to build and debug your app.
 
@@ -451,19 +451,19 @@ You can now open (for example) the project hello_imgui_demodocking_AndroidStudio
 
 You can also build the project manually via gradlew like this:
 
-````bash
+```bash
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home 
 cd hello_imgui_demodocking_AndroidStudio
 ./gradlew build
-````
+```
 
 _Note: (you need to first set JAVA_HOME to the correct java version (Android requires exactly jdk8), the path given here is for MacOS users, where adoptopenjdk provides the correct version)_
 
 You can also install the app via command line, like this:
 
-````bash
+```bash
 ./gradlew installDebug
-````
+```
 
 ---
 
@@ -487,7 +487,7 @@ For Android, simply create a folder named "android" beside the application 'CMak
 
 ## Example of customization:
 
-````
+```
 hello_imgui_democking/
 ├── CMakeLists.txt                              # The app's CMakeLists
 ├── hello_imgui_demodocking.main.cpp            # its source code
@@ -532,7 +532,7 @@ hello_imgui_democking/
         ├── Icon.png
         └── Readme.md
 
-````
+```
 
 ### Resizing icons for Android
 
@@ -544,7 +544,7 @@ This script will create several android icons with correct size.
 
 Your app folder should look like this:
 
-````
+```
 your_app/
 ├── CMakeLists.txt
 ├── android/                  # Run this script from this folder
@@ -553,14 +553,14 @@ your_app/
 ├── assets/
 ├── hello_imgui_demodocking.main.cpp
 └── ios/
-````
+```
 
 Run this script from the subfolder android/ of your app folder.
 A folder named mipmap-source should be present in it, with an icon ic_launcher.png inside it
 
 
 When running this script, several variations of the icons will be created:
-````
+```
 your_app/
 ├── CMakeLists.txt
 ├── android/
@@ -582,7 +582,7 @@ your_app/
 │       └── Akronim-Regular.ttf
 ├── hello_imgui_demodocking.main.cpp
 └── ios/
-````
+```
 
 
 -------

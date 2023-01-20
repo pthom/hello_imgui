@@ -106,7 +106,7 @@ struct RunnerParams
 
 For example, this is sufficient to run an application:
 
-````cpp
+```cpp
 void MyGui() {
     ImGui::Text("Hello, world");
     if (ImGui::Button("Exit"))
@@ -117,7 +117,7 @@ int main(){
     auto params = HelloImGui::SimpleRunnerParams {.guiFunction = MyGui, .windowSizeAuto = true, .windowTitle = "Example"};
     HelloImGui::Run(params);
 }
-````
+```
 
 @@md
  */

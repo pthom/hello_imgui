@@ -11,18 +11,18 @@
 Images are loaded when first displayed, and then cached (they will be freed just before the application exits).
 
 For example, given this files structure:
-````
+```
 ├── CMakeLists.txt
 ├── assets/
 │   └── my_image.jpg
 └── my_app.main.cpp
-````
+```
 
 then, you can display "my_image.jpg", using:
 
-````cpp
+```cpp
 HelloImGui::ImageFromAsset("my_image.jpg");
-````
+```
 
 *Note: HelloImGui::ImageFromAsset only works with OpenGL backends. It will throw an exception on other backends*
 

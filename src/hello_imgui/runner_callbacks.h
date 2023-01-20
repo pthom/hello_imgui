@@ -7,15 +7,15 @@ namespace HelloImGui
 @@md#VoidFunction_AnyEventCallback
 
 **VoidFunctionPointer** can hold any void(void) function.
-````cpp
+```cpp
 using VoidFunction = std::function<void(void)>
-````
+```
 
 **AnyEventCallback** can hold any bool(void *) function.
   It is designed to handle callbacks for a specific backend.
-````cpp
+```cpp
 using AnyEventCallback = std::function<bool(void * backendEvent)>
-````
+```
 
 @@md
 **/

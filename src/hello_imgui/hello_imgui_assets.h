@@ -9,14 +9,14 @@ namespace HelloImGui
 Assets located beside the application CMakeLists are embedded automatically.
 
 For example, you can have the following project structure:
-````
+```
 my_app/
 ├── CMakeLists.txt        # Your app's CMakeLists
 ├── assets/               # Its assets: for mobile devices and emscripten
 │         └── fonts/            # they are embedded automatically by hello_imgui_add_app.cmake
 │             └── my_font.ttf
 ├── my_app.main.cpp       # Its source code
-````
+```
 
 Then you can load the asset "fonts/my_font.ttf", on all platforms.
 
@@ -29,13 +29,13 @@ Then you can load the asset "fonts/my_font.ttf", on all platforms.
 
 * `AssetFileData LoadAssetFileData(const char *assetPath)` will load an entire asset file into memory.
  This works on all platforms, including android.
- ````cpp
+ ```cpp
     struct AssetFileData
     {
         void * data = nullptr;
         size_t dataSize = 0;
     };
- ````
+ ```
 * `FreeAssetFileData(AssetFileData * assetFileData)` will free the memory.
 
   Note about ImGui: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data

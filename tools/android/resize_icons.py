@@ -12,7 +12,7 @@ This script will create several android icons with correct size.
 
 Your app folder should look like this:
 
-````
+```
 your_app/
 ├── CMakeLists.txt
 ├── android/                  # Run this script from this folder
@@ -21,14 +21,14 @@ your_app/
 ├── assets/
 ├── hello_imgui_demodocking.main.cpp
 └── ios/
-````
+```
 
 Run this script from the subfolder android/ of your app folder.
 A folder named mipmap-source should be present in it, with an icon ic_launcher.png inside it
 
 
 When running this script, several variations of the icons will be created:
-````
+```
 your_app/
 ├── CMakeLists.txt
 ├── android/
@@ -50,7 +50,7 @@ your_app/
 │       └── Akronim-Regular.ttf
 ├── hello_imgui_demodocking.main.cpp
 └── ios/
-````
+```
 
 @@md
 """

@@ -16,9 +16,9 @@
      behavior as ImGui::Image (except that the size can be inferred from the loaded image size)
 
     _Note: Since ImageGl is not copiable, it has a private constructor; and you should use it via ImageGlPtr_
-    ````cpp
+    ```cpp
     using ImageGlPtr = std::unique_ptr<ImageGl>;
-    ````
+    ```
 
 @@md
 */

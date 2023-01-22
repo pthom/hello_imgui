@@ -300,8 +300,10 @@ DockableWindow * DockingParams::dockableWindowOfName(const std::string &name)
 void DockingParams::focusDockableWindow(const std::string& windowName)
 {
     DockableWindow * win = dockableWindowOfName(windowName);
-    IM_ASSERT(win != nullptr);
-    win->focusWindowAtNextFrame = true;
+    if (win != nullptr)
+        win->focusWindowAtNextFrame = true;
+    else
+        fprintf(stderr, "focusDockableWindow(%s) failed, window not found!\n", windowName.c_str());
 }
 
 

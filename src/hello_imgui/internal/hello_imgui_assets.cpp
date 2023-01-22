@@ -117,7 +117,7 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
 }
 
 /// Access font files in application bundle or assets/fonts/
-std::string assetFileFullPath(const std::string& assetFilename)
+std::string AssetFileFullPath(const std::string& assetFilename)
 {
 #if defined(IOS)
     std::string path = getAppleBundleResourcePath(assetFilename.c_str());

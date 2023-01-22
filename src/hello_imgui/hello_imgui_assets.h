@@ -57,7 +57,7 @@ void FreeAssetFileData(AssetFileData * assetFileData);
 /**
 @@md#assetFileFullPath
 
-`std::string assetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
+`std::string AssetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
 
 This works under all platforms __except Android__.
 For compatibility with Android and other platforms, prefer to use `LoadAssetFileData` whenever possible.
@@ -70,7 +70,8 @@ For compatibility with Android and other platforms, prefer to use `LoadAssetFile
 
 @@md
 */
-std::string assetFileFullPath(const std::string& assetRelativeFilename);
+std::string AssetFileFullPath(const std::string& assetRelativeFilename);
+inline std::string assetFileFullPath(const std::string& assetRelativeFilename);
 
 
 extern std::string gAssetsSubfolderFolderName;  // "assets" by default

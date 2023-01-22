@@ -597,7 +597,7 @@ Then you can load the asset "fonts/my_font.ttf", on all platforms.
 #### Get assets path
 
 
-`std::string assetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
+`std::string AssetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
 
 This works under all platforms __except Android__.
 For compatibility with Android and other platforms, prefer to use `LoadAssetFileData` whenever possible.

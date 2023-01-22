@@ -149,7 +149,7 @@ std::string AssetFileFullPath(const std::string& assetFilename)
             errorMessage += "            " + assetsFolder.folder + "\n";
         }
         errorMessage += "    (you can call HelloImGui::SetAssetsFolder() to set the default search location)\n";
-        HIMG_THROW_STRING(errorMessage);
+        HIMG_ERROR(errorMessage);
     }
 #endif
 }
@@ -178,7 +178,7 @@ AssetFileData LoadAssetFileData(const char *assetPath)
         testedPaths.push_back(assetPath);
         r.data = SDL_LoadFile(assetPath, &r.dataSize);
         if (!r.data)
-            HIMG_THROW_STRING(std::string("LoadAssetFileData: cannot load ") + assetPath);
+            HIMG_ERROR(std::string("LoadAssetFileData: cannot load ") + assetPath);
 
         return r;
     }
@@ -192,7 +192,8 @@ AssetFileData LoadAssetFileData(const char *assetPath)
         {
             std::string errorMessage = std::string("LoadAssetFileData(") + assetPath + ")\n";
             errorMessage += "==> SDL_LoadFile(" + assetFullPath + ") failed !!!!\n";
-            HIMG_THROW_STRING(errorMessage);
+            HIMG_ERROR(errorMessage);
+            IM_ASSERT(false);
         }
 
         return r;
@@ -239,7 +240,7 @@ AssetFileData LoadAssetFileData(const char *assetPath)
         std::stringstream msg;
         msg << "LoadAssetFileData: cannot load " << assetPath << " (also tried " << fullPath << ")\n";
         msg << "(you can call HelloImGui::SetAssetsFolder() to change the assets default location.";
-        HIMG_THROW_STRING(msg.str());
+        HIMG_ERROR(msg.str());
     }
     return r;
 }

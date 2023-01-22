@@ -42,7 +42,7 @@ namespace HelloImGui
 #endif
         if (SDL_Init(flags) != 0)
         {
-            HIMG_THROW_STRING(
+            HIMG_ERROR(
                 std::string("RunnerSdlOpenGl3::Impl_InitBackend error ")
                 + SDL_GetError());
         }

@@ -2,14 +2,11 @@
 #include <stdexcept>
 #include <iostream>
 
-#define HIMG_THROW(msg) \
+#define HIMG_ERROR(msg) \
     { \
-        std::cerr << "throw runtime_error: " << msg << "\t\t at " << __FILE__ << ":" << __LINE__ << "\n"; \
-        throw std::runtime_error(msg); \
+        std::cerr << "HelloImGui ERROR: " << msg << "\t\t at " << __FILE__ << ":" << __LINE__ << "\n"; \
+        IM_ASSERT(false); \
     }
-
-#define HIMG_THROW_STRING(...) \
-    HIMG_THROW((__VA_ARGS__));
 
 #ifdef __EMSCRIPTEN__
 // Log utilities for emscripten, where the best debug tool is printf

@@ -28,7 +28,7 @@ ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFu
     float fontSizeAdjusted = HelloImGui::DpiFontLoadingFactor() * fontSize;
     ImFont * font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSizeAdjusted, &config);
     if (font == nullptr)
-        HIMG_THROW_STRING(std::string("Cannot load ") + fontFilename);
+        HIMG_ERROR(std::string("Cannot load ") + fontFilename);
     FreeAssetFileData(&fontData);
     return font;
 }
@@ -55,7 +55,7 @@ ImFont* MergeFontAwesomeToLastFont(float fontSize, ImFontConfig config)
         fontData.data, (int)fontData.dataSize, fontSizeAdjusted, &config, icon_fa_ranges);
 
     if (font == nullptr)
-        HIMG_THROW_STRING(std::string("Cannot load ") + faFile);
+        HIMG_ERROR(std::string("Cannot load ") + faFile);
     FreeAssetFileData(&fontData);
     return font;
 }

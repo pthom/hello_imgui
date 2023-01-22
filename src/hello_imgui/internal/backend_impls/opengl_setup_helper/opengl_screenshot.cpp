@@ -1,4 +1,5 @@
 #include "opengl_screenshot.h"
+#include "imgui.h"
 #include "hello_imgui/hello_imgui_include_opengl.h"
 #include "hello_imgui/internal/pnm.h"
 
@@ -7,21 +8,22 @@ namespace HelloImGui
 {
     ImageBuffer OpenglScreenshotRgb()
     {
+        auto draw_data = ImGui::GetDrawData();
+        int fb_width = (int)(draw_data->DisplaySize.x * draw_data->FramebufferScale.x);
+        int fb_height = (int)(draw_data->DisplaySize.y * draw_data->FramebufferScale.y);
+
         int depth = 3;
 
-        GLint glDimensions[4] = {0};
-        glGetIntegerv(GL_SCISSOR_BOX, glDimensions);
-
         auto r = ImageBuffer();
-        r.width = glDimensions[2];
-        r.height = glDimensions[3];
+        r.width = fb_width;
+        r.height = fb_height;
 
         size_t bufferSize= r.width * r.height * depth;
         r.bufferRgb.resize(bufferSize);
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
         glReadPixels(
-            glDimensions[0], glDimensions[1],
-            glDimensions[2], glDimensions[3],
+            0, 0,
+            fb_width, fb_height,
             GL_RGB, GL_UNSIGNED_BYTE,
             r.bufferRgb.data());
 

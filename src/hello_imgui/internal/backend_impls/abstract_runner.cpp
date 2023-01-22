@@ -117,7 +117,7 @@ void AbstractRunner::Run()
             idxFrame += 1;
         }
 
-        // Store screenshot before exiting (only if appShallExit ?)
+        // Store screenshot before exiting
         {
             ImageBuffer b = ScreenshotRgb();
             setFinalAppWindowScreenshotRgbBuffer(b);

@@ -55,7 +55,7 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 #ifdef HELLOIMGUI_USE_QT
         return FactorRunnerQt(params);
 #endif
-        throw std::logic_error("HelloImGui::FactorRunner no backend selected!");
+        IM_ASSERT(false); // HelloImGui::FactorRunner no backend selected!"
     }
     else
     {
@@ -64,7 +64,7 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
             return FactorRunnerSdlOpenGl3(params);
 #else
-            HIMG_THROW("Sdl backend is not available!");
+            IM_ASSERT(false); //Sdl backend is not available!
 #endif
         }
         else if(params.backendType == BackendType::Glfw)
@@ -72,7 +72,7 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 #ifdef HELLOIMGUI_USE_GLFW_OPENGL3
             return FactorRunnerGlfwOpenGl3(params);
 #else
-            HIMG_THROW("Glfw backend is not available!");
+            IM_ASSERT(false); //Glfw backend is not available!
 #endif
         }
         else if(params.backendType == BackendType::Qt)
@@ -80,12 +80,12 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 #ifdef HELLOIMGUI_USE_QT
             return FactorRunnerQt(params);
 #else
-            HIMG_THROW("Qt backend is not available!");
+            IM_ASSERT(false); //Qt backend is not available!
 #endif
         }
         else
         {
-            HIMG_THROW("Bad backend type!");
+            IM_ASSERT(false); //Bad backend type!
         }
     }
 }

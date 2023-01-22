@@ -70,8 +70,7 @@ namespace HelloImGui
     void RunnerSdlOpenGl3::Impl_CreateGlContext()
     {
         mGlContext = SDL_GL_CreateContext((SDL_Window *)mWindow);
-        if (!mGlContext)
-        	HIMG_THROW("RunnerSdlOpenGl3::Impl_CreateGlContext(): Failed to initialize Gl context!");
+        IM_ASSERT(mGlContext != nullptr);
 
         SDL_GL_MakeCurrent((SDL_Window *)mWindow, mGlContext); // KK No
         SDL_GL_SetSwapInterval(1);  // Enable vsync

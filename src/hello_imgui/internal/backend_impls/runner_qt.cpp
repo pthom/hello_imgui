@@ -146,7 +146,7 @@ void RunnerQt::Impl_Select_Gl_Version()
 
 std::string RunnerQt::Impl_GlslVersion()
 {
-    HIMG_THROW("RunnerQt::Impl_GlslVersion should not be called");
+    IM_ASSERT(false); //RunnerQt::Impl_GlslVersion should not be called
 }
 
 void RunnerQt::Impl_CreateWindow()

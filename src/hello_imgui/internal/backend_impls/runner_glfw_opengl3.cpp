@@ -33,8 +33,8 @@ namespace HelloImGui
     void RunnerGlfwOpenGl3::Impl_InitBackend()
     {
         glfwSetErrorCallback(glfw_error_callback);
-        if (!glfwInit())
-            HIMG_THROW("RunnerGlfwOpenGl3::Impl_InitBackend failed");
+        bool glfwInitSuccess = glfwInit();
+        IM_ASSERT(glfwInitSuccess);
     }
 
     void RunnerGlfwOpenGl3::Impl_Select_Gl_Version()

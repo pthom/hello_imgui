@@ -154,6 +154,19 @@ std::string AssetFileFullPath(const std::string& assetFilename)
 #endif
 }
 
+// Returns true if this asset file exists
+bool AssetExists(const std::string& assetFilename)
+{
+    auto possibleAssetsFolders = computePossibleAssetsFolders();
+    for (auto assetsFolder: possibleAssetsFolders)
+    {
+        std::string path = assetsFolder.folder + "/" + assetFilename;
+        if (FileUtils::IsRegularFile(path))
+            return true;
+    }
+    return false;
+}
+
 
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
 

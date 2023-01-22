@@ -52,14 +52,10 @@ namespace
         std::array<int, 2> r;
         for (size_t i = 0; i < 2; ++i)
         {
-            try
-            {
-                r[i] = std::stoi(items[i]);
-            }
-            catch(std::exception&)
-            {
+            int asInt = std::atoi(items[i].c_str());
+            if (asInt == 0)
                 return std::nullopt;
-            }
+            r[i] = asInt;
         }
         return r;
     }

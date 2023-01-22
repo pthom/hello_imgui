@@ -1,4 +1,5 @@
 #include "hello_imgui/hello_imgui_assets.h"
+#include "imgui.h"
 
 #if defined(IOS)
 #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
@@ -128,7 +129,7 @@ std::string AssetFileFullPath(const std::string& assetFilename)
     // Under android, assets can be compressed
     // You cannot use standard file operations!`
     (void)assetFilename;
-    HIMG_THROW("assetFileFullPath does not work on android!");
+    IM_ASSERT(false); //assetFileFullPath does not work on android!
 #else
     auto possibleAssetsFolders = computePossibleAssetsFolders();
     for (auto assetsFolder: possibleAssetsFolders)

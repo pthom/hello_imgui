@@ -377,6 +377,15 @@ void AbstractRunner::CreateFramesAndRender(int idxFrame)
 
     Impl_NewFrame_3D();
     Impl_NewFrame_Backend();
+
+    {
+        // Workaround against SDL clock that sometimes leads to io.DeltaTime=0.f on emscripten
+        // (which fails to an `IM_ASSERT(io.DeltaTime) > 0` in ImGui::NewFrame())
+        auto & io = ImGui::GetIO();
+        if (io.DeltaTime <= 0.f)
+            io.DeltaTime = 1.f / 60.f;
+    }
+
     ImGui::NewFrame();
 
     // Fight against potential font loading issue:

@@ -111,7 +111,7 @@ namespace HelloImGui
 
     bool WindowAutoSizeHelper::WantAutoSize()
     {
-        return ! mWindowGeometryHelper.HasWindowSizeInfo();
+        return !mWindowGeometryHelper.HasInitialWindowSizeInfo();
     }
 
 }

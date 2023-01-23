@@ -67,7 +67,7 @@ namespace HelloImGui
         mGeometry(geometry), mRestoreLast(restoreLast)
         {}
 
-    bool WindowGeometryHelper::HasWindowSizeInfo()
+    bool WindowGeometryHelper::HasInitialWindowSizeInfo()
     {
         if (
             (mGeometry.windowSizeState == WindowSizeState::Maximized)

@@ -15,7 +15,7 @@ namespace HelloImGui
 
         WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast);
 
-        bool HasWindowSizeInfo();
+        bool HasInitialWindowSizeInfo();
 
         ScreenBounds AppWindowBoundsInitial(
             const std::vector<ScreenBounds>& allMonitorsWorkAreas,

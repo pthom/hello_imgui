@@ -134,7 +134,9 @@ void AbstractRunner::PrepareWindowGeometry()
 
 bool AbstractRunner::WantAutoSize()
 {
-    bool autosizeAtStartup = (mIdxFrame == 0) &&  !mGeometryHelper->HasInitialWindowSizeInfo();
+    // AutoSize at startup happens on the second frame, 
+    // since the window may have been resized to handle DPI scaling on the first frame
+    bool autosizeAtStartup = (mIdxFrame == 1) &&  !mGeometryHelper->HasInitialWindowSizeInfo();
     bool autosizeAtNextFrame = params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame;
     return autosizeAtStartup || autosizeAtNextFrame;
 }
@@ -227,7 +229,7 @@ void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
 }
 
 // This will change the window size if we want a size relative to 96ppi and rescale the imgui style
-void AbstractRunner::FinishWindowSetupOnSecondFrame()
+void AbstractRunner::HandleDpiOnSecondFrame()
 {
     MakeWindowSizeRelativeTo96Ppi_IfRequired();
     // High DPI handling on windows & linux
@@ -329,20 +331,35 @@ void AbstractRunner::RenderGui()
 
 void AbstractRunner::CreateFramesAndRender()
 {
+    // Note about the application window sizing 
+    // - On the first frame, we create a window, and use the user provided size (if provided)
+    // - On the second frame, we may multiply this size by the Dpi factor (if > 1), to handle windows and linux High DPI
+    // - At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
+    // - At the begining of the third frame, we may apply the auto-size and recenter the window to the center of the monitor
+    // Argh...
+
     //
-    // Window size setup, etc.
+    // Window size setup, etc:
     //
     if (mIdxFrame == 1)
-        FinishWindowSetupOnSecondFrame();
+    {
+        // We might resize the window on the second frame on window and linux
+        // (and rescale ImGui style)
+        HandleDpiOnSecondFrame();
+    }
 
     if (mWasWindowAutoResizedOnPreviousFrame)
     {
         // The window was resized on last frame
         // We should now recenter the window if needed and ensure it fits on the monitor
         mGeometryHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow);
-        // if this is the second frame, and the user wanted a centered window, let's recenter it
-        if (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::MonitorCenter && (mIdxFrame == 1))
+
+        // if this is the third frame, and the user wanted a centered window, let's recenter it
+        // we do this on the third frame (mIdxFrame == 2), since the initial autosize happens on the second
+        // (see WantAutoSize())
+        if (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::MonitorCenter && (mIdxFrame == 2))
             mGeometryHelper->CenterWindowOnMonitor(mBackendWindowHelper.get(), mWindow);
+
         mWasWindowAutoResizedOnPreviousFrame = false;
         params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = false;
     }

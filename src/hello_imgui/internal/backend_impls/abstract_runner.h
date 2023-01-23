@@ -77,7 +77,7 @@ class AbstractRunner
 
 private:
     void PrepareWindowGeometry();
-    void FinishWindowSetupOnSecondFrame();
+    void HandleDpiOnSecondFrame();
     void ReloadFontIfFailed();
     void MakeWindowSizeRelativeTo96Ppi_IfRequired();
     bool ShallSizeWindowRelativeTo96Ppi();

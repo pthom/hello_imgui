@@ -3,7 +3,6 @@
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/image_from_asset.h"
 #include "hello_imgui/hello_imgui_theme.h"
-#include "hello_imgui/internal/backend_impls/backend_window_helper/window_autosize_helper.h"
 #include "imgui.h"
 
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
@@ -114,10 +113,10 @@ void AbstractRunner::Run()
             {
                 // The window was resized on last frame
                 // We should now recenter the window if needed and ensure it fits on the monitor
-                mAutoSizeHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow);
+                mGeometryHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow);
                 // if this is the second frame, and the user wanted a centered window, let's recenter it
                 if (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::MonitorCenter && (mIdxFrame == 1))
-                    mAutoSizeHelper->CenterWindowOnMonitor(mBackendWindowHelper.get(), mWindow);
+                    mGeometryHelper->CenterWindowOnMonitor(mBackendWindowHelper.get(), mWindow);
                 mWasWindowAutoResizedOnPreviousFrame = false;
                 params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = false;
             }
@@ -156,7 +155,6 @@ static void    MyFreeWrapper(void* ptr, void* user_data)        { IM_UNUSED(user
 void AbstractRunner::PrepareWindowGeometry()
 {
     mGeometryHelper = std::make_unique<WindowGeometryHelper>(params.appWindowParams.windowGeometry, params.appWindowParams.restorePreviousGeometry);
-    mAutoSizeHelper = std::make_unique<WindowAutoSizeHelper>(*mGeometryHelper);
     auto windowBounds = mGeometryHelper->AppWindowBoundsInitial(mBackendWindowHelper->GetMonitorsWorkAreas());
     if (params.appWindowParams.restorePreviousGeometry && mGeometryHelper->ReadLastRunWindowBounds().has_value())
         params.appWindowParams.windowGeometry.positionMode = WindowPositionMode::FromCoords;
@@ -242,8 +240,7 @@ void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
             if (   (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::MonitorCenter)
                 || (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::OsDefault))
             {
-                WindowAutoSizeHelper helper(*mGeometryHelper);
-                auto monitorBounds = (helper.GetCurrentMonitorWorkArea(mBackendWindowHelper.get(), mWindow));
+                auto monitorBounds = (mGeometryHelper->GetCurrentMonitorWorkArea(mBackendWindowHelper.get(), mWindow));
                 ForDim2(dim)
                     bounds.position[dim] =
                         monitorBounds.Center()[dim] - bounds.size[dim] / 2;
@@ -348,7 +345,7 @@ void AbstractRunner::RenderGui()
         {
             ImGui::EndGroup();
             ImVec2 userWidgetsSize = ImGui::GetItemRectSize();
-            mAutoSizeHelper->TrySetWindowSize(mBackendWindowHelper.get(), mWindow, userWidgetsSize);
+            mGeometryHelper->TrySetWindowSize(mBackendWindowHelper.get(), mWindow, userWidgetsSize);
             mWasWindowAutoResizedOnPreviousFrame = true;
         }
     }

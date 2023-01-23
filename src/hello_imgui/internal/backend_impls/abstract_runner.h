@@ -3,7 +3,6 @@
 #include "hello_imgui/hello_imgui_screenshot.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/window_geometry_helper.h"
-#include "hello_imgui/internal/backend_impls/backend_window_helper/window_autosize_helper.h"
 
 #include <memory>
 
@@ -89,7 +88,6 @@ protected:
     std::unique_ptr<BackendApi::IBackendWindowHelper> mBackendWindowHelper;
 private:
     std::unique_ptr<WindowGeometryHelper> mGeometryHelper;
-    std::unique_ptr<WindowAutoSizeHelper> mAutoSizeHelper;
     bool mPotentialFontLoadingError = false;
     int mIdxFrame = 0;
     bool mWasWindowAutoResizedOnPreviousFrame = false;

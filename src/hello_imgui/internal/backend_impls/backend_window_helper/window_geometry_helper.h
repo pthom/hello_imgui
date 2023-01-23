@@ -11,17 +11,29 @@ namespace HelloImGui
     class WindowGeometryHelper
     {
     public:
-        WindowGeometry mGeometry;
+        WindowGeometry& mGeometry;
         bool mRestoreLast;
 
         WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast);
 
         bool HasInitialWindowSizeInfo();
-
         ScreenBounds AppWindowBoundsInitial(const std::vector<ScreenBounds>& allMonitorsWorkAreas);
 
+        // Save / Load last run window bounds
         static void WriteLastRunWindowBounds(const ScreenBounds& windowBounds);
         static std::optional<ScreenBounds> ReadLastRunWindowBounds();
+
+
+        void EnsureWindowFitsMonitor(BackendApi::IBackendWindowHelper* helper, BackendApi::WindowPointer window);
+        void CenterWindowOnMonitor(BackendApi::IBackendWindowHelper* helper, BackendApi::WindowPointer window);
+        ScreenBounds GetCurrentMonitorWorkArea(BackendApi::IBackendWindowHelper* backendWindowHelper,
+                                               BackendApi::WindowPointer window);
+
+        // Will set the window size, after making sure it fits on the current screen
+        void TrySetWindowSize(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window, ImVec2 userWidgetsSize);
+
+    private:
+        int GetMonitorIndexFromWindowPosition(BackendApi::IBackendWindowHelper *backendWindowHelper, const ScreenPosition& windowPosition);
     };
 
     struct SearchForMonitorResult

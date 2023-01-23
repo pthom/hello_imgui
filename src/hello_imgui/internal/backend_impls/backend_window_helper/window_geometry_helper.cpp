@@ -85,6 +85,13 @@ namespace HelloImGui
 
     ScreenBounds WindowGeometryHelper::AppWindowBoundsInitial(const std::vector<ScreenBounds>& allMonitorsWorkAreas)
     {
+        assert(mGeometry.monitorIdx >= 0);
+        if (mGeometry.monitorIdx >= allMonitorsWorkAreas.size() - 1)
+        {
+            fprintf(stderr, "HelloImGui: could not use non existent monitor #%i!\n", mGeometry.monitorIdx);
+            mGeometry.monitorIdx = allMonitorsWorkAreas.size() - 1;
+        }
+
         // if maximized, use the full work area of the selected monitor
         if (mGeometry.windowSizeState == WindowSizeState::Maximized)
         {
@@ -125,7 +132,6 @@ namespace HelloImGui
         // Window position
         auto centerWindowOnMonitor = [&]() -> ScreenPosition {
             auto monitorIdx = mGeometry.monitorIdx;
-            assert((monitorIdx >= 0) && (monitorIdx < allMonitorsWorkAreas.size()));
             auto pos = allMonitorsWorkAreas[monitorIdx].WinPositionCentered(windowSize);
             return pos;
         };
@@ -235,5 +241,93 @@ namespace HelloImGui
         return r;
     }
 
+
+
+    ///////////////////////////////
+
+
+    void WindowGeometryHelper::TrySetWindowSize(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window, ImVec2 userWidgetsSize)
+    {
+        int widgetsMargin = 6;
+
+        auto screenSize = GetCurrentMonitorWorkArea(backendWindowHelper, window).size;
+
+        auto computedSize = ScreenSize {
+            std::min((int)userWidgetsSize.x + widgetsMargin, screenSize[0]),
+            std::min((int)userWidgetsSize.y + widgetsMargin, screenSize[1])
+        };
+
+        auto windowBounds = backendWindowHelper->GetWindowBounds(window);
+        windowBounds.size = computedSize;
+
+        backendWindowHelper->SetWindowBounds(window, windowBounds);
+    }
+
+    ScreenBounds WindowGeometryHelper::GetCurrentMonitorWorkArea(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window)
+    {
+        auto windowBounds = backendWindowHelper->GetWindowBounds(window);
+        int monitorIdx = GetMonitorIndexFromWindowPosition(backendWindowHelper, windowBounds.position);
+        auto areas = backendWindowHelper->GetMonitorsWorkAreas();
+        auto r = areas[monitorIdx];
+        return r;
+    }
+
+    int WindowGeometryHelper::GetMonitorIndexFromWindowPosition(BackendApi::IBackendWindowHelper *backendWindowHelper, const ScreenPosition& windowPosition)
+    {
+        if (mGeometry.fullScreenMode != FullScreenMode::NoFullScreen)
+            return mGeometry.monitorIdx;
+
+        auto monitorsWorkAreas = backendWindowHelper->GetMonitorsWorkAreas();
+
+        for (int monitorIdx = 0; monitorIdx < monitorsWorkAreas.size(); monitorIdx++)
+        {
+            auto monitor_work_area = monitorsWorkAreas[monitorIdx];
+            if (monitor_work_area.Contains(windowPosition))
+                return monitorIdx;
+        }
+
+        // Handle failure and lost windows:
+        // if we did not find any monitor containing the window position, return the closest monitor
+        int minDistance = 1000000;
+        int bestMonitorIdx = -1;
+        for (int monitorIdx = 0; monitorIdx < monitorsWorkAreas.size(); monitorIdx++)
+        {
+            auto monitor_work_area = monitorsWorkAreas[monitorIdx];
+            int distance = monitor_work_area.DistanceFromPixel(windowPosition);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                bestMonitorIdx = monitorIdx;
+            }
+        }
+
+        return bestMonitorIdx;
+    }
+
+    void WindowGeometryHelper::EnsureWindowFitsMonitor(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window)
+    {
+        auto currentMonitorWorkArea = GetCurrentMonitorWorkArea(backendWindowHelper, window);
+
+#ifdef _WIN32
+        currentMonitorWorkArea.position[1] += 35;  // Because windows are unmovable if their top edge if out of screen
+        currentMonitorWorkArea.size[1] -= 35;  // Because the windows start bar is huge and not handled by glfwGetMonitorWorkarea
+#endif
+
+        auto currentWindowBounds = backendWindowHelper->GetWindowBounds(window);
+        auto currentWindowBoundsNew = currentMonitorWorkArea.EnsureWindowFitsThisMonitor(currentWindowBounds);
+        if ( !(currentWindowBoundsNew == currentWindowBounds))
+        {
+            backendWindowHelper->SetWindowBounds(window, currentWindowBoundsNew);
+        }
+    }
+
+    void WindowGeometryHelper::CenterWindowOnMonitor(BackendApi::IBackendWindowHelper* backendWindowHelper, BackendApi::WindowPointer window)
+    {
+        ScreenBounds windowBounds = backendWindowHelper->GetWindowBounds(window);
+        ScreenBounds currentMonitorWorkArea = GetCurrentMonitorWorkArea(backendWindowHelper, window);
+        ScreenPosition newWindowPosition = currentMonitorWorkArea.WinPositionCentered(windowBounds.size);
+        windowBounds.position = newWindowPosition;
+        backendWindowHelper->SetWindowBounds(window, windowBounds);
+    }
 
 }

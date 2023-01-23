@@ -150,6 +150,7 @@ std::string AssetFileFullPath(const std::string& assetFilename)
         }
         errorMessage += "    (you can call HelloImGui::SetAssetsFolder() to set the default search location)\n";
         HIMG_ERROR(errorMessage);
+        return "";
     }
 #endif
 }

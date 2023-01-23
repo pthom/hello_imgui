@@ -318,7 +318,7 @@ Members:
   Example:
   ```cpp
   // Will resize the app window at next displayed frame
-  HelloImGui::GetRunnerParams().appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = true;
+  HelloImGui::GetRunnerParams()->appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = true;
   ```
 
   :::Note: this flag is intended to be used during execution, not at startup (use sizeAuto at startup):::

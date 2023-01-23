@@ -138,11 +138,12 @@ class WindowGeometry <struct>{
     + int monitorIdx = 0
     // used if full screen,
     // or if positionMode==MonitorCenter
+
+    + resizeAppWindowAtNextFrame = false
 }
 
 WindowGeometry *-- FullScreenMode
 WindowGeometry *-- WindowPositionMode
-
 
 
 class AppWindowParams <struct>{

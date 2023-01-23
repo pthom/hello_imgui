@@ -96,10 +96,10 @@ void AbstractRunner::Run()
     while (true)
     {
         CreateFramesAndRender(idxFrame);
-        if (idxFrame == 0)
+        if (mIdxFrame == 0)
             ReloadFontIfFailed();
 
-        idxFrame += 1;
+        mIdxFrame += 1;
     }
 #else
     try

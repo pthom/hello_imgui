@@ -97,6 +97,18 @@ Members:
       (this works with Glfw. With SDL, it only works under windows)
   * ScreenCoords: measure window size in screen coords
     (Note: screen coordinates might differ from real pixels on high dpi screen)
+
+* `resizeAppWindowAtNextFrame`: _bool_, default=false;
+  If you set this to flag to true at any point during the execution, the application window
+  will then try to resize based on its content on the next displayed frame,
+  and this flag will subsequently be set to false.
+  Example:
+  ```cpp
+  // Will resize the app window at next displayed frame
+  HelloImGui::GetRunnerParams()->appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = true;
+  ```
+
+  :::Note: this flag is intended to be used during execution, not at startup (use sizeAuto at startup):::
 @@md
 **/
 struct WindowGeometry
@@ -120,6 +132,9 @@ struct WindowGeometry
     WindowSizeState windowSizeState = WindowSizeState::Standard;
 
     WindowSizeMeasureMode windowSizeMeasureMode = WindowSizeMeasureMode::RelativeTo96Ppi;
+
+    // If true, the application window will try to resize based on its content on the next displayed frame
+    bool resizeAppWindowAtNextFrame = false;
 };
 
 

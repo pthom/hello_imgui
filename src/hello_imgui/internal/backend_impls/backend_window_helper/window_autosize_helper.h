@@ -10,19 +10,17 @@ namespace HelloImGui
     {
         WindowGeometryHelper& mWindowGeometryHelper;
 
-        bool mFlagIsMeasuringSize = false;
-
     public:
         WindowAutoSizeHelper(WindowGeometryHelper& windowGeometryHelper);
-        void BeginMeasureSize(BackendApi::IBackendWindowHelper* helper, BackendApi::WindowPointer window);
-        void EndMeasureSize(BackendApi::IBackendWindowHelper* helper, BackendApi::WindowPointer window);
         void EnsureWindowFitsMonitor(BackendApi::IBackendWindowHelper* helper, BackendApi::WindowPointer window);
-        bool WantAutoSize();
+        void CenterWindowOnMonitor(BackendApi::IBackendWindowHelper* helper, BackendApi::WindowPointer window);
         ScreenBounds GetCurrentMonitorWorkArea(BackendApi::IBackendWindowHelper* backendWindowHelper,
                                                BackendApi::WindowPointer window);
 
+        // Will set the window size, after making sure it fits on the current screen
+        void TrySetWindowSize(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window, ImVec2 userWidgetsSize);
+
     private:
-        void _ForceWindowSize(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window);
 
         int GetMonitorIndexFromWindowPosition(BackendApi::IBackendWindowHelper *backendWindowHelper, const ScreenPosition& windowPosition);
 

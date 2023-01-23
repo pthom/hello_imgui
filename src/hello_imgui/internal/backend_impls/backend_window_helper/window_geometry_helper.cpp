@@ -83,10 +83,7 @@ namespace HelloImGui
         return false;
     }
 
-    ScreenBounds WindowGeometryHelper::AppWindowBoundsInitial(
-        const std::vector<ScreenBounds>& allMonitorsWorkAreas,
-        const std::optional<ScreenSize>& realWindowSizeAfterAutoSize
-    )
+    ScreenBounds WindowGeometryHelper::AppWindowBoundsInitial(const std::vector<ScreenBounds>& allMonitorsWorkAreas)
     {
         // if maximized, use the full work area of the selected monitor
         if (mGeometry.windowSizeState == WindowSizeState::Maximized)
@@ -116,8 +113,6 @@ namespace HelloImGui
         // Window Size
         auto computeSize = [&]() -> ScreenSize
         {
-            if (realWindowSizeAfterAutoSize.has_value())
-                return realWindowSizeAfterAutoSize.value();
             if (mRestoreLast && windowBoundsLastRun.has_value())
                 return windowBoundsLastRun->size;
             if (!mGeometry.sizeAuto)

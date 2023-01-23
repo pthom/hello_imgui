@@ -92,7 +92,7 @@ void AbstractRunner::Run()
 {
     Setup();
 
-    int idxFrame = 0;
+    mIdxFrame = 0;
 #ifdef HELLOIMGUI_MOBILEDEVICE
     while (true)
     {
@@ -107,14 +107,26 @@ void AbstractRunner::Run()
     {
         while (!params.appShallExit)
         {
-            if (idxFrame == 1)
+            if (mIdxFrame == 1)
                 FinishWindowSetupOnSecondFrame();
 
-            CreateFramesAndRender(idxFrame);
-            if (idxFrame == 0)
+            if (mWasWindowAutoResizedOnPreviousFrame)
+            {
+                // The window was resized on last frame
+                // We should now recenter the window if needed and ensure it fits on the monitor
+                mAutoSizeHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow);
+                // if this is the second frame, and the user wanted a centered window, let's recenter it
+                if (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::MonitorCenter && (mIdxFrame == 1))
+                    mAutoSizeHelper->CenterWindowOnMonitor(mBackendWindowHelper.get(), mWindow);
+                mWasWindowAutoResizedOnPreviousFrame = false;
+                params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = false;
+            }
+
+            CreateFramesAndRender();
+            if (mIdxFrame == 0)
                 ReloadFontIfFailed();
 
-            idxFrame += 1;
+            mIdxFrame += 1;
         }
 
         // Store screenshot before exiting
@@ -141,31 +153,24 @@ static void*   MyMallocWrapper(size_t size, void* user_data)    { IM_UNUSED(user
 static void    MyFreeWrapper(void* ptr, void* user_data)        { IM_UNUSED(user_data); free(ptr); }
 #endif
 
-void AbstractRunner::PrepareAutoSize()
+void AbstractRunner::PrepareWindowGeometry()
 {
-    std::optional<ScreenSize> yetUnknownRealWindowSizeAfterAutoSize = std::nullopt;
     mGeometryHelper = std::make_unique<WindowGeometryHelper>(params.appWindowParams.windowGeometry, params.appWindowParams.restorePreviousGeometry);
     mAutoSizeHelper = std::make_unique<WindowAutoSizeHelper>(*mGeometryHelper);
-    auto windowBounds = mGeometryHelper->AppWindowBoundsInitial(mBackendWindowHelper->GetMonitorsWorkAreas(), yetUnknownRealWindowSizeAfterAutoSize);
+    auto windowBounds = mGeometryHelper->AppWindowBoundsInitial(mBackendWindowHelper->GetMonitorsWorkAreas());
     if (params.appWindowParams.restorePreviousGeometry && mGeometryHelper->ReadLastRunWindowBounds().has_value())
         params.appWindowParams.windowGeometry.positionMode = WindowPositionMode::FromCoords;
     params.appWindowParams.windowGeometry.position = windowBounds.position;
     params.appWindowParams.windowGeometry.size = windowBounds.size;
 }
 
-void AbstractRunner::FinishAutoSize_IfRequired()
+bool AbstractRunner::WantAutoSize()
 {
-    // This is done at the second frame, once we know the size of all the widgets
-    if (mAutoSizeHelper->WantAutoSize())
-    {
-        // The window was resized by mAutoSizeHelper
-        // We should now recenter the window if needed and ensure it fits on the monitor
-        auto realWindowSizeAfterAutoSize = mBackendWindowHelper->GetWindowBounds(mWindow).size;
-        auto windowBounds = mGeometryHelper->AppWindowBoundsInitial(
-            mBackendWindowHelper->GetMonitorsWorkAreas(), realWindowSizeAfterAutoSize);
-        mBackendWindowHelper->SetWindowBounds(mWindow, windowBounds);
-    }
+    bool autosizeAtStartup = (mIdxFrame == 0) &&  !mGeometryHelper->HasInitialWindowSizeInfo();
+    bool autosizeAtNextFrame = params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame;
+    return autosizeAtStartup || autosizeAtNextFrame;
 }
+
 
 bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi() 
 {
@@ -261,10 +266,7 @@ void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
 // - rescale the imgui style
 void AbstractRunner::FinishWindowSetupOnSecondFrame()
 {
-    FinishAutoSize_IfRequired();
     MakeWindowSizeRelativeTo96Ppi_IfRequired();
-    mAutoSizeHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow);
-
     // High DPI handling on windows & linux
     {
         float dpiScale = DpiWindowSizeFactor();
@@ -282,7 +284,7 @@ void AbstractRunner::Setup()
     Impl_InitBackend();
     Impl_Select_Gl_Version();
 
-    PrepareAutoSize();
+    PrepareWindowGeometry();
     Impl_CreateWindow();
 
     Impl_CreateGlContext();
@@ -326,7 +328,7 @@ void AbstractRunner::Setup()
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
 }
 
-void AbstractRunner::RenderGui(int idxFrame)
+void AbstractRunner::RenderGui()
 {
     DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams, params.dockingParams);
 
@@ -335,13 +337,20 @@ void AbstractRunner::RenderGui(int idxFrame)
 
     if (params.callbacks.ShowGui)
     {
-        if (idxFrame == 0)
-            mAutoSizeHelper->BeginMeasureSize(mBackendWindowHelper.get(), mWindow);
+        bool wantAutoSize = WantAutoSize();
+
+        if (wantAutoSize)
+            ImGui::BeginGroup();
 
         params.callbacks.ShowGui();
 
-        if (idxFrame == 0)
-            mAutoSizeHelper->EndMeasureSize(mBackendWindowHelper.get(), mWindow);
+        if (wantAutoSize)
+        {
+            ImGui::EndGroup();
+            ImVec2 userWidgetsSize = ImGui::GetItemRectSize();
+            mAutoSizeHelper->TrySetWindowSize(mBackendWindowHelper.get(), mWindow, userWidgetsSize);
+            mWasWindowAutoResizedOnPreviousFrame = true;
+        }
     }
 
     DockingDetails::ShowDockableWindows(params.dockingParams.dockableWindows);
@@ -355,7 +364,7 @@ void AbstractRunner::RenderGui(int idxFrame)
 }
 
 
-void AbstractRunner::CreateFramesAndRender(int idxFrame)
+void AbstractRunner::CreateFramesAndRender()
 {
     assert(params.fpsIdling.fpsIdle >= 0.f);
 
@@ -400,7 +409,7 @@ void AbstractRunner::CreateFramesAndRender(int idxFrame)
 #endif
     }
 
-    RenderGui(idxFrame);
+    RenderGui();
 
     ImGui::Render();
     Impl_Frame_3D_ClearColor();

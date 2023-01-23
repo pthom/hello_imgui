@@ -24,8 +24,8 @@ class AbstractRunner
 
     /// Step 4.b: Or implement your own Run using Setup()/Render()/TearDown()
     void Setup();
-    void CreateFramesAndRender(int idxFrame);
-    void RenderGui(int idxFrame);
+    void CreateFramesAndRender();
+    void RenderGui();
     void TearDown();
 
    public:
@@ -77,12 +77,12 @@ class AbstractRunner
     virtual ImageBuffer Impl_ScreenshotRgb() { return ImageBuffer{}; }
 
 private:
-    void PrepareAutoSize();
+    void PrepareWindowGeometry();
     void FinishWindowSetupOnSecondFrame();
     void ReloadFontIfFailed();
-    void FinishAutoSize_IfRequired();
     void MakeWindowSizeRelativeTo96Ppi_IfRequired();
     bool ShallSizeWindowRelativeTo96Ppi();
+    bool WantAutoSize();
 
 protected:
     BackendApi::WindowPointer mWindow = nullptr;
@@ -91,6 +91,8 @@ private:
     std::unique_ptr<WindowGeometryHelper> mGeometryHelper;
     std::unique_ptr<WindowAutoSizeHelper> mAutoSizeHelper;
     bool mPotentialFontLoadingError = false;
+    int mIdxFrame = 0;
+    bool mWasWindowAutoResizedOnPreviousFrame = false;
 };
 
 }  // namespace HelloImGui

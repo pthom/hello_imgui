@@ -9,9 +9,8 @@ namespace HelloImGui
     {
     }
 
-    void WindowAutoSizeHelper::_ForceWindowSize(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window)
+    void WindowAutoSizeHelper::TrySetWindowSize(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window, ImVec2 userWidgetsSize)
     {
-        auto userWidgetsSize = ImGui::GetItemRectSize();
         int widgetsMargin = 6;
 
         auto screenSize = GetCurrentMonitorWorkArea(backendWindowHelper, window).size;
@@ -34,28 +33,6 @@ namespace HelloImGui
         auto areas = backendWindowHelper->GetMonitorsWorkAreas();
         auto r = areas[monitorIdx];
         return r;
-    }
-
-    void WindowAutoSizeHelper::BeginMeasureSize(BackendApi::IBackendWindowHelper *, BackendApi::WindowPointer )
-    {
-        if (WantAutoSize())
-        {
-            mFlagIsMeasuringSize = true;
-            ImGui::BeginGroup();
-        }
-        else
-        {
-            mFlagIsMeasuringSize = false;
-        }
-    }
-
-    void WindowAutoSizeHelper::EndMeasureSize(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window)
-    {
-        if (mFlagIsMeasuringSize)
-        {
-            ImGui::EndGroup();
-            _ForceWindowSize(backendWindowHelper, window);
-        }
     }
 
     int WindowAutoSizeHelper::GetMonitorIndexFromWindowPosition(BackendApi::IBackendWindowHelper *backendWindowHelper, const ScreenPosition& windowPosition)
@@ -109,9 +86,13 @@ namespace HelloImGui
         }
     }
 
-    bool WindowAutoSizeHelper::WantAutoSize()
+    void WindowAutoSizeHelper::CenterWindowOnMonitor(BackendApi::IBackendWindowHelper* backendWindowHelper, BackendApi::WindowPointer window)
     {
-        return !mWindowGeometryHelper.HasInitialWindowSizeInfo();
+        ScreenBounds windowBounds = backendWindowHelper->GetWindowBounds(window);
+        ScreenBounds currentMonitorWorkArea = GetCurrentMonitorWorkArea(backendWindowHelper, window);
+        ScreenPosition newWindowPosition = currentMonitorWorkArea.WinPositionCentered(windowBounds.size);
+        windowBounds.position = newWindowPosition;
+        backendWindowHelper->SetWindowBounds(window, windowBounds);
     }
 
 }

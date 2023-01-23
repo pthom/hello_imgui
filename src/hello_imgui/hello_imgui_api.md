@@ -272,7 +272,11 @@ Members:
 * `size`: _int[2], default="{800, 600}"_. Size of the application window
   used if fullScreenMode==NoFullScreen and sizeAuto==false
 * `sizeAuto`: _bool, default=false_
-  If true, adapt the app window size to the presented widgets
+  If true, adapt the app window size to the presented widgets.
+  After the first frame was displayed, HelloImGui will measure its size,
+  and the backend application window will be resized. As a consequence, the application window size may
+  vary between the first and the second frame.
+
 * `fullScreenMode`: _FullScreenMode, default=NoFullScreen_.
    You can choose between several full screen modes:
    ```cpp
@@ -306,6 +310,18 @@ Members:
       (this works with Glfw. With SDL, it only works under windows)
   * ScreenCoords: measure window size in screen coords
     (Note: screen coordinates might differ from real pixels on high dpi screen)
+
+* `resizeAppWindowAtNextFrame`: _bool_, default=false;
+  If you set this to flag to true at any point during the execution, the application window
+  will then try to resize based on its content on the next displayed frame,
+  and this flag will subsequently be set to false.
+  Example:
+  ```cpp
+  // Will resize the app window at next displayed frame
+  HelloImGui::GetRunnerParams().appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = true;
+  ```
+
+  :::Note: this flag is intended to be used during execution, not at startup (use sizeAuto at startup):::
 
 ----
 

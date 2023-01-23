@@ -56,6 +56,7 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
         return FactorRunnerQt(params);
 #endif
         IM_ASSERT(false); // HelloImGui::FactorRunner no backend selected!"
+        return nullptr;
     }
     else
     {
@@ -87,6 +88,7 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
         {
             IM_ASSERT(false); //Bad backend type!
         }
+        return nullptr;
     }
 }
 

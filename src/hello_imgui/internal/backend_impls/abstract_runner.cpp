@@ -226,11 +226,7 @@ void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
     }
 }
 
-// This will
-// - finish Autosize window (reduce its size if too big, etc)
-// - change its size if we want a size relative to 96ppi
-// - make sure the windows fits the monitor
-// - rescale the imgui style
+// This will change the window size if we want a size relative to 96ppi and rescale the imgui style
 void AbstractRunner::FinishWindowSetupOnSecondFrame()
 {
     MakeWindowSizeRelativeTo96Ppi_IfRequired();

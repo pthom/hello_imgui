@@ -67,24 +67,21 @@ AbstractRunner::AbstractRunner(RunnerParams &params_)
 // to multiply its font size.
 void AbstractRunner::ReloadFontIfFailed()
 {
-    if (mPotentialFontLoadingError)
-    {
-        fprintf(stderr, "Detected a potential font loading error! You might try to reduce the number of loaded fonts and/or their size!\n");
+    fprintf(stderr, "Detected a potential font loading error! You might try to reduce the number of loaded fonts and/or their size!\n");
 #ifdef HELLOIMGUI_HAS_OPENGL
-        if (ImGui::GetIO().FontGlobalScale < 1.f)
-        {
-            fprintf(stderr,
-                    "Trying to solve the font loading error by changing ImGui::GetIO().FontGlobalScale from %f to 1.f! Font rendering might be less crisp...\n",
-                    ImGui::GetIO().FontGlobalScale
-                    );
-            ImGui::GetIO().FontGlobalScale = 1.f;
-            ImGui::GetIO().Fonts->Clear();
-            params.callbacks.LoadAdditionalFonts();
-            ImGui::GetIO().Fonts->Build();
-            ImGui_ImplOpenGL3_CreateFontsTexture();
-        }
-#endif
+    if (ImGui::GetIO().FontGlobalScale < 1.f)
+    {
+        fprintf(stderr,
+                "Trying to solve the font loading error by changing ImGui::GetIO().FontGlobalScale from %f to 1.f! Font rendering might be less crisp...\n",
+                ImGui::GetIO().FontGlobalScale
+                );
+        ImGui::GetIO().FontGlobalScale = 1.f;
+        ImGui::GetIO().Fonts->Clear();
+        params.callbacks.LoadAdditionalFonts();
+        ImGui::GetIO().Fonts->Build();
+        ImGui_ImplOpenGL3_CreateFontsTexture();
     }
+#endif
 }
 
 void AbstractRunner::Run()
@@ -94,39 +91,12 @@ void AbstractRunner::Run()
     mIdxFrame = 0;
 #ifdef HELLOIMGUI_MOBILEDEVICE
     while (true)
-    {
         CreateFramesAndRender(idxFrame);
-        if (mIdxFrame == 0)
-            ReloadFontIfFailed();
-
-        mIdxFrame += 1;
-    }
 #else
     try
     {
         while (!params.appShallExit)
-        {
-            if (mIdxFrame == 1)
-                FinishWindowSetupOnSecondFrame();
-
-            if (mWasWindowAutoResizedOnPreviousFrame)
-            {
-                // The window was resized on last frame
-                // We should now recenter the window if needed and ensure it fits on the monitor
-                mGeometryHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow);
-                // if this is the second frame, and the user wanted a centered window, let's recenter it
-                if (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::MonitorCenter && (mIdxFrame == 1))
-                    mGeometryHelper->CenterWindowOnMonitor(mBackendWindowHelper.get(), mWindow);
-                mWasWindowAutoResizedOnPreviousFrame = false;
-                params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = false;
-            }
-
             CreateFramesAndRender();
-            if (mIdxFrame == 0)
-                ReloadFontIfFailed();
-
-            mIdxFrame += 1;
-        }
 
         // Store screenshot before exiting
         {
@@ -363,8 +333,28 @@ void AbstractRunner::RenderGui()
 
 void AbstractRunner::CreateFramesAndRender()
 {
-    assert(params.fpsIdling.fpsIdle >= 0.f);
+    //
+    // Window size setup, etc.
+    //
+    if (mIdxFrame == 1)
+        FinishWindowSetupOnSecondFrame();
 
+    if (mWasWindowAutoResizedOnPreviousFrame)
+    {
+        // The window was resized on last frame
+        // We should now recenter the window if needed and ensure it fits on the monitor
+        mGeometryHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow);
+        // if this is the second frame, and the user wanted a centered window, let's recenter it
+        if (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::MonitorCenter && (mIdxFrame == 1))
+            mGeometryHelper->CenterWindowOnMonitor(mBackendWindowHelper.get(), mWindow);
+        mWasWindowAutoResizedOnPreviousFrame = false;
+        params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = false;
+    }
+
+    //
+    // Idling
+    //
+    assert(params.fpsIdling.fpsIdle >= 0.f);
     params.fpsIdling.isIdling = false;
     if ((params.fpsIdling.fpsIdle > 0.f) && params.fpsIdling.enableIdling)
     {
@@ -378,36 +368,38 @@ void AbstractRunner::CreateFramesAndRender()
         params.fpsIdling.isIdling = (waitDuration > waitIdleExpected * 0.9);
     }
 
+    //
+    // Rendering logic
+    //
     if (Impl_PollEvents())
         params.appShallExit = true;
-
     Impl_NewFrame_3D();
     Impl_NewFrame_Backend();
-
     {
         // Workaround against SDL clock that sometimes leads to io.DeltaTime=0.f on emscripten
         // (which fails to an `IM_ASSERT(io.DeltaTime) > 0` in ImGui::NewFrame())
+        // Waiting to be back-ported to imgui sdl backend.
         auto & io = ImGui::GetIO();
         if (io.DeltaTime <= 0.f)
             io.DeltaTime = 1.f / 60.f;
     }
-
     ImGui::NewFrame();
 
-    // Fight against potential font loading issue:
+    // Fight against potential font loading issue
     // Fonts are transferred to the GPU one the first call to ImGui::NewFrame()
     // We might detect an OpenGL error if the font texture was too big for the GPU
+    bool foundPotentialFontLoadingError = false;
     {
-        mPotentialFontLoadingError = false;
 #ifdef HELLOIMGUI_HAS_OPENGL
-        auto error = glGetError();
-        if (error != 0)
-            mPotentialFontLoadingError = true;
+        if (mIdxFrame == 0)
+        {
+            auto error = glGetError();
+            if (error != 0)
+                foundPotentialFontLoadingError = true;
+        }
 #endif
     }
-
     RenderGui();
-
     ImGui::Render();
     Impl_Frame_3D_ClearColor();
     Impl_RenderDrawData_To_3D();
@@ -416,6 +408,11 @@ void AbstractRunner::CreateFramesAndRender()
         Impl_UpdateAndRenderAdditionalPlatformWindows();
 
     Impl_SwapBuffers();
+
+    if (foundPotentialFontLoadingError)
+        ReloadFontIfFailed();
+
+    mIdxFrame += 1;
 }
 
 void AbstractRunner::OnPause()

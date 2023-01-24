@@ -86,10 +86,10 @@ namespace HelloImGui
     ScreenBounds WindowGeometryHelper::AppWindowBoundsInitial(const std::vector<ScreenBounds>& allMonitorsWorkAreas)
     {
         assert(mGeometry.monitorIdx >= 0);
-        if (mGeometry.monitorIdx >= allMonitorsWorkAreas.size() - 1)
+        if (mGeometry.monitorIdx >= allMonitorsWorkAreas.size())
         {
             fprintf(stderr, "HelloImGui: could not use non existent monitor #%i!\n", mGeometry.monitorIdx);
-            mGeometry.monitorIdx = allMonitorsWorkAreas.size() - 1;
+            mGeometry.monitorIdx = 0;
         }
 
         // if maximized, use the full work area of the selected monitor

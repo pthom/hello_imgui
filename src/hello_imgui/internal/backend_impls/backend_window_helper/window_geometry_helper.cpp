@@ -1,6 +1,5 @@
 #include "window_geometry_helper.h"
 
-#include <filesystem>
 #include <sstream>
 #include <fstream>
 #include <vector>

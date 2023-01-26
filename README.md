@@ -3,6 +3,7 @@
 ![MacOS](https://github.com/pthom/hello_imgui/workflows/MacOS/badge.svg)
 ![iOS](https://github.com/pthom/hello_imgui/workflows/iOS/badge.svg)
 ![Emscripten](https://github.com/pthom/hello_imgui/workflows/Emscripten/badge.svg)
+![MinGW](https://github.com/pthom/hello_imgui/workflows/MinGW/badge.svg)
 
 # Hello ImGui
 
@@ -140,17 +141,12 @@ __Table of contents__
       * [handle events](#handle-events)
 * [Full usage instructions and API](#full-usage-instructions-and-api)
   * [Online interactive example applications](#online-interactive-example-applications)
-* [Complete build instructions](#complete-build-instructions)
+* [Build instructions](#build-instructions)
   * [Supported platforms and backends](#supported-platforms-and-backends)
-    * [Platforms](#platforms)
-    * [Backends](#backends)
   * [Clone the repository](#clone-the-repository)
-  * [Build instructions for desktop platforms (Linux, MacOS, Windows)](#build-instructions-for-desktop-platforms-linux-macos-windows)
-    * [Select your backend](#select-your-backend)
-    * [Plug your backend](#plug-your-backend)
-      * [Option 1: plug your backend manually](#option-1-plug-your-backend-manually)
-      * [Option 2: plug SDL or Glfw3 via vcpkg](#option-2-plug-sdl-or-glfw3-via-vcpkg)
-    * [SDL Backend Warning for main() signature](#sdl-backend-warning-for-main-signature)
+  * [Easy build on desktop platforms using Glfw](#easy-build-on-desktop-platforms-using-glfw)
+  * [Custom build: select your preferred backend](#custom-build-select-your-preferred-backend)
+    * [Warning, if using the SDL backend:](#warning-if-using-the-sdl-backend)
   * [Build instructions for iOS](#build-instructions-for-ios)
     * [Customizing the iOS build](#customizing-the-ios-build)
   * [Build instructions for emscripten](#build-instructions-for-emscripten)
@@ -177,23 +173,13 @@ __Table of contents__
 
 --------------------
 
-# Complete build instructions
+# Build instructions
 
 ## Supported platforms and backends
 
-### Platforms
+**Platforms:**  Windows, Linux, OSX, iOS, Emscripten, Android (poorly supported)
 
-* Windows
-* Linux
-* OSX
-* iOS
-* Emscripten
-* Android (poorly supported)
-
-### Backends
-
-* SDL2 + OpenGL 3 or OpenGLES3 for mobile devices
-* Glfw3 + OpenGL 3
+**Backends:**: SDL2 + OpenGL 3 or OpenGLES3 for mobile devices, Glfw3 + OpenGL 3
 
 ## Clone the repository
 
@@ -203,64 +189,28 @@ cd hello_imgui
 git submodule update --init
 ```
 
-## Build instructions for desktop platforms (Linux, MacOS, Windows)
-
-### Select your backend
-
-Several cmake options are provided: you need to select at least one backend:
-
-```cmake
-option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
-option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
-```
-
-"HELLOIMGUI_USE_SDL_OPENGL3" is the preferred backend, since it works under all platforms (windows, linux, osx, android, emscripten, iOS). On Mobile platforms, it will use OpenGLES3. Use it with `cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON`
-
-### Plug your backend
-
-#### Option 1: plug your backend manually
-
-You can install your backend by any mean (global install, Conan, submodule, etc). 
-
-Before adding the hello_imgui directory (`add_subdirectory(hello_imgui)`), just make 
-sure that your backend is available, and select it via one of the variables HELLOIMGUI_USE_SDL_OPENGL3, 
-HELLOIMGUI_USE_GLFW_OPENGL3).
-
-For example, the cmake script below works for the GLFW backend:
-
-```cmake
-  # Here, glfw was added as a submodule into a folder "glfw"
-  add_subdirectory(glfw) 
-  # We instruct HelloImgui to use glfw
-  set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
-  # And add HelloImGui
-  add_subdirectory(hello_imgui)
-```
-
-#### Option 2: plug SDL or Glfw3 via vcpkg
-
-[Vcpkg](https://github.com/Microsoft/vcpkg) is a C++ Library Manager for Windows, Linux, and MacOS (support for iOS and Android is coming).
-
-If you intend to use SDL of glfw, you can have them installed automatically via Vcpkg: simply run this command:
-
-```bash
-./tools/vcpkg_install_third_parties.py
-```
-
-This script will download and build vcpkg, then install sdl2 and Glfw3 into `hello_imgui/vcpkg/`
-
-You can then build HelloImgui, using the following instructions:
+## Easy build on desktop platforms using Glfw
+On Desktop platforms (Linux, MacOS, Windows), if  you do not specify any backend option, HelloImGui will automatically download Glfw and link with it.
 
 ```bash
 mkdir build
-cd build
-cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake -DHELLOIMGUI_USE_SDL_OPENGL3=ON ..
-make -j4
+cd build 
+cmake ..
+make -j
 ```
-(Use `-DHELLOIMGUI_USE_GLFW_OPENGL3=ON` for glfw)
 
 
-### SDL Backend Warning for main() signature
+## Custom build: select your preferred backend
+
+In order to select your own backend, use one of the cmake options below:
+```bash
+cmake .. -DHELLOIMGUI_WITH_GLFW=ON            # To download and build glfw automatically
+cmake .. -DHELLOIMGUI_WITH_SDL=ON             # To download and build SDL automatically
+cmake .. -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # To use your own version of GLFW (it should be findable via find_package(glfw3))
+cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # To use your own version of SDL (it should be findable via find_package(SDL2))
+```
+
+### Warning, if using the SDL backend:
 
 
 Warning for SDL apps under iOS and Android:

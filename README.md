@@ -21,16 +21,59 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 
 ## Get started in 5 minutes
 
-The code for a hello world app is extremely short:
+Save this as `hello_world.main.cpp`
 ```cpp
-HelloImGui::Run(
-    []{ ImGui::Text("Hello, world!"); }, // Gui code
-    "Hello!",                            // Window title
-    true                                 // Window size auto
-);
+#include "hello_imgui/hello_imgui.h"
+int main(int , char *[])
+{
+    HelloImGui::Run(
+        []{ ImGui::Text("Hello, world!"); }, // Gui code
+        "Hello!",                            // Window title
+        true                                 // Window size auto
+    );
+    return 0;
+}
 ```
 
-[_example_integration](_example_integration) shows how to integrate this into your project in a few minutes.
+Save this as `CMakeLists.txt`
+```cmake
+cmake_minimum_required(VERSION 3.12)
+project(helloworld_with_helloimgui)
+set(CMAKE_CXX_STANDARD 11)
+
+##########################################################
+# Prepare hello_imgui during configure time
+##########################################################
+include(FetchContent)
+FetchContent_Declare(
+    hello_imgui
+    GIT_REPOSITORY https://github.com/pthom/hello_imgui.git
+    # Enter the desired git tag below
+    # GIT_TAG
+)
+FetchContent_MakeAvailable(hello_imgui)
+# Make cmake function `hello_imgui_add_app` available
+list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
+include(hello_imgui_add_app)
+
+##########################################################
+# Build your app
+##########################################################
+hello_imgui_add_app(hello_world hello_world.main.cpp)
+```
+
+Now, build with:
+
+```bash
+# Build
+mkdir build && cd build && cmake .. && cmake --build . -j 4
+# Run the build hello_world app
+./hello_world
+```
+
+That's it, you do not need to clone HelloImGui, and you do not need to install any third party! 
+
+For more detailed info, go to [_example_integration](_example_integration).
 
 
 ## Need more widgets, or want to use this with python?
@@ -135,6 +178,15 @@ __Table of contents__
 * [Hello ImGui](#hello-imgui)
   * [Features](#features)
   * [Get started in 5 minutes](#get-started-in-5-minutes)
+                                                                                                                  * [](#)
+* [Prepare hello_imgui during configure time](#prepare-hello_imgui-during-configure-time)
+                                                                                                                  * [](#)
+* [Make cmake function `hello_imgui_add_app` available](#make-cmake-function-`hello_imgui_add_app`-available)
+                                                                                                                  * [](#)
+* [Build your app](#build-your-app)
+                                                                                                                  * [](#)
+* [Build](#build)
+* [Run the build hello_world app](#run-the-build-hello_world-app)
   * [Need more widgets, or want to use this with python?](#need-more-widgets-or-want-to-use-this-with-python?)
   * [Demo - handle events and include assets:](#demo---handle-events-and-include-assets)
       * [include assets](#include-assets)

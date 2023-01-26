@@ -1,0 +1,37 @@
+name: "multiplatform_default"
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+      - main
+      - dev
+
+
+jobs:
+  build:
+    name: Cpp Lib
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest, macos-latest, ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: install xorg-dev (ubuntu only)
+        if: ${{ matrix.platform == 'ubuntu-latest' }}
+        run: sudo apt-get update && sudo apt-get install -y xorg-dev
+
+      - name: Build and install
+        shell: bash
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          cmake --build . -j 3

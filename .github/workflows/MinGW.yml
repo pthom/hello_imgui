@@ -20,12 +20,12 @@ jobs:
       run: |
           mkdir build_x86_64
           cd build_x86_64
-          cmake .. -DCMAKE_BUILD_TYPE=Release  -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_x86_64.cmake  -DHELLOIMGUI_WITH_GLFW=ON
+          cmake .. -DCMAKE_BUILD_TYPE=Release  -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_x86_64.cmake
           make -j 4
 
     - name: Build i686
       run: |
         mkdir build_i686
         cd build_i686
-        cmake .. -DCMAKE_BUILD_TYPE=Release  -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_i686.cmake  -DHELLOIMGUI_WITH_GLFW=ON
+        cmake .. -DCMAKE_BUILD_TYPE=Release  -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_i686.cmake
         make -j 4

@@ -23,17 +23,13 @@ jobs:
       with:
         submodules: true
 
-    - name: Install glfw requirements (ubuntu)
-      if: ${{ matrix.platform == 'ubuntu-latest' }}
-      run: sudo apt-get update && sudo apt-get install -y libxrandr-dev xorg-dev libxinerama-dev
-
 #    - name: Setup interactive tmate session
 #      uses: mxschmitt/action-tmate@v3
 
     - name: Build _example_integration
       run: |
         cd _example_integration
-        mkdir build
+        mkdir build 
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release
         cmake --build . --config Release

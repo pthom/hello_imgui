@@ -6,9 +6,6 @@ set(CMAKE_CXX_STANDARD 11)
 ##########################################################
 # Prepare hello_imgui during configure time
 ##########################################################
-# Select your backend
-set(HELLOIMGUI_WITH_SDL OFF CACHE BOOL "" FORCE)
-set(HELLOIMGUI_WITH_GLFW ON CACHE BOOL "" FORCE)
 # Download hello_imgui
 include(FetchContent)
 Set(FETCHCONTENT_QUIET FALSE)

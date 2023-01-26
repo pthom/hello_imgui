@@ -2,7 +2,11 @@
 
 // Adapted from imgui/backends/imgui_impl_win32.cpp
 #include "imgui.h"
-#include "Windows.h"
+#ifndef __MINGW32__
+#include <Windows.h>
+#else
+#include <windows.h>
+#endif
 
 namespace HelloImGui
 {

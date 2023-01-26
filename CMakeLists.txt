@@ -29,6 +29,7 @@ option(HELLOIMGUI_WIN32_EXECUTABLE "Under windows, hello_imgui_add_app will crea
 #------------------------------------------------------------------------------
 # Options / Backend selection
 #------------------------------------------------------------------------------
+
 # Backend selection with automatic backend compilation
 # (if you set any of those options, the corresponding backend will be automatically downloaded at build time)
 option(HELLOIMGUI_WITH_GLFW "Add GLFW+OpenGl3 support (glfw will be automatically compiled via ExternalProject_Add)" OFF)
@@ -78,6 +79,7 @@ else()
     set(need_opengl_loader ON)
 endif()
 option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
+
 
 
 ###############################################################################

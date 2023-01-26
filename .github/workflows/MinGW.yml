@@ -1,0 +1,31 @@
+name: MinGW
+
+on:
+  push:
+  pull_request:
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Checkout submodules
+      run: git submodule update --init --recursive
+
+    - name: Install MinGW
+      run: sudo apt-get update && sudo apt-get install -y mingw-w64
+
+    - name: Build x86_64
+      run: |
+          mkdir build_x86_64
+          cd build_x86_64
+          cmake .. -DCMAKE_BUILD_TYPE=Release  -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_x86_64.cmake  -DHELLOIMGUI_WITH_GLFW=ON
+          make -j 4
+
+    - name: Build i686
+      run: |
+        mkdir build_i686
+        cd build_i686
+        cmake .. -DCMAKE_BUILD_TYPE=Release  -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_i686.cmake  -DHELLOIMGUI_WITH_GLFW=ON
+        make -j 4

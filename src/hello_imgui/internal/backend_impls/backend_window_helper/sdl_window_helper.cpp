@@ -10,6 +10,7 @@
 #ifdef CreateWindow
 #undef CreateWindow
 #endif
+#include "winuser.h"
 #endif
 
 #include <cassert>

@@ -55,8 +55,3 @@ namespace HelloImGui
     // (Will only lead to accurate values if you call it at each frame)
     float FrameRate(float durationForMean = 0.5f);
 }
-
-
-#if defined(HELLOIMGUI_USE_SDL_OPENGL3)
-#include <SDL_main.h>
-#endif

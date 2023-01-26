@@ -1,8 +1,10 @@
 #include "hello_imgui/hello_imgui.h"
 
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
+#define SDL_MAIN_HANDLED // Tell SDL not to #define main!!!
 #include <SDL.h>
 #endif
+
 
 // Struct that holds the application's state
 struct AppState

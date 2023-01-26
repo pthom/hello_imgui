@@ -391,7 +391,9 @@ void AbstractRunner::CreateFramesAndRender()
     {
         // Workaround against SDL clock that sometimes leads to io.DeltaTime=0.f on emscripten
         // (which fails to an `IM_ASSERT(io.DeltaTime) > 0` in ImGui::NewFrame())
-        // Waiting to be back-ported to imgui sdl backend.
+        //
+        // This can be removed once the commit 07490618 was merged into imgui docking branch
+        // (see https://github.com/ocornut/imgui/commit/07490618ae47fdb9f625565fbb183593170a6a72)
         auto & io = ImGui::GetIO();
         if (io.DeltaTime <= 0.f)
             io.DeltaTime = 1.f / 60.f;

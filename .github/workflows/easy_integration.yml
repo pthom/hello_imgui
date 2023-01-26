@@ -26,6 +26,10 @@ jobs:
 #    - name: Setup interactive tmate session
 #      uses: mxschmitt/action-tmate@v3
 
+    - name: install xorg-dev (ubuntu only)
+      if: ${{ matrix.platform == 'ubuntu-latest' }}
+      run: sudo apt-get update && sudo apt-get install -y xorg-dev
+
     - name: Build _example_integration
       run: |
         cd _example_integration

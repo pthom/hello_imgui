@@ -80,13 +80,17 @@ function(hello_imgui_add_app)
         add_executable(${app_name} ${app_sources})
     endif()
 
-    if (WIN32 AND HELLOIMGUI_WIN32_EXECUTABLE)
-        # Make this an app without console, and force it to use main() as the entry point, not WinMain()
-        # TODO: Use WinMain instead, this hack risks undefined behaviour: https://stackoverflow.com/a/72033725/7753444
-        if (MINGW)
-            target_link_options(${app_name} PRIVATE -Wl,--subsystem,windows,--entry,mainCRTStartup)
-        else() # If MSVC
-            target_link_options(${app_name} PRIVATE /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup)
+    if (WIN32)
+        if (HELLOIMGUI_WIN32_NO_CONSOLE)
+            # Make this an app without console, and use HelloImGui_WinMain.cpp
+            if (MINGW)
+                target_link_options(${app_name} PRIVATE -Wl,--subsystem,windows)
+            else() # If MSVC
+                target_link_options(${app_name} PRIVATE /SUBSYSTEM:WINDOWS)
+            endif()
+        endif()
+        if (HELLOIMGUI_WIN32_AUTO_WINMAIN)
+            target_sources(${app_name} PRIVATE ${HELLOIMGUI_CMAKE_PATH}/HelloImGui_WinMain.cpp)
         endif()
     endif()
 

@@ -163,6 +163,14 @@ __Table of contents__
 
 --------------------
 
+# Main signature: use `int main(int, char**)`
+
+Under windows, Hello ImGui will automatically provide a `WinMain()` function that will call main, 
+and expects its signature to be `int main(int, char**)`. You may get a linker error if your main function signature is for example `int main()`.
+
+You can disable this via cmake by passing `-DHELLOIMGUI_WIN32_AUTO_WINMAIN=OFF` as a command line cmake option.
+
+
 # Build instructions
 
 ## Supported platforms and backends
@@ -199,10 +207,6 @@ cmake .. -DHELLOIMGUI_WITH_SDL=ON             # To download and build SDL automa
 cmake .. -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # To use your own version of GLFW (it should be findable via find_package(glfw3))
 cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # To use your own version of SDL (it should be findable via find_package(SDL2))
 ```
-
-### Warning, if using the SDL backend:
-
-@import "src/hello_imgui/hello_imgui.h" {md_id=SDLMain}
 
 
 ## Build instructions for iOS

@@ -193,12 +193,12 @@ __Table of contents__
       * [handle events](#handle-events)
 * [Full usage instructions and API](#full-usage-instructions-and-api)
   * [Online interactive example applications](#online-interactive-example-applications)
+* [Main signature: use `int main(int, char**)`](#main-signature-use-`int-mainint-char**`)
 * [Build instructions](#build-instructions)
   * [Supported platforms and backends](#supported-platforms-and-backends)
   * [Clone the repository](#clone-the-repository)
   * [Easy build on desktop platforms using Glfw](#easy-build-on-desktop-platforms-using-glfw)
   * [Custom build: select your preferred backend](#custom-build-select-your-preferred-backend)
-    * [Warning, if using the SDL backend:](#warning-if-using-the-sdl-backend)
   * [Build instructions for iOS](#build-instructions-for-ios)
     * [Customizing the iOS build](#customizing-the-ios-build)
   * [Build instructions for emscripten](#build-instructions-for-emscripten)
@@ -224,6 +224,14 @@ __Table of contents__
 * [Online interactive development platform](#online-interactive-development-platform)
 
 --------------------
+
+# Main signature: use `int main(int, char**)`
+
+Under windows, Hello ImGui will automatically provide a `WinMain()` function that will call main, 
+and expects its signature to be `int main(int, char**)`. You may get a linker error if your main function signature is for example `int main()`.
+
+You can disable this via cmake by passing `-DHELLOIMGUI_WIN32_AUTO_WINMAIN=OFF` as a command line cmake option.
+
 
 # Build instructions
 
@@ -261,19 +269,6 @@ cmake .. -DHELLOIMGUI_WITH_SDL=ON             # To download and build SDL automa
 cmake .. -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # To use your own version of GLFW (it should be findable via find_package(glfw3))
 cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # To use your own version of SDL (it should be findable via find_package(SDL2))
 ```
-
-### Warning, if using the SDL backend:
-
-
-Warning for SDL apps under iOS and Android:
-
-SDL uses a dirty hack in order to _replace your main() function by its own main() function_,
-which will then call your own main !
-
-Please make sure that the signature of your main() function is *exactly*
-    `int main(int argc, char **argv)`
-and that your main() function returns an int.
-
 
 
 ## Build instructions for iOS

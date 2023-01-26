@@ -165,8 +165,7 @@ __Table of contents__
 
 # Main signature: use `int main(int, char**)`
 
-Under windows, Hello ImGui will automatically provide a `WinMain()` function that will call main, 
-and expects its signature to be `int main(int, char**)`. You may get a linker error if your main function signature is for example `int main()`.
+Under windows, Hello ImGui will automatically provide a [`WinMain()` function](hello_imgui_cmake/HelloImGui_WinMain.cpp) that will call main, and expects its signature to be `int main(int, char**)`. You may get a linker error if your main function signature is for example `int main()`.
 
 You can disable this via cmake by passing `-DHELLOIMGUI_WIN32_AUTO_WINMAIN=OFF` as a command line cmake option. In this case, write your own `WinMain` under windows.
 

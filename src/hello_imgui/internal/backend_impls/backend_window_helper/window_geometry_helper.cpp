@@ -223,7 +223,7 @@ namespace HelloImGui
             {
                 auto workArea = monitorsWorkAreas[monitorIdx];
                 if (workArea.Contains(wantedPosition))
-                    foundMonitorIdx = monitorIdx;
+                    foundMonitorIdx = (int)monitorIdx;
             }
 
             // If the given position is not on any screen, move the window to the primary screen

@@ -525,7 +525,7 @@ namespace ImGuiTheme
             style.Colors[ImGuiCol_TabUnfocused]           = ImVec4(0.64f, 0.74f, 0.86f, 0.97f);
             style.Colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.70f, 0.80f, 0.93f, 1.00f);
 
-            ThemeTweakImpl::ApplySaturationMultiplier(style, 0.21, style);
+            ThemeTweakImpl::ApplySaturationMultiplier(style, 0.21f, style);
 
             ThemeTweakImpl::ApplyValueMultiplierBg(style, value_multiplier_bg, style);
             ThemeTweakImpl::ApplyValueMultiplierFront(style, value_multiplier_front, style);

@@ -325,7 +325,7 @@ namespace AutomatiColors
     {
         constexpr float hBlue = 130.f / 255.f, hGreen = 94.f / 255.f,
                         hRed = 0.f, hYellow = 42.f / 255.f;
-        constexpr float hBlueHovered = 117. / 255.f, hGreenHovered = 56.f / 255.f,
+        constexpr float hBlueHovered = 117.f / 255.f, hGreenHovered = 56.f / 255.f,
                         hRedHovered = 228.f / 255.f, hYellowHovered = 36.f / 255.f;
         if (state == LogColorState::ButtonHovered)
         {

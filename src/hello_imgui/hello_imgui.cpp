@@ -110,8 +110,8 @@ float FrameRate(float durationForMean)
     }
 
     float totalTime = times.back() - times.front();
-    int nbFrames = times.size();
-    float fps = 1. / (totalTime / (float) (nbFrames - 1));
+    int nbFrames = (int)times.size();
+    float fps = 1.f / (totalTime / (float) (nbFrames - 1));
     return fps;
 }
 

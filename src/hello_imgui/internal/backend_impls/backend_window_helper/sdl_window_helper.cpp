@@ -140,7 +140,7 @@ namespace HelloImGui { namespace BackendApi
         for (size_t i = 0; i < nbMonitors; ++i)
         {
             SDL_Rect rect;
-            SDL_GetDisplayUsableBounds(i, &rect);
+            SDL_GetDisplayUsableBounds((int)i, &rect);
             ScreenBounds b{{rect.x, rect.y},
                            {rect.w, rect.h}};
             r.push_back(b);
@@ -194,7 +194,6 @@ namespace HelloImGui { namespace BackendApi
     #ifdef _WIN32
     HWND SdlWindowToHwnd(WindowPointer window) 
     {
-        HWND win32Window;
         SDL_Window *sdlwindow = (SDL_Window *)window;
         SDL_SysWMinfo info;
         SDL_VERSION(&info.version);

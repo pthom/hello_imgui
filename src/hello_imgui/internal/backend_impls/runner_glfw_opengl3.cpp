@@ -14,6 +14,7 @@
 #include "opengl_setup_helper/opengl_setup_glfw.h"
 #include "opengl_setup_helper/opengl_screenshot.h"
 
+
 namespace HelloImGui
 {
     BackendApi::OpenGlSetupGlfw gOpenGlHelper;
@@ -33,6 +34,11 @@ namespace HelloImGui
     void RunnerGlfwOpenGl3::Impl_InitBackend()
     {
         glfwSetErrorCallback(glfw_error_callback);
+#ifdef __APPLE__
+        // prevent glfw from changing the current dir on macOS.
+        // This glfw behaviour is for Mac only, and interferes with our multiplatform assets handling
+        glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
+#endif
         bool glfwInitSuccess = glfwInit();
         IM_ASSERT(glfwInitSuccess);
     }

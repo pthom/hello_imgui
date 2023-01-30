@@ -20,6 +20,11 @@
 #include "backends/imgui_impl_opengl3.h"
 #endif
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
+
 namespace
 {
     class ClockSeconds_
@@ -165,8 +170,15 @@ void InitImGuiFontGlobalScale()
     float fontSizeIncreaseFactor = 1.f;
 
 #ifdef __EMSCRIPTEN__
-    // increase the loaded font size, to make it crisper
-    fontSizeIncreaseFactor = 2.f;
+    // Query the brower to ask for devicePixelRatio
+    double windowDevicePixelRatio = EM_ASM_DOUBLE( {
+        scale = window.devicePixelRatio;
+        return scale;
+    }
+    );
+    printf("window.devicePixelRatio=%lf\n", windowDevicePixelRatio);
+
+    fontSizeIncreaseFactor = windowDevicePixelRatio;
 #endif
 #ifdef HELLOIMGUI_MACOS
     // Crisp fonts on MacOS:

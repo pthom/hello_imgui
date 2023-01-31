@@ -760,6 +760,7 @@ namespace ImGuiTheme
             ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, 2.5f, style);
             style.Colors[ImGuiCol_Header] =
                 ThemeTweakImpl::_ColorValueMultiply(style.Colors[ImGuiCol_Header], 1.4f);
+            style.Colors[ImGuiCol_Text] = ImVec4(0.88f, 0.88f, 0.88f, 1.f);
             return style;
         }
 

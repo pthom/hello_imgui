@@ -157,7 +157,9 @@ bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi()
         bool isWindowPpiRelativeSize = (params.appWindowParams.windowGeometry.windowSizeMeasureMode ==
                                         HelloImGui::WindowSizeMeasureMode::RelativeTo96Ppi);
 
-        bool isStandardSizeMode = params.appWindowParams.windowGeometry.windowSizeState == HelloImGui::WindowSizeState::Standard;
+        bool isStandardSizeMode = (
+            params.appWindowParams.windowGeometry.windowSizeState == HelloImGui::WindowSizeState::Standard
+            || params.appWindowParams.windowGeometry.windowSizeState == HelloImGui::WindowSizeState::Minimized);
 
         shallSizeRelativeTo96Ppi =
             isStandardSizeMode && isWindowPpiRelativeSize && !doRestorePreviousGeometry;

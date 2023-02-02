@@ -26,7 +26,7 @@ class RunnerQt : public AbstractRunner
     void Impl_InitGlLoader() override;
     void Impl_SetupPlatformRendererBindings() override;
 
-    bool Impl_PollEvents() override;  // returns true if exit required
+    void Impl_PollEvents() override;
     void Impl_NewFrame_3D() override;
     void Impl_NewFrame_Backend() override;
     void Impl_Frame_3D_ClearColor() override;

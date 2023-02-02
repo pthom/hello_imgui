@@ -64,7 +64,7 @@ class AbstractRunner
     virtual void Impl_SetupPlatformRendererBindings() = 0;
     virtual void Impl_SetupImgGuiContext() {}
 
-    virtual bool Impl_PollEvents() = 0;  // returns true if exit required
+    virtual void Impl_PollEvents() = 0;
     virtual void Impl_NewFrame_3D() = 0;
     virtual void Impl_NewFrame_Backend() = 0;
     virtual void Impl_Frame_3D_ClearColor() = 0;

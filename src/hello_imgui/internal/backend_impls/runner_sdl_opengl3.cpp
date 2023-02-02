@@ -89,10 +89,9 @@ namespace HelloImGui
         ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
     }
 
-    bool RunnerSdlOpenGl3::Impl_PollEvents()
+    void RunnerSdlOpenGl3::Impl_PollEvents()
     {
         SDL_Event event;
-        bool exitRequired = false;
         while (SDL_PollEvent(&event))
         {
             if (params.callbacks.AnyBackendEventCallback)
@@ -102,14 +101,13 @@ namespace HelloImGui
             }
             ImGui_ImplSDL2_ProcessEvent(&event);
             if (event.type == SDL_QUIT)
-                exitRequired = true;
+                params.appShallExit = true;
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE &&
                 event.window.windowID == SDL_GetWindowID((SDL_Window *)mWindow))
             {
-                exitRequired = true;
+                params.appShallExit = true;
             }
         }
-        return exitRequired;
     }
 
     void RunnerSdlOpenGl3::Impl_NewFrame_3D() { ImGui_ImplOpenGL3_NewFrame(); }

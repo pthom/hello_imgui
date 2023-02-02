@@ -165,10 +165,8 @@ void RunnerQt::Impl_SetupPlatformRendererBindings()
 {
 }
 
-// returns true if exit required
-bool RunnerQt::Impl_PollEvents()
+void RunnerQt::Impl_PollEvents()
 {
-    return false;
 }
 
 void RunnerQt::Impl_NewFrame_3D()

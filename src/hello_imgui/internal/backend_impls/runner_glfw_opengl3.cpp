@@ -79,7 +79,7 @@ namespace HelloImGui
         ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
     }
 
-    bool RunnerGlfwOpenGl3::Impl_PollEvents()
+    void RunnerGlfwOpenGl3::Impl_PollEvents()
     {
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants
@@ -90,7 +90,8 @@ namespace HelloImGui
         // application based on those two flags.
         glfwPollEvents();
         bool exitRequired = (glfwWindowShouldClose((GLFWwindow *)mWindow) != 0);
-        return exitRequired;
+        if (exitRequired)
+            params.appShallExit = true;
     }
 
     void RunnerGlfwOpenGl3::Impl_NewFrame_3D() { ImGui_ImplOpenGL3_NewFrame(); }

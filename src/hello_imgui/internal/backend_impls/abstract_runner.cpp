@@ -398,8 +398,7 @@ void AbstractRunner::CreateFramesAndRender()
     //
     // Rendering logic
     //
-    if (Impl_PollEvents())
-        params.appShallExit = true;
+    Impl_PollEvents();
     Impl_NewFrame_3D();
     Impl_NewFrame_Backend();
     {

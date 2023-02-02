@@ -68,10 +68,15 @@ namespace ImGuiDefaultSettings
 
 void LoadDefaultFont_WithFontAwesomeIcons()
 {
-    float fontSize = 14.f;
     std::string fontFilename = "fonts/DroidSans.ttf";
-    ImFont* font = LoadFontTTF_WithFontAwesomeIcons(fontFilename, fontSize, false);
-    (void)font;
+    if (HelloImGui::AssetExists(fontFilename))
+    {
+        float fontSize = 14.f;
+        ImFont* font = LoadFontTTF_WithFontAwesomeIcons(fontFilename, fontSize, false);
+        (void)font;
+    }
+    else
+        fprintf(stderr, "HelloImGui::LoadDefaultFont_WithFontAwesomeIcons, did not find fonts/DroidSans.ttf in assets");
 }
 
 void SetupDefaultImGuiConfig()

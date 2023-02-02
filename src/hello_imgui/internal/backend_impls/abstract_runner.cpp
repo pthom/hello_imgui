@@ -3,6 +3,7 @@
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/image_from_asset.h"
 #include "hello_imgui/hello_imgui_theme.h"
+#include "hello_imgui/internal/clock_seconds.h"
 #include "imgui.h"
 
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
@@ -24,34 +25,6 @@
 #include <emscripten.h>
 #endif
 
-
-namespace
-{
-    class ClockSeconds_
-    {
-        // Typical C++ shamanic incantations to get a time in seconds
-    private:
-        using Clock = std::chrono::high_resolution_clock;
-        using second = std::chrono::duration<double, std::ratio<1>>;
-        std::chrono::time_point<Clock> mStart;
-
-    public:
-        ClockSeconds_() : mStart(Clock::now()) {}
-
-        double elapsed() const
-        {
-            return std::chrono::duration_cast<second>
-                (Clock::now() - mStart).count();
-        }
-    };
-
-    double ClockSeconds()
-    {
-        static ClockSeconds_ watch;
-        return watch.elapsed();
-    }
-
-}
 
 
 namespace HelloImGui
@@ -385,11 +358,11 @@ void AbstractRunner::CreateFramesAndRender()
     params.fpsIdling.isIdling = false;
     if ((params.fpsIdling.fpsIdle > 0.f) && params.fpsIdling.enableIdling)
     {
-        double beforeWait = ClockSeconds();
+        double beforeWait = Internal::ClockSeconds();
         double waitTimeout = 1. / (double) params.fpsIdling.fpsIdle;
         mBackendWindowHelper->WaitForEventTimeout(waitTimeout);
 
-        double afterWait = ClockSeconds();
+        double afterWait = Internal::ClockSeconds();
         double waitDuration = (afterWait - beforeWait);
         double waitIdleExpected = 1. / params.fpsIdling.fpsIdle;
         params.fpsIdling.isIdling = (waitDuration > waitIdleExpected * 0.9);

@@ -382,6 +382,10 @@ void AbstractRunner::CreateFramesAndRender()
         if (io.DeltaTime <= 0.f)
             io.DeltaTime = 1.f / 60.f;
     }
+
+    if (params.callbacks.PreNewFrame)
+        params.callbacks.PreNewFrame();
+
     ImGui::NewFrame();
 
     // Fight against potential font loading issue

@@ -91,6 +91,11 @@ private:
     bool mPotentialFontLoadingError = false;
     int mIdxFrame = 0;
     bool mWasWindowAutoResizedOnPreviousFrame = false;
+
+    // Logic for idling
+    void IdleBySleeping();
+    bool ShallIdleThisFrame_Emscripten();
 };
+
 
 }  // namespace HelloImGui

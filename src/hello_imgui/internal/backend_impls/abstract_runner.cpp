@@ -351,27 +351,25 @@ void AbstractRunner::CreateFramesAndRender()
         params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = false;
     }
 
-    //
-    // Idling
-    //
-    assert(params.fpsIdling.fpsIdle >= 0.f);
-    params.fpsIdling.isIdling = false;
-    if ((params.fpsIdling.fpsIdle > 0.f) && params.fpsIdling.enableIdling)
-    {
-        double beforeWait = Internal::ClockSeconds();
-        double waitTimeout = 1. / (double) params.fpsIdling.fpsIdle;
-        mBackendWindowHelper->WaitForEventTimeout(waitTimeout);
+#ifndef __EMSCRIPTEN__
+    // Idling for non emscripten, where HelloImGui is responsible for the main loop.
+    // This form of idling will call WaitForEventTimeout(), which may call sleep():
+    IdleBySleeping();
+#endif
 
-        double afterWait = Internal::ClockSeconds();
-        double waitDuration = (afterWait - beforeWait);
-        double waitIdleExpected = 1. / params.fpsIdling.fpsIdle;
-        params.fpsIdling.isIdling = (waitDuration > waitIdleExpected * 0.9);
-    }
+    // Poll Events (this fills GImGui.InputEventsQueue)
+    Impl_PollEvents();
+
+#ifdef __EMSCRIPTEN__
+    // Idling for emscripten: early exit if idling
+    // This test should be done after calling Impl_PollEvents() since it checks the event queue for incoming events!
+    if (ShallIdleThisFrame_Emscripten())
+        return;
+#endif
 
     //
     // Rendering logic
     //
-    Impl_PollEvents();
     Impl_NewFrame_3D();
     Impl_NewFrame_Backend();
     {
@@ -414,6 +412,64 @@ void AbstractRunner::CreateFramesAndRender()
         ReloadFontIfFailed();
 
     mIdxFrame += 1;
+}
+
+// Idling for non emscripten, where HelloImGui is responsible for the main loop.
+// This form of idling will call WaitForEventTimeout(), which may call sleep():
+void AbstractRunner::IdleBySleeping()
+{
+    assert(params.fpsIdling.fpsIdle >= 0.f);
+    params.fpsIdling.isIdling = false;
+    if ((params.fpsIdling.fpsIdle > 0.f) && params.fpsIdling.enableIdling)
+    {
+        double beforeWait = Internal::ClockSeconds();
+        double waitTimeout = 1. / (double) params.fpsIdling.fpsIdle;
+        mBackendWindowHelper->WaitForEventTimeout(waitTimeout);
+
+        double afterWait = Internal::ClockSeconds();
+        double waitDuration = (afterWait - beforeWait);
+        double waitIdleExpected = 1. / params.fpsIdling.fpsIdle;
+        params.fpsIdling.isIdling = (waitDuration > waitIdleExpected * 0.9);
+    }
+}
+
+// Logic for idling under emscripten
+// (this is adapted for emscripten, since CreateFramesAndRender is called 60 times per second by the browser,
+//  and a sleep would actually could a javascript busy loop!)
+// This test should be done after calling Impl_PollEvents() since it checks the event queue for incoming events!
+bool AbstractRunner::ShallIdleThisFrame_Emscripten()
+{
+    ImGuiContext& g = *GImGui;
+    bool hasInputEvent =  ! g.InputEventsQueue.empty();
+
+    if (! params.fpsIdling.enableIdling)
+    {
+        params.fpsIdling.isIdling = false;
+        return false;
+    }
+
+    static double lastRefreshTime = 0.;
+    double now = Internal::ClockSeconds();
+
+    bool shallIdleThisFrame = false;
+    if (hasInputEvent)
+    {
+        params.fpsIdling.isIdling = false;
+        shallIdleThisFrame = false;
+    }
+    else
+    {
+        params.fpsIdling.isIdling = true;
+        if ((now - lastRefreshTime) < 1. / params.fpsIdling.fpsIdle)
+            shallIdleThisFrame = true;
+        else
+            shallIdleThisFrame = false;
+    }
+
+    if (! shallIdleThisFrame)
+        lastRefreshTime = now;
+
+    return shallIdleThisFrame;
 }
 
 void AbstractRunner::OnPause()

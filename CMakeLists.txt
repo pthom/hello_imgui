@@ -110,6 +110,9 @@ option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 # End of options
 ###############################################################################
 
+#------------------------------------------------------------------------------
+# Download backend glfw or sdl if required
+#------------------------------------------------------------------------------
 if (HELLOIMGUI_WITH_GLFW)
     set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
     if (NOT TARGET glfw AND NOT EMSCRIPTEN)
@@ -147,10 +150,9 @@ if (NOT (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3 OR HELLOIMGUI
     ")
 endif()
 
-
-#
+#------------------------------------------------------------------------------
 # MSVC: Select the solution folder where hello_imgui should be placed
-#
+#------------------------------------------------------------------------------
 if (MSVC)
     if(NOT DEFINED HELLOIMGUI_SOLUTIONFOLDER)
         set(HELLOIMGUI_SOLUTIONFOLDER hello_imgui)

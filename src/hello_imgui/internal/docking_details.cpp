@@ -49,45 +49,6 @@ void ApplyWindowDockingLocations(
         );
 }
 
-void MenuItems_FontScale()
-{
-    float ratio = ImGui::GetIO().FontGlobalScale;
-    char msgCurrentRatio[1000];
-    snprintf(msgCurrentRatio, 1000, "Font Scale: %.1f", ratio);
-    ImGui::MenuItem(msgCurrentRatio, nullptr, false, false);
-
-    bool zoomChanged = false;
-    if (ImGui::MenuItem( "Zoom ++"))
-    {
-        ratio = ratio * 1.2f * 1.2f;
-        zoomChanged = true;
-    }
-    if (ImGui::MenuItem( "Zoom +"))
-    {
-        ratio = ratio * 1.2f;
-        zoomChanged = true;
-    }
-    if (ImGui::MenuItem( "Zoom -"))
-    {
-        ratio = ratio / 1.2f;
-        zoomChanged = true;
-    }
-    if (ImGui::MenuItem(  "Zoom --"))
-    {
-        ratio = ratio / 1.2f / 1.2f;
-        zoomChanged = true;
-    }
-    if (ImGui::MenuItem( "Restore Zoom"))
-    {
-        ratio = 1.f;
-        zoomChanged = true;
-    }
-
-    if (zoomChanged)
-        ImGui::GetIO().FontGlobalScale = ratio;
-
-}
-
 void MenuView_DockableWindows(RunnerParams& runnerParams)
 {
     auto & dockableWindows = runnerParams.dockingParams.dockableWindows;
@@ -136,8 +97,6 @@ void ShowViewMenu(RunnerParams & runnerParams)
         MenuView_DockableWindows(runnerParams);
         ImGui::Separator();
         Theme_MenuGui(runnerParams.imGuiWindowParams.tweakedTheme);
-        ImGui::Separator();
-        MenuItems_FontScale();
         ImGui::Separator();
 
         if (ImGui::MenuItem("View Status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatusBar))

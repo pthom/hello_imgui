@@ -71,7 +71,7 @@ void LoadDefaultFont_WithFontAwesomeIcons()
     std::string fontFilename = "fonts/DroidSans.ttf";
     if (HelloImGui::AssetExists(fontFilename))
     {
-        float fontSize = 14.f;
+        float fontSize = 15.f;
         ImFont* font = LoadFontTTF_WithFontAwesomeIcons(fontFilename, fontSize, false);
         (void)font;
     }

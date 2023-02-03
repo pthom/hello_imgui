@@ -761,6 +761,7 @@ namespace ImGuiTheme
             style.Colors[ImGuiCol_Header] =
                 ThemeTweakImpl::_ColorValueMultiply(style.Colors[ImGuiCol_Header], 1.4f);
             style.Colors[ImGuiCol_Text] = ImVec4(0.88f, 0.88f, 0.88f, 1.f);
+            style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.6f, 0.6f, 0.6f, 1.f);
             return style;
         }
 

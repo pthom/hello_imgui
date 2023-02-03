@@ -221,6 +221,7 @@ using VoidFunction = std::function<void(void)>
 using AnyEventCallback = std::function<bool(void * backendEvent)>
 ```
 
+**AppendCallback** can compose two callbacks. Use this when you want to set a callback and keep the (maybe) preexisting one.
 
 #### MobileCallbacks
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "hello_imgui/runner_callbacks.h"
+#include "imgui.h"
 #include <string>
 
 namespace HelloImGui

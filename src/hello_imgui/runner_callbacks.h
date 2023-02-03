@@ -17,13 +17,17 @@ using VoidFunction = std::function<void(void)>
 using AnyEventCallback = std::function<bool(void * backendEvent)>
 ```
 
+**AppendCallback** can compose two callbacks. Use this when you want to set a callback and keep the (maybe) preexisting one.
 @@md
 **/
 using VoidFunction = std::function<void(void)>;
 using AnyEventCallback = std::function<bool(void * backendEvent)>;
+VoidFunction AppendCallback(const VoidFunction& previousCallback, const VoidFunction& newCallback);
+
 
 inline VoidFunction EmptyVoidFunction() { return {}; }
 inline AnyEventCallback EmptyEventCallback() {return {}; }
+
 }
 
 

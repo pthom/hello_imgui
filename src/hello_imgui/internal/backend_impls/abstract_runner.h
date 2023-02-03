@@ -45,7 +45,8 @@ class AbstractRunner
     float DpiWindowSizeFactor();
     // If we want a font to visually render like a font size of 14 we need to multiply its size by this factor
     float DpiFontLoadingFactor();
-
+    // returns the default value that should be stored inside `ImGui::GetIO().FontGlobalScale`
+    float ImGuiDefaultFontGlobalScale();
 
    protected:
     friend std::string GlslVersion();

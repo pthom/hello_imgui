@@ -1,6 +1,8 @@
 #pragma once
 #include <stdexcept>
 #include <iostream>
+#include "imgui.h"
+
 
 #define HIMG_ERROR(msg) \
     { \

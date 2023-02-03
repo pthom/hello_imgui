@@ -567,10 +567,14 @@ For reproducible results, even on HighDPI screens, always scale your widgets and
 
 `HelloImGui::EmSize(nbLines)` (C++) and `hello_imgui.em_size(nb_lines)` (Python) return a size corresponding to nbLines text lines
 
-
 `HelloImGui::DpiFontLoadingFactor()` (C++) and `hello_imgui.dpi_font_loading_factor()` (Python) return a factor by
  which you shall multiply your font sizes when loading fonts manually with _ImGui::GetIO().Fonts->AddFont..._
  HelloImGui::LoadFontTTF does this by default.
+
+`HelloImGui::ImGuiDefaultFontGlobalScale()` (C++) and `hello_imgui.imgui_default_font_global_scale()` (Python) returns the
+ default value that should be stored inside `ImGui::GetIO().FontGlobalScale`.
+ Under windows and linux, this is always 1: no rescaling should be done by ImGui. Under macOS and emscripten,
+ this can be < 1 (for example it will be 0.5 if the dpi scaling is 200%)
 
 ----
 

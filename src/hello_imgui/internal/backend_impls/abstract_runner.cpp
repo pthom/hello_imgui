@@ -140,7 +140,7 @@ bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi()
     return shallSizeRelativeTo96Ppi;
 }
 
-void InitImGuiFontGlobalScale()
+float AbstractRunner::ImGuiDefaultFontGlobalScale()
 {
     float fontSizeIncreaseFactor = 1.f;
 
@@ -158,13 +158,14 @@ void InitImGuiFontGlobalScale()
 #ifdef HELLOIMGUI_MACOS
     // Crisp fonts on MacOS:
     // cf https://github.com/ocornut/imgui/issues/5301
-    // Issue with MacOS is that it pretends screen has 2x less pixels
-    // than it actually does. This simplifies application development in most cases,
-    // but in our case we happen to render fonts at 1x scale while screen renders at 2x scale.
-    // You can cheat a little:
+    // Issue with macOS is that it pretends screen has 2x fewer pixels than it actually does.
+    // This simplifies application development in most cases, but in our case we happen to render fonts at 1x scale
+    // while screen renders at 2x scale.
     fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
 #endif
-    ImGui::GetIO().FontGlobalScale = 1.0f / fontSizeIncreaseFactor;
+
+    float defaultFontGlobalScale = 1.0f / fontSizeIncreaseFactor;
+    return defaultFontGlobalScale;
 }
 
 float AbstractRunner::DpiWindowSizeFactor()
@@ -180,7 +181,6 @@ float AbstractRunner::DpiFontLoadingFactor()
     float k = DpiWindowSizeFactor() * 1.f / ImGui::GetIO().FontGlobalScale;
     return k;
 }
-
 
 void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
 {
@@ -251,7 +251,7 @@ void AbstractRunner::Setup()
 #else
     ImGui::CreateContext();
 #endif
-    InitImGuiFontGlobalScale();
+    ImGui::GetIO().FontGlobalScale = this->ImGuiDefaultFontGlobalScale();
     Impl_SetupImgGuiContext();
     params.callbacks.SetupImGuiConfig();
     if (params.imGuiWindowParams.enableViewports)

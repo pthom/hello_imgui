@@ -45,7 +45,16 @@ namespace HelloImGui
 
     float DpiFontLoadingFactor()
     {
-        return GetAbstractRunner()->DpiFontLoadingFactor();
+        auto runner = GetAbstractRunner();
+        IM_ASSERT(runner != nullptr);
+        return runner->DpiFontLoadingFactor();
+    }
+
+    float ImGuiDefaultFontGlobalScale()
+    {
+        auto runner = GetAbstractRunner();
+        IM_ASSERT(runner != nullptr);
+        return runner->ImGuiDefaultFontGlobalScale();
     }
 
 }

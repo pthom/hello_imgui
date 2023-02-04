@@ -1067,7 +1067,8 @@ namespace pnm
     template<typename Alloc = std::allocator<bit_pixel>>
     image<bit_pixel, Alloc> read_pbm_ascii(const std::string& fname)
     {
-        using detail::literals::operator"" _str;
+        // using detail::literals::operator"" _str;
+        using namespace detail::literals;
 
         std::ifstream ifs(fname);
         if(!ifs.good())

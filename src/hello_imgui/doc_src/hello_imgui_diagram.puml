@@ -62,6 +62,7 @@ class RunnerCallbacks <struct> {
     ---
     + VoidFunction ShowGui = {}
     + VoidFunction ShowMenus = {}
+    + VoidFunction ShowAppMenuItems = {}
     + VoidFunction ShowStatus = {}
     + VoidFunction PostInit = {}
     + VoidFunction BeforeExit = {}

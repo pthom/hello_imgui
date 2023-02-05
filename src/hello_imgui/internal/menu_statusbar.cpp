@@ -23,14 +23,20 @@ void ShowDefaultAppMenu_Quit(RunnerParams & runnerParams)
 
     bool hideMenuBecauseEmpty = false;
 #ifdef HELLOIMGUI_CANNOTQUIT
-    hideMenuBecauseEmpty = true;
+    if (! runnerParams.callbacks.ShowAppMenuItems)
+        hideMenuBecauseEmpty = true;
 #endif
     if (hideMenuBecauseEmpty)
         return;
 
     if (ImGui::BeginMenu(menuAppTitle.c_str()))
     {
+        if (runnerParams.callbacks.ShowAppMenuItems)
+            runnerParams.callbacks.ShowAppMenuItems();
+
 #ifndef HELLOIMGUI_CANNOTQUIT
+        if (runnerParams.callbacks.ShowAppMenuItems)
+            ImGui::Separator();
         if (ImGui::MenuItem( "Quit"))
             runnerParams.appShallExit = true;
 #endif

@@ -169,6 +169,11 @@ See [runner_callbacks.h](runner_callbacks.h).
     * Some default menus can be provided: see _ImGuiWindowParams_ options
       (_showMenuBar, showMenu_App_QuitAbout, showMenu_View_)
 
+* `ShowAppMenuItems`: *VoidFunction, default=empty*.
+  A function that will render items that will be placed in the App menu.
+  They will be placed before the "Quit" MenuItem, which is added automatically by HelloImGui.
+  This will be displayed only if ImGuiWindowParams.showMenu_App is true
+
 * `ShowStatus`: *VoidFunction, default=empty*.
   A function that will add items to the status bar. Use small items (ImGui::Text for example),
   since the height of the status is 30. Also, remember to call ImGui::SameLine() between items.

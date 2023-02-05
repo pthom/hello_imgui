@@ -170,12 +170,17 @@ class ImGuiWindowParams <struct> {
 
     + bool showMenuBar = false
     + bool showMenu_App = true
+    + string menuAppTitle = ""
     + bool showMenu_View = true
 
     + bool showStatusBar = false
     + bool showStatus_Fps = true
 
     + bool configWindowsMoveFromTitleBarOnly = true
+
+    + bool enableViewports = false
+
+    + ImGuiTweakedTheme tweakedTheme
 }
 
 class BackendPointers <struct> {

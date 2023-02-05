@@ -15,9 +15,11 @@ namespace Menu_StatusBar
 
 void ShowDefaultAppMenu_Quit(RunnerParams & runnerParams)
 {
-    std::string appName = runnerParams.appWindowParams.windowTitle.c_str();
-    if (appName.empty())
-        appName = "App";
+    std::string menuAppTitle = runnerParams.imGuiWindowParams.menuAppTitle;
+    if (menuAppTitle.empty())
+        menuAppTitle = runnerParams.appWindowParams.windowTitle;
+    if (menuAppTitle.empty())
+        menuAppTitle = "App";
 
     bool hideMenuBecauseEmpty = false;
 #ifdef HELLOIMGUI_CANNOTQUIT
@@ -26,7 +28,7 @@ void ShowDefaultAppMenu_Quit(RunnerParams & runnerParams)
     if (hideMenuBecauseEmpty)
         return;
 
-    if (ImGui::BeginMenu(appName.c_str()))
+    if (ImGui::BeginMenu(menuAppTitle.c_str()))
     {
 #ifndef HELLOIMGUI_CANNOTQUIT
         if (ImGui::MenuItem( "Quit"))

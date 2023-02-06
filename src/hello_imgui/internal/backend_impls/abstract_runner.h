@@ -12,16 +12,13 @@ namespace HelloImGui
 class AbstractRunner
 {
    public:
-    /// Step 0: Construct a concrete Runner (for example RunnerSdlOpenGl3 or RunnerGlfwOpenGl3)
     AbstractRunner(RunnerParams &params_);
     virtual ~AbstractRunner() = default;
 
     RunnerParams & params;
 
-    /// Step 4.a: Call Run()
     virtual void Run();
 
-    /// Step 4.b: Or implement your own Run using Setup()/Render()/TearDown()
     void Setup();
     void CreateFramesAndRender();
     void RenderGui();
@@ -83,6 +80,11 @@ private:
     void MakeWindowSizeRelativeTo96Ppi_IfRequired();
     bool ShallSizeWindowRelativeTo96Ppi();
     bool WantAutoSize();
+    // Logic for idling
+    void IdleBySleeping();
+    bool ShallIdleThisFrame_Emscripten();
+    std::string IniFilename_AppWindowPos();
+    std::string IniFilename_ImGui();
 
 protected:
     BackendApi::WindowPointer mWindow = nullptr;
@@ -93,9 +95,6 @@ private:
     int mIdxFrame = 0;
     bool mWasWindowAutoResizedOnPreviousFrame = false;
 
-    // Logic for idling
-    void IdleBySleeping();
-    bool ShallIdleThisFrame_Emscripten();
 };
 
 

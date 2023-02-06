@@ -39,6 +39,10 @@ class RunnerParams <struct> {
     + BackendPointers backendPointers
     + BackendType backendType = FirstAvailable
     + FpsIdling fpsIdling
+
+    + iniFilename = ""
+    + bool iniFilename_useAppWindowTitle = true
+
     + bool appShallExit = false
 }
 

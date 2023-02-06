@@ -102,7 +102,11 @@ static void    MyFreeWrapper(void* ptr, void* user_data)        { IM_UNUSED(user
 
 void AbstractRunner::PrepareWindowGeometry()
 {
-    mGeometryHelper = std::make_unique<WindowGeometryHelper>(params.appWindowParams.windowGeometry, params.appWindowParams.restorePreviousGeometry);
+    mGeometryHelper = std::make_unique<WindowGeometryHelper>(
+        params.appWindowParams.windowGeometry,
+        params.appWindowParams.restorePreviousGeometry,
+        IniFilename_AppWindowPos()
+        );
     auto windowBounds = mGeometryHelper->AppWindowBoundsInitial(mBackendWindowHelper->GetMonitorsWorkAreas());
     if (params.appWindowParams.restorePreviousGeometry && mGeometryHelper->ReadLastRunWindowBounds().has_value())
         params.appWindowParams.windowGeometry.positionMode = WindowPositionMode::FromCoords;
@@ -230,6 +234,53 @@ void AbstractRunner::HandleDpiOnSecondFrame()
     }
 }
 
+static std::string _stringToSaneFilename(const std::string& s, const std::string& extension)
+{
+    std::string filenameSanitized;
+    for (char c : s)
+        if (isalnum(c))
+            filenameSanitized += c;
+        else
+            filenameSanitized += "_";
+    filenameSanitized += extension;
+    return filenameSanitized;
+}
+
+std::string AbstractRunner::IniFilename_AppWindowPos()
+{
+    std::string imguiIniFile = IniFilename_ImGui();
+
+    auto hasEnding = [](std::string const &fullString, std::string const &ending) {
+        if (fullString.length() >= ending.length()) {
+            return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+        } else {
+            return false;
+        }
+    };
+
+    if (hasEnding(imguiIniFile, ".ini"))
+        imguiIniFile = imguiIniFile.substr(0, imguiIniFile.size() - 4);
+
+    std::string iniFileAppWindowPos = imguiIniFile + "_appWindow.ini";
+    return iniFileAppWindowPos;
+}
+
+std::string AbstractRunner::IniFilename_ImGui()
+{
+    if (! params.iniFilename.empty())
+        return params.iniFilename.c_str();
+    else
+    {
+        if (params.iniFilename_useAppWindowTitle && !params.appWindowParams.windowTitle.empty())
+        {
+            std::string iniFilenameSanitized = _stringToSaneFilename(params.appWindowParams.windowTitle, ".ini");
+            return iniFilenameSanitized;
+        }
+        else
+            return "imgui.ini";
+    }
+}
+
 
 void AbstractRunner::Setup()
 {
@@ -251,6 +302,10 @@ void AbstractRunner::Setup()
 #else
     ImGui::CreateContext();
 #endif
+
+    static std::string imguiIniFilename = IniFilename_ImGui();
+    ImGui::GetIO().IniFilename = imguiIniFilename.c_str();
+
     ImGui::GetIO().FontGlobalScale = this->ImGuiDefaultFontGlobalScale();
     Impl_SetupImgGuiContext();
     params.callbacks.SetupImGuiConfig();

@@ -5,7 +5,6 @@
 #include <optional>
 
 
-// Fixme: window_geometry_helper and window_autosize_helper should be merged
 namespace HelloImGui
 {
     class WindowGeometryHelper
@@ -13,15 +12,16 @@ namespace HelloImGui
     public:
         WindowGeometry& mGeometry;
         bool mRestoreLast;
+        std::string mWindowGeometryIniFilename;
 
-        WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast);
+        WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast, const std::string& windowGeometryIniFilename);
 
         bool HasInitialWindowSizeInfo();
         ScreenBounds AppWindowBoundsInitial(const std::vector<ScreenBounds>& allMonitorsWorkAreas);
 
         // Save / Load last run window bounds
-        static void WriteLastRunWindowBounds(const ScreenBounds& windowBounds);
-        static std::optional<ScreenBounds> ReadLastRunWindowBounds();
+        void WriteLastRunWindowBounds(const ScreenBounds& windowBounds);
+        std::optional<ScreenBounds> ReadLastRunWindowBounds();
 
 
         void EnsureWindowFitsMonitor(BackendApi::IBackendWindowHelper* helper, BackendApi::WindowPointer window);

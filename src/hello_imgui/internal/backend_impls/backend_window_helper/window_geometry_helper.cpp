@@ -9,8 +9,6 @@
 
 namespace
 {
-    const char* APP_WINDOW_POS_INI_FILE = "imgui_app_window.ini";
-
     std::vector<std::string> splitString(const std::string& s, char delimiter)
     {
         std::vector<std::string> tokens;
@@ -62,8 +60,8 @@ namespace
 
 namespace HelloImGui
 {
-    WindowGeometryHelper::WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast) :
-        mGeometry(geometry), mRestoreLast(restoreLast)
+    WindowGeometryHelper::WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast, const std::string &windowGeometryIniFilename) :
+        mGeometry(geometry), mRestoreLast(restoreLast), mWindowGeometryIniFilename(windowGeometryIniFilename)
         {}
 
     bool WindowGeometryHelper::HasInitialWindowSizeInfo()
@@ -158,7 +156,7 @@ namespace HelloImGui
         ss << "WindowPosition=" << windowBounds.position[0] << "," << windowBounds.position[1] << "\n";
         ss << "WindowSize=" << windowBounds.size[0] << "," << windowBounds.size[1] << "\n";
 
-        std::ofstream os(APP_WINDOW_POS_INI_FILE);
+        std::ofstream os(mWindowGeometryIniFilename);
         os << ss.str();
         os.close();
 
@@ -169,7 +167,7 @@ namespace HelloImGui
 
     std::optional<ScreenBounds> WindowGeometryHelper::ReadLastRunWindowBounds()
     {
-        std::ifstream is(APP_WINDOW_POS_INI_FILE);
+        std::ifstream is(mWindowGeometryIniFilename);
         if (is.is_open())
         {
             ScreenBounds r;

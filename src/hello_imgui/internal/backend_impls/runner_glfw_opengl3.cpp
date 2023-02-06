@@ -40,6 +40,7 @@ namespace HelloImGui
         glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
 #endif
         bool glfwInitSuccess = glfwInit();
+        (void) glfwInitSuccess;
         IM_ASSERT(glfwInitSuccess);
     }
 

@@ -1042,7 +1042,7 @@ namespace pnm
         inline std::unique_ptr<gain_base> get_gain(const std::size_t max)
         {
             if     (max == 255){return std::unique_ptr<identity>(new identity());}
-            else if(max >  255){return std::unique_ptr<reduce>  (new reduce(max));}
+            else if(max >  255){return std::unique_ptr<reduce>  (new reduce(static_cast<std::uint8_t>(max)));}
             else               {return std::unique_ptr<enlarge> (new enlarge(max));}
         }
 

@@ -197,13 +197,19 @@ class BackendPointers <struct> {
   + void* sdlGlContext
 }
 
+enum DockingLayoutCondition {
+    FirstUseEver,
+    ApplicationStart,
+    Never
+}
+
 class DockingParams <struct> {
     + vector<DockingSplit> dockingSplits
 
     + vector<DockableWindow> dockableWindows
 
-    + bool resetUserDockLayout = true
-    + bool wasDockLayoutApplied = false
+    + layoutCondition = DockingLayoutCondition::FirstUseEver
+    + bool layoutReset = false
 }
 
 class DockableWindow <struct> {
@@ -228,6 +234,7 @@ RunnerParams *-- AppWindowParams
 RunnerParams *-- ImGuiWindowParams
 RunnerParams *-- BackendPointers
 RunnerParams *-- DockingParams
+DockingParams *-- DockingLayoutCondition
 DockingParams *-- DockableWindow : vector
 DockingParams *-- DockingSplit : vector
 

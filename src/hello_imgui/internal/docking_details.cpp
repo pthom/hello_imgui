@@ -58,10 +58,7 @@ void MenuView_DockableWindows(RunnerParams& runnerParams)
     ImGui::MenuItem("Dockable windows##asldqsl", nullptr, false, false);
 
     if (ImGui::MenuItem("Restore default layout##szzz"))
-    {
-        runnerParams.dockingParams.resetUserDockLayout = true;
-        runnerParams.dockingParams.wasDockLayoutApplied = false;
-    }
+        runnerParams.dockingParams.layoutReset = true;
 
     if (ImGui::MenuItem("View All##DSQSDDF"))
         for (auto& dockableWindow: runnerParams.dockingParams.dockableWindows)
@@ -217,15 +214,14 @@ bool IsMainDockSpaceAlreadySplit(ImGuiID mainDockspaceId)
 void ApplyDockLayout(DockingParams& dockingParams)
 {
     bool isFirstFrame = ImGui::GetFrameCount() <= 1;
-    if (!dockingParams.wasDockLayoutApplied && !isFirstFrame)
+    if (dockingParams.layoutReset && !isFirstFrame)
     {
         ImGuiID mainDockspaceId = ImGui::GetID("MainDockSpace");
-        if (dockingParams.resetUserDockLayout)
-            ImGui::DockBuilderRemoveNodeChildNodes(mainDockspaceId);
+        ImGui::DockBuilderRemoveNodeChildNodes(mainDockspaceId);
         if (!IsMainDockSpaceAlreadySplit(mainDockspaceId))
             ApplyDockingSplits(dockingParams.dockingSplits);
         ApplyWindowDockingLocations(dockingParams.dockableWindows);
-        dockingParams.wasDockLayoutApplied = true;
+        dockingParams.layoutReset = false;
     }
 }
 void ProvideWindowOrDock(const ImGuiWindowParams& imGuiWindowParams, DockingParams &dockingParams)

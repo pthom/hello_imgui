@@ -11,6 +11,7 @@
 
 #include <chrono>
 #include <cassert>
+#include <fstream>
 
 #ifdef HELLOIMGUI_MACOS
 #import <AppKit/NSScreen.h>
@@ -246,19 +247,42 @@ static std::string _stringToSaneFilename(const std::string& s, const std::string
     return filenameSanitized;
 }
 
+bool _stringEndsWith(std::string const &fullString, std::string const &ending)
+{
+    if (fullString.length() >= ending.length())
+        return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
+    else
+        return false;
+};
+
+bool _stringStartsWith(std::string const &fullString, std::string const &start)
+{
+    if (fullString.length() >= start.length())
+        return (0 == fullString.compare(0, start.length(), start));
+    else
+        return false;
+};
+
+std::string _windowNameInImguiIniLine(const std::string& line)
+{
+    // Search for a line like
+    //     [Window][Commands]
+    // And return "Commands"
+    std::string token = "[Window][";
+    if (line[line.size() - 1] != ']')
+        return "";
+    if (!_stringStartsWith(line, token))
+        return "";
+
+    std::string windowName = line.substr(token.size(), line.size() - token.size() - 1);
+    return windowName;
+}
+
 std::string AbstractRunner::IniFilename_AppWindowPos()
 {
     std::string imguiIniFile = IniFilename_ImGui();
 
-    auto hasEnding = [](std::string const &fullString, std::string const &ending) {
-        if (fullString.length() >= ending.length()) {
-            return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
-        } else {
-            return false;
-        }
-    };
-
-    if (hasEnding(imguiIniFile, ".ini"))
+    if (_stringEndsWith(imguiIniFile, ".ini"))
         imguiIniFile = imguiIniFile.substr(0, imguiIniFile.size() - 4);
 
     std::string iniFileAppWindowPos = imguiIniFile + "_appWindow.ini";
@@ -281,6 +305,33 @@ std::string AbstractRunner::IniFilename_ImGui()
     }
 }
 
+bool AbstractRunner::HasUserDockingSettingsIniIniFile()
+{
+    std::ifstream ifs(IniFilename_ImGui());
+    if ( !ifs.is_open() )
+        return false;
+
+    std::vector<std::string> windowsWithSettings;
+    std::string line;
+    while ( ifs )
+    {
+        std::getline (ifs, line);
+        std::string w = _windowNameInImguiIniLine(line);
+        if (!w.empty())
+            windowsWithSettings.push_back(w);
+    }
+
+    for (const auto& dockableWindow: params.dockingParams.dockableWindows)
+    {
+        if (
+            std::find(windowsWithSettings.begin(), windowsWithSettings.end(), dockableWindow.label)
+            == windowsWithSettings.end())
+        {
+            return false;
+        }
+    }
+    return true;
+}
 
 void AbstractRunner::Setup()
 {
@@ -331,11 +382,29 @@ void AbstractRunner::Setup()
     ImGui::GetIO().Fonts->Build();
 
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
+    ResetDockingLayoutIfNeeded();
 
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
 }
 
-void AbstractRunner::RenderGui()
+    void AbstractRunner::ResetDockingLayoutIfNeeded()
+    {
+        if (params.imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenDockSpace)
+        {
+            params.dockingParams.layoutReset = false;
+            if (params.dockingParams.layoutCondition == DockingLayoutCondition::FirstUseEver)
+            {
+                if (! HasUserDockingSettingsIniIniFile())
+                    params.dockingParams.layoutReset = true;
+            }
+            else if (params.dockingParams.layoutCondition == DockingLayoutCondition::ApplicationStart)
+                params.dockingParams.layoutReset = true;
+            else if (params.dockingParams.layoutCondition == DockingLayoutCondition::Never)
+                params.dockingParams.layoutReset = false;
+        }
+    }
+
+    void AbstractRunner::RenderGui()
 {
     DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams, params.dockingParams);
 

@@ -182,8 +182,11 @@ struct DockableWindow
   Defines the way docking splits should be applied on the screen in order to create new Dock Spaces
 * `dockableWindows`: _vector[DockableWindow]_.
   List of the dockable windows, together with their Gui code
-* `resetUserDockLayout`: _bool, default=true_.
-  Reset user layout at application startup
+* `layoutCondition`: _enum DockingLayoutCondition, default=DockingLayoutCondition::FirstUseEver_.
+  When to apply the docking layout. Choose between FirstUseEver (apply once, then keep user preference),
+  ApplicationStart (always reapply at application start), and Never.
+* `layoutReset`: _bool, default=false_.
+  Reset layout on next frame (layoutReset will be set to false after applying)
 
  _Helpers:_
 
@@ -192,18 +195,25 @@ struct DockableWindow
 
 @@md
  */
+
+enum class DockingLayoutCondition
+{
+    FirstUseEver,
+    ApplicationStart,
+    Never
+};
+
 struct DockingParams
 {
     std::vector<DockingSplit> dockingSplits;
 
     std::vector<DockableWindow> dockableWindows;
 
-    bool resetUserDockLayout = true;
-
-    // wasDockLayoutApplied is an internal variable
-    bool wasDockLayoutApplied = false;
+    DockingLayoutCondition layoutCondition = DockingLayoutCondition::FirstUseEver;
+    bool layoutReset = false;
 
     DockableWindow * dockableWindowOfName(const std::string & name);
     void focusDockableWindow(const std::string& windowName);
 };
 } // namespace HelloImGui
+

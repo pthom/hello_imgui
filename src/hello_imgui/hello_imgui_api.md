@@ -522,8 +522,11 @@ _Members:_
   Defines the way docking splits should be applied on the screen in order to create new Dock Spaces
 * `dockableWindows`: _vector[DockableWindow]_.
   List of the dockable windows, together with their Gui code
-* `resetUserDockLayout`: _bool, default=true_.
-  Reset user layout at application startup
+* `layoutCondition`: _enum DockingLayoutCondition, default=DockingLayoutCondition::FirstUseEver_.
+  When to apply the docking layout. Choose between FirstUseEver (apply once, then keep user preference),
+  ApplicationStart (always reapply at application start), and Never.
+* `layoutReset`: _bool, default=false_.
+  Reset layout on next frame (layoutReset will be set to false after applying)
 
  _Helpers:_
 

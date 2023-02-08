@@ -218,6 +218,21 @@ namespace HelloImGui { namespace BackendApi
 
     }
 
+    void SdlWindowHelper::HideWindow(WindowPointer window)
+    {
+        SDL_ShowWindow((SDL_Window *) window);
+    }
+    void SdlWindowHelper::ShowWindow(WindowPointer window)
+    {
+        SDL_HideWindow((SDL_Window *) window);
+    }
+    bool SdlWindowHelper::IsWindowHidden(WindowPointer window)
+    {
+        Uint32 flags = SDL_GetWindowFlags((SDL_Window  *)window);
+        bool hidden = (flags & SDL_WINDOW_HIDDEN) != 0;
+        return hidden;
+    }
+
     }} // namespace HelloImGui { namespace BackendApi
 
 #endif // #ifdef HELLOIMGUI_USE_SDL

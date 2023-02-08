@@ -195,5 +195,20 @@ namespace HelloImGui { namespace BackendApi
             return yscale;
 #endif
     }
+
+    void GlfwWindowHelper::HideWindow(WindowPointer window)
+    {
+        glfwHideWindow((GLFWwindow *) window);
+    }
+    void GlfwWindowHelper::ShowWindow(WindowPointer window)
+    {
+        glfwShowWindow((GLFWwindow *) window);
+    }
+    bool GlfwWindowHelper::IsWindowHidden(WindowPointer window)
+    {
+        int visible = glfwGetWindowAttrib((GLFWwindow *) window, GLFW_VISIBLE);
+        return (visible == 0);
+    }
+
 }} // namespace HelloImGui { namespace BackendApi
 #endif // #ifdef HELLOIMGUI_USE_GLFW

@@ -23,7 +23,12 @@ namespace HelloImGui { namespace BackendApi
 
         void WaitForEventTimeout(double timeout_seconds) override;
 
-        virtual float GetWindowSizeDpiScaleFactor(WindowPointer window) override;
+        float GetWindowSizeDpiScaleFactor(WindowPointer window) override;
+
+        void HideWindow(WindowPointer window) override;
+        void ShowWindow(WindowPointer window) override;
+        bool IsWindowHidden(WindowPointer window) override;
+
     };
 }} // namespace HelloImGui { namespace BackendApi
 

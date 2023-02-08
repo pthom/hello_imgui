@@ -269,6 +269,8 @@ std::string _windowNameInImguiIniLine(const std::string& line)
     //     [Window][Commands]
     // And return "Commands"
     std::string token = "[Window][";
+    if (line.empty())
+        return "";
     if (line[line.size() - 1] != ']')
         return "";
     if (!_stringStartsWith(line, token))

@@ -76,6 +76,7 @@ namespace HelloImGui { namespace BackendApi
         else
             glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
         // GLFW_SCALE_TO_MONITOR is set to false: we set manually the window size in screen coordinates,
         // then AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired() may resize the window at the second frame

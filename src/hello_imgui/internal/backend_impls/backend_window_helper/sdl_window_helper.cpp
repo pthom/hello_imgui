@@ -117,6 +117,8 @@ namespace HelloImGui { namespace BackendApi
         else if (appWindowParams.windowGeometry.windowSizeState == WindowSizeState::Maximized)
             window_flags |= SDL_WINDOW_MAXIMIZED;
 
+        window_flags |= SDL_WINDOW_HIDDEN;
+
         auto window = SDL_CreateWindow(appWindowParams.windowTitle.c_str(),
                                        window_pos_sdl[0], window_pos_sdl[1],
                                        windowSize[0], windowSize[1],
@@ -220,11 +222,11 @@ namespace HelloImGui { namespace BackendApi
 
     void SdlWindowHelper::HideWindow(WindowPointer window)
     {
-        SDL_ShowWindow((SDL_Window *) window);
+        SDL_HideWindow((SDL_Window *) window);
     }
     void SdlWindowHelper::ShowWindow(WindowPointer window)
     {
-        SDL_HideWindow((SDL_Window *) window);
+        SDL_ShowWindow((SDL_Window *) window);
     }
     bool SdlWindowHelper::IsWindowHidden(WindowPointer window)
     {

@@ -12,6 +12,7 @@
 #include <chrono>
 #include <cassert>
 #include <fstream>
+#include <thread>
 
 #ifdef HELLOIMGUI_MACOS
 #import <AppKit/NSScreen.h>
@@ -406,7 +407,7 @@ void AbstractRunner::Setup()
         }
     }
 
-    void AbstractRunner::RenderGui()
+void AbstractRunner::RenderGui()
 {
     DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams, params.dockingParams);
 
@@ -443,13 +444,14 @@ void AbstractRunner::Setup()
 
 
 void AbstractRunner::CreateFramesAndRender()
-{
-    // Note about the application window sizing 
-    // - On the first frame, we create a window, and use the user provided size (if provided)
-    // - On the second frame, we may multiply this size by the Dpi factor (if > 1), to handle windows and linux High DPI
+{    
+    // Note about the application window initial placement and sizing 
+    // - On the first frame (mIdxFrame==0), we create a window, and use the user provided size (if provided). The window is initially hidden.
+    // - On the second frame (mIdxFrame == 1), we may multiply this size by the Dpi factor (if > 1), to handle windows and linux High DPI
     // - At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
-    // - At the begining of the third frame, we may apply the auto-size and recenter the window to the center of the monitor
-    // Argh...
+    // - At the beginning of the third frame (mIdxFrame==2 / mWasWindowAutoResizedOnPreviousFrame), we may apply the auto-size and recenter the window to the center of the monitor
+    // - At the 4th frame (mIdxFrame >= 3), we finally show the window
+    // Phew...
 
     //
     // Window size setup, etc:
@@ -460,6 +462,7 @@ void AbstractRunner::CreateFramesAndRender()
         // (and rescale ImGui style)
         HandleDpiOnSecondFrame();
     }
+
 
     if (mWasWindowAutoResizedOnPreviousFrame)
     {
@@ -475,6 +478,15 @@ void AbstractRunner::CreateFramesAndRender()
 
         mWasWindowAutoResizedOnPreviousFrame = false;
         params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = false;
+    }
+
+    
+    if (mIdxFrame >= 3)
+    {
+        if (params.appWindowParams.hidden)
+            mBackendWindowHelper->HideWindow(mWindow);
+        else
+            mBackendWindowHelper->ShowWindow(mWindow);
     }
 
 #ifndef __EMSCRIPTEN__

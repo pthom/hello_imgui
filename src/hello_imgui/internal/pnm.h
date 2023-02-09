@@ -1043,7 +1043,7 @@ namespace pnm
         {
             if     (max == 255){return std::unique_ptr<identity>(new identity());}
             else if(max >  255){return std::unique_ptr<reduce>  (new reduce(max));}
-            else               {return std::unique_ptr<enlarge> (new enlarge(max));}
+            else               {return std::unique_ptr<enlarge> (new enlarge(static_cast<std::uint8_t>(max)));}
         }
 
         namespace literals

@@ -480,13 +480,26 @@ void AbstractRunner::CreateFramesAndRender()
         params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = false;
     }
 
-    
+
+    static bool lastHiddenState = false;
     if (mIdxFrame == 3)
     {
         if (params.appWindowParams.hidden)
             mBackendWindowHelper->HideWindow(mWindow);
         else
             mBackendWindowHelper->ShowWindow(mWindow);
+        lastHiddenState = params.appWindowParams.hidden;
+    }
+    else if (mIdxFrame > 3)
+    {
+        if (params.appWindowParams.hidden != lastHiddenState)
+        {
+            lastHiddenState = params.appWindowParams.hidden;
+            if (params.appWindowParams.hidden)
+                mBackendWindowHelper->HideWindow(mWindow);
+            else
+                mBackendWindowHelper->ShowWindow(mWindow);
+        }
     }
 
 #ifndef __EMSCRIPTEN__

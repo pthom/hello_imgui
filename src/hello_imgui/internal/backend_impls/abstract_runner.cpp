@@ -481,7 +481,7 @@ void AbstractRunner::CreateFramesAndRender()
     }
 
     
-    if (mIdxFrame >= 3)
+    if (mIdxFrame == 3)
     {
         if (params.appWindowParams.hidden)
             mBackendWindowHelper->HideWindow(mWindow);

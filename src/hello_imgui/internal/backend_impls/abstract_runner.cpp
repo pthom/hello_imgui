@@ -446,16 +446,15 @@ void AbstractRunner::RenderGui()
 void AbstractRunner::CreateFramesAndRender()
 {    
     // Note about the application window initial placement and sizing 
-    // - On the first frame (mIdxFrame==0), we create a window, and use the user provided size (if provided). The window is initially hidden.
-    // - On the second frame (mIdxFrame == 1), we may multiply this size by the Dpi factor (if > 1), to handle windows and linux High DPI
-    // - At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
-    // - At the beginning of the third frame (mIdxFrame==2 / mWasWindowAutoResizedOnPreviousFrame), we may apply the auto-size and recenter the window to the center of the monitor
-    // - At the 4th frame (mIdxFrame >= 3), we finally show the window
+    // i/   On the first frame (mIdxFrame==0), we create a window, and use the user provided size (if provided). The window is initially hidden.
+    //      (this was done much sooner by mBackendWindowHelper)
+    // ii/  On the second frame (mIdxFrame == 1), we may multiply this size by the Dpi factor (if > 1), to handle windows and linux High DPI
+    // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
+    // iv/  At the beginning of the third frame (mIdxFrame==2 / mWasWindowAutoResizedOnPreviousFrame), we may apply the auto-size and recenter the window to the center of the monitor
+    // v/   At the 4th frame (mIdxFrame >= 3), we finally show the window
     // Phew...
 
-    //
-    // Window size setup, etc:
-    //
+    // ii/ On the second frame (mIdxFrame == 1), we may multiply this size by the Dpi factor (if > 1), to handle windows and linux High DPI
     if (mIdxFrame == 1)
     {
         // We might resize the window on the second frame on window and linux
@@ -463,7 +462,7 @@ void AbstractRunner::CreateFramesAndRender()
         HandleDpiOnSecondFrame();
     }
 
-
+    // iv/ At the beginning of the third frame (mIdxFrame==2 / mWasWindowAutoResizedOnPreviousFrame), we may apply the auto-size and recenter the window to the center of the monitor
     if (mWasWindowAutoResizedOnPreviousFrame)
     {
         // The window was resized on last frame
@@ -482,6 +481,8 @@ void AbstractRunner::CreateFramesAndRender()
 
 
     static bool lastHiddenState = false;
+
+    // v/   At the 4th frame (mIdxFrame >= 3), we finally show the window
     if (mIdxFrame == 3)
     {
         if (params.appWindowParams.hidden)
@@ -490,7 +491,8 @@ void AbstractRunner::CreateFramesAndRender()
             mBackendWindowHelper->ShowWindow(mWindow);
         lastHiddenState = params.appWindowParams.hidden;
     }
-    else if (mIdxFrame > 3)
+    // On subsequent frames, we take into account user modifications of appWindowParams.hidden
+    if (mIdxFrame > 3)
     {
         if (params.appWindowParams.hidden != lastHiddenState)
         {
@@ -553,7 +555,11 @@ void AbstractRunner::CreateFramesAndRender()
         }
 #endif
     }
+
+    // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
+    // ==> Note: RenderGui() may measure the size of the window and resize it if mIdxFrame==1
     RenderGui();
+
     ImGui::Render();
     Impl_Frame_3D_ClearColor();
     Impl_RenderDrawData_To_3D();

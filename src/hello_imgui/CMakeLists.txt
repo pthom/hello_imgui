@@ -105,8 +105,8 @@ if (HELLOIMGUI_USE_SDL_OPENGL3)
     target_sources(${target_name} PRIVATE
         ${imgui_backends_dir}/imgui_impl_opengl3.h
         ${imgui_backends_dir}/imgui_impl_opengl3.cpp
-        ${imgui_backends_dir}/imgui_impl_sdl.h
-        ${imgui_backends_dir}/imgui_impl_sdl.cpp
+        ${imgui_backends_dir}/imgui_impl_sdl2.h
+        ${imgui_backends_dir}/imgui_impl_sdl2.cpp
         )
 endif()
 

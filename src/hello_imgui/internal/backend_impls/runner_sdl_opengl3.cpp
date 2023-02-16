@@ -8,7 +8,7 @@
 #include "hello_imgui/internal/backend_impls/backend_window_helper/win32_dpi_awareness.h"
 #include "opengl_setup_helper/opengl_screenshot.h"
 #include <backends/imgui_impl_opengl3.h>
-#include <backends/imgui_impl_sdl.h>
+#include <backends/imgui_impl_sdl2.h>
 
 #include <SDL.h>
 #include <SDL_main.h>

@@ -1,6 +1,10 @@
 if (EMSCRIPTEN)
 
-function(hello_imgui_emscripten_add_shell_file app_name)
+# Also see global emscripten flags in hello_imgui_cmake/emscripten/hello_imgui_emscripten_global_options.cmake
+
+
+function(hello_imgui_emscripten_set_shell_file app_name)
+
     if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/shell.emscripten.html)
         set(shell_template_file ${CMAKE_CURRENT_SOURCE_DIR}/shell.emscripten.html)
     else()
@@ -25,10 +29,6 @@ function(hello_imgui_emscripten_add_shell_file app_name)
         PRIVATE
         "SHELL:--shell-file ${shell_file}"
     )
-    set_target_properties(${app_name}
-        PROPERTIES LINK_FLAGS
-        "-s USE_SDL=2 -s USE_WEBGL2=1 -s FULL_ES3=1 -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1"
-        )
 
     set_target_properties(
         ${app_name} 
@@ -37,24 +37,16 @@ function(hello_imgui_emscripten_add_shell_file app_name)
         )
 endfunction()
 
-# hello_imgui_emscripten_target_compile_options needs fix!
-# For the moment, these options are global via hello_imgui_emscripten_global_options.cmake
-# function(hello_imgui_emscripten_target_compile_options target_name)
-#     target_compile_options(
-#         ${target_name} 
-#         PUBLIC
-#         "SHELL:-s USE_SDL=2"
-#         "SHELL:-s USE_WEBGL2=1"
-#         "SHELL:-s WASM=1" 
-#         "SHELL:-s FULL_ES3=1"
-#         "SHELL:-s ALLOW_MEMORY_GROWTH=1"
-#     )
-# endfunction()
+
+function(hello_imgui_emscripten_target_compile_options app_name)
+    target_link_options(${app_name} PRIVATE -sUSE_SDL=2 -sASSERTIONS)
+    target_link_options(${app_name} PRIVATE -sALLOW_MEMORY_GROWTH)
+endfunction()
 
 
 function(hello_imgui_platform_customization app_name)
-    hello_imgui_emscripten_add_shell_file(${app_name})
-    # hello_imgui_emscripten_target_compile_options(${app_name})
+    hello_imgui_emscripten_set_shell_file(${app_name})
+    hello_imgui_emscripten_target_compile_options(${app_name})
 endfunction()
 
 endif (EMSCRIPTEN)

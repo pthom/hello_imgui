@@ -93,7 +93,7 @@ Anything in the assets/ folder located beside the app's CMakeLists will be embed
 └── hello_globe.main.cpp
 ├── CMakeLists.txt
 ├── assets/
-│   └── world.jpg
+│         └── world.jpg
 ```
 (even on iOS and emscripten).
 
@@ -427,29 +427,29 @@ hello_imgui_democking/
 │
 │
 ├── assets/                                     # Anything in the assets/ folder located
-│   └── fonts/                                  # beside the app's CMakeLists will be embedded
-│       └── Akronim-Regular.ttf                 # on mobile devices and emscripten             
+│         └── fonts/                                  # beside the app's CMakeLists will be embedded
+│             └── Akronim-Regular.ttf                 # on mobile devices and emscripten             
 │
 │
 ├── android/                                    # android/ is where you customize the Android App
-│   ├── mipmap-source/
-│   │   ├── Readme.md
-│   │   └── ic_launcher.png                     # an icon that helps creating the different sizes
-│   └── res/                                    # anything in the res/ folder will be embedded as a resource
-│       ├── mipmap-hdpi/
-│       │   └── ic_launcher.png                 # icons with different sizes
-│       ├── mipmap-mdpi/
-│       │   └── ic_launcher.png
-│       ├── mipmap-xhdpi/
-│       │   └── ic_launcher.png
-│       ├── mipmap-xxhdpi/
-│       │   └── ic_launcher.png
-│       ├── mipmap-xxxhdpi/
-│       │   └── ic_launcher.png
-│       └── values/
-│           ├── colors.xml
-│           ├── strings.xml                    # Customize the application icon label here
-│           └── styles.xml
+│         ├── mipmap-source/
+│         │         ├── Readme.md
+│         │         └── ic_launcher.png                     # an icon that helps creating the different sizes
+│         └── res/                                    # anything in the res/ folder will be embedded as a resource
+│             ├── mipmap-hdpi/
+│             │         └── ic_launcher.png                 # icons with different sizes
+│             ├── mipmap-mdpi/
+│             │         └── ic_launcher.png
+│             ├── mipmap-xhdpi/
+│             │         └── ic_launcher.png
+│             ├── mipmap-xxhdpi/
+│             │         └── ic_launcher.png
+│             ├── mipmap-xxxhdpi/
+│             │         └── ic_launcher.png
+│             └── values/
+│                 ├── colors.xml
+│                 ├── strings.xml                    # Customize the application icon label here
+│                 └── styles.xml
 │
 │
 └── ios/                                        # ios/ is where you customize the iOS App

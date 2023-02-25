@@ -27,6 +27,10 @@ list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
 #------------------------------------------------------------------------------
 # Options / Windows: provide WinMain automatically
 #------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Options / Windows: provide WinMain automatically
+#------------------------------------------------------------------------------
 if (WIN32)
     option(HELLOIMGUI_WIN32_NO_CONSOLE "Under windows, build apps without Dos Console" ON)
     option(HELLOIMGUI_WIN32_AUTO_WINMAIN "Under windows, automatically provide a WinMain (provide `int main(int, char**)`, it will be called by WinMain())" ON)
@@ -109,6 +113,12 @@ option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 ###############################################################################
 # End of options
 ###############################################################################
+
+
+# use SDL for emscripten
+if (EMSCRIPTEN AND NOT HELLOIMGUI_USE_SDL_OPENGL3 AND NOT HELLOIMGUI_USE_GLFW_OPENGL3)
+    set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
+endif()
 
 #------------------------------------------------------------------------------
 # Download backend glfw or sdl if required

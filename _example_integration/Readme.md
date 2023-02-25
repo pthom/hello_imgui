@@ -48,8 +48,10 @@ make -j 4
 
 ### Usage with emscripten
 
-YYou can either install emsdk following [the instruction on the emscripten website](https://emscripten.org/docs/getting_started/downloads.html) or you can use the script [../tools/emscripten/install_emscripten.sh](../tools/emscripten/install_emscripten.sh).
+#### Install emscripten
+You can either install emsdk following [the instruction on the emscripten website](https://emscripten.org/docs/getting_started/downloads.html) or you can use the script [../tools/emscripten/install_emscripten.sh](../tools/emscripten/install_emscripten.sh).
 
+#### Compile with emscripten
 
 ```bash
 # Add emscripten tools to your path

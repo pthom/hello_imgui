@@ -291,8 +291,6 @@ cd build_emscripten
 emcmake cmake ..
 ````
 
-Note: the script [tools/emscripten/cmake_emscripten.sh](tools/emscripten/cmake_emscripten.sh) does the cmake part of this.
-
 3. Build
 
 ```bash

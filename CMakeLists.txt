@@ -27,10 +27,6 @@ list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
 #------------------------------------------------------------------------------
 # Options / Windows: provide WinMain automatically
 #------------------------------------------------------------------------------
-
-#------------------------------------------------------------------------------
-# Options / Windows: provide WinMain automatically
-#------------------------------------------------------------------------------
 if (WIN32)
     option(HELLOIMGUI_WIN32_NO_CONSOLE "Under windows, build apps without Dos Console" ON)
     option(HELLOIMGUI_WIN32_AUTO_WINMAIN "Under windows, automatically provide a WinMain (provide `int main(int, char**)`, it will be called by WinMain())" ON)
@@ -85,6 +81,25 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
 else()
     option(HELLOIMGUI_BUILD_DEMOS "Build demos" OFF)
 endif()
+
+#------------------------------------------------------------------------------
+# Esmcripten build options
+#------------------------------------------------------------------------------
+if (EMSCRIPTEN)
+    # You can enable support for multithreading for emscripten via HELLOIMGUI_EMSCRIPTEN_PTHREAD
+    # Warning:
+    #    You will need a server that sends specific http headers (Cross Origin Opener Policy (COOP) and Cross Origin Embedder Policy (COEP))
+    #    HelloImGui provides a demo web server which provides that sends those headers. You can run it like this:
+    #        python tools/emscripten/webserver_multithread_policy.py
+    option(HELLOIMGUI_EMSCRIPTEN_PTHREAD "Build emscripten with multithreading support" OFF)
+
+    # With multithreading support, automatic memory growth can be slow with emscripten, and is disabled by default
+    # In that case, you can call
+    #    hello_imgui_set_emscripten_target_initial_memory_megabytes(your_app_name nb_megabytes)
+    # to set the initial memory for a given target
+    option(HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH "Allow memory growth with emscripten even if multithreading support is on" OFF)
+endif()
+
 
 #------------------------------------------------------------------------------
 # Advanced build options / HelloImGui

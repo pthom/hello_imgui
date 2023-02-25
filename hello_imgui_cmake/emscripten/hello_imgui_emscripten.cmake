@@ -40,7 +40,15 @@ endfunction()
 
 function(hello_imgui_emscripten_target_compile_options app_name)
     target_link_options(${app_name} PRIVATE -sUSE_SDL=2 -sASSERTIONS)
-    target_link_options(${app_name} PRIVATE -sALLOW_MEMORY_GROWTH)
+    if (NOT HELLOIMGUI_EMSCRIPTEN_PTHREAD OR HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH)
+        target_link_options(${app_name} PRIVATE -sALLOW_MEMORY_GROWTH)
+    endif()
+endfunction()
+
+
+function(hello_imgui_set_emscripten_target_initial_memory_megabytes app_name nb_megabytes)
+    math(EXPR nb_bytes "1048576 * ${nb_megabytes}")
+    target_link_options(${app_name} PRIVATE -sINITIAL_MEMORY=${nb_bytes})
 endfunction()
 
 

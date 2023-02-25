@@ -1,4 +1,4 @@
-# How to use integrate HelloImGui into your application
+# How to integrate HelloImGui into your application
 
 This directory is a **standalone** demonstration on how to easily integrate HelloImGui to your own project.
 This means that you can copy-paste this folder in your project, and it will build, with no extra step!

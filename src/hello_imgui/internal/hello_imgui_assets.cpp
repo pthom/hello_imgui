@@ -176,7 +176,6 @@ AssetFileData LoadAssetFileData(const char *assetPath)
     #ifdef __ANDROID__
     {
         AssetFileData r;
-        testedPaths.push_back(assetPath);
         r.data = SDL_LoadFile(assetPath, &r.dataSize);
         if (!r.data)
             HIMG_ERROR(std::string("LoadAssetFileData: cannot load ") + assetPath);

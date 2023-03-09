@@ -31,6 +31,10 @@ void DoSplit(const DockingSplit & dockingSplit)
 
     gImGuiSplitIDs[dockingSplit.initialDock] = initalDock_imguiId;
     gImGuiSplitIDs[dockingSplit.newDock] = newDock_imguiId;
+
+    // apply flags
+    ImGuiDockNode* newDockNode = ImGui::DockBuilderGetNode(newDock_imguiId);
+    newDockNode->SetLocalFlags(dockingSplit.nodeFlags);
 }
 
 void ApplyDockingSplits(const std::vector<DockingSplit>& dockingSplits)

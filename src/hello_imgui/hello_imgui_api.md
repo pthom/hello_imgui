@@ -498,10 +498,11 @@ _Members:_
     At the start, there is only one Dock Space named "MainDockSpace".
     You should start by partitioning this space, in order to create a new dock space.
 
-* `newDock`: _DockSpaceName (aka string)_. id of the new dock space that will be created
+* `newDock`: _DockSpaceName (aka string)_. id of the new dock space that will be created.
 * `direction`: *ImGuiDir_ (enum with ImGuiDir_Down, ImGuiDir_Down, ImGuiDir_Left, ImGuiDir_Right)*.
-Direction where this dock space should be created
-* `ratio`: _float, default=0.25f_. Ratio of the initialDock size that should be used by the new dock space
+Direction where this dock space should be created.
+* `ratio`: _float, default=0.25f_. Ratio of the initialDock size that should be used by the new dock space.
+* `nodeFlags`: *ImGuiDockNodeFlags_ (enum)*. Flags to apply to the new dock space.
 
 
 #### Dockable window

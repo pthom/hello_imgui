@@ -390,22 +390,22 @@ void AbstractRunner::Setup()
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
 }
 
-    void AbstractRunner::ResetDockingLayoutIfNeeded()
+void AbstractRunner::ResetDockingLayoutIfNeeded()
+{
+    if (params.imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenDockSpace)
     {
-        if (params.imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenDockSpace)
+        params.dockingParams.layoutReset = false;
+        if (params.dockingParams.layoutCondition == DockingLayoutCondition::FirstUseEver)
         {
-            params.dockingParams.layoutReset = false;
-            if (params.dockingParams.layoutCondition == DockingLayoutCondition::FirstUseEver)
-            {
-                if (! HasUserDockingSettingsIniIniFile())
-                    params.dockingParams.layoutReset = true;
-            }
-            else if (params.dockingParams.layoutCondition == DockingLayoutCondition::ApplicationStart)
+            if (! HasUserDockingSettingsIniIniFile())
                 params.dockingParams.layoutReset = true;
-            else if (params.dockingParams.layoutCondition == DockingLayoutCondition::Never)
-                params.dockingParams.layoutReset = false;
         }
+        else if (params.dockingParams.layoutCondition == DockingLayoutCondition::ApplicationStart)
+            params.dockingParams.layoutReset = true;
+        else if (params.dockingParams.layoutCondition == DockingLayoutCondition::Never)
+            params.dockingParams.layoutReset = false;
     }
+}
 
 void AbstractRunner::RenderGui()
 {

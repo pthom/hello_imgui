@@ -553,7 +553,10 @@ _Members:_
 
  * `DockableWindow * dockableWindowOfName(const std::string & name)`: returns a pointer to a dockable window
  * `void focusDockableWindow(const std::string& name)`: will focus a dockable window
-
+ * `optional<ImGuiID> dockSpaceIdFromName(const std::string& dockSpaceName)`: may return the ImGuiID corresponding
+   to the dockspace with this name.
+   **Warning**: this will work reliably only if layoutCondition = DockingLayoutCondition::ApplicationStart. In other
+   cases, the ID may be cached by ImGui himself at the first run, and HelloImGui will *not* know it on subsequent runs!
 
 ---
 

@@ -265,5 +265,13 @@ void DockingParams::focusDockableWindow(const std::string& windowName)
         fprintf(stderr, "focusDockableWindow(%s) failed, window not found!\n", windowName.c_str());
 }
 
+std::optional<ImGuiID> DockingParams::dockSpaceIdFromName(const std::string& dockSpaceName)
+{
+    if (gImGuiSplitIDs.find(dockSpaceName) == gImGuiSplitIDs.end())
+        return std::nullopt;
+    else
+        return gImGuiSplitIDs.at(dockSpaceName);
+}
+
 
 }  // namespace HelloImGui

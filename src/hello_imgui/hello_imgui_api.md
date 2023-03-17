@@ -514,8 +514,8 @@ _Members:_
 
 * `label`: _string_. Title of the window.
 * `dockSpaceName`: _DockSpaceName (aka string)_. Id of the dock space where this window
-   should initialy be placed
-* `GuiFunction`: _VoidFuntion_. Any function that will render this window's Gui.
+   should initially be placed
+* `GuiFunction`: _VoidFunction_. Any function that will render this window's Gui.
 * `isVisible`: _bool, default=true_. Flag that indicates whether this window is visible or not.
 * `canBeClosed`: _bool, default=true_. Flag that indicates whether the user can close this window.
 * `callBeginEnd`: _bool, default=true_. Flag that indicates whether ImGui::Begin and ImGui::End

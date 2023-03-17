@@ -18,18 +18,18 @@ namespace DockingDetails
 
 void DoSplit(const DockingSplit & dockingSplit)
 {
-    assert(gImGuiSplitIDs.find(dockingSplit.initialDock) != gImGuiSplitIDs.end());
+    IM_ASSERT(gImGuiSplitIDs.find(dockingSplit.initialDock) != gImGuiSplitIDs.end());
 
-    ImGuiID initalDock_imguiId = gImGuiSplitIDs.at(dockingSplit.initialDock);
+    ImGuiID initialDock_imguiId = gImGuiSplitIDs.at(dockingSplit.initialDock);
     ImGuiID newDock_imguiId
         = ImGui::DockBuilderSplitNode(
-            initalDock_imguiId,
+            initialDock_imguiId,
             dockingSplit.direction,
             dockingSplit.ratio,
             nullptr,
-            &initalDock_imguiId);
+            &initialDock_imguiId);
 
-    gImGuiSplitIDs[dockingSplit.initialDock] = initalDock_imguiId;
+    gImGuiSplitIDs[dockingSplit.initialDock] = initialDock_imguiId;
     gImGuiSplitIDs[dockingSplit.newDock] = newDock_imguiId;
 
     // apply flags

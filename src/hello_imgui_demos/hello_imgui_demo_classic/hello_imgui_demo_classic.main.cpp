@@ -1,10 +1,24 @@
 #include "hello_imgui/hello_imgui.h"
 
+
+// Demonstrate how to load additional fonts (fonts - part 1/3)
+ImFont * gCustomFont = nullptr;
+void MyLoadFonts()
+{
+
+    HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons(); // The font that is loaded first is the default font
+    gCustomFont = HelloImGui::LoadFontTTF("fonts/Akronim-Regular.ttf", 40.f); // will be loaded from the assets folder
+}
+
+
 int main(int , char *[]) {
     HelloImGui::RunnerParams params;
     params.appWindowParams.windowGeometry.size = {1280, 720};
     params.appWindowParams.windowTitle = "Dear ImGui example with 'Hello ImGui'";
     params.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::NoDefaultWindow;
+
+    // Fonts need to be loaded at the appropriate moment during initialization (fonts - part 2/3)
+    params.callbacks.LoadAdditionalFonts = MyLoadFonts; // LoadAdditionalFonts is a callback that we set with our own font loading function
 
     // Our state
     bool show_demo_window = true;
@@ -22,6 +36,11 @@ int main(int , char *[]) {
             static int counter = 0;
 
             ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+            // Demo custom font usage (fonts - part 3/3)
+            ImGui::PushFont(gCustomFont);
+            ImGui::Text("Custom font");
+            ImGui::PopFont();
 
             ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
             ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state

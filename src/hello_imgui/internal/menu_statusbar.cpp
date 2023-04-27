@@ -21,12 +21,16 @@ void ShowDefaultAppMenu_Quit(RunnerParams & runnerParams)
     if (menuAppTitle.empty())
         menuAppTitle = "App";
 
-    bool hideMenuBecauseEmpty = false;
 #ifdef HELLOIMGUI_CANNOTQUIT
-    if (! runnerParams.callbacks.ShowAppMenuItems)
-        hideMenuBecauseEmpty = true;
+    const bool displayQuitItem = false;
+#else
+    const bool displayQuitItem = runnerParams.imGuiWindowParams.showMenu_App_Quit;
 #endif
-    if (hideMenuBecauseEmpty)
+
+    const bool hasCustomAppMenuItems = static_cast<bool>(runnerParams.callbacks.ShowAppMenuItems);
+
+    const bool isAppMenuEmpty = !displayQuitItem && !hasCustomAppMenuItems;
+    if (isAppMenuEmpty)
         return;
 
     if (ImGui::BeginMenu(menuAppTitle.c_str()))
@@ -34,15 +38,15 @@ void ShowDefaultAppMenu_Quit(RunnerParams & runnerParams)
         if (runnerParams.callbacks.ShowAppMenuItems)
             runnerParams.callbacks.ShowAppMenuItems();
 
-#ifndef HELLOIMGUI_CANNOTQUIT
-        if (runnerParams.callbacks.ShowAppMenuItems)
-            ImGui::Separator();
-        if (ImGui::MenuItem( "Quit"))
-            runnerParams.appShallExit = true;
-#endif
+        if (displayQuitItem)
+        {
+            if (hasCustomAppMenuItems)
+                ImGui::Separator();
+            if (ImGui::MenuItem( "Quit"))
+                runnerParams.appShallExit = true;
+        }
         ImGui::EndMenu();
     }
-
 }
 
 void ShowMenu(RunnerParams & runnerParams)

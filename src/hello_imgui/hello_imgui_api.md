@@ -195,6 +195,7 @@ See [runner_callbacks.h](runner_callbacks.h).
 
  * `PreNewFrame`: *VoidFunction, default=empty*.
     You can here add a function that will be called at each frame, and before the call to ImGui::NewFrame().
+    It is a good place to dynamically add new fonts, or dynamically add new dockable windows.
 
 * `AnyBackendEventCallback`: *AnyBackendCallback, default=empty*.
   Callbacks for events from a specific backend. _Only implemented for SDL, where the event
@@ -203,7 +204,7 @@ See [runner_callbacks.h](runner_callbacks.h).
   Note: in the case of GLFW, you should use register them in `PostInit`
 
 * `LoadAdditionalFonts`: *VoidFunction, default=_LoadDefaultFont_WithFontAwesome*.
-   A function that is called when fonts are ready to be loaded.
+   A function that is called once, when fonts are ready to be loaded.
    By default, _LoadDefaultFont_WithFontAwesome_ is called but you can copy-customize it.
 
 * `SetupImGuiConfig`: *VoidFunction, default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.

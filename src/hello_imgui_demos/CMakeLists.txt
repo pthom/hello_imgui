@@ -5,6 +5,7 @@ set(subdirs
     hello_imgui_demodocking
     hello_world
     hello_globe
+    hello_idbfs
 )
 foreach(target_name ${subdirs})
     add_subdirectory(${target_name})

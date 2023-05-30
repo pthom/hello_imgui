@@ -2,6 +2,8 @@
 
 #include <array>
 #include <stddef.h>
+#include <string>
+#include <optional>
 
 
 #define ForDim2(dim) for (size_t dim = 0; dim < 2; dim += 1)
@@ -20,7 +22,6 @@ namespace HelloImGui
     constexpr ScreenPosition DefaultScreenPosition = {0, 0};
     constexpr ScreenSize DefaultWindowSize = {800, 600};
 
-
     struct ScreenBounds
     {
         ScreenPosition position = DefaultScreenPosition;
@@ -36,4 +37,9 @@ namespace HelloImGui
         ScreenBounds EnsureWindowFitsThisMonitor(ScreenBounds windowBoundsOriginal) const;
         bool operator==(const ScreenBounds& other) const;
     };
+
+
+    std::string IntPairToString(std::array<int, 2> v);
+    std::optional<std::array<int, 2>> StringToIntPair(const std::string& s);
+
 } // namespace BackendApi

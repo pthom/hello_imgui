@@ -1,62 +1,11 @@
+#include "hello_imgui/internal/inicpp.h"
 #include "window_geometry_helper.h"
 
 #include <sstream>
-#include <fstream>
 #include <vector>
 #include <string>
 #include <cassert>
 
-
-namespace
-{
-    std::vector<std::string> splitString(const std::string& s, char delimiter)
-    {
-        std::vector<std::string> tokens;
-        std::string token;
-        std::istringstream tokenStream(s);
-        while (std::getline(tokenStream, token, delimiter))
-        {
-            tokens.push_back(token);
-        }
-        return tokens;
-    }
-
-    bool stringStartsWith(const std::string& s, const std::string& prefix)
-    {
-        if (s.size() < prefix.size())
-            return false;
-        auto start = s.substr(0, prefix.size());
-        return start == prefix;
-    }
-
-    std::optional<std::string> stringAfter(const std::string& s, const std::string& prefix)
-    {
-        if (!stringStartsWith(s, prefix))
-            return std::nullopt;
-        auto end = s.substr(prefix.size());
-        return end;
-    }
-
-    std::optional<std::array<int, 2>> parseSizeLine(const std::string& line, const std::string& itemName)
-    {
-        auto values = stringAfter(line, itemName + "=");
-        if (!values.has_value())
-            return std::nullopt;
-        std::vector<std::string> items = splitString(values.value(), ',');
-        if (items.size() != 2)
-            return std::nullopt;
-
-        std::array<int, 2> r;
-        for (size_t i = 0; i < 2; ++i)
-        {
-            int asInt = std::atoi(items[i].c_str());
-            if (asInt == 0)
-                return std::nullopt;
-            r[i] = asInt;
-        }
-        return r;
-    }
-}
 
 namespace HelloImGui
 {
@@ -151,44 +100,58 @@ namespace HelloImGui
 
     void WindowGeometryHelper::WriteLastRunWindowBounds(const ScreenBounds& windowBounds)
     {
-        std::stringstream ss;
-        ss << "[WIN]\n";
-        ss << "WindowPosition=" << windowBounds.position[0] << "," << windowBounds.position[1] << "\n";
-        ss << "WindowSize=" << windowBounds.size[0] << "," << windowBounds.size[1] << "\n";
+        ini::IniFile iniFile;
+        try
+        {
+            iniFile.load(mWindowGeometryIniFilename);
+        }
+        catch(const std::exception&)
+        {
+            fprintf(stderr, "WindowGeometryHelper::WriteLastRunWindowBounds: Corrupt ini file %s\n", mWindowGeometryIniFilename.c_str());
+            iniFile = ini::IniFile();
+        }
 
-        std::ofstream os(mWindowGeometryIniFilename);
-        os << ss.str();
-        os.close();
-
-#ifdef _DEBUG_IMGUI_RUNNER
-        std::cout << ss.str();
-#endif
+        iniFile["WIN"]["WindowPosition"] = IntPairToString(windowBounds.position);
+        iniFile["WIN"]["WindowSize"] = IntPairToString(windowBounds.size);
+        iniFile.save(mWindowGeometryIniFilename);
     }
 
     std::optional<ScreenBounds> WindowGeometryHelper::ReadLastRunWindowBounds()
     {
-        std::ifstream is(mWindowGeometryIniFilename);
-        if (is.is_open())
+        ini::IniFile iniFile;
+        try
         {
-            ScreenBounds r;
-            std::string line;
-            while (is)
-            {
-                std::getline(is, line);
-
-                auto pos = parseSizeLine(line, "WindowPosition");
-                if (pos.has_value())
-                    r.position = pos.value();
-
-                auto size = parseSizeLine(line, "WindowSize");
-                if (size.has_value())
-                    r.size = size.value();
-            }
-
-            return r;
+            iniFile.load(mWindowGeometryIniFilename);
         }
-        else
+        catch(const std::exception&)
+        {
             return std::nullopt;
+        }
+
+        ScreenBounds screenBounds;
+        bool failed = false;
+
+        {
+            auto strValue = iniFile["WIN"]["WindowPosition"].as<std::string>();
+            auto intPair = StringToIntPair(strValue);
+            if (intPair.has_value())
+                screenBounds.position = *intPair;
+            else
+                failed = true;
+        }
+        {
+            auto strValue = iniFile["WIN"]["WindowSize"].as<std::string>();
+            auto intPair = StringToIntPair(strValue);
+            if (intPair.has_value())
+                screenBounds.size = *intPair;
+            else
+                failed = true;
+        }
+
+        if (failed)
+            return std::nullopt;
+        else
+            return screenBounds;
     }
 
 

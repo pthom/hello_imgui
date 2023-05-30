@@ -1,5 +1,7 @@
 #include "hello_imgui/screen_bounds.h"
 
+#include <sstream>
+
 namespace HelloImGui
 {
 
@@ -70,4 +72,51 @@ bool ScreenBounds::operator==(const ScreenBounds& other) const
     }
     return true;
 }
+
+
+
+namespace details
+{
+    std::vector<std::string> splitString(const std::string &s, char delimiter)
+    {
+        std::vector<std::string> tokens;
+        std::string token;
+        std::istringstream tokenStream(s);
+        while (std::getline(tokenStream, token, delimiter))
+        {
+            tokens.push_back(token);
+        }
+        return tokens;
+    }
+}
+
+std::string IntPairToString(std::array<int, 2> v)
+{
+    std::stringstream ss;
+    ss << v[0] << "," << v[1];
+    return ss.str();
+}
+
+std::optional<std::array<int, 2>> StringToIntPair(const std::string& s)
+{
+    auto items = details::splitString(s, ',');
+    if (items.size() != 2)
+        return std::nullopt;
+
+    std::array<int, 2> r;
+    for (size_t i = 0; i < 2; ++i)
+    {
+        try
+        {
+            int asInt = std::stoi(items[i]);
+            r[i] = asInt;
+        }
+        catch(const std::exception&)
+        {
+            return std::nullopt;
+        }
+    }
+    return r;
+}
+
 } // namespace BackendApi

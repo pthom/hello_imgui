@@ -1,5 +1,5 @@
-#include "hello_imgui/internal/inicpp.h"
 #include "window_geometry_helper.h"
+#include "hello_imgui/internal/hello_imgui_ini_settings.h"
 
 #include <sstream>
 #include <vector>
@@ -23,7 +23,7 @@ namespace HelloImGui
         }
         if (!mGeometry.sizeAuto)
             return true;
-        if (mRestoreLast && WindowGeometryHelper::ReadLastRunWindowBounds().has_value())
+        if (mRestoreLast && HelloImGuiIniSettings::ReadLastRunWindowBounds(mWindowGeometryIniFilename).has_value())
             return true;
 
         return false;
@@ -61,7 +61,7 @@ namespace HelloImGui
         //
         std::optional<ScreenBounds> windowBoundsLastRun;
         if (mRestoreLast)
-          windowBoundsLastRun = WindowGeometryHelper::ReadLastRunWindowBounds();
+          windowBoundsLastRun =  HelloImGuiIniSettings::ReadLastRunWindowBounds(mWindowGeometryIniFilename);
 
         // Window Size
         auto computeSize = [&]() -> ScreenSize
@@ -95,63 +95,6 @@ namespace HelloImGui
 
         auto windowBoundsInitial = ScreenBounds{windowPosition, windowSize};
         return windowBoundsInitial;
-    }
-
-
-    void WindowGeometryHelper::WriteLastRunWindowBounds(const ScreenBounds& windowBounds)
-    {
-        ini::IniFile iniFile;
-        try
-        {
-            iniFile.load(mWindowGeometryIniFilename);
-        }
-        catch(const std::exception&)
-        {
-            fprintf(stderr, "WindowGeometryHelper::WriteLastRunWindowBounds: Corrupt ini file %s\n", mWindowGeometryIniFilename.c_str());
-            iniFile = ini::IniFile();
-        }
-
-        iniFile["WIN"]["WindowPosition"] = IntPairToString(windowBounds.position);
-        iniFile["WIN"]["WindowSize"] = IntPairToString(windowBounds.size);
-        iniFile.save(mWindowGeometryIniFilename);
-    }
-
-    std::optional<ScreenBounds> WindowGeometryHelper::ReadLastRunWindowBounds()
-    {
-        ini::IniFile iniFile;
-        try
-        {
-            iniFile.load(mWindowGeometryIniFilename);
-        }
-        catch(const std::exception&)
-        {
-            return std::nullopt;
-        }
-
-        ScreenBounds screenBounds;
-        bool failed = false;
-
-        {
-            auto strValue = iniFile["WIN"]["WindowPosition"].as<std::string>();
-            auto intPair = StringToIntPair(strValue);
-            if (intPair.has_value())
-                screenBounds.position = *intPair;
-            else
-                failed = true;
-        }
-        {
-            auto strValue = iniFile["WIN"]["WindowSize"].as<std::string>();
-            auto intPair = StringToIntPair(strValue);
-            if (intPair.has_value())
-                screenBounds.size = *intPair;
-            else
-                failed = true;
-        }
-
-        if (failed)
-            return std::nullopt;
-        else
-            return screenBounds;
     }
 
 

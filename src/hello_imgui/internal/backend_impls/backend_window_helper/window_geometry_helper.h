@@ -19,11 +19,6 @@ namespace HelloImGui
         bool HasInitialWindowSizeInfo();
         ScreenBounds AppWindowBoundsInitial(const std::vector<ScreenBounds>& allMonitorsWorkAreas);
 
-        // Save / Load last run window bounds
-        void WriteLastRunWindowBounds(const ScreenBounds& windowBounds);
-        std::optional<ScreenBounds> ReadLastRunWindowBounds();
-
-
         void EnsureWindowFitsMonitor(BackendApi::IBackendWindowHelper* helper, BackendApi::WindowPointer window);
         void CenterWindowOnMonitor(BackendApi::IBackendWindowHelper* helper, BackendApi::WindowPointer window);
         ScreenBounds GetCurrentMonitorWorkArea(BackendApi::IBackendWindowHelper* backendWindowHelper,

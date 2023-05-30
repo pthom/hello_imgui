@@ -1,4 +1,5 @@
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
+#include "hello_imgui/internal/hello_imgui_ini_settings.h"
 #include "hello_imgui/internal/docking_details.h"
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/image_from_asset.h"
@@ -85,7 +86,7 @@ void AbstractRunner::Run()
         }
 
         if (params.appWindowParams.restorePreviousGeometry)
-            mGeometryHelper->WriteLastRunWindowBounds(mBackendWindowHelper->GetWindowBounds(mWindow));
+            HelloImGuiIniSettings::WriteLastRunWindowBounds(IniFilename_AppWindowPos(), mBackendWindowHelper->GetWindowBounds(mWindow));
         TearDown();
     }
     catch(std::exception&)
@@ -110,7 +111,7 @@ void AbstractRunner::PrepareWindowGeometry()
         IniFilename_AppWindowPos()
         );
     auto windowBounds = mGeometryHelper->AppWindowBoundsInitial(mBackendWindowHelper->GetMonitorsWorkAreas());
-    if (params.appWindowParams.restorePreviousGeometry && mGeometryHelper->ReadLastRunWindowBounds().has_value())
+    if (params.appWindowParams.restorePreviousGeometry && HelloImGuiIniSettings::ReadLastRunWindowBounds(IniFilename_AppWindowPos()).has_value())
         params.appWindowParams.windowGeometry.positionMode = WindowPositionMode::FromCoords;
     params.appWindowParams.windowGeometry.position = windowBounds.position;
     params.appWindowParams.windowGeometry.size = windowBounds.size;
@@ -131,7 +132,8 @@ bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi()
     bool shallSizeRelativeTo96Ppi;
     {
         bool doRestorePreviousGeometry = (params.appWindowParams.restorePreviousGeometry &&
-                                          mGeometryHelper->ReadLastRunWindowBounds().has_value());
+                                          HelloImGuiIniSettings::ReadLastRunWindowBounds(IniFilename_AppWindowPos()).has_value()
+                                          );
 
         bool isWindowPpiRelativeSize = (params.appWindowParams.windowGeometry.windowSizeMeasureMode ==
                                         HelloImGui::WindowSizeMeasureMode::RelativeTo96Ppi);

@@ -150,5 +150,82 @@ namespace HelloImGui
                 return screenBounds;
 
         }
+
+        /*
+        namespace details
+        {
+            std::string AlnumOrUnderscore(const std::string& s)
+            {
+                std::string r;
+                for (char c : s)
+                {
+                    if (isalnum(c))
+                        r += c;
+                    else
+                        r += "_";
+                }
+                return r;
+            }
+
+            std::string SanitizeIniNameOrCategory(const std::string& s)
+            {
+                std::stringstream ss;
+                ss << ImHashStr(s.c_str()) << "_" << AlnumOrUnderscore(s);
+                return ss.str();
+            }
+        }
+
+        void WriteDockableWindowsVisibility(const std::string& iniFilename, const DockingParams& dockingParams)
+        {
+            ini::IniFile iniFile;
+            try
+            {
+                iniFile.load(iniFilename);
+            }
+            catch(const std::exception&)
+            {
+                fprintf(stderr, "TryReadIniFile: Corrupt ini file %s\n", iniFilename.c_str());
+                iniFile = ini::IniFile();
+            }
+
+
+            for (const auto& dockableWindow: dockingParams.dockableWindows)
+            {
+                if (dockableWindow.saveVisibilityInSettings)
+                {
+                    std::string iniValueName = details::SanitizeIniNameOrCategory(dockableWindow.label);
+                    iniFile["DOCKABLE_VISIBILITY"][iniValueName] = dockableWindow.isVisible;
+                }
+            }
+            iniFile.save(iniFilename);
+        }
+
+        void ReadDockableWindowsVisibility(const std::string& iniFilename, DockingParams* inOutDockingParams)
+        {
+            ini::IniFile iniFile;
+            try
+            {
+                iniFile.load(iniFilename);
+            }
+            catch(const std::exception&)
+            {
+                return;
+            }
+
+            for (auto& dockableWindow: inOutDockingParams->dockableWindows)
+            {
+                if (dockableWindow.saveVisibilityInSettings)
+                {
+                    std::string iniValueName = details::SanitizeIniNameOrCategory(dockableWindow.label);
+                    std::string boolString = iniFile["DOCKABLE_VISIBILITY"][iniValueName].as<std::string>();
+
+                    if (boolString == "true")
+                        dockableWindow.isVisible = true;
+                    if (boolString == "false")
+                        dockableWindow.isVisible = false;
+                }
+            }
+        }
+        */
     } // namespace HelloImGuiIniSettings
 } // namespace HelloImGui

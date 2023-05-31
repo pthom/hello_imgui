@@ -523,6 +523,7 @@ _Members:_
    should initially be placed
 * `GuiFunction`: _VoidFunction_. Any function that will render this window's Gui.
 * `isVisible`: _bool, default=true_. Flag that indicates whether this window is visible or not.
+* `saveIsVisible`: _bool, default=true_. Flag that indicates whether the window visibility should be saved in settings or not.
 * `canBeClosed`: _bool, default=true_. Flag that indicates whether the user can close this window.
 * `callBeginEnd`: _bool, default=true_. Flag that indicates whether ImGui::Begin and ImGui::End
    calls should be added automatically (with the given "label"). Set to false if you want to call

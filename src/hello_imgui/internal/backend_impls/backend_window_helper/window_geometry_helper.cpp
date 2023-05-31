@@ -23,7 +23,7 @@ namespace HelloImGui
         }
         if (!mGeometry.sizeAuto)
             return true;
-        if (mRestoreLast && HelloImGuiIniSettings::ReadLastRunWindowBounds(mWindowGeometryIniFilename).has_value())
+        if (mRestoreLast && HelloImGuiIniSettings::LoadLastRunWindowBounds(mWindowGeometryIniFilename).has_value())
             return true;
 
         return false;
@@ -61,7 +61,7 @@ namespace HelloImGui
         //
         std::optional<ScreenBounds> windowBoundsLastRun;
         if (mRestoreLast)
-          windowBoundsLastRun =  HelloImGuiIniSettings::ReadLastRunWindowBounds(mWindowGeometryIniFilename);
+          windowBoundsLastRun = HelloImGuiIniSettings::LoadLastRunWindowBounds(mWindowGeometryIniFilename);
 
         // Window Size
         auto computeSize = [&]() -> ScreenSize

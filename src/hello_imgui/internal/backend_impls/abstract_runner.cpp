@@ -104,7 +104,8 @@ void AbstractRunner::PrepareWindowGeometry()
         IniPartsFilename()
         );
     auto windowBounds = mGeometryHelper->AppWindowBoundsInitial(mBackendWindowHelper->GetMonitorsWorkAreas());
-    if (params.appWindowParams.restorePreviousGeometry && HelloImGuiIniSettings::ReadLastRunWindowBounds(IniPartsFilename()).has_value())
+    if (params.appWindowParams.restorePreviousGeometry &&
+        HelloImGuiIniSettings::LoadLastRunWindowBounds(IniPartsFilename()).has_value())
         params.appWindowParams.windowGeometry.positionMode = WindowPositionMode::FromCoords;
     params.appWindowParams.windowGeometry.position = windowBounds.position;
     params.appWindowParams.windowGeometry.size = windowBounds.size;
@@ -125,7 +126,7 @@ bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi()
     bool shallSizeRelativeTo96Ppi;
     {
         bool doRestorePreviousGeometry = (params.appWindowParams.restorePreviousGeometry &&
-                                          HelloImGuiIniSettings::ReadLastRunWindowBounds(IniPartsFilename()).has_value()
+            HelloImGuiIniSettings::LoadLastRunWindowBounds(IniPartsFilename()).has_value()
                                           );
 
         bool isWindowPpiRelativeSize = (params.appWindowParams.windowGeometry.windowSizeMeasureMode ==
@@ -376,6 +377,7 @@ void AbstractRunner::Setup()
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
 
     HelloImGuiIniSettings::LoadImGuiSettings(IniPartsFilename());
+    HelloImGuiIniSettings::LoadDockableWindowsVisibility(IniPartsFilename(), &params.dockingParams);
 }
 
 void AbstractRunner::ResetDockingLayoutIfNeeded()
@@ -664,7 +666,9 @@ void AbstractRunner::TearDown(bool gotException)
         }
         HelloImGuiIniSettings::SaveImGuiSettings(IniPartsFilename());
         if (params.appWindowParams.restorePreviousGeometry)
-            HelloImGuiIniSettings::WriteLastRunWindowBounds(IniPartsFilename(), mBackendWindowHelper->GetWindowBounds(mWindow));
+            HelloImGuiIniSettings::SaveLastRunWindowBounds(IniPartsFilename(),
+                                                           mBackendWindowHelper->GetWindowBounds(mWindow));
+        HelloImGuiIniSettings::SaveDockableWindowsVisibility(IniPartsFilename(), params.dockingParams);
     }
 
     HelloImGui::internal::Free_ImageFromAssetMap();

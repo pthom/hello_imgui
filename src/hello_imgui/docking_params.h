@@ -190,6 +190,8 @@ struct DockableWindow
   Defines the way docking splits should be applied on the screen in order to create new Dock Spaces
 * `dockableWindows`: _vector[DockableWindow]_.
   List of the dockable windows, together with their Gui code
+* `layoutName`: _string, default="default"_.
+  Displayed name of the layout. Only used in advanced cases when several layouts are available.
 * `layoutCondition`: _enum DockingLayoutCondition, default=DockingLayoutCondition::FirstUseEver_.
   When to apply the docking layout. Choose between FirstUseEver (apply once, then keep user preference),
   ApplicationStart (always reapply at application start), and Never.
@@ -219,6 +221,8 @@ struct DockingParams
     std::vector<DockingSplit> dockingSplits;
 
     std::vector<DockableWindow> dockableWindows;
+
+    std::string layoutName = "Default";
 
     DockingLayoutCondition layoutCondition = DockingLayoutCondition::FirstUseEver;
     bool layoutReset = false;

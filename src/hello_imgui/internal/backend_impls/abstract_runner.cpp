@@ -244,39 +244,6 @@ static std::string _stringToSaneFilename(const std::string& s, const std::string
     return filenameSanitized;
 }
 
-bool _stringEndsWith(std::string const &fullString, std::string const &ending)
-{
-    if (fullString.length() >= ending.length())
-        return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
-    else
-        return false;
-};
-
-bool _stringStartsWith(std::string const &fullString, std::string const &start)
-{
-    if (fullString.length() >= start.length())
-        return (0 == fullString.compare(0, start.length(), start));
-    else
-        return false;
-};
-
-std::string _windowNameInImguiIniLine(const std::string& line)
-{
-    // Search for a line like
-    //     [Window][Commands]
-    // And return "Commands"
-    std::string token = "[Window][";
-    if (line.empty())
-        return "";
-    if (line[line.size() - 1] != ']')
-        return "";
-    if (!_stringStartsWith(line, token))
-        return "";
-
-    std::string windowName = line.substr(token.size(), line.size() - token.size() - 1);
-    return windowName;
-}
-
 std::string AbstractRunner::IniPartsFilename()
 {
     if (! params.iniFilename.empty())
@@ -291,37 +258,6 @@ std::string AbstractRunner::IniPartsFilename()
         else
             return "imgui.ini";
     }
-}
-
-bool AbstractRunner::HasUserDockingSettingsIniIniFile()
-{
-    auto iniParts = HelloImGuiIniSettings::IniParts::LoadFromFile(IniPartsFilename());
-    if (!iniParts.HasIniPart("ImGui"))
-        return false;
-
-    auto iniPartContent = iniParts.GetIniPart("ImGui");
-    std::stringstream ss(iniPartContent);
-
-    std::vector<std::string> windowsWithSettings;
-    std::string line;
-    while (ss)
-    {
-        std::getline (ss, line);
-        std::string w = _windowNameInImguiIniLine(line);
-        if (!w.empty())
-            windowsWithSettings.push_back(w);
-    }
-
-    for (const auto& dockableWindow: params.dockingParams.dockableWindows)
-    {
-        if (
-            std::find(windowsWithSettings.begin(), windowsWithSettings.end(), dockableWindow.label)
-            == windowsWithSettings.end())
-        {
-            return false;
-        }
-    }
-    return true;
 }
 
 void AbstractRunner::Setup()
@@ -376,7 +312,7 @@ void AbstractRunner::Setup()
 
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
 
-    HelloImGuiIniSettings::LoadImGuiSettings(IniPartsFilename());
+    HelloImGuiIniSettings::LoadImGuiSettings(IniPartsFilename(), params.dockingParams.layoutName);
     HelloImGuiIniSettings::LoadDockableWindowsVisibility(IniPartsFilename(), &params.dockingParams);
 }
 
@@ -387,7 +323,7 @@ void AbstractRunner::ResetDockingLayoutIfNeeded()
         params.dockingParams.layoutReset = false;
         if (params.dockingParams.layoutCondition == DockingLayoutCondition::FirstUseEver)
         {
-            if (! HasUserDockingSettingsIniIniFile())
+            if (! HelloImGuiIniSettings::HasUserDockingSettingsIniIniFile(IniPartsFilename(), params.dockingParams))
                 params.dockingParams.layoutReset = true;
         }
         else if (params.dockingParams.layoutCondition == DockingLayoutCondition::ApplicationStart)
@@ -664,7 +600,7 @@ void AbstractRunner::TearDown(bool gotException)
             ImageBuffer b = ScreenshotRgb();
             setFinalAppWindowScreenshotRgbBuffer(b);
         }
-        HelloImGuiIniSettings::SaveImGuiSettings(IniPartsFilename());
+        HelloImGuiIniSettings::SaveImGuiSettings(IniPartsFilename(), params.dockingParams.layoutName);
         if (params.appWindowParams.restorePreviousGeometry)
             HelloImGuiIniSettings::SaveLastRunWindowBounds(IniPartsFilename(),
                                                            mBackendWindowHelper->GetWindowBounds(mWindow));

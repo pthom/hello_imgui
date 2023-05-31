@@ -56,8 +56,9 @@ namespace HelloImGui
         IniParts SplitIniParts(const std::string& s);
         std::string JoinIniParts(const IniParts& parts);
 
-        void LoadImGuiSettings(const std::string& iniPartsFilename);
-        void SaveImGuiSettings(const std::string& iniPartsFilename);
+        void LoadImGuiSettings(const std::string& iniPartsFilename, const std::string& layoutName);
+        void SaveImGuiSettings(const std::string& iniPartsFilename, const std::string& layoutName);
+        bool HasUserDockingSettingsIniIniFile(const std::string& iniPartsFilename, const DockingParams& dockingParams);
 
         void SaveLastRunWindowBounds(const std::string& iniPartsFilename, const ScreenBounds& windowBounds);
         std::optional<ScreenBounds> LoadLastRunWindowBounds(const std::string& iniPartsFilename);

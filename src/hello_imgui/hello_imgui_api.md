@@ -106,13 +106,16 @@ int main(){
 
  Members:
 * `callbacks`: _see [runner_callbacks.h](runner_callbacks.h)_.
-    callbacks.ShowGui() will render the gui, ShowMenus() will show the menus, etc.
+   callbacks.ShowGui() will render the gui, ShowMenus() will show the menus, etc.
 * `appWindowParams`: _see [app_window_params.h](app_window_params.h)_.
-    application Window Params (position, size, title)
+   application Window Params (position, size, title)
 * `imGuiWindowParams`: _see [imgui_window_params.h](imgui_window_params.h)_.
-    imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)
+   imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)
 * `dockingParams`: _see [docking_params.h](docking_params.h)_.
-    dockable windows content and layout
+   dockable windows content and layout
+* `alternativeDockingLayouts`: _vector<DockingParams>, default=empty_
+   List of possible additional layout for the applications. Only used in advanced cases when several layouts are available.
+   _see [docking_params.h](docking_params.h)_.
 * `backendPointers`: _see [backend_pointers.h](backend_pointers.h)_.
    A struct that contains optional pointers to the backend implementations. These pointers will be filled
    when the application starts
@@ -550,6 +553,8 @@ _Members:_
   Defines the way docking splits should be applied on the screen in order to create new Dock Spaces
 * `dockableWindows`: _vector[DockableWindow]_.
   List of the dockable windows, together with their Gui code
+* `layoutName`: _string, default="default"_.
+  Displayed name of the layout. Only used in advanced cases when several layouts are available.
 * `layoutCondition`: _enum DockingLayoutCondition, default=DockingLayoutCondition::FirstUseEver_.
   When to apply the docking layout. Choose between FirstUseEver (apply once, then keep user preference),
   ApplicationStart (always reapply at application start), and Never.

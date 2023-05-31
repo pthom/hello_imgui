@@ -85,7 +85,6 @@ private:
     bool ShallIdleThisFrame_Emscripten();
     std::string IniPartsFilename();
     void ResetDockingLayoutIfNeeded();
-    bool HasUserDockingSettingsIniIniFile();
 
 protected:
     BackendApi::WindowPointer mWindow = nullptr;

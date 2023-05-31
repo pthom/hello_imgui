@@ -5,6 +5,7 @@
 #include "hello_imgui/docking_params.h"
 #include "hello_imgui/backend_pointers.h"
 
+#include <vector>
 
 namespace HelloImGui
 {
@@ -48,13 +49,16 @@ struct FpsIdling
 
  Members:
 * `callbacks`: _see [runner_callbacks.h](runner_callbacks.h)_.
-    callbacks.ShowGui() will render the gui, ShowMenus() will show the menus, etc.
+   callbacks.ShowGui() will render the gui, ShowMenus() will show the menus, etc.
 * `appWindowParams`: _see [app_window_params.h](app_window_params.h)_.
-    application Window Params (position, size, title)
+   application Window Params (position, size, title)
 * `imGuiWindowParams`: _see [imgui_window_params.h](imgui_window_params.h)_.
-    imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)
+   imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)
 * `dockingParams`: _see [docking_params.h](docking_params.h)_.
-    dockable windows content and layout
+   dockable windows content and layout
+* `alternativeDockingLayouts`: _vector<DockingParams>, default=empty_
+   List of possible additional layout for the applications. Only used in advanced cases when several layouts are available.
+   _see [docking_params.h](docking_params.h)_.
 * `backendPointers`: _see [backend_pointers.h](backend_pointers.h)_.
    A struct that contains optional pointers to the backend implementations. These pointers will be filled
    when the application starts
@@ -82,6 +86,7 @@ struct RunnerParams
     AppWindowParams appWindowParams;
     ImGuiWindowParams imGuiWindowParams;
     DockingParams dockingParams;
+    std::vector<DockingParams> alternativeDockingLayouts;
     BackendPointers backendPointers;
     BackendType backendType = BackendType::FirstAvailable;
     FpsIdling fpsIdling;

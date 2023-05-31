@@ -228,6 +228,7 @@ void ApplyDockLayout(DockingParams& dockingParams)
         dockingParams.layoutReset = false;
     }
 }
+
 void ProvideWindowOrDock(const ImGuiWindowParams& imGuiWindowParams, DockingParams &dockingParams)
 {
     if (imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenWindow)

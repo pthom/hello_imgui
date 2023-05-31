@@ -8,6 +8,64 @@ namespace HelloImGui
 {
     namespace HelloImGuiIniSettings
     {
+        namespace details
+        {
+            std::string AlnumOrUnderscore(const std::string& s)
+            {
+                std::string r;
+                for (char c : s)
+                {
+                    if (isalnum(c))
+                        r += c;
+                    else
+                        r += "_";
+                }
+                return r;
+            }
+
+            std::string SanitizeIniNameOrCategory(const std::string& s)
+            {
+                std::stringstream ss;
+                ss << ImHashStr(s.c_str()) << "_" << AlnumOrUnderscore(s);
+                return ss.str();
+            }
+
+            bool _stringEndsWith(std::string const &fullString, std::string const &ending)
+            {
+                if (fullString.length() >= ending.length())
+                    return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
+                else
+                    return false;
+            };
+
+            bool _stringStartsWith(std::string const &fullString, std::string const &start)
+            {
+                if (fullString.length() >= start.length())
+                    return (0 == fullString.compare(0, start.length(), start));
+                else
+                    return false;
+            };
+
+            std::string _windowNameInImguiIniLine(const std::string& line)
+            {
+                // Search for a line like
+                //     [Window][Commands]
+                // And return "Commands"
+                std::string token = "[Window][";
+                if (line.empty())
+                    return "";
+                if (line[line.size() - 1] != ']')
+                    return "";
+                if (!_stringStartsWith(line, token))
+                    return "";
+
+                std::string windowName = line.substr(token.size(), line.size() - token.size() - 1);
+                return windowName;
+            }
+
+        }
+
+
         // Test if a line looks like an IniPart intro, e.g.:
         //      ;;;<<<imgui>>>;;;
         bool _IsIniPartName(const std::string& line)
@@ -166,50 +224,67 @@ namespace HelloImGui
 
         }
 
-        void LoadImGuiSettings(const std::string& iniPartsFilename)
+        void LoadImGuiSettings(const std::string& iniPartsFilename, const std::string& layoutName)
         {
+            std::string iniPartName = "ImGui_" + details::SanitizeIniNameOrCategory(layoutName);
+
             IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
-            if (!iniParts.HasIniPart("ImGui"))
+            if (!iniParts.HasIniPart(iniPartName))
                 return;
-            auto imguiSettingsContent = iniParts.GetIniPart("ImGui");
+            auto imguiSettingsContent = iniParts.GetIniPart(iniPartName);
             ImGui::LoadIniSettingsFromMemory(imguiSettingsContent.c_str());
         }
 
-        void SaveImGuiSettings(const std::string& iniPartsFilename)
+        void SaveImGuiSettings(const std::string& iniPartsFilename, const std::string& layoutName)
         {
+            std::string iniPartName = "ImGui_" + details::SanitizeIniNameOrCategory(layoutName);
+
             std::string imguiSettingsContent = ImGui::SaveIniSettingsToMemory();
 
             IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
-            iniParts.SetIniPart("ImGui", imguiSettingsContent);
+            iniParts.SetIniPart(iniPartName, imguiSettingsContent);
             iniParts.WriteToFile(iniPartsFilename);
         }
 
-
-        namespace details
+        bool HasUserDockingSettingsIniIniFile(const std::string& iniPartsFilename, const DockingParams& dockingParams)
         {
-            std::string AlnumOrUnderscore(const std::string& s)
+            std::string iniPartName = "ImGui_" + details::SanitizeIniNameOrCategory(dockingParams.layoutName);
+
+            auto iniParts = HelloImGuiIniSettings::IniParts::LoadFromFile(iniPartsFilename);
+            if (!iniParts.HasIniPart(iniPartName))
+                return false;
+
+            auto iniPartContent = iniParts.GetIniPart(iniPartName);
+            std::stringstream ss(iniPartContent);
+
+            std::vector<std::string> windowsWithSettings;
+            std::string line;
+            while (ss)
             {
-                std::string r;
-                for (char c : s)
-                {
-                    if (isalnum(c))
-                        r += c;
-                    else
-                        r += "_";
-                }
-                return r;
+                std::getline (ss, line);
+                std::string w = details::_windowNameInImguiIniLine(line);
+                if (!w.empty())
+                    windowsWithSettings.push_back(w);
             }
 
-            std::string SanitizeIniNameOrCategory(const std::string& s)
+        for (const auto& dockableWindow: dockingParams.dockableWindows)
+        {
+            if (
+            std::find(windowsWithSettings.begin(), windowsWithSettings.end(), dockableWindow.label)
+            == windowsWithSettings.end())
             {
-                std::stringstream ss;
-                ss << ImHashStr(s.c_str()) << "_" << AlnumOrUnderscore(s);
-                return ss.str();
+                return false;
             }
         }
+        return true;
+    }
+
+
 
         void SaveDockableWindowsVisibility(const std::string& iniPartsFilename, const DockingParams& dockingParams)
         {
+            std::string iniPartName = "Layout_" + details::SanitizeIniNameOrCategory(dockingParams.layoutName);
+
             ini::IniFile iniFile;
             for (const auto& dockableWindow: dockingParams.dockableWindows)
             {
@@ -221,18 +296,20 @@ namespace HelloImGui
             }
 
             IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
-            iniParts.SetIniPart("Layout_Default", iniFile.encode());
+            iniParts.SetIniPart(iniPartName, iniFile.encode());
             iniParts.WriteToFile(iniPartsFilename);
         }
 
         void LoadDockableWindowsVisibility(const std::string& iniPartsFilename, DockingParams* inOutDockingParams)
         {
+            std::string iniPartName = "Layout_" + details::SanitizeIniNameOrCategory(inOutDockingParams->layoutName);
+
             IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
-            if (! iniParts.HasIniPart("Layout_Default"))
+            if (! iniParts.HasIniPart(iniPartName))
                 return;
 
             ini::IniFile iniFile;
-            iniFile.decode(iniParts.GetIniPart("Layout_Default"));
+            iniFile.decode(iniParts.GetIniPart(iniPartName));
             for (auto& dockableWindow: inOutDockingParams->dockableWindows)
             {
                 if (dockableWindow.saveIsVisible)
@@ -247,5 +324,6 @@ namespace HelloImGui
                 }
             }
         }
+
     } // namespace HelloImGuiIniSettings
 } // namespace HelloImGui

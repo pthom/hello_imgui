@@ -78,8 +78,10 @@ set(HELLOIMGUI_IMGUI_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/external/imgui" CACHE
 #------------------------------------------------------------------------------
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
     option(HELLOIMGUI_BUILD_DEMOS "Build demos" ON)
+    option(HELLOIMGUI_BUILD_TESTS "Build tests" ON)
 else()
     option(HELLOIMGUI_BUILD_DEMOS "Build demos" OFF)
+    option(HELLOIMGUI_BUILD_TESTS "Build tests" OFF)
 endif()
 
 #------------------------------------------------------------------------------

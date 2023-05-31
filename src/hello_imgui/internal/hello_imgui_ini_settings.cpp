@@ -55,7 +55,7 @@ namespace HelloImGui
 
         std::string JoinIniParts(const IniParts& iniParts)
         {
-            std::string r;
+            std::string r = ";;; !!! This configuration is handled by HelloImGui and stores several Ini Files, separated by markers like this:\n           ;;;<<<INI_NAME>>>;;;\n\n";
             for (const auto& iniPart: iniParts.Parts)
             {
                 r += ";;;<<<" + iniPart.Name + ">>>;;;\n";
@@ -94,30 +94,45 @@ namespace HelloImGui
         }
 
 
-        void WriteLastRunWindowBounds(const std::string& iniFilename, const ScreenBounds& windowBounds)
+        IniParts IniParts::LoadFromFile(const std::string& iniPartsFilename)
         {
-            ini::IniFile iniFile;
-            try
-            {
-                iniFile.load(iniFilename);
-            }
-            catch(const std::exception&)
-            {
-                fprintf(stderr, "WindowGeometryHelper::WriteLastRunWindowBounds: Corrupt ini file %s\n", iniFilename.c_str());
-                iniFile = ini::IniFile();
-            }
-
-            iniFile["WIN"]["WindowPosition"] = IntPairToString(windowBounds.position);
-            iniFile["WIN"]["WindowSize"] = IntPairToString(windowBounds.size);
-            iniFile.save(iniFilename);
+            std::string iniPartsContent = fplus::read_text_file(iniPartsFilename)();
+            auto iniParts = SplitIniParts(iniPartsContent);
+            return iniParts;
         }
 
-        std::optional<ScreenBounds> ReadLastRunWindowBounds(const std::string& iniFilename)
+        void IniParts::WriteToFile(const std::string& iniPartsFilename)
         {
+            std::string iniPartsContent = JoinIniParts(*this);
+            fplus::write_text_file(iniPartsFilename, iniPartsContent)();
+        }
+
+        void WriteLastRunWindowBounds(const std::string& iniPartsFilename, const ScreenBounds& windowBounds)
+        {
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+
+            ini::IniFile iniFile;
+            iniFile["AppWindow"]["WindowPosition"] = IntPairToString(windowBounds.position);
+            iniFile["AppWindow"]["WindowSize"] = IntPairToString(windowBounds.size);
+            std::string iniContent = iniFile.encode();
+
+            iniParts.SetIniPart("AppWindow", iniContent);
+            iniParts.WriteToFile(iniPartsFilename);
+        }
+
+        std::optional<ScreenBounds> ReadLastRunWindowBounds(const std::string& iniPartsFilename)
+        {
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+
+            if (!iniParts.HasIniPart("AppWindow"))
+                return std::nullopt;
+
+
+            auto iniPartContent = iniParts.GetIniPart("AppWindow");
             ini::IniFile iniFile;
             try
             {
-                iniFile.load(iniFilename);
+                iniFile.decode(iniPartContent);
             }
             catch(const std::exception&)
             {
@@ -128,7 +143,7 @@ namespace HelloImGui
             bool failed = false;
 
             {
-                auto strValue = iniFile["WIN"]["WindowPosition"].as<std::string>();
+                auto strValue = iniFile["AppWindow"]["WindowPosition"].as<std::string>();
                 auto intPair = StringToIntPair(strValue);
                 if (intPair.has_value())
                     screenBounds.position = *intPair;
@@ -136,7 +151,7 @@ namespace HelloImGui
                     failed = true;
             }
             {
-                auto strValue = iniFile["WIN"]["WindowSize"].as<std::string>();
+                auto strValue = iniFile["AppWindow"]["WindowSize"].as<std::string>();
                 auto intPair = StringToIntPair(strValue);
                 if (intPair.has_value())
                     screenBounds.size = *intPair;
@@ -149,6 +164,24 @@ namespace HelloImGui
             else
                 return screenBounds;
 
+        }
+
+        void LoadImGuiSettings(const std::string& iniPartsFilename)
+        {
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            if (!iniParts.HasIniPart("ImGui"))
+                return;
+            auto imguiSettingsContent = iniParts.GetIniPart("ImGui");
+            ImGui::LoadIniSettingsFromMemory(imguiSettingsContent.c_str());
+        }
+
+        void SaveImGuiSettings(const std::string& iniPartsFilename)
+        {
+            std::string imguiSettingsContent = ImGui::SaveIniSettingsToMemory();
+
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            iniParts.SetIniPart("ImGui", imguiSettingsContent);
+            iniParts.WriteToFile(iniPartsFilename);
         }
 
         /*

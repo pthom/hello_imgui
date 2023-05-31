@@ -13,6 +13,7 @@
 #include <chrono>
 #include <cassert>
 #include <fstream>
+#include <sstream>
 #include <thread>
 
 #ifdef HELLOIMGUI_MACOS
@@ -79,20 +80,12 @@ void AbstractRunner::Run()
         while (!params.appShallExit)
             CreateFramesAndRender();
 
-        // Store screenshot before exiting
-        {
-            ImageBuffer b = ScreenshotRgb();
-            setFinalAppWindowScreenshotRgbBuffer(b);
-        }
-
-        if (params.appWindowParams.restorePreviousGeometry)
-            HelloImGuiIniSettings::WriteLastRunWindowBounds(IniFilename_AppWindowPos(), mBackendWindowHelper->GetWindowBounds(mWindow));
-        TearDown();
+        TearDown(false);
     }
     catch(std::exception&)
     {
         // Late handling of user exceptions: TearDown backend and rethrow
-        TearDown();
+        TearDown(true);
         throw;
     }
 #endif
@@ -108,10 +101,10 @@ void AbstractRunner::PrepareWindowGeometry()
     mGeometryHelper = std::make_unique<WindowGeometryHelper>(
         params.appWindowParams.windowGeometry,
         params.appWindowParams.restorePreviousGeometry,
-        IniFilename_AppWindowPos()
+        IniPartsFilename()
         );
     auto windowBounds = mGeometryHelper->AppWindowBoundsInitial(mBackendWindowHelper->GetMonitorsWorkAreas());
-    if (params.appWindowParams.restorePreviousGeometry && HelloImGuiIniSettings::ReadLastRunWindowBounds(IniFilename_AppWindowPos()).has_value())
+    if (params.appWindowParams.restorePreviousGeometry && HelloImGuiIniSettings::ReadLastRunWindowBounds(IniPartsFilename()).has_value())
         params.appWindowParams.windowGeometry.positionMode = WindowPositionMode::FromCoords;
     params.appWindowParams.windowGeometry.position = windowBounds.position;
     params.appWindowParams.windowGeometry.size = windowBounds.size;
@@ -132,7 +125,7 @@ bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi()
     bool shallSizeRelativeTo96Ppi;
     {
         bool doRestorePreviousGeometry = (params.appWindowParams.restorePreviousGeometry &&
-                                          HelloImGuiIniSettings::ReadLastRunWindowBounds(IniFilename_AppWindowPos()).has_value()
+                                          HelloImGuiIniSettings::ReadLastRunWindowBounds(IniPartsFilename()).has_value()
                                           );
 
         bool isWindowPpiRelativeSize = (params.appWindowParams.windowGeometry.windowSizeMeasureMode ==
@@ -283,18 +276,7 @@ std::string _windowNameInImguiIniLine(const std::string& line)
     return windowName;
 }
 
-std::string AbstractRunner::IniFilename_AppWindowPos()
-{
-    std::string imguiIniFile = IniFilename_ImGui();
-
-    if (_stringEndsWith(imguiIniFile, ".ini"))
-        imguiIniFile = imguiIniFile.substr(0, imguiIniFile.size() - 4);
-
-    std::string iniFileAppWindowPos = imguiIniFile + "_appWindow.ini";
-    return iniFileAppWindowPos;
-}
-
-std::string AbstractRunner::IniFilename_ImGui()
+std::string AbstractRunner::IniPartsFilename()
 {
     if (! params.iniFilename.empty())
         return params.iniFilename.c_str();
@@ -312,15 +294,18 @@ std::string AbstractRunner::IniFilename_ImGui()
 
 bool AbstractRunner::HasUserDockingSettingsIniIniFile()
 {
-    std::ifstream ifs(IniFilename_ImGui());
-    if ( !ifs.is_open() )
+    auto iniParts = HelloImGuiIniSettings::IniParts::LoadFromFile(IniPartsFilename());
+    if (!iniParts.HasIniPart("ImGui"))
         return false;
+
+    auto iniPartContent = iniParts.GetIniPart("ImGui");
+    std::stringstream ss(iniPartContent);
 
     std::vector<std::string> windowsWithSettings;
     std::string line;
-    while ( ifs )
+    while (ss)
     {
-        std::getline (ifs, line);
+        std::getline (ss, line);
         std::string w = _windowNameInImguiIniLine(line);
         if (!w.empty())
             windowsWithSettings.push_back(w);
@@ -359,8 +344,7 @@ void AbstractRunner::Setup()
     ImGui::CreateContext();
 #endif
 
-    static std::string imguiIniFilename = IniFilename_ImGui();
-    ImGui::GetIO().IniFilename = imguiIniFilename.c_str();
+    ImGui::GetIO().IniFilename = NULL;
 
     ImGui::GetIO().FontGlobalScale = this->ImGuiDefaultFontGlobalScale();
     Impl_SetupImgGuiContext();
@@ -390,6 +374,8 @@ void AbstractRunner::Setup()
     ResetDockingLayoutIfNeeded();
 
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
+
+    HelloImGuiIniSettings::LoadImGuiSettings(IniPartsFilename());
 }
 
 void AbstractRunner::ResetDockingLayoutIfNeeded()
@@ -667,10 +653,21 @@ void AbstractRunner::OnLowMemory()
 #endif
 }
 
-void AbstractRunner::TearDown()
+void AbstractRunner::TearDown(bool gotException)
 {
-    HelloImGui::internal::Free_ImageFromAssetMap();
+    if (! gotException)
+    {
+        // Store screenshot before exiting
+        {
+            ImageBuffer b = ScreenshotRgb();
+            setFinalAppWindowScreenshotRgbBuffer(b);
+        }
+        HelloImGuiIniSettings::SaveImGuiSettings(IniPartsFilename());
+        if (params.appWindowParams.restorePreviousGeometry)
+            HelloImGuiIniSettings::WriteLastRunWindowBounds(IniPartsFilename(), mBackendWindowHelper->GetWindowBounds(mWindow));
+    }
 
+    HelloImGui::internal::Free_ImageFromAssetMap();
     if (params.callbacks.BeforeExit)
         params.callbacks.BeforeExit();
     Impl_Cleanup();

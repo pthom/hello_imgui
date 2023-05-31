@@ -48,13 +48,19 @@ namespace HelloImGui
             std::string    GetIniPart(const std::string& name);
             void           SetIniPart(const std::string& name, const std::string& content);
 
+            static IniParts LoadFromFile(const std::string& iniPartsFilename);
+            void            WriteToFile(const std::string& iniPartsFilename);
+
             std::vector<IniPart> Parts;
         };
         IniParts SplitIniParts(const std::string& s);
         std::string JoinIniParts(const IniParts& parts);
 
-        void WriteLastRunWindowBounds(const std::string& iniFilename, const ScreenBounds& windowBounds);
-        std::optional<ScreenBounds> ReadLastRunWindowBounds(const std::string& iniFilename);
+        void LoadImGuiSettings(const std::string& iniPartsFilename);
+        void SaveImGuiSettings(const std::string& iniPartsFilename);
+
+        void WriteLastRunWindowBounds(const std::string& iniPartsFilename, const ScreenBounds& windowBounds);
+        std::optional<ScreenBounds> ReadLastRunWindowBounds(const std::string& iniPartsFilename);
 
         // void WriteDockableWindowsVisibility(const std::string& iniFilename, const DockingParams& dockingParams);
         // void ReadDockableWindowsVisibility(const std::string& iniFilename, DockingParams* inOutDockingParams);

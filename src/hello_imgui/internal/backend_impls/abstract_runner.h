@@ -22,7 +22,7 @@ class AbstractRunner
     void Setup();
     void CreateFramesAndRender();
     void RenderGui();
-    void TearDown();
+    void TearDown(bool gotException);
 
    public:
     // Events for mobile devices
@@ -83,8 +83,7 @@ private:
     // Logic for idling
     void IdleBySleeping();
     bool ShallIdleThisFrame_Emscripten();
-    std::string IniFilename_AppWindowPos();
-    std::string IniFilename_ImGui();
+    std::string IniPartsFilename();
     void ResetDockingLayoutIfNeeded();
     bool HasUserDockingSettingsIniIniFile();
 

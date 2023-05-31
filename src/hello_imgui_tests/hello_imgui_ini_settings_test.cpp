@@ -4,7 +4,10 @@
 
 TEST_CASE("testing HelloImGuiIniSettings::SplitIniParts")
 {
-    std::string s = R"(;;;<<<imgui>>>;;;
+    std::string s = R"(;;; !!! This configuration is handled by HelloImGui and stores several Ini Files, separated by markers like this:
+           ;;;<<<INI_NAME>>>;;;
+
+;;;<<<imgui>>>;;;
 [Window][Main window (title bar invisible)]
 Pos=0,0
 Size=1000,800

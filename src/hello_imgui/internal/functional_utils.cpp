@@ -13,7 +13,7 @@ namespace HelloImGui
             std::vector<std::string>result;
             while(str.size())
             {
-                int index = str.find(token);
+                size_t index = str.find(token);
                 if(index != std::string::npos)
                 {
                     result.push_back(str.substr(0,index));
@@ -40,7 +40,7 @@ namespace HelloImGui
             auto stream = std::ifstream(path);
             stream.exceptions(std::ios_base::badbit);
 
-            if (not stream)
+            if (! stream)
                 return "";
 
             auto out = std::string();

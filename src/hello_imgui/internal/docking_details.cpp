@@ -56,34 +56,46 @@ void ApplyWindowDockingLocations(
 
 void MenuView_Layouts(RunnerParams& runnerParams)
 {
-    if (runnerParams.alternativeDockingLayouts.empty())
-        return;
+    bool hasAlternativeDockingLayouts = (runnerParams.alternativeDockingLayouts.size() > 0);
+
+    if (hasAlternativeDockingLayouts)
+        ImGui::MenuItem("------ Layouts ------", nullptr, false, false);
+
+    if (ImGui::MenuItem("Restore default layout##szzz"))
+        runnerParams.dockingParams.layoutReset = true;
 
     ImGui::PushID("Layouts##asldqsl");
-    ImGui::MenuItem("Layouts", nullptr, false, false);
-    ImGui::MenuItem(runnerParams.dockingParams.layoutName.c_str(), nullptr, true);
-    for (const auto& layout: runnerParams.alternativeDockingLayouts)
+
+    if (hasAlternativeDockingLayouts)
     {
-        if (ImGui::MenuItem(layout.layoutName.c_str()))
+        if (ImGui::BeginMenu("Select Layout"))
         {
-            HelloImGui::SwitchLayout(layout.layoutName);
+            ImGui::MenuItem(runnerParams.dockingParams.layoutName.c_str(), nullptr, true);
+            for (const auto& layout: runnerParams.alternativeDockingLayouts)
+            {
+                if (ImGui::MenuItem(layout.layoutName.c_str()))
+                {
+                    HelloImGui::SwitchLayout(layout.layoutName);
+                }
+            }
+            ImGui::EndMenu();
         }
     }
+    ImGui::Separator();
+
     ImGui::PopID();
 }
 
 void MenuView_DockableWindows(RunnerParams& runnerParams)
 {
-    MenuView_Layouts(runnerParams);
-
     auto & dockableWindows = runnerParams.dockingParams.dockableWindows;
     if (dockableWindows.empty())
         return;
 
-    ImGui::MenuItem("Dockable windows##asldqsl", nullptr, false, false);
+    ImGui::PushID("DockableWindows##asldqsl");
 
-    if (ImGui::MenuItem("Restore default layout##szzz"))
-        runnerParams.dockingParams.layoutReset = true;
+    ImGui::MenuItem("------ Windows ------", nullptr, false, false);
+
 
     if (ImGui::MenuItem("View All##DSQSDDF"))
         for (auto& dockableWindow: runnerParams.dockingParams.dockableWindows)
@@ -94,44 +106,53 @@ void MenuView_DockableWindows(RunnerParams& runnerParams)
             if (dockableWindow.canBeClosed && dockableWindow.includeInViewMenu)
                 dockableWindow.isVisible = false;
 
-    for (auto& dockableWindow: runnerParams.dockingParams.dockableWindows)
     {
-        if (!dockableWindow.includeInViewMenu)
-            continue;
-        if (dockableWindow.canBeClosed)
+        for (auto& dockableWindow: runnerParams.dockingParams.dockableWindows)
         {
-            if (ImGui::MenuItem(dockableWindow.label.c_str(), nullptr, dockableWindow.isVisible))
-                dockableWindow.isVisible = ! dockableWindow.isVisible;
+            if (!dockableWindow.includeInViewMenu)
+                continue;
+            if (dockableWindow.canBeClosed)
+            {
+                if (ImGui::MenuItem(dockableWindow.label.c_str(), nullptr, dockableWindow.isVisible))
+                    dockableWindow.isVisible = ! dockableWindow.isVisible;
+            }
+            else
+            {
+                ImGui::MenuItem(dockableWindow.label.c_str(), nullptr, dockableWindow.isVisible, false);
+            }
         }
-        else
-        {
-            ImGui::MenuItem(dockableWindow.label.c_str(), nullptr, dockableWindow.isVisible, false);
-        }
+    }
+
+    ImGui::Separator();
+
+    ImGui::PopID();
+}
+
+void MenuView_Misc(RunnerParams& runnerParams)
+{
+    ImGui::MenuItem("------ Misc ------", nullptr, false, false);
+    Theme_MenuGui(runnerParams.imGuiWindowParams.tweakedTheme);
+
+    if (ImGui::MenuItem("View Status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatusBar))
+        runnerParams.imGuiWindowParams.showStatusBar = ! runnerParams.imGuiWindowParams.showStatusBar;
+
+    if (ImGui::BeginMenu("FPS"))
+    {
+        if (ImGui::MenuItem("FPS in status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatus_Fps))
+            runnerParams.imGuiWindowParams.showStatus_Fps = ! runnerParams.imGuiWindowParams.showStatus_Fps;
+
+        ImGui::MenuItem("Enable Idling", nullptr, &runnerParams.fpsIdling.enableIdling);
+        ImGui::EndMenu();
     }
 }
 
-
 void ShowViewMenu(RunnerParams & runnerParams)
 {
-    (void)runnerParams;
     if (ImGui::BeginMenu("View##kdsflmkdflm"))
     {
+        MenuView_Layouts(runnerParams);
         MenuView_DockableWindows(runnerParams);
-        ImGui::Separator();
-        Theme_MenuGui(runnerParams.imGuiWindowParams.tweakedTheme);
-        ImGui::Separator();
-
-        if (ImGui::MenuItem("View Status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatusBar))
-            runnerParams.imGuiWindowParams.showStatusBar = ! runnerParams.imGuiWindowParams.showStatusBar;
-
-        if (ImGui::BeginMenu("FPS"))
-        {
-            if (ImGui::MenuItem("FPS in status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatus_Fps))
-                runnerParams.imGuiWindowParams.showStatus_Fps = ! runnerParams.imGuiWindowParams.showStatus_Fps;
-
-            ImGui::MenuItem("Enable Idling", nullptr, &runnerParams.fpsIdling.enableIdling);
-            ImGui::EndMenu();
-        }
+        MenuView_Misc(runnerParams);
 
         ImGui::EndMenu();
     }

@@ -1,6 +1,6 @@
 #include "hello_imgui/internal/hello_imgui_ini_settings.h"
 #include "hello_imgui/internal/inicpp.h"
-#include "hello_imgui/internal/fplus_all_in_one.hpp"
+#include "hello_imgui/internal/functional_utils.h"
 #include "imgui_internal.h"
 
 
@@ -90,7 +90,7 @@ namespace HelloImGui
             IniParts iniParts;
             std::optional<IniParts::IniPart> currentPart;
 
-            auto lines = fplus::split_lines(true, s);
+            auto lines = FunctionalUtils::split_lines(s);
             for (const std::string& line: lines)
             {
                 if (_IsIniPartName(line))
@@ -154,7 +154,7 @@ namespace HelloImGui
 
         IniParts IniParts::LoadFromFile(const std::string& iniPartsFilename)
         {
-            std::string iniPartsContent = fplus::read_text_file(iniPartsFilename)();
+            std::string iniPartsContent = FunctionalUtils::read_text_file_or_empty(iniPartsFilename);
             auto iniParts = SplitIniParts(iniPartsContent);
             return iniParts;
         }
@@ -162,7 +162,7 @@ namespace HelloImGui
         void IniParts::WriteToFile(const std::string& iniPartsFilename)
         {
             std::string iniPartsContent = JoinIniParts(*this);
-            fplus::write_text_file(iniPartsFilename, iniPartsContent)();
+            FunctionalUtils::write_text_file(iniPartsFilename, iniPartsContent);
         }
 
         void SaveLastRunWindowBounds(const std::string& iniPartsFilename, const ScreenBounds& windowBounds)

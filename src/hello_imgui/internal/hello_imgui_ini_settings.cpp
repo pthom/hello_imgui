@@ -280,7 +280,6 @@ namespace HelloImGui
     }
 
 
-
         void SaveDockableWindowsVisibility(const std::string& iniPartsFilename, const DockingParams& dockingParams)
         {
             std::string iniPartName = "Layout_" + details::SanitizeIniNameOrCategory(dockingParams.layoutName);
@@ -324,6 +323,42 @@ namespace HelloImGui
                 }
             }
         }
+
+        void LoadSelectedAlternativeLayoutAndTheme(const std::string& iniPartsFilename, RunnerParams* inOutRunnerParams)
+        {
+            std::string iniPartName = "HelloImGui_Misc";
+
+            std::string layoutName = "";
+            {
+                if (inOutRunnerParams->rememberSelectedAlternativeLayout)
+                {
+                    IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+                    if (iniParts.HasIniPart(iniPartName))
+                    {
+                        ini::IniFile iniFile;
+                        iniFile.decode(iniParts.GetIniPart(iniPartName));
+                        layoutName = iniFile["Layout"]["Name"].as<std::string>();
+                    }
+                }
+            }
+
+            HelloImGui::SwitchLayout(layoutName);
+        }
+
+        void SaveSelectedAlternativeLayoutAndTheme(const std::string& iniPartsFilename, const RunnerParams& runnerParams)
+        {
+            if (runnerParams.rememberSelectedAlternativeLayout)
+            {
+                std::string iniPartName = "HelloImGui_Misc";
+                ini::IniFile iniFile;
+                iniFile["Layout"]["Name"] = runnerParams.dockingParams.layoutName;
+
+                IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+                iniParts.SetIniPart(iniPartName, iniFile.encode());
+                iniParts.WriteToFile(iniPartsFilename);
+            }
+        }
+
 
     } // namespace HelloImGuiIniSettings
 } // namespace HelloImGui

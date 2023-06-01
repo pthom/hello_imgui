@@ -1,7 +1,7 @@
 #pragma once
 
 #include "hello_imgui/screen_bounds.h"
-#include "hello_imgui/docking_params.h"
+#include "hello_imgui/hello_imgui.h"
 
 #include <string>
 #include <optional>
@@ -56,12 +56,20 @@ namespace HelloImGui
         IniParts SplitIniParts(const std::string& s);
         std::string JoinIniParts(const IniParts& parts);
 
+        //
+        // The settings below are global to the app
+        //
+        void SaveLastRunWindowBounds(const std::string& iniPartsFilename, const ScreenBounds& windowBounds);
+        std::optional<ScreenBounds> LoadLastRunWindowBounds(const std::string& iniPartsFilename);
+        void SaveSelectedAlternativeLayoutAndTheme(const std::string& iniPartsFilename, const RunnerParams& runnerParams);
+        void LoadSelectedAlternativeLayoutAndTheme(const std::string& iniPartsFilename, RunnerParams* inOutRunnerParams);
+
+        //
+        // The settings below are saved with values that can differ from layout to layout
+        //
         void LoadImGuiSettings(const std::string& iniPartsFilename, const std::string& layoutName);
         void SaveImGuiSettings(const std::string& iniPartsFilename, const std::string& layoutName);
         bool HasUserDockingSettingsInImguiSettings(const std::string& iniPartsFilename, const DockingParams& dockingParams);
-
-        void SaveLastRunWindowBounds(const std::string& iniPartsFilename, const ScreenBounds& windowBounds);
-        std::optional<ScreenBounds> LoadLastRunWindowBounds(const std::string& iniPartsFilename);
 
         void SaveDockableWindowsVisibility(const std::string& iniPartsFilename, const DockingParams& dockingParams);
         void LoadDockableWindowsVisibility(const std::string& iniPartsFilename, DockingParams* inOutDockingParams);

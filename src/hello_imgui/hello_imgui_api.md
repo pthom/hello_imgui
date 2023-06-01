@@ -124,7 +124,8 @@ int main(){
    dockable windows content and layout
 * `alternativeDockingLayouts`: _vector<DockingParams>, default=empty_
    List of possible additional layout for the applications. Only used in advanced cases when several layouts are available.
-   _see [docking_params.h](docking_params.h)_.
+* `rememberSelectedAlternativeLayout`: _bool, default=true_
+   Shall the application remember the last selected layout. Only used in advanced cases when several layouts are available.
 * `backendPointers`: _see [backend_pointers.h](backend_pointers.h)_.
    A struct that contains optional pointers to the backend implementations. These pointers will be filled
    when the application starts

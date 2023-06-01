@@ -266,19 +266,26 @@ void AbstractRunner::LayoutSettings_SwitchLayout(const std::string& layoutName)
     if (params.dockingParams.layoutName == layoutName)
         return;
 
-    const DockingParams* wantedLayout = nullptr;
-    for (const auto& layout: params.alternativeDockingLayouts)
-        if (layout.layoutName == layoutName)
-            wantedLayout = &layout;
-
-    IM_ASSERT(wantedLayout != nullptr);
-
     // if we previously loaded another layout, save its settings before changing
     {
         static bool isFirstLayoutSwitch = true;
         if (! isFirstLayoutSwitch)
             LayoutSettings_Save();
         isFirstLayoutSwitch = false;
+    }
+
+    if (layoutName.empty())
+        return;
+
+    const DockingParams* wantedLayout = nullptr;
+    for (const auto& layout: params.alternativeDockingLayouts)
+        if (layout.layoutName == layoutName)
+            wantedLayout = &layout;
+
+    if (wantedLayout == nullptr)
+    {
+        fprintf(stderr, "Can't switch to non existing layout %s\n", layoutName.c_str());
+        return;
     }
 
     std::vector<DockingParams> newAlternativeDockingLayouts;
@@ -363,6 +370,7 @@ void AbstractRunner::Setup()
     ImGui::GetIO().Fonts->Build();
 
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
+    HelloImGuiIniSettings::LoadSelectedAlternativeLayoutAndTheme(IniPartsFilename(), &params);
     SetLayoutResetIfNeeded();
 
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
@@ -659,6 +667,7 @@ void AbstractRunner::TearDown(bool gotException)
             HelloImGuiIniSettings::SaveLastRunWindowBounds(IniPartsFilename(),
                                                            mBackendWindowHelper->GetWindowBounds(mWindow));
         LayoutSettings_Save();
+        HelloImGuiIniSettings::SaveSelectedAlternativeLayoutAndTheme(IniPartsFilename(), params);
     }
 
     HelloImGui::internal::Free_ImageFromAssetMap();

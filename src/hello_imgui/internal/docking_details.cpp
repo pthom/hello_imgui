@@ -131,7 +131,6 @@ void MenuView_DockableWindows(RunnerParams& runnerParams)
 void MenuView_Misc(RunnerParams& runnerParams)
 {
     ImGui::MenuItem("------ Misc ------", nullptr, false, false);
-    Theme_MenuGui(runnerParams.imGuiWindowParams.tweakedTheme);
 
     if (ImGui::MenuItem("View Status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatusBar))
         runnerParams.imGuiWindowParams.showStatusBar = ! runnerParams.imGuiWindowParams.showStatusBar;
@@ -144,6 +143,8 @@ void MenuView_Misc(RunnerParams& runnerParams)
         ImGui::MenuItem("Enable Idling", nullptr, &runnerParams.fpsIdling.enableIdling);
         ImGui::EndMenu();
     }
+
+    Theme_MenuGui(runnerParams.imGuiWindowParams.tweakedTheme);
 }
 
 void ShowViewMenu(RunnerParams & runnerParams)

@@ -246,7 +246,7 @@ namespace HelloImGui
             iniParts.WriteToFile(iniPartsFilename);
         }
 
-        bool HasUserDockingSettingsIniIniFile(const std::string& iniPartsFilename, const DockingParams& dockingParams)
+        bool HasUserDockingSettingsInImguiSettings(const std::string& iniPartsFilename, const DockingParams& dockingParams)
         {
             std::string iniPartName = "ImGui_" + details::SanitizeIniNameOrCategory(dockingParams.layoutName);
 

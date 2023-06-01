@@ -273,8 +273,13 @@ void AbstractRunner::LayoutSettings_SwitchLayout(const std::string& layoutName)
 
     IM_ASSERT(wantedLayout != nullptr);
 
-    // Save previous layout settings before changing layout
-    LayoutSettings_Save();
+    // if we previously loaded another layout, save its settings before changing
+    {
+        static bool isFirstLayoutSwitch = true;
+        if (! isFirstLayoutSwitch)
+            LayoutSettings_Save();
+        isFirstLayoutSwitch = false;
+    }
 
     std::vector<DockingParams> newAlternativeDockingLayouts;
     newAlternativeDockingLayouts.push_back(params.dockingParams);
@@ -369,7 +374,7 @@ void AbstractRunner::SetLayoutResetIfNeeded()
     {
         if (params.dockingParams.layoutCondition == DockingLayoutCondition::FirstUseEver)
         {
-            if (! HelloImGuiIniSettings::HasUserDockingSettingsIniIniFile(IniPartsFilename(), params.dockingParams))
+            if (!HelloImGuiIniSettings::HasUserDockingSettingsInImguiSettings(IniPartsFilename(), params.dockingParams))
                 params.dockingParams.layoutReset = true;
             else
                 params.dockingParams.layoutReset = false;

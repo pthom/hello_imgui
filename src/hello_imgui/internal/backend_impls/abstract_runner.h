@@ -45,6 +45,8 @@ class AbstractRunner
     // returns the default value that should be stored inside `ImGui::GetIO().FontGlobalScale`
     float ImGuiDefaultFontGlobalScale();
 
+    void LayoutSettings_SwitchLayout(const std::string& layoutName);
+
    protected:
     friend std::string GlslVersion();
 
@@ -84,7 +86,12 @@ private:
     void IdleBySleeping();
     bool ShallIdleThisFrame_Emscripten();
     std::string IniPartsFilename();
-    void ResetDockingLayoutIfNeeded();
+
+    void SetLayoutResetIfNeeded();
+
+    void LayoutSettings_HandleChanges();
+    void LayoutSettings_Load();
+    void LayoutSettings_Save();
 
 protected:
     BackendApi::WindowPointer mWindow = nullptr;

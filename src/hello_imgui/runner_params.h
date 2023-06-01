@@ -85,8 +85,10 @@ struct RunnerParams
     RunnerCallbacks callbacks;
     AppWindowParams appWindowParams;
     ImGuiWindowParams imGuiWindowParams;
+
     DockingParams dockingParams;
     std::vector<DockingParams> alternativeDockingLayouts;
+
     BackendPointers backendPointers;
     BackendType backendType = BackendType::FirstAvailable;
     FpsIdling fpsIdling;

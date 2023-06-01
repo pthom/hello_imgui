@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
 #include "hello_imgui/hello_imgui_theme.h"
+#include "hello_imgui/hello_imgui.h"
 #include "imgui_internal.h"
 #include <map>
 #include <cassert>
@@ -53,8 +54,28 @@ void ApplyWindowDockingLocations(
         );
 }
 
+void MenuView_Layouts(RunnerParams& runnerParams)
+{
+    if (runnerParams.alternativeDockingLayouts.empty())
+        return;
+
+    ImGui::PushID("Layouts##asldqsl");
+    ImGui::MenuItem("Layouts", nullptr, false, false);
+    ImGui::MenuItem(runnerParams.dockingParams.layoutName.c_str(), nullptr, true);
+    for (const auto& layout: runnerParams.alternativeDockingLayouts)
+    {
+        if (ImGui::MenuItem(layout.layoutName.c_str()))
+        {
+            HelloImGui::SwitchLayout(layout.layoutName);
+        }
+    }
+    ImGui::PopID();
+}
+
 void MenuView_DockableWindows(RunnerParams& runnerParams)
 {
+    MenuView_Layouts(runnerParams);
+
     auto & dockableWindows = runnerParams.dockingParams.dockableWindows;
     if (dockableWindows.empty())
         return;
@@ -218,11 +239,13 @@ bool IsMainDockSpaceAlreadySplit(ImGuiID mainDockspaceId)
 void ApplyDockLayout(DockingParams& dockingParams)
 {
     bool isFirstFrame = ImGui::GetFrameCount() <= 1;
-    if (dockingParams.layoutReset && !isFirstFrame)
+    if (isFirstFrame)
+        return;
+    if (dockingParams.layoutReset)
     {
         ImGuiID mainDockspaceId = ImGui::GetID("MainDockSpace");
         ImGui::DockBuilderRemoveNodeChildNodes(mainDockspaceId);
-        if (!IsMainDockSpaceAlreadySplit(mainDockspaceId))
+        //if (!IsMainDockSpaceAlreadySplit(mainDockspaceId))
             ApplyDockingSplits(dockingParams.dockingSplits);
         ApplyWindowDockingLocations(dockingParams.dockableWindows);
         dockingParams.layoutReset = false;

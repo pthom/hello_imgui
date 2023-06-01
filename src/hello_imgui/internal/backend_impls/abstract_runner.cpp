@@ -232,20 +232,21 @@ void AbstractRunner::HandleDpiOnSecondFrame()
     }
 }
 
-static std::string _stringToSaneFilename(const std::string& s, const std::string& extension)
-{
-    std::string filenameSanitized;
-    for (char c : s)
-        if (isalnum(c))
-            filenameSanitized += c;
-        else
-            filenameSanitized += "_";
-    filenameSanitized += extension;
-    return filenameSanitized;
-}
 
 std::string AbstractRunner::IniPartsFilename()
 {
+    auto _stringToSaneFilename=[](const std::string& s, const std::string& extension) -> std::string
+    {
+        std::string filenameSanitized;
+        for (char c : s)
+            if (isalnum(c))
+                filenameSanitized += c;
+            else
+                filenameSanitized += "_";
+        filenameSanitized += extension;
+        return filenameSanitized;
+    };
+
     if (! params.iniFilename.empty())
         return params.iniFilename.c_str();
     else
@@ -258,6 +259,55 @@ std::string AbstractRunner::IniPartsFilename()
         else
             return "imgui.ini";
     }
+}
+
+void AbstractRunner::LayoutSettings_SwitchLayout(const std::string& layoutName)
+{
+    if (params.dockingParams.layoutName == layoutName)
+        return;
+
+    const DockingParams* wantedLayout = nullptr;
+    for (const auto& layout: params.alternativeDockingLayouts)
+        if (layout.layoutName == layoutName)
+            wantedLayout = &layout;
+
+    IM_ASSERT(wantedLayout != nullptr);
+
+    // Save previous layout settings before changing layout
+    LayoutSettings_Save();
+
+    std::vector<DockingParams> newAlternativeDockingLayouts;
+    newAlternativeDockingLayouts.push_back(params.dockingParams);
+    params.dockingParams = *wantedLayout;
+    for (const auto& layout: params.alternativeDockingLayouts)
+        if (layout.layoutName != layoutName)
+            newAlternativeDockingLayouts.push_back(layout);
+    params.alternativeDockingLayouts = newAlternativeDockingLayouts;
+}
+
+// Those Layout_XXX functions are called before ImGui::NewFrame()
+void AbstractRunner::LayoutSettings_HandleChanges()
+{
+    static std::string lastLoadedLayout = "";
+    if (params.dockingParams.layoutName != lastLoadedLayout)
+    {
+        LayoutSettings_Load();
+        lastLoadedLayout = params.dockingParams.layoutName;
+    }
+}
+void AbstractRunner::LayoutSettings_Load()
+{
+    HelloImGuiIniSettings::LoadImGuiSettings(IniPartsFilename(), params.dockingParams.layoutName);
+    HelloImGuiIniSettings::LoadDockableWindowsVisibility(IniPartsFilename(), &params.dockingParams);
+
+    // SetLayoutResetIfNeeded() may set params.dockingParams.layoutReset = true
+    // (which will cause the layout to be recreated from scratch, overriding user changes)
+    SetLayoutResetIfNeeded();
+}
+void AbstractRunner::LayoutSettings_Save()
+{
+    HelloImGuiIniSettings::SaveImGuiSettings(IniPartsFilename(), params.dockingParams.layoutName);
+    HelloImGuiIniSettings::SaveDockableWindowsVisibility(IniPartsFilename(), params.dockingParams);
 }
 
 void AbstractRunner::Setup()
@@ -308,23 +358,21 @@ void AbstractRunner::Setup()
     ImGui::GetIO().Fonts->Build();
 
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
-    ResetDockingLayoutIfNeeded();
+    SetLayoutResetIfNeeded();
 
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
-
-    HelloImGuiIniSettings::LoadImGuiSettings(IniPartsFilename(), params.dockingParams.layoutName);
-    HelloImGuiIniSettings::LoadDockableWindowsVisibility(IniPartsFilename(), &params.dockingParams);
 }
 
-void AbstractRunner::ResetDockingLayoutIfNeeded()
+void AbstractRunner::SetLayoutResetIfNeeded()
 {
     if (params.imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenDockSpace)
     {
-        params.dockingParams.layoutReset = false;
         if (params.dockingParams.layoutCondition == DockingLayoutCondition::FirstUseEver)
         {
             if (! HelloImGuiIniSettings::HasUserDockingSettingsIniIniFile(IniPartsFilename(), params.dockingParams))
                 params.dockingParams.layoutReset = true;
+            else
+                params.dockingParams.layoutReset = false;
         }
         else if (params.dockingParams.layoutCondition == DockingLayoutCondition::ApplicationStart)
             params.dockingParams.layoutReset = true;
@@ -370,7 +418,9 @@ void AbstractRunner::RenderGui()
 
 
 void AbstractRunner::CreateFramesAndRender()
-{    
+{
+    LayoutSettings_HandleChanges();
+
     // Note about the application window initial placement and sizing 
     // i/   On the first frame (mIdxFrame==0), we create a window, and use the user provided size (if provided). The window is initially hidden.
     //      (this was done much sooner by mBackendWindowHelper)
@@ -600,11 +650,10 @@ void AbstractRunner::TearDown(bool gotException)
             ImageBuffer b = ScreenshotRgb();
             setFinalAppWindowScreenshotRgbBuffer(b);
         }
-        HelloImGuiIniSettings::SaveImGuiSettings(IniPartsFilename(), params.dockingParams.layoutName);
         if (params.appWindowParams.restorePreviousGeometry)
             HelloImGuiIniSettings::SaveLastRunWindowBounds(IniPartsFilename(),
                                                            mBackendWindowHelper->GetWindowBounds(mWindow));
-        HelloImGuiIniSettings::SaveDockableWindowsVisibility(IniPartsFilename(), params.dockingParams);
+        LayoutSettings_Save();
     }
 
     HelloImGui::internal::Free_ImageFromAssetMap();

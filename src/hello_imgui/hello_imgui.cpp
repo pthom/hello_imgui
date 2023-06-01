@@ -49,6 +49,16 @@ RunnerParams* GetRunnerParams()
     return gLastRunnerParams;
 }
 
+void SwitchLayout(const std::string& layoutName)
+{
+    gLastRunner->LayoutSettings_SwitchLayout(layoutName);
+}
+
+std::string CurrentLayoutName()
+{
+    return gLastRunnerParams->dockingParams.layoutName;
+}
+
 
 // Private API, used internally by AppWindowScreenshotRgbBuffer()
 AbstractRunner *GetAbstractRunner()

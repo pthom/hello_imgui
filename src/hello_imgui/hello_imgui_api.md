@@ -50,7 +50,16 @@ Three signatures are provided:
 
 * `HelloImGui::Run(guiFunction, windowTitle, windowSize, windowSizeAuto=false, restoreLastWindowGeometry=false, fpsIdle=10)`
 
-__HelloImGui::GetRunnerParams()__ is a convenience function that will return the runnerParams of the current application.
+
+__Other utilities:__
+
+* `HelloImGui::GetRunnerParams()`:
+  a convenience function that will return the runnerParams of the current application
+* `SwitchLayout(layoutName)`
+  Changes the application current layout
+  (Only used in advanced cases when several layouts are available, i.e. if you filled runnerParams.alternativeDockingLayouts)
+* `CurrentLayoutName()`: returns the name of the current layout
+
 
 
 ## Runner params

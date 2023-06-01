@@ -2,6 +2,7 @@
 #include "hello_imgui/internal/backend_impls/runner_factory.h"
 #include "imgui_internal.h"
 #include <deque>
+#include <set>
 #include <chrono>
 
 
@@ -10,8 +11,25 @@ namespace HelloImGui
 RunnerParams* gLastRunnerParams = nullptr;
 std::unique_ptr<AbstractRunner> gLastRunner;
 
+bool _CheckAdditionLayoutNamesUniqueness(RunnerParams &runnerParams)
+{
+    std::set<std::string> names_set;
+    names_set.insert(runnerParams.dockingParams.layoutName);
+    for (const auto& layout: runnerParams.alternativeDockingLayouts)
+        names_set.insert(layout.layoutName);
+
+    bool areNamesUnique = (names_set.size() == 1 + runnerParams.alternativeDockingLayouts.size());
+    if (!areNamesUnique)
+        fprintf(stderr, R"(
+            Please give unique names to your layouts!
+                -> Set layoutName inside runnerParams.dockingParams and runnerParams.alternativeDockingLayouts
+        )");
+    return areNamesUnique;
+}
+
 void Run(RunnerParams& runnerParams)
 {
+    IM_ASSERT(_CheckAdditionLayoutNamesUniqueness(runnerParams));
     gLastRunner = FactorRunner(runnerParams);
     gLastRunnerParams = &runnerParams;
     gLastRunner->Run();

@@ -329,34 +329,42 @@ namespace HelloImGui
             std::string iniPartName = "HelloImGui_Misc";
 
             std::string layoutName = "";
+            std::string themeName = "";
             {
-                if (inOutRunnerParams->rememberSelectedAlternativeLayout)
+                IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+                if (iniParts.HasIniPart(iniPartName))
                 {
-                    IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
-                    if (iniParts.HasIniPart(iniPartName))
-                    {
-                        ini::IniFile iniFile;
-                        iniFile.decode(iniParts.GetIniPart(iniPartName));
+                    ini::IniFile iniFile;
+                    iniFile.decode(iniParts.GetIniPart(iniPartName));
+
+                    if (inOutRunnerParams->rememberSelectedAlternativeLayout)
                         layoutName = iniFile["Layout"]["Name"].as<std::string>();
-                    }
+                    if (inOutRunnerParams->imGuiWindowParams.rememberTheme)
+                        themeName = iniFile["Theme"]["Name"].as<std::string>();
                 }
             }
 
+            if (!themeName.empty())
+            {
+                auto theme = ImGuiTheme::ImGuiTheme_FromName(themeName.c_str());
+                inOutRunnerParams->imGuiWindowParams.tweakedTheme.Theme = theme;
+                ImGuiTheme::ApplyTheme(theme);
+            }
             HelloImGui::SwitchLayout(layoutName);
         }
 
         void SaveSelectedAlternativeLayoutAndTheme(const std::string& iniPartsFilename, const RunnerParams& runnerParams)
         {
+            std::string iniPartName = "HelloImGui_Misc";
+            ini::IniFile iniFile;
             if (runnerParams.rememberSelectedAlternativeLayout)
-            {
-                std::string iniPartName = "HelloImGui_Misc";
-                ini::IniFile iniFile;
                 iniFile["Layout"]["Name"] = runnerParams.dockingParams.layoutName;
+            if (runnerParams.imGuiWindowParams.rememberTheme)
+                iniFile["Theme"]["Name"] = ImGuiTheme::ImGuiTheme_Name(runnerParams.imGuiWindowParams.tweakedTheme.Theme);
 
-                IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
-                iniParts.SetIniPart(iniPartName, iniFile.encode());
-                iniParts.WriteToFile(iniPartsFilename);
-            }
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            iniParts.SetIniPart(iniPartName, iniFile.encode());
+            iniParts.WriteToFile(iniPartsFilename);
         }
 
 

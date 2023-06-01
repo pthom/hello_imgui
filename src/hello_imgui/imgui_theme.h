@@ -32,6 +32,7 @@ namespace ImGuiTheme
         ImGuiTheme_Count
     };
     const char* ImGuiTheme_Name(ImGuiTheme_ theme);
+    ImGuiTheme_ ImGuiTheme_FromName(const char* themeName);
     ImGuiStyle ThemeToStyle(ImGuiTheme_ theme);
     void ApplyTheme(ImGuiTheme_ theme);
 

@@ -76,6 +76,10 @@ In order to change the application window settings, change the _AppWindowsParams
   * `tweakedTheme`: _ImGuiTheme::ImGuiTweakedTheme_.
     Change the ImGui theme. Several themes are available, you can query the list by calling
     HelloImGui::AvailableThemes()
+  * `showMenu_View_Themes`: _bool, default=true_.
+    Show theme selection in view menu
+  * `rememberTheme`: _bool, default=true_.
+    Remember selected theme
 @@md
  */
 struct ImGuiWindowParams
@@ -99,6 +103,8 @@ struct ImGuiWindowParams
     std::string menuAppTitle = "";
 
     ImGuiTheme::ImGuiTweakedTheme tweakedTheme;
+    bool showMenu_View_Themes = true;
+    bool rememberTheme = true;
 };
 
 }  // namespace HelloImGui

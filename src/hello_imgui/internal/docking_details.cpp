@@ -144,7 +144,8 @@ void MenuView_Misc(RunnerParams& runnerParams)
         ImGui::EndMenu();
     }
 
-    Theme_MenuGui(runnerParams.imGuiWindowParams.tweakedTheme);
+    if (runnerParams.imGuiWindowParams.showMenu_View_Themes)
+        Theme_MenuGui(runnerParams.imGuiWindowParams.tweakedTheme);
 }
 
 void ShowViewMenu(RunnerParams & runnerParams)

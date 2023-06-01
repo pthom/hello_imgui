@@ -909,6 +909,17 @@ namespace ImGuiTheme
         }
         return "";
     }
+    ImGuiTheme_ ImGuiTheme_FromName(const char* themeName)
+    {
+        std::string themeStr = themeName;
+        for (size_t i = 0; i < IM_ARRAYSIZE(gThemeInfos); ++i)
+        {
+            if (gThemeInfos[i].Name == themeStr)
+                return gThemeInfos[i].Theme;
+        }
+        return ImGuiTheme_ImGuiColorsClassic;
+    }
+
 
     ImGuiStyle ThemeToStyle(ImGuiTheme_ theme)
     {

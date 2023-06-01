@@ -1,6 +1,8 @@
 #include "hello_imgui/screen_bounds.h"
 
 #include <sstream>
+#include <vector>
+#include <string>
 
 namespace HelloImGui
 {

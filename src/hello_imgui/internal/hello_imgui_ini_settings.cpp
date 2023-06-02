@@ -287,7 +287,7 @@ namespace HelloImGui
             ini::IniFile iniFile;
             for (const auto& dockableWindow: dockingParams.dockableWindows)
             {
-                if (dockableWindow.saveIsVisible)
+                if (dockableWindow.rememberIsVisible)
                 {
                     std::string iniValueName = details::SanitizeIniNameOrCategory(dockableWindow.label);
                     iniFile["Visibility"][iniValueName] = dockableWindow.isVisible;
@@ -311,7 +311,7 @@ namespace HelloImGui
             iniFile.decode(iniParts.GetIniPart(iniPartName));
             for (auto& dockableWindow: inOutDockingParams->dockableWindows)
             {
-                if (dockableWindow.saveIsVisible)
+                if (dockableWindow.rememberIsVisible)
                 {
                     std::string iniValueName = details::SanitizeIniNameOrCategory(dockableWindow.label);
                     std::string boolString = iniFile["Visibility"][iniValueName].as<std::string>();

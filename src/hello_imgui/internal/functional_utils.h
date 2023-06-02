@@ -10,5 +10,7 @@ namespace HelloImGui
 
         std::string read_text_file_or_empty(const std::string& path);
         void write_text_file(const std::string& path, const std::string& content);
+
+        std::string lower_string(const std::string& s);
     }
 }

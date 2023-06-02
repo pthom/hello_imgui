@@ -58,5 +58,14 @@ namespace HelloImGui
                 stream << content;
         }
 
+        std::string lower_string(const std::string& s)
+        {
+            std::string r;
+            for (auto c: s)
+                c += std::tolower(c);
+            return r;
+        }
+
+
     }
 }

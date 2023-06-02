@@ -14,6 +14,9 @@
 #include <cstdint>
 
 
+namespace HelloImGui
+{
+
 /**
 @@md#HelloImGui::Run
 
@@ -34,36 +37,61 @@ __Other utilities:__
 
 * `HelloImGui::GetRunnerParams()`:
   a convenience function that will return the runnerParams of the current application
-* `SwitchLayout(layoutName)`
-  Changes the application current layout
-  (Only used in advanced cases when several layouts are available, i.e. if you filled runnerParams.alternativeDockingLayouts)
-* `CurrentLayoutName()`: returns the name of the current layout
 
-
+* `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
+  May differ from ImGui::GetIO().FrameRate, since one can choose the duration for the calculation of the mean value of the fps
 @@md
 */
-namespace HelloImGui
-{
-    void Run(RunnerParams & runnerParams);
+    void Run(RunnerParams &runnerParams);
 
-    void Run(const SimpleRunnerParams& simpleParams);
+    void Run(const SimpleRunnerParams &simpleParams);
 
     void Run(
-        const VoidFunction& guiFunction,
-        const std::string& windowTitle = "",
+        const VoidFunction &guiFunction,
+        const std::string &windowTitle = "",
         bool windowSizeAuto = false,
         bool windowRestorePreviousGeometry = false,
-        const ScreenSize& windowSize = DefaultWindowSize,
+        const ScreenSize &windowSize = DefaultWindowSize,
         float fpsIdle = 10.f
     );
 
-    RunnerParams* GetRunnerParams();
-
-    void           SwitchLayout(const std::string& layoutName);
-    std::string    CurrentLayoutName();
+    RunnerParams *GetRunnerParams();
 
     // Returns the current FrameRate. May differ from ImGui::GetIO().FrameRate,
     // since one can choose the duration for the calculation of the mean value of the fps
     // (Will only lead to accurate values if you call it at each frame)
     float FrameRate(float durationForMean = 0.5f);
+
+
+/**
+@@md#HelloImGui::Layouts
+
+ In advanced cases when several layouts are available, you can switch between layouts.
+(see demo inside [hello_imgui_demodocking.main.cpp](../hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp))
+
+* `SwitchLayout(layoutName)`
+  Changes the application current layout. Only used in advanced cases when several layouts are available,
+  i.e. if you filled runnerParams.alternativeDockingLayouts.
+* `CurrentLayoutName()`: returns the name of the current layout
+@@md
+*/
+    void           SwitchLayout(const std::string& layoutName);
+    std::string    CurrentLayoutName();
+
+
+/**
+@@md#HelloImGui::UserPref
+
+You may store additional user settings in the application settings. This is provided as a convenience only,
+and it is not intended to store large quantities of text data. Use sparingly.
+
+* `SaveUserPref(string userPrefName, string userPrefContent)`:
+  Shall be called in the callback runnerParams.callbacks.BeforeExit
+
+* `string LoadUserPref(string& userPrefName)`
+  Shall be called in the callback runnerParams.callbacks.PostInit
+@@md
+*/
+    void        SaveUserPref(const std::string& userPrefName, const std::string& userPrefContent);
+    std::string LoadUserPref(const std::string& userPrefName);
 }

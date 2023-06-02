@@ -47,7 +47,10 @@ class AbstractRunner
 
     void LayoutSettings_SwitchLayout(const std::string& layoutName);
 
-   protected:
+    void        SaveUserPref(const std::string& userPrefName, const std::string& userPrefContent);
+    std::string LoadUserPref(const std::string& userPrefName);
+
+protected:
     friend std::string GlslVersion();
 
     //

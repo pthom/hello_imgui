@@ -368,5 +368,22 @@ namespace HelloImGui
         }
 
 
+        void        SaveUserPref(const std::string& iniPartsFilename, const std::string& userPrefName, const std::string& userPrefContent)
+        {
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            iniParts.SetIniPart(userPrefName, userPrefContent);
+            iniParts.WriteToFile(iniPartsFilename);
+        }
+
+        std::string LoadUserPref(const std::string& iniPartsFilename, const std::string& userPrefName)
+        {
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            if (iniParts.HasIniPart(userPrefName))
+                return iniParts.GetIniPart(userPrefName);
+            else
+                return "";
+        }
+
+
     } // namespace HelloImGuiIniSettings
 } // namespace HelloImGui

@@ -143,4 +143,15 @@ float FrameRate(float durationForMean)
     return fps;
 }
 
+
+void SaveUserPref(const std::string& userPrefName, const std::string& userPrefContent)
+{
+    gLastRunner->SaveUserPref(userPrefName, userPrefContent);
+}
+
+std::string LoadUserPref(const std::string& userPrefName)
+{
+    return gLastRunner->LoadUserPref(userPrefName);
+}
+
 }  // namespace HelloImGui

@@ -32,6 +32,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 
 See [runner_params.h](runner_params.h).
 
+
 ----
 
 ## Runner callbacks
@@ -137,5 +138,18 @@ See [image_from_asset.h](image_from_asset.h).
 ## Backend Pointers
 
 @import "backend_pointers.h" {md_id=BackendPointers}
+
+## Store user settings in the ini file
+
+See [hello_imgui.h](hello_imgui.h).
+
+@import "hello_imgui.h" {md_id=HelloImGui::UserPref}
+
+## Switch between several layouts
+
+See [hello_imgui.h](hello_imgui.h).
+
+@import "hello_imgui.h" {md_id=HelloImGui::Layouts}
+
 
 ----

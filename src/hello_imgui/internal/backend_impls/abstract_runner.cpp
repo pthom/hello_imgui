@@ -676,4 +676,14 @@ void AbstractRunner::TearDown(bool gotException)
     Impl_Cleanup();
 }
 
+
+void AbstractRunner::SaveUserPref(const std::string& userPrefName, const std::string& userPrefContent)
+{
+    HelloImGuiIniSettings::SaveUserPref(IniPartsFilename(), userPrefName, userPrefContent);
+}
+std::string AbstractRunner::LoadUserPref(const std::string& userPrefName)
+{
+    return HelloImGuiIniSettings::LoadUserPref(IniPartsFilename(), userPrefName);
+}
+
 }  // namespace HelloImGui

@@ -30,6 +30,8 @@
   * [Display images](#display-images)
       * [HelloImGui::ImageFromAsset](#helloimguiimagefromasset)
   * [Backend Pointers](#backend-pointers)
+  * [Store user settings in the ini file](#store-user-settings-in-the-ini-file)
+  * [Switch between several layouts](#switch-between-several-layouts)
 
 # API
 
@@ -55,12 +57,9 @@ __Other utilities:__
 
 * `HelloImGui::GetRunnerParams()`:
   a convenience function that will return the runnerParams of the current application
-* `SwitchLayout(layoutName)`
-  Changes the application current layout
-  (Only used in advanced cases when several layouts are available, i.e. if you filled runnerParams.alternativeDockingLayouts)
-* `CurrentLayoutName()`: returns the name of the current layout
 
-
+* `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
+  May differ from ImGui::GetIO().FrameRate, since one can choose the duration for the calculation of the mean value of the fps
 
 ## Runner params
 
@@ -162,6 +161,7 @@ int main(){
   This bool will be updated during the application execution, and will be set to true when it is idling.
 
 See [runner_params.h](runner_params.h).
+
 
 ----
 
@@ -747,6 +747,34 @@ your application behavior using the selected backend.
   Only filled if the backend is SDL (or emscripten + sdl)
 * `sdlGlContext`: _void *, default=nullptr_. Pointer to SDL's GlContext (of type `SDL_GLContext`).
   Only filled if the backend is SDL (or emscripten + sdl)
+
+
+## Store user settings in the ini file
+
+See [hello_imgui.h](hello_imgui.h).
+
+
+You may store additional user settings in the application settings. This is provided as a convenience only,
+and it is not intended to store large quantities of text data. Use sparingly.
+
+* `SaveUserPref(string userPrefName, string userPrefContent)`:
+  Shall be called in the callback runnerParams.callbacks.BeforeExit
+
+* `string LoadUserPref(string& userPrefName)`
+  Shall be called in the callback runnerParams.callbacks.PostInit
+
+## Switch between several layouts
+
+See [hello_imgui.h](hello_imgui.h).
+
+
+ In advanced cases when several layouts are available, you can switch between layouts.
+(see demo inside [hello_imgui_demodocking.main.cpp](../hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp))
+
+* `SwitchLayout(layoutName)`
+  Changes the application current layout. Only used in advanced cases when several layouts are available,
+  i.e. if you filled runnerParams.alternativeDockingLayouts.
+* `CurrentLayoutName()`: returns the name of the current layout
 
 
 ----

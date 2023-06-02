@@ -73,5 +73,12 @@ namespace HelloImGui
 
         void SaveDockableWindowsVisibility(const std::string& iniPartsFilename, const DockingParams& dockingParams);
         void LoadDockableWindowsVisibility(const std::string& iniPartsFilename, DockingParams* inOutDockingParams);
+
+        //
+        // User prefs
+        //
+        void        SaveUserPref(const std::string& iniPartsFilename, const std::string& userPrefName, const std::string& userPrefContent);
+        std::string LoadUserPref(const std::string& iniPartsFilename, const std::string& userPrefName);
+
     }
 }

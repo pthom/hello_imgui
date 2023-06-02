@@ -368,10 +368,10 @@ namespace HelloImGui
         }
 
 
-        void        SaveUserPref(const std::string& iniPartsFilename, const std::string& userPrefName, const std::string& userPrefContent)
+        void  SaveUserPref(const std::string& iniPartsFilename, const std::string& userPrefName, const std::string& userPrefContent)
         {
             IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
-            iniParts.SetIniPart(userPrefName, userPrefContent);
+            iniParts.SetIniPart(userPrefName, userPrefContent + "\n");
             iniParts.WriteToFile(iniPartsFilename);
         }
 
@@ -379,7 +379,10 @@ namespace HelloImGui
         {
             IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
             if (iniParts.HasIniPart(userPrefName))
-                return iniParts.GetIniPart(userPrefName);
+            {
+                std::string contentWithNewLine = iniParts.GetIniPart(userPrefName);
+                return contentWithNewLine.substr(0, contentWithNewLine.size() - 1);
+            }
             else
                 return "";
         }

@@ -1,136 +1,448 @@
-#include "hello_imgui/hello_imgui.h"
+/*
+A more complex app demo,
+
+It demonstrates:
+- How to use a specific application state (instead of using static variables)
+- How to set up a complex docking layouts (with several possible layouts):
+- How to use the status bar
+- How to use default menus (App and view menu), and how to customize them
+- How to display a log window
+- How to load additional fonts
+*/
 
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
 #define SDL_MAIN_HANDLED // Tell SDL not to #define main!!!
 #include <SDL.h>
 #endif
 
+#include "hello_imgui/hello_imgui.h"
+#include "imgui.h"
+#include "imgui/misc/cpp/imgui_stdlib.h"
+#include "imgui_internal.h"
 
-// Struct that holds the application's state
+#include <sstream>
+
+
+//////////////////////////////////////////////////////////////////////////
+//    Our Application State
+//////////////////////////////////////////////////////////////////////////
+struct PersonInfo
+{
+    std::string name = "Rob";
+    int age = 10;
+};
+
 struct AppState
 {
     float f = 0.0f;
     int counter = 0;
 
-    enum class RocketState
-    {
+    float rocket_launch_time = 0.f;
+    float rocket_progress = 0.0f;
+
+    enum class RocketState {
         Init,
         Preparing,
         Launched
     };
-    float rocket_progress = 0.f;
-    RocketState rocketState = RocketState::Init;
+    RocketState rocket_state = RocketState::Init;
+
+    PersonInfo personInfo; // This values will be stored in the application settings
 };
 
-// MyLoadFonts: demonstrate
-// * how to load additional fonts
-// * how to use assets from the local assets/ folder
-//   Files in the application assets/ folder are embedded automatically
-//   (on iOS/Android/Emscripten)
-ImFont * gAkronimFont = nullptr;
-void MyLoadFonts()
-{
-    // First, we load the default fonts (the font that was loaded first is the default font)
-    HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons();
 
-    // Then we load a second font from
-    // Since this font is in a local assets/ folder, it was embedded automatically
-    std::string fontFilename = "fonts/Akronim-Regular.ttf";
-    gAkronimFont = HelloImGui::LoadFontTTF_WithFontAwesomeIcons(fontFilename, 40.f);
+//////////////////////////////////////////////////////////////////////////
+//    Additional fonts handling
+//////////////////////////////////////////////////////////////////////////
+ImFont * gTitleFont;
+void LoadFonts() // This is called by runnerParams.callbacks.LoadAdditionalFonts
+{
+    // First, load the default font (the default font should be loaded first)
+    HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons();
+    // Then load the title font
+    gTitleFont = HelloImGui::LoadFontTTF("fonts/DroidSans.ttf", 18.f);
 }
 
 
-// CommandGui: the widgets on the left panel
-void CommandGui(AppState & state)
-{
-    ImGui::PushFont(gAkronimFont);
-    ImGui::Text("Hello  " ICON_FA_SMILE);
-    HelloImGui::ImageFromAsset("world.jpg");
-    ImGui::PopFont();
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::SetTooltip(
-            "The custom font and the globe image below were loaded \n"
-            "from the application assets folder\n"\
-            "(those files are embedded automatically).");
-    }
+//////////////////////////////////////////////////////////////////////////
+//    Save additional settings in the ini file
+//////////////////////////////////////////////////////////////////////////
+// This demonstrates how to store additional info in the application settings
+// Use this sparingly!
+// This is provided as a convenience only, and it is not intended to store large quantities of text data.
 
+// Warning, the save/load function below are quite simplistic!
+std::string PersonInfoToString(const PersonInfo& userInfo)
+{
+    std::stringstream ss;
+    ss << userInfo.name << "\n";
+    ss << userInfo.age;
+    return ss.str();
+}
+PersonInfo StringToPersonInfo(const std::string& s)
+{
+    std::stringstream ss(s);
+    PersonInfo userInfo;
+    ss >> userInfo.name;
+    ss >> userInfo.age;
+    return userInfo;
+}
+
+// Note: LoadUserSettings() and SaveUserSettings() will be called in the callbacks `PostInit` and `BeforeExit`:
+//     runnerParams.callbacks.PostInit = [&appState]   { LoadUserSettings(appState);};
+//     runnerParams.callbacks.BeforeExit = [&appState] { SaveUserSettings(appState);};
+void LoadUserSettings(AppState& appState) //
+{
+    appState.personInfo = StringToPersonInfo(HelloImGui::LoadUserPref("UserInfo") );
+}
+void SaveUserSettings(const AppState& appState)
+{
+    HelloImGui::SaveUserPref("UserInfo", PersonInfoToString(appState.personInfo));
+}
+
+//////////////////////////////////////////////////////////////////////////
+//    Gui functions used in this demo
+//////////////////////////////////////////////////////////////////////////
+
+// Display a button that will hide the application window
+void DemoHideWindow()
+{
+    ImGui::PushFont(gTitleFont); ImGui::Text("Hide app window"); ImGui::PopFont();
+    ImGui::TextWrapped("By clicking the button below, you can hide the window for 3 seconds.");
+
+    static double lastHideTime = -1.;
+    if (ImGui::Button("Hide"))
+    {
+        lastHideTime =  ImGui::GetTime();
+        HelloImGui::GetRunnerParams()->appWindowParams.hidden = true;
+    }
+    if (lastHideTime > 0.)
+    {
+        double now = ImGui::GetTime();
+        if (now - lastHideTime > 3.)
+        {
+            lastHideTime = -1.;
+            HelloImGui::GetRunnerParams()->appWindowParams.hidden = false;
+        }
+    }
+}
+
+// Display a button that will show an additional window
+void DemoShowAdditionalWindow()
+{
+    // Notes:
+    //     - it is *not* possible to modify the content of the vector runnerParams.dockingParams.dockableWindows
+    //       from the code inside a window's `GuiFunction` (since this GuiFunction will be called while iterating on this vector!)
+    //     - there are two ways to dynamically add windows:
+    //           * either make them initially invisible, and exclude them from the view menu (such as shown here)
+    //           * or modify runnerParams.dockingParams.dockableWindows inside the callback RunnerCallbacks.PreNewFrame
+    const char* windowName = "Additional Window";
+    ImGui::PushFont(gTitleFont); ImGui::Text("Dynamically add window"); ImGui::PopFont();
+    if (ImGui::Button("Show additional window"))
+    {
+        auto additionalWindowPtr = HelloImGui::GetRunnerParams()->dockingParams.dockableWindowOfName(windowName);
+        if (additionalWindowPtr)
+        {
+            // additionalWindowPtr->includeInViewMenu = true;
+            additionalWindowPtr->isVisible = true;
+        }
+    }
+}
+
+void DemoAdvertiseFeatures()
+{
+    ImGui::PushFont(gTitleFont); ImGui::Text("Switch between layouts"); ImGui::PopFont();
+    ImGui::Text("with the menu \"View/Layouts\"");
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("Each layout remembers separately the modifications applied by the user, \nand the selected layout is restored at startup");
     ImGui::Separator();
 
-    // Edit 1 float using a slider from 0.0f to 1.0f
-    if (ImGui::SliderFloat("float", &state.f, 0.0f, 1.0f))
-        HelloImGui::Log(HelloImGui::LogLevel::Warning, "state.f was changed to %f", state.f);
+    ImGui::PushFont(gTitleFont); ImGui::Text("Change the theme"); ImGui::PopFont();
+    ImGui::Text("with the menu \"View/Theme\"");
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("The selected theme is remembered and restored at startup");
+    ImGui::Separator();
+}
+
+void DemoBasicWidgets(AppState& appState)
+{
+    ImGui::PushFont(gTitleFont); ImGui::Text("Basic widgets demo"); ImGui::PopFont();
+    ImGui::TextWrapped("The widgets below will interact with the log window and the status bar");
+
+    // Edit a float using a slider from 0.0f to 1.0f
+    bool changed = ImGui::SliderFloat("float", &appState.f, 0.0f, 1.0f);
+    if (changed)
+        HelloImGui::Log(HelloImGui::LogLevel::Warning, "state.f was changed to %f", appState.f);
 
     // Buttons return true when clicked (most widgets return true when edited/activated)
-    if (ImGui::Button("Button")) {
-        state.counter++;
-        HelloImGui::Log(HelloImGui::LogLevel::Info, "Button was pressed", state.f);
-    }
-    ImGui::SameLine();
-    ImGui::Text("counter = %d", state.counter);
-
-    switch(state.rocketState)
+    if (ImGui::Button("Button"))
     {
-        case AppState::RocketState::Init:
-            if (ImGui::Button(ICON_FA_ROCKET " Launch rocket"))
-            {
-                state.rocketState = AppState::RocketState::Preparing;
-                HelloImGui::Log(HelloImGui::LogLevel::Warning, "Rocket is being prepared");
-            }
-            break;
-        case AppState::RocketState::Preparing:
-            ImGui::Text(ICON_FA_ROCKET " Please Wait");
-            state.rocket_progress += 0.003f;
-            if (state.rocket_progress >= 1.f)
-            {
-                state.rocketState = AppState::RocketState::Launched;
-                HelloImGui::Log(HelloImGui::LogLevel::Warning, "Rocket was launched!");
-            }
-            break;
-        case AppState::RocketState::Launched:
-            ImGui::Text(ICON_FA_ROCKET " Rocket Launched");
-            if (ImGui::Button("Reset Rocket"))
-            {
-                state.rocketState = AppState::RocketState ::Init;
-                state.rocket_progress = 0.f;
-            }
-            break;
+        appState.counter++;
+        HelloImGui::Log(HelloImGui::LogLevel::Info, "Button was pressed");
+    }
+
+    ImGui::SameLine();
+    ImGui::Text("counter = %d", appState.counter);
+}
+
+void DemoUserSettings(AppState& appState)
+{
+    ImGui::PushFont(gTitleFont); ImGui::Text("User settings"); ImGui::PopFont();
+    ImGui::TextWrapped("The values below are stored in the application settings ini file and restored at startup");
+    ImGui::SetNextItemWidth(HelloImGui::EmSize(7.f));
+    ImGui::InputText("Name", &appState.personInfo.name);
+    ImGui::SetNextItemWidth(HelloImGui::EmSize(7.f));
+    ImGui::SliderInt("Age", &appState.personInfo.age, 0, 100);
+}
+
+void DemoRocket(AppState& appState)
+{
+    ImGui::PushFont(gTitleFont); ImGui::Text("Rocket demo"); ImGui::PopFont();
+    ImGui::TextWrapped("How to show a progress bar in the status bar");
+    if (appState.rocket_state == AppState::RocketState::Init)
+    {
+        if (ImGui::Button(ICON_FA_ROCKET" Launch rocket"))
+        {
+            appState.rocket_launch_time = (float)ImGui::GetTime();
+            appState.rocket_state = AppState::RocketState::Preparing;
+            HelloImGui::Log(HelloImGui::LogLevel::Warning, "Rocket is being prepared");
+        }
+    }
+    else if (appState.rocket_state == AppState::RocketState::Preparing)
+    {
+        ImGui::Text("Please Wait");
+        appState.rocket_progress = (float)(ImGui::GetTime() - appState.rocket_launch_time) / 3.f;
+        if (appState.rocket_progress >= 1.0f)
+        {
+            appState.rocket_state = AppState::RocketState::Launched;
+            HelloImGui::Log(HelloImGui::LogLevel::Warning, "Rocket was launched");
+        }
+    }
+    else if (appState.rocket_state == AppState::RocketState::Launched)
+    {
+        ImGui::Text(ICON_FA_ROCKET " Rocket launched");
+        if (ImGui::Button("Reset Rocket"))
+        {
+            appState.rocket_state = AppState::RocketState::Init;
+            appState.rocket_progress = 0.f;
+        }
     }
 }
 
-// Our Gui in the status bar
-void StatusBarGui(const AppState &appState)
+// The Gui of the command panel
+void CommandGui(AppState& appState)
 {
-    if (appState.rocketState == AppState::RocketState::Preparing) {
+    DemoAdvertiseFeatures();
+    ImGui::Separator();
+    DemoBasicWidgets(appState);
+    ImGui::Separator();
+    DemoRocket(appState);
+    ImGui::Separator();
+    DemoUserSettings(appState);
+    ImGui::Separator();
+    DemoHideWindow();
+    ImGui::Separator();
+    DemoShowAdditionalWindow();
+}
+
+// The Gui of the status bar
+void StatusBarGui(AppState& app_state)
+{
+    if (app_state.rocket_state == AppState::RocketState::Preparing)
+    {
         ImGui::Text("Rocket completion: ");
         ImGui::SameLine();
-        ImGui::ProgressBar(appState.rocket_progress, HelloImGui::EmToVec2(12.f, 1.f));
+        ImGui::ProgressBar(app_state.rocket_progress, HelloImGui::EmToVec2(7.0f, 1.0f));
     }
 }
 
-// Example of an optional native event callback for the backend (implemented here only for SDL)
-bool NativeBackendEventCallback(void * event)
+// The menu gui
+void ShowMenuGui()
 {
-#ifdef HELLOIMGUI_USE_SDL_OPENGL3
-    SDL_Event*  sdlEvent = (SDL_Event *)event;
-        switch( sdlEvent->type)
+    if (ImGui::BeginMenu("My Menu"))
+    {
+        bool clicked = ImGui::MenuItem("Test me", "", false);
+        if (clicked)
         {
-            case SDL_KEYDOWN:
-                HelloImGui::Log(HelloImGui::LogLevel::Warning, "It SDL_KEYDOWN detected");
-                return false; // if you return true, the event is not processd further
+            HelloImGui::Log(HelloImGui::LogLevel::Warning, "It works");
         }
-        return false;
-#else
-    return false;
-#endif
+        ImGui::EndMenu();
+    }
+}
+void ShowAppMenuItems()
+{
+    if (ImGui::MenuItem("A Custom app menu item"))
+        HelloImGui::Log(HelloImGui::LogLevel::Info, "Clicked on A Custom app menu item");
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//    Docking Layouts and Docking windows
+//////////////////////////////////////////////////////////////////////////
+
+//
+// 1. Define the Docking splits (two versions are available)
+//
+std::vector<HelloImGui::DockingSplit> CreateDefaultDockingSplits()
+{
+    //    Define the default docking splits,
+    //    i.e. the way the screen space is split in different target zones for the dockable windows
+    //     We want to split "MainDockSpace" (which is provided automatically) into three zones, like this:
+    //
+    //    ___________________________________________
+    //    |        |                                |
+    //    | Command|                                |
+    //    | Space  |    MainDockSpace               |
+    //    |        |                                |
+    //    |        |                                |
+    //    |        |                                |
+    //    -------------------------------------------
+    //    |     MiscSpace                           |
+    //    -------------------------------------------
+    //
+
+    // uncomment the next line if you want to always start with this layout.
+    // Otherwise, modifications to the layout applied by the user layout will be remembered.
+    // runnerParams.dockingParams.layoutCondition = HelloImGui::DockingLayoutCondition::ApplicationStart;
+
+    // Then, add a space named "MiscSpace" whose height is 25% of the app height.
+    // This will split the preexisting default dockspace "MainDockSpace" in two parts.
+    HelloImGui::DockingSplit splitMainMisc;
+    splitMainMisc.initialDock = "MainDockSpace";
+    splitMainMisc.newDock = "MiscSpace";
+    splitMainMisc.direction = ImGuiDir_Down;
+    splitMainMisc.ratio = 0.25f;
+
+    // Then, add a space to the left which occupies a column whose width is 25% of the app width
+    HelloImGui::DockingSplit splitMainCommand;
+    splitMainCommand.initialDock = "MainDockSpace";
+    splitMainCommand.newDock = "CommandSpace";
+    splitMainCommand.direction = ImGuiDir_Left;
+    splitMainCommand.ratio = 0.25f;
+    // Exclude this space from Docking
+    splitMainCommand.nodeFlags = ImGuiDockNodeFlags_NoDocking | ImGuiDockNodeFlags_NoTabBar;
+
+    std::vector<HelloImGui::DockingSplit> splits {splitMainMisc, splitMainCommand};
+    return splits;
+}
+
+std::vector<HelloImGui::DockingSplit> CreateAlternativeDockingSplits()
+{
+    //    Define alternative docking splits for the "Alternative Layout"
+    //    ___________________________________________
+    //    |                |                        |
+    //    | Misc           |                        |
+    //    | Space          |    MainDockSpace       |
+    //    |                |                        |
+    //    -------------------------------------------
+    //    |                                         |
+    //    |                                         |
+    //    |     CommandSpace                        |
+    //    |                                         |
+    //    -------------------------------------------
+
+    HelloImGui::DockingSplit splitMainCommand;
+    splitMainCommand.initialDock = "MainDockSpace";
+    splitMainCommand.newDock = "CommandSpace";
+    splitMainCommand.direction = ImGuiDir_Down;
+    splitMainCommand.ratio = 0.5f;
+
+    HelloImGui::DockingSplit splitMainMisc;
+    splitMainMisc.initialDock = "MainDockSpace";
+    splitMainMisc.newDock = "MiscSpace";
+    splitMainMisc.direction = ImGuiDir_Left;
+    splitMainMisc.ratio = 0.5f;
+
+    std::vector<HelloImGui::DockingSplit> splits {splitMainCommand, splitMainMisc};
+    return splits;
+}
+
+//
+// 2. Define the Dockable windows
+//
+std::vector<HelloImGui::DockableWindow> CreateDockableWindows(AppState& appState)
+{
+    // A Command panel named "Commands" will be placed in "CommandSpace". Its Gui is provided calls "CommandGui"
+    HelloImGui::DockableWindow commandsWindow;
+    commandsWindow.label = "Commands";
+    commandsWindow.dockSpaceName = "CommandSpace";
+    commandsWindow.GuiFunction = [&] { CommandGui(appState); };
+
+    // A Log window named "Logs" will be placed in "MiscSpace". It uses the HelloImGui logger gui
+    HelloImGui::DockableWindow logsWindow;
+    logsWindow.label = "Logs";
+    logsWindow.dockSpaceName = "MiscSpace";
+    logsWindow.GuiFunction = [] { HelloImGui::LogGui(); };
+
+    // A Window named "Dear ImGui Demo" will be placed in "MainDockSpace"
+    HelloImGui::DockableWindow dearImGuiDemoWindow;
+    dearImGuiDemoWindow.label = "Dear ImGui Demo";
+    dearImGuiDemoWindow.dockSpaceName = "MainDockSpace";
+    dearImGuiDemoWindow.GuiFunction = [] { ImGui::ShowDemoWindow(); };
+
+    // additionalWindow is initially not visible (and not mentioned in the view menu).
+    // it will be opened only if the user chooses to display it
+    HelloImGui::DockableWindow additionalWindow;
+    additionalWindow.label = "Additional Window";
+    additionalWindow.isVisible = false;               // this window is initially hidden,
+    additionalWindow.includeInViewMenu = false;       // it is not shown in the view menu,
+    additionalWindow.rememberIsVisible = false;       // its visibility is not saved in the settings file,
+    additionalWindow.dockSpaceName = "MiscSpace";     // when shown, it will appear in BottomSpace.
+    additionalWindow.GuiFunction = [] { ImGui::Text("This is the additional window"); };
+
+    std::vector<HelloImGui::DockableWindow> dockableWindows {
+        commandsWindow,
+        logsWindow,
+        dearImGuiDemoWindow,
+        additionalWindow,
+    };
+    return dockableWindows;
+};
+
+//
+// 3. Define the layouts:
+//        A layout is stored inside DockingParams, and stores the splits + the dockable windows.
+//        Here, we provide the default layout, and two alternative layouts.
+//
+HelloImGui::DockingParams CreateDefaultLayout(AppState& appState)
+{
+    HelloImGui::DockingParams dockingParams;
+    // dockingParams.layoutName = "Default"; // By default, the layout name is already "Default"
+    dockingParams.dockingSplits = CreateDefaultDockingSplits();
+    dockingParams.dockableWindows = CreateDockableWindows(appState);
+    return dockingParams;
+}
+
+std::vector<HelloImGui::DockingParams> CreateAlternativeLayouts(AppState& appState)
+{
+    HelloImGui::DockingParams alternativeLayout;
+    {
+        alternativeLayout.layoutName = "Alternative Layout";
+        alternativeLayout.dockingSplits = CreateAlternativeDockingSplits();
+        alternativeLayout.dockableWindows = CreateDockableWindows(appState);
+    }
+    HelloImGui::DockingParams tabsLayout;
+    {
+        tabsLayout.layoutName = "Tabs Layout";
+        tabsLayout.dockableWindows = CreateDockableWindows(appState);
+        // Force all windows to be presented in the MainDockSpace
+        for (auto& window: tabsLayout.dockableWindows)
+            window.dockSpaceName = "MainDockSpace";
+        // In "Tabs Layout", no split is created
+        tabsLayout.dockingSplits = {};
+    }
+    return {alternativeLayout, tabsLayout};
 };
 
 
-int main(int, char **)
+//////////////////////////////////////////////////////////////////////////
+//    main(): here, we simply fill RunnerParams, then run the application
+//////////////////////////////////////////////////////////////////////////
+int main(int, char**)
 {
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //###############################################################################################
     // Part 1: Define the application state, fill the status and menu bars, and load additional font
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //###############################################################################################
 
     // Our application state
     AppState appState;
@@ -138,9 +450,16 @@ int main(int, char **)
     // Hello ImGui params (they hold the settings as well as the Gui callbacks)
     HelloImGui::RunnerParams runnerParams;
 
+    // Note: by setting the window title, we also set the name of the ini files in which the settings for the user
+    // layout will be stored: Docking_demo.ini
     runnerParams.appWindowParams.windowTitle = "Docking demo";
-    runnerParams.appWindowParams.windowGeometry.size = {800, 600};
-    // runnerParams.appWindowParams.restorePreviousGeometry = true;
+
+    runnerParams.imGuiWindowParams.menuAppTitle = "Docking App";
+    runnerParams.appWindowParams.windowGeometry.size = {1000, 900};
+    runnerParams.appWindowParams.restorePreviousGeometry = true;
+
+    // Load additional font
+    runnerParams.callbacks.LoadAdditionalFonts = LoadFonts;
 
     //
     // Status bar
@@ -148,100 +467,40 @@ int main(int, char **)
     // We use the default status bar of Hello ImGui
     runnerParams.imGuiWindowParams.showStatusBar = true;
     // uncomment next line in order to hide the FPS in the status bar
-    // runnerParams.imGuiWindowParams.showStatus_Fps = false;
-    runnerParams.callbacks.ShowStatus = [&appState] { StatusBarGui(appState); };
+    // runnerParams.imGuiWindowParams.showStatusFps = false;
+    runnerParams.callbacks.ShowStatus = [&appState]() { StatusBarGui(appState); };
 
     //
     // Menu bar
     //
-    // We use the default menu of Hello ImGui, to which we add some more items
-    runnerParams.imGuiWindowParams.showMenuBar = true;
-    runnerParams.callbacks.ShowMenus = []() {
-        if (ImGui::BeginMenu("My Menu"))
-        {
-            if (ImGui::MenuItem("Test me"))
-                HelloImGui::Log(HelloImGui::LogLevel::Debug, "It works");
-            ImGui::EndMenu();
-        }
-    };
+    runnerParams.imGuiWindowParams.showMenuBar = true;          // We use the default menu of Hello ImGui
+    runnerParams.callbacks.ShowMenus = ShowMenuGui;             // where we add items to the default menu
+    runnerParams.callbacks.ShowAppMenuItems = ShowAppMenuItems; // and where add items to the App menu
 
-    // Custom load fonts
-    runnerParams.callbacks.LoadAdditionalFonts = MyLoadFonts;
+    //
+    // Load user settings at `PostInit` and save them at `BeforeExit`
+    //
+    runnerParams.callbacks.PostInit = [&appState]   { LoadUserSettings(appState);};
+    runnerParams.callbacks.BeforeExit = [&appState] { SaveUserSettings(appState);};
 
-    // optional native events handling
-    runnerParams.callbacks.AnyBackendEventCallback = NativeBackendEventCallback;
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //###############################################################################################
     // Part 2: Define the application layout and windows
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //
-    //    2.1 Define the docking splits,
-    //    i.e. the way the screen space is split in different target zones for the dockable windows
-    //     We want to split "MainDockSpace" (which is provided automatically) into three zones, like this:
-    //
-    //    ___________________________________________
-    //    |        |                                |
-    //    | Left   |                                |
-    //    | Space  |    MainDockSpace               |
-    //    |        |                                |
-    //    |        |                                |
-    //    |        |                                |
-    //    -------------------------------------------
-    //    |     BottomSpace                         |
-    //    -------------------------------------------
-    //
+    //###############################################################################################
 
     // First, tell HelloImGui that we want full screen dock space (this will create "MainDockSpace")
     runnerParams.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::ProvideFullScreenDockSpace;
-    // In this demo, we also demonstrate multiple viewports.
-    // you can drag windows outside out the main window in order to put their content into new native windows
+    // In this demo, we also demonstrate multiple viewports: you can drag windows outside out the main window in order to put their content into new native windows
     runnerParams.imGuiWindowParams.enableViewports = true;
+    // Set the default layout
+    runnerParams.dockingParams = CreateDefaultLayout(appState);
+    // Add alternative layouts
+    runnerParams.alternativeDockingLayouts = CreateAlternativeLayouts(appState);
 
-    // Then, add a space named "BottomSpace" whose height is 25% of the app height.
-    // This will split the preexisting default dockspace "MainDockSpace" in two parts.
-    HelloImGui::DockingSplit splitMainBottom;
-    splitMainBottom.initialDock = "MainDockSpace";
-    splitMainBottom.newDock = "BottomSpace";
-    splitMainBottom.direction = ImGuiDir_Down;
-    splitMainBottom.ratio = 0.25f;
-
-    // Then, add a space to the left which occupies a column whose width is 25% of the app width
-    HelloImGui::DockingSplit splitMainLeft;
-    splitMainLeft.initialDock = "MainDockSpace";
-    splitMainLeft.newDock = "LeftSpace";
-    splitMainLeft.direction = ImGuiDir_Left;
-    splitMainLeft.ratio = 0.25f;
-
-    // Finally, transmit these splits to HelloImGui
-    runnerParams.dockingParams.dockingSplits = { splitMainBottom, splitMainLeft };
-
-    //
-    // 2.1 Define our dockable windows : each window provide a Gui callback, and will be displayed
-    //     in a docking split.
-    //
-
-    // A Command panel named "Commands" will be placed in "LeftSpace". Its Gui is provided calls "CommandGui"
-    HelloImGui::DockableWindow commandsWindow;
-    commandsWindow.label = "Commands";
-    commandsWindow.dockSpaceName = "LeftSpace";
-    commandsWindow.GuiFunction = [&appState]() { CommandGui(appState); };
-    // A Log  window named "Logs" will be placed in "BottomSpace". It uses the HelloImGui logger gui
-    HelloImGui::DockableWindow logsWindow;
-    logsWindow.label = "Logs";
-    logsWindow.dockSpaceName = "BottomSpace";
-    logsWindow.GuiFunction = [] { HelloImGui::LogGui(); };
-    // A Window named "Dear ImGui Demo" will be placed in "MainDockSpace"
-    HelloImGui::DockableWindow demoWindow;
-    demoWindow.label = "Dear ImGui Demo";
-    demoWindow.dockSpaceName = "MainDockSpace";
-    demoWindow.GuiFunction = [] { ImGui::ShowDemoWindow(); };
-    // Finally, transmit these windows to HelloImGui
-    runnerParams.dockingParams.dockableWindows = { commandsWindow, logsWindow, demoWindow };
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //###############################################################################################
     // Part 3: Run the app
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    HelloImGui::Run(runnerParams);
+    //###############################################################################################
+    HelloImGui::Run(runnerParams); // Note: with ImGuiBundle, it is also possible to use ImmApp::Run(...)
+
+
     return 0;
 }

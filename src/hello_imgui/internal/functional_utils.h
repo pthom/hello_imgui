@@ -12,5 +12,14 @@ namespace HelloImGui
         void write_text_file(const std::string& path, const std::string& content);
 
         std::string lower_string(const std::string& s);
+
+        template<typename T>
+        bool vector_contains(const std::vector<T>& xs, const T& value)
+        {
+            for (const auto& v : xs)
+                if (v == value)
+                    return true;
+            return false;
+        }
     }
 }

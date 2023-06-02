@@ -3,6 +3,7 @@
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
 #include "hello_imgui/hello_imgui_theme.h"
 #include "hello_imgui/hello_imgui.h"
+#include "hello_imgui/internal/functional_utils.h"
 #include "imgui_internal.h"
 #include <map>
 #include <cassert>
@@ -54,6 +55,34 @@ void ApplyWindowDockingLocations(
         );
 }
 
+std::vector<std::string> _GetStaticallyOrderedLayoutsList(const RunnerParams& runnerParams)
+{
+    static std::vector<std::string> staticallyOrderedLayoutNames;
+
+    // First fill the static vector with currently available layouts
+    if (! FunctionalUtils::vector_contains(staticallyOrderedLayoutNames, runnerParams.dockingParams.layoutName))
+        staticallyOrderedLayoutNames.push_back(runnerParams.dockingParams.layoutName);
+    for (const auto& layout: runnerParams.alternativeDockingLayouts)
+        if (! FunctionalUtils::vector_contains(staticallyOrderedLayoutNames, layout.layoutName))
+            staticallyOrderedLayoutNames.push_back(layout.layoutName);
+
+    // Then, fill currently available layouts
+    std::vector<std::string> currentLayoutNames;
+    currentLayoutNames.push_back(runnerParams.dockingParams.layoutName);
+    for (const auto& layout: runnerParams.alternativeDockingLayouts)
+        currentLayoutNames.push_back(layout.layoutName);
+
+    // Only display currently available layout, but with the static order
+    std::vector<std::string> layoutNames;
+    for (const auto& staticalLayoutName: staticallyOrderedLayoutNames)
+    {
+        if (FunctionalUtils::vector_contains(currentLayoutNames, staticalLayoutName))
+            layoutNames.push_back(staticalLayoutName);
+    }
+
+    return layoutNames;
+}
+
 void MenuView_Layouts(RunnerParams& runnerParams)
 {
     bool hasAlternativeDockingLayouts = (runnerParams.alternativeDockingLayouts.size() > 0);
@@ -70,13 +99,12 @@ void MenuView_Layouts(RunnerParams& runnerParams)
     {
         if (ImGui::BeginMenu("Select Layout"))
         {
-            ImGui::MenuItem(runnerParams.dockingParams.layoutName.c_str(), nullptr, true);
-            for (const auto& layout: runnerParams.alternativeDockingLayouts)
+            auto layoutNames = _GetStaticallyOrderedLayoutsList(runnerParams);
+            for (const auto& layoutName: layoutNames)
             {
-                if (ImGui::MenuItem(layout.layoutName.c_str()))
-                {
-                    HelloImGui::SwitchLayout(layout.layoutName);
-                }
+                bool isSelected = (layoutName == runnerParams.dockingParams.layoutName);
+                if (ImGui::MenuItem(layoutName.c_str(), nullptr, isSelected))
+                    HelloImGui::SwitchLayout(layoutName);
             }
             ImGui::EndMenu();
         }

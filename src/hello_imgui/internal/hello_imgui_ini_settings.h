@@ -61,8 +61,8 @@ namespace HelloImGui
         //
         void SaveLastRunWindowBounds(const std::string& iniPartsFilename, const ScreenBounds& windowBounds);
         std::optional<ScreenBounds> LoadLastRunWindowBounds(const std::string& iniPartsFilename);
-        void SaveSelectedAlternativeLayoutAndTheme(const std::string& iniPartsFilename, const RunnerParams& runnerParams);
-        void LoadSelectedAlternativeLayoutAndTheme(const std::string& iniPartsFilename, RunnerParams* inOutRunnerParams);
+        void SaveHelloImGuiMiscSettings(const std::string& iniPartsFilename, const RunnerParams& runnerParams);
+        void LoadHelloImGuiMiscSettings(const std::string& iniPartsFilename, RunnerParams* inOutRunnerParams);
 
         //
         // The settings below are saved with values that can differ from layout to layout

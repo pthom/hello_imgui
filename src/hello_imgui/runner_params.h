@@ -33,6 +33,8 @@ enum class BackendType
   Set this to false to disable idling (this can be changed dynamically during execution)
 * `isIdling`: bool (dynamically updated during execution)
   This bool will be updated during the application execution, and will be set to true when it is idling.
+* `rememberEnableIdling`: _bool, default=true_.
+  If true, the last value of enableIdling is restored from the settings at startup.
 @@md
 */
 struct FpsIdling
@@ -40,6 +42,7 @@ struct FpsIdling
     float fpsIdle = 9.f;
     bool  enableIdling = true;
     bool  isIdling = false;
+    bool  rememberEnableIdling = true;
 };
 
 /**

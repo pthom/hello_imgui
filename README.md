@@ -147,12 +147,9 @@ __Other utilities:__
 
 * `HelloImGui::GetRunnerParams()`:
   a convenience function that will return the runnerParams of the current application
-* `SwitchLayout(layoutName)`
-  Changes the application current layout
-  (Only used in advanced cases when several layouts are available, i.e. if you filled runnerParams.alternativeDockingLayouts)
-* `CurrentLayoutName()`: returns the name of the current layout
 
-
+* `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
+  May differ from ImGui::GetIO().FrameRate, since one can choose the duration for the calculation of the mean value of the fps
 
 Although the API is extremely simple, it is highly customizable, and you can set many options by filling the elements in the `RunnerParams` struct, or in the simpler  `SimpleRunnerParams`, or even by giving a subset of params to `HelloImGui::Run`.
 

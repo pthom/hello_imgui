@@ -159,6 +159,8 @@ int main(){
   Set this to false to disable idling (this can be changed dynamically during execution)
 * `isIdling`: bool (dynamically updated during execution)
   This bool will be updated during the application execution, and will be set to true when it is idling.
+* `rememberEnableIdling`: _bool, default=true_.
+  If true, the last value of enableIdling is restored from the settings at startup.
 
 See [runner_params.h](runner_params.h).
 
@@ -413,8 +415,8 @@ In order to change the application window settings, change the _AppWindowsParams
   * `showStatusBar`: _bool, default=false_.
     Flag that enable to show a Status bar at the bottom. You can customize the status bar
     via RunnerCallbacks.ShowStatus()
-
   * `showStatus_Fps`: _bool, default=true_. If set, display the FPS in the status bar.
+  * `rememberStatusBarSettings`: _bool, default=true_. If set, showStatusBar and showStatus_Fps are stored in the application settings.
 
   * `configWindowsMoveFromTitleBarOnly`: _bool, default=true_.
     Make windows only movable from the title bar

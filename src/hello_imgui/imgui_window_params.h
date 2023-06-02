@@ -61,8 +61,8 @@ In order to change the application window settings, change the _AppWindowsParams
   * `showStatusBar`: _bool, default=false_.
     Flag that enable to show a Status bar at the bottom. You can customize the status bar
     via RunnerCallbacks.ShowStatus()
-
   * `showStatus_Fps`: _bool, default=true_. If set, display the FPS in the status bar.
+  * `rememberStatusBarSettings`: _bool, default=true_. If set, showStatusBar and showStatus_Fps are stored in the application settings.
 
   * `configWindowsMoveFromTitleBarOnly`: _bool, default=true_.
     Make windows only movable from the title bar
@@ -95,6 +95,7 @@ struct ImGuiWindowParams
 
     bool showStatusBar = false;
     bool showStatus_Fps = true;
+    bool rememberStatusBarSettings = true;
 
     bool configWindowsMoveFromTitleBarOnly = true;
 

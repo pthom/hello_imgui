@@ -370,7 +370,7 @@ void AbstractRunner::Setup()
     ImGui::GetIO().Fonts->Build();
 
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
-    HelloImGuiIniSettings::LoadSelectedAlternativeLayoutAndTheme(IniPartsFilename(), &params);
+    HelloImGuiIniSettings::LoadHelloImGuiMiscSettings(IniPartsFilename(), &params);
     SetLayoutResetIfNeeded();
 
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
@@ -667,7 +667,7 @@ void AbstractRunner::TearDown(bool gotException)
             HelloImGuiIniSettings::SaveLastRunWindowBounds(IniPartsFilename(),
                                                            mBackendWindowHelper->GetWindowBounds(mWindow));
         LayoutSettings_Save();
-        HelloImGuiIniSettings::SaveSelectedAlternativeLayoutAndTheme(IniPartsFilename(), params);
+        HelloImGuiIniSettings::SaveHelloImGuiMiscSettings(IniPartsFilename(), params);
     }
 
     HelloImGui::internal::Free_ImageFromAssetMap();

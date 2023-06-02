@@ -324,7 +324,7 @@ namespace HelloImGui
             }
         }
 
-        void LoadSelectedAlternativeLayoutAndTheme(const std::string& iniPartsFilename, RunnerParams* inOutRunnerParams)
+        void LoadHelloImGuiMiscSettings(const std::string& iniPartsFilename, RunnerParams* inOutRunnerParams)
         {
             std::string iniPartName = "HelloImGui_Misc";
 
@@ -341,6 +341,32 @@ namespace HelloImGui
                         layoutName = iniFile["Layout"]["Name"].as<std::string>();
                     if (inOutRunnerParams->imGuiWindowParams.rememberTheme)
                         themeName = iniFile["Theme"]["Name"].as<std::string>();
+
+                    if (inOutRunnerParams->imGuiWindowParams.rememberStatusBarSettings)
+                    {
+                        {
+                            std::string s = iniFile["StatusBar"]["Show"].as<std::string>();
+                            if (s == "true")
+                                inOutRunnerParams->imGuiWindowParams.showStatusBar = true;
+                            if (s == "false")
+                                inOutRunnerParams->imGuiWindowParams.showStatusBar = false;
+                        }
+                        {
+                            std::string s = iniFile["StatusBar"]["ShowFps"].as<std::string>();
+                            if (s == "true")
+                                inOutRunnerParams->imGuiWindowParams.showStatus_Fps = true;
+                            if (s == "false")
+                                inOutRunnerParams->imGuiWindowParams.showStatus_Fps = false;
+                        }
+                    }
+                    if (inOutRunnerParams->fpsIdling.rememberEnableIdling)
+                    {
+                        std::string s = iniFile["Idling"]["EnableIdling"].as<std::string>();
+                        if (s == "true")
+                            inOutRunnerParams->fpsIdling.enableIdling = true;
+                        if (s == "false")
+                            inOutRunnerParams->fpsIdling.enableIdling = false;
+                    }
                 }
             }
 
@@ -353,7 +379,7 @@ namespace HelloImGui
             HelloImGui::SwitchLayout(layoutName);
         }
 
-        void SaveSelectedAlternativeLayoutAndTheme(const std::string& iniPartsFilename, const RunnerParams& runnerParams)
+        void SaveHelloImGuiMiscSettings(const std::string& iniPartsFilename, const RunnerParams& runnerParams)
         {
             std::string iniPartName = "HelloImGui_Misc";
             ini::IniFile iniFile;
@@ -361,6 +387,15 @@ namespace HelloImGui
                 iniFile["Layout"]["Name"] = runnerParams.dockingParams.layoutName;
             if (runnerParams.imGuiWindowParams.rememberTheme)
                 iniFile["Theme"]["Name"] = ImGuiTheme::ImGuiTheme_Name(runnerParams.imGuiWindowParams.tweakedTheme.Theme);
+            if (runnerParams.imGuiWindowParams.rememberStatusBarSettings)
+            {
+                iniFile["StatusBar"]["Show"] = runnerParams.imGuiWindowParams.showStatusBar;
+                iniFile["StatusBar"]["ShowFps"] = runnerParams.imGuiWindowParams.showStatus_Fps;
+            }
+            if (runnerParams.fpsIdling.rememberEnableIdling)
+            {
+                iniFile["Idling"]["EnableIdling"] = runnerParams.fpsIdling.enableIdling;
+            }
 
             IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
             iniParts.SetIniPart(iniPartName, iniFile.encode());

@@ -20,6 +20,8 @@
 
 #ifdef _WIN32
 #include <direct.h>
+#include <locale>
+#include <codecvt>
 #else
 #include <unistd.h>
 #endif
@@ -28,10 +30,19 @@ namespace FileUtils
 {
     bool IsRegularFile(const std::string& filename)
     {
+#ifdef _WIN32
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        std::wstring wide_filename = converter.from_bytes(filename);
+        auto ifs =new std::ifstream(wide_filename.c_str(), std::ios::binary | std::ios::ate);
+        bool found = (ifs != NULL);
+        if (ifs)
+            ifs->close();
+#else
         FILE *f = fopen(filename.c_str(), "r");
         bool found = (f != NULL);
         if (f)
             fclose(f);
+#endif
         return found;
     }
 
@@ -214,7 +225,13 @@ AssetFileData LoadAssetFileData_Impl(const char *assetPath)
 {
     AssetFileData r;
 
+#ifdef _WIN32
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    std::wstring wide_assetPath = converter.from_bytes(assetPath);
+    std::ifstream ifs(wide_assetPath.c_str(), std::ios::binary | std::ios::ate);
+#else
     std::ifstream ifs(assetPath, std::ios::binary | std::ios::ate);
+#endif
     if (!ifs.good())
         return AssetFileData();
 

@@ -572,3 +572,4 @@ vcpkg/
 build-*/
 build/
 build_*/
+.vscode/settings.json

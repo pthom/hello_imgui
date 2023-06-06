@@ -7,4 +7,4 @@ cd $REPO_DIR
 
 ./tools/emscripten/deploy/emscripten_build.sh
 cd build_emscripten
-rsync -vaz src/* pascal@traineq.org:HTML/HelloImGui/
+rsync -vaz bin pascal@traineq.org:HTML/HelloImGui/

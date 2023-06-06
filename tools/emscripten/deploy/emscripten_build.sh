@@ -10,5 +10,5 @@ fi
 
 cd build_emscripten
 source ~/emsdk/emsdk_env.sh
-emcmake cmake ..
+emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j 4

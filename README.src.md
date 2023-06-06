@@ -143,17 +143,15 @@ More info about the [docking API](src/hello_imgui/hello_imgui_api.md#docking).
 
 Click on the images below to run the demonstration applications.
 
-| Hello, World | Advanced Docking | Classic ImGui Demo | ImGui Manual|
-| --- | --- | --- | --- |
-| [![Hello, World](docs/images/wasm_demos/hello.jpg)][hello-world]  | [![Advanced Docking demo](docs/images/wasm_demos/docking.jpg)][docking]  | [![ImGui classic demo](docs/images/wasm_demos/classic.jpg)][classic] | [![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)][manual_online]|
-|[Code](src/hello_imgui_demos/hello_world)|[Code](src/hello_imgui_demos/hello_imgui_demodocking)|[Code](src/hello_imgui_demos/hello_imgui_demo_classic)| ImGui Manual is a fully interactive manual for ImGui. [Code](https://github.com/pthom/imgui_manual)|
+| Hello, World | Advanced Docking | ImGui Manual|
+| --- | --- | --- |
+| [![Hello, World](docs/images/wasm_demos/hello.jpg)][hello-world]  | [![Advanced Docking demo](docs/images/wasm_demos/docking.jpg)][docking] | [![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)][manual_online]|
+|[Code](src/hello_imgui_demos/hello_world)|[Code](src/hello_imgui_demos/hello_imgui_demodocking)| ImGui Manual is a fully interactive manual for ImGui. [Code](https://github.com/pthom/imgui_manual)|
 
-[hello-world]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_world/hello_world.html  "Hello world"
-[docking]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html  "Advanced docking demo"
-[classic]: https://traineq.org/HelloImGui/hello_imgui_demos/hello_imgui_demo_classic/hello-imgui-demo-classic.html  "ImGui classic demo"
+[hello-world]: https://traineq.org/HelloImGui/bin/hello_world.html  "Hello world"
+[docking]: https://traineq.org/HelloImGui/bin/hello_imgui_demodocking.html  "Advanced docking demo"
+[classic]: https://traineq.org/HelloImGui/bin/hello-imgui-demo-classic.html  "ImGui classic demo"
 [manual_online]: https://pthom.github.io/imgui_manual_online/  "ImGui Manual"
-
-Also, [ImGui Manual](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html), an interactive manual for ImGui is developed with HelloImGui.
 
 
 -------------------

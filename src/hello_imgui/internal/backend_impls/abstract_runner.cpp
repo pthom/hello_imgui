@@ -113,11 +113,15 @@ void AbstractRunner::PrepareWindowGeometry()
 
 bool AbstractRunner::WantAutoSize()
 {
+#ifdef __EMSCRIPTEN__
+    return false;
+#else
     // AutoSize at startup happens on the second frame, 
     // since the window may have been resized to handle DPI scaling on the first frame
     bool autosizeAtStartup = (mIdxFrame == 1) &&  !mGeometryHelper->HasInitialWindowSizeInfo();
     bool autosizeAtNextFrame = params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame;
     return autosizeAtStartup || autosizeAtNextFrame;
+#endif
 }
 
 

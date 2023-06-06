@@ -12,6 +12,7 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 ## Features
 
 * Set up a project in 5 minutes
+* Advanced layout handling: handle multiple layouts (each of which will remember the user modifications and the list of opened windows). See [demo video](https://www.youtube.com/watch?v=XKxmz__F4ow)
 * Embed assets on all platforms
 * Power Save mode: reduce FPS when application is idle
 * [Theme tweaking](https://www.youtube.com/watch?v=Hhartw0cUjg)
@@ -76,11 +77,40 @@ That's it, you do not need to clone HelloImGui, and you do not need to install a
 For more detailed info, go to [_example_integration](_example_integration).
 
 
-## Need more widgets, or want to use this with python?
+## Do you need more widgets, or do you want to use ImGui with python?
 
-[ImGuiBundle](https://github.com/pthom/imgui_bundle) is based on HelloImGui and provides lots of additional widgets ([imgui](https://github.com/ocornut/imgui.git), [implot](https://github.com/epezent/implot), [imgui-node-editor](https://github.com/thedmd/imgui-node-editor), [ImFileDialog](https://github.com/pthom/ImFileDialog.git), [ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit), [imgui_md](https://github.com/mekhontsev/imgui_md.git)), as well as complete python bindings.
+[<img src="https://raw.githubusercontent.com/pthom/imgui_bundle/doc/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png" width="128"> ImGuiBundle](https://github.com/pthom/imgui_bundle) is based on HelloImGui and provides lots of additional widgets ([imgui](https://github.com/ocornut/imgui.git), [implot](https://github.com/epezent/implot), [imgui-node-editor](https://github.com/thedmd/imgui-node-editor), [ImFileDialog](https://github.com/pthom/ImFileDialog.git), [ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit), [imgui_md](https://github.com/mekhontsev/imgui_md.git)), as well as complete python bindings.
 
 See ImGuiBundle's  [C++ demos](https://github.com/pthom/imgui_bundle/tree/main/demos_cpp) and [Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos).
+
+
+# Full usage instructions and API
+
+HelloImGui is extremely easy to use: there is **one** main function in the API, with three overloads.
+
+@import "src/hello_imgui/hello_imgui.h" {md_id=HelloImGui::Run}
+
+Although the API is extremely simple, it is highly customizable, and you can set many options by filling the elements in the `RunnerParams` struct, or in the simpler  `SimpleRunnerParams`, or even by giving a subset of params to `HelloImGui::Run`.
+
+Click on the image below to access the [full API doc](src/hello_imgui/hello_imgui_api.md)
+[![a](src/hello_imgui/doc_src/hello_imgui_diagram.png)](src/hello_imgui/hello_imgui_api.md)
+
+More info about the [docking API](src/hello_imgui/hello_imgui_api.md#docking).
+
+
+## Online interactive example applications
+
+Click on the images below to run the demonstration applications.
+
+| Hello, World | Advanced Docking | ImGui Manual|
+| --- | --- | --- |
+| [![Hello, World](docs/images/wasm_demos/hello.jpg)][hello-world]  | [![Advanced Docking demo](docs/images/wasm_demos/docking.jpg)][docking] | [![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)][manual_online]|
+|[Code](src/hello_imgui_demos/hello_world)|[Code](src/hello_imgui_demos/hello_imgui_demodocking)| ImGui Manual is a fully interactive manual for ImGui. [Code](https://github.com/pthom/imgui_manual)|
+
+[hello-world]: https://traineq.org/HelloImGui/bin/hello_world.html  "Hello world"
+[docking]: https://traineq.org/HelloImGui/bin/hello_imgui_demodocking.html  "Advanced docking demo"
+[classic]: https://traineq.org/HelloImGui/bin/hello-imgui-demo-classic.html  "ImGui classic demo"
+[manual_online]: https://pthom.github.io/imgui_manual_online/  "ImGui Manual"
 
 
 ## Demo - handle events and include assets:
@@ -125,33 +155,19 @@ hello_imgui_add_app(hello_globe hello_globe.main.cpp)
 ```
 
 
-# Full usage instructions and API
+## Complete demo - advanced layout, FPS, theme, etc:
 
-HelloImGui is extremely easy to use: there is **one** main function in the API, with three overloads.
+The C++ demo file [hello_imgui_demodocking.main.cpp](src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp) demonstrates:
 
-@import "src/hello_imgui/hello_imgui.h" {md_id=HelloImGui::Run}
+* How to handle complex layouts: you can define several layouts and switch between them:  each layout which will remember the user modifications and the list of opened windows
+* How to use theming
+* How to store you own user settings in the app ini file
+* How to add a status bar and a log window
+* How to set an adaptative FPS for your application (to reduce CPU usage)
 
-Although the API is extremely simple, it is highly customizable, and you can set many options by filling the elements in the `RunnerParams` struct, or in the simpler  `SimpleRunnerParams`, or even by giving a subset of params to `HelloImGui::Run`.
+You can try this demo online via an [emscripten web demo](https://traineq.org/HelloImGui/bin/hello_imgui_demodocking.html). It is also available [in python](https://github.com/pthom/imgui_bundle/blob/main/bindings/imgui_bundle/demos_python/demos_immapp/demo_docking.py), inside [Dear ImGui Bundle](https://github.com/pthom/imgui_bundle)
 
-Click on the image below to access the [full API doc](src/hello_imgui/hello_imgui_api.md)
-[![a](src/hello_imgui/doc_src/hello_imgui_diagram.png)](src/hello_imgui/hello_imgui_api.md)
-
-More info about the [docking API](src/hello_imgui/hello_imgui_api.md#docking).
-
-
-## Online interactive example applications
-
-Click on the images below to run the demonstration applications.
-
-| Hello, World | Advanced Docking | ImGui Manual|
-| --- | --- | --- |
-| [![Hello, World](docs/images/wasm_demos/hello.jpg)][hello-world]  | [![Advanced Docking demo](docs/images/wasm_demos/docking.jpg)][docking] | [![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)][manual_online]|
-|[Code](src/hello_imgui_demos/hello_world)|[Code](src/hello_imgui_demos/hello_imgui_demodocking)| ImGui Manual is a fully interactive manual for ImGui. [Code](https://github.com/pthom/imgui_manual)|
-
-[hello-world]: https://traineq.org/HelloImGui/bin/hello_world.html  "Hello world"
-[docking]: https://traineq.org/HelloImGui/bin/hello_imgui_demodocking.html  "Advanced docking demo"
-[classic]: https://traineq.org/HelloImGui/bin/hello-imgui-demo-classic.html  "ImGui classic demo"
-[manual_online]: https://pthom.github.io/imgui_manual_online/  "ImGui Manual"
+Also, see this video that give more explanations on [how to handle multiple complex layouts](https://www.youtube.com/watch?v=XKxmz__F4ow)
 
 
 -------------------

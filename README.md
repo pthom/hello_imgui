@@ -12,6 +12,7 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 ## Features
 
 * Set up a project in 5 minutes
+* Advanced layout handling: handle multiple layouts (each of which will remember the user modifications and the list of opened windows). See [demo video](https://www.youtube.com/watch?v=XKxmz__F4ow)
 * Embed assets on all platforms
 * Power Save mode: reduce FPS when application is idle
 * [Theme tweaking](https://www.youtube.com/watch?v=Hhartw0cUjg)
@@ -76,53 +77,11 @@ That's it, you do not need to clone HelloImGui, and you do not need to install a
 For more detailed info, go to [_example_integration](_example_integration).
 
 
-## Need more widgets, or want to use this with python?
+## Do you need more widgets, or do you want to use ImGui with python?
 
-[ImGuiBundle](https://github.com/pthom/imgui_bundle) is based on HelloImGui and provides lots of additional widgets ([imgui](https://github.com/ocornut/imgui.git), [implot](https://github.com/epezent/implot), [imgui-node-editor](https://github.com/thedmd/imgui-node-editor), [ImFileDialog](https://github.com/pthom/ImFileDialog.git), [ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit), [imgui_md](https://github.com/mekhontsev/imgui_md.git)), as well as complete python bindings.
+[<img src="https://raw.githubusercontent.com/pthom/imgui_bundle/doc/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png" width="128"> ImGuiBundle](https://github.com/pthom/imgui_bundle) is based on HelloImGui and provides lots of additional widgets ([imgui](https://github.com/ocornut/imgui.git), [implot](https://github.com/epezent/implot), [imgui-node-editor](https://github.com/thedmd/imgui-node-editor), [ImFileDialog](https://github.com/pthom/ImFileDialog.git), [ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit), [imgui_md](https://github.com/mekhontsev/imgui_md.git)), as well as complete python bindings.
 
 See ImGuiBundle's  [C++ demos](https://github.com/pthom/imgui_bundle/tree/main/demos_cpp) and [Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos).
-
-
-## Demo - handle events and include assets:
-
-<img src="docs/images/hello_globe.jpg" width="150">
-
-#### include assets
-Anything in the assets/ folder located beside the app's CMakeLists will be embedded in the app:
-```
-└── hello_globe.main.cpp
-├── CMakeLists.txt
-├── assets/
-│         └── world.jpg
-```
-(even on iOS and emscripten).
-
-#### handle events
-Dear ImGui uses the Immediate Gui paradigm: each button, each widget returns true if the user interacted with it.
-
-> hello_globe.main.cpp
-```cpp
-#include "hello_imgui/hello_imgui.h"
-int main(int , char *[])
-{
-    auto guiFunction = []() {
-        ImGui::Text("Hello, ");                    // Display a simple label
-        HelloImGui::ImageFromAsset("world.jpg");   // Display a static image
-        if (ImGui::Button("Bye!"))                 // Display a button
-            // and immediately handle its action if it is clicked!
-            HelloImGui::GetRunnerParams()->appShallExit = true;
-     };
-    HelloImGui::Run(guiFunction, "Hello, globe", true);
-    return 0;
-}
-```
-
-The CMakeLists fits in two lines, and will work on Linux, Mac, Windows, iOS and Emscripten_
-> CMakeLists.txt:
-```cmake
-include(hello_imgui_add_app)
-hello_imgui_add_app(hello_globe hello_globe.main.cpp)
-```
 
 
 # Full usage instructions and API
@@ -174,6 +133,63 @@ Click on the images below to run the demonstration applications.
 [manual_online]: https://pthom.github.io/imgui_manual_online/  "ImGui Manual"
 
 
+## Demo - handle events and include assets:
+
+<img src="docs/images/hello_globe.jpg" width="150">
+
+#### include assets
+Anything in the assets/ folder located beside the app's CMakeLists will be embedded in the app:
+```
+└── hello_globe.main.cpp
+├── CMakeLists.txt
+├── assets/
+│         └── world.jpg
+```
+(even on iOS and emscripten).
+
+#### handle events
+Dear ImGui uses the Immediate Gui paradigm: each button, each widget returns true if the user interacted with it.
+
+> hello_globe.main.cpp
+```cpp
+#include "hello_imgui/hello_imgui.h"
+int main(int , char *[])
+{
+    auto guiFunction = []() {
+        ImGui::Text("Hello, ");                    // Display a simple label
+        HelloImGui::ImageFromAsset("world.jpg");   // Display a static image
+        if (ImGui::Button("Bye!"))                 // Display a button
+            // and immediately handle its action if it is clicked!
+            HelloImGui::GetRunnerParams()->appShallExit = true;
+     };
+    HelloImGui::Run(guiFunction, "Hello, globe", true);
+    return 0;
+}
+```
+
+The CMakeLists fits in two lines, and will work on Linux, Mac, Windows, iOS and Emscripten_
+> CMakeLists.txt:
+```cmake
+include(hello_imgui_add_app)
+hello_imgui_add_app(hello_globe hello_globe.main.cpp)
+```
+
+
+## Complete demo - advanced layout, FPS, theme, etc:
+
+The C++ demo file [hello_imgui_demodocking.main.cpp](src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp) demonstrates:
+
+* How to handle complex layouts: you can define several layouts and switch between them:  each layout which will remember the user modifications and the list of opened windows
+* How to use theming
+* How to store you own user settings in the app ini file
+* How to add a status bar and a log window
+* How to set an adaptative FPS for your application (to reduce CPU usage)
+
+You can try this demo online via an [emscripten web demo](https://traineq.org/HelloImGui/bin/hello_imgui_demodocking.html). It is also available [in python](https://github.com/pthom/imgui_bundle/blob/main/bindings/imgui_bundle/demos_python/demos_immapp/demo_docking.py), inside [Dear ImGui Bundle](https://github.com/pthom/imgui_bundle)
+
+Also, see this video that give more explanations on [how to handle multiple complex layouts](https://www.youtube.com/watch?v=XKxmz__F4ow)
+
+
 -------------------
 __Table of contents__
 
@@ -191,12 +207,13 @@ __Table of contents__
                                                                                                                   * [](#)
 * [Build](#build)
 * [Run the build hello_world app](#run-the-build-hello_world-app)
-  * [Need more widgets, or want to use this with python?](#need-more-widgets-or-want-to-use-this-with-python?)
+  * [Do you need more widgets, or do you want to use ImGui with python?](#do-you-need-more-widgets-or-do-you-want-to-use-imgui-with-python?)
+* [Full usage instructions and API](#full-usage-instructions-and-api)
+  * [Online interactive example applications](#online-interactive-example-applications)
   * [Demo - handle events and include assets:](#demo---handle-events-and-include-assets)
       * [include assets](#include-assets)
       * [handle events](#handle-events)
-* [Full usage instructions and API](#full-usage-instructions-and-api)
-  * [Online interactive example applications](#online-interactive-example-applications)
+  * [Complete demo - advanced layout, FPS, theme, etc:](#complete-demo---advanced-layout-fps-theme-etc)
 * [Main signature: use `int main(int, char**)`](#main-signature-use-`int-mainint-char**`)
 * [Build instructions](#build-instructions)
   * [Supported platforms and backends](#supported-platforms-and-backends)

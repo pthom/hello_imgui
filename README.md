@@ -115,7 +115,7 @@ Although the API is extremely simple, it is highly customizable, and you can set
 Click on the image below to access the [full API doc](src/hello_imgui/hello_imgui_api.md)
 [![a](src/hello_imgui/doc_src/hello_imgui_diagram.png)](src/hello_imgui/hello_imgui_api.md)
 
-More info about the [docking API](src/hello_imgui/hello_imgui_api.md#docking).
+More info about the how to handle complex layouts in the [docking API](src/hello_imgui/hello_imgui_api.md#docking).
 
 
 ## Online interactive example applications

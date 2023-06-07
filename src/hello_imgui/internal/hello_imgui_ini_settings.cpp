@@ -113,7 +113,7 @@ namespace HelloImGui
 
         std::string JoinIniParts(const IniParts& iniParts)
         {
-            std::string r = ";;; !!! This configuration is handled by HelloImGui and stores several Ini Files, separated by markers like this:\n           ;;;<<<INI_NAME>>>;;;\n\n";
+            std::string r = ";;;<<< This configuration is handled by HelloImGui and stores several Ini Files, separated by markers like this: >>>;;;\n           ;;;<<<INI_NAME>>>;;;\n\n";
             for (const auto& iniPart: iniParts.Parts)
             {
                 r += ";;;<<<" + iniPart.Name + ">>>;;;\n";

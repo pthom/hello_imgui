@@ -31,15 +31,26 @@ struct ImageGl
 {
 private:
     ImageGl(const char *assetPath);
+    ImageGl(const char *assetPath, bool isGif);
 public:
     static ImageGlPtr FactorImage(const char *assetPath);
+    static ImageGlPtr FactorImage(const char *assetPath, bool isGif);
     ~ImageGl();
 
     void Draw(const ImVec2& size = ImVec2(0, 0), const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0));
+    void Draw(bool isGif, const ImVec2& size = ImVec2(0, 0), const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0));
     bool DrawButton(const ImVec2& size = ImVec2(0, 0), const ImVec2& uv0 = ImVec2(0, 0),  const ImVec2& uv1 = ImVec2(1,1), int frame_padding = -1, const ImVec4& bg_col = ImVec4(0,0,0,0), const ImVec4& tint_col = ImVec4(1,1,1,1));    // <0 frame_padding uses default frame padding settings. 0 for no padding
+    bool DrawButton(bool isGif, const ImVec2& size = ImVec2(0, 0), const ImVec2& uv0 = ImVec2(0, 0),  const ImVec2& uv1 = ImVec2(1,1), int frame_padding = -1, const ImVec4& bg_col = ImVec4(0,0,0,0), const ImVec4& tint_col = ImVec4(1,1,1,1));    // <0 frame_padding uses default frame padding settings. 0 for no padding
 
     ImVec2 imageSize;
     ImTextureID imTextureId;
+    
+    bool isGif = false;
+    int Gif_Fps = 0;
+    float Gif_Time = 0.0f; // playback progress
+    ImTextureID* imTextureId_StaticImage = nullptr;
+    ImTextureID* imTextureId_GifArray = nullptr;
+
 };
 
 

@@ -102,7 +102,10 @@ namespace HelloImGui
                     currentPart->Name = _ReadIniPartName(line);
                 }
                 else
-                    currentPart->Content += line + "\n";
+                {
+                    if (currentPart.has_value())
+                        currentPart->Content += line + "\n";
+                }
             }
 
             if (currentPart.has_value())

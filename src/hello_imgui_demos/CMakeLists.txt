@@ -6,6 +6,7 @@ set(subdirs
     hello_world
     hello_globe
     hello_idbfs
+    hello_gif
 )
 foreach(target_name ${subdirs})
     add_subdirectory(${target_name})

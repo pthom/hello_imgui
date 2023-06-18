@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <functional>
 
 namespace HelloImGui
 {
@@ -21,5 +22,10 @@ namespace HelloImGui
                     return true;
             return false;
         }
+
+        inline std::function<void()> sequence_functions(std::function<void()> f1, std::function<void()> f2) {
+            return [f1, f2]{ if (f1) f1();  if (f2) f2(); };
+        }
+
     }
 }

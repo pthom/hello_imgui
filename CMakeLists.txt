@@ -68,10 +68,14 @@ option(HELLOIMGUI_USE_QT "Build HelloImGui for Qt" OFF)
 #------------------------------------------------------------------------------
 # Build options / ImGui
 #------------------------------------------------------------------------------
-# if HELLOIMGUI_BUILD_IMGUI, imgui will be built as part of the build
-option(HELLOIMGUI_BUILD_IMGUI "Build imgui using sources provided in external/imgui" ON)
 # HELLOIMGUI_IMGUI_SOURCE_DIR: folder containing the sources for imgui (by default in the submodule external/imgui)
-set(HELLOIMGUI_IMGUI_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/external/imgui" CACHE STRING "Source dir of imgui")
+if (NOT DEFINED HELLOIMGUI_IMGUI_SOURCE_DIR)
+    set(HELLOIMGUI_IMGUI_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/external/imgui" CACHE STRING "Source dir of ImGui")
+endif()
+# if HELLOIMGUI_BUILD_IMGUI, imgui will be built as part of the build of HelloImGui
+if (NOT DEFINED HELLOIMGUI_BUILD_IMGUI)
+    option(HELLOIMGUI_BUILD_IMGUI "Build ImGui as part of HelloImGui" ON)
+endif()
 
 #------------------------------------------------------------------------------
 # Common build options / HelloImGui

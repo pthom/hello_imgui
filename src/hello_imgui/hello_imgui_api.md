@@ -638,9 +638,11 @@ _Members:_
   When to apply the docking layout. Choose between FirstUseEver (apply once, then keep user preference),
   ApplicationStart (always reapply at application start), and Never.
 * `mainDockSpaceNodeFlags`: _ImGuiDockNodeFlags (enum), default=ImGuiDockNodeFlags_PassthruCentralNode_
-   Flags to apply to the main dock space (enable/disable resizing, splitting, tab bar, etc.)
+   Flags to apply to the main dock space (enable/disable resizing, splitting, tab bar, etc.).
+   Most flags are inherited by children dock spaces. You can also set flags for specific dock spaces via `DockingSplit.nodeFlags`
 * `layoutReset`: _bool, default=false_.
-  Reset layout on next frame (layoutReset will be set to false after applying)
+  Reset layout on next frame, i.e. drop the layout customizations which were applied manually by the user.
+  (layoutReset will be set to false after applying)
 
  _Helpers:_
 

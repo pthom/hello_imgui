@@ -400,7 +400,7 @@ void AbstractRunner::SetLayoutResetIfNeeded()
 
 void AbstractRunner::RenderGui()
 {
-    DockingDetails::ProvideWindowOrDock(params.imGuiWindowParams, params.dockingParams);
+    DockingDetails::ProvideWindowOrDock(params);
 
     if (params.imGuiWindowParams.showMenuBar)
         Menu_StatusBar::ShowMenu(params);

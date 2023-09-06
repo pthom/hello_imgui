@@ -261,13 +261,11 @@ void ImplProvideFullScreenImGuiWindow(const ImGuiWindowParams& imGuiWindowParams
     DoCreateFullScreenImGuiWindow(imGuiWindowParams, false);
 }
 
-void ImplProvideFullScreenDockSpace(const ImGuiWindowParams& imGuiWindowParams)
+void ImplProvideFullScreenDockSpace(const RunnerParams& runnerParams)
 {
-    DoCreateFullScreenImGuiWindow(imGuiWindowParams, true);
+    DoCreateFullScreenImGuiWindow(runnerParams.imGuiWindowParams, true);
     ImGuiID mainDockspaceId = ImGui::GetID("MainDockSpace");
-    ImGuiDockNodeFlags dockspace_flags =
-        ImGuiDockNodeFlags_PassthruCentralNode;  // ImGuiDockNodeFlags_PassthruDockspace;
-    ImGui::DockSpace(mainDockspaceId, ImVec2(0.0f, 0.0f), dockspace_flags);
+    ImGui::DockSpace(mainDockspaceId, ImVec2(0.0f, 0.0f), runnerParams.dockingParams.mainDockSpaceNodeFlags);
     gImGuiSplitIDs["MainDockSpace"] = mainDockspaceId;
 }
 
@@ -303,15 +301,15 @@ void ApplyDockLayout(DockingParams& dockingParams)
     }
 }
 
-void ProvideWindowOrDock(const ImGuiWindowParams& imGuiWindowParams, DockingParams &dockingParams)
+void ProvideWindowOrDock(RunnerParams& runnerParams)
 {
-    if (imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenWindow)
-        ImplProvideFullScreenImGuiWindow(imGuiWindowParams);
+    if (runnerParams.imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenWindow)
+        ImplProvideFullScreenImGuiWindow(runnerParams.imGuiWindowParams);
 
-    if (imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenDockSpace)
+    if (runnerParams.imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenDockSpace)
     {
-        ImplProvideFullScreenDockSpace(imGuiWindowParams);
-        ApplyDockLayout(dockingParams);
+        ImplProvideFullScreenDockSpace(runnerParams);
+        ApplyDockLayout(runnerParams.dockingParams);
     }
 }
 

@@ -590,7 +590,7 @@ _Members:_
 * `direction`: *ImGuiDir_ (enum with ImGuiDir_Down, ImGuiDir_Down, ImGuiDir_Left, ImGuiDir_Right)*.
 Direction where this dock space should be created.
 * `ratio`: _float, default=0.25f_. Ratio of the initialDock size that should be used by the new dock space.
-* `nodeFlags`: *ImGuiDockNodeFlags_ (enum)*. Flags to apply to the new dock space.
+* `nodeFlags`: *ImGuiDockNodeFlags_ (enum)*. Flags to apply to the new dock space (enable/disable resizing, splitting, tab bar, etc.)
 
 
 #### Dockable window
@@ -637,6 +637,8 @@ _Members:_
 * `layoutCondition`: _enum DockingLayoutCondition, default=DockingLayoutCondition::FirstUseEver_.
   When to apply the docking layout. Choose between FirstUseEver (apply once, then keep user preference),
   ApplicationStart (always reapply at application start), and Never.
+* `mainDockSpaceNodeFlags`: _ImGuiDockNodeFlags (enum), default=ImGuiDockNodeFlags_PassthruCentralNode_
+   Flags to apply to the main dock space (enable/disable resizing, splitting, tab bar, etc.)
 * `layoutReset`: _bool, default=false_.
   Reset layout on next frame (layoutReset will be set to false after applying)
 

@@ -536,8 +536,8 @@ int main(int, char**)
     // Add alternative layouts
     runnerParams.alternativeDockingLayouts = CreateAlternativeLayouts(appState);
 
-    // uncomment the next line if you want to always start with this layout.
-    // Otherwise, modifications to the layout applied by the user layout will be remembered.
+    // uncomment the next line if you want to always start with the layout defined in the code
+    //     (otherwise, modifications to the layout applied by the user layout will be remembered)
     // runnerParams.dockingParams.layoutCondition = HelloImGui::DockingLayoutCondition::ApplicationStart;
 
     //###############################################################################################

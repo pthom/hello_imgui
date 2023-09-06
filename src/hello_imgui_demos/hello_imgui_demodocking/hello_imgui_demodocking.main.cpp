@@ -93,11 +93,11 @@ MyAppSettings StringToMyAppSettings(const std::string& s)
 //     runnerParams.callbacks.BeforeExit = [&appState] { SaveMyAppSettings(appState);};
 void LoadMyAppSettings(AppState& appState) //
 {
-    appState.myAppSettings = StringToMyAppSettings(HelloImGui::LoadUserPref("UserInfo"));
+    appState.myAppSettings = StringToMyAppSettings(HelloImGui::LoadUserPref("MyAppSettings"));
 }
 void SaveMyAppSettings(const AppState& appState)
 {
-    HelloImGui::SaveUserPref("UserInfo", MyAppSettingsToString(appState.myAppSettings));
+    HelloImGui::SaveUserPref("MyAppSettings", MyAppSettingsToString(appState.myAppSettings));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -147,21 +147,6 @@ void DemoShowAdditionalWindow()
             additionalWindowPtr->isVisible = true;
         }
     }
-}
-
-void DemoAdvertiseFeatures()
-{
-    ImGui::PushFont(gTitleFont); ImGui::Text("Switch between layouts"); ImGui::PopFont();
-    ImGui::Text("with the menu \"View/Layouts\"");
-    if (ImGui::IsItemHovered())
-        ImGui::SetTooltip("Each layout remembers separately the modifications applied by the user, \nand the selected layout is restored at startup");
-    ImGui::Separator();
-
-    ImGui::PushFont(gTitleFont); ImGui::Text("Change the theme"); ImGui::PopFont();
-    ImGui::Text("with the menu \"View/Theme\"");
-    if (ImGui::IsItemHovered())
-        ImGui::SetTooltip("The selected theme is remembered and restored at startup");
-    ImGui::Separator();
 }
 
 void DemoBasicWidgets(AppState& appState)
@@ -229,11 +214,63 @@ void DemoRocket(AppState& appState)
     }
 }
 
-// The Gui of the command panel
-void CommandGui(AppState& appState)
+void DemoDockingFlags()
 {
-    DemoAdvertiseFeatures();
+    ImGui::PushFont(gTitleFont); ImGui::Text("Main dock space node flags"); ImGui::PopFont();
+    ImGui::TextWrapped(R"(
+This will edit the ImGuiDockNodeFlags for "MainDockSpace".
+Most flags are inherited by children dock spaces.
+    )");
+
+    struct DockFlagWithInfo {
+        ImGuiDockNodeFlags flag;
+        std::string label;
+        std::string tip;
+    };
+    std::vector<DockFlagWithInfo> all_flags = {
+        {ImGuiDockNodeFlags_NoSplit, "NoSplit", "prevent Dock Nodes from being split"},
+        {ImGuiDockNodeFlags_NoResize, "NoResize", "prevent Dock Nodes from being resized"},
+        {ImGuiDockNodeFlags_AutoHideTabBar, "AutoHideTabBar",
+         "show tab bar only if multiple windows\n"
+         "You will need to restore the layout after changing (Menu \"View/Restore Layout\")"},
+        {ImGuiDockNodeFlags_NoDockingInCentralNode, "NoDockingInCentralNode",
+         "prevent docking in central node\n"
+         "(only works with the main dock space)"},
+        // {ImGuiDockNodeFlags_PassthruCentralNode, "PassthruCentralNode", "advanced"},
+        // {ImGuiDockNodeFlags_KeepAliveOnly, "KeepAliveOnly", "warning, this will prevent sub dock nodes from rendering"},
+    };
+
+    auto & mainDockSpaceNodeFlags = HelloImGui::GetRunnerParams()->dockingParams.mainDockSpaceNodeFlags;
+    for (auto flag: all_flags)
+    {
+        ImGui::CheckboxFlags(flag.label.c_str(), &mainDockSpaceNodeFlags, flag.flag);
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("%s", flag.tip.c_str());
+    }
+}
+
+void GuiWindowLayoutCustomization()
+{
+    ImGui::PushFont(gTitleFont); ImGui::Text("Switch between layouts"); ImGui::PopFont();
+    ImGui::Text("with the menu \"View/Layouts\"");
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("Each layout remembers separately the modifications applied by the user, \nand the selected layout is restored at startup");
     ImGui::Separator();
+
+    ImGui::PushFont(gTitleFont); ImGui::Text("Change the theme"); ImGui::PopFont();
+    ImGui::Text("with the menu \"View/Theme\"");
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("The selected theme is remembered and restored at startup");
+    ImGui::Separator();
+
+    DemoDockingFlags();
+    ImGui::Separator();
+}
+
+
+// The Gui of the demo feature window
+void GuiWindowDemoFeatures(AppState& appState)
+{
     DemoBasicWidgets(appState);
     ImGui::Separator();
     DemoRocket(appState);
@@ -243,6 +280,7 @@ void CommandGui(AppState& appState)
     DemoHideWindow();
     ImGui::Separator();
     DemoShowAdditionalWindow();
+    ImGui::Separator();
 }
 
 // The Gui of the status bar
@@ -269,6 +307,7 @@ void ShowMenuGui()
         ImGui::EndMenu();
     }
 }
+
 void ShowAppMenuItems()
 {
     if (ImGui::MenuItem("A Custom app menu item"))
@@ -319,8 +358,6 @@ std::vector<HelloImGui::DockingSplit> CreateDefaultDockingSplits()
     splitMainCommand.newDock = "CommandSpace";
     splitMainCommand.direction = ImGuiDir_Left;
     splitMainCommand.ratio = 0.25f;
-    // Exclude this space from Docking
-    splitMainCommand.nodeFlags = ImGuiDockNodeFlags_NoDocking | ImGuiDockNodeFlags_NoTabBar;
 
     std::vector<HelloImGui::DockingSplit> splits {splitMainMisc, splitMainCommand};
     return splits;
@@ -362,11 +399,17 @@ std::vector<HelloImGui::DockingSplit> CreateAlternativeDockingSplits()
 //
 std::vector<HelloImGui::DockableWindow> CreateDockableWindows(AppState& appState)
 {
-    // A Command panel named "Commands" will be placed in "CommandSpace". Its Gui is provided calls "CommandGui"
-    HelloImGui::DockableWindow commandsWindow;
-    commandsWindow.label = "Commands";
-    commandsWindow.dockSpaceName = "CommandSpace";
-    commandsWindow.GuiFunction = [&] { CommandGui(appState); };
+    // A window named "FeaturesDemo" will be placed in "CommandSpace". Its Gui is provided by "GuiWindowDemoFeatures"
+    HelloImGui::DockableWindow featuresDemoWindow;
+    featuresDemoWindow.label = "Features Demo";
+    featuresDemoWindow.dockSpaceName = "CommandSpace";
+    featuresDemoWindow.GuiFunction = [&] { GuiWindowDemoFeatures(appState); };
+
+    // A layout customization window will be placed in "MainDockSpace". Its Gui is provided by "GuiWindowLayoutCustomization"
+    HelloImGui::DockableWindow layoutCustomizationWindow;
+    layoutCustomizationWindow.label = "Layout customization";
+    layoutCustomizationWindow.dockSpaceName = "MainDockSpace";
+    layoutCustomizationWindow.GuiFunction = GuiWindowLayoutCustomization;
 
     // A Log window named "Logs" will be placed in "MiscSpace". It uses the HelloImGui logger gui
     HelloImGui::DockableWindow logsWindow;
@@ -391,7 +434,8 @@ std::vector<HelloImGui::DockableWindow> CreateDockableWindows(AppState& appState
     additionalWindow.GuiFunction = [] { ImGui::Text("This is the additional window"); };
 
     std::vector<HelloImGui::DockableWindow> dockableWindows {
-        commandsWindow,
+        featuresDemoWindow,
+        layoutCustomizationWindow,
         logsWindow,
         dearImGuiDemoWindow,
         additionalWindow,

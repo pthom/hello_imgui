@@ -114,7 +114,8 @@ struct MobileCallbacks
 
 * `LoadAdditionalFonts`: *VoidFunction, default=_LoadDefaultFont_WithFontAwesome*.
    A function that is called once, when fonts are ready to be loaded.
-   By default, _LoadDefaultFont_WithFontAwesome_ is called but you can copy-customize it.
+   By default, _LoadDefaultFont_WithFontAwesome_ is called but you can copy and customize it.
+   (LoadDefaultFont_WithFontAwesome will load from assets/fonts/ but reverts to the ImGui embedded font if not found)
 
 * `SetupImGuiConfig`: *VoidFunction, default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.
     If needed, change ImGui config via SetupImGuiConfig (enable docking, gamepad, etc)

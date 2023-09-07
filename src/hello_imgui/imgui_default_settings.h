@@ -11,8 +11,14 @@ ImFont* MergeFontAwesomeToLastFont(float fontSize, ImFontConfig config = ImFontC
 
 namespace ImGuiDefaultSettings
 {
+// LoadDefaultFont_WithFontAwesome will load from assets/fonts and reverts to the imgui embedded font if not found.
 void LoadDefaultFont_WithFontAwesomeIcons();
+
 void SetupDefaultImGuiConfig();
 void SetupDefaultImGuiStyle();
+
+// indicates that fonts were loaded using HelloImGui::LoadFontTTF. In that case, fonts may have been resized to
+// account for HighDPI (on macOS and emscripten)
+bool DidCallHelloImGuiLoadFontTTF();
 }  // namespace ImGuiDefaultSettings
 }  // namespace HelloImGui

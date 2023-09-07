@@ -13,7 +13,7 @@
 
 namespace HelloImGui
 {
-
+bool gDidCallHelloImGuiLoadFontTTF = false;
 
 ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange, ImFontConfig config)
 {
@@ -30,6 +30,7 @@ ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFu
     if (font == nullptr)
         fprintf(stderr, "Cannot load font %s\n", fontFilename.c_str());
     FreeAssetFileData(&fontData);
+    gDidCallHelloImGuiLoadFontTTF = true;
     return font;
 }
 
@@ -62,9 +63,14 @@ ImFont* MergeFontAwesomeToLastFont(float fontSize, ImFontConfig config)
     return font;
 }
 
+
 namespace ImGuiDefaultSettings
 {
 
+bool DidCallHelloImGuiLoadFontTTF()
+{
+    return HelloImGui::gDidCallHelloImGuiLoadFontTTF;
+}
 
 void LoadDefaultFont_WithFontAwesomeIcons()
 {
@@ -75,8 +81,6 @@ void LoadDefaultFont_WithFontAwesomeIcons()
         ImFont* font = LoadFontTTF_WithFontAwesomeIcons(fontFilename, fontSize, false);
         (void)font;
     }
-    else
-        fprintf(stderr, "HelloImGui::LoadDefaultFont_WithFontAwesomeIcons, did not find fonts/DroidSans.ttf in assets");
 }
 
 void SetupDefaultImGuiConfig()

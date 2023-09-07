@@ -349,7 +349,6 @@ void AbstractRunner::Setup()
 
     ImGui::GetIO().IniFilename = NULL;
 
-    ImGui::GetIO().FontGlobalScale = this->ImGuiDefaultFontGlobalScale();
     Impl_SetupImgGuiContext();
     params.callbacks.SetupImGuiConfig();
     if (params.imGuiWindowParams.enableViewports)
@@ -369,9 +368,21 @@ void AbstractRunner::Setup()
 
     Impl_SetupPlatformRendererBindings();
 
+    //
+    // load fonts & set ImGui::GetIO().FontGlobalScale
+    //
     ImGui::GetIO().Fonts->Clear();
+    // (On macOS with HighDPI) FontGlobalScale may be set to 0.5
+    ImGui::GetIO().FontGlobalScale = this->ImGuiDefaultFontGlobalScale();
+    // LoadAdditionalFonts will load fonts and resize them by 1./FontGlobalScale
+    // (if and only if it uses HelloImGui::LoadFontTTF instead of ImGui's font loading functions)
     params.callbacks.LoadAdditionalFonts();
     ImGui::GetIO().Fonts->Build();
+    {
+        // Reset FontGlobalScale if we did not use HelloImGui font loading mechanism
+        if (! HelloImGui::ImGuiDefaultSettings::DidCallHelloImGuiLoadFontTTF())
+            ImGui::GetIO().FontGlobalScale = 1.f;
+    }
 
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
     HelloImGuiIniSettings::LoadHelloImGuiMiscSettings(IniPartsFilename(), &params);

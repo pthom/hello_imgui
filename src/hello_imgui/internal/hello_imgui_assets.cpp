@@ -28,40 +28,40 @@
 namespace FileUtils
 {
 #ifdef _WIN32
-std::wstring Utf8ToUtf16(const std::string& utf8Str)
-{
-    if (utf8Str.empty())
-        return std::wstring();
+    std::wstring Utf8ToUtf16(const std::string& utf8Str)
+    {
+        if (utf8Str.empty())
+            return std::wstring();
 
-    // Calculate the required size for the wide string.
-    int requiredSize = MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, nullptr, 0);
-    if (requiredSize == 0)
-        HIMG_ERROR("Failed to convert UTF-8 to UTF-16.");
+        // Calculate the required size for the wide string.
+        int requiredSize = MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, nullptr, 0);
+        if (requiredSize == 0)
+            HIMG_ERROR("Failed to convert UTF-8 to UTF-16.");
 
-    std::wstring wideStr;
-    wideStr.resize(requiredSize - 1);  // Subtract 1 because we don't need space for the null terminator
+        std::wstring wideStr;
+        wideStr.resize(requiredSize - 1);  // Subtract 1 because we don't need space for the null terminator
 
-    // Perform the conversion.
-    if (!MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, &wideStr[0], requiredSize))
-        HIMG_ERROR("Failed to convert UTF-8 to UTF-16.");
+        // Perform the conversion.
+        if (!MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, &wideStr[0], requiredSize))
+            HIMG_ERROR("Failed to convert UTF-8 to UTF-16.");
 
-    return wideStr;
-}
+        return wideStr;
+    }
 
-bool IsRegularFile_Utf8ToUtf16(const std::string& filename)
-{
-    std::wstring filename_u16 = Utf8ToUtf16(filename);
+    bool IsRegularFile_Utf8ToUtf16(const std::string& filename)
+    {
+        std::wstring filename_u16 = Utf8ToUtf16(filename);
 
-    DWORD fileAttributes = GetFileAttributesW(filename_u16.c_str());
-    if (fileAttributes == INVALID_FILE_ATTRIBUTES)
-        return false;  // File doesn't exist or some other error
+        DWORD fileAttributes = GetFileAttributesW(filename_u16.c_str());
+        if (fileAttributes == INVALID_FILE_ATTRIBUTES)
+            return false;  // File doesn't exist or some other error
 
-    // Check if it's a regular file (and not a directory)
-    if (fileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-        return false;  // It's a directory
+        // Check if it's a regular file (and not a directory)
+        if (fileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+            return false;  // It's a directory
 
-    return true;  // It's a regular file
-}
+        return true;  // It's a regular file
+    }
 #endif
 
 

@@ -39,7 +39,7 @@ namespace FileUtils
             HIMG_ERROR("Failed to convert UTF-8 to UTF-16.");
 
         std::wstring wideStr;
-        wideStr.resize(requiredSize - 1);  // Subtract 1 because we don't need space for the null terminator
+        wideStr.resize(requiredSize);
 
         // Perform the conversion.
         if (!MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, &wideStr[0], requiredSize))
@@ -82,7 +82,8 @@ namespace FileUtils
     {
         char buffer[2000];
 #ifdef _WIN32
-        _getcwd(buffer, 2000);
+        char* b = _getcwd(buffer, 2000);
+        (void)b;
 #else
         char *b = getcwd(buffer, 2000);
         (void)b;
@@ -175,7 +176,7 @@ std::string AssetFileFullPath(const std::string& assetFilename)
     IM_ASSERT(false); //assetFileFullPath does not work on android!
 #else
     auto possibleAssetsFolders = computePossibleAssetsFolders();
-    for (auto assetsFolder: possibleAssetsFolders)
+    for (const auto& assetsFolder: possibleAssetsFolders)
     {
         std::string path = assetsFolder.folder + "/" + assetFilename;
         if (FileUtils::IsRegularFile(path))
@@ -186,7 +187,7 @@ std::string AssetFileFullPath(const std::string& assetFilename)
         std::string errorMessage;
         errorMessage += "assetFileFullPath(" + assetFilename + ") failed!\n";
         errorMessage += "    Tried the following assets folders:\n";
-        for (auto assetsFolder: possibleAssetsFolders)
+        for (const auto& assetsFolder: possibleAssetsFolders)
         {
             errorMessage += "        " + assetsFolder.designation + ":\n";
             errorMessage += "            " + assetsFolder.folder + "\n";
@@ -202,7 +203,7 @@ std::string AssetFileFullPath(const std::string& assetFilename)
 bool AssetExists(const std::string& assetFilename)
 {
     auto possibleAssetsFolders = computePossibleAssetsFolders();
-    for (auto assetsFolder: possibleAssetsFolders)
+    for (const auto& assetsFolder: possibleAssetsFolders)
     {
         std::string path = assetsFolder.folder + "/" + assetFilename;
         if (FileUtils::IsRegularFile(path))

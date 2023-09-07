@@ -33,10 +33,9 @@ namespace FileUtils
 #ifdef _WIN32
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         std::wstring wide_filename = converter.from_bytes(filename);
-        auto ifs =new std::ifstream(wide_filename.c_str(), std::ios::binary | std::ios::ate);
-        bool found = (ifs != NULL);
-        if (ifs)
-            ifs->close();
+        auto ifs = std::ifstream(wide_filename.c_str(), std::ios::binary | std::ios::ate);
+        bool found = ifs.is_open();
+        ifs.close();
 #else
         FILE *f = fopen(filename.c_str(), "r");
         bool found = (f != NULL);

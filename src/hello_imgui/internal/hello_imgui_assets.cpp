@@ -20,7 +20,7 @@
 
 #ifdef _WIN32
 #include <direct.h>
-#include <Windows.h>
+#include <windows.h>
 #else
 #include <unistd.h>
 #endif

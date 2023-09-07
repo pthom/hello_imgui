@@ -20,29 +20,62 @@
 
 #ifdef _WIN32
 #include <direct.h>
-#include <locale>
-#include <codecvt>
+#include <Windows.h>
 #else
 #include <unistd.h>
 #endif
 
 namespace FileUtils
 {
+#ifdef _WIN32
+std::wstring Utf8ToUtf16(const std::string& utf8Str)
+{
+    if (utf8Str.empty())
+        return std::wstring();
+
+    // Calculate the required size for the wide string.
+    int requiredSize = MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, nullptr, 0);
+    if (requiredSize == 0)
+        HIMG_ERROR("Failed to convert UTF-8 to UTF-16.");
+
+    std::wstring wideStr;
+    wideStr.resize(requiredSize - 1);  // Subtract 1 because we don't need space for the null terminator
+
+    // Perform the conversion.
+    if (!MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, &wideStr[0], requiredSize))
+        HIMG_ERROR("Failed to convert UTF-8 to UTF-16.");
+
+    return wideStr;
+}
+
+bool IsRegularFile_Utf8ToUtf16(const std::string& filename)
+{
+    std::wstring filename_u16 = Utf8ToUtf16(filename);
+
+    DWORD fileAttributes = GetFileAttributesW(filename_u16.c_str());
+    if (fileAttributes == INVALID_FILE_ATTRIBUTES)
+        return false;  // File doesn't exist or some other error
+
+    // Check if it's a regular file (and not a directory)
+    if (fileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+        return false;  // It's a directory
+
+    return true;  // It's a regular file
+}
+#endif
+
+
     bool IsRegularFile(const std::string& filename)
     {
 #ifdef _WIN32
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        std::wstring wide_filename = converter.from_bytes(filename);
-        auto ifs = std::ifstream(wide_filename.c_str(), std::ios::binary | std::ios::ate);
-        bool found = ifs.is_open();
-        ifs.close();
+        return IsRegularFile_Utf8ToUtf16(filename);
 #else
         FILE *f = fopen(filename.c_str(), "r");
         bool found = (f != NULL);
         if (f)
             fclose(f);
-#endif
         return found;
+#endif
     }
 
     std::string GetCurrentDirectory()
@@ -225,8 +258,7 @@ AssetFileData LoadAssetFileData_Impl(const char *assetPath)
     AssetFileData r;
 
 #ifdef _WIN32
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    std::wstring wide_assetPath = converter.from_bytes(assetPath);
+    std::wstring wide_assetPath = FileUtils::Utf8ToUtf16(assetPath);
     std::ifstream ifs(wide_assetPath.c_str(), std::ios::binary | std::ios::ate);
 #else
     std::ifstream ifs(assetPath, std::ios::binary | std::ios::ate);

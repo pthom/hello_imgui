@@ -381,7 +381,10 @@ void AbstractRunner::Setup()
     {
         // Reset FontGlobalScale if we did not use HelloImGui font loading mechanism
         if (! HelloImGui::ImGuiDefaultSettings::DidCallHelloImGuiLoadFontTTF())
-            ImGui::GetIO().FontGlobalScale = 1.f;
+        {
+            float dpiFactor = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
+            ImGui::GetIO().FontGlobalScale = dpiFactor;
+        }
     }
 
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);

@@ -268,7 +268,7 @@ struct DockableWindow
  _Helpers:_
 
  * `DockableWindow * dockableWindowOfName(const std::string & name)`: returns a pointer to a dockable window
- * `void focusDockableWindow(const std::string& name)`: will focus a dockable window
+ * `void focusDockableWindow(const std::string& name)`: will focus a dockable window (and make its tab visible if needed)
  * `optional<ImGuiID> dockSpaceIdFromName(const std::string& dockSpaceName)`: may return the ImGuiID corresponding
    to the dockspace with this name.
    **Warning**: this will work reliably only if layoutCondition = DockingLayoutCondition::ApplicationStart. In other
@@ -297,7 +297,7 @@ struct DockingParams
 
     // Helpers
     DockableWindow * dockableWindowOfName(const std::string& name);
-    void focusDockableWindow(const std::string& windowName);
+    bool focusDockableWindow(const std::string& windowName);
     std::optional<ImGuiID> dockSpaceIdFromName(const std::string& dockSpaceName);
 };
 } // namespace HelloImGui

@@ -17,6 +17,14 @@ std::map<DockSpaceName, ImGuiID> gImGuiSplitIDs;
 
 namespace DockingDetails
 {
+bool _makeImGuiWindowTabVisible(const std::string& windowName)
+{
+    ImGuiWindow* window = ImGui::FindWindowByName(windowName.c_str());
+    if (window == NULL || window->DockNode == NULL || window->DockNode->TabBar == NULL)
+        return false;
+    window->DockNode->TabBar->NextSelectedTabId = window->TabId;
+    return true;
+}
 
 void DoSplit(const DockingSplit & dockingSplit)
 {
@@ -190,20 +198,21 @@ void ShowViewMenu(RunnerParams & runnerParams)
 
 void ShowDockableWindows(std::vector<DockableWindow>& dockableWindows)
 {
+    bool wereAllDockableWindowsInited = (ImGui::GetFrameCount() > 1);
+
     for (auto& dockableWindow: dockableWindows)
     {
-        if (dockableWindow.focusWindowAtNextFrame)
+        bool shallFocusWindow = dockableWindow.focusWindowAtNextFrame && wereAllDockableWindowsInited;
+
+        if (shallFocusWindow)
             dockableWindow.isVisible = true;
 
         if (dockableWindow.isVisible)
         {
             if (dockableWindow.callBeginEnd)
             {
-                if (dockableWindow.focusWindowAtNextFrame)
-                {
+                if (shallFocusWindow)
                     ImGui::SetNextWindowFocus();
-                    dockableWindow.focusWindowAtNextFrame = false;
-                }
                 if (dockableWindow.windowSize.x > 0.f)
                     ImGui::SetNextWindowSize(dockableWindow.windowSize, dockableWindow.windowSizeCondition);
                 if (dockableWindow.windowPosition.x > 0.f)
@@ -216,6 +225,12 @@ void ShowDockableWindows(std::vector<DockableWindow>& dockableWindows)
                 if (not_collapsed && dockableWindow.GuiFunction)
                     dockableWindow.GuiFunction();
                 ImGui::End();
+
+                if (shallFocusWindow)
+                    DockingDetails::_makeImGuiWindowTabVisible(dockableWindow.label);
+
+                if (shallFocusWindow)
+                    dockableWindow.focusWindowAtNextFrame = false;
             }
             else
             {
@@ -329,14 +344,18 @@ DockableWindow * DockingParams::dockableWindowOfName(const std::string &name)
     return nullptr;
 }
 
-void DockingParams::focusDockableWindow(const std::string& windowName)
+bool DockingParams::focusDockableWindow(const std::string& windowName)
 {
     DockableWindow * win = dockableWindowOfName(windowName);
     if (win != nullptr)
+    {
         win->focusWindowAtNextFrame = true;
+        return true;
+    }
     else
-        fprintf(stderr, "focusDockableWindow(%s) failed, window not found!\n", windowName.c_str());
+        return false;
 }
+
 
 std::optional<ImGuiID> DockingParams::dockSpaceIdFromName(const std::string& dockSpaceName)
 {

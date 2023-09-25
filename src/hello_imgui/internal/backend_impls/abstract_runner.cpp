@@ -567,6 +567,9 @@ void AbstractRunner::CreateFramesAndRender()
     // ==> Note: RenderGui() may measure the size of the window and resize it if mIdxFrame==1
     RenderGui();
 
+    if (params.callbacks.BeforeImGuiRender)
+        params.callbacks.BeforeImGuiRender();
+
     ImGui::Render();
     Impl_Frame_3D_ClearColor();
     Impl_RenderDrawData_To_3D();

@@ -10,9 +10,7 @@
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
 #include "imgui_internal.h"
 
-#ifdef HELLOIMGUI_WITH_TEST_ENGINE
 #include "hello_imgui_test_engine_integration/test_engine_integration.h"
-#endif
 
 #include <chrono>
 #include <cassert>
@@ -332,11 +330,6 @@ void AbstractRunner::LayoutSettings_Save()
 
 void AbstractRunner::Setup()
 {
-#ifdef HELLOIMGUI_WITH_TEST_ENGINE
-    if (params.useImGuiTestEngine)
-        _AddTestEngineCallbacks(&this->params);
-#endif
-
     Impl_InitBackend();
     Impl_Select_Gl_Version();
 
@@ -368,8 +361,10 @@ void AbstractRunner::Setup()
     }
     params.callbacks.SetupImGuiStyle();
 
-    if (params.callbacks._testEngineCallbacks.OnSetup)
-        params.callbacks._testEngineCallbacks.OnSetup();
+#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+    if (params.useImGuiTestEngine)
+        TestEngineCallbacks::Setup();
+#endif
 
     // This should be done before Impl_SetupPlatformRendererBindings()
     // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks
@@ -594,8 +589,11 @@ void AbstractRunner::CreateFramesAndRender()
 
     if (params.callbacks.AfterSwap)
         params.callbacks.AfterSwap();
-    if (params.callbacks._testEngineCallbacks.OnFrame_PostSwap)
-        params.callbacks._testEngineCallbacks.OnFrame_PostSwap();
+
+#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+    if (params.useImGuiTestEngine)
+        TestEngineCallbacks::PostSwap();
+#endif
 
     if (foundPotentialFontLoadingError)
         ReloadFontIfFailed();
@@ -713,15 +711,19 @@ void AbstractRunner::TearDown(bool gotException)
 
     if (params.callbacks.BeforeExit)
         params.callbacks.BeforeExit();
-    if (params.callbacks._testEngineCallbacks.OnTearDown_ImGuiContextAlive)
-        params.callbacks._testEngineCallbacks.OnTearDown_ImGuiContextAlive();
+#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+    if (params.useImGuiTestEngine)
+        TestEngineCallbacks::TearDown_ImGuiContextAlive();
+#endif
 
     Impl_Cleanup();
 
     if (params.callbacks.BeforeExit_PostCleanup)
         params.callbacks.BeforeExit_PostCleanup();
-    if (params.callbacks._testEngineCallbacks.OnTearDown_ImGuiContextDestroyed)
-        params.callbacks._testEngineCallbacks.OnTearDown_ImGuiContextDestroyed();
+#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+    if (params.useImGuiTestEngine)
+        TestEngineCallbacks::TearDown_ImGuiContextDestroyed();
+#endif
 }
 
 

@@ -68,19 +68,6 @@ struct MobileCallbacks
 
 
 /**
-@@md#_TestEngineCallbacks
-**_TestEngineCallbacks** is a private struct that contains callbacks, called when the application uses ImGui Test Engine.
-*/
-struct _TestEngineCallbacks
-{
-    VoidFunction OnSetup = EmptyVoidFunction();
-    VoidFunction OnFrame_PostSwap = EmptyVoidFunction();
-    VoidFunction OnTearDown_ImGuiContextAlive = EmptyVoidFunction();
-    VoidFunction OnTearDown_ImGuiContextDestroyed = EmptyVoidFunction();
-};
-
-
-/**
  @@md#RunnerCallbacks
 
  **RunnerCallbacks** is a struct that contains the callbacks that are called by the application
@@ -157,9 +144,6 @@ Notes:
      Use `#ifdef HELLOIMGUI_MOBILEDEVICE` to detect this.
   * These events are currently handled only with SDL backend.
 
-* `_testEngineCallbacks` (private): specific callbacks when the application uses ImGui Test Engine.
-Do not edit them, they are filled automatically when RunnerParams.useImGuiTestEngine==true
-
 @@md
  */
 struct RunnerCallbacks
@@ -186,8 +170,6 @@ struct RunnerCallbacks
 #ifdef HELLOIMGUI_MOBILEDEVICE
     MobileCallbacks mobileCallbacks;
 #endif
-
-    _TestEngineCallbacks _testEngineCallbacks;
 };
 
 }  // namespace HelloImGui

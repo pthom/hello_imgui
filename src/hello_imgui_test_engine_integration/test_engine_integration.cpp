@@ -1,13 +1,10 @@
-//
-// Created by Pascal Thomet on 26/09/2023.
-//
 #include "imgui_test_engine/imgui_te_engine.h"
 #include "hello_imgui/runner_params.h"
 #include "hello_imgui/internal/functional_utils.h"
 
 namespace HelloImGui
 {
-    namespace TestEngineIntegration
+    namespace TestEngineCallbacks
     {
         ImGuiTestEngine *GImGuiTestEngine = nullptr;
 
@@ -38,6 +35,12 @@ namespace HelloImGui
             ImGuiTestEngine_InstallDefaultCrashHandler();
         }
 
+        void PostSwap()
+        {
+            // Call after your rendering. This is mostly to support screen/video capturing features.
+            ImGuiTestEngine_PostSwap(GImGuiTestEngine);
+        }
+
         void TearDown_ImGuiContextAlive()
         {
             ImGuiTestEngine_Stop(GImGuiTestEngine);
@@ -48,26 +51,11 @@ namespace HelloImGui
             ImGuiTestEngine_DestroyContext(GImGuiTestEngine);
         }
 
-        void PostSwap()
-        {
-            // Call after your rendering. This is mostly to support screen/video capturing features.
-            ImGuiTestEngine_PostSwap(GImGuiTestEngine);
-        }
-    } // namespace TestEngineIntegration
+    } // namespace TestEngineCallbacks
 
-
-    void _AddTestEngineCallbacks(RunnerParams* runnerParams)
-    {
-        auto &testEngineCallbacks = runnerParams->callbacks._testEngineCallbacks;
-
-        testEngineCallbacks.OnSetup = TestEngineIntegration::Setup;
-        testEngineCallbacks.OnFrame_PostSwap = TestEngineIntegration::PostSwap;
-        testEngineCallbacks.OnTearDown_ImGuiContextAlive = TestEngineIntegration::TearDown_ImGuiContextAlive;
-        testEngineCallbacks.OnTearDown_ImGuiContextDestroyed = TestEngineIntegration::TearDown_ImGuiContextDestroyed;
-    }
 
     ImGuiTestEngine* GetImGuiTestEngine()
     {
-        return TestEngineIntegration::GImGuiTestEngine;
+        return TestEngineCallbacks::GImGuiTestEngine;
     }
 }

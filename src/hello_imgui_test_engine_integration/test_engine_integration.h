@@ -4,6 +4,13 @@ struct ImGuiTestEngine;
 
 namespace HelloImGui
 {
-    void _AddTestEngineCallbacks(RunnerParams* runnerParams);
+    namespace TestEngineCallbacks
+    {
+        void Setup();
+        void PostSwap();
+        void TearDown_ImGuiContextAlive();
+        void TearDown_ImGuiContextDestroyed();
+    } // namespace TestEngineCallbacks
+
     ImGuiTestEngine* GetImGuiTestEngine();
 }

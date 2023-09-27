@@ -333,7 +333,8 @@ void AbstractRunner::LayoutSettings_Save()
 void AbstractRunner::Setup()
 {
 #ifdef HELLOIMGUI_WITH_TEST_ENGINE
-    _AddTestEngineCallbacks(&this->params);
+    if (params.useImGuiTestEngine)
+        _AddTestEngineCallbacks(&this->params);
 #endif
 
     Impl_InitBackend();

@@ -93,6 +93,7 @@ int main(int, char *[])
 {
     HelloImGui::RunnerParams runnerParams;
     runnerParams.callbacks.ShowGui = Gui;
+    runnerParams.useImGuiTestEngine = true;
 
 #ifdef HELLOIMGUI_WITH_TEST_ENGINE
     runnerParams.callbacks.PostInit = [](){

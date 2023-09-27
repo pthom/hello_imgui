@@ -249,6 +249,8 @@ See [runner_callbacks.h](runner_callbacks.h).
 * `SetupImGuiStyle`: *VoidFunction, default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.
     If needed, setup your own style by providing your own SetupImGuiStyle callback
 
+* `RegisterTests`: *VoidFunction, default=empty*.
+   A function that is called once ImGuiTestEngine is ready to be filled with tests and automations definitions.
 
 * `mobileCallbacks`: *_MobileCallbacks_*. Callbacks that are called by the application
     when running under "Android, iOS and WinRT".

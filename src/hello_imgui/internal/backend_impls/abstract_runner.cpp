@@ -373,6 +373,10 @@ void AbstractRunner::Setup()
     if (params.callbacks.PostInit)
         params.callbacks.PostInit();
 
+#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+    if (params.useImGuiTestEngine && params.callbacks.RegisterTests)
+            params.callbacks.RegisterTests();
+#endif
 
     Impl_SetupPlatformRendererBindings();
 

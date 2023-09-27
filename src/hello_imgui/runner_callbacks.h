@@ -3,6 +3,7 @@
 
 namespace HelloImGui
 {
+
 /**
 @@md#VoidFunction_AnyEventCallback
 
@@ -136,6 +137,8 @@ struct MobileCallbacks
 * `SetupImGuiStyle`: *VoidFunction, default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.
     If needed, setup your own style by providing your own SetupImGuiStyle callback
 
+* `RegisterTests`: *VoidFunction, default=empty*.
+   A function that is called once ImGuiTestEngine is ready to be filled with tests and automations definitions.
 
 * `mobileCallbacks`: *_MobileCallbacks_*. Callbacks that are called by the application
     when running under "Android, iOS and WinRT".
@@ -166,6 +169,10 @@ struct RunnerCallbacks
     VoidFunction LoadAdditionalFonts = (VoidFunction)(ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons);
     VoidFunction SetupImGuiConfig = (VoidFunction)(ImGuiDefaultSettings::SetupDefaultImGuiConfig);
     VoidFunction SetupImGuiStyle = (VoidFunction)(ImGuiDefaultSettings::SetupDefaultImGuiStyle);
+
+#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+    VoidFunction RegisterTests = EmptyVoidFunction();
+#endif
 
 #ifdef HELLOIMGUI_MOBILEDEVICE
     MobileCallbacks mobileCallbacks;

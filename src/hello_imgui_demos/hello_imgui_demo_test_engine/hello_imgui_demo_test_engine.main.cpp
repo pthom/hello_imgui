@@ -1,7 +1,8 @@
-#include "hello_imgui/hello_imgui.h"
-
 #ifdef HELLOIMGUI_WITH_TEST_ENGINE
 
+#include "hello_imgui/hello_imgui.h"
+
+#include "imgui_test_engine/imgui_te_engine.h"
 #include "imgui_test_engine/imgui_te_context.h"
 #include "imgui_test_engine/imgui_te_ui.h"
 #include "imgui_test_engine/imgui_capture_tool.h"
@@ -77,13 +78,11 @@ void RegisterAppMinimalTests(ImGuiTestEngine* e)
 
 }
 
-#endif
-
 
 void Gui()
 {
     ImGui::Text("Hello");
-    //ImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
     ImGuiTestEngine_ShowTestEngineWindows(HelloImGui::GetImGuiTestEngine(), NULL);
 
 }
@@ -95,12 +94,15 @@ int main(int, char *[])
     runnerParams.callbacks.ShowGui = Gui;
     runnerParams.useImGuiTestEngine = true;
 
-#ifdef HELLOIMGUI_WITH_TEST_ENGINE
-    runnerParams.callbacks.PostInit = [](){
+    runnerParams.callbacks.RegisterTests = [](){
         RegisterAppMinimalTests(HelloImGui::GetImGuiTestEngine());
     };
-#endif
 
     HelloImGui::Run(runnerParams);
     return 0;
 }
+
+#else // #ifdef HELLOIMGUI_WITH_TEST_ENGINE
+#include <stdio.h>
+int main(int, char *[]) { fprintf(stderr, "Please compile HelloImGui with the option -DHELLOIMGUI_WITH_TEST_ENGINE=ON");}
+#endif // #ifdef HELLOIMGUI_WITH_TEST_ENGINE

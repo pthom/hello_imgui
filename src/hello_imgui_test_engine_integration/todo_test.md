@@ -4,10 +4,12 @@ HELLOIMGUI_WITH_TEST_ENGINE default ON or OFF ?
     ON dans imGui Bundle ?
 
 
+Capture: bad location!
 
-Config:
+
+Config test engine:
     Study params
-    Reflechir / imconfig
+    Reflechir / imconfig: Header or compile options ?
 
 HelloImGui params:
     param / enable tests

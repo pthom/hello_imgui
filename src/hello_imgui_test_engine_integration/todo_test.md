@@ -14,6 +14,7 @@ HelloImGui params:
 callbacks:
     struct / all callbacks
     special callback / test registration?
+    cacher _TestEngineCallbacks?
     PreNewFrame => BeforeNewFrame ?
 
 add namespace HelloImGui::TestEngine ?

@@ -257,6 +257,9 @@ Notes:
      Use `#ifdef HELLOIMGUI_MOBILEDEVICE` to detect this.
   * These events are currently handled only with SDL backend.
 
+* `_testEngineCallbacks` (private): specific callbacks when the application uses ImGui Test Engine.
+Do not edit them, they are filled automatically when RunnerParams.useImGuiTestEngine==true
+
 
 
 **VoidFunctionPointer** can hold any void(void) function.

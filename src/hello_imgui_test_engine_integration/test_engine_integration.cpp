@@ -7,13 +7,13 @@
 
 namespace HelloImGui
 {
-    struct TestEngineIntegration
+    namespace TestEngineIntegration
     {
-        ImGuiTestEngine *mTestEngine = nullptr;
+        ImGuiTestEngine *GImGuiTestEngine = nullptr;
 
         void _SetOptions()
         {
-            ImGuiTestEngineIO& test_io = ImGuiTestEngine_GetIO(mTestEngine);
+            ImGuiTestEngineIO& test_io = ImGuiTestEngine_GetIO(GImGuiTestEngine);
             test_io.ConfigVerboseLevel = ImGuiTestVerboseLevel_Info;
             test_io.ConfigVerboseLevelOnError = ImGuiTestVerboseLevel_Debug;
             test_io.ConfigRunSpeed = ImGuiTestRunSpeed_Cinematic; // Default to slowest mode in this demo
@@ -29,62 +29,45 @@ namespace HelloImGui
         void Setup()
         {
             // Setup test engine
-            mTestEngine = ImGuiTestEngine_CreateContext();
+            GImGuiTestEngine = ImGuiTestEngine_CreateContext();
 
             _SetOptions();
 
             // Start test engine
-            ImGuiTestEngine_Start(mTestEngine, ImGui::GetCurrentContext());
+            ImGuiTestEngine_Start(GImGuiTestEngine, ImGui::GetCurrentContext());
             ImGuiTestEngine_InstallDefaultCrashHandler();
         }
 
-        void Shutdown_Before_ImGui_DestroyContext()
+        void TearDown_ImGuiContextAlive()
         {
-            ImGuiTestEngine_Stop(mTestEngine);
+            ImGuiTestEngine_Stop(GImGuiTestEngine);
         }
-        void Shutdown_After_ImGui_DestroyContext()
+        void TearDown_ImGuiContextDestroyed()
         {
             // IMPORTANT: we need to destroy the Dear ImGui context BEFORE the test engine context, so .ini data may be saved.
-            ImGuiTestEngine_DestroyContext(mTestEngine);
+            ImGuiTestEngine_DestroyContext(GImGuiTestEngine);
         }
 
         void PostSwap()
         {
             // Call after your rendering. This is mostly to support screen/video capturing features.
-            ImGuiTestEngine_PostSwap(mTestEngine);
+            ImGuiTestEngine_PostSwap(GImGuiTestEngine);
         }
-    };
-
-    TestEngineIntegration gTestEngineIntegration;
+    } // namespace TestEngineIntegration
 
 
     void _AddTestEngineCallbacks(RunnerParams* runnerParams)
     {
-        auto &callbacks = runnerParams->callbacks;
+        auto &testEngineCallbacks = runnerParams->callbacks._testEngineCallbacks;
 
-        callbacks.PostInit = FunctionalUtils::sequence_functions(
-            []() { gTestEngineIntegration.Setup(); },
-            callbacks.PostInit
-            );
-
-        callbacks.AfterSwap = FunctionalUtils::sequence_functions(
-            []() { gTestEngineIntegration.PostSwap(); },
-            callbacks.AfterSwap
-            );
-
-        callbacks.BeforeExit = FunctionalUtils::sequence_functions(
-            []() { gTestEngineIntegration.Shutdown_Before_ImGui_DestroyContext(); },
-            callbacks.BeforeExit
-            );
-
-        callbacks.BeforeExit_PostCleanup = FunctionalUtils::sequence_functions(
-            []() { gTestEngineIntegration.Shutdown_After_ImGui_DestroyContext(); },
-            callbacks.BeforeExit_PostCleanup
-        );
+        testEngineCallbacks.OnSetup = TestEngineIntegration::Setup;
+        testEngineCallbacks.OnFrame_PostSwap = TestEngineIntegration::PostSwap;
+        testEngineCallbacks.OnTearDown_ImGuiContextAlive = TestEngineIntegration::TearDown_ImGuiContextAlive;
+        testEngineCallbacks.OnTearDown_ImGuiContextDestroyed = TestEngineIntegration::TearDown_ImGuiContextDestroyed;
     }
 
     ImGuiTestEngine* GetImGuiTestEngine()
     {
-        return gTestEngineIntegration.mTestEngine;
+        return TestEngineIntegration::GImGuiTestEngine;
     }
 }

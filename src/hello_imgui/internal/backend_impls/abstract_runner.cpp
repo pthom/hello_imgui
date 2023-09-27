@@ -368,12 +368,16 @@ void AbstractRunner::Setup()
     }
     params.callbacks.SetupImGuiStyle();
 
+    if (params.callbacks._testEngineCallbacks.OnSetup)
+        params.callbacks._testEngineCallbacks.OnSetup();
+
     // This should be done before Impl_SetupPlatformRendererBindings()
     // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks
     // will chain the user callbacks with ImGui callbacks; and PostInit()
     // is a good place for the user to install callbacks
     if (params.callbacks.PostInit)
         params.callbacks.PostInit();
+
 
     Impl_SetupPlatformRendererBindings();
 
@@ -590,6 +594,8 @@ void AbstractRunner::CreateFramesAndRender()
 
     if (params.callbacks.AfterSwap)
         params.callbacks.AfterSwap();
+    if (params.callbacks._testEngineCallbacks.OnFrame_PostSwap)
+        params.callbacks._testEngineCallbacks.OnFrame_PostSwap();
 
     if (foundPotentialFontLoadingError)
         ReloadFontIfFailed();
@@ -704,11 +710,18 @@ void AbstractRunner::TearDown(bool gotException)
     }
 
     HelloImGui::internal::Free_ImageFromAssetMap();
+
     if (params.callbacks.BeforeExit)
         params.callbacks.BeforeExit();
+    if (params.callbacks._testEngineCallbacks.OnTearDown_ImGuiContextAlive)
+        params.callbacks._testEngineCallbacks.OnTearDown_ImGuiContextAlive();
+
     Impl_Cleanup();
+
     if (params.callbacks.BeforeExit_PostCleanup)
         params.callbacks.BeforeExit_PostCleanup();
+    if (params.callbacks._testEngineCallbacks.OnTearDown_ImGuiContextDestroyed)
+        params.callbacks._testEngineCallbacks.OnTearDown_ImGuiContextDestroyed();
 }
 
 

@@ -89,9 +89,9 @@ Notes about the use of [Dear ImGui Test & Automation Engine](https://github.com/
 * HelloImGui must be compiled with the option HELLOIMGUI_WITH_TEST_ENGINE (-DHELLOIMGUI_WITH_TEST_ENGINE=ON)
 * See demo in src/hello_imgui_demos/hello_imgui_demo_test_engine.
 * imgui_test_engine is subject to a [specific license](https://github.com/ocornut/imgui_test_engine/blob/main/imgui_test_engine/LICENSE.txt)
-  TL;DR: free for individuals, educational, open-source and small businesses uses. Paid for larger businesses.
+  (TL;DR: free for individuals, educational, open-source and small businesses uses. Paid for larger businesses.)
 
-@@md
+    @@md
  */
 struct RunnerParams
 {

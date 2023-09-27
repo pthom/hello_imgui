@@ -1,0 +1,2 @@
+include(hello_imgui_add_app)
+hello_imgui_add_app(hello_imgui_demo_test_engine hello_imgui_demo_test_engine.main.cpp)

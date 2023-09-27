@@ -10,6 +10,10 @@
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
 #include "imgui_internal.h"
 
+#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+#include "hello_imgui_test_engine_integration/test_engine_integration.h"
+#endif
+
 #include <chrono>
 #include <cassert>
 #include <fstream>
@@ -328,6 +332,10 @@ void AbstractRunner::LayoutSettings_Save()
 
 void AbstractRunner::Setup()
 {
+#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+    _AddTestEngineCallbacks(&this->params);
+#endif
+
     Impl_InitBackend();
     Impl_Select_Gl_Version();
 
@@ -579,6 +587,9 @@ void AbstractRunner::CreateFramesAndRender()
 
     Impl_SwapBuffers();
 
+    if (params.callbacks.AfterSwap)
+        params.callbacks.AfterSwap();
+
     if (foundPotentialFontLoadingError)
         ReloadFontIfFailed();
 
@@ -695,6 +706,8 @@ void AbstractRunner::TearDown(bool gotException)
     if (params.callbacks.BeforeExit)
         params.callbacks.BeforeExit();
     Impl_Cleanup();
+    if (params.callbacks.BeforeExit_PostCleanup)
+        params.callbacks.BeforeExit_PostCleanup();
 }
 
 

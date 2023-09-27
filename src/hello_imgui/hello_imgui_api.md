@@ -208,13 +208,20 @@ See [runner_callbacks.h](runner_callbacks.h).
     You can here add a function that will be called once before exiting (when OpenGL and ImGui are
     still inited)
 
- * `PreNewFrame`: *VoidFunction, default=empty*.
+* `BeforeExit_PostCleanup`: *VoidFunction, default=empty*.
+    You can here add a function that will be called once before exiting (after OpenGL and ImGui have been deinited)
+
+* `PreNewFrame`: *VoidFunction, default=empty*.
     You can here add a function that will be called at each frame, and before the call to ImGui::NewFrame().
     It is a good place to dynamically add new fonts, or dynamically add new dockable windows.
 
- * `BeforeImGuiRender`: *VoidFunction, default=empty*.
+* `BeforeImGuiRender`: *VoidFunction, default=empty*.
     You can here add a function that will be called at each frame, after the user Gui code,
     and just before the call to ImGui::Render() (which will also call ImGui::EndFrame()).
+
+* `AfterSwap`: *VoidFunction, default=empty*.
+    You can here add a function that will be called at each frame, after the Gui was rendered
+    and swapped to the screen.
 
 * `AnyBackendEventCallback`: *AnyBackendCallback, default=empty*.
   Callbacks for events from a specific backend. _Only implemented for SDL, where the event

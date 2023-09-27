@@ -10,6 +10,7 @@ endif()
 project(HelloImGui LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
+
 ###############################################################################
 # hello_imgui_add_app location
 ###############################################################################
@@ -89,6 +90,12 @@ else()
 endif()
 
 #------------------------------------------------------------------------------
+# Options / ImGui Test Engine
+#------------------------------------------------------------------------------
+option(HELLOIMGUI_WITH_TEST_ENGINE "Provide ImGui Test engine" OFF)
+set(IMGUI_TEST_ENGINE_BASEPATH ${CMAKE_CURRENT_LIST_DIR}/../imgui_test_engine CACHE STRING "path to imgui_test_engine")
+
+#------------------------------------------------------------------------------
 # Esmcripten build options
 #------------------------------------------------------------------------------
 if (EMSCRIPTEN)
@@ -136,7 +143,13 @@ option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 ###############################################################################
 
 
+###############################################################################
+# HelloImGui Build Actions
+###############################################################################
+
+#------------------------------------------------------------------------------
 # use SDL for emscripten
+#------------------------------------------------------------------------------
 if (EMSCRIPTEN AND NOT HELLOIMGUI_USE_SDL_OPENGL3 AND NOT HELLOIMGUI_USE_GLFW_OPENGL3)
     set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
 endif()
@@ -191,9 +204,10 @@ if (MSVC)
 endif()
 
 
+#------------------------------------------------------------------------------
+# Main build actions
+#------------------------------------------------------------------------------
 set(HELLOIMGUI_BASEPATH ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Hello imgui base path" FORCE)
-
-
 include(cmake/StandardProjectSettings.cmake)
 include(cmake/StaticAnalyzers.cmake)
 include(msvc/msvc_target_group)
@@ -206,6 +220,14 @@ endif()
 
 add_subdirectory(external)
 add_subdirectory(src)
+
+#------------------------------------------------------------------------------
+# imgui_test_engine integration
+#------------------------------------------------------------------------------
+if (HELLOIMGUI_WITH_TEST_ENGINE)
+    include(${CMAKE_CURRENT_LIST_DIR}/src/hello_imgui_test_engine_integration/hello_imgui_test_engine_cmake.cmake)
+    add_imgui_test_engine()
+endif()
 
 # Install
 if(PROJECT_IS_TOP_LEVEL)

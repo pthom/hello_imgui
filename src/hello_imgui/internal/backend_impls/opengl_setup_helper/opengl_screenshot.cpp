@@ -3,6 +3,10 @@
 #include "hello_imgui/hello_imgui_include_opengl.h"
 #include "hello_imgui/internal/pnm.h"
 
+#ifdef __linux__
+#include <unistd.h>
+#endif
+
 
 namespace HelloImGui
 {

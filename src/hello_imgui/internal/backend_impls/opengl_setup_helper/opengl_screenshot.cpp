@@ -53,6 +53,40 @@ namespace HelloImGui
         }
 
         return r;
-
     }
+
+
+    bool ImGuiApp_ImplGL_CaptureFramebuffer(ImGuiID viewport_id, int x, int y, int w, int h, unsigned int* pixels, void* user_data)
+    {
+        (void)viewport_id;
+        (void)user_data;
+
+#ifdef __linux__
+        // FIXME: Odd timing issue is observed on linux (Plasma/X11 specifically), which causes outdated frames to be captured, unless we give compositor some time to update screen.
+    // glFlush() didn't seem enough. Will probably need to revisit that.
+    usleep(1000);   // 1ms
+#endif
+
+        int y2 = (int)ImGui::GetIO().DisplaySize.y - (y + h);
+        glPixelStorei(GL_PACK_ALIGNMENT, 1);
+        glReadPixels(x, y2, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+        // Flip vertically
+        size_t comp = 4;
+        size_t stride = (size_t)w * comp;
+        unsigned char* line_tmp = new unsigned char[stride];
+        unsigned char* line_a = (unsigned char*)pixels;
+        unsigned char* line_b = (unsigned char*)pixels + (stride * ((size_t)h - 1));
+        while (line_a < line_b)
+        {
+            memcpy(line_tmp, line_a, stride);
+            memcpy(line_a, line_b, stride);
+            memcpy(line_b, line_tmp, stride);
+            line_a += stride;
+            line_b -= stride;
+        }
+        delete[] line_tmp;
+        return true;
+    }
+
 }

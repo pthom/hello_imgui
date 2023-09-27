@@ -1,6 +1,7 @@
 #include "imgui_test_engine/imgui_te_engine.h"
 #include "hello_imgui/runner_params.h"
 #include "hello_imgui/internal/functional_utils.h"
+#include "hello_imgui/internal/backend_impls/opengl_setup_helper/opengl_screenshot.h"
 
 namespace HelloImGui
 {
@@ -13,14 +14,11 @@ namespace HelloImGui
             ImGuiTestEngineIO& test_io = ImGuiTestEngine_GetIO(GImGuiTestEngine);
             test_io.ConfigVerboseLevel = ImGuiTestVerboseLevel_Info;
             test_io.ConfigVerboseLevelOnError = ImGuiTestVerboseLevel_Debug;
-            test_io.ConfigRunSpeed = ImGuiTestRunSpeed_Cinematic; // Default to slowest mode in this demo
+            test_io.ConfigRunSpeed = ImGuiTestRunSpeed_Normal; // Default to slowest mode in this demo
 
-            // test_io.ScreenCaptureFunc = ImGuiApp_ScreenCaptureFunc;
-            // test_io.ScreenCaptureUserData = (void*)app;
-
-            // Optional: save test output in junit-compatible XML format.
-            //test_io.ExportResultsFile = "./results.xml";
-            //test_io.ExportResultsFormat = ImGuiTestEngineExportFormat_JUnitXml;
+#if defined(HELLOIMGUI_USE_SDL_OPENGL3) || defined(HELLOIMGUI_USE_GLFW_OPENGL3)
+            test_io.ScreenCaptureFunc = HelloImGui::ImGuiApp_ImplGL_CaptureFramebuffer;
+#endif
         }
 
         void Setup()

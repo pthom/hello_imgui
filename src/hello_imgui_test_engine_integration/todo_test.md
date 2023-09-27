@@ -4,6 +4,7 @@ HELLOIMGUI_WITH_TEST_ENGINE default ON or OFF ?
     ON dans imGui Bundle ?
 
 
+
 Config:
     Study params
     Reflechir / imconfig
@@ -11,16 +12,7 @@ Config:
 HelloImGui params:
     param / enable tests
 
-callbacks:
-    struct / all callbacks
-    special callback / test registration?
-    cacher _TestEngineCallbacks?
-    PreNewFrame => BeforeNewFrame ?
-
-add namespace HelloImGui::TestEngine ?
-
 doc / license
-capture function
 
 Démo dans imgui_manual
 

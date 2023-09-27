@@ -93,7 +93,8 @@ endif()
 # Options / ImGui Test Engine
 #------------------------------------------------------------------------------
 option(HELLOIMGUI_WITH_TEST_ENGINE "Provide ImGui Test engine" OFF)
-set(IMGUI_TEST_ENGINE_BASEPATH ${CMAKE_CURRENT_LIST_DIR}/../imgui_test_engine CACHE STRING "path to imgui_test_engine")
+# By default we use imgui_test_engine from the submodule at external/imgui_test_engine/
+set(IMGUI_TEST_ENGINE_BASEPATH ${CMAKE_CURRENT_LIST_DIR}/external/imgui_test_engine CACHE STRING "path to imgui_test_engine")
 
 #------------------------------------------------------------------------------
 # Esmcripten build options

@@ -1,5 +1,3 @@
-submodule test_engine or not ? (warning; includes implot) / 9.8M (sur 126M)
-
 check uses of HELLOIMGUI_WITH_TEST_ENGINE vs IMGUI_ENABLE_TEST_ENGINE
 
 Config:

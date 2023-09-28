@@ -33,8 +33,24 @@ function(_add_hello_imgui_test_engine_integration)
 endfunction()
 
 
+function(_add_imgui_test_example)
+    set(imgui_base_path ${PROJECT_SOURCE_DIR}/external/imgui)
+    add_executable(test_app_minimal
+        ${IMGUI_TEST_ENGINE_BASEPATH}/app_minimal/app_minimal_main.cpp
+        ${IMGUI_TEST_ENGINE_BASEPATH}/app_minimal/app_minimal_tests.cpp
+        ${IMGUI_TEST_ENGINE_BASEPATH}/app_minimal/app_minimal_imconfig.h
+        ${IMGUI_TEST_ENGINE_BASEPATH}/shared/imgui_app.cpp
+        ${IMGUI_TEST_ENGINE_BASEPATH}/shared/imgui_app.h
+        )
+    target_compile_definitions(test_app_minimal PUBLIC IMGUI_APP_GLFW_GL3)
+    target_link_libraries(test_app_minimal PRIVATE imgui glfw)
+    target_include_directories(test_app_minimal PUBLIC ${imgui_base_path}/backends)
+endfunction()
+
+
 function(add_imgui_test_engine)
     _add_imgui_test_engine_lib()
     _configure_imgui_with_test_engine()
     _add_hello_imgui_test_engine_integration()
+    _add_imgui_test_example()
 endfunction()

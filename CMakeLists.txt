@@ -19,7 +19,10 @@ set(CMAKE_CXX_STANDARD 17)
 #     include(hello_imgui_add_app)
 # somewhere before calling `hello_imgui_add_app`
 set(HELLOIMGUI_CMAKE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/hello_imgui_cmake CACHE STRING "" FORCE)
+# Make cmake function `hello_imgui_add_app` available
 list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
+include(hello_imgui_add_app)
+
 
 ###############################################################################
 # HelloImGui Build options
@@ -94,7 +97,7 @@ endif()
 #------------------------------------------------------------------------------
 option(HELLOIMGUI_WITH_TEST_ENGINE "Provide ImGui Test engine" OFF)
 # By default we use imgui_test_engine from the submodule at external/imgui_test_engine/
-set(IMGUI_TEST_ENGINE_BASEPATH ${CMAKE_CURRENT_LIST_DIR}/external/imgui_test_engine CACHE STRING "path to imgui_test_engine")
+set(HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/external/imgui_test_engine CACHE STRING "path to imgui_test_engine")
 
 #------------------------------------------------------------------------------
 # Esmcripten build options

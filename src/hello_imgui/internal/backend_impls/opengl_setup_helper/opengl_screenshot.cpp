@@ -65,15 +65,18 @@ namespace HelloImGui
     // Inspired from imgui_test_engine: imgui_app.cpp
     //
 
-    void _GlCaptureFramebuffer(int x, int y, int w, int h, unsigned int* pixels)
+
+    void _GlCaptureFramebuffer(
+        int x, int y, int w, int h,
+        float frameBufferScaleY,    // We now need to know the frameBufferScaleY to be able to flip the y coordinate into y2
+        unsigned int* pixels)
     {
 #ifdef __linux__
         // FIXME: Odd timing issue is observed on linux (Plasma/X11 specifically), which causes outdated frames to be captured, unless we give compositor some time to update screen.
     // glFlush() didn't seem enough. Will probably need to revisit that.
     usleep(1000);   // 1ms
 #endif
-
-        int y2 = (int)ImGui::GetIO().DisplaySize.y - (y + h);
+        int y2 = (int)ImGui::GetIO().DisplaySize.y * frameBufferScaleY - (y + h);
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
         glReadPixels(x, y2, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
@@ -94,20 +97,24 @@ namespace HelloImGui
         delete[] line_tmp;
     }
 
-
     bool ImGuiApp_ImplGL_CaptureFramebuffer(ImGuiID viewport_id, int x, int y, int w, int h, unsigned int* pixels, void* user_data)
     {
         IM_UNUSED(viewport_id);
         IM_UNUSED(user_data);
 
+        ImVec2 framebufferScale(1., 1.f);
+        if (ImGui::GetDrawData() != nullptr)
+            framebufferScale = ImGui::GetDrawData()->FramebufferScale; // WARNING WARNING: Sometimes GetDrawData() will return NULL
+                                                                       //  when invoked from the CaptureTool window!
+        // framebufferScale = ImVec2(2.f, 2.f);                        // Manual hack for when GetDrawData() returns null
+
         // Are we using a scaled frame buffer (for example on macOS with retina screen)
-        auto fbScale = ImGui::GetDrawData()->FramebufferScale;
-        bool hasFbScale = (fbScale.x != 1.f) || (fbScale.y != 1.f);
+        bool hasFramebufferScale = (framebufferScale.x != 1.f) || (framebufferScale.y != 1.f);
 
         // if not using scaled frame buffer, perform simple capture
-        if (!hasFbScale)
+        if (!hasFramebufferScale)
         {
-            _GlCaptureFramebuffer(x, y, w, h, pixels);
+            _GlCaptureFramebuffer(x, y, w, h, framebufferScale.y, pixels);
             return true;
         }
 
@@ -116,33 +123,26 @@ namespace HelloImGui
         //
 
         // 1. Capture to temporary buffer capturePixels
-        auto x_to_scaled = [fbScale](int _x) -> int { return (int)((float)_x * fbScale.x); };
-        auto y_to_scaled = [fbScale](int _y) -> int { return (int)((float)_y * fbScale.y); };
+        auto x_to_scaled = [framebufferScale](int _x) -> int { return (int)((float)_x * framebufferScale.x); };
+        auto y_to_scaled = [framebufferScale](int _y) -> int { return (int)((float)_y * framebufferScale.y); };
 
-        int channels = 4;
         int xs = x_to_scaled(x), ys = y_to_scaled(y), ws = x_to_scaled(w), hs = y_to_scaled(h);
 
-        unsigned int* capturePixels = new unsigned int[ws * hs * channels];
-        _GlCaptureFramebuffer(xs, ys, ws, hs, capturePixels);
+        unsigned int* capturePixels = new unsigned int[ws * hs];
+        _GlCaptureFramebuffer(xs, ys, ws, hs, framebufferScale.y, capturePixels);
 
-        // 2. Fill pixel from capturePixels
+        // 2. Fill pixel from capturePixels: an atrocious and slow loop
         auto get_capture_pixel = [&](int _x, int _y) -> unsigned int {
             int _xs = x_to_scaled(_x), _ys = y_to_scaled(_y);
             return capturePixels[_ys * ws + _xs];
         };
         for (int _y = 0; _y < h; ++_y)
-        {
             for (int _x = 0; _x < w; ++_x)
-            {
                 pixels[_y * w + _x] = get_capture_pixel(_x, _y);
-            }
-        }
 
         delete[] capturePixels;
         return true;
     }
-
-
 
 
 }

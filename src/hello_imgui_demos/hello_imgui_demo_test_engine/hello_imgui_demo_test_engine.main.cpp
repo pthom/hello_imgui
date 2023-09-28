@@ -29,7 +29,7 @@ void MyRegisterTests()
         ctx->SetRef("Dear ImGui Demo");
         ctx->ItemOpen("Widgets");       // Open collapsing header
         ctx->ItemOpenAll("Basic");      // Open tree node and all its descendant
-        ctx->CaptureScreenshotWindow("Dear ImGui Demo"); //, ImGuiCaptureFlags_StitchAll | ImGuiCaptureFlags_HideMouseCursor);
+        ctx->CaptureScreenshotWindow("Dear ImGui Demo", ImGuiCaptureFlags_StitchAll | ImGuiCaptureFlags_HideMouseCursor);
     };
 }
 

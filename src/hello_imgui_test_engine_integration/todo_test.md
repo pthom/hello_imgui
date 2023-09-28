@@ -14,7 +14,9 @@ Config test engine:
 HelloImGui params:
     param / enable tests
 
-doc / license
+doc / license:
+    md specifique
+
 
 Démo dans imgui_manual
 

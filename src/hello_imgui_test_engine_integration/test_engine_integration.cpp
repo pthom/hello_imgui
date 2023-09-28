@@ -5,9 +5,10 @@
 
 namespace HelloImGui
 {
+    ImGuiTestEngine *GImGuiTestEngine = nullptr;
+
     namespace TestEngineCallbacks
     {
-        ImGuiTestEngine *GImGuiTestEngine = nullptr;
 
         void _SetOptions()
         {
@@ -50,10 +51,4 @@ namespace HelloImGui
         }
 
     } // namespace TestEngineCallbacks
-
-
-    ImGuiTestEngine* GetImGuiTestEngine()
-    {
-        return TestEngineCallbacks::GImGuiTestEngine;
-    }
 }

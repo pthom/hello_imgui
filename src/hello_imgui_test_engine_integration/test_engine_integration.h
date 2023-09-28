@@ -1,6 +1,5 @@
 #include "hello_imgui/runner_params.h"
 
-struct ImGuiTestEngine;
 
 namespace HelloImGui
 {
@@ -11,6 +10,4 @@ namespace HelloImGui
         void TearDown_ImGuiContextAlive();
         void TearDown_ImGuiContextDestroyed();
     } // namespace TestEngineCallbacks
-
-    ImGuiTestEngine* GetImGuiTestEngine();
 }

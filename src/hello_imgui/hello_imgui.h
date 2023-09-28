@@ -13,6 +13,8 @@
 #include <cstddef>
 #include <cstdint>
 
+struct ImGuiTestEngine;
+
 
 namespace HelloImGui
 {
@@ -40,6 +42,9 @@ __Other utilities:__
 
 * `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
   May differ from ImGui::GetIO().FrameRate, since one can choose the duration for the calculation of the mean value of the fps
+
+* `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance of ImGuiTestEngine that was
+  initialized by HelloImGui (iif ImGui Test Engine is active).
 @@md
 */
     void Run(RunnerParams &runnerParams);
@@ -61,6 +66,8 @@ __Other utilities:__
     // since one can choose the duration for the calculation of the mean value of the fps
     // (Will only lead to accurate values if you call it at each frame)
     float FrameRate(float durationForMean = 0.5f);
+
+    ImGuiTestEngine* GetImGuiTestEngine();
 
 
 /**

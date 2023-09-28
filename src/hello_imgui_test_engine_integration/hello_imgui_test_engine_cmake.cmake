@@ -5,7 +5,7 @@ endif()
 
 # Add imgui_test_engine lib with sources in imgui_test_engine/imgui_test_engine
 function(_add_imgui_test_engine_lib)
-    set(source_folder ${IMGUI_TEST_ENGINE_BASEPATH}/imgui_test_engine)
+    set(source_folder ${HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR}/imgui_test_engine)
     file(GLOB_RECURSE sources ${source_folder}/*.h ${source_folder}/*.cpp)
     add_library(imgui_test_engine ${sources})
     target_include_directories(imgui_test_engine PUBLIC ${source_folder}/..)
@@ -33,14 +33,17 @@ function(_add_hello_imgui_test_engine_integration)
 endfunction()
 
 
-function(_add_imgui_test_example)
+# Unused: add the original app_minimal example from imgui_test_engine
+function(_add_imgui_test_engine_app_minimal_example)
+    # This does not compile at the moment since app_minimal_main.cpp require implot
+    # (but commenting out the related lines works)
     set(imgui_base_path ${PROJECT_SOURCE_DIR}/external/imgui)
     add_executable(test_app_minimal
-        ${IMGUI_TEST_ENGINE_BASEPATH}/app_minimal/app_minimal_main.cpp
-        ${IMGUI_TEST_ENGINE_BASEPATH}/app_minimal/app_minimal_tests.cpp
-        ${IMGUI_TEST_ENGINE_BASEPATH}/app_minimal/app_minimal_imconfig.h
-        ${IMGUI_TEST_ENGINE_BASEPATH}/shared/imgui_app.cpp
-        ${IMGUI_TEST_ENGINE_BASEPATH}/shared/imgui_app.h
+        ${HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR}/app_minimal/app_minimal_main.cpp
+        ${HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR}/app_minimal/app_minimal_tests.cpp
+        ${HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR}/app_minimal/app_minimal_imconfig.h
+        ${HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR}/shared/imgui_app.cpp
+        ${HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR}/shared/imgui_app.h
         )
     target_compile_definitions(test_app_minimal PUBLIC IMGUI_APP_GLFW_GL3)
     target_link_libraries(test_app_minimal PRIVATE imgui glfw)
@@ -48,9 +51,10 @@ function(_add_imgui_test_example)
 endfunction()
 
 
+# Public API for this module
 function(add_imgui_test_engine)
     _add_imgui_test_engine_lib()
     _configure_imgui_with_test_engine()
     _add_hello_imgui_test_engine_integration()
-#    _add_imgui_test_example()
+    # _add_imgui_test_engine_app_minimal_example()
 endfunction()

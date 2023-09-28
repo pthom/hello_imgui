@@ -48,6 +48,9 @@ int main(int, char *[])
     HelloImGui::RunnerParams runnerParams;
     runnerParams.useImGuiTestEngine = true;
 
+    // at the moment configWindowsMoveFromTitleBarOnly should be false for the screen capture to work with stitching
+    runnerParams.imGuiWindowParams.configWindowsMoveFromTitleBarOnly = false;
+
     runnerParams.callbacks.ShowGui = AppGui;
     runnerParams.callbacks.RegisterTests = MyRegisterTests;
 

@@ -110,6 +110,9 @@ __Other utilities:__
 * `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
   May differ from ImGui::GetIO().FrameRate, since one can choose the duration for the calculation of the mean value of the fps
 
+* `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance of ImGuiTestEngine that was
+  initialized by HelloImGui (iif ImGui Test Engine is active).
+
 Although the API is extremely simple, it is highly customizable, and you can set many options by filling the elements in the `RunnerParams` struct, or in the simpler  `SimpleRunnerParams`, or even by giving a subset of params to `HelloImGui::Run`.
 
 Click on the image below to access the [full API doc](src/hello_imgui/hello_imgui_api.md)

@@ -61,6 +61,9 @@ __Other utilities:__
 * `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
   May differ from ImGui::GetIO().FrameRate, since one can choose the duration for the calculation of the mean value of the fps
 
+* `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance of ImGuiTestEngine that was
+  initialized by HelloImGui (iif ImGui Test Engine is active).
+
 ## Runner params
 
 See [runner_params.h](runner_params.h).

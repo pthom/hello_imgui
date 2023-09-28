@@ -60,11 +60,13 @@ namespace HelloImGui
     }
 
 
-    bool ImGuiApp_ImplGL_CaptureFramebuffer(ImGuiID viewport_id, int x, int y, int w, int h, unsigned int* pixels, void* user_data)
-    {
-        (void)viewport_id;
-        (void)user_data;
+    //
+    // Screenshot for imgui_test_engine
+    // Inspired from imgui_test_engine: imgui_app.cpp
+    //
 
+    void _GlCaptureFramebuffer(int x, int y, int w, int h, unsigned int* pixels)
+    {
 #ifdef __linux__
         // FIXME: Odd timing issue is observed on linux (Plasma/X11 specifically), which causes outdated frames to be captured, unless we give compositor some time to update screen.
     // glFlush() didn't seem enough. Will probably need to revisit that.
@@ -90,7 +92,57 @@ namespace HelloImGui
             line_b -= stride;
         }
         delete[] line_tmp;
+    }
+
+
+    bool ImGuiApp_ImplGL_CaptureFramebuffer(ImGuiID viewport_id, int x, int y, int w, int h, unsigned int* pixels, void* user_data)
+    {
+        IM_UNUSED(viewport_id);
+        IM_UNUSED(user_data);
+
+        // Are we using a scaled frame buffer (for example on macOS with retina screen)
+        auto fbScale = ImGui::GetDrawData()->FramebufferScale;
+        bool hasFbScale = (fbScale.x != 1.f) || (fbScale.y != 1.f);
+
+        // if not using scaled frame buffer, perform simple capture
+        if (!hasFbScale)
+        {
+            _GlCaptureFramebuffer(x, y, w, h, pixels);
+            return true;
+        }
+
+        //
+        // else
+        //
+
+        // 1. Capture to temporary buffer capturePixels
+        auto x_to_scaled = [fbScale](int _x) -> int { return (int)((float)_x * fbScale.x); };
+        auto y_to_scaled = [fbScale](int _y) -> int { return (int)((float)_y * fbScale.y); };
+
+        int channels = 4;
+        int xs = x_to_scaled(x), ys = y_to_scaled(y), ws = x_to_scaled(w), hs = y_to_scaled(h);
+
+        unsigned int* capturePixels = new unsigned int[ws * hs * channels];
+        _GlCaptureFramebuffer(xs, ys, ws, hs, capturePixels);
+
+        // 2. Fill pixel from capturePixels
+        auto get_capture_pixel = [&](int _x, int _y) -> unsigned int {
+            int _xs = x_to_scaled(_x), _ys = y_to_scaled(_y);
+            return capturePixels[_ys * ws + _xs];
+        };
+        for (int _y = 0; _y < h; ++_y)
+        {
+            for (int _x = 0; _x < w; ++_x)
+            {
+                pixels[_y * w + _x] = get_capture_pixel(_x, _y);
+            }
+        }
+
+        delete[] capturePixels;
         return true;
     }
+
+
+
 
 }

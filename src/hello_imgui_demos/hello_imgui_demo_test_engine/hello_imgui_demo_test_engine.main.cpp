@@ -34,7 +34,7 @@ void MyRegisterTests()
 }
 
 
-void Gui()
+void AppGui()
 {
     ImGui::Text("Hello");
     ImGui::ShowDemoWindow();
@@ -48,7 +48,7 @@ int main(int, char *[])
     HelloImGui::RunnerParams runnerParams;
     runnerParams.useImGuiTestEngine = true;
 
-    runnerParams.callbacks.ShowGui = Gui;
+    runnerParams.callbacks.ShowGui = AppGui;
     runnerParams.callbacks.RegisterTests = MyRegisterTests;
 
     HelloImGui::Run(runnerParams);

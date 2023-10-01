@@ -5,14 +5,14 @@
 
 namespace HelloImGui
 {
-    ImGuiTestEngine *GImGuiTestEngine = nullptr;
+    ImGuiTestEngine *GHImGuiTestEngine = nullptr;
 
     namespace TestEngineCallbacks
     {
 
         void _SetOptions()
         {
-            ImGuiTestEngineIO& test_io = ImGuiTestEngine_GetIO(GImGuiTestEngine);
+            ImGuiTestEngineIO& test_io = ImGuiTestEngine_GetIO(GHImGuiTestEngine);
             test_io.ConfigVerboseLevel = ImGuiTestVerboseLevel_Info;
             test_io.ConfigVerboseLevelOnError = ImGuiTestVerboseLevel_Debug;
             test_io.ConfigRunSpeed = ImGuiTestRunSpeed_Normal; // Default to slowest mode in this demo
@@ -25,29 +25,29 @@ namespace HelloImGui
         void Setup()
         {
             // Setup test engine
-            GImGuiTestEngine = ImGuiTestEngine_CreateContext();
+            GHImGuiTestEngine = ImGuiTestEngine_CreateContext();
 
             _SetOptions();
 
             // Start test engine
-            ImGuiTestEngine_Start(GImGuiTestEngine, ImGui::GetCurrentContext());
+            ImGuiTestEngine_Start(GHImGuiTestEngine, ImGui::GetCurrentContext());
             ImGuiTestEngine_InstallDefaultCrashHandler();
         }
 
         void PostSwap()
         {
             // Call after your rendering. This is mostly to support screen/video capturing features.
-            ImGuiTestEngine_PostSwap(GImGuiTestEngine);
+            ImGuiTestEngine_PostSwap(GHImGuiTestEngine);
         }
 
         void TearDown_ImGuiContextAlive()
         {
-            ImGuiTestEngine_Stop(GImGuiTestEngine);
+            ImGuiTestEngine_Stop(GHImGuiTestEngine);
         }
         void TearDown_ImGuiContextDestroyed()
         {
             // IMPORTANT: we need to destroy the Dear ImGui context BEFORE the test engine context, so .ini data may be saved.
-            ImGuiTestEngine_DestroyContext(GImGuiTestEngine);
+            ImGuiTestEngine_DestroyContext(GHImGuiTestEngine);
         }
 
     } // namespace TestEngineCallbacks

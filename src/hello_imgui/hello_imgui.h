@@ -69,7 +69,6 @@ __Other utilities:__
 
     ImGuiTestEngine* GetImGuiTestEngine();
 
-
 /**
 @@md#HelloImGui::Layouts
 

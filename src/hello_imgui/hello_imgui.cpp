@@ -143,8 +143,12 @@ float FrameRate(float durationForMean)
     return fps;
 }
 
-extern ImGuiTestEngine *GImGuiTestEngine;
-ImGuiTestEngine* GetImGuiTestEngine() { return GImGuiTestEngine; }
+#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+extern ImGuiTestEngine *GHImGuiTestEngine;
+ImGuiTestEngine* GetImGuiTestEngine() { return GHImGuiTestEngine; }
+#else
+ImGuiTestEngine* GetImGuiTestEngine() { return nullptr; }
+#endif
 
 
 void SaveUserPref(const std::string& userPrefName, const std::string& userPrefContent)

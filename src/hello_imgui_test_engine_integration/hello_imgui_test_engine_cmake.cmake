@@ -14,7 +14,14 @@ endfunction()
 
 # ImGui uses imconfig from imconfig_with_test_engine.h (with options for imgui_test_engine)
 function(_configure_imgui_with_test_engine)
-    target_compile_definitions(imgui PUBLIC IMGUI_USER_CONFIG="${CMAKE_CURRENT_FUNCTION_LIST_DIR}/imconfig_with_test_engine.h")
+    target_compile_definitions(imgui
+        PUBLIC
+        IMGUI_ENABLE_TEST_ENGINE
+        IMGUI_TEST_ENGINE_ENABLE_CAPTURE=1
+        IMGUI_TEST_ENGINE_ENABLE_STD_FUNCTION=1
+        IMGUI_TEST_ENGINE_ENABLE_COROUTINE_STDTHREAD_IMPL=1
+        )
+    #        IMGUI_TEST_ENGINE_ENABLE_IMPLOT=0
     # Link imgui_test_engine with imgui
     target_link_libraries(imgui_test_engine PUBLIC imgui)
     # any App built with ImGui should now also link with imgui_test_engine

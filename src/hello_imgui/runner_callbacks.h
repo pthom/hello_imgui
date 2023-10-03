@@ -170,9 +170,7 @@ struct RunnerCallbacks
     VoidFunction SetupImGuiConfig = (VoidFunction)(ImGuiDefaultSettings::SetupDefaultImGuiConfig);
     VoidFunction SetupImGuiStyle = (VoidFunction)(ImGuiDefaultSettings::SetupDefaultImGuiStyle);
 
-#ifdef HELLOIMGUI_WITH_TEST_ENGINE
     VoidFunction RegisterTests = EmptyVoidFunction();
-#endif
 
 #ifdef HELLOIMGUI_MOBILEDEVICE
     MobileCallbacks mobileCallbacks;

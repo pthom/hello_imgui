@@ -373,11 +373,6 @@ void AbstractRunner::Setup()
     if (params.callbacks.PostInit)
         params.callbacks.PostInit();
 
-#ifdef HELLOIMGUI_WITH_TEST_ENGINE
-    if (params.useImGuiTestEngine && params.callbacks.RegisterTests)
-            params.callbacks.RegisterTests();
-#endif
-
     Impl_SetupPlatformRendererBindings();
 
     //
@@ -463,6 +458,14 @@ void AbstractRunner::RenderGui()
 void AbstractRunner::CreateFramesAndRender()
 {
     LayoutSettings_HandleChanges();
+
+    #ifdef HELLOIMGUI_WITH_TEST_ENGINE
+    if (mIdxFrame == 1)
+    {
+        if (params.useImGuiTestEngine && params.callbacks.RegisterTests)
+                params.callbacks.RegisterTests();
+    }
+    #endif
 
     // Note about the application window initial placement and sizing 
     // i/   On the first frame (mIdxFrame==0), we create a window, and use the user provided size (if provided). The window is initially hidden.

@@ -44,6 +44,7 @@ endfunction()
 function(_add_imgui_test_engine_app_minimal_example)
     # This does not compile at the moment since app_minimal_main.cpp require implot
     # (but commenting out the related lines works)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
     set(imgui_base_path ${PROJECT_SOURCE_DIR}/external/imgui)
     add_executable(test_app_minimal
         ${HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR}/app_minimal/app_minimal_main.cpp
@@ -53,7 +54,8 @@ function(_add_imgui_test_engine_app_minimal_example)
         ${HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR}/shared/imgui_app.h
         )
     target_compile_definitions(test_app_minimal PUBLIC IMGUI_APP_GLFW_GL3)
-    target_link_libraries(test_app_minimal PRIVATE imgui glfw)
+    find_package(Python3 COMPONENTS Development)
+    target_link_libraries(test_app_minimal PRIVATE imgui glfw Python3::Python)
     target_include_directories(test_app_minimal PUBLIC ${imgui_base_path}/backends)
 endfunction()
 

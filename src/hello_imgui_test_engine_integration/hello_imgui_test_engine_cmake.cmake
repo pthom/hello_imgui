@@ -32,7 +32,7 @@ endfunction()
 # Add integration into HelloImGui
 function(_add_hello_imgui_test_engine_integration)
     target_compile_definitions(hello_imgui PUBLIC HELLOIMGUI_WITH_TEST_ENGINE)
-    target_sources(hello_imgui PUBLIC
+    target_sources(hello_imgui PRIVATE
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/test_engine_integration.cpp
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/test_engine_integration.h
         )

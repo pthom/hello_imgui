@@ -51,6 +51,10 @@ function(hello_imgui_prepare_app app_name)
     hello_imgui_platform_customization(${app_name})
     target_link_libraries(${app_name} PRIVATE hello_imgui)
 
+    if (HELLOIMGUI_WITH_TEST_ENGINE)
+        target_link_libraries(${app_name} PRIVATE imgui_test_engine)
+    endif()
+
     if (ANDROID AND HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT)
         set(apkCMake_applicationIdUrlPart ${HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART})
         set(apkCMake_applicationIdNamePart ${HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART})

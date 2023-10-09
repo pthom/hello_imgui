@@ -1,2 +1,5 @@
 add_executable(hello_imgui_tests hello_imgui_ini_settings_test.cpp hello_imgui_tests_main.cpp)
 target_link_libraries(hello_imgui_tests PRIVATE hello_imgui)
+if (HELLOIMGUI_WITH_TEST_ENGINE)
+    target_link_libraries(hello_imgui_tests PRIVATE imgui_test_engine)
+endif()

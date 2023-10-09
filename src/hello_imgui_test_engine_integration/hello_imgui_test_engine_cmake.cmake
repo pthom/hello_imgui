@@ -9,6 +9,18 @@ function(_add_imgui_test_engine_lib)
     file(GLOB_RECURSE sources ${source_folder}/*.h ${source_folder}/*.cpp)
     add_library(imgui_test_engine ${sources})
     target_include_directories(imgui_test_engine PUBLIC ${source_folder}/..)
+    target_link_libraries(imgui_test_engine PUBLIC imgui)
+
+    if(HELLOIMGUI_BUILD_PYTHON)
+        # if building python bindings, build a duplicate imgui_test_engine_py lib...
+        add_library(imgui_test_engine_py ${sources})
+        target_include_directories(imgui_test_engine_py PUBLIC ${source_folder}/..)
+        target_link_libraries(imgui_test_engine_py PUBLIC imgui)
+        # ... that will move the GIL between threads
+        target_compile_definitions(imgui_test_engine_py PUBLIC IMGUI_TEST_ENGINE_WITH_PYTHON_GIL)
+        # ... and needs to link with pybind
+        target_link_libraries(imgui_test_engine_py PUBLIC pybind11::pybind11 pybind11::module)
+    endif()
 endfunction()
 
 
@@ -22,11 +34,7 @@ function(_configure_imgui_with_test_engine)
         IMGUI_TEST_ENGINE_ENABLE_COROUTINE_STDTHREAD_IMPL=1
         )
     #        IMGUI_TEST_ENGINE_ENABLE_IMPLOT=0
-    # Link imgui_test_engine with imgui
-    target_link_libraries(imgui_test_engine PUBLIC imgui)
-    # any App built with ImGui should now also link with imgui_test_engine
-    target_link_libraries(imgui PUBLIC imgui_test_engine)
-endfunction()
+ endfunction()
 
 
 # Add integration into HelloImGui
@@ -37,6 +45,7 @@ function(_add_hello_imgui_test_engine_integration)
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/test_engine_integration.h
         )
     target_include_directories(hello_imgui PUBLIC ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/..)
+    target_include_directories(hello_imgui PRIVATE ${HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR})
 endfunction()
 
 

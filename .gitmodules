@@ -4,6 +4,3 @@
 [submodule "external/ios-cmake"]
 	path = hello_imgui_cmake/ios-cmake
 	url = https://github.com/leetal/ios-cmake.git
-[submodule "external/imgui_test_engine"]
-	path = external/imgui_test_engine
-	url = https://github.com/pthom/imgui_test_engine.git

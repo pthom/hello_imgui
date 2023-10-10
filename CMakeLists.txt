@@ -232,7 +232,17 @@ if (HELLOIMGUI_WITH_TEST_ENGINE)
     add_imgui_test_engine()
 endif()
 
-# Install
+#------------------------------------------------------------------------------
+# automation tests (set cache var HELLOIMGUI_BUILD_AUTOMATION_TEST to enable)
+# by default, they should only be built standalone, (run cmake inside .github/ci_automation_tests)
+#------------------------------------------------------------------------------
+if(HELLOIMGUI_BUILD_AUTOMATION_TEST)
+    add_subdirectory(.github/ci_automation_tests)
+endif()
+
+#------------------------------------------------------------------------------
+# install
+#------------------------------------------------------------------------------
 if(PROJECT_IS_TOP_LEVEL)
     install(DIRECTORY hello_imgui_cmake DESTINATION .)
     install(DIRECTORY hello_imgui_assets DESTINATION .)

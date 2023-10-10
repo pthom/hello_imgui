@@ -2,6 +2,32 @@ if(POLICY CMP0079)
     cmake_policy(SET CMP0079 NEW) # target_link_libraries() allows use with targets in other directories.
 endif()
 
+include(FetchContent)
+
+
+# By default we will fetch imgui_test_engine from https://github.com/pthom/imgui_test_engine/ (branch imgui_bundle)
+# but you can override this (set HELLOIMGUI_FETCH_IMGUI_TEST_ENGINE=OFF and set HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR)
+option(HELLOIMGUI_FETCH_IMGUI_TEST_ENGINE "Fetch imgui_test_engine from https://github.com/pthom/imgui_test_engine/ (branch imgui_bundle)" ON)
+
+
+# fetch imgui_test_engine from https://github.com/pthom/imgui_test_engine/ (branch imgui_bundle) if needed
+function(_fetch_imgui_test_engine_if_needed)
+    if(NOT HELLOIMGUI_FETCH_IMGUI_TEST_ENGINE AND NOT HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR)
+        message(FATAL_ERROR "Either set HELLOIMGUI_FETCH_IMGUI_TEST_ENGINE=ON or set HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR")
+    endif()
+    if(HELLOIMGUI_FETCH_IMGUI_TEST_ENGINE)
+        Set(FETCHCONTENT_QUIET FALSE)
+        FetchContent_Declare(
+            imgui_test_engine
+            GIT_REPOSITORY https://github.com/pthom/imgui_test_engine.git
+            GIT_PROGRESS TRUE
+            GIT_TAG imgui_bundle
+        )
+        FetchContent_MakeAvailable(imgui_test_engine)
+        set(HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR ${CMAKE_BINARY_DIR}/_deps/imgui_test_engine-src CACHE STRING "" FORCE)
+    endif()
+endfunction()
+
 
 # Add imgui_test_engine lib with sources in imgui_test_engine/imgui_test_engine
 function(_add_imgui_test_engine_lib)
@@ -78,6 +104,7 @@ endfunction()
 
 # Public API for this module
 function(add_imgui_test_engine)
+    _fetch_imgui_test_engine_if_needed()
     _add_imgui_test_engine_lib()
     _configure_imgui_with_test_engine()
     _add_hello_imgui_test_engine_integration()

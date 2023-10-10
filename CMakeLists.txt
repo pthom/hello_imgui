@@ -96,8 +96,6 @@ endif()
 # Options / ImGui Test Engine
 #------------------------------------------------------------------------------
 option(HELLOIMGUI_WITH_TEST_ENGINE "Provide ImGui Test engine" OFF)
-# By default we use imgui_test_engine from the submodule at external/imgui_test_engine/
-set(HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/external/imgui_test_engine CACHE STRING "path to imgui_test_engine")
 
 #------------------------------------------------------------------------------
 # Esmcripten build options

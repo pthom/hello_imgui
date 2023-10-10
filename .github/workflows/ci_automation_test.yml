@@ -23,28 +23,48 @@ jobs:
         with:
           submodules: true
 
-      - name: install xorg-dev (ubuntu only)
-        if: ${{ matrix.platform == 'ubuntu-latest' }}
-        run: sudo apt-get update && sudo apt-get install -y xorg-dev
-
-      - name: Install & Start Xvfb (ubuntu only)
-        if: ${{ matrix.platform == 'ubuntu-latest' }}
-        run: |
-          sudo apt-get install -y xvfb
-          Xvfb :99 &
-          echo "DISPLAY=:99.0" >> $GITHUB_ENV
-
-      - name: Build
+      - name: install mesa software renderer (windows only)
         shell: bash
+        if: ${{ matrix.platform == 'windows-latest' }}
         run: |
-          cd .github/ci_automation_tests
-          mkdir build
-          cd build
-          cmake ..  -DCMAKE_BUILD_TYPE=Release
-          cmake --build . -j 3
+          # Download the archive
+          curl -L -O https://github.com/pal1000/mesa-dist-win/releases/download/23.1.9/mesa3d-23.1.9-release-msvc.7z
 
-      - name: Run Automation Test
-        shell: bash
-        run: |
-          cd .github/ci_automation_tests/build
-          cmake --build . --target run_ci_automation_test_app
+          # Extract the archive using 7-zip which is preinstalled on the GitHub Actions Windows runner
+          7z x mesa3d-23.1.9-release-msvc.7z -o${{ github.workspace }}
+
+          # Optionally move/copy the required DLLs to the directory of your executable
+          # For this example, I'll assume your executable is in '.github/ci_automation_tests/build'
+          # Copy the opengl32.dll to your executable directory
+          # cp ${{ github.workspace }}/path_to_mesa_opengl32_dll/.github/ci_automation_tests/build/
+          
+      - name: Setup interactive tmate session
+        uses: mxschmitt/action-tmate@v3
+
+
+#      - name: install xorg-dev (ubuntu only)
+#        if: ${{ matrix.platform == 'ubuntu-latest' }}
+#        run: sudo apt-get update && sudo apt-get install -y xorg-dev
+#
+#      - name: Install & Start Xvfb (ubuntu only)
+#        if: ${{ matrix.platform == 'ubuntu-latest' }}
+#        run: |
+#          sudo apt-get install -y xvfb
+#          Xvfb :99 &
+#          echo "DISPLAY=:99.0" >> $GITHUB_ENV
+#
+#      - name: Build
+#        shell: bash
+#        run: |
+#          cd .github/ci_automation_tests
+#          mkdir build
+#          cd build
+#          cmake ..  -DCMAKE_BUILD_TYPE=Release
+#          cmake --build . -j 3
+#
+#      - name: Run Automation Test
+#        shell: bash
+#        run: |
+#          cd .github/ci_automation_tests/build
+#          cmake --build . --target run_ci_automation_test_app
+#

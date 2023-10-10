@@ -41,6 +41,21 @@ function(_add_hello_imgui_test_engine_integration)
 endfunction()
 
 
+# Configure imgui_test_engine for use with python / pybind11: move the GIL between threads
+function(configure_imgui_test_engine_with_python_gil)
+    # 1. imgui_test_engine should move the GIL between threads
+    target_compile_definitions(imgui_test_engine PUBLIC IMGUI_TEST_ENGINE_WITH_PYTHON_GIL)
+    # 2. and for this it needs to link with pybind
+    if(SKBUILD)
+        # if building wheel, only add include path to pybind11 and python
+        target_link_libraries(imgui_test_engine PUBLIC pybind11::pybind11)
+    else()
+        # if building an app, link the python interpreter
+        target_link_libraries(imgui_test_engine PUBLIC pybind11::embed)
+    endif()
+endfunction()
+
+
 # Unused: add the original app_minimal example from imgui_test_engine
 function(_add_imgui_test_engine_app_minimal_example)
     # This does not compile at the moment since app_minimal_main.cpp require implot

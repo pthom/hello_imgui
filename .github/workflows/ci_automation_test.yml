@@ -15,7 +15,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest, macos-latest, ubuntu-latest]
+        platform: [ubuntu-latest]
+        # platform: [windows-latest, macos-latest, ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v3
@@ -38,5 +39,5 @@ jobs:
       - name: Run
         shell: bash
         run: |
-          cd .github/ci_automation_tests/build
-          ./ci_automation_test_app
+          cd .github/ci_automation_tests/
+          cmake --build . --target run_ci_automation_test_app

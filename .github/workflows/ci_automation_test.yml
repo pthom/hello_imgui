@@ -44,7 +44,7 @@ jobs:
           cmake ..  -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_WIN32_NO_CONSOLE=OFF
           cmake --build . -j 3 --config Release
 
-      - name: install mesa software renderer (windows only)
+      - name: install mesa OpenGL software renderer (windows only)
         shell: bash
         if: ${{ matrix.platform == 'windows-latest' }}
         run: |
@@ -62,9 +62,17 @@ jobs:
 #      - name: Setup interactive tmate session
 #        uses: mxschmitt/action-tmate@v3
 
-      - name: Run Automation Test
+      - name: Run Automation Test (windows)
         shell: bash
+        if: ${{ matrix.platform == 'windows-latest' }}
+        run: |
+          cd .github/ci_automation_tests/build/Release
+          ./ci_automation_test_app.exe
+
+      - name: Run Automation Test (nixes)
+        shell: bash
+        if: ${{ matrix.platform != 'windows-latest' }}
         run: |
           cd .github/ci_automation_tests/build
-          cmake --build . --config Release --target run_ci_automation_test_app
+          ./ci_automation_test_app
 

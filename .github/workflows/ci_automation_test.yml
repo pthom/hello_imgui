@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest]
+        platform: [windows-latest, ubuntu-latest]
         # platform: [windows-latest, macos-latest, ubuntu-latest]
 
     steps:
@@ -23,25 +23,24 @@ jobs:
         with:
           submodules: true
 
+      - name: install xorg-dev (ubuntu only)
+        if: ${{ matrix.platform == 'ubuntu-latest' }}
+        run: sudo apt-get update && sudo apt-get install -y xorg-dev
 
-#      - name: install xorg-dev (ubuntu only)
-#        if: ${{ matrix.platform == 'ubuntu-latest' }}
-#        run: sudo apt-get update && sudo apt-get install -y xorg-dev
-#
-#      - name: Install & Start Xvfb (ubuntu only)
-#        if: ${{ matrix.platform == 'ubuntu-latest' }}
-#        run: |
-#          sudo apt-get install -y xvfb
-#          Xvfb :99 &
-#          echo "DISPLAY=:99.0" >> $GITHUB_ENV
-#
+      - name: Install & Start Xvfb (ubuntu only)
+        if: ${{ matrix.platform == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get install -y xvfb
+          Xvfb :99 &
+          echo "DISPLAY=:99.0" >> $GITHUB_ENV
+
       - name: Build
         shell: bash
         run: |
           cd .github/ci_automation_tests
           mkdir build
           cd build
-          cmake ..  -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_WIN32_NO_CONSOLE=OFF
+          cmake ..  -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_WIN32_NO_CONSOLE=OFF -DHELLOIMGUI_WIN32_AUTO_WINMAIN=OFF
           cmake --build . -j 3 --config Release
 
       - name: install mesa OpenGL software renderer (windows only)

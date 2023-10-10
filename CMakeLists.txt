@@ -96,6 +96,7 @@ endif()
 # Options / ImGui Test Engine
 #------------------------------------------------------------------------------
 option(HELLOIMGUI_WITH_TEST_ENGINE "Provide ImGui Test engine" OFF)
+message(WARNING "HELLOIMGUI_WITH_TEST_ENGINE=${HELLOIMGUI_WITH_TEST_ENGINE}")
 
 #------------------------------------------------------------------------------
 # Esmcripten build options

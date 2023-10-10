@@ -27,6 +27,13 @@ jobs:
         if: ${{ matrix.platform == 'ubuntu-latest' }}
         run: sudo apt-get update && sudo apt-get install -y xorg-dev
 
+      - name: Install & Start Xvfb under linux
+        if: ${{ matrix.platform == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get install -y xvfb
+          Xvfb :99 &
+          echo "DISPLAY=:99.0" >> $GITHUB_ENV
+
       - name: Build
         shell: bash
         run: |
@@ -39,5 +46,5 @@ jobs:
       - name: Run
         shell: bash
         run: |
-          cd .github/ci_automation_tests/
+          cd .github/ci_automation_tests/build
           cmake --build . --target run_ci_automation_test_app

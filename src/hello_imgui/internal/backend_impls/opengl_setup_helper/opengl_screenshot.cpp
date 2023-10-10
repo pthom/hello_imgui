@@ -76,7 +76,7 @@ namespace HelloImGui
     // glFlush() didn't seem enough. Will probably need to revisit that.
     usleep(1000);   // 1ms
 #endif
-        int y2 = (int)ImGui::GetIO().DisplaySize.y * frameBufferScaleY - (y + h);
+        int y2 = (int)((float)ImGui::GetIO().DisplaySize.y * frameBufferScaleY - (float)(y + h));
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
         glReadPixels(x, y2, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 

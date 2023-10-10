@@ -32,5 +32,5 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DHELLOIMGUI_WITH_TEST_ENGINE=${{ test_engine }} -DCMAKE_BUILD_TYPE=Release
+          cmake .. -DHELLOIMGUI_WITH_TEST_ENGINE=${{ matrix.test_engine }} -DCMAKE_BUILD_TYPE=Release
           cmake --build . -j 3

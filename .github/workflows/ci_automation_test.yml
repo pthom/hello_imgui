@@ -41,8 +41,8 @@ jobs:
           cd .github/ci_automation_tests
           mkdir build
           cd build
-          cmake ..  -DCMAKE_BUILD_TYPE=Release
-          cmake --build . -j 3
+          cmake ..  -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_WIN32_NO_CONSOLE=OFF
+          cmake --build . -j 3 --config Release
 
       - name: install mesa software renderer (windows only)
         shell: bash
@@ -57,14 +57,14 @@ jobs:
           # Optionally move/copy the required DLLs to the directory of your executable
           # For this example, I'll assume your executable is in '.github/ci_automation_tests/build'
           # Copy the opengl32.dll to your executable directory
-          cp mesa3d/x64/*.* .github/ci_automation_tests/build/
+          cp mesa3d/x64/*.* .github/ci_automation_tests/build/Release
 
-      - name: Setup interactive tmate session
-        uses: mxschmitt/action-tmate@v3
+#      - name: Setup interactive tmate session
+#        uses: mxschmitt/action-tmate@v3
 
       - name: Run Automation Test
         shell: bash
         run: |
           cd .github/ci_automation_tests/build
-          cmake --build . --target run_ci_automation_test_app
+          cmake --build . --config Release --target run_ci_automation_test_app
 

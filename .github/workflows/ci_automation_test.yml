@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-latest]
+        platform: [windows-latest]
         # platform: [windows-latest, macos-latest, ubuntu-latest]
 
     steps:
@@ -43,7 +43,7 @@ jobs:
           cmake ..  -DCMAKE_BUILD_TYPE=Release
           cmake --build . -j 3
 
-      - name: Run
+      - name: Run Automation Test
         shell: bash
         run: |
           cd .github/ci_automation_tests/build

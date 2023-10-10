@@ -15,8 +15,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest]
-        # platform: [windows-latest, macos-latest, ubuntu-latest]
+        platform: [ubuntu-latest]
+        # platform: [windows-latest, ubuntu-latest]
+        # this does not work under macos-latest (may be "Off-screen Mesa" could help)
 
     steps:
       - uses: actions/checkout@v3
@@ -58,8 +59,8 @@ jobs:
           # Copy the opengl32.dll to your executable directory
           cp mesa3d/x64/*.* .github/ci_automation_tests/build/Release
 
-#      - name: Setup interactive tmate session
-#        uses: mxschmitt/action-tmate@v3
+      - name: Setup interactive tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: Run Automation Test (windows)
         shell: bash

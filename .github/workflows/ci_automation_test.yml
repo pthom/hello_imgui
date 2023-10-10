@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-latest]
+        platform: [ubuntu-latest, windows-latest]
         # platform: [windows-latest, ubuntu-latest]
         # this does not work under macos-latest (may be "Off-screen Mesa" could help)
 
@@ -59,15 +59,26 @@ jobs:
           # Copy the opengl32.dll to your executable directory
           cp mesa3d/x64/*.* .github/ci_automation_tests/build/Release
 
-      - name: Setup interactive tmate session
-        uses: mxschmitt/action-tmate@v3
+#      - name: Setup interactive tmate session
+#        uses: mxschmitt/action-tmate@v3
 
       - name: Run Automation Test (windows)
         shell: bash
         if: ${{ matrix.platform == 'windows-latest' }}
         run: |
           cd .github/ci_automation_tests/build/Release
-          ./ci_automation_test_app.exe
+          
+          # Run the application, but don't exit the script even if it fails
+          # Under windows, the app works well a local machine and on GitHub CI
+          # However it ends with a segfault on Github CI, althought it did run to the end.
+          # Let's detect this via an old-style hack.
+          ./ci_automation_test_app.exe || true
+          
+          # Now check for the success file
+          if [[ ! -f ci_automation_test_app_success.txt ]]; then
+            echo "Error: ci_automation_test_app_success.txt not found!"
+            exit 1
+          fi
 
       - name: Run Automation Test (nixes)
         shell: bash

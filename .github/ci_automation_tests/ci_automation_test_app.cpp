@@ -4,6 +4,8 @@
 #include "imgui_test_engine/imgui_te_context.h"
 #include "imgui_test_engine/imgui_te_ui.h"
 
+#include <cstdio>
+
 
 ImGuiTest *testOpenMetrics, *testCapture, *testExit;
 
@@ -72,6 +74,7 @@ void AppGui()
 
 int main(int, char *[])
 {
+    printf("Starting ci_automation_test_app\n");
     try
     {
         HelloImGui::RunnerParams runnerParams;
@@ -83,7 +86,9 @@ int main(int, char *[])
     }
     catch(...)
     {
+        printf("ERROR: exception in ci_automation_test_app\n");
         return 1;
     }
+    printf("Exiting ci_automation_test_app\n");
     return 0;
 }

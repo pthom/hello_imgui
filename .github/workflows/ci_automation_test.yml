@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest, ubuntu-latest]
+        platform: [macos-latest]
         # platform: [windows-latest, macos-latest, ubuntu-latest]
 
     steps:

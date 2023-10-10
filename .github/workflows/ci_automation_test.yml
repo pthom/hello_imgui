@@ -1,0 +1,42 @@
+name: "ci_automation_test"
+
+# Run an app with automation thanks to imgui_test_engine / ensure it works
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+
+
+jobs:
+  build:
+    name: Automation Test
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest, macos-latest, ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: install xorg-dev (ubuntu only)
+        if: ${{ matrix.platform == 'ubuntu-latest' }}
+        run: sudo apt-get update && sudo apt-get install -y xorg-dev
+
+      - name: Build
+        shell: bash
+        run: |
+          cd .github/ci_automation_tests
+          mkdir build
+          cd build
+          cmake ..  -DCMAKE_BUILD_TYPE=Release
+          cmake --build . -j 3
+
+      - name: Run
+        shell: bash
+        run: |
+          cd .github/ci_automation_tests/build
+          ./ci_automation_test_app

@@ -201,7 +201,7 @@ __Table of contents__
       * [include assets](#include-assets)
       * [handle events](#handle-events)
   * [Complete demo - advanced layout, FPS, theme, etc:](#complete-demo---advanced-layout-fps-theme-etc)
-* [Main signature: use `int main(int, char**)`](#main-signature-use-`int-mainint-char**`)
+* [Main signature: use `int main(int, char**)`](#main-signature-use-int-mainint-char)
 * [Build instructions](#build-instructions)
   * [Supported platforms and backends](#supported-platforms-and-backends)
   * [Clone the repository](#clone-the-repository)

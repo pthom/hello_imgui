@@ -33,9 +33,22 @@ def is_header_line(line):
     return line.startswith("#") and not (line.startswith("#include"))
 
 
+def remove_code_blocks(lines):
+    filtered_lines = []
+    in_code_block = False
+    for line in lines:
+        if line.strip().startswith("```"):
+            in_code_block = not in_code_block
+        if not in_code_block:
+            filtered_lines.append(line)
+    return filtered_lines
+
+
 def make_toc(file):
     with open(file, "r") as f:
         lines = f.readlines()
+    lines = remove_code_blocks(lines)
+
     header_lines = [line[:-1] for line in lines if is_header_line(line)]
     toc = '<span id="TOC"/></span>\n\n'
     for header_line in header_lines:

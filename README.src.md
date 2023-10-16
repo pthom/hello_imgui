@@ -50,9 +50,7 @@ FetchContent_MakeAvailable(hello_imgui)
 # 2/  Option 2: if hello_imgui is available as a submodule for example
 # add_subdirectory(path/to/hello_imgui)
 
-#
 # Build your app
-#
 hello_imgui_add_app(hello_world hello_world.main.cpp)
 ```
 
@@ -138,13 +136,6 @@ int main(int , char *[])
     HelloImGui::Run(guiFunction, "Hello, globe", true);
     return 0;
 }
-```
-
-The CMakeLists fits in two lines, and will work on Linux, Mac, Windows, iOS and Emscripten_
-> CMakeLists.txt:
-```cmake
-include(hello_imgui_add_app)
-hello_imgui_add_app(hello_globe hello_globe.main.cpp)
 ```
 
 

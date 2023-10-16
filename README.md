@@ -50,9 +50,7 @@ FetchContent_MakeAvailable(hello_imgui)
 # 2/  Option 2: if hello_imgui is available as a submodule for example
 # add_subdirectory(path/to/hello_imgui)
 
-#
 # Build your app
-#
 hello_imgui_add_app(hello_world hello_world.main.cpp)
 ```
 
@@ -160,13 +158,6 @@ int main(int , char *[])
 }
 ```
 
-The CMakeLists fits in two lines, and will work on Linux, Mac, Windows, iOS and Emscripten_
-> CMakeLists.txt:
-```cmake
-include(hello_imgui_add_app)
-hello_imgui_add_app(hello_globe hello_globe.main.cpp)
-```
-
 
 ## Complete demo - advanced layout, FPS, theme, etc:
 
@@ -191,15 +182,6 @@ __Table of contents__
 * [Hello ImGui](#hello-imgui)
   * [Features](#features)
   * [Get started in 5 minutes](#get-started-in-5-minutes)
-* [Build hello_imgui](#build-hello_imgui)
-* [1/  Option 1: if you do not wish to include hello_imgui in your project folders, fetch it at build time](#1/--option-1-if-you-do-not-wish-to-include-hello_imgui-in-your-project-folders-fetch-it-at-build-time)
-* [2/  Option 2: if hello_imgui is available as a submodule for example](#2/--option-2-if-hello_imgui-is-available-as-a-submodule-for-example)
-* [add_subdirectory(path/to/hello_imgui)](#add_subdirectorypath/to/hello_imgui)
-* [](#)
-* [Build your app](#build-your-app)
-* [](#)
-* [Build](#build)
-* [Run the build hello_world app](#run-the-build-hello_world-app)
   * [Do you need more widgets, or do you want to use ImGui with python?](#do-you-need-more-widgets-or-do-you-want-to-use-imgui-with-python?)
 * [Full usage instructions and API](#full-usage-instructions-and-api)
   * [Online interactive example applications](#online-interactive-example-applications)

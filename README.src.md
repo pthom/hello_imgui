@@ -67,6 +67,18 @@ That's it, you do not need to clone HelloImGui, and you do not need to install a
 
 For more detailed info, go to [_example_integration](_example_integration).
 
+**Note about hello_imgui_add_app**
+
+[hello_imgui_add_app](hello_imgui/hello_imgui_cmake/hello_imgui_add_app.cmake) is a helper function, similar to cmake's "add_executable" which will:
+
+* automaticaly link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
+* embed the assets
+* perform additional customization (app icon and name on mobile platforms, etc)
+
+Usage:
+```cmake
+hello_imgui_add_app(app_name file1.cpp file2.cpp ...)
+```
 
 ## Do you need more widgets, or do you want to use ImGui with python?
 

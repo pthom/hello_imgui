@@ -42,9 +42,9 @@ endfunction()
 # hello_imgui_prepare_app(target_name)
 #
 # Features:
-# * It will automaticaly link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
-# * It will embed the assets
-# * It will perform additional customization (app icon and name on mobile platforms, etc)
+#     * It will automaticaly link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
+#     * It will embed the assets
+#     * It will perform additional customization (app icon and name on mobile platforms, etc)
 function(hello_imgui_prepare_app app_name)
     set_bundle_variables_defaults(${app_name})
     hello_imgui_bundle_assets(${app_name})
@@ -67,7 +67,10 @@ endfunction()
 # Usage:
 # hello_imgui_add_app(app_name file1.cpp file2.cpp ...)
 #
-# Features: see the doc for hello_imgui_prepare_app, which is called by this function
+# Features: 
+#     * It will automaticaly link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
+#     * It will embed the assets
+#     * It will perform additional customization (app icon and name on mobile platforms, etc)
 function(hello_imgui_add_app)
     set(args ${ARGN})
     list(GET args 0 app_name)

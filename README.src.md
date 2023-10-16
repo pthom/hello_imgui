@@ -42,24 +42,17 @@ cmake_minimum_required(VERSION 3.12)
 project(helloworld_with_helloimgui)
 set(CMAKE_CXX_STANDARD 17)
 
-##########################################################
-# Prepare hello_imgui during configure time
-##########################################################
+# Build hello_imgui
+# 1/  Option 1: if you do not wish to include hello_imgui in your project folders, fetch it at build time
 include(FetchContent)
-FetchContent_Declare(
-    hello_imgui
-    GIT_REPOSITORY https://github.com/pthom/hello_imgui.git
-    # Enter the desired git tag below
-    # GIT_TAG
-)
+FetchContent_Declare(hello_imgui GIT_REPOSITORY https://github.com/pthom/hello_imgui.git GIT_TAG master)
 FetchContent_MakeAvailable(hello_imgui)
-# Make cmake function `hello_imgui_add_app` available
-list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
-include(hello_imgui_add_app)
+# 2/  Option 2: if hello_imgui is available as a submodule for example
+# add_subdirectory(path/to/hello_imgui)
 
-##########################################################
+#
 # Build your app
-##########################################################
+#
 hello_imgui_add_app(hello_world hello_world.main.cpp)
 ```
 

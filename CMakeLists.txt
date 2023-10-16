@@ -19,6 +19,7 @@ set(CMAKE_CXX_STANDARD 17)
 # somewhere before calling `hello_imgui_add_app`
 set(HELLOIMGUI_CMAKE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/hello_imgui_cmake CACHE STRING "" FORCE)
 list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
+include(hello_imgui_add_app)
 
 ###############################################################################
 # HelloImGui Build options

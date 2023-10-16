@@ -69,7 +69,7 @@ For more detailed info, go to [_example_integration](_example_integration).
 
 **Note about hello_imgui_add_app**
 
-[hello_imgui_add_app](hello_imgui/hello_imgui_cmake/hello_imgui_add_app.cmake) is a helper function, similar to cmake's "add_executable" which will:
+[hello_imgui_add_app](hello_imgui_cmake/hello_imgui_add_app.cmake) is a helper function, similar to cmake's "add_executable" which will:
 
 * automaticaly link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
 * embed the assets

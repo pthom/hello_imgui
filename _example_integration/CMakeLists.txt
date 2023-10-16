@@ -20,7 +20,7 @@ hello_imgui_add_app(hello_world hello_world.main.cpp)
 #
 # Features: 
 # * It will automaticaly link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
-# * It will embed the assets
+# * It will embed the assets (for desktop, mobile, and emscripten apps)
 # * It will perform additional customization (app icon and name on mobile platforms, etc)
 
 # Now you can build your app with

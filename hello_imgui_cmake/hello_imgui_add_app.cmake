@@ -43,7 +43,7 @@ endfunction()
 #
 # Features:
 #     * It will automaticaly link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
-#     * It will embed the assets
+#     * It will embed the assets (for desktop, mobile, and emscripten apps)
 #     * It will perform additional customization (app icon and name on mobile platforms, etc)
 function(hello_imgui_prepare_app app_name)
     set_bundle_variables_defaults(${app_name})
@@ -69,7 +69,7 @@ endfunction()
 #
 # Features: 
 #     * It will automaticaly link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
-#     * It will embed the assets
+#     * It will embed the assets (for desktop, mobile, and emscripten apps)
 #     * It will perform additional customization (app icon and name on mobile platforms, etc)
 function(hello_imgui_add_app)
     set(args ${ARGN})

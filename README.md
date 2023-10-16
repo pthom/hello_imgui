@@ -42,24 +42,15 @@ cmake_minimum_required(VERSION 3.12)
 project(helloworld_with_helloimgui)
 set(CMAKE_CXX_STANDARD 17)
 
-##########################################################
-# Prepare hello_imgui during configure time
-##########################################################
+# Build hello_imgui
+# 1/  Option 1: simply fetch hello_imgui during the build
 include(FetchContent)
-FetchContent_Declare(
-    hello_imgui
-    GIT_REPOSITORY https://github.com/pthom/hello_imgui.git
-    # Enter the desired git tag below
-    # GIT_TAG
-)
+FetchContent_Declare(hello_imgui GIT_REPOSITORY https://github.com/pthom/hello_imgui.git GIT_TAG master)
 FetchContent_MakeAvailable(hello_imgui)
-# Make cmake function `hello_imgui_add_app` available
-list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
-include(hello_imgui_add_app)
+# 2/  Option 2: if hello_imgui is available as a submodule for example
+# add_subdirectory(path/to/hello_imgui)
 
-##########################################################
 # Build your app
-##########################################################
 hello_imgui_add_app(hello_world hello_world.main.cpp)
 ```
 
@@ -76,6 +67,18 @@ That's it, you do not need to clone HelloImGui, and you do not need to install a
 
 For more detailed info, go to [_example_integration](_example_integration).
 
+**Note about hello_imgui_add_app**
+
+[hello_imgui_add_app](hello_imgui_cmake/hello_imgui_add_app.cmake) is a helper function, similar to cmake's "add_executable" which will:
+
+* automaticaly link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
+* embed the assets
+* perform additional customization (app icon and name on mobile platforms, etc)
+
+Usage:
+```cmake
+hello_imgui_add_app(app_name file1.cpp file2.cpp ...)
+```
 
 ## Do you need more widgets, or do you want to use ImGui with python?
 
@@ -170,13 +173,6 @@ int main(int , char *[])
 }
 ```
 
-The CMakeLists fits in two lines, and will work on Linux, Mac, Windows, iOS and Emscripten_
-> CMakeLists.txt:
-```cmake
-include(hello_imgui_add_app)
-hello_imgui_add_app(hello_globe hello_globe.main.cpp)
-```
-
 
 ## Complete demo - advanced layout, FPS, theme, etc:
 
@@ -201,23 +197,14 @@ __Table of contents__
 * [Hello ImGui](#hello-imgui)
   * [Features](#features)
   * [Get started in 5 minutes](#get-started-in-5-minutes)
-                                                                                                                  * [](#)
-* [Prepare hello_imgui during configure time](#prepare-hello_imgui-during-configure-time)
-                                                                                                                  * [](#)
-* [Make cmake function `hello_imgui_add_app` available](#make-cmake-function-`hello_imgui_add_app`-available)
-                                                                                                                  * [](#)
-* [Build your app](#build-your-app)
-                                                                                                                  * [](#)
-* [Build](#build)
-* [Run the build hello_world app](#run-the-build-hello_world-app)
-  * [Do you need more widgets, or do you want to use ImGui with python?](#do-you-need-more-widgets-or-do-you-want-to-use-imgui-with-python?)
+  * [Do you need more widgets, or do you want to use ImGui with python?](#do-you-need-more-widgets-or-do-you-want-to-use-imgui-with-python)
 * [Full usage instructions and API](#full-usage-instructions-and-api)
   * [Online interactive example applications](#online-interactive-example-applications)
   * [Demo - handle events and include assets:](#demo---handle-events-and-include-assets)
       * [include assets](#include-assets)
       * [handle events](#handle-events)
   * [Complete demo - advanced layout, FPS, theme, etc:](#complete-demo---advanced-layout-fps-theme-etc)
-* [Main signature: use `int main(int, char**)`](#main-signature-use-`int-mainint-char**`)
+* [Main signature: use `int main(int, char**)`](#main-signature-use-int-mainint-char)
 * [Build instructions](#build-instructions)
   * [Supported platforms and backends](#supported-platforms-and-backends)
   * [Clone the repository](#clone-the-repository)

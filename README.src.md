@@ -43,7 +43,7 @@ project(helloworld_with_helloimgui)
 set(CMAKE_CXX_STANDARD 17)
 
 # Build hello_imgui
-# 1/  Option 1: if you do not wish to include hello_imgui in your project folders, fetch it at build time
+# 1/  Option 1: simply fetch hello_imgui during the build
 include(FetchContent)
 FetchContent_Declare(hello_imgui GIT_REPOSITORY https://github.com/pthom/hello_imgui.git GIT_TAG master)
 FetchContent_MakeAvailable(hello_imgui)

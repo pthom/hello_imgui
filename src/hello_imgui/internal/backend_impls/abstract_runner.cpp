@@ -539,7 +539,10 @@ void AbstractRunner::CreateFramesAndRender()
     // Idling for emscripten: early exit if idling
     // This test should be done after calling Impl_PollEvents() since it checks the event queue for incoming events!
     if (ShallIdleThisFrame_Emscripten())
+    {
+        mIdxFrame += 1;
         return;
+    }
 #endif
 
     //

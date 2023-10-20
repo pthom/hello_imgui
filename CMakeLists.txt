@@ -103,21 +103,28 @@ option(HELLOIMGUI_WITH_TEST_ENGINE "Provide ImGui Test engine" OFF)
 message(WARNING "HELLOIMGUI_WITH_TEST_ENGINE=${HELLOIMGUI_WITH_TEST_ENGINE}")
 
 #------------------------------------------------------------------------------
-# Esmcripten build options
+# Instructions: how to enable Esmcripten multihtread support
 #------------------------------------------------------------------------------
 if (EMSCRIPTEN)
-    # You can enable support for multithreading for emscripten via HELLOIMGUI_EMSCRIPTEN_PTHREAD
-    # Warning:
-    #    You will need a server that sends specific http headers (Cross Origin Opener Policy (COOP) and Cross Origin Embedder Policy (COEP))
-    #    HelloImGui provides a demo web server which provides that sends those headers. You can run it like this:
-    #        python tools/emscripten/webserver_multithread_policy.py
+    # 1. set HELLOIMGUI_EMSCRIPTEN_PTHREAD to ON to enable support for multithreading
     option(HELLOIMGUI_EMSCRIPTEN_PTHREAD "Build emscripten with multithreading support" OFF)
 
-    # With multithreading support, automatic memory growth can be slow with emscripten, and is disabled by default
+    # 2. With multithreading support, automatic memory growth can be slow with emscripten, and is disabled by default
     # In that case, you can call
     #    hello_imgui_set_emscripten_target_initial_memory_megabytes(your_app_name nb_megabytes)
     # to set the initial memory for a given target
     option(HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH "Allow memory growth with emscripten even if multithreading support is on" OFF)
+
+    # 3. Enable multithreading per target:
+    #        if(EMSCRIPTEN)
+    #            target_link_options(your_app PRIVATE -pthread)
+    #            target_link_options(your_app PRIVATE -sPTHREAD_POOL_SIZE=3)  # Specify the needed number of threads!
+    #        endif()
+
+    # 4. Warning: a specific http server may be needed!
+    #    You will need a server that sends specific http headers (Cross Origin Opener Policy (COOP) and Cross Origin Embedder Policy (COEP))
+    #    HelloImGui provides a demo web server which provides that sends those headers. You can run it like this:
+    #        python tools/emscripten/webserver_multithread_policy.py
 endif()
 
 

@@ -1,7 +1,6 @@
 if (EMSCRIPTEN)
 
-# Also see global emscripten flags in hello_imgui_cmake/emscripten/hello_imgui_emscripten_global_options.cmake
-
+include(${CMAKE_CURRENT_LIST_DIR}/hello_imgui_emscripten_global_options.cmake)
 
 function(hello_imgui_emscripten_set_shell_file app_name)
 

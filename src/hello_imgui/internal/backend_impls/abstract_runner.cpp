@@ -615,6 +615,11 @@ void AbstractRunner::CreateFramesAndRender()
 // This form of idling will call WaitForEventTimeout(), which may call sleep():
 void AbstractRunner::IdleBySleeping()
 {
+#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+    if (params.useImGuiTestEngine && TestEngineCallbacks::IsRunningTest())
+        return;
+#endif
+
     assert(params.fpsIdling.fpsIdle >= 0.f);
     params.fpsIdling.isIdling = false;
     if ((params.fpsIdling.fpsIdle > 0.f) && params.fpsIdling.enableIdling)
@@ -636,6 +641,11 @@ void AbstractRunner::IdleBySleeping()
 // This test should be done after calling Impl_PollEvents() since it checks the event queue for incoming events!
 bool AbstractRunner::ShallIdleThisFrame_Emscripten()
 {
+#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+        if (params.useImGuiTestEngine && TestEngineCallbacks::IsRunningTest())
+            return false;
+#endif
+
     ImGuiContext& g = *GImGui;
     bool hasInputEvent =  ! g.InputEventsQueue.empty();
 

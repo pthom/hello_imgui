@@ -9,5 +9,7 @@ namespace HelloImGui
         void PostSwap();
         void TearDown_ImGuiContextAlive();
         void TearDown_ImGuiContextDestroyed();
+
+        bool IsRunningTest();
     } // namespace TestEngineCallbacks
 }

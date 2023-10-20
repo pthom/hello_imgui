@@ -50,5 +50,11 @@ namespace HelloImGui
             ImGuiTestEngine_DestroyContext(GHImGuiTestEngine);
         }
 
+        bool IsRunningTest()
+        {
+            bool r = !ImGuiTestEngine_IsTestQueueEmpty(GHImGuiTestEngine);
+            return r;
+        }
+
     } // namespace TestEngineCallbacks
 }

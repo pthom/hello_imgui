@@ -16,6 +16,11 @@ namespace HelloImGui
 
     void RunnerEmscripten::Run()
     {
+        #if defined(HELLOIMGUI_WITH_TEST_ENGINE) && !defined(HELLOIMGUI_EMSCRIPTEN_PTHREAD)
+            printf("RunnerEmscripten::Run Disabling useImGuiTestEngine since compiled without pthread\n");
+            params.useImGuiTestEngine = false;
+        #endif
+
         gRunnerEmscripten = this;
         gRunnerEmscripten->Setup();
 

@@ -46,6 +46,7 @@ function(hello_imgui_emscripten_target_compile_options app_name)
         # if using multithreading, *everything* needs to be compiled with -pthread
         target_compile_options(imgui PUBLIC -pthread)
         target_link_options(imgui PUBLIC -pthread)
+        target_compile_definitions(hello_imgui PUBLIC HELLOIMGUI_EMSCRIPTEN_PTHREAD)
     endif()
 endfunction()
 

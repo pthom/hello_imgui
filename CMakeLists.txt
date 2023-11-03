@@ -7,7 +7,7 @@ if (IOS)
     set(DEPLOYMENT_TARGET "13.0" CACHE STRING "" FORCE)
 endif()
 
-project(HelloImGui LANGUAGES C CXX)
+project(HelloImGui LANGUAGES C CXX VERSION "1.0.0")
 set(CMAKE_CXX_STANDARD 17)
 
 

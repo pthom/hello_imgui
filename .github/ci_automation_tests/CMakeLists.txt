@@ -9,8 +9,3 @@ if(NOT TARGET hello_imgui)
 endif()
 
 hello_imgui_add_app(ci_automation_test_app ci_automation_test_app.cpp)
-
-add_custom_target(run_ci_automation_test_app
-    COMMAND ci_automation_test_app
-    DEPENDS ci_automation_test_app
-    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR})

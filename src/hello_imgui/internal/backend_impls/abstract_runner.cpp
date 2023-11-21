@@ -589,7 +589,10 @@ void AbstractRunner::CreateFramesAndRender()
         params.callbacks.BeforeImGuiRender();
 
     ImGui::Render();
-    Impl_Frame_3D_ClearColor();
+    if (params.callbacks.CustomBackground)
+        params.callbacks.CustomBackground();
+    else
+        Impl_Frame_3D_ClearColor();
     Impl_RenderDrawData_To_3D();
 
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

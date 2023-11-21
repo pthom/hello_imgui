@@ -164,6 +164,8 @@ struct RunnerCallbacks
     VoidFunction BeforeImGuiRender = EmptyVoidFunction();
     VoidFunction AfterSwap = EmptyVoidFunction();
 
+    VoidFunction CustomBackground = EmptyVoidFunction();
+
     AnyEventCallback AnyBackendEventCallback = EmptyEventCallback();
 
     VoidFunction LoadAdditionalFonts = (VoidFunction)(ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons);

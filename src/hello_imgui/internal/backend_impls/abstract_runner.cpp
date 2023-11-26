@@ -580,6 +580,11 @@ void AbstractRunner::CreateFramesAndRender()
         }
 #endif
     }
+    
+    if (params.callbacks.CustomBackground)
+        params.callbacks.CustomBackground();
+    else
+        Impl_Frame_3D_ClearColor();
 
     // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
     // ==> Note: RenderGui() may measure the size of the window and resize it if mIdxFrame==1
@@ -589,10 +594,6 @@ void AbstractRunner::CreateFramesAndRender()
         params.callbacks.BeforeImGuiRender();
 
     ImGui::Render();
-    if (params.callbacks.CustomBackground)
-        params.callbacks.CustomBackground();
-    else
-        Impl_Frame_3D_ClearColor();
     Impl_RenderDrawData_To_3D();
 
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

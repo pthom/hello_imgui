@@ -13,10 +13,10 @@ jobs:
       run: git submodule update --init --recursive
 
     - name: Install needed libraries
-      run: sudo apt-get update && sudo apt-get install -y libxrandr-dev xorg-dev libxinerama-dev
+      run: sudo apt-get update && sudo apt-get install -y libxrandr-dev xorg-dev libxinerama-dev autopoint gperf
 
-    - name: Setup interactive tmate session
-      uses: mxschmitt/action-tmate@v3
+#    - name: Setup interactive tmate session
+#      uses: mxschmitt/action-tmate@v3
 
     - name: Install sdl and glfw via vcpkg
       run: python tools/vcpkg_install_third_parties.py

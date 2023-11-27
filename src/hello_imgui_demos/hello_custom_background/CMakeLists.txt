@@ -1,0 +1,2 @@
+include(hello_imgui_add_app)
+hello_imgui_add_app(hello_custom_background hello_custom_background.main.cpp)

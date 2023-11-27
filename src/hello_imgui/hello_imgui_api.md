@@ -235,6 +235,12 @@ See [runner_callbacks.h](runner_callbacks.h).
     You can here add a function that will be called at each frame, after the Gui was rendered
     and swapped to the screen.
 
+* `CustomBackground`: *VoidFunction, default=empty*.
+    By default, the background is cleared using ImGuiWindowParams.backgroundColor. If set, this function
+    instead gives you full control over the background that is drawn behind the Gui. An example use case
+    is if you have a 3D application like a mesh editor, or game, and just want the Gui to be drawn on top
+    of that content.
+
 * `AnyBackendEventCallback`: *AnyBackendCallback, default=empty*.
   Callbacks for events from a specific backend. _Only implemented for SDL, where the event
   will be of type 'SDL_Event *'_
@@ -420,7 +426,9 @@ In order to change the application window settings, change the _AppWindowsParams
       add windows on top of it, since the Z-order of this background window is always behind
 
   * `backgroundColor`: _ImVec4, default=ImVec4(0.45f, 0.55f, 0.60f, 1.00f)_.
-      This is the "clearColor", only visible is defaultImGuiWindowType is NoDefaultWindow.
+      This is the "clearColor", visible if defaultImGuiWindowType is not ProvideFullScreenWindow.
+      Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full
+      control over what is drawn behind the Gui.
 
   * `showMenuBar`: _bool, default=false_.
     Show Menu bar on top of imgui main window

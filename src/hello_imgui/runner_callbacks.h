@@ -120,6 +120,12 @@ struct MobileCallbacks
     You can here add a function that will be called at each frame, after the Gui was rendered
     and swapped to the screen.
 
+* `CustomBackground`: *VoidFunction, default=empty*.
+    By default, the background is cleared using ImGuiWindowParams.backgroundColor. If set, this function
+    instead gives you full control over the background that is drawn behind the Gui. An example use case
+    is if you have a 3D application like a mesh editor, or game, and just want the Gui to be drawn on top
+    of that content.
+
 * `AnyBackendEventCallback`: *AnyBackendCallback, default=empty*.
   Callbacks for events from a specific backend. _Only implemented for SDL, where the event
   will be of type 'SDL_Event *'_

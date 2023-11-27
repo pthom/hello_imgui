@@ -188,6 +188,12 @@ You can try this demo online via an [emscripten web demo](https://traineq.org/He
 
 Also, see this video that give more explanations on [how to handle multiple complex layouts](https://www.youtube.com/watch?v=XKxmz__F4ow)
 
+## Demo - custom background
+
+<img src="docs//images/custom_background.jpg" width="300">
+
+The C++ demo file [hello_custom_background.main.cpp](src/hello_imgui_demos/hello_custom_background/hello_custom_background.main.cpp) demonstrates how to use a custom 3D background.
+
 
 -------------------
 __Table of contents__
@@ -204,6 +210,7 @@ __Table of contents__
       * [include assets](#include-assets)
       * [handle events](#handle-events)
   * [Complete demo - advanced layout, FPS, theme, etc:](#complete-demo---advanced-layout-fps-theme-etc)
+  * [Demo - custom background](#demo---custom-background)
 * [Main signature: use `int main(int, char**)`](#main-signature-use-int-mainint-char)
 * [Build instructions](#build-instructions)
   * [Supported platforms and backends](#supported-platforms-and-backends)

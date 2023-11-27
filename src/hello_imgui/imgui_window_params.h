@@ -36,13 +36,13 @@ In order to change the application window settings, change the _AppWindowsParams
  Members:
 
   * `defaultImGuiWindowType`: _DefaultImGuiWindowType, default=ProvideFullScreenWindow_.
-      By default, a full window is provided in the background. You can still
-      add windows on top of it, since the Z-order of this background window is always behind
+    By default, a full window is provided in the background. You can still
+     add windows on top of it, since the Z-order of this background window is always behind
 
   * `backgroundColor`: _ImVec4, default=ImVec4(0.45f, 0.55f, 0.60f, 1.00f)_.
-      This is the "clearColor", visible if defaultImGuiWindowType is not ProvideFullScreenWindow.
-      Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full
-      control over what is drawn behind the Gui.
+    This is the "clearColor", visible if defaultImGuiWindowType is not ProvideFullScreenWindow.
+    Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full
+    control over what is drawn behind the Gui.
 
   * `showMenuBar`: _bool, default=false_.
     Show Menu bar on top of imgui main window

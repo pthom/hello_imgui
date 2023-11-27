@@ -27,10 +27,10 @@ __HelloImGui::Run()__ will run an application with a single call.
 Three signatures are provided:
 
 * `HelloImGui::Run(RunnerParams &)`: full signature, the most customizable version.
-   Runs an application whose params and Gui are provided by runnerParams.
+  Runs an application whose params and Gui are provided by runnerParams.
 
 * `HelloImGui::Run(const SimpleRunnerParams&)`:
-   Runs an application, using simpler params.
+  Runs an application, using simpler params.
 
 * `HelloImGui::Run(guiFunction, windowTitle, windowSize, windowSizeAuto=false, restoreLastWindowGeometry=false, fpsIdle=10)`
 

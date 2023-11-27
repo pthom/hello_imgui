@@ -45,10 +45,10 @@ __HelloImGui::Run()__ will run an application with a single call.
 Three signatures are provided:
 
 * `HelloImGui::Run(RunnerParams &)`: full signature, the most customizable version.
-   Runs an application whose params and Gui are provided by runnerParams.
+  Runs an application whose params and Gui are provided by runnerParams.
 
 * `HelloImGui::Run(const SimpleRunnerParams&)`:
-   Runs an application, using simpler params.
+  Runs an application, using simpler params.
 
 * `HelloImGui::Run(guiFunction, windowTitle, windowSize, windowSizeAuto=false, restoreLastWindowGeometry=false, fpsIdle=10)`
 
@@ -83,17 +83,17 @@ The diagram below summarize all the possible settings and callbacks (which are e
 
  Members:
 * `guiFunction`: _VoidFunction_.
-   Function that renders the Gui.
+  Function that renders the Gui.
 * `windowTitle`: _string, default=""_.
-   Title of the application window
+  Title of the application window
 * `windowSizeAuto`: _bool, default=false_.
-   If true, the size of the window will be computed from its widgets.
+  If true, the size of the window will be computed from its widgets.
 * `windowRestorePreviousGeometry`: _bool, default=true_.
-   If true, restore the size and position of the window between runs.
+  If true, restore the size and position of the window between runs.
 * `windowSize`: _ScreenSize, default={800, 600}_.
-   Size of the window
+  Size of the window
 * `fpsIdle`: _float, default=9_.
-   FPS of the application when idle (set to 0 for full speed).
+  FPS of the application when idle (set to 0 for full speed).
 
 For example, this is sufficient to run an application:
 
@@ -136,7 +136,7 @@ int main(){
   and available.
 * `fpsIdling`: _FpsIdling_. Idling parameters (set fpsIdling.enableIdling to false to disable Idling)
 * `useImGuiTestEngine`: _bool, default=false_.
-   Set this to true if you intend to use imgui_test_engine (please read note below)
+  Set this to true if you intend to use imgui_test_engine (please read note below)
 * `iniFilename`: _string, default = ""_
   Sets the ini filename under which imgui will save its params. Path is relative to the current app working dir.
   If empty, then the ini file name will be derived from appWindowParams.windowTitle (if both are empty, the ini filename will be imgui.ini).
@@ -144,9 +144,9 @@ int main(){
 * `iniFilename_useAppWindowTitle`: _bool, default = true_.
   Shall the iniFilename be derived from appWindowParams.windowTitle if empty
 * `appShallExit`: _bool, default=false_.
-   During execution, set this to true to exit the app.
-   _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
-   shall not exit._
+  During execution, set this to true to exit the app.
+  _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
+  shall not exit._
 * `emscripten_fps`: _int, default = 0_.
   Set the application refresh rate (only used on emscripten: 0 stands for "let the app or the browser decide")
 
@@ -194,12 +194,12 @@ See [runner_callbacks.h](runner_callbacks.h).
   Fill it with a function that will add your widgets.
 
 * `ShowMenus`: *VoidFunction, default=empty*.
-    A function that will render your menus. Fill it with a function that will add ImGui menus by calling:
-    _ImGui::BeginMenu(...) / ImGui::MenuItem(...) / ImGui::EndMenu()_
+   A function that will render your menus. Fill it with a function that will add ImGui menus by calling:
+   _ImGui::BeginMenu(...) / ImGui::MenuItem(...) / ImGui::EndMenu()_
 
-    _Notes:_
-    * you do not need to call _ImGui::BeginMenuBar_ and _ImGui::EndMenuBar_
-    * Some default menus can be provided: see _ImGuiWindowParams_ options
+   _Notes:_
+   * you do not need to call _ImGui::BeginMenuBar_ and _ImGui::EndMenuBar_
+   * Some default menus can be provided: see _ImGuiWindowParams_ options
       (_showMenuBar, showMenu_App_QuitAbout, showMenu_View_)
 
 * `ShowAppMenuItems`: *VoidFunction, default=empty*.
@@ -212,34 +212,34 @@ See [runner_callbacks.h](runner_callbacks.h).
   since the height of the status is 30. Also, remember to call ImGui::SameLine() between items.
 
 * `PostInit`: *VoidFunction, default=empty*.
-    You can here add a function that will be called once after OpenGL and ImGui are inited, but before
-    the backend callback are initialized.
-    If you, for instance, want to add your own glfw callbacks, you should use this function to do so."
+  You can here add a function that will be called once after OpenGL and ImGui are inited, but before
+  the backend callback are initialized.
+  If you, for instance, want to add your own glfw callbacks, you should use this function to do so."
 
 * `BeforeExit`: *VoidFunction, default=empty*.
-    You can here add a function that will be called once before exiting (when OpenGL and ImGui are
-    still inited)
+  You can here add a function that will be called once before exiting (when OpenGL and ImGui are
+  still inited)
 
 * `BeforeExit_PostCleanup`: *VoidFunction, default=empty*.
-    You can here add a function that will be called once before exiting (after OpenGL and ImGui have been deinited)
+  You can here add a function that will be called once before exiting (after OpenGL and ImGui have been deinited)
 
 * `PreNewFrame`: *VoidFunction, default=empty*.
-    You can here add a function that will be called at each frame, and before the call to ImGui::NewFrame().
-    It is a good place to dynamically add new fonts, or dynamically add new dockable windows.
+  You can here add a function that will be called at each frame, and before the call to ImGui::NewFrame().
+  It is a good place to dynamically add new fonts, or dynamically add new dockable windows.
 
 * `BeforeImGuiRender`: *VoidFunction, default=empty*.
-    You can here add a function that will be called at each frame, after the user Gui code,
-    and just before the call to ImGui::Render() (which will also call ImGui::EndFrame()).
+  You can here add a function that will be called at each frame, after the user Gui code,
+  and just before the call to ImGui::Render() (which will also call ImGui::EndFrame()).
 
 * `AfterSwap`: *VoidFunction, default=empty*.
-    You can here add a function that will be called at each frame, after the Gui was rendered
-    and swapped to the screen.
+  You can here add a function that will be called at each frame, after the Gui was rendered
+  and swapped to the screen.
 
 * `CustomBackground`: *VoidFunction, default=empty*.
-    By default, the background is cleared using ImGuiWindowParams.backgroundColor. If set, this function
-    instead gives you full control over the background that is drawn behind the Gui. An example use case
-    is if you have a 3D application like a mesh editor, or game, and just want the Gui to be drawn on top
-    of that content.
+  By default, the background is cleared using ImGuiWindowParams.backgroundColor. If set, this function
+  instead gives you full control over the background that is drawn behind the Gui. An example use case
+  is if you have a 3D application like a mesh editor, or game, and just want the Gui to be drawn on top
+  of that content.
 
 * `AnyBackendEventCallback`: *AnyBackendCallback, default=empty*.
   Callbacks for events from a specific backend. _Only implemented for SDL, where the event
@@ -248,24 +248,24 @@ See [runner_callbacks.h](runner_callbacks.h).
   Note: in the case of GLFW, you should use register them in `PostInit`
 
 * `LoadAdditionalFonts`: *VoidFunction, default=_LoadDefaultFont_WithFontAwesome*.
-   A function that is called once, when fonts are ready to be loaded.
-   By default, _LoadDefaultFont_WithFontAwesome_ is called but you can copy and customize it.
-   (LoadDefaultFont_WithFontAwesome will load from assets/fonts/ but reverts to the ImGui embedded font if not found)
+  A function that is called once, when fonts are ready to be loaded.
+  By default, _LoadDefaultFont_WithFontAwesome_ is called but you can copy and customize it.
+  (LoadDefaultFont_WithFontAwesome will load from assets/fonts/ but reverts to the ImGui embedded font if not found)
 
 * `SetupImGuiConfig`: *VoidFunction, default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.
-    If needed, change ImGui config via SetupImGuiConfig (enable docking, gamepad, etc)
+  If needed, change ImGui config via SetupImGuiConfig (enable docking, gamepad, etc)
 
 * `SetupImGuiStyle`: *VoidFunction, default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.
-    If needed, setup your own style by providing your own SetupImGuiStyle callback
+  If needed, setup your own style by providing your own SetupImGuiStyle callback
 
 * `RegisterTests`: *VoidFunction, default=empty*.
-   A function that is called once ImGuiTestEngine is ready to be filled with tests and automations definitions.
+  A function that is called once ImGuiTestEngine is ready to be filled with tests and automations definitions.
 
 * `mobileCallbacks`: *_MobileCallbacks_*. Callbacks that are called by the application
-    when running under "Android, iOS and WinRT".
+  when running under "Android, iOS and WinRT".
 Notes:
   * 'mobileCallbacks' is present only if the target device is a mobile device (iOS, Android).
-     Use `#ifdef HELLOIMGUI_MOBILEDEVICE` to detect this.
+    Use `#ifdef HELLOIMGUI_MOBILEDEVICE` to detect this.
   * These events are currently handled only with SDL backend.
 
 
@@ -422,13 +422,13 @@ In order to change the application window settings, change the _AppWindowsParams
  Members:
 
   * `defaultImGuiWindowType`: _DefaultImGuiWindowType, default=ProvideFullScreenWindow_.
-      By default, a full window is provided in the background. You can still
-      add windows on top of it, since the Z-order of this background window is always behind
+    By default, a full window is provided in the background. You can still
+     add windows on top of it, since the Z-order of this background window is always behind
 
   * `backgroundColor`: _ImVec4, default=ImVec4(0.45f, 0.55f, 0.60f, 1.00f)_.
-      This is the "clearColor", visible if defaultImGuiWindowType is not ProvideFullScreenWindow.
-      Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full
-      control over what is drawn behind the Gui.
+    This is the "clearColor", visible if defaultImGuiWindowType is not ProvideFullScreenWindow.
+    Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full
+    control over what is drawn behind the Gui.
 
   * `showMenuBar`: _bool, default=false_.
     Show Menu bar on top of imgui main window
@@ -783,8 +783,7 @@ Then you can load the asset "fonts/my_font.ttf", on all platforms.
     };
  ```
 * `FreeAssetFileData(AssetFileData * assetFileData)` will free the memory.
-
-  Note about ImGui: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
+  Note: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
   and will free the memory for you.
 
 

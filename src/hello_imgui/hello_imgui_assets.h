@@ -37,8 +37,7 @@ Then you can load the asset "fonts/my_font.ttf", on all platforms.
     };
  ```
 * `FreeAssetFileData(AssetFileData * assetFileData)` will free the memory.
-
-  Note about ImGui: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
+  Note: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
   and will free the memory for you.
 
 @@md

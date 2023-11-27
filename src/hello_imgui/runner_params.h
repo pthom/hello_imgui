@@ -71,7 +71,7 @@ struct FpsIdling
   and available.
 * `fpsIdling`: _FpsIdling_. Idling parameters (set fpsIdling.enableIdling to false to disable Idling)
 * `useImGuiTestEngine`: _bool, default=false_.
-   Set this to true if you intend to use imgui_test_engine (please read note below)
+  Set this to true if you intend to use imgui_test_engine (please read note below)
 * `iniFilename`: _string, default = ""_
   Sets the ini filename under which imgui will save its params. Path is relative to the current app working dir.
   If empty, then the ini file name will be derived from appWindowParams.windowTitle (if both are empty, the ini filename will be imgui.ini).
@@ -79,9 +79,9 @@ struct FpsIdling
 * `iniFilename_useAppWindowTitle`: _bool, default = true_.
   Shall the iniFilename be derived from appWindowParams.windowTitle if empty
 * `appShallExit`: _bool, default=false_.
-   During execution, set this to true to exit the app.
-   _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
-   shall not exit._
+  During execution, set this to true to exit the app.
+  _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
+  shall not exit._
 * `emscripten_fps`: _int, default = 0_.
   Set the application refresh rate (only used on emscripten: 0 stands for "let the app or the browser decide")
 
@@ -91,7 +91,7 @@ Notes about the use of [Dear ImGui Test & Automation Engine](https://github.com/
 * imgui_test_engine is subject to a [specific license](https://github.com/ocornut/imgui_test_engine/blob/main/imgui_test_engine/LICENSE.txt)
   (TL;DR: free for individuals, educational, open-source and small businesses uses. Paid for larger businesses.)
 
-    @@md
+@@md
  */
 struct RunnerParams
 {
@@ -125,17 +125,17 @@ struct RunnerParams
 
  Members:
 * `guiFunction`: _VoidFunction_.
-   Function that renders the Gui.
+  Function that renders the Gui.
 * `windowTitle`: _string, default=""_.
-   Title of the application window
+  Title of the application window
 * `windowSizeAuto`: _bool, default=false_.
-   If true, the size of the window will be computed from its widgets.
+  If true, the size of the window will be computed from its widgets.
 * `windowRestorePreviousGeometry`: _bool, default=true_.
-   If true, restore the size and position of the window between runs.
+  If true, restore the size and position of the window between runs.
 * `windowSize`: _ScreenSize, default={800, 600}_.
-   Size of the window
+  Size of the window
 * `fpsIdle`: _float, default=9_.
-   FPS of the application when idle (set to 0 for full speed).
+  FPS of the application when idle (set to 0 for full speed).
 
 For example, this is sufficient to run an application:
 

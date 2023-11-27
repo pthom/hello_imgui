@@ -79,12 +79,12 @@ struct MobileCallbacks
   Fill it with a function that will add your widgets.
 
 * `ShowMenus`: *VoidFunction, default=empty*.
-    A function that will render your menus. Fill it with a function that will add ImGui menus by calling:
-    _ImGui::BeginMenu(...) / ImGui::MenuItem(...) / ImGui::EndMenu()_
+   A function that will render your menus. Fill it with a function that will add ImGui menus by calling:
+   _ImGui::BeginMenu(...) / ImGui::MenuItem(...) / ImGui::EndMenu()_
 
-    _Notes:_
-    * you do not need to call _ImGui::BeginMenuBar_ and _ImGui::EndMenuBar_
-    * Some default menus can be provided: see _ImGuiWindowParams_ options
+   _Notes:_
+   * you do not need to call _ImGui::BeginMenuBar_ and _ImGui::EndMenuBar_
+   * Some default menus can be provided: see _ImGuiWindowParams_ options
       (_showMenuBar, showMenu_App_QuitAbout, showMenu_View_)
 
 * `ShowAppMenuItems`: *VoidFunction, default=empty*.
@@ -97,34 +97,34 @@ struct MobileCallbacks
   since the height of the status is 30. Also, remember to call ImGui::SameLine() between items.
 
 * `PostInit`: *VoidFunction, default=empty*.
-    You can here add a function that will be called once after OpenGL and ImGui are inited, but before
-    the backend callback are initialized.
-    If you, for instance, want to add your own glfw callbacks, you should use this function to do so."
+  You can here add a function that will be called once after OpenGL and ImGui are inited, but before
+  the backend callback are initialized.
+  If you, for instance, want to add your own glfw callbacks, you should use this function to do so."
 
 * `BeforeExit`: *VoidFunction, default=empty*.
-    You can here add a function that will be called once before exiting (when OpenGL and ImGui are
-    still inited)
+  You can here add a function that will be called once before exiting (when OpenGL and ImGui are
+  still inited)
 
 * `BeforeExit_PostCleanup`: *VoidFunction, default=empty*.
-    You can here add a function that will be called once before exiting (after OpenGL and ImGui have been deinited)
+  You can here add a function that will be called once before exiting (after OpenGL and ImGui have been deinited)
 
 * `PreNewFrame`: *VoidFunction, default=empty*.
-    You can here add a function that will be called at each frame, and before the call to ImGui::NewFrame().
-    It is a good place to dynamically add new fonts, or dynamically add new dockable windows.
+  You can here add a function that will be called at each frame, and before the call to ImGui::NewFrame().
+  It is a good place to dynamically add new fonts, or dynamically add new dockable windows.
 
 * `BeforeImGuiRender`: *VoidFunction, default=empty*.
-    You can here add a function that will be called at each frame, after the user Gui code,
-    and just before the call to ImGui::Render() (which will also call ImGui::EndFrame()).
+  You can here add a function that will be called at each frame, after the user Gui code,
+  and just before the call to ImGui::Render() (which will also call ImGui::EndFrame()).
 
 * `AfterSwap`: *VoidFunction, default=empty*.
-    You can here add a function that will be called at each frame, after the Gui was rendered
-    and swapped to the screen.
+  You can here add a function that will be called at each frame, after the Gui was rendered
+  and swapped to the screen.
 
 * `CustomBackground`: *VoidFunction, default=empty*.
-    By default, the background is cleared using ImGuiWindowParams.backgroundColor. If set, this function
-    instead gives you full control over the background that is drawn behind the Gui. An example use case
-    is if you have a 3D application like a mesh editor, or game, and just want the Gui to be drawn on top
-    of that content.
+  By default, the background is cleared using ImGuiWindowParams.backgroundColor. If set, this function
+  instead gives you full control over the background that is drawn behind the Gui. An example use case
+  is if you have a 3D application like a mesh editor, or game, and just want the Gui to be drawn on top
+  of that content.
 
 * `AnyBackendEventCallback`: *AnyBackendCallback, default=empty*.
   Callbacks for events from a specific backend. _Only implemented for SDL, where the event
@@ -133,24 +133,24 @@ struct MobileCallbacks
   Note: in the case of GLFW, you should use register them in `PostInit`
 
 * `LoadAdditionalFonts`: *VoidFunction, default=_LoadDefaultFont_WithFontAwesome*.
-   A function that is called once, when fonts are ready to be loaded.
-   By default, _LoadDefaultFont_WithFontAwesome_ is called but you can copy and customize it.
-   (LoadDefaultFont_WithFontAwesome will load from assets/fonts/ but reverts to the ImGui embedded font if not found)
+  A function that is called once, when fonts are ready to be loaded.
+  By default, _LoadDefaultFont_WithFontAwesome_ is called but you can copy and customize it.
+  (LoadDefaultFont_WithFontAwesome will load from assets/fonts/ but reverts to the ImGui embedded font if not found)
 
 * `SetupImGuiConfig`: *VoidFunction, default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.
-    If needed, change ImGui config via SetupImGuiConfig (enable docking, gamepad, etc)
+  If needed, change ImGui config via SetupImGuiConfig (enable docking, gamepad, etc)
 
 * `SetupImGuiStyle`: *VoidFunction, default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.
-    If needed, setup your own style by providing your own SetupImGuiStyle callback
+  If needed, setup your own style by providing your own SetupImGuiStyle callback
 
 * `RegisterTests`: *VoidFunction, default=empty*.
-   A function that is called once ImGuiTestEngine is ready to be filled with tests and automations definitions.
+  A function that is called once ImGuiTestEngine is ready to be filled with tests and automations definitions.
 
 * `mobileCallbacks`: *_MobileCallbacks_*. Callbacks that are called by the application
-    when running under "Android, iOS and WinRT".
+  when running under "Android, iOS and WinRT".
 Notes:
   * 'mobileCallbacks' is present only if the target device is a mobile device (iOS, Android).
-     Use `#ifdef HELLOIMGUI_MOBILEDEVICE` to detect this.
+    Use `#ifdef HELLOIMGUI_MOBILEDEVICE` to detect this.
   * These events are currently handled only with SDL backend.
 
 @@md

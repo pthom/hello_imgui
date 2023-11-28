@@ -11,15 +11,14 @@
  *
 ******************************************************************************/
 
-struct MyVec3
-{
-    float x, y, z;
-};
+// Helper struct to store 3D float uniforms
+struct MyVec3 { float x, y, z; };
 
 
 // Helper struct for checking if a type is supported (typical C++ shenanigans)
 template<class T> struct UnsupportedType : std::false_type {};
 
+// Transmit any uniform type to the shader
 template<typename T>
 void ApplyUniform(GLint location, const T& value)
 {
@@ -37,7 +36,7 @@ void ApplyUniform(GLint location, const T& value)
         static_assert(UnsupportedType<T>::value, "Unsupported type");
 }
 
-
+// Base uniform class: can be used to store a uniform of any type
 struct IUniform
 {
     GLint location = 0;
@@ -53,6 +52,7 @@ struct IUniform
 };
 
 
+// Concrete uniform class: can be used to store a uniform of a specific type
 template<typename T>
 struct Uniform : public IUniform
 {
@@ -62,6 +62,7 @@ struct Uniform : public IUniform
 };
 
 
+// Helper struct to store a list of uniforms
 struct UniformsList
 {
     std::unordered_map<std::string, std::unique_ptr<IUniform>> Uniforms;
@@ -83,7 +84,8 @@ struct UniformsList
             uniform.second->Apply();
     }
 
-    template<typename T> T& GetUniformValue(const std::string& name)
+    // UniformValue returns a modifiable reference to the uniform value
+    template<typename T> T& UniformValue(const std::string& name)
     {
         IM_ASSERT(Uniforms.find(name) != Uniforms.end());
         auto& uniform = Uniforms[name];
@@ -109,7 +111,7 @@ struct UniformsList
  *
 ******************************************************************************/
 
-void FailOnGlLinkError(GLuint shaderProgram)
+void FailOnShaderLinkError(GLuint shaderProgram)
 {
     GLint isLinked;
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &isLinked);
@@ -121,7 +123,7 @@ void FailOnGlLinkError(GLuint shaderProgram)
     }
 }
 
-void FailOnShaderError(GLuint shader)
+void FailOnShaderCompileError(GLuint shader)
 {
     GLint shaderCompileSuccess;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &shaderCompileSuccess);
@@ -151,7 +153,7 @@ GLuint CompileShader(GLuint type, const char* source)
     GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, &source, NULL);
     glCompileShader(shader);
-    FailOnShaderError(shader); // Check for compilation errors
+    FailOnShaderCompileError(shader);
     return shader;
 }
 
@@ -190,6 +192,9 @@ GLuint CreateFullScreenQuadVAO()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    // Check for any OpenGL errors
+    FailOnOpenGlError();
+
     return vao;
 }
 
@@ -203,7 +208,7 @@ GLuint CreateShaderProgram(const char* vertexShaderSource, const char* fragmentS
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
-    FailOnGlLinkError(shaderProgram);
+    FailOnShaderLinkError(shaderProgram);
 
     // Delete shader objects once linked
     glDeleteShader(vertexShader);
@@ -481,9 +486,9 @@ void main()
 
 struct AppState
 {
-    UniformsList Uniforms;
-    GLuint ShaderProgram;
-    GLuint FullScreenQuadVAO;
+    GLuint ShaderProgram;     // the shader program that is compiled and linked at startup
+    GLuint FullScreenQuadVAO; // the VAO of a full-screen quad
+    UniformsList Uniforms;    // the uniforms of the shader program, that enable to modify the shader parameters
 
     AppState()
     {
@@ -501,7 +506,10 @@ struct AppState
         Uniforms.AddUniform("iMouse", ImVec2{0.f, 0.f});
     }
 
+    // Transmit new uniforms values to the shader
     void ApplyUniforms() { Uniforms.ApplyUniforms(); }
+
+    // Get uniforms locations in the shader program
     void StoreUniformLocations() { Uniforms.StoreUniformLocations(ShaderProgram); }
 };
 
@@ -514,13 +522,16 @@ void InitAppResources3D(AppState& appState)
 }
 
 
-void DeInitAppResources3D(AppState& appState)
+void DestroyAppResources3D(AppState& appState)
 {
     glDeleteProgram(appState.ShaderProgram);
     glDeleteVertexArrays(1, &appState.FullScreenQuadVAO);
 }
 
 
+// ScaledDisplaySize() is a helper function that returns the size of the window in pixels:
+//     for retina displays, io.DisplaySize is the size of the window in points (logical pixels)
+//     but we need the size in pixels. So we scale io.DisplaySize by io.DisplayFramebufferScale
 ImVec2 ScaledDisplaySize()
 {
     auto& io = ImGui::GetIO();
@@ -530,7 +541,7 @@ ImVec2 ScaledDisplaySize()
 }
 
 
-// Our custom background callback: it display the sea shader
+// Our custom background callback: it displays the sea shader
 void CustomBackground(AppState& appState)
 {
     ImVec2 displaySize = ScaledDisplaySize();
@@ -539,11 +550,13 @@ void CustomBackground(AppState& appState)
 
     glUseProgram(appState.ShaderProgram);
 
+    // Set uniforms values that can be computed automatically
+    // (other uniforms values are modifiable in the Gui() function)
     appState.Uniforms.SetUniformValue("iResolution", displaySize);
     appState.Uniforms.SetUniformValue("iTime", (float)ImGui::GetTime());
-
     // Optional: Set the iMouse uniform if you use it
-    // appState.Uniforms.SetUniformValue("iMouse", ImGui::IsMouseDown(0) ? ImGui::GetMousePos() : ImVec2(0.f, 0.f));
+    //     appState.Uniforms.SetUniformValue("iMouse", ImGui::IsMouseDown(0) ? ImGui::GetMousePos() : ImVec2(0.f, 0.f));
+    // Here, we set it to zero, because the mouse uniforms does not lead to visually pleasing results
     appState.Uniforms.SetUniformValue("iMouse", ImVec2(0.f, 0.f));
 
     appState.ApplyUniforms();
@@ -571,17 +584,22 @@ void Gui(AppState& appState)
                 "https://www.shadertoy.com/view/Ms2SD1"
                 );
 
+    // Modify the uniforms values:
+    // Note:
+    //     `uniforms.UniformValue<T>(name)`
+    //     returns a modifiable reference to a uniform value
     auto& uniforms = appState.Uniforms;
-    ImGui::SliderFloat("SEA_HEIGHT", &uniforms.GetUniformValue<float>("SEA_HEIGHT"), 0.1f, 2.1f);
-    ImGui::SliderFloat("SEA_CHOPPY", &uniforms.GetUniformValue<float>("SEA_CHOPPY"), 0.1f, 10.0f);
+
+    ImGui::SliderFloat("SEA_HEIGHT", &uniforms.UniformValue<float>("SEA_HEIGHT"), 0.1f, 2.1f);
+    ImGui::SliderFloat("SEA_CHOPPY", &uniforms.UniformValue<float>("SEA_CHOPPY"), 0.1f, 10.0f);
 
     //ImGui::ColorEdit3("SEA_WATER_COLOR", &uniforms.GetUniformValue<MyVec3>("SEA_WATER_COLOR").x);
-    ImGui::ColorEdit3("SEA_BASE", &uniforms.GetUniformValue<MyVec3>("SEA_BASE").x);
+    ImGui::ColorEdit3("SEA_BASE", &uniforms.UniformValue<MyVec3>("SEA_BASE").x);
 
-    ImGui::SliderFloat("SEA_SPEED", &uniforms.GetUniformValue<float>("SEA_SPEED"), 0.1f, 3.0f);
-    ImGui::SliderFloat("SEA_FREQ", &uniforms.GetUniformValue<float>("SEA_FREQ"), 0.01f, 0.5f);
-    ImGui::SliderInt("ITER_GEOMETRY", &uniforms.GetUniformValue<int>("ITER_GEOMETRY"), 1, 5);
-    ImGui::SliderInt("ITER_FRAGMENT", &uniforms.GetUniformValue<int>("ITER_FRAGMENT"), 3, 10);
+    ImGui::SliderFloat("SEA_SPEED", &uniforms.UniformValue<float>("SEA_SPEED"), 0.1f, 3.0f);
+    ImGui::SliderFloat("SEA_FREQ", &uniforms.UniformValue<float>("SEA_FREQ"), 0.01f, 0.5f);
+    ImGui::SliderInt("ITER_GEOMETRY", &uniforms.UniformValue<int>("ITER_GEOMETRY"), 1, 5);
+    ImGui::SliderInt("ITER_FRAGMENT", &uniforms.UniformValue<int>("ITER_FRAGMENT"), 3, 10);
 
     ImGui::Text("FPS: %.1f", HelloImGui::FrameRate());
 
@@ -591,17 +609,32 @@ void Gui(AppState& appState)
 
 int main(int , char *[])
 {
+    // Our global app state
+    AppState appState;
+
+    // Hello ImGui parameters
     HelloImGui::RunnerParams params;
+
+    // disable idling so that the shader runs at full speed
     params.fpsIdling.enableIdling = false;
     params.appWindowParams.windowGeometry.size = {1200, 720};
     params.appWindowParams.windowTitle = "Hello ImGui: custom 3D background - shader by Alexander Alekseev aka TDM - 2014";
+    // Do not create a default ImGui window, so that the shader occupies the whole display
     params.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::NoDefaultWindow;
 
-    AppState appState;
+    //
+    // Callbacks
+    //
+    // PostInit is called after the ImGui context is created, and after OpenGL is initialized
     params.callbacks.PostInit = [&appState]() { InitAppResources3D(appState); };
+    // BeforeExit is called before the ImGui context is destroyed, and before OpenGL is deinitialized
+    params.callbacks.BeforeExit = [&appState]() { DestroyAppResources3D(appState); };
+    // ShowGui is called every frame, and is used to display the ImGui widgets
     params.callbacks.ShowGui = [&appState]() { Gui(appState); };
+    // CustomBackground is called every frame, and is used to display the custom background
     params.callbacks.CustomBackground = [&appState]() { CustomBackground(appState); };
-    params.callbacks.BeforeExit = [&appState]() { DeInitAppResources3D(appState); };
+
+    // Let's go!
     HelloImGui::Run(params);
     return 0;
 }

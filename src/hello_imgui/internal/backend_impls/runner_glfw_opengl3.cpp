@@ -34,11 +34,6 @@ namespace HelloImGui
     void RunnerGlfwOpenGl3::Impl_InitBackend()
     {
         glfwSetErrorCallback(glfw_error_callback);
-#ifdef __APPLE__
-        // prevent glfw from changing the current dir on macOS.
-        // This glfw behaviour is for Mac only, and interferes with our multiplatform assets handling
-        glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
-#endif
         bool glfwInitSuccess = glfwInit();
         (void) glfwInitSuccess;
         IM_ASSERT(glfwInitSuccess);

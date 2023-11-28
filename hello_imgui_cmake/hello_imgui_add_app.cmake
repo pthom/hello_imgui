@@ -31,7 +31,7 @@ function(set_bundle_variables_defaults app_name)
         set(HELLO_IMGUI_BUNDLE_VERSION 0.0.1 PARENT_SCOPE)
     endif()
     if (NOT DEFINED HELLO_IMGUI_BUNDLE_ICON_FILE)
-        set(HELLO_IMGUI_BUNDLE_ICON_FILE "" PARENT_SCOPE)
+        set(HELLO_IMGUI_BUNDLE_ICON_FILE "icon.icns" PARENT_SCOPE)
     endif()
 endfunction()
 

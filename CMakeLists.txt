@@ -38,6 +38,8 @@ include(hello_imgui_add_app)
 if (WIN32)
     option(HELLOIMGUI_WIN32_NO_CONSOLE "Under windows, build apps without Dos Console" ON)
     option(HELLOIMGUI_WIN32_AUTO_WINMAIN "Under windows, automatically provide a WinMain (provide `int main(int, char**)`, it will be called by WinMain())" ON)
+elseif(APPLE)
+    option(HELLOIMGUI_MACOS_NO_BUNDLE "Under macOS, build regular terminal executables, not app bundles" OFF)
 endif()
 
 #------------------------------------------------------------------------------
@@ -100,7 +102,7 @@ endif()
 # Options / ImGui Test Engine
 #------------------------------------------------------------------------------
 option(HELLOIMGUI_WITH_TEST_ENGINE "Provide ImGui Test engine" OFF)
-message(WARNING "HELLOIMGUI_WITH_TEST_ENGINE=${HELLOIMGUI_WITH_TEST_ENGINE}")
+message(STATUS "HELLOIMGUI_WITH_TEST_ENGINE=${HELLOIMGUI_WITH_TEST_ENGINE}")
 
 #------------------------------------------------------------------------------
 # Instructions: how to enable Esmcripten multihtread support

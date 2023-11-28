@@ -24,20 +24,19 @@ if (EMSCRIPTEN)
         endif()
     endfunction()
 
-elseif(IOS)
+elseif(IOS OR (APPLE AND (NOT HELLOIMGUI_MACOS_NO_BUNDLE)))
 
-    # Bundle assets / iOS version
+    # Bundle assets / macOS and iOS app version
     function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
-        FILE(GLOB_RECURSE assets ${assets_folder}/*.*)
+        file(GLOB_RECURSE assets ${assets_folder}/*.*)
         target_sources(${app_name} PRIVATE ${assets})
         foreach(asset ${assets})
-            string(REPLACE ${assets_folder}/ "" asset_relative ${asset})
+            file(RELATIVE_PATH asset_relative ${assets_folder} ${asset})
             get_filename_component(asset_dir ${asset_relative} DIRECTORY)
-            SET_SOURCE_FILES_PROPERTIES (
-                ${app_name}
+            set_source_files_properties (
                 ${asset}
                 PROPERTIES
-                MACOSX_PACKAGE_LOCATION Resources/${asset_dir}
+                MACOSX_PACKAGE_LOCATION Resources/assets/${asset_dir}
             )
         endforeach()
     endfunction()

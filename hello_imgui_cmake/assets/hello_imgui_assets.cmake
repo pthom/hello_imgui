@@ -24,7 +24,7 @@ if (EMSCRIPTEN)
         endif()
     endfunction()
 
-elseif(IOS OR (APPLE AND (NOT HELLOIMGUI_MACOS_NO_BUNDLE)))
+elseif(IOS OR (MACOSX AND (NOT HELLOIMGUI_MACOS_NO_BUNDLE)))
 
     # Bundle assets / macOS and iOS app version
     function(hello_imgui_bundle_assets_from_folder app_name assets_folder)

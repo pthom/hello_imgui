@@ -3,12 +3,17 @@ if (EMSCRIPTEN)
 else()
     cmake_minimum_required(VERSION 3.10)
 endif()
+
+project(HelloImGui LANGUAGES C CXX VERSION "1.0.0")
+set(CMAKE_CXX_STANDARD 17)
+
 if (IOS)
     set(DEPLOYMENT_TARGET "13.0" CACHE STRING "" FORCE)
 endif()
 
-project(HelloImGui LANGUAGES C CXX VERSION "1.0.0")
-set(CMAKE_CXX_STANDARD 17)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(MACOSX TRUE)
+endif()
 
 
 ###############################################################################
@@ -38,7 +43,7 @@ include(hello_imgui_add_app)
 if (WIN32)
     option(HELLOIMGUI_WIN32_NO_CONSOLE "Under windows, build apps without Dos Console" ON)
     option(HELLOIMGUI_WIN32_AUTO_WINMAIN "Under windows, automatically provide a WinMain (provide `int main(int, char**)`, it will be called by WinMain())" ON)
-elseif(APPLE)
+elseif(MACOSX)
     option(HELLOIMGUI_MACOS_NO_BUNDLE "Under macOS, build regular terminal executables, not app bundles" OFF)
 endif()
 

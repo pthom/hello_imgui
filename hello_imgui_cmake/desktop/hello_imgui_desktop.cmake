@@ -1,6 +1,4 @@
-if ((NOT IOS) AND (NOT EMSCRIPTEN) AND (NOT ANDROID))
-
-if (APPLE AND (NOT HELLOIMGUI_MACOS_NO_BUNDLE))
+if (MACOSX AND (NOT HELLOIMGUI_MACOS_NO_BUNDLE))
 
 function(hello_imgui_macos_add_icons app_name)
     set(app_icon ${CMAKE_CURRENT_SOURCE_DIR}/macos/${HELLO_IMGUI_BUNDLE_ICON_FILE})
@@ -61,7 +59,4 @@ else()
 function(hello_imgui_platform_customization app_name)
 endfunction()
 
-endif(APPLE AND (NOT HELLOIMGUI_MACOS_NO_BUNDLE))
-
-
-endif((NOT IOS) AND (NOT EMSCRIPTEN) AND (NOT ANDROID))
+endif(MACOSX AND (NOT HELLOIMGUI_MACOS_NO_BUNDLE))

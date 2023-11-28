@@ -493,8 +493,8 @@ struct AppState
         Uniforms.AddUniform("SEA_CHOPPY", 4.0f);
         Uniforms.AddUniform("SEA_SPEED", 0.8f);
         Uniforms.AddUniform("SEA_FREQ", 0.16f);
-        Uniforms.AddUniform("SEA_WATER_COLOR", MyVec3{0.8 * 0.6, 0.9 * 0.6, 0.6 * 0.6});
-        Uniforms.AddUniform("SEA_BASE", MyVec3{0.0,0.09,0.18});
+        Uniforms.AddUniform("SEA_WATER_COLOR", MyVec3{0.8f * 0.6f, 0.9f * 0.6f, 0.6f * 0.6f});
+        Uniforms.AddUniform("SEA_BASE", MyVec3{0.0f, 0.09f, 0.18f});
 
         Uniforms.AddUniform("iResolution", ImVec2{100.f, 100.f});
         Uniforms.AddUniform("iTime", 0.f);
@@ -521,15 +521,25 @@ void DeInitAppResources3D(AppState& appState)
 }
 
 
+ImVec2 ScaledDisplaySize()
+{
+    auto& io = ImGui::GetIO();
+    auto r = ImVec2(io.DisplaySize.x * io.DisplayFramebufferScale.x,
+                    io.DisplaySize.y * io.DisplayFramebufferScale.y);
+    return r;
+}
+
+
+// Our custom background callback: it display the sea shader
 void CustomBackground(AppState& appState)
 {
-    ImVec2 windowSize = ImGui::GetWindowSize();
-
+    ImVec2 displaySize = ScaledDisplaySize();
+    glViewport(0, 0, (GLsizei)displaySize.x, (GLsizei)displaySize.y);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(appState.ShaderProgram);
 
-    appState.Uniforms.SetUniformValue("iResolution", windowSize);
+    appState.Uniforms.SetUniformValue("iResolution", displaySize);
     appState.Uniforms.SetUniformValue("iTime", (float)ImGui::GetTime());
 
     // Optional: Set the iMouse uniform if you use it

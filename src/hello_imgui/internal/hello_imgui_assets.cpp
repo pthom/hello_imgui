@@ -3,9 +3,9 @@
 
 #if defined(IOS)
 #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
-#else
-#include "hello_imgui/internal/whereami/whereami_cpp.h"
 #endif
+
+#include "hello_imgui/internal/whereami/whereami_cpp.h"
 
 
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
@@ -155,6 +155,13 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
     {
         r.push_back({"/", "root folder for emscripten"});
         r.push_back({"/" + gAssetsSubfolderFolderName , "root assets folder for emscripten"});
+    }
+    #endif
+
+    // 4. For Apple bundles, search inside the Resources folder
+    #ifdef __APPLE__
+    {
+        r.push_back({wai_getExecutableFolder_string() + "/Resources", "Apple bundle Resources folder"});
     }
     #endif
 

@@ -1,8 +1,11 @@
 #include "hello_imgui/hello_imgui.h"
-#include "hello_imgui/hello_imgui_include_opengl.h"
 #include "imgui.h"
 
-#include <unordered_map>
+// hello_imgui_include_opengl.h provides a cross-platform way to include OpenGL headers
+#include "hello_imgui/hello_imgui_include_opengl.h"
+
+#include <iostream>        // for std::cerr
+#include <unordered_map>   // for UniformsList
 
 
 /******************************************************************************
@@ -13,7 +16,6 @@
 
 // Helper struct to store 3D float uniforms
 struct MyVec3 { float x, y, z; };
-
 
 // Helper struct for checking if a type is supported (typical C++ shenanigans)
 template<class T> struct UnsupportedType : std::false_type {};
@@ -35,6 +37,7 @@ void ApplyUniform(GLint location, const T& value)
     else
         static_assert(UnsupportedType<T>::value, "Unsupported type");
 }
+
 
 // Base uniform class: can be used to store a uniform of any type
 struct IUniform
@@ -484,6 +487,7 @@ void main()
  *
 ******************************************************************************/
 
+// Our global app state
 struct AppState
 {
     GLuint ShaderProgram;     // the shader program that is compiled and linked at startup
@@ -613,28 +617,28 @@ int main(int , char *[])
     AppState appState;
 
     // Hello ImGui parameters
-    HelloImGui::RunnerParams params;
+    HelloImGui::RunnerParams runnerParams;
 
     // disable idling so that the shader runs at full speed
-    params.fpsIdling.enableIdling = false;
-    params.appWindowParams.windowGeometry.size = {1200, 720};
-    params.appWindowParams.windowTitle = "Hello ImGui: custom 3D background - shader by Alexander Alekseev aka TDM - 2014";
+    runnerParams.fpsIdling.enableIdling = false;
+    runnerParams.appWindowParams.windowGeometry.size = {1200, 720};
+    runnerParams.appWindowParams.windowTitle = "Hello ImGui: custom 3D background - shader by Alexander Alekseev aka TDM - 2014";
     // Do not create a default ImGui window, so that the shader occupies the whole display
-    params.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::NoDefaultWindow;
+    runnerParams.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::NoDefaultWindow;
 
     //
     // Callbacks
     //
     // PostInit is called after the ImGui context is created, and after OpenGL is initialized
-    params.callbacks.PostInit = [&appState]() { InitAppResources3D(appState); };
+    runnerParams.callbacks.PostInit = [&appState]() { InitAppResources3D(appState); };
     // BeforeExit is called before the ImGui context is destroyed, and before OpenGL is deinitialized
-    params.callbacks.BeforeExit = [&appState]() { DestroyAppResources3D(appState); };
+    runnerParams.callbacks.BeforeExit = [&appState]() { DestroyAppResources3D(appState); };
     // ShowGui is called every frame, and is used to display the ImGui widgets
-    params.callbacks.ShowGui = [&appState]() { Gui(appState); };
+    runnerParams.callbacks.ShowGui = [&appState]() { Gui(appState); };
     // CustomBackground is called every frame, and is used to display the custom background
-    params.callbacks.CustomBackground = [&appState]() { CustomBackground(appState); };
+    runnerParams.callbacks.CustomBackground = [&appState]() { CustomBackground(appState); };
 
     // Let's go!
-    HelloImGui::Run(params);
+    HelloImGui::Run(runnerParams);
     return 0;
 }

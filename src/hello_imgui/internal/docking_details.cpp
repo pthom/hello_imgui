@@ -96,7 +96,7 @@ void MenuView_Layouts(RunnerParams& runnerParams)
     bool hasAlternativeDockingLayouts = (runnerParams.alternativeDockingLayouts.size() > 0);
 
     if (hasAlternativeDockingLayouts)
-        ImGui::MenuItem("------ Layouts ------", nullptr, false, false);
+        ImGui::SeparatorText("Layouts");
 
     if (ImGui::MenuItem("Restore default layout##szzz"))
         runnerParams.dockingParams.layoutReset = true;
@@ -130,7 +130,7 @@ void MenuView_DockableWindows(RunnerParams& runnerParams)
 
     ImGui::PushID("DockableWindows##asldqsl");
 
-    ImGui::MenuItem("------ Windows ------", nullptr, false, false);
+    ImGui::SeparatorText("Windows");
 
 
     if (ImGui::MenuItem("View All##DSQSDDF"))
@@ -166,7 +166,7 @@ void MenuView_DockableWindows(RunnerParams& runnerParams)
 
 void MenuView_Misc(RunnerParams& runnerParams)
 {
-    ImGui::MenuItem("------ Misc ------", nullptr, false, false);
+    ImGui::SeparatorText("Misc");
 
     if (ImGui::MenuItem("View Status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatusBar))
         runnerParams.imGuiWindowParams.showStatusBar = ! runnerParams.imGuiWindowParams.showStatusBar;

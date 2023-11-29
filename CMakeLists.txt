@@ -43,7 +43,11 @@ include(hello_imgui_add_app)
 if (WIN32)
     option(HELLOIMGUI_WIN32_NO_CONSOLE "Under windows, build apps without Dos Console" ON)
     option(HELLOIMGUI_WIN32_AUTO_WINMAIN "Under windows, automatically provide a WinMain (provide `int main(int, char**)`, it will be called by WinMain())" ON)
-elseif(MACOSX)
+endif()
+#------------------------------------------------------------------------------
+# Options / macOS: provide regular terminal executables, not app bundles
+#------------------------------------------------------------------------------
+if(MACOSX)
     option(HELLOIMGUI_MACOS_NO_BUNDLE "Under macOS, build regular terminal executables, not app bundles" OFF)
 endif()
 

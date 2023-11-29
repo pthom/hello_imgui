@@ -5,11 +5,26 @@
 #include <set>
 #include <chrono>
 
+#ifdef HELLOIMGUI_INSIDE_APPLE_BUNDLE
+#include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
+#include <unistd.h>
+#endif
 
 namespace HelloImGui
 {
 RunnerParams* gLastRunnerParams = nullptr;
 std::unique_ptr<AbstractRunner> gLastRunner;
+
+#ifdef HELLOIMGUI_INSIDE_APPLE_BUNDLE
+// We are inside an apple bundle, so we need to chdir to the bundle resources folder
+// (otherwise, the assets folder would not be found)
+void ChdirToBundleResourcesFolder()
+{
+    std::string bundlePath = GetBundlePath();
+    std::string resourceFolder = bundlePath + "/Contents/Resources";
+    chdir(resourceFolder.c_str());
+}
+#endif
 
 bool _CheckAdditionLayoutNamesUniqueness(RunnerParams &runnerParams)
 {
@@ -29,6 +44,9 @@ bool _CheckAdditionLayoutNamesUniqueness(RunnerParams &runnerParams)
 
 void Run(RunnerParams& runnerParams)
 {
+#ifdef HELLOIMGUI_INSIDE_APPLE_BUNDLE
+        ChdirToBundleResourcesFolder();
+#endif
     IM_ASSERT(_CheckAdditionLayoutNamesUniqueness(runnerParams));
     gLastRunner = FactorRunner(runnerParams);
     gLastRunnerParams = &runnerParams;

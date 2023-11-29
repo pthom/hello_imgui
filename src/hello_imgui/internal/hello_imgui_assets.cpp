@@ -129,7 +129,14 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
     if (! gOverrideAssetsFolder.empty())
         r.push_back({gOverrideAssetsFolder, "folder provided by HelloImGui::SetAssetsFolder()"});
 
-    // 2. Search inside a subfolder of the exe
+    // 2. Search inside a subfolder of the current working directory
+    #if !defined(HELLOIMGUI_MOBILEDEVICE)
+    {
+        r.push_back({FileUtils::GetCurrentDirectory() +  "/" + gAssetsSubfolderFolderName, "current_folder/assets"});
+    }
+    #endif
+
+    // 3. Search inside a subfolder of the exe
     #if !defined(HELLOIMGUI_MOBILEDEVICE) && !defined(__EMSCRIPTEN__)
     {
         r.push_back({wai_getExecutableFolder_string() + "/" + gAssetsSubfolderFolderName, "exe_folder/assets"});
@@ -143,26 +150,11 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
     }
     #endif
 
-    // 3. Search inside a subfolder of the current working directory
-    #if !defined(HELLOIMGUI_MOBILEDEVICE)
-    {
-        r.push_back({FileUtils::GetCurrentDirectory() +  "/" + gAssetsSubfolderFolderName, "current_folder/assets"});
-    }
-    #endif
-
-    // 3. For emscripten, search at "/"
+    // 4. For emscripten, search at "/"
     #ifdef __EMSCRIPTEN__
     {
         r.push_back({"/", "root folder for emscripten"});
         r.push_back({"/" + gAssetsSubfolderFolderName , "root assets folder for emscripten"});
-    }
-    #endif
-
-    // 4. For Apple bundles, search inside the Resources folder
-    #ifdef __APPLE__
-    {
-        r.push_back({wai_getExecutableFolder_string() + "/Contents/Resources/assets", "Apple bundle Resources folder"});
-        r.push_back({wai_getExecutableFolder_string() + "/assets", "Apple exeFolder/assets"});
     }
     #endif
 

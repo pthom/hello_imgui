@@ -188,9 +188,8 @@ std::string AssetFileFullPath(const std::string& assetFilename)
     #if defined(IOS)
     {
         std::string path = getAppleBundleResourcePath(std::string("assets/") + assetFilename.c_str());
-        if (! FileUtils::IsRegularFile(path))
-            return  "";
-        return path;
+        if (FileUtils::IsRegularFile(path))
+            return path;
     }
     #endif
 

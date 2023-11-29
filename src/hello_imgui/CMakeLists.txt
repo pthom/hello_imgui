@@ -26,6 +26,10 @@ if(APPLE AND NOT IOS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -x objective-c++")
 endif()
 
+if(IOS)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_IOS)
+endif()
+
 if (IOS)
     target_compile_definitions(${target_name} PUBLIC IOS)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_MOBILEDEVICE)

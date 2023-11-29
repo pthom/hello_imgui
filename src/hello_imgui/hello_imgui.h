@@ -14,12 +14,14 @@
 #include <cstdint>
 
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
-    // Let SDL redefine main under iOS and co., but not under Windows, where we redefine WinMain
     #ifdef _WIN32
         #ifndef HELLOIMGUI_WIN32_AUTO_WINMAIN
+            // Under Windows, we redefine WinMain ourselves
             #include <SDL.h>
         #endif
-    #else
+    #endif
+     // Let SDL redefine main under iOS
+    #ifdef HELLOIMGUI_IOS
         #include <SDL.h>
     #endif
 #endif

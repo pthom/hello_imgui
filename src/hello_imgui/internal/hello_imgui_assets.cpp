@@ -161,7 +161,8 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
     // 4. For Apple bundles, search inside the Resources folder
     #ifdef __APPLE__
     {
-        r.push_back({wai_getExecutableFolder_string() + "/Resources", "Apple bundle Resources folder"});
+        r.push_back({wai_getExecutableFolder_string() + "/Contents/Resources/assets", "Apple bundle Resources folder"});
+        r.push_back({wai_getExecutableFolder_string() + "/assets", "Apple exeFolder/assets"});
     }
     #endif
 
@@ -171,12 +172,7 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
 /// Access font files in application bundle or assets/fonts/
 std::string AssetFileFullPath(const std::string& assetFilename)
 {
-#if defined(IOS)
-    std::string path = getAppleBundleResourcePath(assetFilename.c_str());
-    if (! FileUtils::IsRegularFile(path))
-        return  "";
-    return path;
-#elif defined(__ANDROID__)
+#if defined(__ANDROID__)
     // Under android, assets can be compressed
     // You cannot use standard file operations!`
     (void)assetFilename;
@@ -189,6 +185,15 @@ std::string AssetFileFullPath(const std::string& assetFilename)
         if (FileUtils::IsRegularFile(path))
             return path;
     }
+    #if defined(IOS)
+    {
+        std::string path = getAppleBundleResourcePath(std::string("assets/") + assetFilename.c_str());
+        if (! FileUtils::IsRegularFile(path))
+            return  "";
+        return path;
+    }
+    #endif
+
     // Display nice message on error
     {
         std::string errorMessage;

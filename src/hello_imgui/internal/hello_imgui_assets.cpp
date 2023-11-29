@@ -1,8 +1,9 @@
 #include "hello_imgui/hello_imgui_assets.h"
 #include "imgui.h"
 
-#if defined(IOS)
+#ifdef HELLOIMGUI_INSIDE_APPLE_BUNDLE
 #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
+#include <unistd.h>
 #endif
 
 #include "hello_imgui/internal/whereami/whereami_cpp.h"
@@ -234,14 +235,8 @@ std::string AssetFileFullPath(const std::string& assetFilename)
 // Returns true if this asset file exists
 bool AssetExists(const std::string& assetFilename)
 {
-    auto possibleAssetsFolders = computePossibleAssetsFolders();
-    for (const auto& assetsFolder: possibleAssetsFolders)
-    {
-        std::string path = assetsFolder.folder + "/" + assetFilename;
-        if (FileUtils::IsRegularFile(path))
-            return true;
-    }
-    return false;
+    std::string fullPath = AssetFileFullPath(assetFilename);
+    return ! fullPath.empty();
 }
 
 

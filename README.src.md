@@ -1,3 +1,5 @@
+<img src="logo/logo_hello_imgui.png" width="200">
+
 ![Ubuntu](https://github.com/pthom/hello_imgui/workflows/Ubuntu/badge.svg)
 ![Windows](https://github.com/pthom/hello_imgui/workflows/Windows/badge.svg)
 ![MacOS](https://github.com/pthom/hello_imgui/workflows/MacOS/badge.svg)

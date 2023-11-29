@@ -10,11 +10,6 @@ It demonstrates:
 - How to load additional fonts
 */
 
-#ifdef HELLOIMGUI_USE_SDL_OPENGL3
-#define SDL_MAIN_HANDLED // Tell SDL not to #define main!!!
-#include <SDL.h>
-#endif
-
 #include "hello_imgui/hello_imgui.h"
 #include "imgui.h"
 #include "misc/cpp/imgui_stdlib.h"

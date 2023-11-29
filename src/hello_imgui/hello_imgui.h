@@ -13,6 +13,10 @@
 #include <cstddef>
 #include <cstdint>
 
+#ifdef HELLOIMGUI_USE_SDL_OPENGL3
+#include <SDL.h>  // So that SDL can surreptitiously define its own main...
+#endif
+
 struct ImGuiTestEngine;
 
 

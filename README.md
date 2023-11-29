@@ -231,6 +231,8 @@ __Table of contents__
   * [Embed assets](#embed-assets)
   * [Customize per platform](#customize-per-platform)
     * [iOS](#ios)
+    * [macOS](#macos)
+      * [How to build terminal executables under macOS](#how-to-build-terminal-executables-under-macos)
     * [Android](#android)
   * [Example of customization:](#example-of-customization)
     * [Resizing icons for Android](#resizing-icons-for-android)
@@ -491,7 +493,21 @@ on mobile devices and emscripten, i.e they will be bundled together with the app
 
 ### iOS
 
-For iOS, simply create a folder named "ios" beside the application 'CMakeLists.txt'. There, you can add a custom Info.plist, as well as app icons and launch screens.
+For iOS, simply create a folder named `ios` beside the application 'CMakeLists.txt'. There, you can add a custom Info.plist, as well as app icons and launch screens.
+
+For an example, see the `ios` folder inside [src/hello_imgui_demos/hello_imgui_demodocking/](src/hello_imgui_demos/hello_imgui_demodocking)
+
+
+### macOS
+
+For macOS, simply create a folder named `macos` beside the application 'CMakeLists.txt'. There, you can add a custom Info.plist, as well as app icons.
+
+For an example, see the `macos` folder inside [src/hello_imgui_demos/hello_imgui_demodocking/](src/hello_imgui_demos/hello_imgui_demodocking/)
+
+#### How to build terminal executables under macOS
+
+If you prefer to build regular terminal executables (not app bundles), use the cmake option `-DHELLOIMGUI_MACOS_NO_BUNDLE=ON`.
+
 
 ### Android 
 

@@ -178,6 +178,9 @@ endif()
 if (IOS OR (MACOSX AND NOT HELLOIMGUI_MACOS_NO_BUNDLE))
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_INSIDE_APPLE_BUNDLE)
 endif()
+if (HELLOIMGUI_WIN32_AUTO_WINMAIN)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_WIN32_AUTO_WINMAIN)
+endif()
 
 # install
 if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)

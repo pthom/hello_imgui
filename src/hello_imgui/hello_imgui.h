@@ -14,7 +14,14 @@
 #include <cstdint>
 
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
-#include <SDL.h>  // So that SDL can surreptitiously define its own main...
+    // Let SDL redefine main under iOS and co., but not under Windows, where we redefine WinMain
+    #ifdef _WIN32
+        #ifndef HELLOIMGUI_WIN32_AUTO_WINMAIN
+            #include <SDL.h>
+        #endif
+    #else
+        #include <SDL.h>
+    #endif
 #endif
 
 struct ImGuiTestEngine;

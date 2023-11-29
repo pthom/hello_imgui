@@ -86,14 +86,14 @@ if (APPLE)
             set(app_icon ${CMAKE_CURRENT_SOURCE_DIR}/macos/${HELLO_IMGUI_BUNDLE_ICON_FILE})
             if (EXISTS ${app_icon})
                 message(STATUS "hello_imgui_macos_add_icons: ${app_name} found app specific icon at ${app_icon}")
-                target_sources(${app_name} PRIVATE ${app_icon})
-                set_source_files_properties(${app_icon}
-                    PROPERTIES
-                    MACOSX_PACKAGE_LOCATION "Resources"
-                )
             else()
-                message(STATUS "hello_imgui_macos_add_icons: ${app_name} could NOT find app specific icon")
+                set(app_icon ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/mac_icons/icon.icns)
             endif()
+            target_sources(${app_name} PRIVATE ${app_icon})
+            set_source_files_properties(${app_icon}
+                PROPERTIES
+                MACOSX_PACKAGE_LOCATION "Resources"
+            )
         endfunction()
     endif(MACOSX)
 
@@ -115,5 +115,5 @@ if (APPLE)
             hello_imgui_ios_add_icons(${app_name})
         endfunction()
 
-    endif(MACOSX)
+    endif()
 endif(APPLE)

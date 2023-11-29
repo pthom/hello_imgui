@@ -1,7 +1,7 @@
+include(${CMAKE_CURRENT_LIST_DIR}/desktop/hello_imgui_desktop.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/ios/hello_imgui_ios.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/android/hello_imgui_android.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/emscripten/hello_imgui_emscripten.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/desktop/hello_imgui_desktop.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/assets/hello_imgui_assets.cmake)
 
 set(apkCMake_projectTemplateFolder ${CMAKE_CURRENT_LIST_DIR}/android/apkCMake/templates/sdl)

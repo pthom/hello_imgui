@@ -17,7 +17,7 @@ if (APPLE)
             set(info_plist_dir_all ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/info_plist)
             set(info_plist_in ${info_plist_dir_all}/Info.plist.in)
         endif()
-        set(info_plist_configured ${CMAKE_CURRENT_BINARY_DIR}/Info.plist)
+        set(info_plist_configured ${CMAKE_CURRENT_BINARY_DIR}/Info${app_name}.plist)
 
         # Clean CFBundleIdentifier (remove unwanted characters)
         # See https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/TP40009249-SW1

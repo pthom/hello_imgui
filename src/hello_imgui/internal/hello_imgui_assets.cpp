@@ -25,6 +25,17 @@
 #include <unistd.h>
 #endif
 
+#ifdef HELLOIMGUI_INSIDE_APPLE_BUNDLE
+// We are inside an apple bundle, so we need to chdir to the bundle resources folder
+// (otherwise, the assets folder would not be found)
+static void ChdirToBundleResourcesFolder()
+{
+    std::string bundlePath = GetBundlePath();
+    std::string resourceFolder = bundlePath + "/Contents/Resources";
+    chdir(resourceFolder.c_str());
+}
+#endif
+
 namespace FileUtils
 {
 #ifdef _WIN32
@@ -183,6 +194,24 @@ std::string AssetFileFullPath(const std::string& assetFilename)
         if (FileUtils::IsRegularFile(path))
             return path;
     }
+    #endif
+
+    //
+    // Handle failures below
+    //
+
+    #ifdef HELLOIMGUI_INSIDE_APPLE_BUNDLE
+    {
+        // if we are inside an apple bundle, we may have to chdir to the bundle resources folder
+        // let's try this once
+        static bool triedChdirToBundleResourcesFolder = false;
+        if (!triedChdirToBundleResourcesFolder)
+        {
+            triedChdirToBundleResourcesFolder = true;
+            ChdirToBundleResourcesFolder();
+            return AssetFileFullPath(assetFilename);
+        }
+    };
     #endif
 
     // Display nice message on error

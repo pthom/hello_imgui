@@ -97,11 +97,10 @@ endif()
 #------------------------------------------------------------------------------
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
     option(HELLOIMGUI_BUILD_DEMOS "Build demos" ON)
-    option(HELLOIMGUI_BUILD_TESTS "Build tests" ON)
 else()
     option(HELLOIMGUI_BUILD_DEMOS "Build demos" OFF)
-    option(HELLOIMGUI_BUILD_TESTS "Build tests" OFF)
 endif()
+option(HELLOIMGUI_BUILD_TESTS "Build tests" OFF)
 
 #------------------------------------------------------------------------------
 # Options / ImGui Test Engine

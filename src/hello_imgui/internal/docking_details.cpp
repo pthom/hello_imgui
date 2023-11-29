@@ -117,7 +117,6 @@ void MenuView_Layouts(RunnerParams& runnerParams)
             ImGui::EndMenu();
         }
     }
-    ImGui::Separator();
 
     ImGui::PopID();
 }
@@ -158,8 +157,6 @@ void MenuView_DockableWindows(RunnerParams& runnerParams)
             }
         }
     }
-
-    ImGui::Separator();
 
     ImGui::PopID();
 }

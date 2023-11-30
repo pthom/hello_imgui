@@ -1,3 +1,49 @@
+#
+# hello_imgui_add_app is a helper function, similar to cmake's "add_executable"
+#
+# Usage:
+# hello_imgui_add_app(app_name file1.cpp file2.cpp ...)
+#
+# Features:
+#     * It will automatically link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
+#     * It will embed the assets (for desktop, mobile, and emscripten apps)
+#     * It will perform additional customization (app icon and name on mobile platforms, etc)
+function(hello_imgui_add_app)
+    set(args ${ARGN})
+    list(GET args 0 app_name)
+    list(REMOVE_AT args 0)
+    set(app_sources ${args})
+
+    if (ANDROID)
+        add_library(${app_name} SHARED ${app_sources})
+    else()
+        add_executable(${app_name} ${app_sources})
+    endif()
+
+    if (WIN32)
+        if (HELLOIMGUI_WIN32_NO_CONSOLE)
+            # Make this an app without console, and use HelloImGui_WinMain.cpp
+            if (MINGW)
+                target_link_options(${app_name} PRIVATE -Wl,--subsystem,windows)
+            else() # If MSVC
+                target_link_options(${app_name} PRIVATE /SUBSYSTEM:WINDOWS)
+            endif()
+        endif()
+        if (HELLOIMGUI_WIN32_AUTO_WINMAIN)
+            target_sources(${app_name} PRIVATE ${HELLOIMGUI_CMAKE_PATH}/HelloImGui_WinMain.cpp)
+        endif()
+    endif()
+
+    hello_imgui_prepare_app(${app_name})
+
+    message(VERBOSE "hello_imgui_add_app
+             app_name=${app_name}
+             sources=${app_sources}
+    ")
+endfunction()
+
+
+
 # Platform dependent version of hello_imgui_platform_customization
 #
 # By default hello_imgui_platform_customization does nothing
@@ -9,6 +55,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/apple/hello_imgui_apple.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/android/hello_imgui_android.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/emscripten/hello_imgui_emscripten.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/assets/hello_imgui_assets.cmake)
+
 
 
 set(apkCMake_projectTemplateFolder ${CMAKE_CURRENT_LIST_DIR}/android/apkCMake/templates/sdl)
@@ -65,51 +112,6 @@ function(hello_imgui_prepare_app app_name)
         # set(apkCMake_abiFilters "'arm64-v8a', 'x86', 'x86_64'")
         apkCMake_makeAndroidStudioProject(${app_name})
     endif()
-endfunction()
-
-
-#
-# hello_imgui_add_app is a helper function, similar to cmake's "add_executable"
-#
-# Usage:
-# hello_imgui_add_app(app_name file1.cpp file2.cpp ...)
-#
-# Features: 
-#     * It will automaticaly link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
-#     * It will embed the assets (for desktop, mobile, and emscripten apps)
-#     * It will perform additional customization (app icon and name on mobile platforms, etc)
-function(hello_imgui_add_app)
-    set(args ${ARGN})
-    list(GET args 0 app_name)
-    list(REMOVE_AT args 0)
-    set(app_sources ${args})
-
-    if (ANDROID)
-        add_library(${app_name} SHARED ${app_sources})
-    else()
-        add_executable(${app_name} ${app_sources})
-    endif()
-
-    if (WIN32)
-        if (HELLOIMGUI_WIN32_NO_CONSOLE)
-            # Make this an app without console, and use HelloImGui_WinMain.cpp
-            if (MINGW)
-                target_link_options(${app_name} PRIVATE -Wl,--subsystem,windows)
-            else() # If MSVC
-                target_link_options(${app_name} PRIVATE /SUBSYSTEM:WINDOWS)
-            endif()
-        endif()
-        if (HELLOIMGUI_WIN32_AUTO_WINMAIN)
-            target_sources(${app_name} PRIVATE ${HELLOIMGUI_CMAKE_PATH}/HelloImGui_WinMain.cpp)
-        endif()
-    endif()
-
-    hello_imgui_prepare_app(${app_name})
-
-    message(VERBOSE "hello_imgui_add_app
-             app_name=${app_name}
-             sources=${app_sources}
-            ")
 endfunction()
 
 

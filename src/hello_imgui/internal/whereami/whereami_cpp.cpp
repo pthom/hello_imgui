@@ -1,3 +1,5 @@
+#ifndef __EMSCRIPTEN__
+
 #include "hello_imgui/internal/whereami/whereami.h"
 #include "hello_imgui/internal/whereami/whereami_cpp.h"
 
@@ -38,3 +40,5 @@ std::string wai_getExecutableFolder_string()
 {
     return dirname(wai_getExecutablePath_string());
 }
+
+#endif

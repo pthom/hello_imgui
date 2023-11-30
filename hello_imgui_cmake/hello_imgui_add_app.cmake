@@ -43,7 +43,7 @@ function(hello_imgui_add_app)
         endif()
     endif()
 
-    message(STATUS "hello_imgui_add_app
+    message(VERBOSE "hello_imgui_add_app
              app_name=${app_name}
              sources=${app_sources}
              assets_location=${assets_location}

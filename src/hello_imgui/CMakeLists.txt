@@ -26,6 +26,10 @@ if(APPLE AND NOT IOS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -x objective-c++")
 endif()
 
+if(IOS)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_IOS)
+endif()
+
 if (IOS)
     target_compile_definitions(${target_name} PUBLIC IOS)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_MOBILEDEVICE)
@@ -175,6 +179,12 @@ if (HELLOIMGUI_USE_GLFW_OPENGL3)
     target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_HAS_OPENGL)
 endif()
 
+if (IOS OR (MACOSX AND NOT HELLOIMGUI_MACOS_NO_BUNDLE))
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_INSIDE_APPLE_BUNDLE)
+endif()
+if (HELLOIMGUI_WIN32_AUTO_WINMAIN)
+    target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_WIN32_AUTO_WINMAIN)
+endif()
 
 # install
 if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)

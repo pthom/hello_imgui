@@ -13,6 +13,19 @@
 #include <cstddef>
 #include <cstdint>
 
+#ifdef HELLOIMGUI_USE_SDL_OPENGL3
+    #ifdef _WIN32
+        #ifndef HELLOIMGUI_WIN32_AUTO_WINMAIN
+            // Under Windows, we redefine WinMain ourselves
+            #include <SDL.h>
+        #endif
+    #endif
+     // Let SDL redefine main under iOS
+    #ifdef HELLOIMGUI_IOS
+        #include <SDL.h>
+    #endif
+#endif
+
 struct ImGuiTestEngine;
 
 

@@ -24,22 +24,25 @@ if (EMSCRIPTEN)
         endif()
     endfunction()
 
-elseif(IOS)
+elseif(IOS OR (MACOSX AND (NOT HELLOIMGUI_MACOS_NO_BUNDLE)))
 
-    # Bundle assets / iOS version
-    function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
-        FILE(GLOB_RECURSE assets ${assets_folder}/*.*)
+    # Bundle assets / macOS and iOS app version
+    function(hello_imgui_apple_bundle_add_files_from_folder app_name assets_folder location_in_bundle)
+        file(GLOB_RECURSE assets ${assets_folder}/*.*)
         target_sources(${app_name} PRIVATE ${assets})
         foreach(asset ${assets})
-            string(REPLACE ${assets_folder}/ "" asset_relative ${asset})
+            file(RELATIVE_PATH asset_relative ${assets_folder} ${asset})
             get_filename_component(asset_dir ${asset_relative} DIRECTORY)
-            SET_SOURCE_FILES_PROPERTIES (
-                ${app_name}
+            set_source_files_properties (
                 ${asset}
                 PROPERTIES
-                MACOSX_PACKAGE_LOCATION Resources/${asset_dir}
+                MACOSX_PACKAGE_LOCATION ${location_in_bundle}/${asset_dir}
             )
         endforeach()
+    endfunction()
+
+    function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
+        hello_imgui_apple_bundle_add_files_from_folder(${app_name} ${assets_folder} "Resources/assets")
     endfunction()
 
 elseif(ANDROID)
@@ -109,9 +112,9 @@ function(hello_imgui_copy_folder1_files_missing_from_folder2 folder_src_1 folder
 endfunction()
 
 
-function(hello_imgui_bundle_assets app_name)
+function(hello_imgui_bundle_assets app_name assets_location)
     set(common_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_assets)
-    set(local_assets_folder ${CMAKE_CURRENT_SOURCE_DIR}/assets)
+    set(local_assets_folder ${assets_location})
 
     set(common_assets_folder_copy ${CMAKE_CURRENT_BINARY_DIR}/tmp/common_assets)
     file(REMOVE_RECURSE ${common_assets_folder_copy})

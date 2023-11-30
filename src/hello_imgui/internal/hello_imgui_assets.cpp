@@ -1,11 +1,12 @@
 #include "hello_imgui/hello_imgui_assets.h"
 #include "imgui.h"
 
-#if defined(IOS)
+#ifdef HELLOIMGUI_INSIDE_APPLE_BUNDLE
 #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
-#else
-#include "hello_imgui/internal/whereami/whereami_cpp.h"
+#include <unistd.h>
 #endif
+
+#include "hello_imgui/internal/whereami/whereami_cpp.h"
 
 
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
@@ -23,6 +24,17 @@
 #include <windows.h>
 #else
 #include <unistd.h>
+#endif
+
+#ifdef HELLOIMGUI_INSIDE_APPLE_BUNDLE
+// We are inside an apple bundle, so we need to chdir to the bundle resources folder
+// (otherwise, the assets folder would not be found)
+static void ChdirToBundleResourcesFolder()
+{
+    std::string bundlePath = GetBundlePath();
+    std::string resourceFolder = bundlePath + "/Contents/Resources";
+    chdir(resourceFolder.c_str());
+}
 #endif
 
 namespace FileUtils
@@ -129,7 +141,14 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
     if (! gOverrideAssetsFolder.empty())
         r.push_back({gOverrideAssetsFolder, "folder provided by HelloImGui::SetAssetsFolder()"});
 
-    // 2. Search inside a subfolder of the exe
+    // 2. Search inside a subfolder of the current working directory
+    #if !defined(HELLOIMGUI_MOBILEDEVICE)
+    {
+        r.push_back({FileUtils::GetCurrentDirectory() +  "/" + gAssetsSubfolderFolderName, "current_folder/assets"});
+    }
+    #endif
+
+    // 3. Search inside a subfolder of the exe
     #if !defined(HELLOIMGUI_MOBILEDEVICE) && !defined(__EMSCRIPTEN__)
     {
         r.push_back({wai_getExecutableFolder_string() + "/" + gAssetsSubfolderFolderName, "exe_folder/assets"});
@@ -143,14 +162,7 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
     }
     #endif
 
-    // 3. Search inside a subfolder of the current working directory
-    #if !defined(HELLOIMGUI_MOBILEDEVICE)
-    {
-        r.push_back({FileUtils::GetCurrentDirectory() +  "/" + gAssetsSubfolderFolderName, "current_folder/assets"});
-    }
-    #endif
-
-    // 3. For emscripten, search at "/"
+    // 4. For emscripten, search at "/"
     #ifdef __EMSCRIPTEN__
     {
         r.push_back({"/", "root folder for emscripten"});
@@ -164,12 +176,7 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
 /// Access font files in application bundle or assets/fonts/
 std::string AssetFileFullPath(const std::string& assetFilename)
 {
-#if defined(IOS)
-    std::string path = getAppleBundleResourcePath(assetFilename.c_str());
-    if (! FileUtils::IsRegularFile(path))
-        return  "";
-    return path;
-#elif defined(__ANDROID__)
+#if defined(__ANDROID__)
     // Under android, assets can be compressed
     // You cannot use standard file operations!`
     (void)assetFilename;
@@ -182,6 +189,32 @@ std::string AssetFileFullPath(const std::string& assetFilename)
         if (FileUtils::IsRegularFile(path))
             return path;
     }
+    #if defined(IOS)
+    {
+        std::string path = getAppleBundleResourcePath(std::string("assets/") + assetFilename.c_str());
+        if (FileUtils::IsRegularFile(path))
+            return path;
+    }
+    #endif
+
+    //
+    // Handle failures below
+    //
+
+    #ifdef HELLOIMGUI_INSIDE_APPLE_BUNDLE
+    {
+        // if we are inside an apple bundle, we may have to chdir to the bundle resources folder
+        // let's try this once
+        static bool triedChdirToBundleResourcesFolder = false;
+        if (!triedChdirToBundleResourcesFolder)
+        {
+            triedChdirToBundleResourcesFolder = true;
+            ChdirToBundleResourcesFolder();
+            return AssetFileFullPath(assetFilename);
+        }
+    };
+    #endif
+
     // Display nice message on error
     {
         std::string errorMessage;
@@ -202,14 +235,8 @@ std::string AssetFileFullPath(const std::string& assetFilename)
 // Returns true if this asset file exists
 bool AssetExists(const std::string& assetFilename)
 {
-    auto possibleAssetsFolders = computePossibleAssetsFolders();
-    for (const auto& assetsFolder: possibleAssetsFolders)
-    {
-        std::string path = assetsFolder.folder + "/" + assetFilename;
-        if (FileUtils::IsRegularFile(path))
-            return true;
-    }
-    return false;
+    std::string fullPath = AssetFileFullPath(assetFilename);
+    return ! fullPath.empty();
 }
 
 

@@ -3,12 +3,17 @@ if (EMSCRIPTEN)
 else()
     cmake_minimum_required(VERSION 3.10)
 endif()
+
+project(HelloImGui LANGUAGES C CXX VERSION "1.0.0")
+set(CMAKE_CXX_STANDARD 17)
+
 if (IOS)
     set(DEPLOYMENT_TARGET "13.0" CACHE STRING "" FORCE)
 endif()
 
-project(HelloImGui LANGUAGES C CXX VERSION "1.0.0")
-set(CMAKE_CXX_STANDARD 17)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(MACOSX TRUE)
+endif()
 
 
 ###############################################################################
@@ -38,6 +43,12 @@ include(hello_imgui_add_app)
 if (WIN32)
     option(HELLOIMGUI_WIN32_NO_CONSOLE "Under windows, build apps without Dos Console" ON)
     option(HELLOIMGUI_WIN32_AUTO_WINMAIN "Under windows, automatically provide a WinMain (provide `int main(int, char**)`, it will be called by WinMain())" ON)
+endif()
+#------------------------------------------------------------------------------
+# Options / macOS: provide regular terminal executables, not app bundles
+#------------------------------------------------------------------------------
+if(MACOSX)
+    option(HELLOIMGUI_MACOS_NO_BUNDLE "Under macOS, build regular terminal executables, not app bundles" OFF)
 endif()
 
 #------------------------------------------------------------------------------
@@ -90,17 +101,16 @@ endif()
 #------------------------------------------------------------------------------
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
     option(HELLOIMGUI_BUILD_DEMOS "Build demos" ON)
-    option(HELLOIMGUI_BUILD_TESTS "Build tests" ON)
 else()
     option(HELLOIMGUI_BUILD_DEMOS "Build demos" OFF)
-    option(HELLOIMGUI_BUILD_TESTS "Build tests" OFF)
 endif()
+option(HELLOIMGUI_BUILD_TESTS "Build tests" OFF)
 
 #------------------------------------------------------------------------------
 # Options / ImGui Test Engine
 #------------------------------------------------------------------------------
 option(HELLOIMGUI_WITH_TEST_ENGINE "Provide ImGui Test engine" OFF)
-message(WARNING "HELLOIMGUI_WITH_TEST_ENGINE=${HELLOIMGUI_WITH_TEST_ENGINE}")
+message(STATUS "HELLOIMGUI_WITH_TEST_ENGINE=${HELLOIMGUI_WITH_TEST_ENGINE}")
 
 #------------------------------------------------------------------------------
 # Instructions: how to enable Esmcripten multihtread support

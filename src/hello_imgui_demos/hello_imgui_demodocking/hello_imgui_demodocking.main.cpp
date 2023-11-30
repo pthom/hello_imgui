@@ -10,11 +10,6 @@ It demonstrates:
 - How to load additional fonts
 */
 
-#ifdef HELLOIMGUI_USE_SDL_OPENGL3
-#define SDL_MAIN_HANDLED // Tell SDL not to #define main!!!
-#include <SDL.h>
-#endif
-
 #include "hello_imgui/hello_imgui.h"
 #include "imgui.h"
 #include "misc/cpp/imgui_stdlib.h"
@@ -267,10 +262,17 @@ void GuiWindowLayoutCustomization()
     ImGui::Separator();
 }
 
+void DemoAssets()
+{
+    ImGui::PushFont(gTitleFont); ImGui::Text("Hello"); ImGui::PopFont();
+    HelloImGui::ImageFromAsset("world.jpg", HelloImGui::EmToVec2(3.f, 3.f));
+}
 
 // The Gui of the demo feature window
 void GuiWindowDemoFeatures(AppState& appState)
 {
+    DemoAssets();
+    ImGui::Separator();
     DemoBasicWidgets(appState);
     ImGui::Separator();
     DemoRocket(appState);

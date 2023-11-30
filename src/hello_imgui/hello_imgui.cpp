@@ -11,6 +11,7 @@ namespace HelloImGui
 RunnerParams* gLastRunnerParams = nullptr;
 std::unique_ptr<AbstractRunner> gLastRunner;
 
+
 bool _CheckAdditionLayoutNamesUniqueness(RunnerParams &runnerParams)
 {
     std::set<std::string> names_set;

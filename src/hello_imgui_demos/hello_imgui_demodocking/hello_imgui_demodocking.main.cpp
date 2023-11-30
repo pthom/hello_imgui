@@ -262,10 +262,17 @@ void GuiWindowLayoutCustomization()
     ImGui::Separator();
 }
 
+void DemoAssets()
+{
+    ImGui::PushFont(gTitleFont); ImGui::Text("Hello"); ImGui::PopFont();
+    HelloImGui::ImageFromAsset("world.jpg", HelloImGui::EmToVec2(3.f, 3.f));
+}
 
 // The Gui of the demo feature window
 void GuiWindowDemoFeatures(AppState& appState)
 {
+    DemoAssets();
+    ImGui::Separator();
     DemoBasicWidgets(appState);
     ImGui::Separator();
     DemoRocket(appState);

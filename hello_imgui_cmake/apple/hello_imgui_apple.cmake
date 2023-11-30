@@ -70,9 +70,11 @@ if (APPLE)
 
         function(hello_imgui_ios_add_icons app_name)
             if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/ios/icons)
-                message("hello_imgui_ios_add_icons: ${app_name} found app specific icons")
+                message("hello_imgui_ios_add_icons: ${app_name} found ios/icons specific icons folder")
                 set(icons_assets_folder ${CMAKE_CURRENT_SOURCE_DIR}/ios/icons)
             else()
+                set(local_assets_folder ${CMAKE_CURRENT_SOURCE_DIR}/assets)
+
                 set(icons_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/ios_icons)
             endif()
             hello_imgui_apple_bundle_add_files_from_folder(${app_name} ${icons_assets_folder} "")

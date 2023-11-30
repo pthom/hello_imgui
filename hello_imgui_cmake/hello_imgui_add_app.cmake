@@ -2,24 +2,64 @@
 # hello_imgui_add_app is a helper function, similar to cmake's "add_executable"
 #
 # Usage:
-# hello_imgui_add_app(app_name file1.cpp file2.cpp ...)
+#     hello_imgui_add_app(app_name file1.cpp file2.cpp ...)
+# Or:
+#     hello_imgui_add_app(app_name file1.cpp file2.cpp ... ASSETS_LOCATION "path/to/assets")
+# (By default, ASSETS_LOCATION is "assets", which means that the assets will be searched in the "assets" folder,
+# relative to the location of the CMakeLists.txt file)
 #
 # Features:
 #     * It will automatically link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
 #     * It will embed the assets (for desktop, mobile, and emscripten apps)
 #     * It will perform additional customization (app icon and name on mobile platforms, etc)
+#
 function(hello_imgui_add_app)
-    set(args ${ARGN})
-    list(GET args 0 app_name)
-    list(REMOVE_AT args 0)
-    set(app_sources ${args})
+    #############################################################################
+    # CMake argument parsing shenanigans...
+    # arguments are parsed as: app_name, app_sources, assets_location
+    #############################################################################
+    # Define the keywords for known arguments
+    set(oneValueArgs ASSETS_LOCATION)
+    set(multiValueArgs "")
+    set(options "")
+    # Parse the arguments
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    # The application name is the first argument in ARGN
+    list(GET ARGN 0 app_name)
+    # After parsing, the unparsed arguments are what's left and are treated
+    # as sources except the first one (which is the app name)
+    # We should also remove the ASSETS_LOCATION argument if provided
+    list(REMOVE_AT ARG_UNPARSED_ARGUMENTS 0)
+    set(app_sources ${ARG_UNPARSED_ARGUMENTS})
+    # The ASSETS_LOCATION parameter is optional
+    if(NOT ARG_ASSETS_LOCATION)
+        set(assets_location "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+    else()
+        # if assets_location is relative to the current source dir, make it absolute
+        if (NOT IS_ABSOLUTE ${ARG_ASSETS_LOCATION})
+            set(assets_location "${CMAKE_CURRENT_SOURCE_DIR}/${ARG_ASSETS_LOCATION}")
+        else()
+            set(assets_location ${ARG_ASSETS_LOCATION})
+        endif()
+    endif()
 
+    message(STATUS "hello_imgui_add_app
+             app_name=${app_name}
+             sources=${app_sources}
+             assets_location=${assets_location}
+    ")
+
+    #############################################################################
+
+    # Add the target for the application
     if (ANDROID)
         add_library(${app_name} SHARED ${app_sources})
     else()
         add_executable(${app_name} ${app_sources})
     endif()
 
+    # If windows, and if the user wants to, we can make this an app without console
+    # and provide a WinMain entry point
     if (WIN32)
         if (HELLOIMGUI_WIN32_NO_CONSOLE)
             # Make this an app without console, and use HelloImGui_WinMain.cpp
@@ -34,12 +74,7 @@ function(hello_imgui_add_app)
         endif()
     endif()
 
-    hello_imgui_prepare_app(${app_name})
-
-    message(VERBOSE "hello_imgui_add_app
-             app_name=${app_name}
-             sources=${app_sources}
-    ")
+    hello_imgui_prepare_app(${app_name} ${assets_location})
 endfunction()
 
 
@@ -96,12 +131,12 @@ endfunction()
 # hello_imgui_prepare_app(target_name)
 #
 # Features:
-#     * It will automaticaly link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
+#     * It will automatically link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
 #     * It will embed the assets (for desktop, mobile, and emscripten apps)
 #     * It will perform additional customization (app icon and name on mobile platforms, etc)
-function(hello_imgui_prepare_app app_name)
+function(hello_imgui_prepare_app app_name assets_location)
     set_bundle_variables_defaults(${app_name})
-    hello_imgui_bundle_assets(${app_name})
+    hello_imgui_bundle_assets(${app_name} ${assets_location})
     hello_imgui_platform_customization(${app_name})
     target_link_libraries(${app_name} PRIVATE hello_imgui)
 

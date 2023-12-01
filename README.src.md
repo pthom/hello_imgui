@@ -181,6 +181,44 @@ __Table of contents__
 
 --------------------
 
+# Embed assets
+
+Anything in the assets/ folder located beside the app's CMakeLists will be embedded
+on mobile devices and emscripten, i.e. they will be bundled together with the app; 
+and you can access them via `assetFileFullPath(const std::string& assetRelativeFilename)`.
+
+Typical content of the assets/ folder:
+```
+assets/
+├── fonts/
+├── DroidSans.ttf                 # default fonts 
+│    └── fontawesome-webfont.ttf  # used by HelloImGui
+├── images/
+│    ├── whatever.jpg             # add any image you like in whatever folder you like
+├── app_settings/
+│         ├── ...                 # see App customization
+```
+
+
+# App customization
+
+The subfolder `assets/app_settings` located beside your app's CMakeLists can store some settings: app icon, app name, etc.
+
+Example:
+```
+assets/
+├── app_settings/
+│         ├── icon.png                     # if present, this will be used as the app icon
+│         │                                # (works on macOS and iOS, and it will be converted to the correct format)
+│         │
+│         ├── apple/
+│         │         ├── Info.plist         # if present, this will be used as the app Info.plist for iOS and macOS
+│         │         ├── Info.ios.plist     # (optional, but if present, it will be used instead of Info.plist on iOS)
+│         │         ├── Info.macos.plist   # (optional, but if present, it will be used instead of Info.plist on macOS) 
+│         │ 
+```
+
+
 # Main signature: use `int main(int, char**)`
 
 Under windows, Hello ImGui will automatically provide a [`WinMain()` function](hello_imgui_cmake/HelloImGui_WinMain.cpp) that will call main, and expects its signature to be `int main(int, char**)`. You may get a linker error if your main function signature is for example `int main()`.
@@ -260,21 +298,6 @@ cmake .. \
   ..
 ````
 
-_Notes about apps bundle identifiers: each app built for iOS needs to have a unique Bundle identifier (this is required by Apple). 
-When using HelloImGui, this ID is a concatenation of HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART and HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART, which
-you can specify as cmake arguments via the command line (by default HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART will be the name of the app
-given to `hello_imgui_add_app`)
-
-See [hello_imgui_cmake/ios/hello_imgui_ios.cmake](hello_imgui_cmake/ios/hello_imgui_ios.cmake):
-```
-  set(HELLO_IMGUI_BUNDLE_IDENTIFIER ${HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART}.${HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART})
-```
-and [hello_imgui_cmake/ios/info_plist/sdl/Info.plist.in](hello_imgui_cmake/ios/info_plist/sdl/Info.plist.in).
-
-### Customizing the iOS build
-
-See [Embed assets and customize apps](#embed-assets-and-customize-apps)
- 
 ---
 
 ## Build instructions for emscripten
@@ -415,30 +438,11 @@ You can also install the app via command line, like this:
 ```bash
 ./gradlew installDebug
 ```
-
 ---
 
-# Embed assets and customize apps
 
-## Embed assets
+### Customize for Android
 
-Anything in the assets/ folder located beside the app's CMakeLists will be embedded
-on mobile devices and emscripten, i.e they will be bundled together with the app; and you can access them via `assetFileFullPath(const std::string& assetRelativeFilename)`.
-
-## Customize per platform 
-
-### iOS
-
-For iOS, simply create a folder named `ios` beside the application 'CMakeLists.txt'. There, you can add a custom Info.plist, as well as app icons and launch screens.
-
-For an example, see the `ios` folder inside [src/hello_imgui_demos/hello_imgui_demodocking/](src/hello_imgui_demos/hello_imgui_demodocking)
-
-
-### macOS
-
-For macOS, simply create a folder named `macos` beside the application 'CMakeLists.txt'. There, you can add a custom Info.plist, as well as app icons.
-
-For an example, see the `macos` folder inside [src/hello_imgui_demos/hello_imgui_demodocking/](src/hello_imgui_demos/hello_imgui_demodocking/)
 
 #### How to build terminal executables under macOS
 
@@ -447,22 +451,11 @@ If you prefer to build regular terminal executables (not app bundles), use the c
 
 ### Android 
 
-For Android, simply create a folder named "android" beside the application 'CMakeLists.txt'. There, you can add a custom "res/" folder, containing your icons and application settings inside "res/values/".
+For Android, create a folder named "android" beside the application 'CMakeLists.txt'. There, you can add a custom "res/" folder, containing your icons and application settings inside "res/values/".
 
-
-## Example of customization:
+**Example**
 
 ```
-hello_imgui_democking/
-├── CMakeLists.txt                              # The app's CMakeLists
-├── hello_imgui_demodocking.main.cpp            # its source code
-│
-│
-├── assets/                                     # Anything in the assets/ folder located
-│         └── fonts/                                  # beside the app's CMakeLists will be embedded
-│             └── Akronim-Regular.ttf                 # on mobile devices and emscripten             
-│
-│
 ├── android/                                    # android/ is where you customize the Android App
 │         ├── mipmap-source/
 │         │         ├── Readme.md
@@ -470,41 +463,13 @@ hello_imgui_democking/
 │         └── res/                                    # anything in the res/ folder will be embedded as a resource
 │             ├── mipmap-hdpi/
 │             │         └── ic_launcher.png                 # icons with different sizes
-│             ├── mipmap-mdpi/
-│             │         └── ic_launcher.png
-│             ├── mipmap-xhdpi/
-│             │         └── ic_launcher.png
-│             ├── mipmap-xxhdpi/
-│             │         └── ic_launcher.png
-│             ├── mipmap-xxxhdpi/
-│             │         └── ic_launcher.png
+│             ├── mipmap-.../
 │             └── values/
 │                 ├── colors.xml
 │                 ├── strings.xml                    # Customize the application icon label here
 │                 └── styles.xml
-│
-│
-└── ios/                                        # ios/ is where you customize the iOS App
-    │
-    ├── Info.plist                              # If present, this Info.plist will be applied 
-    │                                           # (if not, a default is provided)
-    │                                           # You can there customize the App icon name, etc.
-    │
-    └── icons/                                  # Icons and Launch images placed inside icons/ 
-        ├── Default-375w-812h@3x.disabled.png   # will be placed in the application bundle 
-        ├── Default-568h@2x.png                 # and thus used by the app
-        ├── Default.png
-        ├── Icon.png
-        └── Readme.md
-
 ```
 
-### Resizing icons for Android
-
-You can use the script [tools/android/resize_icons.py](tools/android/resize_icons.py) in order 
-to quickly create the icons with all the required sizes.
-
-@import "tools/android/resize_icons.py" {md_id=resize_icons}
 
 -------
 

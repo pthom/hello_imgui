@@ -174,17 +174,10 @@ Also, see this video that give more explanations on [how to handle multiple comp
 The C++ demo file [hello_custom_background.main.cpp](src/hello_imgui_demos/hello_custom_background/hello_custom_background.main.cpp) demonstrates how to use a custom 3D background.
 
 
--------------------
-__Table of contents__
-
-[TOC]
-
---------------------
-
 # Embed assets
 
 Anything in the assets/ folder located beside the app's CMakeLists will be embedded
-on mobile devices and emscripten, i.e. they will be bundled together with the app; 
+on mobile devices and emscripten, i.e. they will be bundled together with the app;
 and you can access them via `assetFileFullPath(const std::string& assetRelativeFilename)`.
 
 Typical content of the assets/ folder:
@@ -209,8 +202,9 @@ Example:
 assets/
 ├── app_settings/
 │         ├── icon.png          # If present, this will be used as the app icon.
-│         │                     # Tt should be a square image, of big size, e.g. 1024x1024.
-│         │                     # This works on macOS and iOS, and it will automatically 
+│         │                     # Tt should be a square image, of large size, e.g. 1024x1024.
+│         │                     # This works on macOS, iOS, windows, linux, and emscripten 
+│         │                     # and it will automatically 
 │         │                     # be converted to the correct format.
 │         │
 │         ├── apple/
@@ -222,14 +216,13 @@ assets/
 │         │ 
 ```
 
+-------------------
+__Table of contents__
 
-# Main signature: use `int main(int, char**)`
+[TOC]
 
-Under windows, Hello ImGui will automatically provide a [`WinMain()` function](hello_imgui_cmake/HelloImGui_WinMain.cpp) that will call main, and expects its signature to be `int main(int, char**)`. You may get a linker error if your main function signature is for example `int main()`.
+--------------------
 
-You can disable this via cmake by passing `-DHELLOIMGUI_WIN32_AUTO_WINMAIN=OFF` as a command line cmake option. In this case, write your own `WinMain` under windows.
-
-Warning: if using SDL, you will need to `#define SDL_MAIN_HANDLED` before any inclusion of SDL.h (to refrain SDL from #defining  `#define main SDL_main`)
 
 # Build instructions
 
@@ -268,6 +261,14 @@ cmake .. -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # To use your own version of GLFW
 cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # To use your own version of SDL (it should be findable via find_package(SDL2))
 ```
 
+
+## Build for Windows: use `int main(int, char**)`
+
+Under windows, Hello ImGui will automatically provide a [`WinMain()` function](hello_imgui_cmake/HelloImGui_WinMain.cpp) that will call main, and expects its signature to be `int main(int, char**)`. You may get a linker error if your main function signature is for example `int main()`.
+
+You can disable this via cmake by passing `-DHELLOIMGUI_WIN32_AUTO_WINMAIN=OFF` as a command line cmake option. In this case, write your own `WinMain` under windows.
+
+Warning: if using SDL, you will need to `#define SDL_MAIN_HANDLED` before any inclusion of SDL.h (to refrain SDL from #defining  `#define main SDL_main`)
 
 ## Build instructions for iOS
 

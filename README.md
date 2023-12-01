@@ -197,55 +197,10 @@ Also, see this video that give more explanations on [how to handle multiple comp
 The C++ demo file [hello_custom_background.main.cpp](src/hello_imgui_demos/hello_custom_background/hello_custom_background.main.cpp) demonstrates how to use a custom 3D background.
 
 
--------------------
-__Table of contents__
-
-<span id="TOC"/></span>
-
-* [Hello ImGui](#hello-imgui)
-  * [Features](#features)
-  * [Get started in 5 minutes](#get-started-in-5-minutes)
-  * [Do you need more widgets, or do you want to use ImGui with python?](#do-you-need-more-widgets-or-do-you-want-to-use-imgui-with-python)
-* [Full usage instructions and API](#full-usage-instructions-and-api)
-  * [Online interactive example applications](#online-interactive-example-applications)
-  * [Demo - handle events and include assets:](#demo---handle-events-and-include-assets)
-      * [include assets](#include-assets)
-      * [handle events](#handle-events)
-  * [Complete demo - advanced layout, FPS, theme, etc:](#complete-demo---advanced-layout-fps-theme-etc)
-  * [Demo - custom background](#demo---custom-background)
-* [Embed assets](#embed-assets)
-* [App customization](#app-customization)
-* [Main signature: use `int main(int, char**)`](#main-signature-use-int-mainint-char)
-* [Build instructions](#build-instructions)
-  * [Supported platforms and backends](#supported-platforms-and-backends)
-  * [Clone the repository](#clone-the-repository)
-  * [Easy build on desktop platforms using Glfw](#easy-build-on-desktop-platforms-using-glfw)
-  * [Custom build: select your preferred backend](#custom-build-select-your-preferred-backend)
-  * [Build instructions for iOS](#build-instructions-for-ios)
-  * [Build instructions for emscripten](#build-instructions-for-emscripten)
-    * [Install the requirements (emsdk)](#install-the-requirements-emsdk)
-    * [Build for emscripten](#build-for-emscripten)
-    * [Customizing the emscripten build](#customizing-the-emscripten-build)
-  * [Build and deploy instructions for Android](#build-and-deploy-instructions-for-android)
-    * [Download SDL](#download-sdl)
-    * [Set Android required environment variables](#set-android-required-environment-variables)
-    * [Run cmake in order to create an Android studio project](#run-cmake-in-order-to-create-an-android-studio-project)
-    * [Customize for Android](#customize-for-android)
-      * [How to build terminal executables under macOS](#how-to-build-terminal-executables-under-macos)
-    * [Android](#android)
-* [Real world examples](#real-world-examples)
-  * [ImGui Manual](#imgui-manual)
-  * [CatSight](#catsight)
-  * [Example of an app using HelloImGui as a submodule](#example-of-an-app-using-helloimgui-as-a-submodule)
-* [Alternatives](#alternatives)
-* [Online interactive development platform](#online-interactive-development-platform)
-
---------------------
-
 # Embed assets
 
 Anything in the assets/ folder located beside the app's CMakeLists will be embedded
-on mobile devices and emscripten, i.e. they will be bundled together with the app; 
+on mobile devices and emscripten, i.e. they will be bundled together with the app;
 and you can access them via `assetFileFullPath(const std::string& assetRelativeFilename)`.
 
 Typical content of the assets/ folder:
@@ -270,8 +225,9 @@ Example:
 assets/
 ├── app_settings/
 │         ├── icon.png          # If present, this will be used as the app icon.
-│         │                     # Tt should be a square image, of big size, e.g. 1024x1024.
-│         │                     # This works on macOS and iOS, and it will automatically 
+│         │                     # Tt should be a square image, of large size, e.g. 1024x1024.
+│         │                     # This works on macOS, iOS, windows, linux, and emscripten 
+│         │                     # and it will automatically 
 │         │                     # be converted to the correct format.
 │         │
 │         ├── apple/
@@ -283,14 +239,51 @@ assets/
 │         │ 
 ```
 
+-------------------
+__Table of contents__
 
-# Main signature: use `int main(int, char**)`
+<span id="TOC"/></span>
 
-Under windows, Hello ImGui will automatically provide a [`WinMain()` function](hello_imgui_cmake/HelloImGui_WinMain.cpp) that will call main, and expects its signature to be `int main(int, char**)`. You may get a linker error if your main function signature is for example `int main()`.
+* [Hello ImGui](#hello-imgui)
+  * [Features](#features)
+  * [Get started in 5 minutes](#get-started-in-5-minutes)
+  * [Do you need more widgets, or do you want to use ImGui with python?](#do-you-need-more-widgets-or-do-you-want-to-use-imgui-with-python)
+* [Full usage instructions and API](#full-usage-instructions-and-api)
+  * [Online interactive example applications](#online-interactive-example-applications)
+  * [Demo - handle events and include assets:](#demo---handle-events-and-include-assets)
+      * [include assets](#include-assets)
+      * [handle events](#handle-events)
+  * [Complete demo - advanced layout, FPS, theme, etc:](#complete-demo---advanced-layout-fps-theme-etc)
+  * [Demo - custom background](#demo---custom-background)
+* [Embed assets](#embed-assets)
+* [App customization](#app-customization)
+* [Build instructions](#build-instructions)
+  * [Supported platforms and backends](#supported-platforms-and-backends)
+  * [Clone the repository](#clone-the-repository)
+  * [Easy build on desktop platforms using Glfw](#easy-build-on-desktop-platforms-using-glfw)
+  * [Custom build: select your preferred backend](#custom-build-select-your-preferred-backend)
+  * [Build for Windows: use `int main(int, char**)`](#build-for-windows-use-int-mainint-char)
+  * [Build instructions for iOS](#build-instructions-for-ios)
+  * [Build instructions for emscripten](#build-instructions-for-emscripten)
+    * [Install the requirements (emsdk)](#install-the-requirements-emsdk)
+    * [Build for emscripten](#build-for-emscripten)
+    * [Customizing the emscripten build](#customizing-the-emscripten-build)
+  * [Build and deploy instructions for Android](#build-and-deploy-instructions-for-android)
+    * [Download SDL](#download-sdl)
+    * [Set Android required environment variables](#set-android-required-environment-variables)
+    * [Run cmake in order to create an Android studio project](#run-cmake-in-order-to-create-an-android-studio-project)
+    * [Customize for Android](#customize-for-android)
+      * [How to build terminal executables under macOS](#how-to-build-terminal-executables-under-macos)
+    * [Android](#android)
+* [Real world examples](#real-world-examples)
+  * [ImGui Manual](#imgui-manual)
+  * [CatSight](#catsight)
+  * [Example of an app using HelloImGui as a submodule](#example-of-an-app-using-helloimgui-as-a-submodule)
+* [Alternatives](#alternatives)
+* [Online interactive development platform](#online-interactive-development-platform)
 
-You can disable this via cmake by passing `-DHELLOIMGUI_WIN32_AUTO_WINMAIN=OFF` as a command line cmake option. In this case, write your own `WinMain` under windows.
+--------------------
 
-Warning: if using SDL, you will need to `#define SDL_MAIN_HANDLED` before any inclusion of SDL.h (to refrain SDL from #defining  `#define main SDL_main`)
 
 # Build instructions
 
@@ -329,6 +322,14 @@ cmake .. -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # To use your own version of GLFW
 cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # To use your own version of SDL (it should be findable via find_package(SDL2))
 ```
 
+
+## Build for Windows: use `int main(int, char**)`
+
+Under windows, Hello ImGui will automatically provide a [`WinMain()` function](hello_imgui_cmake/HelloImGui_WinMain.cpp) that will call main, and expects its signature to be `int main(int, char**)`. You may get a linker error if your main function signature is for example `int main()`.
+
+You can disable this via cmake by passing `-DHELLOIMGUI_WIN32_AUTO_WINMAIN=OFF` as a command line cmake option. In this case, write your own `WinMain` under windows.
+
+Warning: if using SDL, you will need to `#define SDL_MAIN_HANDLED` before any inclusion of SDL.h (to refrain SDL from #defining  `#define main SDL_main`)
 
 ## Build instructions for iOS
 

@@ -114,16 +114,33 @@ if (APPLE)
             # Second possible custom icon, in assets/app_settings/icon.png
             set(custom_app_png_icon ${assets_location}/app_settings/icon.png)
             if ((NOT found_custom_icon) AND (EXISTS ${custom_app_png_icon}))
+                # find python program
+                find_program(PYTHON_EXECUTABLE NAMES python3 python)
+                if (NOT PYTHON_EXECUTABLE)
+                    message(WARNING "
+                        ${app_name}: can't create iOS icon from ${custom_app_png_icon}
+                        (did not find python)
+                        This is not a fatal error, but the iOS app will not have the correct icon.
+                    ")
+                    return()
+                endif()
+
                 # We need to convert icon.png to an icon folder
                 set(script_png_icon_to_icon_folder "${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/ios_png_icon_to_icon_folder.py")
                 message(STATUS "hello_imgui_ios_add_icons: converting ${custom_app_png_icon} to icon folder for app ${app_name} ")
                 set(custom_icons_assets_folder ${CMAKE_CURRENT_BINARY_DIR}/custom_icons)
                 execute_process(
-                    COMMAND python3 ${script_png_icon_to_icon_folder} ${custom_app_png_icon} ${custom_icons_assets_folder}
+                    COMMAND ${PYTHON_EXECUTABLE} ${script_png_icon_to_icon_folder} ${custom_app_png_icon} ${custom_icons_assets_folder}
                     RESULT_VARIABLE script_png_icon_to_icon_folder_result
                 )
                 if (NOT ${script_png_icon_to_icon_folder_result} EQUAL 0)
-                    message(FATAL_ERROR "hello_imgui_ios_add_icons: ${app_name} failed to convert ${custom_app_icon} to icon folder")
+                    message(WARNING "
+                        ${app_name}: failed to create iOS icon from ${custom_app_icon}
+                        Tried to run:
+                            ${PYTHON_EXECUTABLE} ${script_png_icon_to_icon_folder} ${custom_app_png_icon} ${custom_icons_assets_folder}
+                        This is not a fatal error, but the app will not have a custom icon.
+                    ")
+                    return()
                 endif()
 
                 set(icons_assets_folder ${custom_icons_assets_folder})
@@ -142,7 +159,6 @@ if (APPLE)
     ########################################################
     if (MACOSX)
 
-
         # Handle icons (and conversion if necessary)
         function(hello_imgui_macos_add_icons app_name assets_location)
             # Default HelloImGui icon
@@ -160,20 +176,38 @@ if (APPLE)
             # Second possible custom icon, in assets/app_settings/icon.png (which we need to convert to icon.icns)
             set(custom_app_png_icon ${assets_location}/app_settings/icon.png)
             if ((NOT found_custom_icon) AND (EXISTS ${custom_app_png_icon}))
+                # find python program
+                find_program(PYTHON_EXECUTABLE NAMES python3 python)
+                if (NOT PYTHON_EXECUTABLE)
+                    message(WARNING "
+                    ${app_name}: can't create a macOS icons from ${custom_app_png_icon}
+                        (did not find python)
+                        This is not a fatal error, but the app will not have a custom icon.
+                    ")
+                    return()
+                endif()
+
                 # We need to convert icon.png to icon.icns
                 set(script_png_to_icns "${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/macos_png_icon_to_icns.py")
-                message(STATUS "hello_imgui_macos_add_icons: converting ${custom_app_png_icon} to icns for app ${app_name}")
+                message(VERBOSE "hello_imgui_macos_add_icons: converting ${custom_app_png_icon} to icns for app ${app_name}")
                 set(custom_app_icon ${CMAKE_CURRENT_BINARY_DIR}/icon.icns)
                 execute_process(
-                    COMMAND python3 ${script_png_to_icns} ${custom_app_png_icon} ${custom_app_icon}
+                    COMMAND ${PYTHON_EXECUTABLE} ${script_png_to_icns} ${custom_app_png_icon} ${custom_app_icon}
                     RESULT_VARIABLE script_png_to_icns_result
                 )
                 if (NOT ${script_png_to_icns_result} EQUAL 0)
-                    message(FATAL_ERROR "hello_imgui_macos_add_icons: ${app_name} failed to convert ${custom_app_icon} to icns")
+                    message(WARNING "
+                        ${app_name}: failed to create macOS icon from ${custom_app_icon}
+                            Tried to run:
+                                ${PYTHON_EXECUTABLE} ${script_png_to_icns} ${custom_app_png_icon} ${custom_app_icon}
+                            This is not a fatal error, but the app will not have a custom icon.
+                        ")
+                    return()
                 endif()
 
                 set(app_icon ${custom_app_icon})
                 set(found_custom_icon ON)
+                message(WARNING "found custom icon at ${custom_app_icon} for app ${app_name} ")
             endif()
 
             # Add icon to target
@@ -182,6 +216,13 @@ if (APPLE)
                 PROPERTIES
                 MACOSX_PACKAGE_LOCATION "Resources"
             )
+            message(WARNING "
+            target_sources(${app_name} PRIVATE ${app_icon})
+            set_source_files_properties(${app_icon}
+                PROPERTIES
+                MACOSX_PACKAGE_LOCATION "Resources"
+            )
+            ")
         endfunction()
     endif(MACOSX)
 

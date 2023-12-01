@@ -17,14 +17,17 @@ def create_icns(input_png: str, output_icns: str):
             '-z', str(size), str(size),
             input_png,
             '--out', out_image_name
-        ])
+        ],
+        stdout=subprocess.DEVNULL,
+        check=True
+        )
 
     # list files in the iconset folder
     iconset_files = os.listdir(tmp_iconset_folder)
-    print(iconset_files)
 
-    # Create the .icns file using iconutil
-    subprocess.run(['iconutil', '-c', 'icns', tmp_iconset_folder, '-o', output_icns])
+    # Create the .icns file using iconutil, redirecting stdout to /dev/null
+    subprocess.run(['iconutil', '-c', 'icns', tmp_iconset_folder, '-o', output_icns],
+                   stdout=subprocess.DEVNULL,  check=True)
 
 
 def sandbox():

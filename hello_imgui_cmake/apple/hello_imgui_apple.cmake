@@ -216,13 +216,6 @@ if (APPLE)
                 PROPERTIES
                 MACOSX_PACKAGE_LOCATION "Resources"
             )
-            message(WARNING "
-            target_sources(${app_name} PRIVATE ${app_icon})
-            set_source_files_properties(${app_icon}
-                PROPERTIES
-                MACOSX_PACKAGE_LOCATION "Resources"
-            )
-            ")
         endfunction()
     endif(MACOSX)
 

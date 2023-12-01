@@ -28,6 +28,11 @@ if (APPLE)
             endif()
         endforeach()
 
+        # if found_plist is not defined, we have a problem
+        if (NOT DEFINED found_plist)
+            message(FATAL_ERROR "hello_imgui_select_plist: no plist found in ${possible_paths}")
+        endif()
+
         set(${output_plist_path} ${found_plist} PARENT_SCOPE)
     endfunction()
 

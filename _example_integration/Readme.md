@@ -7,9 +7,29 @@ No manual download or git clone is required.
 
 ## Explanations
 
+### CMake
+
 The [CMakeLists.txt](CMakeLists.txt) file will download and build hello_imgui at configure time, and make the "hello_imgui_add_app" cmake function available.
 
-*Note: hello_imgui_add_app will automaticaly link your app to hello_imgui, and will embed the assets folder (for desktop, mobile, and emscripten apps)*
+*Note: hello_imgui_add_app will automatically link your app to hello_imgui, and will embed the assets folder (for desktop, mobile, and emscripten apps)*
+
+### Assets
+
+Anything in the assets/ folder located beside the app's CMakeLists 
+will be bundled together with the app (for macOS, iOS, Android, Emscripten).
+
+```
+assets/
+├── world.jpg                         # A custom asset
+├── app_settings/                     # Application settings
+│         ├── icon.png                # This will be the app icon
+│         │                           #    (it will be converted to the right format) 
+│         ├── apple/
+│         │         └── Info.plist    # macOS and iOS app settings
+├── fonts/
+│         ├── DroidSans.ttf           # Default fonts
+│         └── fontawesome-webfont.ttf #     used by HelloImGui
+```
 
 ### Standard usage
 

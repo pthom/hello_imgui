@@ -12,7 +12,7 @@ if (IOS)
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(MACOSX TRUE)
+    set(MACOSX TRUE CACHE BOOL "" FORCE)
 endif()
 
 

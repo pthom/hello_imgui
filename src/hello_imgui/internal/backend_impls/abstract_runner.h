@@ -75,6 +75,7 @@ protected:
     virtual void Impl_UpdateAndRenderAdditionalPlatformWindows() = 0;
     virtual void Impl_SwapBuffers() = 0;
     virtual void Impl_Cleanup() = 0;
+    virtual void Impl_SetWindowIcon() {}
 
     virtual ImageBuffer Impl_ScreenshotRgb() { return ImageBuffer{}; }
 

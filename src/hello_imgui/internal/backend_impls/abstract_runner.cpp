@@ -338,6 +338,9 @@ void AbstractRunner::Setup()
 
     Impl_CreateGlContext();
     Impl_InitGlLoader();
+
+    Impl_SetWindowIcon();
+
     IMGUI_CHECKVERSION();
 
 #ifdef HELLO_IMGUI_IMGUI_SHARED

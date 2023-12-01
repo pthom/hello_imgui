@@ -2,6 +2,8 @@
 
 #include "hello_imgui/hello_imgui_include_opengl.h"
 #include "hello_imgui/hello_imgui.h"
+#include "hello_imgui/internal/stb_image.h"
+#include "hello_imgui/hello_imgui_assets.h"
 
 #include <GLFW/glfw3.h>
 #include <backends/imgui_impl_glfw.h>
@@ -134,6 +136,36 @@ namespace HelloImGui
     {
         return OpenglScreenshotRgb();
     }
+
+    void RunnerGlfwOpenGl3::Impl_SetWindowIcon()
+    {
+        std::string iconFile = "app_settings/icon.png";
+        if (!HelloImGui::AssetExists(iconFile))
+            return;
+
+        auto imageAsset = HelloImGui::LoadAssetFileData(iconFile.c_str());
+        int width, height, channels;
+        unsigned char* image = stbi_load_from_memory(
+            (stbi_uc *)imageAsset.data, imageAsset.dataSize , &width, &height, &channels, 4); // force RGBA channels
+
+        if (image)
+        {
+            GLFWimage icons[1];
+            icons[0].width = width;
+            icons[0].height = height;
+            icons[0].pixels = image; // GLFWimage expects an array of pixels (unsigned char *)
+
+            glfwSetWindowIcon((GLFWwindow*)mWindow, 1, icons);
+
+            stbi_image_free(image);
+        }
+        else
+        {
+            // Handle error
+        }
+        HelloImGui::FreeAssetFileData(&imageAsset);
+    }
+
 
 }  // namespace HelloImGui
 #endif  // #ifdef HELLOIMGUI_USE_GLFW_OPENGL3

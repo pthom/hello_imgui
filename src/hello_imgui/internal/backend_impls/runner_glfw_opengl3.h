@@ -30,6 +30,7 @@ class RunnerGlfwOpenGl3 : public AbstractRunner
         void Impl_UpdateAndRenderAdditionalPlatformWindows() override;
         void Impl_Cleanup() override;
         void Impl_SwapBuffers() override;
+        void Impl_SetWindowIcon() override;
 
         ImageBuffer Impl_ScreenshotRgb() override;
 };

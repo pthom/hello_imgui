@@ -160,9 +160,7 @@ namespace HelloImGui
             stbi_image_free(image);
         }
         else
-        {
-            // Handle error
-        }
+            HIMG_LOG("RunnerGlfwOpenGl3::Impl_SetWindowIcon: Failed to load window icon: " + iconFile);
         HelloImGui::FreeAssetFileData(&imageAsset);
     }
 

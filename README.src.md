@@ -194,9 +194,9 @@ assets/
 ├── DroidSans.ttf                 # default fonts 
 │    └── fontawesome-webfont.ttf  # used by HelloImGui
 ├── images/
-│    ├── whatever.jpg             # add any image you like in whatever folder you like
+│    ├── whatever.jpg             # add any file you like in whatever folder you like
 ├── app_settings/
-│         ├── ...                 # see App customization
+│    ├── ...                      # see App customization
 ```
 
 
@@ -208,13 +208,17 @@ Example:
 ```
 assets/
 ├── app_settings/
-│         ├── icon.png                     # if present, this will be used as the app icon
-│         │                                # (works on macOS and iOS, and it will be converted to the correct format)
+│         ├── icon.png          # If present, this will be used as the app icon.
+│         │                     # Tt should be a square image, of big size, e.g. 1024x1024.
+│         │                     # This works on macOS and iOS, and it will automatically 
+│         │                     # be converted to the correct format.
 │         │
 │         ├── apple/
-│         │         ├── Info.plist         # if present, this will be used as the app Info.plist for iOS and macOS
-│         │         ├── Info.ios.plist     # (optional, but if present, it will be used instead of Info.plist on iOS)
-│         │         ├── Info.macos.plist   # (optional, but if present, it will be used instead of Info.plist on macOS) 
+│         │         ├── Info.plist         # Will be used as the app Info.plist for iOS and macOS
+│         │         │                      # (if absent, HelloImGui will provide a default one)
+│         │         │
+│         │         ├── Info.ios.plist     # (optional, used on iOS if present)
+│         │         ├── Info.macos.plist   # (optional, used on macOS if present) 
 │         │ 
 ```
 

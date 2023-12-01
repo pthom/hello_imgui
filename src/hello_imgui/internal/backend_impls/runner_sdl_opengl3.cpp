@@ -1,6 +1,9 @@
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
 
 #include "hello_imgui/hello_imgui_include_opengl.h"
+#include "hello_imgui/internal/stb_image.h"
+#include "hello_imgui/hello_imgui_assets.h"
+
 #include "runner_sdl_opengl3.h"
 #include "hello_imgui/hello_imgui_error.h"
 #include "backend_window_helper/sdl_window_helper.h"
@@ -205,6 +208,39 @@ namespace HelloImGui
     {
         return OpenglScreenshotRgb();
     }
+
+    void RunnerSdlOpenGl3::Impl_SetWindowIcon()
+    {
+        std::string iconFile = "app_settings/icon.png";
+        if (!HelloImGui::AssetExists(iconFile))
+            return;
+
+        auto imageAsset = HelloImGui::LoadAssetFileData(iconFile.c_str());
+        int width, height, channels;
+        unsigned char *image = stbi_load_from_memory(
+            (stbi_uc *)imageAsset.data, (int)imageAsset.dataSize, &width, &height, &channels, 4);  // force RGBA channels
+
+        if (image)
+        {
+            // Create an SDL_Surface from the raw pixel data
+            SDL_Surface *iconSurface = SDL_CreateRGBSurfaceFrom(
+                image, width, height, 32, 4 * width, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+
+            if (iconSurface)
+            {
+                SDL_SetWindowIcon((SDL_Window *)mWindow, iconSurface);
+                SDL_FreeSurface(iconSurface);  // SDL_CreateRGBSurfaceFrom does not free the pixel data
+            }
+            else
+                HIMG_LOG("RunnerSdlOpenGl3::Impl_SetWindowIcon: Failed to create surface");
+
+            stbi_image_free(image);
+        }
+        else
+            HIMG_LOG("RunnerSdlOpenGl3::Impl_SetWindowIcon: Failed to load window icon: " + iconFile);
+        HelloImGui::FreeAssetFileData(&imageAsset);
+    }
+
 
 }  // namespace HelloImGui
 

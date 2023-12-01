@@ -146,7 +146,7 @@ namespace HelloImGui
         auto imageAsset = HelloImGui::LoadAssetFileData(iconFile.c_str());
         int width, height, channels;
         unsigned char* image = stbi_load_from_memory(
-            (stbi_uc *)imageAsset.data, imageAsset.dataSize , &width, &height, &channels, 4); // force RGBA channels
+            (stbi_uc *)imageAsset.data, (int)imageAsset.dataSize , &width, &height, &channels, 4); // force RGBA channels
 
         if (image)
         {

@@ -103,14 +103,14 @@ if (APPLE)
     # Definitions of hello_imgui_platform_customization for IOS and MACOSX
     if (MACOSX AND NOT HELLOIMGUI_MACOS_NO_BUNDLE)
 
-        function(hello_imgui_platform_customization app_name)
+        function(hello_imgui_platform_customization app_name assets_location)
             hello_imgui_add_info_plist(${app_name} sdl)
             hello_imgui_macos_add_icons(${app_name})
         endfunction()
 
     elseif(IOS)
 
-        function(hello_imgui_platform_customization app_name)
+        function(hello_imgui_platform_customization app_name assets_location)
             hello_imgui_ios_check_development_team()
             hello_imgui_ios_set_dev_team(${app_name})
             hello_imgui_add_info_plist(${app_name})

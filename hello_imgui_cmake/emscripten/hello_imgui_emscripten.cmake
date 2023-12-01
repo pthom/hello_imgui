@@ -57,7 +57,7 @@ function(hello_imgui_set_emscripten_target_initial_memory_megabytes app_name nb_
 endfunction()
 
 
-function(hello_imgui_platform_customization app_name)
+function(hello_imgui_platform_customization app_name assets_location)
     hello_imgui_emscripten_set_shell_file(${app_name})
     hello_imgui_emscripten_target_compile_options(${app_name})
 endfunction()

@@ -83,7 +83,7 @@ endfunction()
 #
 # By default hello_imgui_platform_customization does nothing
 #
-function(hello_imgui_platform_customization app_name)
+function(hello_imgui_platform_customization app_name assets_location)
 endfunction()
 # But it can be overriden by platform specific implementations, in the following files:
 include(${CMAKE_CURRENT_LIST_DIR}/apple/hello_imgui_apple.cmake)
@@ -137,7 +137,7 @@ endfunction()
 function(hello_imgui_prepare_app app_name assets_location)
     set_bundle_variables_defaults(${app_name})
     hello_imgui_bundle_assets(${app_name} ${assets_location})
-    hello_imgui_platform_customization(${app_name})
+    hello_imgui_platform_customization(${app_name} ${assets_location})
     target_link_libraries(${app_name} PRIVATE hello_imgui)
 
     if (ANDROID AND HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT)

@@ -9,23 +9,21 @@ if (WIN32)
 
         # We need to convert icon.png to a windows ico file
         set(script_png_to_ico "${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/windows/windows_png_icon_to_ico.py")
-        message(STATUS "_hello_imgui_create_ico: converting ${custom_app_png_icon} to windows ico for app ${app_name}")
+        message(VERBOSE "_hello_imgui_create_ico: converting ${custom_app_png_icon} to windows ico for app ${app_name}")
         set(custom_app_icon ${CMAKE_CURRENT_BINARY_DIR}/icon.ico)
         execute_process(
-            COMMAND python3 ${script_png_to_ico} ${custom_app_png_icon} ${custom_app_icon}
+            COMMAND python ${script_png_to_ico} ${custom_app_png_icon} ${custom_app_icon}
             RESULT_VARIABLE script_png_to_ico_result
         )
         if (NOT ${script_png_to_ico_result} EQUAL 0)
             message(WARNING "
-                ${app_name}: failed to convert app icon ${custom_app_icon}
-                to a Windows ico file.
+                ${app_name}: failed to create a Windows ico file from ${custom_app_icon} 
+                Tried to run:
+                    python ${script_png_to_ico} ${custom_app_png_icon} ${custom_app_icon}
 
                 This is not a fatal error, but the app will not have a custom icon.
-
-                In order to have a custom icon, you need to have python3 with the python3 Pillow package:
-
+                In order to have a custom icon, you need to have python with the Pillow package:
                     pip install Pillow
-
                 ")
             return()
         endif()
@@ -46,6 +44,7 @@ if (WIN32)
         # Create rc file
         set(icon_rc_file "${CMAKE_CURRENT_BINARY_DIR}/app.rc")
         set(icon_rc_file_contents "IDI_ICON1 ICON DISCARDABLE \"${custom_app_icon}\"")
+        file(WRITE ${icon_rc_file} ${icon_rc_file_contents})
 
         # Add the rc file to the executable
         target_sources(${app_name} PRIVATE ${icon_rc_file})

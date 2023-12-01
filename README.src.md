@@ -282,7 +282,7 @@ This project uses the [ios-cmake](https://github.com/leetal/ios-cmake) toolchain
 .tools/sdl_download.sh
 ```
 
-Alternatively, download [SDL2-2.24.2.tar.gz](https://www.libsdl.org/release/SDL2-2.24.2.tar.gz) and extract it into external/SDL.
+Alternatively, download [SDL2-2.28.5.tar.gz](https://www.libsdl.org/release/SDL2-2.28.5.tar.gz) and extract it into external/SDL.
 
 2. Launch cmake with correct team and bundle url parts:
 

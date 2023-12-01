@@ -49,7 +49,7 @@ if (WIN32)
         endif()
 
         # Create rc file
-        set(icon_rc_file "${CMAKE_CURRENT_BINARY_DIR}/app.rc")
+        set(icon_rc_file "${CMAKE_CURRENT_BINARY_DIR}/app_${app_name}.rc")
         set(icon_rc_file_contents "IDI_ICON1 ICON DISCARDABLE \"${custom_app_icon}\"")
         file(WRITE ${icon_rc_file} ${icon_rc_file_contents})
 

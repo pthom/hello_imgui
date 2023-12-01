@@ -1,23 +1,46 @@
 if (APPLE)
 
+    # hello_imgui_select_plist: select best plist file for the current platform
+    function(hello_imgui_select_plist assets_location output_plist_path)
+        # List of possible paths, in order of priority (first is highest priority)
+        if (MACOSX)
+            set(possible_paths
+                ${CMAKE_CURRENT_SOURCE_DIR}/macos/Info.plist
+                ${assets_location}/app_settings/apple/Info.macos.plist
+                ${assets_location}/app_settings/apple/Info.plist
+                ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/info_plist/Info.plist.in
+            )
+        endif()
+        if (IOS)
+            set(possible_paths
+                ${CMAKE_CURRENT_SOURCE_DIR}/ios/Info.plist
+                ${assets_location}/app_settings/apple/Info.ios.plist
+                ${assets_location}/app_settings/apple/Info.plist
+                ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/info_plist/Info.plist.in
+            )
+        endif()
+
+        # Find the first existing plist
+        foreach(possible_path ${possible_paths})
+            if (EXISTS ${possible_path})
+                set(found_plist ${possible_path})
+                break()
+            endif()
+        endforeach()
+
+        set(${output_plist_path} ${found_plist} PARENT_SCOPE)
+    endfunction()
+
+
     # This function is common to IOS and MACOSX, and customize the Info.plist
-    function(hello_imgui_add_info_plist app_name)
+    function(hello_imgui_add_info_plist app_name assets_location)
+        hello_imgui_select_plist( ${assets_location} info_plist_in)
+        message(VERBOSE "hello_imgui_add_info_plist: info_plist_in=${info_plist_in} for app_name=${app_name}")
+        set(info_plist_configured ${CMAKE_CURRENT_BINARY_DIR}/Info${app_name}.plist)
+
         if (NOT DEFINED HELLO_IMGUI_BUNDLE_IDENTIFIER)
             set(HELLO_IMGUI_BUNDLE_IDENTIFIER ${HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART}.${HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART})
         endif()
-        if (MACOSX)
-            set(plist_subfolder "macos")
-        else()
-            set(plist_subfolder "ios")
-        endif()
-        if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${plist_subfolder}/Info.plist)
-            message("hello_imgui_add_info_plist: ${app_name} found app specific Info.plist")
-            set(info_plist_in ${CMAKE_CURRENT_SOURCE_DIR}/${plist_subfolder}/Info.plist)
-        else()
-            set(info_plist_dir_all ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/info_plist)
-            set(info_plist_in ${info_plist_dir_all}/Info.plist.in)
-        endif()
-        set(info_plist_configured ${CMAKE_CURRENT_BINARY_DIR}/Info${app_name}.plist)
 
         # Clean CFBundleIdentifier (remove unwanted characters)
         # See https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/TP40009249-SW1
@@ -38,7 +61,9 @@ if (APPLE)
         )
     endfunction()
 
+    ########################################################
     # Specific functions for IOS
+    ########################################################
     if (IOS)
         string(REGEX MATCH "SIMULATOR.*" IOS_IS_SIMULATOR ${PLATFORM})
 
@@ -67,30 +92,86 @@ if (APPLE)
             message(VERBOSE "CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=${CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM}")
         endfunction()
 
-
+        # Handle icons (and conversion if necessary)
         function(hello_imgui_ios_add_icons app_name)
-            if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/ios/icons)
-                message("hello_imgui_ios_add_icons: ${app_name} found ios/icons specific icons folder")
-                set(icons_assets_folder ${CMAKE_CURRENT_SOURCE_DIR}/ios/icons)
-            else()
-                set(local_assets_folder ${CMAKE_CURRENT_SOURCE_DIR}/assets)
+            # Default HelloImGui icons
+            set(icons_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/ios_icons)
+            set(found_custom_icon OFF)
 
-                set(icons_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/ios_icons)
+            # First possible custom icons folder, in ios/icons
+            set(custom_icons_assets_folder ${CMAKE_CURRENT_SOURCE_DIR}/ios/icons)
+            if ((NOT found_custom_icon) AND (IS_DIRECTORY ${custom_icons_assets_folder}))
+                message(STATUS "hello_imgui_ios_add_icons: found ios/icons specific icons folder for app ${app_name} ")
+                set(icons_assets_folder ${custom_icons_assets_folder})
+                set(found_custom_icon ON)
             endif()
+
+            # Second possible custom icon, in assets/app_settings/icon.png
+            set(custom_app_png_icon ${assets_location}/app_settings/icon.png)
+            if ((NOT found_custom_icon) AND (EXISTS ${custom_app_png_icon}))
+                # We need to convert icon.png to an icon folder
+                set(script_png_icon_to_icon_folder "${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/ios_png_icon_to_icon_folder.py")
+                message(STATUS "hello_imgui_ios_add_icons: converting ${custom_app_png_icon} to icon folder for app ${app_name} ")
+                set(custom_icons_assets_folder ${CMAKE_CURRENT_BINARY_DIR}/custom_icons)
+                execute_process(
+                    COMMAND python3 ${script_png_icon_to_icon_folder} ${custom_app_png_icon} ${custom_icons_assets_folder}
+                    RESULT_VARIABLE script_png_icon_to_icon_folder_result
+                )
+                if (NOT ${script_png_icon_to_icon_folder_result} EQUAL 0)
+                    message(FATAL_ERROR "hello_imgui_ios_add_icons: ${app_name} failed to convert ${custom_app_icon} to icon folder")
+                endif()
+
+                set(icons_assets_folder ${custom_icons_assets_folder})
+                set(found_custom_icon ON)
+            endif()
+
             hello_imgui_apple_bundle_add_files_from_folder(${app_name} ${icons_assets_folder} "")
         endfunction()
 
     endif(IOS)
 
+
+
+    ########################################################
     # Specific functions for MACOSX
+    ########################################################
     if (MACOSX)
-        function(hello_imgui_macos_add_icons app_name)
-            set(app_icon ${CMAKE_CURRENT_SOURCE_DIR}/macos/${HELLO_IMGUI_BUNDLE_ICON_FILE})
-            if (EXISTS ${app_icon})
-                message(STATUS "hello_imgui_macos_add_icons: ${app_name} found app specific icon at ${app_icon}")
-            else()
-                set(app_icon ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/mac_icons/icon.icns)
+
+
+        # Handle icons (and conversion if necessary)
+        function(hello_imgui_macos_add_icons app_name assets_location)
+            # Default HelloImGui icon
+            set(app_icon ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/mac_icons/icon.icns)
+            set(found_custom_icon OFF)
+
+            # First possible custom icon in macos/icon.icns
+            set(custom_app_icon ${CMAKE_CURRENT_SOURCE_DIR}/macos/${HELLO_IMGUI_BUNDLE_ICON_FILE})
+            if ((NOT found_custom_icon) AND (EXISTS ${custom_app_icon}))
+                set(app_icon ${custom_app_icon})
+                set(found_custom_icon ON)
+                message(STATUS "hello_imgui_macos_add_icons: found app specific icon at ${custom_app_icon} for app ${app_name} ")
             endif()
+
+            # Second possible custom icon, in assets/app_settings/icon.png (which we need to convert to icon.icns)
+            set(custom_app_png_icon ${assets_location}/app_settings/icon.png)
+            if ((NOT found_custom_icon) AND (EXISTS ${custom_app_png_icon}))
+                # We need to convert icon.png to icon.icns
+                set(script_png_to_icns "${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/macos_png_icon_to_icns.py")
+                message(STATUS "hello_imgui_macos_add_icons: converting ${custom_app_png_icon} to icns for app ${app_name}")
+                set(custom_app_icon ${CMAKE_CURRENT_BINARY_DIR}/icon.icns)
+                execute_process(
+                    COMMAND python3 ${script_png_to_icns} ${custom_app_png_icon} ${custom_app_icon}
+                    RESULT_VARIABLE script_png_to_icns_result
+                )
+                if (NOT ${script_png_to_icns_result} EQUAL 0)
+                    message(FATAL_ERROR "hello_imgui_macos_add_icons: ${app_name} failed to convert ${custom_app_icon} to icns")
+                endif()
+
+                set(app_icon ${custom_app_icon})
+                set(found_custom_icon ON)
+            endif()
+
+
             target_sources(${app_name} PRIVATE ${app_icon})
             set_source_files_properties(${app_icon}
                 PROPERTIES
@@ -100,12 +181,15 @@ if (APPLE)
     endif(MACOSX)
 
 
-    # Definitions of hello_imgui_platform_customization for IOS and MACOSX
+    ########################################################
+    # Definitions of hello_imgui_platform_customization
+    # for IOS and MACOSX
+    ########################################################
     if (MACOSX AND NOT HELLOIMGUI_MACOS_NO_BUNDLE)
 
         function(hello_imgui_platform_customization app_name assets_location)
-            hello_imgui_add_info_plist(${app_name} sdl)
-            hello_imgui_macos_add_icons(${app_name})
+            hello_imgui_add_info_plist(${app_name} ${assets_location})
+            hello_imgui_macos_add_icons(${app_name} ${assets_location})
         endfunction()
 
     elseif(IOS)
@@ -113,7 +197,7 @@ if (APPLE)
         function(hello_imgui_platform_customization app_name assets_location)
             hello_imgui_ios_check_development_team()
             hello_imgui_ios_set_dev_team(${app_name})
-            hello_imgui_add_info_plist(${app_name})
+            hello_imgui_add_info_plist(${app_name} ${assets_location})
             hello_imgui_ios_add_icons(${app_name})
         endfunction()
 

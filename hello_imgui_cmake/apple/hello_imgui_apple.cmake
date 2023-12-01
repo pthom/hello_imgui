@@ -171,7 +171,7 @@ if (APPLE)
                 set(found_custom_icon ON)
             endif()
 
-
+            # Add icon to target
             target_sources(${app_name} PRIVATE ${app_icon})
             set_source_files_properties(${app_icon}
                 PROPERTIES

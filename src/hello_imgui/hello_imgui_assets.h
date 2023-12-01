@@ -69,8 +69,9 @@ For compatibility with Android and other platforms, prefer to use `LoadAssetFile
 
 @@md
 */
-std::string AssetFileFullPath(const std::string& assetRelativeFilename);
-inline std::string assetFileFullPath(const std::string& assetRelativeFilename) { return AssetFileFullPath(assetRelativeFilename); }
+std::string AssetFileFullPath(const std::string& assetRelativeFilename, bool assertIfNotFound = true);
+inline std::string assetFileFullPath(const std::string& assetRelativeFilename, bool assertIfNotFound = true)
+    { return AssetFileFullPath(assetRelativeFilename, assertIfNotFound); }
 
 // Returns true if this asset file exists
 bool AssetExists(const std::string& assetRelativeFilename);

@@ -174,7 +174,7 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
 }
 
 /// Access font files in application bundle or assets/fonts/
-std::string AssetFileFullPath(const std::string& assetFilename)
+std::string AssetFileFullPath(const std::string& assetFilename, bool assertIfNotFound)
 {
 #if defined(__ANDROID__)
     // Under android, assets can be compressed
@@ -210,12 +210,13 @@ std::string AssetFileFullPath(const std::string& assetFilename)
         {
             triedChdirToBundleResourcesFolder = true;
             ChdirToBundleResourcesFolder();
-            return AssetFileFullPath(assetFilename);
+            return AssetFileFullPath(assetFilename, assertIfNotFound);
         }
     };
     #endif
 
     // Display nice message on error
+    if (assertIfNotFound)
     {
         std::string errorMessage;
         errorMessage += "assetFileFullPath(" + assetFilename + ") failed!\n";
@@ -227,15 +228,15 @@ std::string AssetFileFullPath(const std::string& assetFilename)
         }
         errorMessage += "    (you can call HelloImGui::SetAssetsFolder() to set the default search location)\n";
         HIMG_ERROR(errorMessage);
-        return "";
     }
+    return "";
 #endif
 }
 
 // Returns true if this asset file exists
 bool AssetExists(const std::string& assetFilename)
 {
-    std::string fullPath = AssetFileFullPath(assetFilename);
+    std::string fullPath = AssetFileFullPath(assetFilename, false);
     return ! fullPath.empty();
 }
 

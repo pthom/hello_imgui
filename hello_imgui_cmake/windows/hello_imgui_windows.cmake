@@ -7,19 +7,31 @@ if (WIN32)
             return()
         endif()
 
+        # find python program
+        find_program(PYTHON_EXECUTABLE NAMES python3 python)
+        # if python is not found, we can't create the ico file
+        if (NOT PYTHON_EXECUTABLE)
+            message(WARNING "
+            ${app_name}: can't create a windows ico file from ${custom_app_png_icon}
+                (did not find python)
+                This is not a fatal error, but the web app will not have a favicon.
+                ")
+            return()
+        endif()
+
         # We need to convert icon.png to a windows ico file
         set(script_png_to_ico "${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/windows/windows_png_icon_to_ico.py")
         message(VERBOSE "_hello_imgui_create_ico: converting ${custom_app_png_icon} to windows ico for app ${app_name}")
         set(custom_app_icon ${CMAKE_CURRENT_BINARY_DIR}/icon.ico)
         execute_process(
-            COMMAND python ${script_png_to_ico} ${custom_app_png_icon} ${custom_app_icon}
+            COMMAND ${PYTHON_EXECUTABLE} ${script_png_to_ico} ${custom_app_png_icon} ${custom_app_icon}
             RESULT_VARIABLE script_png_to_ico_result
         )
         if (NOT ${script_png_to_ico_result} EQUAL 0)
             message(WARNING "
                 ${app_name}: failed to create a Windows ico file from ${custom_app_icon} 
                 Tried to run:
-                    python ${script_png_to_ico} ${custom_app_png_icon} ${custom_app_icon}
+                    ${PYTHON_EXECUTABLE} ${script_png_to_ico} ${custom_app_png_icon} ${custom_app_icon}
 
                 This is not a fatal error, but the app will not have a custom icon.
                 In order to have a custom icon, you need to have python with the Pillow package:
@@ -27,11 +39,6 @@ if (WIN32)
                 ")
             return()
         endif()
-
-        set(app_icon ${custom_app_icon})
-        set(found_custom_icon ON)
-
-
     endfunction()
 
     function(_hello_imgui_add_windows_icon app_name assets_location)

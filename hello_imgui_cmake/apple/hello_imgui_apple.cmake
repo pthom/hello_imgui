@@ -207,7 +207,7 @@ if (APPLE)
 
                 set(app_icon ${custom_app_icon})
                 set(found_custom_icon ON)
-                message(WARNING "found custom icon at ${custom_app_icon} for app ${app_name} ")
+                message(VERBOSE "found custom icon at ${custom_app_icon} for app ${app_name} ")
             endif()
 
             # Add icon to target

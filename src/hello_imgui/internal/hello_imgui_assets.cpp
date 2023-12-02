@@ -206,11 +206,16 @@ std::string AssetFileFullPath(const std::string& assetFilename, bool assertIfNot
         // if we are inside an apple bundle, we may have to chdir to the bundle resources folder
         // let's try this once
         static bool triedChdirToBundleResourcesFolder = false;
-        if (!triedChdirToBundleResourcesFolder)
+        if (!triedChdirToBundleResourcesFolder && gOverrideAssetsFolder.empty())
         {
             triedChdirToBundleResourcesFolder = true;
+            auto current_path = std::filesystem::current_path();
             ChdirToBundleResourcesFolder();
-            return AssetFileFullPath(assetFilename, assertIfNotFound);
+            std::string newPath = AssetFileFullPath(assetFilename, false);
+            if (!newPath.empty())
+                return newPath;
+            else
+                std::filesystem::current_path(current_path);
         }
     };
     #endif

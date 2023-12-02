@@ -17,6 +17,11 @@ bool gDidCallHelloImGuiLoadFontTTF = false;
 
 ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange, ImFontConfig config)
 {
+    if (!HelloImGui::AssetExists(fontFilename))
+    {
+        HIMG_LOG(std::string("Cannot find font ") + fontFilename);
+        return nullptr;
+    }
     AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());
 
     config.FontDataOwnedByAtlas = false;

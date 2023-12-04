@@ -5,6 +5,7 @@
 #include "hello_imgui/image_from_asset.h"
 #include "hello_imgui/hello_imgui_theme.h"
 #include "hello_imgui/internal/clock_seconds.h"
+#include "hello_imgui/internal/platform/ini_folder_locations.h"
 #include "imgui.h"
 
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
@@ -241,30 +242,40 @@ void AbstractRunner::HandleDpiOnSecondFrame()
 
 std::string AbstractRunner::IniPartsFilename()
 {
-    auto _stringToSaneFilename=[](const std::string& s, const std::string& extension) -> std::string
+    auto _getIniFileName = [this]() -> std::string
     {
-        std::string filenameSanitized;
-        for (char c : s)
-            if (isalnum(c))
-                filenameSanitized += c;
+        auto _stringToSaneFilename=[](const std::string& s, const std::string& extension) -> std::string
+        {
+            std::string filenameSanitized;
+            for (char c : s)
+                if (isalnum(c))
+                    filenameSanitized += c;
+                else
+                    filenameSanitized += "_";
+            filenameSanitized += extension;
+            return filenameSanitized;
+        };
+
+        if (! params.iniFilename.empty())
+            return params.iniFilename.c_str();
+        else
+        {
+            if (params.iniFilename_useAppWindowTitle && !params.appWindowParams.windowTitle.empty())
+            {
+                std::string iniFilenameSanitized = _stringToSaneFilename(params.appWindowParams.windowTitle, ".ini");
+                return iniFilenameSanitized;
+            }
             else
-                filenameSanitized += "_";
-        filenameSanitized += extension;
-        return filenameSanitized;
+                return "imgui.ini";
+        }
     };
 
-    if (! params.iniFilename.empty())
-        return params.iniFilename.c_str();
-    else
-    {
-        if (params.iniFilename_useAppWindowTitle && !params.appWindowParams.windowTitle.empty())
-        {
-            std::string iniFilenameSanitized = _stringToSaneFilename(params.appWindowParams.windowTitle, ".ini");
-            return iniFilenameSanitized;
-        }
-        else
-            return "imgui.ini";
-    }
+    std::string iniFilename = _getIniFileName();
+    std::string folder = HelloImGui::IniFolderLocation(params.iniFolderType);
+
+    std::string iniFullFilename = folder.empty() ? iniFilename : folder + "/" + iniFilename;
+
+    return iniFullFilename;
 }
 
 void AbstractRunner::LayoutSettings_SwitchLayout(const std::string& layoutName)

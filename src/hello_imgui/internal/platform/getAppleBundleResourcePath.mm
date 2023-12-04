@@ -22,3 +22,33 @@ std::string GetBundlePath()
         return [bundlePath UTF8String];
     }
 }
+
+
+namespace AppleIniFolderLocations
+{
+    std::string GetTempPath()
+    {
+        NSString *tempPath = NSTemporaryDirectory();
+        return [tempPath UTF8String];
+    }
+
+    std::string GetAppUserConfigFolder()
+    {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+        NSString *appDataPath = [paths firstObject];
+        return [appDataPath UTF8String];
+    }
+
+    std::string GetDocumentsPath()
+    {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsPath = [paths firstObject];
+        return [documentsPath UTF8String];
+    }
+
+    std::string GetHomePath()
+    {
+        NSString *homePath = NSHomeDirectory();
+        return [homePath UTF8String];
+    }
+}

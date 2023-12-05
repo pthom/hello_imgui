@@ -1,6 +1,6 @@
 #include "hello_imgui/internal/platform/ini_folder_locations.h"
+#include "hello_imgui/internal/whereami/whereami_cpp.h"
 
-#include <filesystem>
 
 #ifdef __MINGW32__
     // Specific implementation for MingW which doesn't have SHGetFolderPath
@@ -153,7 +153,7 @@ namespace HelloImGui
     std::string IniFolderLocation(IniFolderType iniFolderType)
     {
 #ifdef __EMSCRIPTEN__
-        return ".";
+        return "/";     // Emscripten uses a virtual file system, so we can't use any of the other paths
 #else
         switch(iniFolderType)
         {
@@ -167,6 +167,8 @@ namespace HelloImGui
                 return GetHomePath();
             case IniFolderType::TempFolder:
                 return GetTempPath();
+            case IniFolderType::AppExecutableFolder:
+                return wai_getExecutableFolder_string();
             default:
                 return "";
         }

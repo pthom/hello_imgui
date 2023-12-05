@@ -140,10 +140,13 @@ int main(){
 
 * `iniFolderType`: _IniFolderType, default = IniFolderType::CurrentFolder_
   Sets the folder where imgui will save its params.
-  (possible values are: CurrentFolder, AppUserConfigFolder, DocumentsFolder, HomeFolder, TempFolder)
+  (possible values are: CurrentFolder, AppUserConfigFolder, DocumentsFolder, HomeFolder, TempFolder, AppExecutableFolder)
+   AppUserConfigFolder is [Hume]\AppData\Roaming under Windows, ~/.config under Linux, ~/Library/Application Support"
+   under macOS)
 * `iniFilename`: _string, default = ""_
-  Sets the ini filename under which imgui will save its params. Path is relative to the path given by iniFolderType.
-  If empty, then the ini file name will be derived from appWindowParams.windowTitle (if both are empty, the ini filename will be imgui.ini).
+  Sets the ini filename under which imgui will save its params. Its path is relative to the path given by iniFolderType,
+  and can include a subfolder (which will be created if needed).
+  If iniFilename empty, then it will be derived from appWindowParams.windowTitle (if both are empty, the ini filename will be imgui.ini).
 * `iniFilename_useAppWindowTitle`: _bool, default = true_.
   Shall the iniFilename be derived from appWindowParams.windowTitle (if not empty)
 

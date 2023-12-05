@@ -19,25 +19,37 @@ enum class BackendType
 };
 
 
-// Where to store the ini file for the application settings
+// IniFolderType: "Where to store the ini file for the application settings"
+// Note: RunnerParams contains the following members, which are used to compute the ini file location:
+//           iniFolderType                   (IniFolderType::CurrentFolder by default)
+//           iniFilename                     (empty string by default)
+//           iniFilename_useAppWindowTitle   (true by default: iniFilename is derived from appWindowParams.windowTitle)
+// iniFilename may contain a subfolder (which will be created inside the iniFolderType folder if needed)
 enum class IniFolderType
 {
-    // NoFolder: do not add any folder before the ini file name
-    NoFolder,
-
     // CurrentFolder: the folder where the application is executed
+    // (convenient for development, but not recommended for production)
     CurrentFolder,
 
     // AppUserConfigFolder:
     //      AppData under Windows (Example: C:\Users\[Username]\AppData\Roaming under windows)
     //      ~/.config under Linux
     //      "~/Library/Application Support" under macOS
+    // (recommended for production, if settings do not need to be easily accessible by the user)
     AppUserConfigFolder,
 
+    // AppExecutableFolder: the folder where the application executable is located
+    // (this may be different from CurrentFolder if the application is launched from a shortcut)
+    // (convenient for development, but not recommended for production)
+    AppExecutableFolder,
+
     // HomeFolder: the user home folder
+    // (recommended for production, if settings need to be easily accessible by the user)
     HomeFolder,
+
     // DocumentsFolder: the user documents folder
     DocumentsFolder,
+
     // TempFolder: the system temp folder
     TempFolder
 };
@@ -103,10 +115,13 @@ struct FpsIdling
 
 * `iniFolderType`: _IniFolderType, default = IniFolderType::CurrentFolder_
   Sets the folder where imgui will save its params.
-  (possible values are: CurrentFolder, AppUserConfigFolder, DocumentsFolder, HomeFolder, TempFolder)
+  (possible values are: CurrentFolder, AppUserConfigFolder, DocumentsFolder, HomeFolder, TempFolder, AppExecutableFolder)
+   AppUserConfigFolder is [Hume]\AppData\Roaming under Windows, ~/.config under Linux, ~/Library/Application Support"
+   under macOS)
 * `iniFilename`: _string, default = ""_
-  Sets the ini filename under which imgui will save its params. Path is relative to the path given by iniFolderType.
-  If empty, then the ini file name will be derived from appWindowParams.windowTitle (if both are empty, the ini filename will be imgui.ini).
+  Sets the ini filename under which imgui will save its params. Its path is relative to the path given by iniFolderType,
+  and can include a subfolder (which will be created if needed).
+  If iniFilename empty, then it will be derived from appWindowParams.windowTitle (if both are empty, the ini filename will be imgui.ini).
 * `iniFilename_useAppWindowTitle`: _bool, default = true_.
   Shall the iniFilename be derived from appWindowParams.windowTitle (if not empty)
 

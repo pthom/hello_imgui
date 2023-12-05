@@ -137,13 +137,20 @@ int main(){
 * `fpsIdling`: _FpsIdling_. Idling parameters (set fpsIdling.enableIdling to false to disable Idling)
 * `useImGuiTestEngine`: _bool, default=false_.
   Set this to true if you intend to use imgui_test_engine (please read note below)
+
+* `iniFolderType`: _IniFolderType, default = IniFolderType::CurrentFolder_
+  Sets the folder where imgui will save its params.
+  (possible values are: CurrentFolder, AppUserConfigFolder, DocumentsFolder, HomeFolder, TempFolder, AppExecutableFolder)
+   AppUserConfigFolder is [Hume]\AppData\Roaming under Windows, ~/.config under Linux, ~/Library/Application Support"
+   under macOS)
 * `iniFilename`: _string, default = ""_
-  Sets the ini filename under which imgui will save its params. Path is relative to the current app working dir.
-  If empty, then the ini file name will be derived from appWindowParams.windowTitle (if both are empty, the ini filename will be imgui.ini).
-  Note: if appWindowParams.restorePreviousGeometry is true, then HelloImGui will also store the app window size and position into "iniFilename + _appWindow.ini"
+  Sets the ini filename under which imgui will save its params. Its path is relative to the path given by iniFolderType,
+  and can include a subfolder (which will be created if needed).
+  If iniFilename empty, then it will be derived from appWindowParams.windowTitle (if both are empty, the ini filename will be imgui.ini).
 * `iniFilename_useAppWindowTitle`: _bool, default = true_.
-  Shall the iniFilename be derived from appWindowParams.windowTitle if empty
-* `appShallExit`: _bool, default=false_.
+  Shall the iniFilename be derived from appWindowParams.windowTitle (if not empty)
+
+ * `appShallExit`: _bool, default=false_.
   During execution, set this to true to exit the app.
   _Note: 'appShallExit' has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
   shall not exit._

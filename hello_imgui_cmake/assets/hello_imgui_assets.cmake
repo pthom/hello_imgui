@@ -99,9 +99,11 @@ endif()
 
 
 function(hello_imgui_copy_folder1_files_missing_from_folder2 folder_src_1 folder_src_2 folder_dst)
+    if (NOT EXISTS ${folder_dst})
+        file(MAKE_DIRECTORY ${folder_dst})
+    endif()
     hello_imgui_file_glob_recurse_relative(files1 ${folder_src_1})
     hello_imgui_file_glob_recurse_relative(files2 ${folder_src_2})
-
     foreach(file1 ${files1})
         list(FIND files2 ${file1} index)
         if (${index} EQUAL -1)

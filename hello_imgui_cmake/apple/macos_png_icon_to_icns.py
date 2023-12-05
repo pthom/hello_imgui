@@ -43,7 +43,7 @@ def main():
     args = parser.parse_args()
 
     # call create_icns
-    print(f"macos_png_icon_to_icns.py: Converting {args.input_png} to {args.output_icns}")
+    # print(f"macos_png_icon_to_icns.py: Converting {args.input_png} to {args.output_icns}")
     create_icns(args.input_png, args.output_icns)
 
 

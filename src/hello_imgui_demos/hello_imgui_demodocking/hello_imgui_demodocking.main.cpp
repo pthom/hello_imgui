@@ -482,18 +482,15 @@ std::vector<HelloImGui::DockingParams> CreateAlternativeLayouts(AppState& appSta
 //////////////////////////////////////////////////////////////////////////
 int main(int, char**)
 {
-    //###############################################################################################
-    // Part 1: Define the application state, fill the status and menu bars, and load additional font
-    //###############################################################################################
+    //#############################################################################################
+    // Part 1: Define the application state, fill the status and menu bars, load additional font
+    //#############################################################################################
 
     // Our application state
     AppState appState;
 
     // Hello ImGui params (they hold the settings as well as the Gui callbacks)
     HelloImGui::RunnerParams runnerParams;
-
-    // Note: by setting the window title, we also set the name of the ini files in which the settings for the user
-    // layout will be stored: Docking_demo.ini
     runnerParams.appWindowParams.windowTitle = "Docking demo";
 
     runnerParams.imGuiWindowParams.menuAppTitle = "Docking App";
@@ -560,8 +557,14 @@ int main(int, char**)
     //         ~/.config under Linux
     //         "~/Library/Application Support" under macOS or iOS
     runnerParams.iniFolderType = HelloImGui::IniFolderType::AppUserConfigFolder;
-    // This will be the name of the ini file in which the settings will be stored
-    // The subdirectory Docking_Demo will be created under the folder defined by runnerParams.iniFolderType
+
+    // runnerParams.iniFilename: this will be the name of the ini file in which the settings
+    // will be stored.
+    // In this example, the subdirectory Docking_Demo will be created under the folder defined
+    // by runnerParams.iniFolderType.
+    //
+    // Note: if iniFilename is left empty, the name of the ini file will be derived
+    // from appWindowParams.windowTitle
     runnerParams.iniFilename = "Docking_Demo/Docking_demo.ini";
 
     //###############################################################################################

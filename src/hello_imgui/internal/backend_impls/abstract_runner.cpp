@@ -459,7 +459,7 @@ void AbstractRunner::RenderGui()
     DockingDetails::ProvideWindowOrDock(params);
 
     if (params.imGuiWindowParams.showMenuBar)
-        Menu_StatusBar::ShowMenu(params);
+        Menu_StatusBar::ShowMenu(params, mWindow);
 
     if (params.callbacks.ShowGui)
     {

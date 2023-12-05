@@ -1,3 +1,4 @@
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/internal/docking_details.h"
 
@@ -7,6 +8,10 @@
 #include "imgui_internal.h"
 
 #include <string>
+
+#ifdef HELLOIMGUI_USE_GLFW
+#include "GLFW/glfw3.h"
+#endif
 
 namespace HelloImGui
 {
@@ -49,13 +54,82 @@ void ShowDefaultAppMenu_Quit(RunnerParams & runnerParams)
     }
 }
 
-void ShowMenu(RunnerParams & runnerParams)
+void ShowMenu(RunnerParams & runnerParams, HelloImGui::BackendApi::WindowPointer window)
 {
     bool hasMenu = (ImGui::GetCurrentWindow()->Flags & ImGuiWindowFlags_MenuBar) != 0;
     if (!hasMenu)
         return;
 
+    bool borderless = runnerParams.appWindowParams.borderless;
     ImGui::BeginMenuBar();
+    if (borderless)
+    {
+        const float windowUpBorderHeight = 5.0f;
+        const float windowCornerBorderWidth = 10.0f;
+        ImVec2 drag_rect_size = ImGui::GetCurrentWindow()->MenuBarRect().GetSize();
+        ImGui::SetCursorPos(ImVec2(0.0f, 0.0f));
+        ImGui::SetNextItemAllowOverlap();
+        ImGui::InvisibleButton("titleBarDragLeftCornerZone", ImVec2(windowCornerBorderWidth, windowUpBorderHeight));
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNWSE);
+        }
+        if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0))
+        {
+            ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNWSE);
+            ImVec2 windowPos = ImGui::GetWindowPos();
+            ImVec2 MouseDelta = ImGui::GetIO().MouseDelta;
+            int winHeight = 0;
+            int winWidth = 0;
+            #ifdef HELLOIMGUI_USE_GLFW
+                auto glfwWindow = (GLFWwindow *)(window);
+                glfwGetWindowSize((GLFWwindow *)window, &winWidth, &winHeight);
+                glfwSetWindowPos(glfwWindow, (int)(windowPos.x + MouseDelta.x), (int)(windowPos.y + MouseDelta.y));
+                glfwSetWindowSize(glfwWindow, (int)(winWidth - MouseDelta.x), (int)(winHeight - MouseDelta.y));
+            #endif
+        }
+        ImGui::SetCursorPos(ImVec2(windowCornerBorderWidth, 0.0f));
+        ImGui::SetNextItemAllowOverlap();
+        ImGui::InvisibleButton("titleBarDragUpZone", ImVec2(drag_rect_size.x - windowCornerBorderWidth, windowUpBorderHeight));
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
+        }
+        if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0))
+        {
+            ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
+            ImVec2 windowPos = ImGui::GetWindowPos();
+            ImVec2 MouseDelta = ImGui::GetIO().MouseDelta;
+            int winHeight = 0;
+            int winWidth = 0;
+            #ifdef HELLOIMGUI_USE_GLFW
+                auto glfwWindow = (GLFWwindow *)(window);
+                glfwGetWindowSize((GLFWwindow *)window, &winWidth, &winHeight);
+                glfwSetWindowPos(glfwWindow, (int)windowPos.x, (int)(windowPos.y + MouseDelta.y));
+                glfwSetWindowSize(glfwWindow, winWidth, (int)(winHeight - MouseDelta.y));
+            #endif
+        }
+
+        ImVec2 windowUpBorderPadding = ImVec2(0, windowUpBorderHeight);
+        ImGui::SetNextItemAllowOverlap();
+        ImGui::SetCursorPos(windowUpBorderPadding);
+        ImGui::InvisibleButton("titleBarDragZone", drag_rect_size - windowUpBorderPadding);
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+        }
+        if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0))
+        {
+            ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+            ImVec2 windowPos = ImGui::GetWindowPos();
+            ImVec2 MouseDelta = ImGui::GetIO().MouseDelta;
+            #ifdef HELLOIMGUI_USE_GLFW
+                auto glfwWindow = (GLFWwindow *)(window);
+                glfwSetWindowPos(glfwWindow, (int)(windowPos.x + MouseDelta.x), (int)(windowPos.y + + MouseDelta.y));
+            #endif
+        }
+        ImGui::SetCursorPos(ImVec2(windowCornerBorderWidth, 0.0f));
+    }
 
     if (runnerParams.imGuiWindowParams.showMenu_App)
         ShowDefaultAppMenu_Quit(runnerParams);

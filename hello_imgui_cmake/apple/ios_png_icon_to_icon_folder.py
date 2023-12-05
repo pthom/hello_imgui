@@ -29,7 +29,7 @@ def main():
     args = parser.parse_args()
 
     # call create_icns
-    print(f"ios_png_icon_to_icon_folder.py: Converting {args.input_png} to {args.output_icon_folder}")
+    # print(f"ios_png_icon_to_icon_folder.py: Converting {args.input_png} to {args.output_icon_folder}")
     create_icon_folder(args.input_png, args.output_icon_folder)
 
 

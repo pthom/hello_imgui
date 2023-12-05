@@ -21,7 +21,7 @@ def main():
     args = parser.parse_args()
 
     # call create_icns
-    print(f"windows_png_icon_to_ico.py: Converting {args.input_png} to {args.output_ico}")
+    # print(f"windows_png_icon_to_ico.py: Converting {args.input_png} to {args.output_ico}")
     png_to_ico(args.input_png, args.output_ico)
 
 

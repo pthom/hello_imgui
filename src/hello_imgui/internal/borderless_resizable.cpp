@@ -109,7 +109,13 @@ namespace HelloImGui
         auto highlightColor = ImGui::GetColorU32(ImGuiCol_FrameBgHovered, 0.8f);
         ImVec2 dragPadding = HelloImGui::EmToVec2(1.5f, 1.5f);
 
-        static struct dragArea dragAreaData[4];
+        // check if main viewport focused
+        if (GImGui->WindowsFocusOrder.back()->Viewport->Idx != 0)
+        {
+            return;
+        }
+
+        static struct dragArea dragAreaData[5];
         unsigned int dragAreaIndex = 0;
 
         // Top pan area
@@ -170,6 +176,8 @@ namespace HelloImGui
             dragAreaData[dragAreaIndex].corner_type = ImDrawCornerFlags_BotLeft;
         }
         dragAreaIndex++;
+
+        IM_ASSERT(sizeof(dragAreaData) / sizeof(dragArea) == dragAreaIndex);
 
         BorderlessResizableHandler(dragAreaData, dragAreaIndex, window, backendWindowHelper, highlightColor);
     }

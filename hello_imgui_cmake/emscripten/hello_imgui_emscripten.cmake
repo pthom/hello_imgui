@@ -56,7 +56,7 @@ function(_hello_imgui_emscripten_set_shell_file app_name assets_location)
     _him_get_real_output_directory(${app_name} real_output_directory)
     file(MAKE_DIRECTORY ${real_output_directory}) # make dir real_output_directory if needed
     set(shell_file_configured ${CMAKE_CURRENT_BINARY_DIR}/tmp/shell.emscripten_${app_name}.html)
-    set(HELLO_IMGUI_FAVICON "${app_name}_favicon.ico")
+    set(HELLO_IMGUI_FAVICON "${app_name}_favicon.png")
     configure_file(
         ${shell_template_file}
         ${shell_file_configured}
@@ -100,50 +100,23 @@ endfunction()
 function(_hello_imgui_create_emscripten_ico app_name assets_location)
     _him_get_real_output_directory(${app_name} real_output_directory)
     file(MAKE_DIRECTORY ${real_output_directory}) # make dir real_output_directory if needed
-    set(custom_app_icon ${real_output_directory}/${app_name}_favicon.ico)
+    set(final_icon ${real_output_directory}/${app_name}_favicon.png)
 
-    # if the user did not provide a custom icon, we copy the standard hello_imgui icon
-    set(custom_app_png_icon ${assets_location}/app_settings/icon.png)
-    if (NOT EXISTS ${custom_app_png_icon})
-        set(standard_favicon ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_favicon.ico)
+    # if the user provided a custom icon, we use it
+    set(user_provided_app_png_icon ${assets_location}/app_settings/icon.png)
+
+    if (NOT EXISTS ${user_provided_app_png_icon})
+        # if the user did not provide a custom icon, we copy the standard hello_imgui icon
+        set(standard_favicon ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_favicon.png)
         message(VERBOSE "_hello_imgui_create_ico: copying ${standard_favicon} to ${custom_app_icon} for app ${app_name}")
         # copy and rename the standard_favicon to custom_app_icon
         # CMake forces us to use configure_file if we want to rename the file... Whatever
-        configure_file(${standard_favicon} ${custom_app_icon} COPYONLY)
-        return()
+        configure_file(${standard_favicon} ${final_icon} COPYONLY)
+    else()
+        message(VERBOSE "_hello_imgui_create_ico: copying ${standard_favicon} to ${custom_app_icon} for app ${app_name}")
+        configure_file(${user_provided_app_png_icon} ${final_icon} COPYONLY)
     endif()
 
-    # find python program
-    find_program(PYTHON_EXECUTABLE NAMES python3 python)
-    # if python is not found, we can't create the ico file
-    if (NOT PYTHON_EXECUTABLE)
-        message(WARNING "
-        ${app_name}: can't create a favicon.ico file from ${custom_app_png_icon}
-                (did not find python)
-                This is not a fatal error, but the web app will not have a favicon.
-                ")
-        return()
-    endif()
-
-    # We need to convert icon.png to a favicon.ico file
-    set(script_png_to_ico "${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/emscripten_png_icon_to_ico.py")
-    message(VERBOSE "_hello_imgui_create_ico: converting ${custom_app_png_icon} to favicon.ico for app ${app_name}")
-    execute_process(
-        COMMAND ${PYTHON_EXECUTABLE} ${script_png_to_ico} ${custom_app_png_icon} ${custom_app_icon}
-        RESULT_VARIABLE script_png_to_ico_result
-    )
-    if (NOT ${script_png_to_ico_result} EQUAL 0)
-        message(WARNING "
-        ${app_name}: failed to create a favicon.ico file from ${custom_app_icon}
-                Tried to run:
-                    ${PYTHON_EXECUTABLE} ${script_png_to_ico} ${custom_app_png_icon} ${custom_app_icon}
-
-                This is not a fatal error, but the web app will not have a favicon.
-                In order to have a custom icon, you need to have python with the Pillow package:
-                    pip install Pillow
-                ")
-        return()
-    endif()
 endfunction()
 
 

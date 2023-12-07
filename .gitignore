@@ -563,6 +563,9 @@ MigrationBackup/
 # Jetbrains settings
 .idea
 
+# Mac
+.DS_Store
+
 # Misc
 nohup.out
 

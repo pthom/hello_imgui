@@ -13,27 +13,43 @@ function(_him_get_real_output_directory app_name output_dir)
 endfunction()
 
 
-function(_hello_imgui_emscripten_set_shell_file app_name)
+function(_hello_imgui_emscripten_set_shell_file app_name assets_location)
+    set(possible_shell_files
+        ${assets_location}/app_settings/emscripten/shell.emscripten.html
+        ${assets_location}/app_settings/emscripten/shell.emscripten.html.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/shell.emscripten.html
+        ${CMAKE_CURRENT_SOURCE_DIR}/shell.emscripten.html.in
+        ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/shell.emscripten.html
+    )
+    set(shell_template_file "")
+    foreach(shell_file ${possible_shell_files})
+        if (EXISTS ${shell_file})
+            set(shell_template_file ${shell_file})
+            break()
+        endif()
+    endforeach()
 
-    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/shell.emscripten.html)
-        set(shell_file ${CMAKE_CURRENT_SOURCE_DIR}/shell.emscripten.html)
-    else()
-        set(shell_template_file ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/shell.emscripten.html)
-        _him_get_real_output_directory(${app_name} real_output_directory)
-        file(MAKE_DIRECTORY ${real_output_directory}) # make dir real_output_directory if needed
-        set(shell_file ${CMAKE_CURRENT_BINARY_DIR}/shell.emscripten_${app_name}.html)
-        set(HELLO_IMGUI_FAVICON "${app_name}_favicon.ico")
-        configure_file(
-            ${shell_template_file}
-            ${shell_file}
-            @ONLY
-        )
+    if (NOT EXISTS ${shell_template_file})
+        message(FATAL_ERROR "
+        ${app_name}: could not find a shell.emscripten.html file in the following locations:
+            ${possible_shell_files}
+        ")
     endif()
+
+    _him_get_real_output_directory(${app_name} real_output_directory)
+    file(MAKE_DIRECTORY ${real_output_directory}) # make dir real_output_directory if needed
+    set(shell_file_configured ${CMAKE_CURRENT_BINARY_DIR}/tmp/shell.emscripten_${app_name}.html)
+    set(HELLO_IMGUI_FAVICON "${app_name}_favicon.ico")
+    configure_file(
+        ${shell_template_file}
+        ${shell_file_configured}
+        @ONLY
+    )
 
     target_link_options(
         ${app_name} 
         PRIVATE
-        "SHELL:--shell-file ${shell_file}"
+        "SHELL:--shell-file ${shell_file_configured}"
     )
 
     set_target_properties(
@@ -117,7 +133,7 @@ endfunction()
 
 function(hello_imgui_platform_customization app_name assets_location)
     _hello_imgui_create_emscripten_ico(${app_name} ${assets_location})
-    _hello_imgui_emscripten_set_shell_file(${app_name})
+    _hello_imgui_emscripten_set_shell_file(${app_name} ${assets_location})
     _hello_imgui_emscripten_target_compile_options(${app_name})
 endfunction()
 

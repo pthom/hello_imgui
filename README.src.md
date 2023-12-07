@@ -128,7 +128,7 @@ Anything in the assets/ folder located beside the app's CMakeLists will be embed
 └── hello_globe.main.cpp
 ├── CMakeLists.txt
 ├── assets/
-│         └── world.jpg
+│    └── world.jpg
 ```
 (even on iOS and emscripten).
 
@@ -201,19 +201,26 @@ Example:
 ```
 assets/
 ├── app_settings/
-│         ├── icon.png          # If present, this will be used as the app icon.
-│         │                     # Tt should be a square image, of large size, e.g. 1024x1024.
-│         │                     # This works on macOS, iOS, windows, linux, and emscripten 
-│         │                     # and it will automatically 
-│         │                     # be converted to the correct format.
-│         │
-│         ├── apple/
-│         │         ├── Info.plist         # Will be used as the app Info.plist for iOS and macOS
-│         │         │                      # (if absent, HelloImGui will provide a default one)
-│         │         │
-│         │         ├── Info.ios.plist     # (optional, used on iOS if present)
-│         │         ├── Info.macos.plist   # (optional, used on macOS if present) 
-│         │ 
+│    ├── icon.png          # If present, this will be used as the app icon.
+│    │                     # Tt should be a square image, of large size, at least 256x256.
+│    │                     # This works on macOS, iOS, windows, linux, and emscripten 
+│    │                     # and it will automatically 
+│    │                     # be converted to the correct format.
+│    │
+│    ├── apple/
+│    │    ├── Info.plist    # Will be used as the app Info.plist for iOS and macOS
+│    │    │                      # (if absent, HelloImGui will provide a default one)
+│    │    │
+│    │    ├── Info.ios.plist     # (optional, used on iOS if present)
+│    │    ├── Info.macos.plist   # (optional, used on macOS if present) 
+│    │ 
+│    └── emscripten/
+│        ├── shell.emscripten.html # Emscripten shell file
+│        │                         #   (this file will be cmake "configured"
+│        │                         #    to add the name and favicon) 
+│        └── custom.js             # Any custom file here will be deployed
+│                                  #   in the emscripten build folder
+
 ```
 
 -------------------
@@ -462,12 +469,12 @@ For Android, create a folder named "android" beside the application 'CMakeLists.
 
 ```
 ├── android/                                    # android/ is where you customize the Android App
-│         ├── mipmap-source/
-│         │         ├── Readme.md
-│         │         └── ic_launcher.png                     # an icon that helps creating the different sizes
-│         └── res/                                    # anything in the res/ folder will be embedded as a resource
+│    ├── mipmap-source/
+│    │    ├── Readme.md
+│    │    └── ic_launcher.png                     # an icon that helps creating the different sizes
+│    └── res/                                    # anything in the res/ folder will be embedded as a resource
 │             ├── mipmap-hdpi/
-│             │         └── ic_launcher.png                 # icons with different sizes
+│             │    └── ic_launcher.png                 # icons with different sizes
 │             ├── mipmap-.../
 │             └── values/
 │                 ├── colors.xml

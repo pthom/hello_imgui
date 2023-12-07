@@ -17,21 +17,29 @@ The [CMakeLists.txt](CMakeLists.txt) file will download and build hello_imgui at
  
 
 Anything in the assets/ folder located beside the app's CMakeLists will be bundled together with the app (for macOS, iOS, Android, Emscripten).
-The files in assets/app_settings/ will be used to generate the app icon, and the app settings (for macOS, iOS, Android).
+The files in assets/app_settings/ will be used to generate the app icon, and the app settings.
 
 ```
 assets/
-├── world.jpg                         # A custom asset
-├── app_settings/                     # Application settings
-│         ├── icon.png                # This will be the app icon, it should be square
-│         │                           # and at least 512x512. It will  be converted
-│         │                           # to the right format, for each platform.
-│         ├── apple/
-│         │         └── Info.plist    # macOS and iOS app settings
-│         │                          # (or Info.ios.plist + Info.macos.plist)
+├── world.jpg                   # A custom asset
+│
+├── app_settings/               # Application settings
+│    ├── icon.png               # This will be the app icon, it should be square
+│    │                          # and at least 256x256. It will  be converted
+│    │                          # to the right format, for each platform.
+│    ├── apple/
+│    │    └── Info.plist        # macOS and iOS app settings
+│    │                          # (or Info.ios.plist + Info.macos.plist)
+│    └── emscripten/
+│        ├── shell.emscripten.html # Emscripten shell file
+│        │                         #   (this file will be cmake "configured"
+│        │                         #    to add the name and favicon) 
+│        └── custom.js             # Any custom file here will be deployed
+│                                  #   in the emscripten build folder
+│
 ├── fonts/
-│         ├── DroidSans.ttf           # Default fonts
-│         └── fontawesome-webfont.ttf #     used by HelloImGui
+│    ├── DroidSans.ttf           # Default fonts
+│    └── fontawesome-webfont.ttf #   used by HelloImGui
 ```
 
 ### Standard usage

@@ -24,6 +24,11 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 
 ## Get started in 5 minutes
 
+### Either use this starter template
+[This template](https://github.com/pthom/hello_imgui_template) will get you started in 5 minutes (and shows how to embed assets, customize the app icon, etc.).
+
+### Or write a cmake + main.cpp file, and you are good to go!
+
 Save this as `hello_world.main.cpp`
 ```cpp
 #include "hello_imgui/hello_imgui.h"
@@ -65,9 +70,12 @@ mkdir build && cd build && cmake .. && cmake --build . -j 4
 ./hello_world
 ```
 
-That's it, you do not need to clone HelloImGui, and you do not need to install any third party! 
+Optionally, copy some assets beside your app's CMakeLists.txt, and they will be embedded in the app.
+See [Embed assets](#embed-assets) for more info.
 
-For more detailed info, go to [_example_integration](_example_integration).
+That's it! 
+
+
 
 **Note about hello_imgui_add_app**
 
@@ -192,6 +200,7 @@ assets/
 │    ├── ...                      # see App customization
 ```
 
+The default fonts are available inside [hello_imgui_assets](hello_imgui_assets/).
 
 # App customization
 
@@ -495,13 +504,12 @@ Just click on the image below to open it:
 
 [![ImGui Manual](https://raw.githubusercontent.com/pthom/imgui_manual/master/doc/images/link_manual.png)](https://pthom.github.io/imgui_manual_online/)
 
+## Dear ImGui Bundle
+[Dear ImGui Bundle](https://pthom.github.io/imgui_bundle/introduction.html) is a bundle for Dear ImGui, including various powerful libraries from its ecosystem. It is based on HelloImGui.
+
 ## CatSight
 
 [CatSight](https://github.com/codecat/catsight) is a cross-platform process memory inspector.
-
-## Example of an app using HelloImGui as a submodule
-
-[hello_imgui_my_app](https://github.com/pthom/hello_imgui_my_app) is a separate repo that gives a working example on how to use the library as a submodule.
 
 ---
 

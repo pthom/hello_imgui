@@ -13,6 +13,23 @@ function(_him_get_real_output_directory app_name output_dir)
 endfunction()
 
 
+function(_hello_imgui_emscripten_add_js_css_resources app_name assets_location)
+    set(resources_dir ${assets_location}/app_settings/emscripten)
+    _him_get_real_output_directory(${app_name} real_output_directory)
+
+    # find all files inside resources_dir
+    file(GLOB resources_files ${resources_dir}/*)
+    # remove the shell.emscripten.html file
+    list(FILTER resources_files EXCLUDE REGEX "shell.emscripten.html$")
+    list(FILTER resources_files EXCLUDE REGEX "shell.emscripten.html.in$")
+
+    # copy all files to the output directory (no configure_file here)
+    foreach(resource_file ${resources_files})
+        file(COPY ${resource_file} DESTINATION ${real_output_directory})
+    endforeach()
+endfunction()
+
+
 function(_hello_imgui_emscripten_set_shell_file app_name assets_location)
     set(possible_shell_files
         ${assets_location}/app_settings/emscripten/shell.emscripten.html
@@ -135,6 +152,7 @@ function(hello_imgui_platform_customization app_name assets_location)
     _hello_imgui_create_emscripten_ico(${app_name} ${assets_location})
     _hello_imgui_emscripten_set_shell_file(${app_name} ${assets_location})
     _hello_imgui_emscripten_target_compile_options(${app_name})
+    _hello_imgui_emscripten_add_js_css_resources(${app_name} ${assets_location})
 endfunction()
 
 endif (EMSCRIPTEN)

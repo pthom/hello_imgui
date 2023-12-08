@@ -150,6 +150,16 @@ if (APPLE)
             hello_imgui_apple_bundle_add_files_from_folder(${app_name} ${icons_assets_folder} "")
         endfunction()
 
+
+        function(hello_imgui_ios_copy_resources app_name assets_location)
+            # if assets_location/app_settings/apple/Resources/ios exists, copy it to the bundle Resources folder
+            set(custom_resources_folder ${assets_location}/app_settings/apple/Resources/ios)
+            if (EXISTS ${custom_resources_folder})
+                message(STATUS "hello_imgui_ios_copy_resources: found custom iOS resources folder ${custom_resources_folder} for app ${app_name} ")
+                hello_imgui_apple_bundle_add_files_from_folder(${app_name} ${custom_resources_folder} "Resources")
+            endif()
+        endfunction()
+
     endif(IOS)
 
 
@@ -237,6 +247,7 @@ if (APPLE)
             hello_imgui_ios_check_development_team()
             hello_imgui_ios_set_dev_team(${app_name})
             hello_imgui_add_info_plist(${app_name} ${assets_location})
+            hello_imgui_ios_copy_resources(${app_name} ${assets_location})
             hello_imgui_ios_add_icons(${app_name})
         endfunction()
 

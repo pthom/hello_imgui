@@ -18,9 +18,6 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 </table><t></t>
 
 
-https://www.youtube.com/watch?v=dArP4lBnOr8
-Watch this 
-
 ## Features
 
 * Set up a project in 5 minutes

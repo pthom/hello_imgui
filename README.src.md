@@ -11,6 +11,16 @@
 
 Hello ImGui is a library that enables quickly write multiplatform apps with the simplicity of a "Hello World" app. It is based on [Dear ImGui](https://github.com/ocornut/imgui).
 
+<table style="border-style: none">
+<tr><td align="center"><a href="https://www.youtube.com/watch?v=dArP4lBnOr8">
+<img src="docs/images/yt_multiplatform.jpg" height="120"></a></td></tr>
+<tr><td><i>10' demo video showcasing multi-platform support<br/> and rapid development with Hello ImGui</i></td></tr>
+</table><t></t>
+
+
+https://www.youtube.com/watch?v=dArP4lBnOr8
+Watch this 
+
 ## Features
 
 * Set up a project in 5 minutes
@@ -20,6 +30,7 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 * [Theme tweaking](https://www.youtube.com/watch?v=Hhartw0cUjg)
 * Window geometry utilities (autosize, restore window position)
 * [Truly multiplatform](https://traineq.org/HelloImGui_6_Platforms.mp4) (Linux, Windows, MacOS, iOS, Android, emscripten)
+
 
 
 ## Get started in 5 minutes

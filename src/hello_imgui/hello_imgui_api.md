@@ -438,8 +438,10 @@ In order to change the application window settings, change the _AppWindowsParams
     control over what is drawn behind the Gui.
 
   * `showMenuBar`: _bool, default=false_.
-    Show Menu bar on top of imgui main window
-    You can customize the menu via `RunnerCallbacks.ShowMenus()`
+    Show Menu bar on top of imgui main window.
+    In order to fully customize the menu, set showMenuBar to true, and set showMenu_App and showMenu_View params to false.
+    Then, implement the callback `RunnerParams.callbacks.ShowMenus` which can optionally call `HelloImGui::ShowViewMenu`
+    and `HelloImGui::ShowAppMenu`.
 
   * `showMenu_App`: _bool, default=true_.
     If menu bar is shown, include or not the default app menu

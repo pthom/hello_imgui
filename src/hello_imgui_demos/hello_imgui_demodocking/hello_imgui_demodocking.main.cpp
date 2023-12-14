@@ -297,8 +297,11 @@ void StatusBarGui(AppState& app_state)
 }
 
 // The menu gui
-void ShowMenuGui()
+void ShowMenuGui(HelloImGui::RunnerParams& runnerParams)
 {
+    HelloImGui::ShowAppMenu(runnerParams);
+    HelloImGui::ShowViewMenu(runnerParams);
+
     if (ImGui::BeginMenu("My Menu"))
     {
         bool clicked = ImGui::MenuItem("Test me", "", false);
@@ -512,9 +515,16 @@ int main(int, char**)
     //
     // Menu bar
     //
-    runnerParams.imGuiWindowParams.showMenuBar = true;          // We use the default menu of Hello ImGui
-    runnerParams.callbacks.ShowMenus = ShowMenuGui;             // where we add items to the default menu
-    runnerParams.callbacks.ShowAppMenuItems = ShowAppMenuItems; // and where add items to the App menu
+    // Here, we fully customize the menu bar:
+    // by setting `showMenuBar` to true, and `showMenu_App` and `showMenu_View` to false,
+    // HelloImGui will display an empty menu bar, which we can fill with our own menu items via the callback `ShowMenus`
+    runnerParams.imGuiWindowParams.showMenuBar = true;
+    runnerParams.imGuiWindowParams.showMenu_App = false;
+    runnerParams.imGuiWindowParams.showMenu_View = false;
+    // Inside `ShowMenus`, we can call `HelloImGui::ShowViewMenu` and `HelloImGui::ShowAppMenu` if desired
+    runnerParams.callbacks.ShowMenus = [&runnerParams]() {ShowMenuGui(runnerParams);};
+    // Optional: add items to Hello ImGui default App menu
+    runnerParams.callbacks.ShowAppMenuItems = ShowAppMenuItems;
 
     //
     // Load user settings at `PostInit` and save them at `BeforeExit`

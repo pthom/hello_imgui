@@ -52,37 +52,40 @@ if(MACOSX)
 endif()
 
 #------------------------------------------------------------------------------
-# Options / Backend selection
+# Glfw Backend
 #------------------------------------------------------------------------------
-# If no backend option is selected, automatically download glfw and build it
-if (NOT HELLOIMGUI_WITH_GLFW
-    AND NOT HELLOIMGUI_WITH_SDL
-    AND NOT HELLOIMGUI_USE_SDL_OPENGL3
-    AND NOT HELLOIMGUI_USE_GLFW_OPENGL3
-    AND NOT HELLOIMGUI_USE_QT
-    AND NOT EMSCRIPTEN
-    )
-    set(HELLOIMGUI_WITH_GLFW ON CACHE BOOL "")
-    message(WARNING "
-            HelloImGui: using Glfw as default default backend (it will be downloaded and built inside {CMAKE_CURRENT_BINARY_DIR}/_deps/glfw-*)
-            In order to select your own backend, use one of the cmake options below:
-                -DHELLOIMGUI_WITH_GLFW=ON            # To download and build glfw automatically
-                -DHELLOIMGUI_WITH_SDL=ON             # To download and build SDL automatically
-                -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # To use your own version of GLFW (it should be findable via find_package(glfw3))
-                -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # To use your own version of SDL (it should be findable via find_package(SDL2))
-            ")
+# if HELLOIMGUI_WITH_GLFW is ON, Glfw may be downloaded and built automatically
+#     (unless HELLOIMGUI_USE_GLFW_SYSTEM_LIB is ON, in which case it will be searched via find_package())
+option(HELLOIMGUI_WITH_GLFW "Add GLFW backend (download if needed)" OFF)
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    option(HELLOIMGUI_USE_GLFW_SYSTEM_LIB "Force usage of GLFW system library" ON)
+else()
+    option(HELLOIMGUI_USE_GLFW_SYSTEM_LIB "Force usage of GLFW system library" OFF)
 endif()
-
-# Backend selection with automatic backend compilation
-# (if you set any of those options, the corresponding backend will be automatically downloaded at build time)
-option(HELLOIMGUI_WITH_GLFW "Add GLFW+OpenGl3 support (glfw will be automatically compiled via ExternalProject_Add)" OFF)
-option(HELLOIMGUI_WITH_SDL "Add SDL+OpenGl3 support (SDL will be automatically compiled via ExternalProject_Add)" OFF)
-
-# Backend selection with manual backend compilation
-# (setting those options without setting HELLOIMGUI_WITH_XXX will require that the backend can be found by find_package())
-option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
+# if HELLOIMGUI_USE_GLFW_OPENGL3 is ON, Glfw backend will be built,
+# but Glfw need to be found via find_package()
 option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
+
+#------------------------------------------------------------------------------
+# SDL Backend
+#------------------------------------------------------------------------------
+# if HELLOIMGUI_WITH_SDL is ON, SDL may be downloaded and built automatically
+#     (unless HELLOIMGUI_USE_GLFW_SYSTEM_LIB is ON, in which case it will be searched via find_package())
+option(HELLOIMGUI_WITH_SDL "Add SDL backend (download if needed)" OFF)
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    option(HELLOIMGUI_USE_SDL_SYSTEM_LIB "Force usage of SDL system library" ON)
+else()
+    option(HELLOIMGUI_USE_SDL_SYSTEM_LIB "Force usage of SDL system library" OFF)
+endif()
+# if HELLOIMGUI_USE_SDL_OPENGL3 is ON, SDL backend will be built,
+# but SDL need to be found via find_package()
+option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
+
+#------------------------------------------------------------------------------
+# Qt Backend (unmaintained)
+#------------------------------------------------------------------------------
 option(HELLOIMGUI_USE_QT "Build HelloImGui for Qt" OFF)
+
 
 #------------------------------------------------------------------------------
 # Build options / ImGui
@@ -167,6 +170,60 @@ option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 ###############################################################################
 
 
+#------------------------------------------------------------------------------
+# Backend check: If no backend option is selected, 
+# either select Glfw automatically if possible, or fail
+#------------------------------------------------------------------------------
+# 
+if (NOT HELLOIMGUI_WITH_GLFW
+    AND NOT HELLOIMGUI_WITH_SDL
+    AND NOT HELLOIMGUI_USE_SDL_OPENGL3
+    AND NOT HELLOIMGUI_USE_GLFW_OPENGL3
+    AND NOT HELLOIMGUI_USE_QT
+    AND NOT EMSCRIPTEN
+    )
+    set(backend_message "
+                    In order to select your own backend, use one of the cmake options below:
+                    -DHELLOIMGUI_WITH_GLFW=ON             # To download and build glfw automatically
+                    -DHELLOIMGUI_WITH_SDL=ON              # To download and build SDL automatically
+                    -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # To use your own version of GLFW (it should be findable via find_package(glfw3))
+                    -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # To use your own version of SDL (it should be findable via find_package(SDL2))
+
+                    (Note: under Linux, it is advised to use system-wide libraries, and not to use
+                    -DHELLOIMGUI_WITH_GLFW=ON or -DHELLOIMGUI_WITH_SDL=ON)
+    ")
+    if (NOT HELLOIMGUI_USE_GLFW_SYSTEM_LIB)
+        set(HELLOIMGUI_WITH_GLFW ON)
+        message(STATUS "
+                HelloImGui: using Glfw as default default backend (it will be downloaded and built inside {CMAKE_CURRENT_BINARY_DIR}/_deps/glfw-*)
+                ${backend_message}
+                ")
+    else()
+        # Check if Glfw can be found
+        find_package(glfw3 QUIET)
+        if (glfw3_FOUND)
+            set(HELLOIMGUI_USE_GLFW_OPENGL3 ON)
+            message(STATUS
+                    "HelloImGui: using Glfw as default default backend (it was found via find_package(glfw3))
+                    ${backend_message}
+                    ")
+        else()
+            set(glfw_help_msg "
+                you can install glfw via your package manager (apt, pacman, etc).
+                For example, on Ubuntu, you can run:
+                    sudo apt install libglfw3-dev
+                on macOS you can run:
+                    brew install glfw3
+            ")
+            message(FATAL_ERROR "
+                        HelloImGui: no backend selected, and could not find Glfw via find_package(glfw3).                    
+                        ${backend_message} ${glfw_help_msg}
+                        ")
+        endif()
+    endif()
+endif()
+
+
 ###############################################################################
 # HelloImGui Build Actions
 ###############################################################################
@@ -178,35 +235,69 @@ if (EMSCRIPTEN AND NOT HELLOIMGUI_USE_SDL_OPENGL3 AND NOT HELLOIMGUI_USE_GLFW_OP
     set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
 endif()
 
+
 #------------------------------------------------------------------------------
-# Download backend glfw or sdl if required
+# Check options logic
 #------------------------------------------------------------------------------
 if (HELLOIMGUI_WITH_GLFW)
-    set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
-    if (NOT TARGET glfw AND NOT EMSCRIPTEN)
-        include(FetchContent)
-        Set(FETCHCONTENT_QUIET FALSE)
-        FetchContent_Declare(glfw
-            GIT_REPOSITORY    https://github.com/glfw/glfw.git
-            GIT_TAG           3.3.8
-            GIT_PROGRESS TRUE
-            )
-        set(need_fetch_make_available_glfw ON)
+    set(HELLOIMGUI_USE_GLFW_OPENGL3 ON)
+endif()
+if (HELLOIMGUI_WITH_SDL)
+    set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
+endif()
+
+# Shall we fetch glfw? (fill shall_fetch_glfw)
+set(shall_fetch_glfw OFF)
+if (HELLOIMGUI_WITH_GLFW
+    AND NOT HELLOIMGUI_USE_GLFW_SYSTEM_LIB
+    AND NOT TARGET glfw
+    AND NOT EMSCRIPTEN
+    )
+    find_package(glfw3 QUIET)
+    if (NOT glfw3_FOUND)
+        set(shall_fetch_glfw ON)
     endif()
 endif()
 
-if (HELLOIMGUI_WITH_SDL)
-    set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
-    if (NOT TARGET sdl AND NOT EMSCRIPTEN)
-        include(FetchContent)
-        Set(FETCHCONTENT_QUIET FALSE)
-        FetchContent_Declare(sdl
-            GIT_REPOSITORY    https://github.com/libsdl-org/SDL.git
-            GIT_TAG           release-2.24.2
-            GIT_PROGRESS TRUE
-            )
-        set(need_fetch_make_available_sdl ON)
+# Shall we fetch sdl? (fill shall_fetch_sdl)
+set(shall_fetch_sdl OFF)
+if (HELLOIMGUI_WITH_SDL
+    AND NOT HELLOIMGUI_USE_SDL_SYSTEM_LIB
+    AND NOT TARGET sdl
+    AND NOT EMSCRIPTEN
+    )
+    find_package(SDL2 QUIET)
+    if (NOT SDL2_FOUND)
+        set(shall_fetch_sdl ON)
     endif()
+endif()
+
+
+#------------------------------------------------------------------------------
+# Download backend glfw or sdl if required
+#------------------------------------------------------------------------------
+if (shall_fetch_glfw)
+    message(STATUS "HelloImGui: downloading and building glfw")
+    include(FetchContent)
+    Set(FETCHCONTENT_QUIET FALSE)
+    FetchContent_Declare(glfw
+        GIT_REPOSITORY    https://github.com/glfw/glfw.git
+        GIT_TAG           3.3.8
+        GIT_PROGRESS TRUE
+        )
+    set(need_fetch_make_available_glfw ON)
+endif()
+
+if (shall_fetch_sdl)
+    message(STATUS "HelloImGui: downloading and building SDL")
+    include(FetchContent)
+    Set(FETCHCONTENT_QUIET FALSE)
+    FetchContent_Declare(sdl
+        GIT_REPOSITORY    https://github.com/libsdl-org/SDL.git
+        GIT_TAG           release-2.24.2
+        GIT_PROGRESS TRUE
+        )
+    set(need_fetch_make_available_sdl ON)
 endif()
 
 if (NOT (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3 OR HELLOIMGUI_USE_QT OR HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT))

@@ -16,7 +16,7 @@ public class @apkCMake_activityClassName@ extends SDLActivity
      */
     protected String[] getLibraries() {
         return new String[] {
-            "hidapi",
+            // "hidapi",
             "SDL2",
             // "SDL2_image",
             // "SDL2_mixer",

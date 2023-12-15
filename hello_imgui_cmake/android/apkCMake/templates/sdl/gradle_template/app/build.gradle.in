@@ -28,12 +28,12 @@ android {
 
         externalNativeBuild {
             // cmake {
-            //    arguments "-DANDROID_APP_PLATFORM=android-16", "-DANDROID_STL=c++_static"
+            //    arguments "-DANDROID_APP_PLATFORM=android-16", "-DANDROID_STL=c++_shared"
             //    // abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
             //    abiFilters 'arm64-v8a'
             //}
             cmake {
-                arguments "-DANDROID_APP_PLATFORM=@apkCMake_androidAppPlatform@", "-DANDROID_STL=c++_static"
+                arguments "-DANDROID_APP_PLATFORM=@apkCMake_androidAppPlatform@", "-DANDROID_STL=c++_shared"
                 abiFilters @apkCMake_abiFilters@
             }
         }

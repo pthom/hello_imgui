@@ -36,16 +36,18 @@ macro(apkCMake_fillAndroidSdkVariables)
     endif()
     apkCMake_logVar(ANDROID_NDK_HOME)
 
-
     if (NOT DEFINED apkCMake_sdkDir)
         set(apkCMake_sdkDir ${ANDROID_HOME})
     endif()
     apkCMake_logVar(apkCMake_sdkDir)
 
-    if (NOT DEFINED apkCMake_ndkDir)
-        set(apkCMake_ndkDir ${ANDROID_NDK_HOME})
+    if (NOT DEFINED apkCMake_ndkVersion)
+        # message(FATAL_ERROR "ANDROID_NDK_HOME=${ANDROID_NDK_HOME} but apkCMake_ndkVersion is not defined")
+        # apkCMake_ndkVersion is the dirname of ANDROID_NDK_HOME
+        get_filename_component(apkCMake_ndkVersion ${ANDROID_NDK_HOME} NAME)
+        message(STATUS "apkCMake_ndkVersion=${apkCMake_ndkVersion}, inferred from NDK_HOME=${ANDROID_NDK_HOME}")
     endif()
-    apkCMake_logVar(apkCMake_ndkDir)
+
 endmacro()
 
 

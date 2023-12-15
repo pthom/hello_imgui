@@ -10,6 +10,8 @@ else {
 android {
     // compileSdkVersion 26
     compileSdkVersion @apkCMake_compileSdkVersion@
+    // ndkVersion @apkCMake_ndkVersion@
+    ndkVersion "@apkCMake_ndkVersion@"
     defaultConfig {
         if (buildAsApplication) {
             // applicationId "org.libsdl.app"

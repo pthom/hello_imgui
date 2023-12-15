@@ -6,6 +6,9 @@
 
 namespace HelloImGui
 {
+    std::string IntPairToString(std::array<int, 2> v);
+    std::array<int, 2> StringToIntPair(const std::string& s);
+
     namespace HelloImGuiIniSettings
     {
         namespace details
@@ -206,16 +209,16 @@ namespace HelloImGui
             {
                 auto strValue = iniFile["AppWindow"]["WindowPosition"].as<std::string>();
                 auto intPair = StringToIntPair(strValue);
-                if (intPair.has_value())
-                    screenBounds.position = *intPair;
+                if (intPair[0] >= 0)
+                    screenBounds.position = intPair;
                 else
                     failed = true;
             }
             {
                 auto strValue = iniFile["AppWindow"]["WindowSize"].as<std::string>();
                 auto intPair = StringToIntPair(strValue);
-                if (intPair.has_value())
-                    screenBounds.size = *intPair;
+                if (intPair[0] >= 0)
+                    screenBounds.size = intPair;
                 else
                     failed = true;
             }

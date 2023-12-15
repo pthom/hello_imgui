@@ -15,6 +15,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(MACOSX TRUE CACHE BOOL "" FORCE)
 endif()
 
+set(CMAKE_CXX_STANDARD 17)
 
 ###############################################################################
 # hello_imgui_add_app

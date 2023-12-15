@@ -99,11 +99,11 @@ std::string IntPairToString(std::array<int, 2> v)
     return ss.str();
 }
 
-std::optional<std::array<int, 2>> StringToIntPair(const std::string& s)
+std::array<int, 2> StringToIntPair(const std::string& s)
 {
     auto items = details::splitString(s, ',');
     if (items.size() != 2)
-        return std::nullopt;
+        return {-1, -1};
 
     std::array<int, 2> r;
     for (size_t i = 0; i < 2; ++i)
@@ -115,7 +115,7 @@ std::optional<std::array<int, 2>> StringToIntPair(const std::string& s)
         }
         catch(const std::exception&)
         {
-            return std::nullopt;
+            return {-1, -1};
         }
     }
     return r;

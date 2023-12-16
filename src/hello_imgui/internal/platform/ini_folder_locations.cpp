@@ -89,28 +89,31 @@
     #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
     using namespace AppleIniFolderLocations;
 
-#elif defined(__ANDROID__)
-static std::string GetTempPath()
-{
-    return "./cache";
-}
+#elif defined(__ANDROID__) && defined(HELLOIMGUI_USE_SDL_OPENGL3)
+    #include "SDL.h"
 
-static std::string GetAppUserConfigFolder()
-{
-    // This leads to the Internal Storage Directory for the App
-    return "";
-}
+    static std::string GetAppUserConfigFolder()
+    {
+        const char* orgName = "Dummy"; // SDL does not use this param under Android
+        const char* appName = "YourAppName"; // SDL does not use this param under Android
+        const char* prefPath = SDL_GetPrefPath(orgName, appName);
+        return prefPath;
+    }
 
-static std::string GetDocumentsPath()
-{
-    return GetAppUserConfigFolder();
-}
+    static std::string GetTempPath()
+    {
+        return GetAppUserConfigFolder() + "/cache";
+    }
 
-static std::string GetHomePath()
-{
-    return GetAppUserConfigFolder();
-}
+    static std::string GetDocumentsPath()
+    {
+        return GetAppUserConfigFolder();
+    }
 
+    static std::string GetHomePath()
+    {
+        return GetAppUserConfigFolder();
+    }
 
 #elif defined(__linux__)
     #include <cstdlib>

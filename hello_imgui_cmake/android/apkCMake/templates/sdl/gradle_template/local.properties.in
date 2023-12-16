@@ -4,5 +4,5 @@
 # Location of the SDK. This is only used by Gradle.
 # For customization when using a Version Control System, please read the
 # header note.
-#Wed Jun 24 11:43:58 CEST 2020
+#Sat Dec 16 19:35:14 CET 2023
 sdk.dir=@apkCMake_sdkDir@

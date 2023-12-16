@@ -1,4 +1,10 @@
 #pragma once
+
+#if defined(__ANDROID__) && defined(HELLOIMGUI_USE_SDL_OPENGL3)
+// We need to include SDL, so that it can instantiate its main function under Android
+#include "SDL.h"
+#endif
+
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/hello_imgui_error.h"
 #include "hello_imgui/icons_font_awesome.h"

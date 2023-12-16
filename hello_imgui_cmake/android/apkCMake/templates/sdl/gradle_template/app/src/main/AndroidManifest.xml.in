@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="@apkCMake_applicationIdUrlPart@.@apkCMake_applicationIdNamePart@"
     android:versionCode="@apkCMake_versionCode@"
     android:versionName="@apkCMake_versionName@"
     android:installLocation="auto">

@@ -241,8 +241,17 @@ std::string AssetFileFullPath(const std::string& assetFilename, bool assertIfNot
 // Returns true if this asset file exists
 bool AssetExists(const std::string& assetFilename)
 {
+#ifdef __ANDROID__
+    size_t dataSize;
+    void *data = SDL_LoadFile(assetFilename.c_str(), &dataSize);
+    bool exists = (data != nullptr);
+    if (data != nullptr)
+        SDL_free(data);
+    return exists;
+#else
     std::string fullPath = AssetFileFullPath(assetFilename, false);
     return ! fullPath.empty();
+#endif
 }
 
 

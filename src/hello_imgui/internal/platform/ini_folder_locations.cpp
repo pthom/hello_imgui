@@ -89,6 +89,29 @@
     #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
     using namespace AppleIniFolderLocations;
 
+#elif defined(__ANDROID__)
+static std::string GetTempPath()
+{
+    return "./cache";
+}
+
+static std::string GetAppUserConfigFolder()
+{
+    // This leads to the Internal Storage Directory for the App
+    return "";
+}
+
+static std::string GetDocumentsPath()
+{
+    return GetAppUserConfigFolder();
+}
+
+static std::string GetHomePath()
+{
+    return GetAppUserConfigFolder();
+}
+
+
 #elif defined(__linux__)
     #include <cstdlib>
     #include <string>

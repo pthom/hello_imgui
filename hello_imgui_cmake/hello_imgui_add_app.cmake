@@ -147,7 +147,7 @@ function(hello_imgui_prepare_app app_name assets_location)
         set(apkCMake_applicationIdNamePart ${HELLO_IMGUI_BUNDLE_IDENTIFIER_NAME_PART})
         set(apkCMake_iconDisplayName  ${HELLO_IMGUI_ICON_DISPLAY_NAME})
         # set(apkCMake_abiFilters "'arm64-v8a', 'x86', 'x86_64'")
-        apkCMake_makeAndroidStudioProject(${app_name})
+        apkCMake_makeAndroidStudioProject(${app_name} ${assets_location})
     endif()
 endfunction()
 

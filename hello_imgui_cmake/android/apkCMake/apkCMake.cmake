@@ -198,10 +198,12 @@ function(apkCMake_addTemplateResFolder)
 endfunction()
 
 
-function(apkCMake_addLocalResFolder)
-    if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/android/res)
-        message("hello_imgui_platform_customization: ${app_name} found local res")
-        apkCMake_addResFolder(${CMAKE_CURRENT_SOURCE_DIR}/android/res)
+function(apkCMake_addAppSettingsAndroidFolder assets_location)
+    set(local_settings_location ${assets_location}/app_settings/android)
+    if (IS_DIRECTORY ${local_settings_location})
+        message(STATUS "apkCMake_addAppSettingsAndroidFolder: ${app_name} found local settings in ${local_settings_location}")
+        set(settingsOutputFolder ${apkCMake_outputProjectFolder}/app/src/main/)
+        apkCMake_copyDirectoryContent(${local_settings_location} ${settingsOutputFolder})
     endif()
 endfunction()
 
@@ -222,7 +224,7 @@ function (apkCmake_processActivityClass)
 endfunction()
 
 
-function(apkCMake_makeAndroidStudioProject appTargetToEmbed)
+function(apkCMake_makeAndroidStudioProject appTargetToEmbed assets_location)
     #message(FATAL_ERROR "ANDROID_STL=${ANDROID_STL}")
     message(STATUS "apkCMake_makeAndroidStudioProject ${appTargetToEmbed}")
     apkCMake_fillVariables(${appTargetToEmbed})
@@ -231,7 +233,7 @@ function(apkCMake_makeAndroidStudioProject appTargetToEmbed)
     apkCMake_makeSymLinks()
 
     apkCMake_addTemplateResFolder()
-    apkCMake_addLocalResFolder()
+    apkCMake_addAppSettingsAndroidFolder(${assets_location})
 
     message(STATUS "    ---> Success: please open the project ${apkCMake_outputProjectFolder} with Android Studio!")
 endfunction()

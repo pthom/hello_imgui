@@ -90,7 +90,7 @@ struct ImGuiWindowParams
 {
     DefaultImGuiWindowType defaultImGuiWindowType = DefaultImGuiWindowType::ProvideFullScreenWindow;
 
-    ImVec4 backgroundColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    ImVec4 backgroundColor = ImVec4(0.f, 0.f, 0.f, 0.f);
 
     bool showMenuBar = false;
     bool showMenu_App = true;

@@ -172,8 +172,10 @@ creation.
 can show/hide the window with this). Full screen windows cannot be hidden.@@md
 * `edgeInsets`: _EdgeInsets_. iOS only, out values filled by HelloImGui:
   if there is a notch on the iPhone, you should not display inside these insets.
-  HelloImGui handles this automatically, if runnerParams.imGuiWindowParams.defaultImGuiWindowType is not NoDefaultWindow.
+  HelloImGui handles this automatically, if handleEdgeInsets is true and
+  if runnerParams.imGuiWindowParams.defaultImGuiWindowType is not NoDefaultWindow.
   (warning, these values are updated only after a few frames, they are typically 0 for the first 4 frames)
+* `handleEdgeInsets`: _bool, default = true_. iOS only, if true, HelloImGui will handle the edgeInsets.
 **/
 struct AppWindowParams
 {
@@ -189,6 +191,7 @@ struct AppWindowParams
     bool hidden = false;
 
     EdgeInsets edgeInsets;
+    bool       handleEdgeInsets = true;
 };
 
 }  // namespace HelloImGui

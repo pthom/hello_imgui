@@ -248,7 +248,9 @@ void DoCreateFullScreenImGuiWindow(const RunnerParams& runnerParams, bool useDoc
     {
         // One some platform, like iOS, we need to take into account the insets
         // so that our app does not go under the notch or the home indicator
-        const EdgeInsets& edgeInsets = runnerParams.appWindowParams.edgeInsets;
+        EdgeInsets edgeInsets;
+        if (runnerParams.appWindowParams.handleEdgeInsets)
+            edgeInsets = runnerParams.appWindowParams.edgeInsets;
         fullScreenPos = viewport->Pos;
         fullScreenPos.x += edgeInsets.left;
         fullScreenPos.y += edgeInsets.top;

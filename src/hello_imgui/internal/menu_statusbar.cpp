@@ -79,7 +79,9 @@ void ShowStatusBar(RunnerParams & params)
     {
         // One some platform, like iOS, we need to take into account the insets
         // so that our app does not go under the notch or the home indicator
-        const EdgeInsets& edgeInsets = params.appWindowParams.edgeInsets;
+        EdgeInsets edgeInsets;
+        if (params.appWindowParams.handleEdgeInsets)
+            edgeInsets = params.appWindowParams.edgeInsets;
         statusBarSize = ImVec2(viewport->Size.x - edgeInsets.left - edgeInsets.right, statusWindowHeight);
         statusBarPos = ImVec2(edgeInsets.left, viewport->Size.y - edgeInsets.bottom - statusBarSize.y);
     }

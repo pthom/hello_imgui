@@ -506,10 +506,10 @@ void AbstractRunner::CreateFramesAndRender()
 
 #if TARGET_OS_IOS
     auto insets = GetIPhoneSafeAreaInsets();
-    params.appWindowParams.iosEdgeInsets.top = insets.top;
-    params.appWindowParams.iosEdgeInsets.left = insets.left;
-    params.appWindowParams.iosEdgeInsets.bottom = insets.bottom;
-    params.appWindowParams.iosEdgeInsets.right = insets.right;
+    params.appWindowParams.edgeInsets.top = insets.top;
+    params.appWindowParams.edgeInsets.left = insets.left;
+    params.appWindowParams.edgeInsets.bottom = insets.bottom;
+    params.appWindowParams.edgeInsets.right = insets.right;
 #endif
 
     #ifdef HELLOIMGUI_WITH_TEST_ENGINE

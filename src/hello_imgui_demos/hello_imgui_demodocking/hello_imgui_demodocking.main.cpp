@@ -495,8 +495,7 @@ int main(int, char**)
     // Hello ImGui params (they hold the settings as well as the Gui callbacks)
     HelloImGui::RunnerParams runnerParams;
     runnerParams.appWindowParams.windowTitle = "Docking demo";
-
-    runnerParams.imGuiWindowParams.menuAppTitle = "Docking App";
+    runnerParams.imGuiWindowParams.menuAppTitle = "Docking Demo";
     runnerParams.appWindowParams.windowGeometry.size = {1000, 900};
     runnerParams.appWindowParams.restorePreviousGeometry = true;
 

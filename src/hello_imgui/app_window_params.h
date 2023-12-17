@@ -140,16 +140,15 @@ struct WindowGeometry
 };
 
 
-#if TARGET_OS_IOS
 // If there is a notch on the iPhone, you should not display inside these insets
-struct IosEdgeInsets
+struct EdgeInsets
 {
-    double top;     // Typically around 47
-    double left;    // Typically 0
-    double bottom;  // Typically around 34
-    double right;   // Typically 0
+    double top = 0.;     // Typically around 47
+    double left = 0.;    // Typically 0
+    double bottom = 0.;  // Typically around 34
+    double right = 0.;   // Typically 0
 };
-#endif
+
 
 /**
 @@md#AppWindowParams
@@ -171,6 +170,10 @@ creation.
 creation.
 * `hidden`: _bool, default = false_. Should the window be hidden. This is taken into account dynamically (you
 can show/hide the window with this). Full screen windows cannot be hidden.@@md
+* `edgeInsets`: _EdgeInsets_. iOS only, out values filled by HelloImGui:
+  if there is a notch on the iPhone, you should not display inside these insets.
+  HelloImGui handles this automatically, if runnerParams.imGuiWindowParams.defaultImGuiWindowType is not NoDefaultWindow.
+  (warning, these values are updated only after a few frames, they are typically 0 for the first 4 frames)
 **/
 struct AppWindowParams
 {
@@ -185,11 +188,7 @@ struct AppWindowParams
     bool resizable = true;
     bool hidden = false;
 
-#if TARGET_OS_IOS
-    // Out values filled by HelloImGui: if there is a notch on the iPhone, you should not display inside these insets.
-    // (warning, these values are updated only after a few frames, they are typically 0 for the first 4 frames)
-    IosEdgeInsets iosEdgeInsets;
-#endif
+    EdgeInsets edgeInsets;
 };
 
 }  // namespace HelloImGui

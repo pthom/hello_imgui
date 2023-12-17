@@ -237,16 +237,30 @@ void ShowDockableWindows(std::vector<DockableWindow>& dockableWindows)
     }
 }
 
-void DoCreateFullScreenImGuiWindow(const ImGuiWindowParams& imGuiWindowParams, bool useDocking)
+
+void DoCreateFullScreenImGuiWindow(const RunnerParams& runnerParams, bool useDocking)
 {
+    const ImGuiWindowParams& imGuiWindowParams = runnerParams.imGuiWindowParams;
+
     ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->Pos);
 
-    ImVec2 viewportSize = viewport->Size;
-    if (imGuiWindowParams.showStatusBar)
-        viewportSize.y -= ImGui::GetFrameHeight() * 1.35f;
+    ImVec2 fullScreenSize, fullScreenPos;
+    {
+        // One some platform, like iOS, we need to take into account the insets
+        // so that our app does not go under the notch or the home indicator
+        const EdgeInsets& edgeInsets = runnerParams.appWindowParams.edgeInsets;
+        fullScreenPos = viewport->Pos;
+        fullScreenPos.x += edgeInsets.left;
+        fullScreenPos.y += edgeInsets.top;
+        fullScreenSize = viewport->Size;
+        fullScreenSize.x -= edgeInsets.left + edgeInsets.right;
+        fullScreenSize.y -= edgeInsets.top + edgeInsets.bottom;
+        if (imGuiWindowParams.showStatusBar)
+            fullScreenSize.y -= ImGui::GetFrameHeight() * 1.35f;
+    }
 
-    ImGui::SetNextWindowSize(viewportSize);
+    ImGui::SetNextWindowPos(fullScreenPos);
+    ImGui::SetNextWindowSize(fullScreenSize);
     ImGui::SetNextWindowViewport(viewport->ID);
     if (useDocking)
         ImGui::SetNextWindowBgAlpha(0.0f);
@@ -268,14 +282,14 @@ void DoCreateFullScreenImGuiWindow(const ImGuiWindowParams& imGuiWindowParams, b
 }
 
 
-void ImplProvideFullScreenImGuiWindow(const ImGuiWindowParams& imGuiWindowParams)
+void ImplProvideFullScreenImGuiWindow(const RunnerParams& runnerParams)
 {
-    DoCreateFullScreenImGuiWindow(imGuiWindowParams, false);
+    DoCreateFullScreenImGuiWindow(runnerParams, false);
 }
 
 void ImplProvideFullScreenDockSpace(const RunnerParams& runnerParams)
 {
-    DoCreateFullScreenImGuiWindow(runnerParams.imGuiWindowParams, true);
+    DoCreateFullScreenImGuiWindow(runnerParams, true);
     ImGuiID mainDockspaceId = ImGui::GetID("MainDockSpace");
     ImGui::DockSpace(mainDockspaceId, ImVec2(0.0f, 0.0f), runnerParams.dockingParams.mainDockSpaceNodeFlags);
     gImGuiSplitIDs["MainDockSpace"] = mainDockspaceId;
@@ -316,7 +330,7 @@ void ApplyDockLayout(DockingParams& dockingParams)
 void ProvideWindowOrDock(RunnerParams& runnerParams)
 {
     if (runnerParams.imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenWindow)
-        ImplProvideFullScreenImGuiWindow(runnerParams.imGuiWindowParams);
+        ImplProvideFullScreenImGuiWindow(runnerParams);
 
     if (runnerParams.imGuiWindowParams.defaultImGuiWindowType == DefaultImGuiWindowType::ProvideFullScreenDockSpace)
     {

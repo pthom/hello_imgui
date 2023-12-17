@@ -74,8 +74,18 @@ void ShowStatusBar(RunnerParams & params)
 {
     float statusWindowHeight = ImGui::GetFrameHeight() * 1.4f;
     ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + viewport->Size.y - statusWindowHeight));
-    ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, statusWindowHeight));
+
+    ImVec2 statusBarSize, statusBarPos;
+    {
+        // One some platform, like iOS, we need to take into account the insets
+        // so that our app does not go under the notch or the home indicator
+        const EdgeInsets& edgeInsets = params.appWindowParams.edgeInsets;
+        statusBarSize = ImVec2(viewport->Size.x - edgeInsets.left - edgeInsets.right, statusWindowHeight);
+        statusBarPos = ImVec2(edgeInsets.left, viewport->Size.y - edgeInsets.bottom - statusBarSize.y);
+    }
+
+    ImGui::SetNextWindowPos(statusBarPos);
+    ImGui::SetNextWindowSize(statusBarSize);
     ImGui::SetNextWindowViewport(viewport->ID);
 
     ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking;

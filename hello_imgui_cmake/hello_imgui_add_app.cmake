@@ -86,18 +86,14 @@ endfunction()
 function(hello_imgui_platform_customization app_name assets_location)
 endfunction()
 # But it can be overriden by platform specific implementations, in the following files:
-include(${CMAKE_CURRENT_LIST_DIR}/apple/hello_imgui_apple.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/android/hello_imgui_android.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/emscripten/hello_imgui_emscripten.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/windows/hello_imgui_windows.cmake)
+include(${HELLOIMGUI_CMAKE_PATH}/apple/hello_imgui_apple.cmake)
+include(${HELLOIMGUI_CMAKE_PATH}/android/hello_imgui_android.cmake)
+include(${HELLOIMGUI_CMAKE_PATH}/emscripten/hello_imgui_emscripten.cmake)
+include(${HELLOIMGUI_CMAKE_PATH}/windows/hello_imgui_windows.cmake)
+include(${HELLOIMGUI_CMAKE_PATH}/assets/hello_imgui_assets.cmake)
 
+include(${HELLOIMGUI_CMAKE_PATH}/android/apkCMake/apkCMake.cmake)
 
-include(${CMAKE_CURRENT_LIST_DIR}/assets/hello_imgui_assets.cmake)
-
-
-set(apkCMake_projectTemplateFolder ${CMAKE_CURRENT_LIST_DIR}/android/apkCMake/templates/sdl)
-set(apkCMake_resTemplateFolder ${CMAKE_CURRENT_LIST_DIR}/android/res)
-include(${CMAKE_CURRENT_LIST_DIR}/android/apkCMake/apkCMake.cmake)
 
 function(set_bundle_variables_defaults app_name)
     if (NOT DEFINED HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART)

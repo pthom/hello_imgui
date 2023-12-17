@@ -1,10 +1,4 @@
-if (NOT DEFINED apkCMake_projectTemplateFolder)
-    message(FATAL_ERROR "Please define apkCMake_projectTemplateFolder")
-endif()
-if (NOT DEFINED apkCMake_resTemplateFolder)
-    message(FATAL_ERROR "Please define apkCMake_resTemplateFolder")
-endif()
-
+set(apkCMake_projectTemplateFolder ${HELLOIMGUI_CMAKE_PATH}/android/apkCMake/templates/sdl CACHE STRING "" FORCE)
 include(${apkCMake_projectTemplateFolder}/apkCMake_makeSymLinks.cmake)
 
 
@@ -187,14 +181,10 @@ function(apkCMake_copyAndConfigureDirectoryContent src dst)
 endfunction()
 
 
-function(apkCMake_addResFolder resFolder)
-    set(resOutputFolder ${apkCMake_outputProjectFolder}/app/src/main/res)
-    apkCMake_copyDirectoryContent(${resFolder} ${resOutputFolder})
-endfunction()
-
-
 function(apkCMake_addTemplateResFolder)
-    apkCMake_addResFolder(${apkCMake_resTemplateFolder})
+    set(apkCMake_resTemplateFolder ${HELLOIMGUI_CMAKE_PATH}/android/res)
+    set(resOutputFolder ${apkCMake_outputProjectFolder}/app/src/main/res)
+    apkCMake_copyDirectoryContent(${apkCMake_resTemplateFolder} ${resOutputFolder})
 endfunction()
 
 
@@ -225,7 +215,6 @@ endfunction()
 
 
 function(apkCMake_makeAndroidStudioProject appTargetToEmbed assets_location)
-    #message(FATAL_ERROR "ANDROID_STL=${ANDROID_STL}")
     message(STATUS "apkCMake_makeAndroidStudioProject ${appTargetToEmbed}")
     apkCMake_fillVariables(${appTargetToEmbed})
     apkCMake_copyAndConfigureDirectoryContent(${apkCMake_projectTemplateFolder}/gradle_template ${apkCMake_outputProjectFolder})

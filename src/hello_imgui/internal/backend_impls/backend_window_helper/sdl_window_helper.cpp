@@ -7,6 +7,11 @@
 
 #include <cassert>
 
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
+#endif
+
 
 namespace HelloImGui { namespace BackendApi
 {
@@ -188,27 +193,26 @@ namespace HelloImGui { namespace BackendApi
     
     float SdlWindowHelper::GetWindowSizeDpiScaleFactor(WindowPointer window)
     {
-        // - we use the display DPI on Android (but we display smaller widgets:
-        //     normally images are displayed at 96PPI on a desktop screen.
-        //     That means, that independently of the screen DPI, the image size in millimeters
-        //     corresponds to a hypothetical 9DPPI screen.
-        //     However on a mobile device, we choose to display them at 140PPI (so that widgets and images appear smaller)
-        // - for historical reasons, we do not use the display DPI on macOS
-        //   (scaling is handled via other means)
-        //  - under linux: SDL_GetDisplayDPI can fail (at least on ubuntu 22 / Parallels VM)
-        //  - under iOS: to be confirmed
-        #if defined(_WIN32) || defined(__ANDROID__)
+        #if TARGET_OS_MAC // is true for any software platform that's derived from macOS, which includes iOS, watchOS, and tvOS
+            // with apple, the OS handles the scaling, so we don't need to do anything
+            return 1.f;
+        #elif defined(_WIN32) || defined(__ANDROID__)
+            // Shall linux use this branch? To be confirmed
+            // under linux: SDL_GetDisplayDPI can fail (at least on ubuntu 22 / Parallels VM)
             float ddpi, hdpi, vdpi;
             if (SDL_GetDisplayDPI(0, &ddpi, &hdpi, &vdpi) != 0)
             {
                 std::cerr << "GetWindowSizeDpiScaleFactor: Failed to get DPI: " << SDL_GetError() << std::endl;
                 return 1.f;
             }
-            #ifdef __ANDROID__
-            // We make widgets smaller on mobile devices (the standard PPI on desktop is 96, on mobile we choose 140)
-            float targetPpi = 140.f;
+            #ifndef __ANDROID__
+                // normally images are displayed at 96PPI on a desktop screen.
+                // That means, that independently of the screen DPI, the image size in millimeters
+                // corresponds to a hypothetical 9DPPI screen.
+                float targetPpi = 96.f;
             #else
-            float targetPpi = 96.f;
+                // However on a mobile device, we choose to display them at 140PPI (so that widgets and images appear smaller)
+                float targetPpi = 140.f;
             #endif
             return ddpi / targetPpi;
         #else

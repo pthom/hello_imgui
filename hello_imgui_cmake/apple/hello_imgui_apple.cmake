@@ -98,7 +98,7 @@ if (APPLE)
         endfunction()
 
         # Handle icons (and conversion if necessary)
-        function(hello_imgui_ios_add_icons app_name)
+        function(hello_imgui_ios_add_icons app_name assets_location)
             # Default HelloImGui icons
             set(icons_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/apple/ios_icons)
             set(found_custom_icon OFF)
@@ -248,7 +248,7 @@ if (APPLE)
             hello_imgui_ios_set_dev_team(${app_name})
             hello_imgui_add_info_plist(${app_name} ${assets_location})
             hello_imgui_ios_copy_resources(${app_name} ${assets_location})
-            hello_imgui_ios_add_icons(${app_name})
+            hello_imgui_ios_add_icons(${app_name} ${assets_location})
         endfunction()
 
     endif()

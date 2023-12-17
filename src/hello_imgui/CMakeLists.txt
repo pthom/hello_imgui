@@ -136,6 +136,9 @@ if (HELLOIMGUI_USE_GLFW_OPENGL3)
         )
 endif()
 
+if (IOS)
+    target_link_libraries(${target_name} PUBLIC "-framework UIKit")
+endif ()
 if (APPLE AND NOT IOS) # If mac
     target_link_libraries(${target_name} PUBLIC "-framework AppKit -framework IOKit")
 endif()

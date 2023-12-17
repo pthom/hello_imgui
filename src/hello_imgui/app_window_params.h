@@ -3,7 +3,9 @@
 #include "hello_imgui/screen_bounds.h"
 #include <string>
 
-
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#endif
 
 namespace HelloImGui
 {
@@ -138,6 +140,17 @@ struct WindowGeometry
 };
 
 
+#if TARGET_OS_IOS
+// If there is a notch on the iPhone, you should not display inside these insets
+struct IosEdgeInsets
+{
+    double top;     // Typically around 47
+    double left;    // Typically 0
+    double bottom;  // Typically around 34
+    double right;   // Typically 0
+};
+#endif
+
 /**
 @@md#AppWindowParams
 
@@ -171,6 +184,12 @@ struct AppWindowParams
     bool borderless = false;
     bool resizable = true;
     bool hidden = false;
+
+#if TARGET_OS_IOS
+    // Out values filled by HelloImGui: if there is a notch on the iPhone, you should not display inside these insets.
+    // (warning, these values are updated only after a few frames, they are typically 0 for the first 4 frames)
+    IosEdgeInsets iosEdgeInsets;
+#endif
 };
 
 }  // namespace HelloImGui

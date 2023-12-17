@@ -350,6 +350,12 @@ struct AppWindowParams
     bool borderless = false;
     bool resizable = true;
     bool hidden = false;
+
+#if TARGET_OS_IOS
+    // Out values filled by HelloImGui: if there is a notch on the iPhone, you should not display inside these insets
+    // (warning, these values are updated only after a few frames, they are typically 0 for the first 4 frames)
+    IosEdgeInsets iosEdgeInsets;
+#endif
 };
 
 }  // namespace HelloImGui

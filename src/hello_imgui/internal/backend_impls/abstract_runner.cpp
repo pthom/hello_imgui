@@ -20,8 +20,15 @@
 #include <thread>
 #include <filesystem>
 
+#if __APPLE__
+#include <TargetConditionals.h>
+#endif
+
 #ifdef HELLOIMGUI_MACOS
 #import <AppKit/NSScreen.h>
+#endif
+#if TARGET_OS_IOS
+#include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
 #endif
 
 #ifdef HELLOIMGUI_HAS_OPENGL
@@ -496,6 +503,14 @@ void AbstractRunner::RenderGui()
 void AbstractRunner::CreateFramesAndRender()
 {
     LayoutSettings_HandleChanges();
+
+#if TARGET_OS_IOS
+    auto insets = GetIPhoneSafeAreaInsets();
+    params.appWindowParams.iosEdgeInsets.top = insets.top;
+    params.appWindowParams.iosEdgeInsets.left = insets.left;
+    params.appWindowParams.iosEdgeInsets.bottom = insets.bottom;
+    params.appWindowParams.iosEdgeInsets.right = insets.right;
+#endif
 
     #ifdef HELLOIMGUI_WITH_TEST_ENGINE
     if (mIdxFrame == 1)

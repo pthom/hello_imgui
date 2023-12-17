@@ -5,14 +5,6 @@
 #include "hello_imgui/internal/backend_impls/backend_window_helper/win32_dpi_awareness.h"
 #include "SDL.h"
 
-#ifdef _WIN32
-#include "SDL_syswm.h"
-#ifdef CreateWindow
-#undef CreateWindow
-#endif
-#include "winuser.h"
-#endif
-
 #include <cassert>
 
 
@@ -193,16 +185,6 @@ namespace HelloImGui { namespace BackendApi
         SDL_WaitEventTimeout(NULL, timeout_ms);
     }
 
-    #ifdef _WIN32
-    HWND SdlWindowToHwnd(WindowPointer window) 
-    {
-        SDL_Window *sdlwindow = (SDL_Window *)window;
-        SDL_SysWMinfo info;
-        SDL_VERSION(&info.version);
-        bool success = SDL_GetWindowWMInfo(sdlwindow, &info);
-        return info.info.win.window;
-    }
-    #endif
     
     float SdlWindowHelper::GetWindowSizeDpiScaleFactor(WindowPointer window)
     {
@@ -213,20 +195,22 @@ namespace HelloImGui { namespace BackendApi
         //     However on a mobile device, we choose to display them at 140PPI (so that widgets and images appear smaller)
         // - for historical reasons, we do not use the display DPI on macOS
         //   (scaling is handled via other means)
-        //  - under linux: to be confirmed
+        //  - under linux: SDL_GetDisplayDPI can fail (at least on ubuntu 22 / Parallels VM)
         //  - under iOS: to be confirmed
-        #ifdef _WIN32
-            int dpi = GetDpiForWindow(SdlWindowToHwnd(window));
-            float dpiScale = dpi / 96.f;
-            return dpiScale;
-        #elif defined(__ANDROID__)
+        #if defined(_WIN32) || defined(__ANDROID__)
             float ddpi, hdpi, vdpi;
-            if (SDL_GetDisplayDPI(0, &ddpi, &hdpi, &vdpi) != 0) {
-                std::cerr << "Failed to get DPI: " << SDL_GetError() << std::endl;
+            if (SDL_GetDisplayDPI(0, &ddpi, &hdpi, &vdpi) != 0)
+            {
+                std::cerr << "GetWindowSizeDpiScaleFactor: Failed to get DPI: " << SDL_GetError() << std::endl;
                 return 1.f;
             }
-            // Smaller widgets on mobile devices (the standard PPI on desktop is 96, on mobile we choose 140)
-            return ddpi / 140.f;
+            #ifdef __ANDROID__
+            // We make widgets smaller on mobile devices (the standard PPI on desktop is 96, on mobile we choose 140)
+            float targetPpi = 140.f;
+            #else
+            float targetPpi = 96.f;
+            #endif
+            return ddpi / targetPpi;
         #else
             return 1.f;
         #endif

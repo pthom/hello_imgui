@@ -181,6 +181,7 @@ std::string AssetFileFullPath(const std::string& assetFilename, bool assertIfNot
     // You cannot use standard file operations!`
     (void)assetFilename;
     IM_ASSERT(false); //assetFileFullPath does not work on android!
+    return "";
 #else
     auto possibleAssetsFolders = computePossibleAssetsFolders();
     for (const auto& assetsFolder: possibleAssetsFolders)

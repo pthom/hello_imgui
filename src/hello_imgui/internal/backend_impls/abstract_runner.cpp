@@ -228,7 +228,10 @@ void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
 // This will change the window size if we want a size relative to 96ppi and rescale the imgui style
 void AbstractRunner::HandleDpiOnSecondFrame()
 {
+#ifndef __ANDROID__
     MakeWindowSizeRelativeTo96Ppi_IfRequired();
+#endif
+    
     // High DPI handling on windows & linux
     {
         float dpiScale = DpiWindowSizeFactor();

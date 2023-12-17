@@ -206,16 +206,29 @@ namespace HelloImGui { namespace BackendApi
     
     float SdlWindowHelper::GetWindowSizeDpiScaleFactor(WindowPointer window)
     {
-        // SDL does not support HighDPI
-        // See https://github.com/libsdl-org/SDL/issues/2119
-
-        // We have to implement manual workarounds for windows
+        // - we use the display DPI on Android (but we display smaller widgets:
+        //     normally images are displayed at 96PPI on a desktop screen.
+        //     That means, that independently of the screen DPI, the image size in millimeters
+        //     corresponds to a hypothetical 9DPPI screen.
+        //     However on a mobile device, we choose to display them at 140PPI (so that widgets and images appear smaller)
+        // - for historical reasons, we do not use the display DPI on macOS
+        //   (scaling is handled via other means)
+        //  - under linux: to be confirmed
+        //  - under iOS: to be confirmed
         #ifdef _WIN32
-        int dpi = GetDpiForWindow(SdlWindowToHwnd(window));
-        float dpiScale = dpi / 96.f;
-        return dpiScale;
+            int dpi = GetDpiForWindow(SdlWindowToHwnd(window));
+            float dpiScale = dpi / 96.f;
+            return dpiScale;
+        #elif defined(__ANDROID__)
+            float ddpi, hdpi, vdpi;
+            if (SDL_GetDisplayDPI(0, &ddpi, &hdpi, &vdpi) != 0) {
+                std::cerr << "Failed to get DPI: " << SDL_GetError() << std::endl;
+                return 1.f;
+            }
+            // Smaller widgets on mobile devices (the standard PPI on desktop is 96, on mobile we choose 140)
+            return ddpi / 140.f;
         #else
-        return 1.f;
+            return 1.f;
         #endif
 
     }

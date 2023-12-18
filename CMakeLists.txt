@@ -82,11 +82,6 @@ endif()
 # but SDL need to be found via find_package()
 option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
 
-#------------------------------------------------------------------------------
-# Qt Backend (unmaintained)
-#------------------------------------------------------------------------------
-option(HELLOIMGUI_USE_QT "Build HelloImGui for Qt" OFF)
-
 
 #------------------------------------------------------------------------------
 # Build options / ImGui
@@ -180,7 +175,6 @@ if (NOT HELLOIMGUI_WITH_GLFW
     AND NOT HELLOIMGUI_WITH_SDL
     AND NOT HELLOIMGUI_USE_SDL_OPENGL3
     AND NOT HELLOIMGUI_USE_GLFW_OPENGL3
-    AND NOT HELLOIMGUI_USE_QT
     AND NOT EMSCRIPTEN
     )
     set(backend_message "
@@ -301,7 +295,7 @@ if (shall_fetch_sdl)
     set(need_fetch_make_available_sdl ON)
 endif()
 
-if (NOT (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3 OR HELLOIMGUI_USE_QT OR HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT))
+if (NOT (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3 OR HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT))
     message(FATAL_ERROR "Select at least one backend: use either
         -DHELLOIMGUI_USE_SDL_OPENGL3=ON
         -DHELLOIMGUI_USE_GLFW_OPENGL3=ON

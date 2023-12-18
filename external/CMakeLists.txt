@@ -1,14 +1,3 @@
-if (HELLOIMGUI_USE_QT)
-    if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/qtimgui)
-        message(FATAL_ERROR "Please download qtimgui by running ${HELLOIMGUI_BASEPATH}/tools/qtimgui_download.py")
-    endif()
-
-    # qtimgui includes imgui as a submodule by default
-    # we prefer to use our own version (in external/imgui)
-    set(QTIMGUI_BUILD_IMGUI OFF CACHE BOOL "disable qtimgui included imgui" FORCE)
-    add_subdirectory(qtimgui)
-endif()
-
 # glad OpenGL loader
 if (HELLOIMGUI_USE_GLAD)
     include(${CMAKE_CURRENT_LIST_DIR}/OpenGL_Loaders/glad.cmake)

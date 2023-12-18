@@ -15,7 +15,6 @@ enum class BackendType
     FirstAvailable,
     Sdl,
     Glfw,
-    Qt
 };
 
 

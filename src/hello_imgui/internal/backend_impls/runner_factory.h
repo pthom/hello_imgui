@@ -12,10 +12,6 @@ std::unique_ptr<AbstractRunner> FactorRunnerGlfwOpenGl3(RunnerParams & params);
 std::unique_ptr<AbstractRunner> FactorRunnerSdlOpenGl3(RunnerParams & params);
 #endif
 
-#ifdef HELLOIMGUI_USE_QT
-std::unique_ptr<AbstractRunner> FactorRunnerQt(RunnerParams & params);
-#endif
-
 #ifdef __EMSCRIPTEN__
 std::unique_ptr<AbstractRunner> FactorRunnerEmscripten(RunnerParams & params);
 #endif

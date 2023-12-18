@@ -175,13 +175,6 @@ if (HELLOIMGUI_USE_GLFW_OPENGL3)
     _use_glfw_backend(${helloimgui_target})
 endif()
 
-
-
-if (HELLOIMGUI_USE_QT)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_QT)
-    target_link_libraries(${helloimgui_target} PUBLIC qt_imgui_quick)
-endif()
-
 if (HELLOIMGUI_USE_GLAD)
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
     target_link_libraries(${helloimgui_target} PUBLIC glad)

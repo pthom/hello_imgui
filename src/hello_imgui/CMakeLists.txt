@@ -22,13 +22,12 @@ function(_add_hello_imgui_target)
     target_link_libraries(${helloimgui_target} PUBLIC imgui)
 endfunction()
 
-_add_hello_imgui_target()
 
 ###################################################################################################
-# Misc to refactor
+# Link Os dependent frameworks
 ###################################################################################################
 
-function(_link_apple_frameworks)
+function(_link_os_dependent_libs)
     if (IOS)
         target_link_libraries(${helloimgui_target} PUBLIC "-framework UIKit")
     endif ()
@@ -38,19 +37,29 @@ function(_link_apple_frameworks)
     if (APPLE)
         target_link_libraries(${helloimgui_target} PUBLIC "-framework Foundation")
     endif()
+
+    # OS specific link options
+    if (UNIX AND NOT EMSCRIPTEN)
+        target_link_libraries(hello_imgui PUBLIC stdc++ dl)
+    endif()
+    if (UNIX AND NOT EMSCRIPTEN AND NOT APPLE AND NOT ANDROID)
+        target_link_libraries(hello_imgui PUBLIC X11)
+    endif()
+
 endfunction()
 
-_link_apple_frameworks()
 
-function(_emscripten_use_sdl_open_gl3)
+###################################################################################################
+# Misc to refactor
+###################################################################################################
+
+
+function(_emscripten_force_use_sdl_open_gl3)
     if (EMSCRIPTEN)
         set(HELLOIMGUI_USE_SDL_OPENGL3 ON PARENT_SCOPE)
         set(HELLOIMGUI_USE_GLFW_OPENGL3 OFF PARENT_SCOPE)
     endif()
 endfunction()
-
-
-_emscripten_use_sdl_open_gl3()
 
 
 ###################################################################################################
@@ -81,7 +90,12 @@ function(_use_opengl3_backend target)
     if(ANDROID OR IOS)
         _link_opengles_sdl(${helloimgui_target})
     endif()
+    if (HELLOIMGUI_USE_GLAD)
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
+        target_link_libraries(${helloimgui_target} PUBLIC glad)
+    endif()
 endfunction()
+
 
 ###################################################################################################
 # SDL backend
@@ -162,77 +176,78 @@ endfunction()
 
 
 ###################################################################################################
-# Misc to refactor
-###################################################################################################
-
-if (HELLOIMGUI_USE_SDL_OPENGL3)
-    _use_opengl3_backend(${helloimgui_target})
-    _use_sdl2_backend(${helloimgui_target})
-endif()
-
-if (HELLOIMGUI_USE_GLFW_OPENGL3)
-    _use_opengl3_backend(${helloimgui_target})
-    _use_glfw_backend(${helloimgui_target})
-endif()
-
-if (HELLOIMGUI_USE_GLAD)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
-    target_link_libraries(${helloimgui_target} PUBLIC glad)
-endif()
-
-if (MSVC)
-    hello_imgui_msvc_target_group_sources(${helloimgui_target})
-    hello_imgui_msvc_target_set_folder(${helloimgui_target} ${HELLOIMGUI_SOLUTIONFOLDER})
-endif()
-
-
-# OS specific link options
-if (UNIX AND NOT EMSCRIPTEN)
-    target_link_libraries(hello_imgui PUBLIC stdc++ dl)
-endif()
-if (UNIX AND NOT EMSCRIPTEN AND NOT APPLE AND NOT ANDROID)
-    target_link_libraries(hello_imgui PUBLIC X11)
-endif()
-
-
 # Compile definitions
-if (HELLO_IMGUI_IMGUI_SHARED)
-    target_compile_definitions(${helloimgui_target} PRIVATE GImGui=GImGuiFromHelloImGui)
-    target_compile_definitions(${helloimgui_target} PRIVATE HELLO_IMGUI_IMGUI_SHARED)
-endif()
+###################################################################################################
+function(_add_mobile_compile_definitions)
+    if(ANDROID OR IOS)
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_CANNOTQUIT)
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_MOBILEDEVICE)
+    endif()
+endfunction()
 
-if(ANDROID OR IOS)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_CANNOTQUIT)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_MOBILEDEVICE)
-endif()
 
-if (IOS)
-    target_compile_definitions(${helloimgui_target} PUBLIC IOS)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_IOS)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_MOBILEDEVICE)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_CANNOTQUIT)
-    # this is a hack because imgui_impl_opengl3.cpp does not include <TargetConditional.h>
-    # and thus TARGET_OS_IOS is not found as it should be
-    target_compile_definitions(${helloimgui_target} PRIVATE TARGET_OS_IOS)
-endif()
-if (EMSCRIPTEN)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLES3)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_CANNOTQUIT)
-endif()
+function(_add_ios_compile_definitions)
+    if (IOS)
+        target_compile_definitions(${helloimgui_target} PUBLIC IOS)
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_IOS)
+        # this is a hack because imgui_impl_opengl3.cpp does not include <TargetConditional.h>
+        # and thus TARGET_OS_IOS is not found as it should be
+        target_compile_definitions(${helloimgui_target} PRIVATE TARGET_OS_IOS)
+    endif()
+endfunction()
 
-if (HELLOIMGUI_USE_SDL_OPENGL3)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_OPENGL3)
-endif()
-if (HELLOIMGUI_USE_GLFW_OPENGL3)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_OPENGL3)
-endif()
 
-if (IOS OR (MACOSX AND NOT HELLOIMGUI_MACOS_NO_BUNDLE))
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_INSIDE_APPLE_BUNDLE)
-endif()
-if (HELLOIMGUI_WIN32_AUTO_WINMAIN)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_WIN32_AUTO_WINMAIN)
-endif()
+###################################################################################################
+# Main
+###################################################################################################
+function(_main_hello_imgui)
+    _add_hello_imgui_target()
+    _link_os_dependent_libs()
+    _emscripten_force_use_sdl_open_gl3()
+    _add_mobile_compile_definitions()
+    _add_ios_compile_definitions()
+
+    if (HELLOIMGUI_USE_SDL_OPENGL3)
+        _use_opengl3_backend(${helloimgui_target})
+        _use_sdl2_backend(${helloimgui_target})
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_OPENGL3)
+    endif()
+
+    if (HELLOIMGUI_USE_GLFW_OPENGL3)
+        _use_opengl3_backend(${helloimgui_target})
+        _use_glfw_backend(${helloimgui_target})
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_OPENGL3)
+    endif()
+
+
+    if (MSVC)
+        hello_imgui_msvc_target_group_sources(${helloimgui_target})
+        hello_imgui_msvc_target_set_folder(${helloimgui_target} ${HELLOIMGUI_SOLUTIONFOLDER})
+    endif()
+
+
+    # Compile definitions
+    if (HELLO_IMGUI_IMGUI_SHARED)
+        target_compile_definitions(${helloimgui_target} PRIVATE GImGui=GImGuiFromHelloImGui)
+        target_compile_definitions(${helloimgui_target} PRIVATE HELLO_IMGUI_IMGUI_SHARED)
+    endif()
+
+
+    if (EMSCRIPTEN)
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLES3)
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_CANNOTQUIT)
+    endif()
+
+
+    if (IOS OR (MACOSX AND NOT HELLOIMGUI_MACOS_NO_BUNDLE))
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_INSIDE_APPLE_BUNDLE)
+    endif()
+    if (HELLOIMGUI_WIN32_AUTO_WINMAIN)
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_WIN32_AUTO_WINMAIN)
+    endif()
+
+endfunction()
+
 
 ###################################################################################################
 # Install
@@ -245,4 +260,11 @@ if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
 endif()
 endfunction()
 
+
+###################################################################################################
+# Call main and install
+# This is the only part where we are allow to make function calls
+# *above we only define functions!*
+###################################################################################################
+_main_hello_imgui()
 _install_hello_imgui()

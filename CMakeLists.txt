@@ -17,6 +17,7 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 
+# Set HELLOIMGUI_BASEPATH / HELLOIMGUI_CMAKE_PATH
 include(${CMAKE_CURRENT_LIST_DIR}/hello_imgui_cmake/utils/cache_hello_imgui_paths.cmake)
 
 ###############################################################################
@@ -89,6 +90,7 @@ option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
 # HELLOIMGUI_IMGUI_SOURCE_DIR: folder containing the sources for imgui (by default in the submodule external/imgui)
 if (NOT DEFINED HELLOIMGUI_IMGUI_SOURCE_DIR)
     set(HELLOIMGUI_IMGUI_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/external/imgui" CACHE STRING "Source dir of ImGui")
+    message(WARNING "Defined HELLOIMGUI_IMGUI_SOURCE_DIR=${HELLOIMGUI_IMGUI_SOURCE_DIR}")
 endif()
 # if HELLOIMGUI_BUILD_IMGUI, imgui will be built as part of the build of HelloImGui
 if (NOT DEFINED HELLOIMGUI_BUILD_IMGUI)
@@ -166,57 +168,6 @@ option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 ###############################################################################
 
 
-#------------------------------------------------------------------------------
-# Backend check: If no backend option is selected, 
-# either select Glfw automatically if possible, or fail
-#------------------------------------------------------------------------------
-# 
-if (NOT HELLOIMGUI_WITH_GLFW
-    AND NOT HELLOIMGUI_WITH_SDL
-    AND NOT HELLOIMGUI_USE_SDL_OPENGL3
-    AND NOT HELLOIMGUI_USE_GLFW_OPENGL3
-    AND NOT EMSCRIPTEN
-    )
-    set(backend_message "
-                    In order to select your own backend, use one of the cmake options below:
-                    -DHELLOIMGUI_WITH_GLFW=ON             # To download and build glfw automatically
-                    -DHELLOIMGUI_WITH_SDL=ON              # To download and build SDL automatically
-                    -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # To use your own version of GLFW (it should be findable via find_package(glfw3))
-                    -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # To use your own version of SDL (it should be findable via find_package(SDL2))
-
-                    (Note: under Linux, it is advised to use system-wide libraries, and not to use
-                    -DHELLOIMGUI_WITH_GLFW=ON or -DHELLOIMGUI_WITH_SDL=ON)
-    ")
-    if (NOT HELLOIMGUI_USE_GLFW_SYSTEM_LIB)
-        set(HELLOIMGUI_WITH_GLFW ON)
-        message(STATUS "
-                HelloImGui: using Glfw as default default backend (it will be downloaded and built inside {CMAKE_CURRENT_BINARY_DIR}/_deps/glfw-*)
-                ${backend_message}
-                ")
-    else()
-        # Check if Glfw can be found
-        find_package(glfw3 QUIET)
-        if (glfw3_FOUND)
-            set(HELLOIMGUI_USE_GLFW_OPENGL3 ON)
-            message(STATUS
-                    "HelloImGui: using Glfw as default default backend (it was found via find_package(glfw3))
-                    ${backend_message}
-                    ")
-        else()
-            set(glfw_help_msg "
-                you can install glfw via your package manager (apt, pacman, etc).
-                For example, on Ubuntu, you can run:
-                    sudo apt install libglfw3-dev
-                on macOS you can run:
-                    brew install glfw3
-            ")
-            message(FATAL_ERROR "
-                        HelloImGui: no backend selected, and could not find Glfw via find_package(glfw3).                    
-                        ${backend_message} ${glfw_help_msg}
-                        ")
-        endif()
-    endif()
-endif()
 
 
 ###############################################################################
@@ -242,43 +193,7 @@ if (HELLOIMGUI_WITH_SDL)
     set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
 endif()
 
-# Shall we fetch glfw? (fill shall_fetch_glfw)
-set(shall_fetch_glfw OFF)
-if (HELLOIMGUI_WITH_GLFW
-    AND NOT HELLOIMGUI_USE_GLFW_SYSTEM_LIB
-    AND NOT TARGET glfw
-    AND NOT EMSCRIPTEN
-    )
-    find_package(glfw3 QUIET)
-    if (NOT glfw3_FOUND)
-        set(shall_fetch_glfw ON)
-    endif()
-endif()
 
-
-#------------------------------------------------------------------------------
-# Download backend glfw or sdl if required
-#------------------------------------------------------------------------------
-if (shall_fetch_glfw)
-    message(STATUS "HelloImGui: downloading and building glfw")
-    include(FetchContent)
-    Set(FETCHCONTENT_QUIET FALSE)
-    FetchContent_Declare(glfw
-        GIT_REPOSITORY    https://github.com/glfw/glfw.git
-        GIT_TAG           3.3.8
-        GIT_PROGRESS TRUE
-        )
-    set(need_fetch_make_available_glfw ON)
-endif()
-
-if (NOT (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3 OR HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT))
-    message(FATAL_ERROR "Select at least one backend: use either
-        -DHELLOIMGUI_USE_SDL_OPENGL3=ON
-        -DHELLOIMGUI_USE_GLFW_OPENGL3=ON
-        -DHELLOIMGUI_USE_QT=ON
-        -DHELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT=ON
-    ")
-endif()
 
 #------------------------------------------------------------------------------
 # MSVC: Select the solution folder where hello_imgui should be placed
@@ -297,22 +212,11 @@ include(cmake/StandardProjectSettings.cmake)
 include(cmake/StaticAnalyzers.cmake)
 include(msvc/msvc_target_group)
 
-
 if (EMSCRIPTEN)
     include(${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_emscripten_global_options.cmake)
 endif()
 
-
-add_subdirectory(external)
 add_subdirectory(src)
-
-#------------------------------------------------------------------------------
-# imgui_test_engine integration
-#------------------------------------------------------------------------------
-if (HELLOIMGUI_WITH_TEST_ENGINE)
-    include(${CMAKE_CURRENT_LIST_DIR}/src/hello_imgui_test_engine_integration/hello_imgui_test_engine_cmake.cmake)
-    add_imgui_test_engine()
-endif()
 
 #------------------------------------------------------------------------------
 # automation tests (set cache var HELLOIMGUI_BUILD_AUTOMATION_TEST to enable)

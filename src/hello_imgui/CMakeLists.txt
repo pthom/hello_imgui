@@ -2,6 +2,9 @@
 # Global variables and + objective-c++ for apple
 ###################################################################################################
 include(FetchContent)
+include(${HELLOIMGUI_BASEPATH}/external/OpenGL_Loaders/glad.cmake)
+include(${HELLOIMGUI_BASEPATH}/src/hello_imgui_test_engine_integration/hello_imgui_test_engine_cmake.cmake)
+
 
 # Set target name
 set(helloimgui_target hello_imgui)
@@ -35,6 +38,138 @@ function(him_add_target)
     target_link_libraries(${helloimgui_target} PUBLIC imgui)
 endfunction()
 
+
+###################################################################################################
+# Build imgui: API = him_build_imgui
+###################################################################################################
+function(him_build_imgui)
+    _him_do_build_imgui()
+    if (HELLOIMGUI_WITH_TEST_ENGINE)
+        add_imgui_test_engine()
+    endif()
+endfunction()
+
+function(_him_do_build_imgui)
+    # imgui is built by default
+    # You can use your own :
+    # In this case, make sure that a target named imgui is available
+    # and add this code to your CMakeLists:
+    #
+    #     set(HELLOIMGUI_BUILD_IMGUI OFF CACHE BOOL "" FORCE)
+    #     set(HELLOIMGUI_IMGUI_SOURCE_DIR "path/to/your/imgui" CACHE STRING "" FORCE)
+    #
+    if (HELLOIMGUI_BUILD_IMGUI)
+        # if HELLOIMGUI_IMGUI_SOURCE_DIR is  CMAKE_CURRENT_LIST_DIR/imgui
+        # and the submodule is not present, update submodules
+        if (HELLOIMGUI_IMGUI_SOURCE_DIR STREQUAL ${HELLOIMGUI_BASEPATH}/external/imgui)
+            if (NOT EXISTS ${HELLOIMGUI_IMGUI_SOURCE_DIR}/imgui.h)
+                # Run git submodule update --init --recursive
+                message(WARNING "Updating imgui submodule")
+                execute_process(COMMAND git submodule update --init --recursive
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+            endif()
+        endif()
+
+        file(GLOB imgui_sources ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.h ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.cpp)
+        set(imgui_sources ${imgui_sources}
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/imgui_stdlib.h)
+        if (HELLO_IMGUI_IMGUI_SHARED)
+            add_library(imgui SHARED ${imgui_sources})
+            install(TARGETS imgui DESTINATION ./lib/)
+        else()
+            add_library(imgui ${imgui_sources})
+        endif()
+        target_include_directories(imgui PUBLIC ${HELLOIMGUI_IMGUI_SOURCE_DIR})
+        if (MSVC)
+            hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
+        endif()
+
+        # Install
+        if(PROJECT_IS_TOP_LEVEL)
+            install(FILES ${imgui_sources} DESTINATION imgui)
+            install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends DESTINATION imgui)
+            install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp DESTINATION imgui/misc)
+            install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype DESTINATION imgui/misc)
+        endif()
+    endif()
+
+endfunction()
+
+
+
+###################################################################################################
+# Sanity checks: API = him_sanity_checks
+###################################################################################################
+function(him_sanity_checks)
+    _him_try_select_glfw_if_no_backend_selected()
+    _him_shout_if_no_backend()
+endfunction()
+
+function(_him_try_select_glfw_if_no_backend_selected)
+    #------------------------------------------------------------------------------
+    # Backend check: If no backend option is selected,
+    # either select Glfw automatically if possible, or fail
+    #------------------------------------------------------------------------------
+    #
+    if (NOT HELLOIMGUI_WITH_GLFW
+        AND NOT HELLOIMGUI_WITH_SDL
+        AND NOT HELLOIMGUI_USE_SDL_OPENGL3
+        AND NOT HELLOIMGUI_USE_GLFW_OPENGL3
+        AND NOT EMSCRIPTEN
+    )
+        set(backend_message "
+                    In order to select your own backend, use one of the cmake options below:
+                    -DHELLOIMGUI_WITH_GLFW=ON             # To download and build glfw automatically
+                    -DHELLOIMGUI_WITH_SDL=ON              # To download and build SDL automatically
+                    -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # To use your own version of GLFW (it should be findable via find_package(glfw3))
+                    -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # To use your own version of SDL (it should be findable via find_package(SDL2))
+
+                    (Note: under Linux, it is advised to use system-wide libraries, and not to use
+                    -DHELLOIMGUI_WITH_GLFW=ON or -DHELLOIMGUI_WITH_SDL=ON)
+    ")
+        if (NOT HELLOIMGUI_USE_GLFW_SYSTEM_LIB)
+            set(HELLOIMGUI_WITH_GLFW ON)
+            message(STATUS "
+                HelloImGui: using Glfw as default default backend (it will be downloaded and built inside {CMAKE_CURRENT_BINARY_DIR}/_deps/glfw-*)
+                ${backend_message}
+            ")
+        else()
+            # Check if Glfw can be found
+            find_package(glfw3 QUIET)
+            if (glfw3_FOUND)
+                set(HELLOIMGUI_USE_GLFW_OPENGL3 ON)
+                message(STATUS
+                    "HelloImGui: using Glfw as default default backend (it was found via find_package(glfw3))
+                    ${backend_message}
+                    ")
+            else()
+                set(glfw_help_msg "
+                you can install glfw via your package manager (apt, pacman, etc).
+                For example, on Ubuntu, you can run:
+                    sudo apt install libglfw3-dev
+                on macOS you can run:
+                    brew install glfw3
+            ")
+                message(FATAL_ERROR "
+                        HelloImGui: no backend selected, and could not find Glfw via find_package(glfw3).
+                        ${backend_message} ${glfw_help_msg}
+                ")
+            endif()
+        endif()
+    endif()
+endfunction()
+
+function(_him_shout_if_no_backend)
+    if (NOT (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3 OR HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT))
+        message(FATAL_ERROR "Select at least one backend: use either
+        -DHELLOIMGUI_USE_SDL_OPENGL3=ON
+        -DHELLOIMGUI_USE_GLFW_OPENGL3=ON
+        -DHELLOIMGUI_USE_QT=ON
+        -DHELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT=ON
+    ")
+    endif()
+endfunction()
 
 ###################################################################################################
 # Apple related options: API = him_add_apple_options
@@ -159,6 +294,9 @@ function(him_use_opengl3_backend target)
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
         target_link_libraries(${helloimgui_target} PUBLIC glad)
     endif()
+    if (HELLOIMGUI_USE_GLAD)
+        him_install_glad()
+    endif()
 endfunction()
 
 function(_him_link_opengles_sdl target)
@@ -175,6 +313,7 @@ function(_him_link_opengles_sdl target)
         HELLOIMGUI_USE_GLES3
     )
 endfunction()
+
 
 ###################################################################################################
 # SDL backend: API = him_use_sdl2_backend
@@ -291,9 +430,7 @@ endfunction()
 # Glfw backend: API = him_use_glfw_backend
 ###################################################################################################
 function(him_use_glfw_backend target)
-    if (need_fetch_make_available_glfw)
-        _him_fetch_make_available_glfw()
-    endif()
+    _him_fetch_glfw_if_needed()
     if (NOT TARGET glfw) # if glfw is not built as part of the whole build, find it
         find_package(glfw3 CONFIG REQUIRED)
     endif()
@@ -306,12 +443,36 @@ function(him_use_glfw_backend target)
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW)
 endfunction()
 
-function(_him_fetch_make_available_glfw)
-    set(GLFW_BUILD_EXAMPLES OFF)
-    set(GLFW_BUILD_TESTS OFF)
-    set(GLFW_BUILD_DOCS OFF)
-    set(GLFW_INSTALL OFF)
-    FetchContent_MakeAvailable(glfw)
+function(_him_fetch_glfw_if_needed)
+    set(shall_fetch_glfw OFF)
+    if (HELLOIMGUI_WITH_GLFW
+        AND NOT HELLOIMGUI_USE_GLFW_SYSTEM_LIB
+        AND NOT TARGET glfw
+        AND NOT EMSCRIPTEN
+    )
+        find_package(glfw3 QUIET)
+        if (NOT glfw3_FOUND)
+            set(shall_fetch_glfw ON)
+        endif()
+    endif()
+
+    if (shall_fetch_glfw)
+        message(STATUS "HelloImGui: downloading and building glfw")
+        include(FetchContent)
+        Set(FETCHCONTENT_QUIET FALSE)
+        FetchContent_Declare(glfw
+            GIT_REPOSITORY    https://github.com/glfw/glfw.git
+            GIT_TAG           3.3.8
+            GIT_PROGRESS TRUE
+        )
+
+        set(GLFW_BUILD_EXAMPLES OFF)
+        set(GLFW_BUILD_TESTS OFF)
+        set(GLFW_BUILD_DOCS OFF)
+        set(GLFW_INSTALL OFF)
+        FetchContent_MakeAvailable(glfw)
+    endif()
+
 endfunction()
 
 
@@ -346,6 +507,8 @@ endfunction()
 # Main: API = him_main
 ###################################################################################################
 function(him_main)
+    him_sanity_checks()
+    him_build_imgui()
     him_add_target()
 
     if (HELLOIMGUI_USE_SDL_OPENGL3)

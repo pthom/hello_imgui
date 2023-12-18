@@ -39,7 +39,7 @@ jobs:
           export ANDROID_HOME=/usr/local/lib/android/sdk
           mkdir build_android
           cd build_android
-          ../tools/android/cmake_arm-android.sh
+          ../tools/android/cmake_arm-android.sh ..
 
     - name: gradlew build
       # This will build for all android architectures

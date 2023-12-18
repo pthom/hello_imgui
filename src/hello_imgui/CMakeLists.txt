@@ -49,27 +49,36 @@ if (EMSCRIPTEN)
 endif()
 
 
-function(link_opengl_sdl target)
+function(_link_opengles_sdl target)
     if(IOS)
         target_link_libraries(${target} PUBLIC "-framework OpenGLES")
     elseif(ANDROID)
         target_link_libraries(${target} PUBLIC GLESv3)
     endif()
+
+    target_compile_definitions(${target_name}
+        PUBLIC
+        IMGUI_IMPL_OPENGL_LOADER_CUSTOM="<OpenGLES/ES3/gl.h>"
+        IMGUI_IMPL_OPENGL_ES3
+        HELLOIMGUI_USE_GLES3
+    )
 endfunction()
 
 
-function(link_sdl target)
+function(_link_sdl target)
     if (need_fetch_make_available_sdl)
         FetchContent_MakeAvailable(sdl)
     endif()
 
     if(IOS)
         target_link_libraries(${target} PUBLIC SDL2-static SDL2main)
+        _link_opengles_sdl(${target})
     elseif(EMSCRIPTEN)
         target_compile_options(${target} PUBLIC -s USE_SDL=2)
         target_link_options(${target} INTERFACE -s USE_SDL=2)
     elseif(ANDROID)
         target_link_libraries(${target} PUBLIC SDL2main SDL2)
+        _link_opengles_sdl(${target})
     elseif(TARGET SDL2-static)
         target_link_libraries(${target} PUBLIC SDL2-static)
     else()
@@ -88,7 +97,6 @@ function(link_sdl target)
         endif()
     endif()
 
-    link_opengl_sdl(${target})
     if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
         target_link_libraries(${target} PUBLIC Xext X11)
     endif()
@@ -96,21 +104,9 @@ endfunction()
 
 
 if (HELLOIMGUI_USE_SDL_OPENGL3)
-    link_sdl(${target_name})
+    _link_sdl(${target_name})
 
-    if (IOS)
-        target_compile_definitions(${target_name}
-            PUBLIC
-            IMGUI_IMPL_OPENGL_LOADER_CUSTOM="<OpenGLES/ES3/gl.h>"
-            IMGUI_IMPL_OPENGL_ES3
-            HELLOIMGUI_USE_GLES3
-            )
-    elseif(ANDROID)
-        target_compile_definitions(${target_name} PUBLIC
-            IMGUI_IMPL_OPENGL_LOADER_CUSTOM="<OpenGLES/ES3/gl.h>"
-            IMGUI_IMPL_OPENGL_ES3
-            HELLOIMGUI_USE_GLES3
-            )
+    if(ANDROID)
         target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_CANNOTQUIT)
         target_compile_definitions(${target_name} PUBLIC HELLOIMGUI_MOBILEDEVICE)
     endif()

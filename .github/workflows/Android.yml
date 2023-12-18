@@ -20,9 +20,6 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init --recursive
 
-    - name: Download SDL
-      run: ./tools/sdl_download.sh
-
     - name: Set up JDK 17
       uses: actions/setup-java@v2
       with:

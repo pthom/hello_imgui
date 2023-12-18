@@ -255,19 +255,6 @@ if (HELLOIMGUI_WITH_GLFW
     endif()
 endif()
 
-# Shall we fetch sdl? (fill shall_fetch_sdl)
-set(shall_fetch_sdl OFF)
-if (HELLOIMGUI_WITH_SDL
-    AND NOT HELLOIMGUI_USE_SDL_SYSTEM_LIB
-    AND NOT TARGET sdl
-    AND NOT EMSCRIPTEN
-    )
-    find_package(SDL2 QUIET)
-    if (NOT SDL2_FOUND)
-        set(shall_fetch_sdl ON)
-    endif()
-endif()
-
 
 #------------------------------------------------------------------------------
 # Download backend glfw or sdl if required
@@ -282,18 +269,6 @@ if (shall_fetch_glfw)
         GIT_PROGRESS TRUE
         )
     set(need_fetch_make_available_glfw ON)
-endif()
-
-if (shall_fetch_sdl)
-    message(STATUS "HelloImGui: downloading and building SDL")
-    include(FetchContent)
-    Set(FETCHCONTENT_QUIET FALSE)
-    FetchContent_Declare(sdl
-        GIT_REPOSITORY    https://github.com/libsdl-org/SDL.git
-        GIT_TAG           release-2.24.2
-        GIT_PROGRESS TRUE
-        )
-    set(need_fetch_make_available_sdl ON)
 endif()
 
 if (NOT (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3 OR HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT))

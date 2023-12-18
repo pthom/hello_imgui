@@ -192,13 +192,31 @@ endfunction()
 
 
 function(_him_fetch_sdl_if_needed)
+    set(shall_fetch_sdl OFF)
+
+    # Always fetch SDL for iOS and Android
     if (HELLOIMGUI_USE_SDL_OPENGL3 AND (IOS OR ANDROID))
+        set(shall_fetch_sdl ON)
+    endif()
+
+    # Fetch SDL if:
+    # option HELLOIMGUI_WITH_SDL was passed
+    # and SDL not available by find_package
+    # and HELLOIMGUI_USE_SDL_SYSTEM_LIB is OFF
+    if (HELLOIMGUI_WITH_SDL AND NOT HELLOIMGUI_USE_SDL_SYSTEM_LIB
+        AND NOT TARGET sdl AND NOT EMSCRIPTEN)
+        find_package(SDL2 QUIET)
+        if (NOT SDL2_FOUND)
+            set(shall_fetch_sdl ON)
+        endif()
+    endif()
+
+    if (shall_fetch_sdl)
         _him_fetch_declare_sdl()
         if(ANDROID)
             FetchContent_Populate(sdl)
             _him_prepare_android_sdl_symlink()
-        endif()
-        if(IOS)
+        else()
             FetchContent_MakeAvailable(sdl)
         endif()
     endif()

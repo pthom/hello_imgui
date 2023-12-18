@@ -3,15 +3,20 @@ message(STATUS "Library ${helloimgui_target}")
 
 set(imgui_backends_dir ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends)
 
+#
+# Add library and sources (enable objective-c++ for mac)
+#
 if (APPLE)
     file(GLOB_RECURSE sources *.h *.cpp *.c *.mm)
 else()
     file(GLOB_RECURSE sources *.h *.cpp *.c)
 endif()
 add_library(${helloimgui_target} ${sources})
-
-set_property(TARGET ${helloimgui_target} PROPERTY CXX_STANDARD 17)
-
+if(APPLE AND NOT IOS)
+    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_MACOS)
+    enable_language(OBJC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -x objective-c++")
+endif()
 target_include_directories(${helloimgui_target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_link_libraries(${helloimgui_target} PUBLIC imgui)
 
@@ -26,12 +31,16 @@ if(ANDROID OR IOS)
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_MOBILEDEVICE)
 endif()
 
-
-if(APPLE AND NOT IOS)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_MACOS)
-    enable_language(OBJC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -x objective-c++")
+if (IOS)
+    target_link_libraries(${helloimgui_target} PUBLIC "-framework UIKit")
+endif ()
+if (APPLE AND NOT IOS) # If mac
+    target_link_libraries(${helloimgui_target} PUBLIC "-framework AppKit -framework IOKit")
 endif()
+if (APPLE)
+    target_link_libraries(${helloimgui_target} PUBLIC "-framework Foundation")
+endif()
+
 
 if(IOS)
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_IOS)
@@ -71,6 +80,18 @@ function(_link_opengles_sdl target)
 endfunction()
 
 
+function(_use_opengl3_backend target)
+    target_sources(${target} PRIVATE
+        ${imgui_backends_dir}/imgui_impl_opengl3.h
+        ${imgui_backends_dir}/imgui_impl_opengl3.cpp
+    )
+
+    if(ANDROID OR IOS)
+        _link_opengles_sdl(${helloimgui_target})
+    endif()
+endfunction()
+
+
 function(_link_sdl target)
     if (need_fetch_make_available_sdl)
         FetchContent_MakeAvailable(sdl)
@@ -107,18 +128,13 @@ function(_link_sdl target)
 endfunction()
 
 
-function(_use_opengl3_backend target)
-    target_sources(${target} PRIVATE
-        ${imgui_backends_dir}/imgui_impl_opengl3.h
-        ${imgui_backends_dir}/imgui_impl_opengl3.cpp
-        )
-endfunction()
 
 function (_use_sdl2_backend target)
     target_sources(${target} PRIVATE
         ${imgui_backends_dir}/imgui_impl_sdl2.h
         ${imgui_backends_dir}/imgui_impl_sdl2.cpp
         )
+    _link_sdl(${helloimgui_target})
 endfunction()
 
 function(_use_glfw_backend target)
@@ -128,23 +144,23 @@ function(_use_glfw_backend target)
         )
 endfunction()
 
-if (HELLOIMGUI_USE_SDL_OPENGL3)
-    _link_sdl(${helloimgui_target})
+function(_fetch_make_available_glfw)
+    set(GLFW_BUILD_EXAMPLES OFF)
+    set(GLFW_BUILD_TESTS OFF)
+    set(GLFW_BUILD_DOCS OFF)
+    set(GLFW_INSTALL OFF)
+    FetchContent_MakeAvailable(glfw)
+endfunction()
 
-    if(ANDROID OR IOS)
-        _link_opengles_sdl(${helloimgui_target})
-    endif()
+
+if (HELLOIMGUI_USE_SDL_OPENGL3)
     _use_opengl3_backend(${helloimgui_target})
     _use_sdl2_backend(${helloimgui_target})
 endif()
 
 if (HELLOIMGUI_USE_GLFW_OPENGL3)
     if (need_fetch_make_available_glfw)
-        set(GLFW_BUILD_EXAMPLES OFF)
-        set(GLFW_BUILD_TESTS OFF)
-        set(GLFW_BUILD_DOCS OFF)
-        set(GLFW_INSTALL OFF)
-        FetchContent_MakeAvailable(glfw)
+        _fetch_make_available_glfw()
     endif()
     if (NOT TARGET glfw) # if glfw is not built as part of the whole build, find it
         find_package(glfw3 CONFIG REQUIRED)
@@ -155,12 +171,7 @@ if (HELLOIMGUI_USE_GLFW_OPENGL3)
     _use_glfw_backend(${helloimgui_target})
 endif()
 
-if (IOS)
-    target_link_libraries(${helloimgui_target} PUBLIC "-framework UIKit")
-endif ()
-if (APPLE AND NOT IOS) # If mac
-    target_link_libraries(${helloimgui_target} PUBLIC "-framework AppKit -framework IOKit")
-endif()
+
 
 if (HELLOIMGUI_USE_QT)
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_QT)
@@ -184,9 +195,6 @@ if (UNIX AND NOT EMSCRIPTEN)
 endif()
 if (UNIX AND NOT EMSCRIPTEN AND NOT APPLE AND NOT ANDROID)
     target_link_libraries(hello_imgui PUBLIC X11)
-endif()
-if (APPLE)
-    target_link_libraries(${helloimgui_target} PUBLIC "-framework Foundation")
 endif()
 
 

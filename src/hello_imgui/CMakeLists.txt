@@ -4,9 +4,10 @@ set(imgui_backends_dir ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends)
 
 
 ###################################################################################################
-# Add library and sources (enable objective-c++ for mac)
+# Add library and sources: API = add_hello_imgui_target
+# (enable objective-c++ for mac)
 ###################################################################################################
-function(_add_hello_imgui_target)
+function(add_hello_imgui_target)
     if (APPLE)
         file(GLOB_RECURSE sources *.h *.cpp *.c *.mm)
     else()
@@ -24,10 +25,9 @@ endfunction()
 
 
 ###################################################################################################
-# Link Os dependent frameworks
+# Link Os dependent frameworks: API = link_os_dependent_libs
 ###################################################################################################
-
-function(_link_os_dependent_libs)
+function(link_os_dependent_libs)
     if (IOS)
         target_link_libraries(${helloimgui_target} PUBLIC "-framework UIKit")
     endif ()
@@ -40,47 +40,19 @@ function(_link_os_dependent_libs)
 
     # OS specific link options
     if (UNIX AND NOT EMSCRIPTEN)
-        target_link_libraries(hello_imgui PUBLIC stdc++ dl)
+        target_link_libraries(${helloimgui_target} PUBLIC stdc++ dl)
     endif()
     if (UNIX AND NOT EMSCRIPTEN AND NOT APPLE AND NOT ANDROID)
-        target_link_libraries(hello_imgui PUBLIC X11)
-    endif()
-
-endfunction()
-
-
-###################################################################################################
-# Misc to refactor
-###################################################################################################
-
-
-function(_emscripten_force_use_sdl_open_gl3)
-    if (EMSCRIPTEN)
-        set(HELLOIMGUI_USE_SDL_OPENGL3 ON PARENT_SCOPE)
-        set(HELLOIMGUI_USE_GLFW_OPENGL3 OFF PARENT_SCOPE)
+        target_link_libraries(${helloimgui_target} PUBLIC X11)
     endif()
 endfunction()
 
 
-###################################################################################################
-# OpenGL backend
-###################################################################################################
-function(_link_opengles_sdl target)
-    if(IOS)
-        target_link_libraries(${target} PUBLIC "-framework OpenGLES")
-    elseif(ANDROID)
-        target_link_libraries(${target} PUBLIC GLESv3)
-    endif()
 
-    target_compile_definitions(${target}
-        PUBLIC
-        IMGUI_IMPL_OPENGL_LOADER_CUSTOM="<OpenGLES/ES3/gl.h>"
-        IMGUI_IMPL_OPENGL_ES3
-        HELLOIMGUI_USE_GLES3
-    )
-endfunction()
-
-function(_use_opengl3_backend target)
+###################################################################################################
+# OpenGL backend: API = use_opengl3_backend
+###################################################################################################
+function(use_opengl3_backend target)
     target_sources(${target} PRIVATE
         ${imgui_backends_dir}/imgui_impl_opengl3.h
         ${imgui_backends_dir}/imgui_impl_opengl3.cpp
@@ -96,10 +68,33 @@ function(_use_opengl3_backend target)
     endif()
 endfunction()
 
+function(_link_opengles_sdl target)
+    if(IOS)
+        target_link_libraries(${target} PUBLIC "-framework OpenGLES")
+    elseif(ANDROID)
+        target_link_libraries(${target} PUBLIC GLESv3)
+    endif()
+
+    target_compile_definitions(${target}
+        PUBLIC
+        IMGUI_IMPL_OPENGL_LOADER_CUSTOM="<OpenGLES/ES3/gl.h>"
+        IMGUI_IMPL_OPENGL_ES3
+        HELLOIMGUI_USE_GLES3
+    )
+endfunction()
 
 ###################################################################################################
-# SDL backend
+# SDL backend: API = use_sdl2_backend
 ###################################################################################################
+function (use_sdl2_backend target)
+    target_sources(${target} PRIVATE
+        ${imgui_backends_dir}/imgui_impl_sdl2.h
+        ${imgui_backends_dir}/imgui_impl_sdl2.cpp
+    )
+    _link_sdl(${helloimgui_target})
+    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL)
+endfunction()
+
 function(_link_sdl target)
     if (need_fetch_make_available_sdl)
         FetchContent_MakeAvailable(sdl)
@@ -136,20 +131,10 @@ function(_link_sdl target)
 endfunction()
 
 
-function (_use_sdl2_backend target)
-    target_sources(${target} PRIVATE
-        ${imgui_backends_dir}/imgui_impl_sdl2.h
-        ${imgui_backends_dir}/imgui_impl_sdl2.cpp
-        )
-    _link_sdl(${helloimgui_target})
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL)
-endfunction()
-
-
 ###################################################################################################
-# Glfw backend
+# Glfw backend: API = use_glfw_backend
 ###################################################################################################
-function(_use_glfw_backend target)
+function(use_glfw_backend target)
     if (need_fetch_make_available_glfw)
         _fetch_make_available_glfw()
     endif()
@@ -161,10 +146,9 @@ function(_use_glfw_backend target)
     target_sources(${target} PRIVATE
         ${imgui_backends_dir}/imgui_impl_glfw.h
         ${imgui_backends_dir}/imgui_impl_glfw.cpp
-        )
+    )
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW)
 endfunction()
-
 
 function(_fetch_make_available_glfw)
     set(GLFW_BUILD_EXAMPLES OFF)
@@ -176,15 +160,21 @@ endfunction()
 
 
 ###################################################################################################
-# Compile definitions
+# Compile definitions: API = himgui_add_compile_definitions
 ###################################################################################################
+function(himgui_add_compile_definitions)
+    _add_mobile_compile_definitions()
+    _add_ios_compile_definitions()
+    _add_apple_compile_definitions()
+    add_imgui_shared_compile_definitions()
+endfunction()
+
 function(_add_mobile_compile_definitions)
     if(ANDROID OR IOS)
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_CANNOTQUIT)
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_MOBILEDEVICE)
     endif()
 endfunction()
-
 
 function(_add_ios_compile_definitions)
     if (IOS)
@@ -196,41 +186,53 @@ function(_add_ios_compile_definitions)
     endif()
 endfunction()
 
+function(_add_apple_compile_definitions)
+    if (IOS OR (MACOSX AND NOT HELLOIMGUI_MACOS_NO_BUNDLE))
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_INSIDE_APPLE_BUNDLE)
+    endif()
+endfunction()
 
+function(add_imgui_shared_compile_definitions)
+    # Compile definitions
+    if (HELLO_IMGUI_IMGUI_SHARED)
+        target_compile_definitions(${helloimgui_target} PRIVATE GImGui=GImGuiFromHelloImGui)
+        target_compile_definitions(${helloimgui_target} PRIVATE HELLO_IMGUI_IMGUI_SHARED)
+    endif()
+endfunction()
+
+    
 ###################################################################################################
-# Main
+# Main: API = himgui_main
 ###################################################################################################
-function(_main_hello_imgui)
-    _add_hello_imgui_target()
-    _link_os_dependent_libs()
-    _emscripten_force_use_sdl_open_gl3()
-    _add_mobile_compile_definitions()
-    _add_ios_compile_definitions()
+function(himgui_main)
+    add_hello_imgui_target()
+    link_os_dependent_libs()
+
+    if (EMSCRIPTEN)
+        set(HELLOIMGUI_USE_SDL_OPENGL3 ON PARENT_SCOPE)
+        set(HELLOIMGUI_USE_GLFW_OPENGL3 OFF PARENT_SCOPE)
+    endif()
+
+
+    himgui_add_compile_definitions()
 
     if (HELLOIMGUI_USE_SDL_OPENGL3)
-        _use_opengl3_backend(${helloimgui_target})
-        _use_sdl2_backend(${helloimgui_target})
+        use_opengl3_backend(${helloimgui_target})
+        use_sdl2_backend(${helloimgui_target})
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_OPENGL3)
     endif()
 
     if (HELLOIMGUI_USE_GLFW_OPENGL3)
-        _use_opengl3_backend(${helloimgui_target})
-        _use_glfw_backend(${helloimgui_target})
+        use_opengl3_backend(${helloimgui_target})
+        use_glfw_backend(${helloimgui_target})
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_OPENGL3)
     endif()
-
 
     if (MSVC)
         hello_imgui_msvc_target_group_sources(${helloimgui_target})
         hello_imgui_msvc_target_set_folder(${helloimgui_target} ${HELLOIMGUI_SOLUTIONFOLDER})
     endif()
 
-
-    # Compile definitions
-    if (HELLO_IMGUI_IMGUI_SHARED)
-        target_compile_definitions(${helloimgui_target} PRIVATE GImGui=GImGuiFromHelloImGui)
-        target_compile_definitions(${helloimgui_target} PRIVATE HELLO_IMGUI_IMGUI_SHARED)
-    endif()
 
 
     if (EMSCRIPTEN)
@@ -239,9 +241,6 @@ function(_main_hello_imgui)
     endif()
 
 
-    if (IOS OR (MACOSX AND NOT HELLOIMGUI_MACOS_NO_BUNDLE))
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_INSIDE_APPLE_BUNDLE)
-    endif()
     if (HELLOIMGUI_WIN32_AUTO_WINMAIN)
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_WIN32_AUTO_WINMAIN)
     endif()
@@ -250,9 +249,9 @@ endfunction()
 
 
 ###################################################################################################
-# Install
+# Install: API = himgui_install
 ###################################################################################################
-function(_install_hello_imgui)
+function(himgui_install)
 if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
     install(TARGETS ${helloimgui_target} DESTINATION ./lib/)
     file(GLOB headers *.h)
@@ -266,5 +265,5 @@ endfunction()
 # This is the only part where we are allow to make function calls
 # *above we only define functions!*
 ###################################################################################################
-_main_hello_imgui()
-_install_hello_imgui()
+himgui_main()
+himgui_install()

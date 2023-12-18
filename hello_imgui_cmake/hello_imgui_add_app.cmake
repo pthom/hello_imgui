@@ -1,3 +1,5 @@
+include(${CMAKE_CURRENT_LIST_DIR}/utils/cache_hello_imgui_paths.cmake)
+
 #
 # hello_imgui_add_app is a helper function, similar to cmake's "add_executable"
 #

@@ -17,6 +17,8 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 
+include(${CMAKE_CURRENT_LIST_DIR}/hello_imgui_cmake/utils/cache_hello_imgui_paths.cmake)
+
 ###############################################################################
 # hello_imgui_add_app
 ###############################################################################
@@ -28,9 +30,7 @@ set(CMAKE_CXX_STANDARD 17)
 #     * It will automatically link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
 #     * It will embed the assets (for desktop, mobile, and emscripten apps)
 #     * It will perform additional customization (app icon and name on mobile platforms, etc)
-set(HELLOIMGUI_CMAKE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/hello_imgui_cmake CACHE STRING "" FORCE)
 # Make cmake function `hello_imgui_add_app` available
-list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
 include(hello_imgui_add_app)
 
 
@@ -323,7 +323,6 @@ endif()
 #------------------------------------------------------------------------------
 # Main build actions
 #------------------------------------------------------------------------------
-set(HELLOIMGUI_BASEPATH ${CMAKE_CURRENT_LIST_DIR} CACHE STRING "Hello imgui base path" FORCE)
 include(cmake/StandardProjectSettings.cmake)
 include(cmake/StaticAnalyzers.cmake)
 include(msvc/msvc_target_group)

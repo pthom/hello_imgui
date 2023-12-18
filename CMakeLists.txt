@@ -161,8 +161,6 @@ else()
 endif()
 option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 
-
-
 ###############################################################################
 # End of options
 ###############################################################################
@@ -175,27 +173,6 @@ option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
 ###############################################################################
 
 #------------------------------------------------------------------------------
-# use SDL for emscripten
-#------------------------------------------------------------------------------
-if (EMSCRIPTEN AND NOT HELLOIMGUI_USE_SDL_OPENGL3 AND NOT HELLOIMGUI_USE_GLFW_OPENGL3)
-    set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
-    set(HELLOIMGUI_USE_GLFW_OPENGL3 OFF)
-endif()
-
-
-#------------------------------------------------------------------------------
-# Check options logic
-#------------------------------------------------------------------------------
-if (HELLOIMGUI_WITH_GLFW)
-    set(HELLOIMGUI_USE_GLFW_OPENGL3 ON)
-endif()
-if (HELLOIMGUI_WITH_SDL)
-    set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
-endif()
-
-
-
-#------------------------------------------------------------------------------
 # MSVC: Select the solution folder where hello_imgui should be placed
 #------------------------------------------------------------------------------
 if (MSVC)
@@ -203,7 +180,6 @@ if (MSVC)
         set(HELLOIMGUI_SOLUTIONFOLDER hello_imgui)
     endif()
 endif()
-
 
 #------------------------------------------------------------------------------
 # Main build actions

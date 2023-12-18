@@ -1,4 +1,4 @@
-name: "StarterTemlate"
+name: "StarterTemplate"
 
 on:
   workflow_dispatch:

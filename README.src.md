@@ -5,7 +5,7 @@
 [![iOS](https://github.com/pthom/hello_imgui/workflows/iOS/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/iOS.yml)
 [![Android](https://github.com/pthom/hello_imgui/workflows/Android/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Android.yml)
 [![Emscripten](https://github.com/pthom/hello_imgui/workflows/Emscripten/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Emscripten.yml)
-[![StarterTemlate](https://github.com/pthom/hello_imgui/workflows/StarterTemlate/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/StarterTemlate.yml)
+[![StarterTemplate](https://github.com/pthom/hello_imgui/workflows/StarterTemplate/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/StarterTemplate.yml)
 [![Automation](https://github.com/pthom/hello_imgui/workflows/Automation/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Automation.yml)
 
 

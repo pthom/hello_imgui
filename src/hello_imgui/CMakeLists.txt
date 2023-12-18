@@ -22,9 +22,9 @@ set(imgui_backends_dir ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends)
 
 
 ###################################################################################################
-# Add library and sources: API = him_add_target
+# Add library and sources: API = him_add_hello_imgui
 ###################################################################################################
-function(him_add_target)
+function(him_add_hello_imgui)
     if (APPLE)
         file(GLOB_RECURSE sources *.h *.cpp *.c *.mm)
     else()
@@ -45,9 +45,6 @@ endfunction()
 function(him_build_imgui)
     _him_checkout_imgui_submodule_if_needed()
     _him_do_build_imgui()
-    if (HELLOIMGUI_WITH_TEST_ENGINE)
-        add_imgui_test_engine()
-    endif()
 endfunction()
 
 function(_him_checkout_imgui_submodule_if_needed)
@@ -523,7 +520,10 @@ endfunction()
 function(him_main)
     him_sanity_checks()
     him_build_imgui()
-    him_add_target()
+    him_add_hello_imgui()
+    if (HELLOIMGUI_WITH_TEST_ENGINE)
+        add_imgui_test_engine()
+    endif()
 
     if (HELLOIMGUI_USE_SDL_OPENGL3)
         him_use_opengl3_backend(${helloimgui_target})

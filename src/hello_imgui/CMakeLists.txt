@@ -1,6 +1,7 @@
 ###################################################################################################
 # Global variables and + objective-c++ for apple
 ###################################################################################################
+include(FetchContent)
 
 # Set target name
 set(helloimgui_target hello_imgui)
@@ -15,13 +16,6 @@ endif()
 
 # Global variable for this file
 set(imgui_backends_dir ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends)
-
-# Force emscripten to use opengl3 + sdl
-# (this is dirty, maybe this should be done at the root CMakeLists.txt, to be more visible)
-if (EMSCRIPTEN)
-    set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
-    set(HELLOIMGUI_USE_GLFW_OPENGL3 OFF)
-endif()
 
 
 ###################################################################################################
@@ -89,6 +83,7 @@ function(him_add_linux_options)
         target_link_libraries(${helloimgui_target} PUBLIC X11)
     endif()
 endfunction()
+
 
 ###################################################################################################
 # Windows related options: API = him_add_windows_options
@@ -185,13 +180,58 @@ endfunction()
 # SDL backend: API = him_use_sdl2_backend
 ###################################################################################################
 function (him_use_sdl2_backend target)
+    _him_fetch_sdl_if_needed()
+    _him_link_sdl(${helloimgui_target})
+
     target_sources(${target} PRIVATE
         ${imgui_backends_dir}/imgui_impl_sdl2.h
         ${imgui_backends_dir}/imgui_impl_sdl2.cpp
     )
-    _him_link_sdl(${helloimgui_target})
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL)
 endfunction()
+
+
+function(_him_fetch_sdl_if_needed)
+    if (HELLOIMGUI_USE_SDL_OPENGL3 AND (IOS OR ANDROID))
+        _him_fetch_declare_sdl()
+        if(ANDROID)
+            FetchContent_Populate(sdl)
+            _him_prepare_android_sdl_symlink()
+        endif()
+        if(IOS)
+            FetchContent_MakeAvailable(sdl)
+        endif()
+    endif()
+endfunction()
+
+function(_him_prepare_android_sdl_symlink)
+    # We now have SDL in _deps/sdl-src
+    set(sdl_location ${CMAKE_BINARY_DIR}/_deps/sdl-src)
+    # We need to communicate this location to the function apkCMake_makeSymLinks()
+    # so that it can create the symlinks in the right place:
+    # it will use the variable apkCMake_sdl_symlink_target
+    set(apkCMake_sdl_symlink_target ${CMAKE_BINARY_DIR}/_deps/sdl-src CACHE STRING "" FORCE)
+endfunction()
+
+function(_him_fetch_declare_sdl)
+    # iOS and Android were tested with SDL 2.28.5
+    # other platforms, not yet
+    if (IOS OR ANDROID)
+        set(sdl_version 2.28.5)
+    else()
+        set(sdl_version 2.24.2)
+    endif()
+
+    message(STATUS "Fetching SDL version ${sdl_version}")
+    include(FetchContent)
+    Set(FETCHCONTENT_QUIET FALSE)
+    FetchContent_Declare(sdl
+        GIT_REPOSITORY    https://github.com/libsdl-org/SDL.git
+        GIT_TAG           release-${sdl_version}
+        GIT_PROGRESS TRUE
+    )
+endfunction()
+
 
 function(_him_link_sdl target)
     if (need_fetch_make_available_sdl)

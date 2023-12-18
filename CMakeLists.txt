@@ -228,6 +228,7 @@ endif()
 #------------------------------------------------------------------------------
 if (EMSCRIPTEN AND NOT HELLOIMGUI_USE_SDL_OPENGL3 AND NOT HELLOIMGUI_USE_GLFW_OPENGL3)
     set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
+    set(HELLOIMGUI_USE_GLFW_OPENGL3 OFF)
 endif()
 
 

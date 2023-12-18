@@ -45,17 +45,3 @@ if (HELLOIMGUI_BUILD_IMGUI)
     endif()
 endif()
 
-if (HELLOIMGUI_USE_SDL_OPENGL3)
-    # On desktop (linux, windows, osx) sdl is provided via vcpkg
-    # On iOS, the build is done externally via tools/ios/sdl_compile_ios.sh
-
-    if (ANDROID OR IOS)
-        # if the folder SDL is not present, it means that the user did not download the submodule
-        # we download it for him
-        if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/SDL)
-            message(FATAL_ERROR "Please download SDL by running ${HELLOIMGUI_BASEPATH}/tools/sdl_download.sh")
-        endif()
-
-        add_subdirectory(SDL)
-    endif()
-endif()

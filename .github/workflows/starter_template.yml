@@ -1,4 +1,4 @@
-name: "EasyIntegration"
+name: "StarterTemlate"
 
 on:
   workflow_dispatch:

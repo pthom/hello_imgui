@@ -1,4 +1,4 @@
-name: "ci_automation_test"
+name: "Automation"
 
 # Run an app with automation thanks to imgui_test_engine / ensure it works
 

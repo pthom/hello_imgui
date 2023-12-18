@@ -1,4 +1,4 @@
-name: "multiplatform_default"
+name: "Win_Mac_Linux"
 
 # Test that a default build works with no specific option on all desktop platforms
 

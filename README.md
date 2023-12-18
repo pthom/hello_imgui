@@ -1,11 +1,13 @@
 <img src="logo/logo_hello_imgui.png" width="200">
 
-![Ubuntu](https://github.com/pthom/hello_imgui/workflows/Ubuntu/badge.svg)
-![Windows](https://github.com/pthom/hello_imgui/workflows/Windows/badge.svg)
-![MacOS](https://github.com/pthom/hello_imgui/workflows/MacOS/badge.svg)
-![iOS](https://github.com/pthom/hello_imgui/workflows/iOS/badge.svg)
-![Emscripten](https://github.com/pthom/hello_imgui/workflows/Emscripten/badge.svg)
+![Win_Mac_Linux](https://github.com/pthom/hello_imgui/workflows/Win_Mac_Linux/badge.svg)
 ![MinGW](https://github.com/pthom/hello_imgui/workflows/MinGW/badge.svg)
+![iOS](https://github.com/pthom/hello_imgui/workflows/iOS/badge.svg)
+![Android](https://github.com/pthom/hello_imgui/workflows/Android/badge.svg)
+![Emscripten](https://github.com/pthom/hello_imgui/workflows/Emscripten/badge.svg)
+![StarterTemlate](https://github.com/pthom/hello_imgui/workflows/StarterTemlate/badge.svg)
+![Automation](https://github.com/pthom/hello_imgui/workflows/Automation/badge.svg)
+
 
 # Hello ImGui
 
@@ -33,7 +35,7 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 ## Get started in 5 minutes
 
 ### Either use this starter template
-[This template](https://github.com/pthom/hello_imgui_template) will get you started in 5 minutes (and shows how to embed assets, customize the app icon, etc.).
+[The starter template](https://github.com/pthom/hello_imgui_template) will get you started in 5 minutes, and shows how to embed assets, customize the app icon (etc.), on all platforms.
 
 ### Or write a cmake + main.cpp file, and you are good to go!
 

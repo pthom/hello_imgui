@@ -43,21 +43,14 @@ endfunction()
 # Build imgui: API = him_build_imgui
 ###################################################################################################
 function(him_build_imgui)
+    _him_checkout_imgui_submodule_if_needed()
     _him_do_build_imgui()
     if (HELLOIMGUI_WITH_TEST_ENGINE)
         add_imgui_test_engine()
     endif()
 endfunction()
 
-function(_him_do_build_imgui)
-    # imgui is built by default
-    # You can use your own :
-    # In this case, make sure that a target named imgui is available
-    # and add this code to your CMakeLists:
-    #
-    #     set(HELLOIMGUI_BUILD_IMGUI OFF CACHE BOOL "" FORCE)
-    #     set(HELLOIMGUI_IMGUI_SOURCE_DIR "path/to/your/imgui" CACHE STRING "" FORCE)
-    #
+function(_him_checkout_imgui_submodule_if_needed)
     if (HELLOIMGUI_BUILD_IMGUI)
         # if HELLOIMGUI_IMGUI_SOURCE_DIR is  CMAKE_CURRENT_LIST_DIR/imgui
         # and the submodule is not present, update submodules
@@ -65,11 +58,16 @@ function(_him_do_build_imgui)
             if (NOT EXISTS ${HELLOIMGUI_IMGUI_SOURCE_DIR}/imgui.h)
                 # Run git submodule update --init --recursive
                 message(WARNING "Updating imgui submodule")
-                execute_process(COMMAND git submodule update --init --recursive
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+                execute_process(
+                    COMMAND git submodule update --init --recursive
+                    WORKING_DIRECTORY ${HELLOIMGUI_BASEPATH})
             endif()
         endif()
+    endif()
+endfunction()
 
+function(_him_do_build_imgui)
+    if (HELLOIMGUI_BUILD_IMGUI)
         file(GLOB imgui_sources ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.h ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.cpp)
         set(imgui_sources ${imgui_sources}
             ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
@@ -93,7 +91,6 @@ function(_him_do_build_imgui)
             install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype DESTINATION imgui/misc)
         endif()
     endif()
-
 endfunction()
 
 
@@ -146,7 +143,7 @@ function(_him_try_select_glfw_if_no_backend_selected)
             # Check if Glfw can be found
             find_package(glfw3 QUIET)
             if (glfw3_FOUND)
-                set(HELLOIMGUI_USE_GLFW_OPENGL3 ON)
+                set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
                 message(STATUS
                     "HelloImGui: using Glfw as default default backend (it was found via find_package(glfw3))
                     ${backend_message}
@@ -282,8 +279,8 @@ function(him_add_emscripten_options)
     # use SDL for emscripten
     #------------------------------------------------------------------------------
     if (EMSCRIPTEN AND NOT HELLOIMGUI_USE_SDL_OPENGL3 AND NOT HELLOIMGUI_USE_GLFW_OPENGL3)
-        set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
-        set(HELLOIMGUI_USE_GLFW_OPENGL3 OFF)
+        set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_USE_GLFW_OPENGL3 OFF CACHE BOOL "" FORCE)
     endif()
 
     if (EMSCRIPTEN)

@@ -1,12 +1,12 @@
 <img src="logo/logo_hello_imgui.png" width="200">
 
-![Win_Mac_Linux](https://github.com/pthom/hello_imgui/workflows/Win_Mac_Linux/badge.svg)
-![MinGW](https://github.com/pthom/hello_imgui/workflows/MinGW/badge.svg)
-![iOS](https://github.com/pthom/hello_imgui/workflows/iOS/badge.svg)
-![Android](https://github.com/pthom/hello_imgui/workflows/Android/badge.svg)
-![Emscripten](https://github.com/pthom/hello_imgui/workflows/Emscripten/badge.svg)
-![StarterTemlate](https://github.com/pthom/hello_imgui/workflows/StarterTemlate/badge.svg)
-![Automation](https://github.com/pthom/hello_imgui/workflows/Automation/badge.svg)
+[![Win_Mac_Linux](https://github.com/pthom/hello_imgui/workflows/Win_Mac_Linux/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Win_Mac_Linux.yml)
+[![MinGW](https://github.com/pthom/hello_imgui/workflows/MinGW/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/MinGW.yml)
+[![iOS](https://github.com/pthom/hello_imgui/workflows/iOS/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/iOS.yml)
+[![Android](https://github.com/pthom/hello_imgui/workflows/Android/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Android.yml)
+[![Emscripten](https://github.com/pthom/hello_imgui/workflows/Emscripten/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Emscripten.yml)
+[![StarterTemlate](https://github.com/pthom/hello_imgui/workflows/StarterTemlate/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/StarterTemlate.yml)
+[![Automation](https://github.com/pthom/hello_imgui/workflows/Automation/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Automation.yml)
 
 
 # Hello ImGui

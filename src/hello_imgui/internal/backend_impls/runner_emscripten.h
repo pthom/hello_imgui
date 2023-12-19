@@ -1,14 +1,14 @@
 #pragma once
 #ifdef __EMSCRIPTEN__
 
-#include "hello_imgui/internal/backend_impls/runner_sdl_opengl3.h"
+#include "hello_imgui/internal/backend_impls/runner_sdl2.h"
 
 namespace HelloImGui
 {
-    class RunnerEmscripten : public RunnerSdlOpenGl3
+    class RunnerEmscripten : public RunnerSdl2
     {
        public:
-        RunnerEmscripten(RunnerParams & runnerParams) : RunnerSdlOpenGl3(runnerParams) {}
+        RunnerEmscripten(RunnerParams & runnerParams) : RunnerSdl2(runnerParams) {}
         virtual ~RunnerEmscripten() = default;
         void Run() override;
 

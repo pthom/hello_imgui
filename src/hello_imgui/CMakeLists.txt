@@ -99,6 +99,12 @@ endfunction()
 function(him_sanity_checks)
     _him_try_select_glfw_if_no_backend_selected()
 
+    # use SDL for emscripten
+    if (EMSCRIPTEN AND NOT HELLOIMGUI_USE_SDL_OPENGL3 AND NOT HELLOIMGUI_USE_GLFW_OPENGL3)
+        set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_USE_GLFW_OPENGL3 OFF CACHE BOOL "" FORCE)
+    endif()
+
     if (HELLOIMGUI_WITH_GLFW)
         set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
     endif()
@@ -273,19 +279,10 @@ endfunction()
 # Emscripten related options: API = him_add_emscripten_options
 ###################################################################################################
 function(him_add_emscripten_options)
-    #------------------------------------------------------------------------------
-    # use SDL for emscripten
-    #------------------------------------------------------------------------------
-    if (EMSCRIPTEN AND NOT HELLOIMGUI_USE_SDL_OPENGL3 AND NOT HELLOIMGUI_USE_GLFW_OPENGL3)
-        set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
-        set(HELLOIMGUI_USE_GLFW_OPENGL3 OFF CACHE BOOL "" FORCE)
-    endif()
-
     if (EMSCRIPTEN)
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLES3)
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_CANNOTQUIT)
     endif()
-
 endfunction()
 
 

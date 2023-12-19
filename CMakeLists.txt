@@ -40,12 +40,42 @@ include(hello_imgui_add_app)
 ###############################################################################
 
 #------------------------------------------------------------------------------
+# Available backends combinations: HelloImGui needs to use at least one of them.
+# If you specify no option:
+# - HELLOIMGUI_USE_GLFW_OPENGL3 will be used for Windows, Linux, and macOS
+# - HELLOIMGUI_USE_SDL_OPENGL3 will be used for Android, iOS and emscripten
+#------------------------------------------------------------------------------
+# Use Glfw3 + OpenGl3
+option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
+# Use SDL2 + OpenGL3
+option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
+# Use SDL2 + Metal (Apple only)
+option(HELLOIMGUI_USE_SDL_METAL "Build HelloImGui for SDL+Metal" OFF)
+# Note: Metal and OpenGl3 are mutually exclusive!
+
+
+#------------------------------------------------------------------------------
+# Automatic download of Glfw3 and SDL2 (provided as a convenience)
+# (disabled by default on Linux, which prefers to use the system libraries,
+# enabled by default on other platforms)
+#------------------------------------------------------------------------------
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set(autodownload_default OFF)
+else()
+    set(autodownload_default OFF)
+endif()
+option(HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED "Download and build GLFW if needed" ${autodownload_default})
+option(HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED "Download and build GLFW if needed" ${autodownload_default})
+
+
+#------------------------------------------------------------------------------
 # Options / Windows: provide WinMain automatically
 #------------------------------------------------------------------------------
 if (WIN32)
     option(HELLOIMGUI_WIN32_NO_CONSOLE "Under windows, build apps without Dos Console" ON)
     option(HELLOIMGUI_WIN32_AUTO_WINMAIN "Under windows, automatically provide a WinMain (provide `int main(int, char**)`, it will be called by WinMain())" ON)
 endif()
+
 #------------------------------------------------------------------------------
 # Options / macOS: provide regular terminal executables, not app bundles
 #------------------------------------------------------------------------------
@@ -53,47 +83,6 @@ if(MACOSX)
     option(HELLOIMGUI_MACOS_NO_BUNDLE "Under macOS, build regular terminal executables, not app bundles" OFF)
 endif()
 
-#------------------------------------------------------------------------------
-# Windowing Backends (SDL, Glfw)
-# SDL2 and Glfw3 are supported. If you specify no option, Glfw3 will be downloaded
-# automatically (unless HELLOIMGUI_USE_GLFW_SYSTEM_LIB is ON,
-# in which case it will be searched via find_package())
-#------------------------------------------------------------------------------
-# Glfw Backend (Glfw3)
-#---------------------
-# if HELLOIMGUI_WITH_GLFW is ON, Glfw may be downloaded and built automatically
-#     (unless HELLOIMGUI_USE_GLFW_SYSTEM_LIB is ON, in which case it will be searched via find_package())
-option(HELLOIMGUI_WITH_GLFW "Add GLFW backend (download if needed)" OFF)
-if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-    option(HELLOIMGUI_USE_GLFW_SYSTEM_LIB "Force usage of GLFW system library" ON)
-else()
-    option(HELLOIMGUI_USE_GLFW_SYSTEM_LIB "Force usage of GLFW system library" OFF)
-endif()
-# SDL Backend (SDL2)
-#-------------------
-# if HELLOIMGUI_WITH_SDL is ON, SDL may be downloaded and built automatically
-#     (unless HELLOIMGUI_USE_GLFW_SYSTEM_LIB is ON, in which case it will be searched via find_package())
-option(HELLOIMGUI_WITH_SDL "Add SDL backend (download if needed)" OFF)
-if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-    option(HELLOIMGUI_USE_SDL_SYSTEM_LIB "Force usage of SDL system library" ON)
-else()
-    option(HELLOIMGUI_USE_SDL_SYSTEM_LIB "Force usage of SDL system library" OFF)
-endif()
-
-#------------------------------------------------------------------------------
-# Available backends combinations: HelloImGui needs to use at least one of them
-# If you specify no option:
-# - HELLOIMGUI_USE_GLFW_OPENGL3 will be ON for Windows, Linux, and macOS
-# - HELLOIMGUI_USE_SDL_OPENGL3 will be ON for Android, iOS and emscripten
-#------------------------------------------------------------------------------
-# HELLOIMGUI_USE_GLFW_OPENGL3:
-# Use Glfw + OpenGl3: Glfw will be searched via find_package()
-option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
-# HELLOIMGUI_USE_SDL_OPENGL3: select Windowing + Rendering backend in one option
-# Use SDL + OpenGL3: SDL will be searched via find_package()
-option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
-# Metal and OpenGl3 are mutually exclusive!
-option(HELLOIMGUI_USE_SDL_METAL "Build HelloImGui for SDL+Metal" OFF)
 
 #------------------------------------------------------------------------------
 # Build options / ImGui

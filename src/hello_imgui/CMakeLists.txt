@@ -100,7 +100,9 @@ function(him_sanity_checks)
     # use SDL for emscripten
     if (EMSCRIPTEN AND NOT HELLOIMGUI_USE_SDL_OPENGL3 AND NOT HELLOIMGUI_USE_GLFW_OPENGL3)
         set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
-        set(HELLOIMGUI_USE_GLFW_OPENGL3 OFF CACHE BOOL "" FORCE)
+    endif()
+    if (IOS AND NOT HELLOIMGUI_USE_SDL_OPENGL3 AND NOT HELLOIMGUI_USE_GLFW_OPENGL3 AND NOT HELLOIMGUI_USE_SDL_METAL)
+        set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
     endif()
 
     _him_check_if_no_backend_selected()  # will set HELLOIMGUI_NO_BACKEND_SELECTED to ON if no backend selected
@@ -126,22 +128,12 @@ function(him_sanity_checks)
     if (HELLOIMGUI_NO_BACKEND_SELECTED)
         message(FATAL_ERROR "HelloImGui: no backend selected, and could not auto-select one!")
     endif()
-
-    if (HELLOIMGUI_WITH_GLFW)
-        set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
-    endif()
-    if (HELLOIMGUI_WITH_SDL AND NOT HELLOIMGUI_USE_SDL_METAL)
-        set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
-    endif()
 endfunction()
 
 function(_him_check_if_no_backend_selected)
-    if (NOT HELLOIMGUI_WITH_GLFW
-        AND NOT HELLOIMGUI_WITH_SDL
-        AND NOT HELLOIMGUI_USE_SDL_OPENGL3
+    if (NOT HELLOIMGUI_USE_SDL_OPENGL3
         AND NOT HELLOIMGUI_USE_GLFW_OPENGL3
         AND NOT HELLOIMGUI_USE_SDL_METAL
-        AND NOT EMSCRIPTEN
     )
         set(HELLOIMGUI_NO_BACKEND_SELECTED ON CACHE INTERNAL "")
     endif()
@@ -153,10 +145,11 @@ function(_him_try_select_glfw_if_no_backend_selected)
     # either select Glfw automatically if possible, or fail
     #------------------------------------------------------------------------------
     #
-    if (NOT HELLOIMGUI_USE_GLFW_SYSTEM_LIB)
-        set(HELLOIMGUI_WITH_GLFW ON CACHE BOOL "" FORCE)
+    if (HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED)
+        set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
         message(STATUS "
-            HelloImGui: using Glfw as default default backend (it will be downloaded and built inside {CMAKE_CURRENT_BINARY_DIR}/_deps/glfw-*)
+            HelloImGui: using HELLOIMGUI_USE_GLFW_OPENGL3 as default default backend
+            (Glfw3 will be downloaded and built inside {CMAKE_CURRENT_BINARY_DIR}/_deps/glfw-*)
             ${backend_message}
         ")
         set(HELLOIMGUI_NO_BACKEND_SELECTED OFF CACHE INTERNAL "")
@@ -373,8 +366,7 @@ function(_him_fetch_sdl_if_needed)
     # option HELLOIMGUI_WITH_SDL was passed
     # and SDL not available by find_package
     # and HELLOIMGUI_USE_SDL_SYSTEM_LIB is OFF
-    if (HELLOIMGUI_WITH_SDL AND NOT HELLOIMGUI_USE_SDL_SYSTEM_LIB
-        AND NOT TARGET sdl AND NOT EMSCRIPTEN)
+    if (HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED AND NOT TARGET sdl AND NOT EMSCRIPTEN)
         find_package(SDL2 QUIET)
         if (NOT SDL2_FOUND)
             set(shall_fetch_sdl ON)
@@ -476,11 +468,7 @@ endfunction()
 
 function(_him_fetch_glfw_if_needed)
     set(shall_fetch_glfw OFF)
-    if (HELLOIMGUI_WITH_GLFW
-        AND NOT HELLOIMGUI_USE_GLFW_SYSTEM_LIB
-        AND NOT TARGET glfw
-        AND NOT EMSCRIPTEN
-    )
+    if (HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED AND NOT TARGET glfw)
         find_package(glfw3 QUIET)
         if (NOT glfw3_FOUND)
             set(shall_fetch_glfw ON)

@@ -1,20 +1,23 @@
-#ifdef HELLOIMGUI_USE_GLFW_OPENGL3
+#ifdef HELLOIMGUI_USE_GLFW
 
-#include "hello_imgui/hello_imgui_include_opengl.h"
+#ifdef HELLOIMGUI_HAS_OPENGL
+//#include "hello_imgui/hello_imgui_include_opengl.h"
+#include <backends/imgui_impl_opengl3.h>
+#include "opengl_setup_helper/opengl_setup_glfw.h"
+#include "opengl_setup_helper/opengl_screenshot.h"
+#endif
+
 #include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/internal/stb_image.h"
 #include "hello_imgui/hello_imgui_assets.h"
 
 #include <GLFW/glfw3.h>
 #include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
 #include <imgui.h>
 #include <stdexcept>
 #include "hello_imgui/hello_imgui_error.h"
 #include "runner_glfw_opengl3.h"
 #include "backend_window_helper/glfw_window_helper.h"
-#include "opengl_setup_helper/opengl_setup_glfw.h"
-#include "opengl_setup_helper/opengl_screenshot.h"
 
 
 namespace HelloImGui
@@ -46,15 +49,6 @@ namespace HelloImGui
         IM_ASSERT(glfwInitSuccess);
     }
 
-    void RunnerGlfwOpenGl3::Impl_Select_Gl_Version()
-    {
-        gOpenGlHelper.SelectOpenGlVersion();
-    }
-
-    std::string RunnerGlfwOpenGl3::Impl_GlslVersion()
-    {
-        return gOpenGlHelper.GlslVersion();
-    }
 
     void RunnerGlfwOpenGl3::Impl_CreateWindow()
     {
@@ -62,24 +56,6 @@ namespace HelloImGui
 
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
         params.backendPointers.glfwWindow = mWindow;
-    }
-
-    void RunnerGlfwOpenGl3::Impl_CreateGlContext()
-    {
-        glfwMakeContextCurrent((GLFWwindow *) mWindow); // OpenGl!
-        glfwSwapInterval(1);  // Enable vsync (openGL only, not vulkan)
-    }
-
-
-    void RunnerGlfwOpenGl3::Impl_InitGlLoader()
-    {
-        gOpenGlHelper.InitGlLoader();
-    }
-
-    void RunnerGlfwOpenGl3::Impl_SetupPlatformRendererBindings()
-    {
-        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow *)mWindow, true);
-        ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
     }
 
     void RunnerGlfwOpenGl3::Impl_PollEvents()
@@ -97,20 +73,7 @@ namespace HelloImGui
             params.appShallExit = true;
     }
 
-    void RunnerGlfwOpenGl3::Impl_NewFrame_3D() { ImGui_ImplOpenGL3_NewFrame(); }
-
     void RunnerGlfwOpenGl3::Impl_NewFrame_Backend() { ImGui_ImplGlfw_NewFrame(); }
-
-    void RunnerGlfwOpenGl3::Impl_Frame_3D_ClearColor()
-    {
-        auto& io = ImGui::GetIO();
-        glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-        ImVec4 clear_color = params.imGuiWindowParams.backgroundColor;
-        glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-
-    void RunnerGlfwOpenGl3::Impl_RenderDrawData_To_3D() { ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); }
 
     void RunnerGlfwOpenGl3::Impl_UpdateAndRenderAdditionalPlatformWindows()
     {
@@ -122,7 +85,6 @@ namespace HelloImGui
 
     void RunnerGlfwOpenGl3::Impl_Cleanup()
     {
-        ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
 
@@ -131,11 +93,6 @@ namespace HelloImGui
     }
 
     void RunnerGlfwOpenGl3::Impl_SwapBuffers() { glfwSwapBuffers((GLFWwindow *)mWindow); }
-
-    ImageBuffer RunnerGlfwOpenGl3::Impl_ScreenshotRgb()
-    {
-        return OpenglScreenshotRgb();
-    }
 
     void RunnerGlfwOpenGl3::Impl_SetWindowIcon()
     {
@@ -165,5 +122,36 @@ namespace HelloImGui
     }
 
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Rendering Backends (OpenGL, Vulkan, ...)
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+#ifdef HELLOIMGUI_HAS_OPENGL
+    void RunnerGlfwOpenGl3::Impl_LinkWindowingToRenderingBackend()
+    {
+        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow *)mWindow, true);
+        ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
+    }
+
+    void RunnerGlfwOpenGl3::Impl_InitRenderBackendCallbacks()
+    {
+        mRenderingBackendCallbacks = CreateOpenGl3RenderingBackendCallbacks();
+    }
+
+    void RunnerGlfwOpenGl3::Impl_CreateGlContext()
+    {
+        glfwMakeContextCurrent((GLFWwindow *) mWindow); // OpenGl!
+        glfwSwapInterval(1);  // Enable vsync (openGL only, not vulkan)
+    }
+
+    void RunnerGlfwOpenGl3::Impl_Select_Gl_Version() { gOpenGlHelper.SelectOpenGlVersion(); }
+
+    std::string RunnerGlfwOpenGl3::Impl_GlslVersion() { return gOpenGlHelper.GlslVersion(); }
+
+    void RunnerGlfwOpenGl3::Impl_InitGlLoader() { gOpenGlHelper.InitGlLoader(); }
+#endif // #ifdef HELLOIMGUI_HAS_OPENGL
+
+
 }  // namespace HelloImGui
-#endif  // #ifdef HELLOIMGUI_USE_GLFW_OPENGL3
+#endif  // #ifdef HELLOIMGUI_USE_GLFW

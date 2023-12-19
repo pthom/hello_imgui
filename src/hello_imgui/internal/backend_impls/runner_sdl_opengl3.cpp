@@ -1,17 +1,19 @@
-#ifdef HELLOIMGUI_USE_SDL_OPENGL3
+#ifdef HELLOIMGUI_USE_SDL
 
-#include "hello_imgui/hello_imgui_include_opengl.h"
+#ifdef HELLOIMGUI_HAS_OPENGL
+#include "runner_sdl_opengl3.h"
+#include <backends/imgui_impl_opengl3.h>
+#endif
+
+#include <backends/imgui_impl_sdl2.h>
+#include "hello_imgui/internal/backend_impls/rendering_backend_callbacks.h"
 #include "hello_imgui/internal/stb_image.h"
 #include "hello_imgui/hello_imgui_assets.h"
 
-#include "runner_sdl_opengl3.h"
 #include "hello_imgui/hello_imgui_error.h"
 #include "backend_window_helper/sdl_window_helper.h"
 #include "internal/backend_impls/opengl_setup_helper/opengl_setup_sdl.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/win32_dpi_awareness.h"
-#include "opengl_setup_helper/opengl_screenshot.h"
-#include <backends/imgui_impl_opengl3.h>
-#include <backends/imgui_impl_sdl2.h>
 
 #include <SDL.h>
 #include <SDL_main.h>
@@ -52,44 +54,12 @@ namespace HelloImGui
         SDL_SetEventFilter(HandleAppEvents, this);
     }
 
-    void RunnerSdlOpenGl3::Impl_Select_Gl_Version()
-    {
-        gOpenGlSetupSdl.SelectOpenGlVersion();
-    }
-
-    std::string RunnerSdlOpenGl3::Impl_GlslVersion()
-    {
-        return gOpenGlSetupSdl.GlslVersion();
-    }
-
     void RunnerSdlOpenGl3::Impl_CreateWindow()
     {
         BackendApi::BackendOptions backendOptions;
 
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
         params.backendPointers.sdlWindow = mWindow;
-    }
-
-    void RunnerSdlOpenGl3::Impl_CreateGlContext()
-    {
-        mGlContext = SDL_GL_CreateContext((SDL_Window *)mWindow);
-        IM_ASSERT(mGlContext != nullptr);
-
-        SDL_GL_MakeCurrent((SDL_Window *)mWindow, mGlContext); // KK No
-        SDL_GL_SetSwapInterval(1);  // Enable vsync
-        params.backendPointers.sdlGlContext = mGlContext;
-    }
-
-
-    void RunnerSdlOpenGl3::Impl_InitGlLoader()
-    {
-        gOpenGlSetupSdl.InitGlLoader();
-    }
-
-    void RunnerSdlOpenGl3::Impl_SetupPlatformRendererBindings()
-    {
-        ImGui_ImplSDL2_InitForOpenGL((SDL_Window *)mWindow, mGlContext);
-        ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
     }
 
     void RunnerSdlOpenGl3::Impl_PollEvents()
@@ -113,21 +83,6 @@ namespace HelloImGui
         }
     }
 
-    void RunnerSdlOpenGl3::Impl_NewFrame_3D() { ImGui_ImplOpenGL3_NewFrame(); }
-
-    void RunnerSdlOpenGl3::Impl_NewFrame_Backend() { ImGui_ImplSDL2_NewFrame(); }
-
-    void RunnerSdlOpenGl3::Impl_Frame_3D_ClearColor()
-    {
-        auto& io = ImGui::GetIO();
-        glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
-        ImVec4 clear_color = params.imGuiWindowParams.backgroundColor;
-        glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-
-    void RunnerSdlOpenGl3::Impl_RenderDrawData_To_3D() { ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()); }
-
     void RunnerSdlOpenGl3::Impl_UpdateAndRenderAdditionalPlatformWindows()
     {
         SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
@@ -139,7 +94,6 @@ namespace HelloImGui
 
     void RunnerSdlOpenGl3::Impl_Cleanup()
     {
-        ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplSDL2_Shutdown();
         ImGui::DestroyContext();
 
@@ -204,11 +158,6 @@ namespace HelloImGui
 #endif
     }
 
-    ImageBuffer RunnerSdlOpenGl3::Impl_ScreenshotRgb()
-    {
-        return OpenglScreenshotRgb();
-    }
-
     void RunnerSdlOpenGl3::Impl_SetWindowIcon()
     {
         std::string iconFile = "app_settings/icon.png";
@@ -241,7 +190,40 @@ namespace HelloImGui
         HelloImGui::FreeAssetFileData(&imageAsset);
     }
 
+    void RunnerSdlOpenGl3::Impl_NewFrame_Backend() { ImGui_ImplSDL2_NewFrame(); }
 
-}  // namespace HelloImGui
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Rendering Backends (OpenGL, Vulkan, ...)
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+#ifdef HELLOIMGUI_HAS_OPENGL
+    void RunnerSdlOpenGl3::Impl_InitRenderBackendCallbacks()
+    {
+        mRenderingBackendCallbacks = CreateOpenGl3RenderingBackendCallbacks();
+    }
 
-#endif  // #ifdef HELLOIMGUI_USE_SDL_OPENGL3
+    void RunnerSdlOpenGl3::Impl_LinkWindowingToRenderingBackend()
+    {
+        ImGui_ImplSDL2_InitForOpenGL((SDL_Window *)mWindow, mGlContext);
+        ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
+    }
+
+    void RunnerSdlOpenGl3::Impl_CreateGlContext()
+    {
+        mGlContext = SDL_GL_CreateContext((SDL_Window *)mWindow);
+        IM_ASSERT(mGlContext != nullptr);
+
+        SDL_GL_MakeCurrent((SDL_Window *)mWindow, mGlContext); // KK No
+        SDL_GL_SetSwapInterval(1);  // Enable vsync
+        params.backendPointers.sdlGlContext = mGlContext;
+    }
+    void RunnerSdlOpenGl3::Impl_InitGlLoader() { gOpenGlSetupSdl.InitGlLoader(); }
+    void RunnerSdlOpenGl3::Impl_Select_Gl_Version() { gOpenGlSetupSdl.SelectOpenGlVersion(); }
+    std::string RunnerSdlOpenGl3::Impl_GlslVersion() { return gOpenGlSetupSdl.GlslVersion(); }
+#endif // HELLOIMGUI_HAS_OPENGL
+
+
+    }  // namespace HelloImGui
+
+#endif  // #ifdef HELLOIMGUI_USE_SDL

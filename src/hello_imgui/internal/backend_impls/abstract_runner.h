@@ -1,10 +1,13 @@
 #pragma once
+#include "hello_imgui/hello_imgui_error.h"
 #include "hello_imgui/runner_params.h"
 #include "hello_imgui/hello_imgui_screenshot.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/window_geometry_helper.h"
+#include "hello_imgui/internal/backend_impls/rendering_backend_callbacks.h"
 
 #include <memory>
+#include <functional>
 
 namespace HelloImGui
 {
@@ -32,7 +35,7 @@ class AbstractRunner
     void OnLowMemory();
 
     // For jupyter notebook, which displays a screenshot post execution
-    ImageBuffer ScreenshotRgb() { return Impl_ScreenshotRgb(); }
+    ImageBuffer ScreenshotRgb() { return mRenderingBackendCallbacks.Impl_ScreenshotRgb(); }
 
     //
     // Dpi related methods
@@ -57,30 +60,38 @@ protected:
     // The methods Impl_* are astract
     // and shall be overriden in the concrete implementations by derivates
     //
+
+    //
+    // Methods related to the Windowing backend (SDL, Glfw, ...)
+    //
     virtual void Impl_InitBackend() = 0;
-
-#ifdef HELLOIMGUI_HAS_OPENGL
-    virtual void Impl_Select_Gl_Version() = 0;
-    virtual void Impl_InitGlLoader() = 0;
-    virtual std::string Impl_GlslVersion() = 0;
-    virtual void Impl_CreateGlContext() = 0;
-#endif
-
     virtual void Impl_CreateWindow() = 0;
-    virtual void Impl_SetupPlatformRendererBindings() = 0;
     virtual void Impl_SetupImgGuiContext() {}
-
     virtual void Impl_PollEvents() = 0;
-    virtual void Impl_NewFrame_3D() = 0;
     virtual void Impl_NewFrame_Backend() = 0;
-    virtual void Impl_Frame_3D_ClearColor() = 0;
-    virtual void Impl_RenderDrawData_To_3D() = 0;
     virtual void Impl_UpdateAndRenderAdditionalPlatformWindows() = 0;
     virtual void Impl_SwapBuffers() = 0;
     virtual void Impl_Cleanup() = 0;
     virtual void Impl_SetWindowIcon() {}
 
-    virtual ImageBuffer Impl_ScreenshotRgb() { return ImageBuffer{}; }
+    //
+    // Linking the windowing backend (SDL, Glfw, ...) to the rendering backend (OpenGL, ...)
+    //
+    virtual void Impl_LinkWindowingToRenderingBackend() = 0;
+    // Specific to OpenGL
+    #ifdef HELLOIMGUI_HAS_OPENGL
+        virtual void Impl_Select_Gl_Version() = 0;
+        virtual void Impl_InitGlLoader() = 0;
+        virtual std::string Impl_GlslVersion() = 0;
+        virtual void Impl_CreateGlContext() = 0;
+    #endif
+
+    //
+    // Methods and callbacks related to the rendering backend (OpenGL, ...)
+    //
+    // Wish should be filled by Impl_InitRenderBackendCallbacks
+    virtual void Impl_InitRenderBackendCallbacks() = 0;
+    RenderingBackendCallbacks mRenderingBackendCallbacks;
 
 private:
     void PrepareWindowGeometry();

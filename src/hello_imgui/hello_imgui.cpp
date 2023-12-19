@@ -90,8 +90,14 @@ AbstractRunner *GetAbstractRunner()
 // Private API, not mentioned in headers!
 std::string GlslVersion()
 {
+#ifdef HELLOIMGUI_HAS_OPENGL
     std::string r = GetAbstractRunner()->Impl_GlslVersion();
     return r;
+#else
+    bool GlslVersionNotAvailable = false;
+    IM_ASSERT(GlslVersionNotAvailable);
+    return "";
+#endif
 }
 
 

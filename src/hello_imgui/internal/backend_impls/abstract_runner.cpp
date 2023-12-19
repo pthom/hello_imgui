@@ -373,13 +373,18 @@ void AbstractRunner::LayoutSettings_Save()
 void AbstractRunner::Setup()
 {
     Impl_InitBackend();
+
+#ifdef HELLOIMGUI_HAS_OPENGL
     Impl_Select_Gl_Version();
+#endif
 
     PrepareWindowGeometry();
     Impl_CreateWindow();
 
+#ifdef HELLOIMGUI_HAS_OPENGL
     Impl_CreateGlContext();
     Impl_InitGlLoader();
+#endif
 
     Impl_SetWindowIcon();
 

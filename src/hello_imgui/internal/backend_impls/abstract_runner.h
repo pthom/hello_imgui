@@ -17,7 +17,7 @@ class AbstractRunner
 
     RunnerParams & params;
 
-    virtual void Run();
+    virtual void Run(); // Only overriden in emscripten
 
     void Setup();
     void CreateFramesAndRender();
@@ -58,12 +58,15 @@ protected:
     // and shall be overriden in the concrete implementations by derivates
     //
     virtual void Impl_InitBackend() = 0;
+
+#ifdef HELLOIMGUI_HAS_OPENGL
     virtual void Impl_Select_Gl_Version() = 0;
+    virtual void Impl_InitGlLoader() = 0;
     virtual std::string Impl_GlslVersion() = 0;
+    virtual void Impl_CreateGlContext() = 0;
+#endif
 
     virtual void Impl_CreateWindow() = 0;
-    virtual void Impl_CreateGlContext() = 0;
-    virtual void Impl_InitGlLoader() = 0;
     virtual void Impl_SetupPlatformRendererBindings() = 0;
     virtual void Impl_SetupImgGuiContext() {}
 

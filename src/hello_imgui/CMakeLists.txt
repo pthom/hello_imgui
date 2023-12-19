@@ -143,7 +143,7 @@ function(_him_check_if_no_backend_selected)
         AND NOT HELLOIMGUI_USE_SDL_METAL
         AND NOT EMSCRIPTEN
     )
-        set(HELLOIMGUI_NO_BACKEND_SELECTED ON INTERNAL BOOL "" FORCE)
+        set(HELLOIMGUI_NO_BACKEND_SELECTED ON CACHE INTERNAL "")
     endif()
 endfunction()
 

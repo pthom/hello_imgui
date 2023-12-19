@@ -301,6 +301,7 @@ function(him_use_opengl3_backend target)
         ${imgui_backends_dir}/imgui_impl_opengl3.cpp
     )
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_OPENGL)
+    set(HELLOIMGUI_HAS_OPENGL ON CACHE BOOL "" FORCE)
 
     if(ANDROID OR IOS)
         _him_link_opengles_sdl(${helloimgui_target})
@@ -338,6 +339,7 @@ function(him_use_metal_backend target)
         ${imgui_backends_dir}/imgui_impl_metal.mm
     )
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_METAL)
+    set(HELLOIMGUI_HAS_METAL ON CACHE BOOL "" FORCE)
     target_link_libraries(${helloimgui_target} PUBLIC
         "-framework Metal -framework MetalKit -framework QuartzCore")
 endfunction()
@@ -559,6 +561,10 @@ function(him_main)
         him_use_metal_backend(${helloimgui_target})
         him_use_sdl2_backend(${helloimgui_target})
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_METAL)
+    endif()
+
+    if(HELLOIMGUI_HAS_METAL AND HELLOIMGUI_HAS_OPENGL)
+        message(FATAL_ERROR "HelloImGui: cannot have both Metal and OpenGL backends at the same time")
     endif()
 
     him_add_apple_options()

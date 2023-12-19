@@ -287,7 +287,7 @@ endfunction()
 
 
 ###################################################################################################
-# OpenGL backend: API = him_use_opengl3_backend
+# OpenGL Rendering backend: API = him_use_opengl3_backend
 ###################################################################################################
 function(him_use_opengl3_backend target)
     target_sources(${target} PRIVATE
@@ -323,9 +323,21 @@ function(_him_link_opengles_sdl target)
     )
 endfunction()
 
+###################################################################################################
+# Metal Rendering backend: API = him_use_metal_backend
+###################################################################################################
+function(him_use_metal_backend target)
+    target_sources(${target} PRIVATE
+        ${imgui_backends_dir}/imgui_impl_metal.h
+        ${imgui_backends_dir}/imgui_impl_metal.mm
+    )
+    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_METAL)
+    target_link_libraries(${helloimgui_target} PUBLIC "-framework Metal")
+    target_link_libraries(${helloimgui_target} PUBLIC "-framework MetalKit")
+endfunction()
 
 ###################################################################################################
-# SDL backend: API = him_use_sdl2_backend
+# SDL Windowing backend: API = him_use_sdl2_backend
 ###################################################################################################
 function (him_use_sdl2_backend target)
     _him_fetch_sdl_if_needed()
@@ -436,7 +448,7 @@ endfunction()
 
 
 ###################################################################################################
-# Glfw backend: API = him_use_glfw_backend
+# Glfw Windowing backend: API = him_use_glfw_backend
 ###################################################################################################
 function(him_use_glfw_backend target)
     _him_fetch_glfw_if_needed()
@@ -487,7 +499,7 @@ endfunction()
 
 
 ###################################################################################################
-# Miscellanous: API = him_add_misc_options
+# Miscellaneous: API = him_add_misc_options
 ###################################################################################################
 function(him_add_misc_options)
     _him_add_imgui_shared_compile_definitions()
@@ -534,6 +546,12 @@ function(him_main)
         him_use_opengl3_backend(${helloimgui_target})
         him_use_glfw_backend(${helloimgui_target})
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_OPENGL3)
+    endif()
+
+    if(HELLOIMGUI_USE_SDL_METAL)
+        him_use_metal_backend(${helloimgui_target})
+        him_use_sdl2_backend(${helloimgui_target})
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_METAL)
     endif()
 
     him_add_apple_options()

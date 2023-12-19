@@ -27,7 +27,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/hello_imgui_cmake/utils/cache_hello_imgui_path
 # Usage:
 # hello_imgui_add_app(app_name file1.cpp file2.cpp ...)
 #
-# Features: 
+# Features:
 #     * It will automatically link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
 #     * It will embed the assets (for desktop, mobile, and emscripten apps)
 #     * It will perform additional customization (app icon and name on mobile platforms, etc)
@@ -54,8 +54,13 @@ if(MACOSX)
 endif()
 
 #------------------------------------------------------------------------------
-# Glfw Backend
+# Windowing Backends (SDL, Glfw)
+# SDL2 and Glfw3 are supported. If you specify no option, Glfw3 will be downloaded
+# automatically (unless HELLOIMGUI_USE_GLFW_SYSTEM_LIB is ON,
+# in which case it will be searched via find_package())
 #------------------------------------------------------------------------------
+# Glfw Backend (Glfw3)
+#---------------------
 # if HELLOIMGUI_WITH_GLFW is ON, Glfw may be downloaded and built automatically
 #     (unless HELLOIMGUI_USE_GLFW_SYSTEM_LIB is ON, in which case it will be searched via find_package())
 option(HELLOIMGUI_WITH_GLFW "Add GLFW backend (download if needed)" OFF)
@@ -64,13 +69,8 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 else()
     option(HELLOIMGUI_USE_GLFW_SYSTEM_LIB "Force usage of GLFW system library" OFF)
 endif()
-# if HELLOIMGUI_USE_GLFW_OPENGL3 is ON, Glfw backend will be built,
-# but Glfw need to be found via find_package()
-option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
-
-#------------------------------------------------------------------------------
-# SDL Backend
-#------------------------------------------------------------------------------
+# SDL Backend (SDL2)
+#-------------------
 # if HELLOIMGUI_WITH_SDL is ON, SDL may be downloaded and built automatically
 #     (unless HELLOIMGUI_USE_GLFW_SYSTEM_LIB is ON, in which case it will be searched via find_package())
 option(HELLOIMGUI_WITH_SDL "Add SDL backend (download if needed)" OFF)
@@ -79,10 +79,20 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 else()
     option(HELLOIMGUI_USE_SDL_SYSTEM_LIB "Force usage of SDL system library" OFF)
 endif()
-# if HELLOIMGUI_USE_SDL_OPENGL3 is ON, SDL backend will be built,
-# but SDL need to be found via find_package()
-option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
 
+#------------------------------------------------------------------------------
+# Available backends combinations: HelloImGui needs to use at least one of them
+# If you specify no option:
+# - HELLOIMGUI_USE_GLFW_OPENGL3 will be ON for Windows, Linux, and macOS
+# - HELLOIMGUI_USE_SDL_OPENGL3 will be ON for Android, iOS and emscripten
+#------------------------------------------------------------------------------
+# HELLOIMGUI_USE_GLFW_OPENGL3:
+# Use Glfw + OpenGl3: Glfw will be searched via find_package()
+option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
+# HELLOIMGUI_USE_SDL_OPENGL3: select Windowing + Rendering backend in one option
+# Use SDL + OpenGL3: SDL will be searched via find_package()
+option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
+option(HELLOIMGUI_USE_SDL_METAL "Build HelloImGui for SDL+Metal" OFF)
 
 #------------------------------------------------------------------------------
 # Build options / ImGui

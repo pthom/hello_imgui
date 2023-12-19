@@ -1,14 +1,16 @@
+#ifdef HELLOIMGUI_HAS_OPENGL
+#include "rendering_opengl3.h"
+
 #include "hello_imgui/hello_imgui_include_opengl.h"
-#include "hello_imgui/internal/backend_impls/rendering_backend_callbacks.h"
 #include "hello_imgui/internal/backend_impls/opengl_setup_helper/opengl_screenshot.h"
 #include <backends/imgui_impl_opengl3.h>
 
 
 namespace HelloImGui
 {
-    RenderingBackendCallbacks CreateOpenGl3RenderingBackendCallbacks()
+    RenderingCallbacks CreateBackendCallbacks_OpenGl3()
     {
-        RenderingBackendCallbacks callbacks;
+        RenderingCallbacks callbacks;
 
         callbacks.Impl_NewFrame_3D = [] {
             ImGui_ImplOpenGL3_NewFrame();
@@ -34,4 +36,7 @@ namespace HelloImGui
         };
         return callbacks;
     }
+
 }
+
+#endif

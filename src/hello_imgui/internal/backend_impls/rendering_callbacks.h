@@ -14,7 +14,7 @@ namespace HelloImGui
     //
     // There is no Init backend here, since it needs to account for the Windowing Backend and the Rendering Backend.
     // As a consequence, it is implemented in the Rendering Backend, with #ifdefs
-    struct RenderingBackendCallbacks
+    struct RenderingCallbacks
     {
         VoidFunction                 Impl_NewFrame_3D =          [] { HIMG_ERROR("Empty function"); };
         std::function<void(ImVec4)>  Impl_Frame_3D_ClearColor =  [] (ImVec4) { HIMG_ERROR("Empty function"); };
@@ -22,8 +22,4 @@ namespace HelloImGui
         VoidFunction                 Impl_Shutdown =             [] { HIMG_ERROR("Empty function"); };
         std::function<ImageBuffer()> Impl_ScreenshotRgb =        [] { return ImageBuffer{}; };
     };
-
-    #ifdef HELLOIMGUI_HAS_OPENGL
-    RenderingBackendCallbacks CreateOpenGl3RenderingBackendCallbacks();
-    #endif
-}
+} // namespace HelloImGui

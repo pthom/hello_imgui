@@ -1,10 +1,10 @@
 #pragma once
 #include "hello_imgui/hello_imgui_error.h"
-#include "hello_imgui/runner_params.h"
 #include "hello_imgui/hello_imgui_screenshot.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/window_geometry_helper.h"
-#include "hello_imgui/internal/backend_impls/rendering_backend_callbacks.h"
+#include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
+#include "hello_imgui/runner_params.h"
 
 #include <memory>
 #include <functional>
@@ -91,7 +91,7 @@ protected:
     //
     // Wish should be filled by Impl_InitRenderBackendCallbacks
     virtual void Impl_InitRenderBackendCallbacks() = 0;
-    RenderingBackendCallbacks mRenderingBackendCallbacks;
+    RenderingCallbacks mRenderingBackendCallbacks;
 
 private:
     void PrepareWindowGeometry();

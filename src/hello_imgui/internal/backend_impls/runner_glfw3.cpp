@@ -5,6 +5,7 @@
 #include <backends/imgui_impl_opengl3.h>
 #include "opengl_setup_helper/opengl_setup_glfw.h"
 #include "opengl_setup_helper/opengl_screenshot.h"
+#include "rendering_opengl3.h"
 #endif
 
 #include "hello_imgui/hello_imgui.h"
@@ -135,7 +136,7 @@ namespace HelloImGui
 
     void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
     {
-        mRenderingBackendCallbacks = CreateOpenGl3RenderingBackendCallbacks();
+        mRenderingBackendCallbacks = CreateBackendCallbacks_OpenGl3();
     }
 
     void RunnerGlfw3::Impl_CreateGlContext()

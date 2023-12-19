@@ -3,12 +3,13 @@
 #ifdef HELLOIMGUI_HAS_OPENGL
 #include "runner_sdl2.h"
 #include <backends/imgui_impl_opengl3.h>
+#include "rendering_opengl3.h"
 #endif
 
-#include <backends/imgui_impl_sdl2.h>
-#include "hello_imgui/internal/backend_impls/rendering_backend_callbacks.h"
-#include "hello_imgui/internal/stb_image.h"
 #include "hello_imgui/hello_imgui_assets.h"
+#include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
+#include "hello_imgui/internal/stb_image.h"
+#include <backends/imgui_impl_sdl2.h>
 
 #include "hello_imgui/hello_imgui_error.h"
 #include "backend_window_helper/sdl_window_helper.h"
@@ -200,7 +201,7 @@ namespace HelloImGui
 #ifdef HELLOIMGUI_HAS_OPENGL
     void RunnerSdl2::Impl_InitRenderBackendCallbacks()
     {
-        mRenderingBackendCallbacks = CreateOpenGl3RenderingBackendCallbacks();
+        mRenderingBackendCallbacks = CreateBackendCallbacks_OpenGl3();
     }
 
     void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()

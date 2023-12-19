@@ -11,14 +11,13 @@
 #include "hello_imgui/internal/stb_image.h"
 #include "hello_imgui/hello_imgui_assets.h"
 
+#include "backend_window_helper/glfw_window_helper.h"
+#include "hello_imgui/hello_imgui_error.h"
+#include "runner_glfw3.h"
 #include <GLFW/glfw3.h>
 #include <backends/imgui_impl_glfw.h>
 #include <imgui.h>
 #include <stdexcept>
-#include "hello_imgui/hello_imgui_error.h"
-#include "runner_glfw_opengl3.h"
-#include "backend_window_helper/glfw_window_helper.h"
-
 
 namespace HelloImGui
 {
@@ -30,13 +29,13 @@ namespace HelloImGui
         fprintf(stderr, "Glfw Error %d: %s\n", error, description);
     }
 
-    RunnerGlfwOpenGl3::RunnerGlfwOpenGl3(RunnerParams & runnerParams)
+    RunnerGlfw3::RunnerGlfw3(RunnerParams & runnerParams)
         : AbstractRunner(runnerParams)
     {
         mBackendWindowHelper = std::make_unique<BackendApi::GlfwWindowHelper>();
     }
 
-    void RunnerGlfwOpenGl3::Impl_InitBackend()
+    void RunnerGlfw3::Impl_InitBackend()
     {
         glfwSetErrorCallback(glfw_error_callback);
 #ifdef __APPLE__
@@ -50,7 +49,7 @@ namespace HelloImGui
     }
 
 
-    void RunnerGlfwOpenGl3::Impl_CreateWindow()
+    void RunnerGlfw3::Impl_CreateWindow()
     {
         BackendApi::BackendOptions backendOptions;
 
@@ -58,7 +57,7 @@ namespace HelloImGui
         params.backendPointers.glfwWindow = mWindow;
     }
 
-    void RunnerGlfwOpenGl3::Impl_PollEvents()
+    void RunnerGlfw3::Impl_PollEvents()
     {
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants
@@ -73,9 +72,9 @@ namespace HelloImGui
             params.appShallExit = true;
     }
 
-    void RunnerGlfwOpenGl3::Impl_NewFrame_Backend() { ImGui_ImplGlfw_NewFrame(); }
+    void RunnerGlfw3::Impl_NewFrame_Backend() { ImGui_ImplGlfw_NewFrame(); }
 
-    void RunnerGlfwOpenGl3::Impl_UpdateAndRenderAdditionalPlatformWindows()
+    void RunnerGlfw3::Impl_UpdateAndRenderAdditionalPlatformWindows()
     {
         GLFWwindow* backup_current_context = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
@@ -83,7 +82,7 @@ namespace HelloImGui
         glfwMakeContextCurrent(backup_current_context);
     }
 
-    void RunnerGlfwOpenGl3::Impl_Cleanup()
+    void RunnerGlfw3::Impl_Cleanup()
     {
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
@@ -92,9 +91,9 @@ namespace HelloImGui
         glfwTerminate();
     }
 
-    void RunnerGlfwOpenGl3::Impl_SwapBuffers() { glfwSwapBuffers((GLFWwindow *)mWindow); }
+    void RunnerGlfw3::Impl_SwapBuffers() { glfwSwapBuffers((GLFWwindow *)mWindow); }
 
-    void RunnerGlfwOpenGl3::Impl_SetWindowIcon()
+    void RunnerGlfw3::Impl_SetWindowIcon()
     {
         std::string iconFile = "app_settings/icon.png";
         if (!HelloImGui::AssetExists(iconFile))
@@ -128,28 +127,28 @@ namespace HelloImGui
     //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef HELLOIMGUI_HAS_OPENGL
-    void RunnerGlfwOpenGl3::Impl_LinkWindowingToRenderingBackend()
+    void RunnerGlfw3::Impl_LinkWindowingToRenderingBackend()
     {
         ImGui_ImplGlfw_InitForOpenGL((GLFWwindow *)mWindow, true);
         ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
     }
 
-    void RunnerGlfwOpenGl3::Impl_InitRenderBackendCallbacks()
+    void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
     {
         mRenderingBackendCallbacks = CreateOpenGl3RenderingBackendCallbacks();
     }
 
-    void RunnerGlfwOpenGl3::Impl_CreateGlContext()
+    void RunnerGlfw3::Impl_CreateGlContext()
     {
         glfwMakeContextCurrent((GLFWwindow *) mWindow); // OpenGl!
         glfwSwapInterval(1);  // Enable vsync (openGL only, not vulkan)
     }
 
-    void RunnerGlfwOpenGl3::Impl_Select_Gl_Version() { gOpenGlHelper.SelectOpenGlVersion(); }
+    void RunnerGlfw3::Impl_Select_Gl_Version() { gOpenGlHelper.SelectOpenGlVersion(); }
 
-    std::string RunnerGlfwOpenGl3::Impl_GlslVersion() { return gOpenGlHelper.GlslVersion(); }
+    std::string RunnerGlfw3::Impl_GlslVersion() { return gOpenGlHelper.GlslVersion(); }
 
-    void RunnerGlfwOpenGl3::Impl_InitGlLoader() { gOpenGlHelper.InitGlLoader(); }
+    void RunnerGlfw3::Impl_InitGlLoader() { gOpenGlHelper.InitGlLoader(); }
 #endif // #ifdef HELLOIMGUI_HAS_OPENGL
 
 

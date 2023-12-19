@@ -7,11 +7,11 @@
 
 namespace HelloImGui
 {
-    class RunnerSdlOpenGl3 : public AbstractRunner
+    class RunnerSdl2 : public AbstractRunner
 {
        public:
-        RunnerSdlOpenGl3(RunnerParams & runnerParams);
-        virtual ~RunnerSdlOpenGl3() = default;
+        RunnerSdl2(RunnerParams & runnerParams);
+        virtual ~RunnerSdl2() = default;
 
        protected:
         //

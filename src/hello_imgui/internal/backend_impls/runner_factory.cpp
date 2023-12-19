@@ -1,10 +1,10 @@
 #include "hello_imgui/internal/backend_impls/runner_factory.h"
 
-#include "hello_imgui/internal/backend_impls/runner_emscripten.h"
-#include "hello_imgui/internal/backend_impls/runner_glfw_opengl3.h"
-#include "hello_imgui/internal/backend_impls/runner_qt.h"
-#include "hello_imgui/internal/backend_impls/runner_sdl_opengl3.h"
 #include "hello_imgui/hello_imgui_error.h"
+#include "hello_imgui/internal/backend_impls/runner_emscripten.h"
+#include "hello_imgui/internal/backend_impls/runner_glfw3.h"
+#include "hello_imgui/internal/backend_impls/runner_qt.h"
+#include "hello_imgui/internal/backend_impls/runner_sdl2.h"
 
 #include <stdexcept>
 
@@ -14,14 +14,14 @@ namespace HelloImGui
 #ifdef HELLOIMGUI_USE_GLFW_OPENGL3
 std::unique_ptr<AbstractRunner> FactorRunnerGlfwOpenGl3(RunnerParams& params)
 {
-    return std::make_unique<RunnerGlfwOpenGl3>(params);
+    return std::make_unique<RunnerGlfw3>(params);
 }
 #endif
 
 #ifdef HELLOIMGUI_USE_SDL_OPENGL3
 std::unique_ptr<AbstractRunner> FactorRunnerSdlOpenGl3(RunnerParams& params)
 {
-    return std::make_unique<RunnerSdlOpenGl3>(params);
+    return std::make_unique<RunnerSdl2>(params);
 }
 #endif
 

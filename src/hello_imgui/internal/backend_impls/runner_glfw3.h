@@ -7,11 +7,11 @@
 
 namespace HelloImGui
 {
-class RunnerGlfwOpenGl3 : public AbstractRunner
+class RunnerGlfw3 : public AbstractRunner
 {
        public:
-        RunnerGlfwOpenGl3(RunnerParams & runnerParams);
-        virtual ~RunnerGlfwOpenGl3() = default;
+        RunnerGlfw3(RunnerParams & runnerParams);
+        virtual ~RunnerGlfw3() = default;
 
        protected:
         //

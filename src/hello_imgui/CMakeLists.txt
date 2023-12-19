@@ -339,6 +339,7 @@ function (him_use_sdl2_backend target)
         ${imgui_backends_dir}/imgui_impl_sdl2.cpp
     )
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL)
+    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL2)
 endfunction()
 
 
@@ -452,6 +453,7 @@ function(him_use_glfw_backend target)
         ${imgui_backends_dir}/imgui_impl_glfw.cpp
     )
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW)
+    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW3)
 endfunction()
 
 function(_him_fetch_glfw_if_needed)

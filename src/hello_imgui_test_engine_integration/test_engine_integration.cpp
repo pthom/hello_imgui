@@ -17,7 +17,7 @@ namespace HelloImGui
             test_io.ConfigVerboseLevelOnError = ImGuiTestVerboseLevel_Debug;
             test_io.ConfigRunSpeed = ImGuiTestRunSpeed_Normal; // Default to slowest mode in this demo
 
-#if defined(HELLOIMGUI_USE_SDL_OPENGL3) || defined(HELLOIMGUI_USE_GLFW_OPENGL3)
+#ifdef HELLOIMGUI_HAS_OPENGL
             test_io.ScreenCaptureFunc = HelloImGui::ImGuiApp_ImplGL_CaptureFramebuffer;
 #endif
         }

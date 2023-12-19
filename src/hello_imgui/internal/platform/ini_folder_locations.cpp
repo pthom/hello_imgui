@@ -89,7 +89,7 @@
     #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
     using namespace AppleIniFolderLocations;
 
-#elif defined(__ANDROID__) && defined(HELLOIMGUI_USE_SDL_OPENGL3)
+#elif defined(__ANDROID__) && defined(HELLOIMGUI_USE_SDL)
     #include "SDL.h"
 
     static std::string GetAppUserConfigFolder()

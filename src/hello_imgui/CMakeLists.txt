@@ -159,7 +159,7 @@ function(_him_try_select_glfw_if_no_backend_selected)
             HelloImGui: using Glfw as default default backend (it will be downloaded and built inside {CMAKE_CURRENT_BINARY_DIR}/_deps/glfw-*)
             ${backend_message}
         ")
-        set(HELLOIMGUI_NO_BACKEND_SELECTED OFF INTERNAL BOOL "" FORCE)
+        set(HELLOIMGUI_NO_BACKEND_SELECTED OFF CACHE INTERNAL "")
     else()
         # Check if Glfw can be found
         find_package(glfw3 QUIET)
@@ -169,7 +169,7 @@ function(_him_try_select_glfw_if_no_backend_selected)
                 "HelloImGui: using Glfw as default default backend (it was found via find_package(glfw3))
                 ${backend_message}
                 ")
-            set(HELLOIMGUI_NO_BACKEND_SELECTED OFF INTERNAL BOOL "" FORCE)
+            set(HELLOIMGUI_NO_BACKEND_SELECTED OFF CACHE INTERNAL "")
         else()
             set(glfw_help_msg "
             you can install glfw via your package manager (apt, pacman, etc).

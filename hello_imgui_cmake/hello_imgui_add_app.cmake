@@ -91,7 +91,7 @@ endfunction()
 if(APPLE)
     include(${CMAKE_CURRENT_LIST_DIR}/apple/hello_imgui_apple.cmake)
 elseif(ANDROID)
-    include(${CMAKE_CURRENT_LIST_DIR}/android/hello_imgui_android)  # almost empty
+    include(${CMAKE_CURRENT_LIST_DIR}/android/hello_imgui_android.cmake)  # almost empty
     include(${CMAKE_CURRENT_LIST_DIR}/android/apkCMake/apkCMake.cmake)    # most of the logic is here and called by hello_imgui_prepare_app()
 elseif (EMSCRIPTEN)
     include(${CMAKE_CURRENT_LIST_DIR}/emscripten/hello_imgui_emscripten.cmake)

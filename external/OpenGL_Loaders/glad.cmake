@@ -1,6 +1,9 @@
 set(_him_glad_cmake_dir ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "")
 
 function(him_install_glad)
+    if(TARGET glad)
+        return()
+    endif()
     set(GLAD_DIR ${_him_glad_cmake_dir}/glad CACHE INTERNAL "Directory of glad")
     set(GLAD_FILES
         ${GLAD_DIR}/src/glad.c

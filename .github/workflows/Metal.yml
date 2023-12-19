@@ -1,0 +1,30 @@
+name: "Metal"
+
+# Test that Metal build works with no specific option on Apple
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+
+
+jobs:
+  build:
+    name: Cpp Lib
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        test_engine: [ON, OFF]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Build and install
+        shell: bash
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DHELLOIMGUI_USE_SDL_METAL=ON -DHELLOIMGUI_WITH_TEST_ENGINE=${{ matrix.test_engine }} -DCMAKE_BUILD_TYPE=Release
+          cmake --build . -j 3

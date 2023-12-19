@@ -1,5 +1,3 @@
-if (EMSCRIPTEN)
-
 include(${CMAKE_CURRENT_LIST_DIR}/hello_imgui_emscripten_global_options.cmake)
 
 
@@ -127,5 +125,3 @@ function(hello_imgui_platform_customization app_name assets_location)
     _hello_imgui_emscripten_target_compile_options(${app_name})
     _hello_imgui_emscripten_add_js_css_resources(${app_name} ${assets_location})
 endfunction()
-
-endif (EMSCRIPTEN)

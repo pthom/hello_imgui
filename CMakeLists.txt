@@ -90,7 +90,6 @@ option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
 # HELLOIMGUI_IMGUI_SOURCE_DIR: folder containing the sources for imgui (by default in the submodule external/imgui)
 if (NOT DEFINED HELLOIMGUI_IMGUI_SOURCE_DIR)
     set(HELLOIMGUI_IMGUI_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/external/imgui" CACHE STRING "Source dir of ImGui")
-    message(WARNING "Defined HELLOIMGUI_IMGUI_SOURCE_DIR=${HELLOIMGUI_IMGUI_SOURCE_DIR}")
 endif()
 # if HELLOIMGUI_BUILD_IMGUI, imgui will be built as part of the build of HelloImGui
 if (NOT DEFINED HELLOIMGUI_BUILD_IMGUI)

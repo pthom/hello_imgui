@@ -3,7 +3,6 @@
 
 #include <string>
 #include <unordered_map>
-#include <exception>
 
 namespace HelloImGui
 {
@@ -50,21 +49,25 @@ namespace internal
 
 #else // #ifdef HELLOIMGUI_HAS_OPENGL
 
+#include "imgui.h"
+
 namespace HelloImGui
 {
 void ImageFromAsset(const char *assetPath, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)
 {
-    throw std::runtime_error("ImageFromAsset is only available with OpenGL backends at this time, sorry!")
+    ImGui::Text("ImageFromAsset requires OpenGL");
 }
 
 bool ImageButtonFromAsset(const char *assetPath, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, int frame_padding, const ImVec4& bg_col, const ImVec4& tint_col)
 {
-    throw std::runtime_error("ImageButtonFromAsset is only available with OpenGL backends at this time, sorry!")
+    ImGui::Text("ButtonFromAsset requires OpenGL");
+    return false;
 }
 
 ImTextureID ImTextureIDFromAsset(const char *assetPath)
 {
-    throw std::runtime_error("ImTextureIDFromAsset is only available with OpenGL backends at this time, sorry!")
+    // Requires OpenGL!
+    return nullptr;
 }
 
 namespace internal

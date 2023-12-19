@@ -92,6 +92,7 @@ option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
 # HELLOIMGUI_USE_SDL_OPENGL3: select Windowing + Rendering backend in one option
 # Use SDL + OpenGL3: SDL will be searched via find_package()
 option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
+# Metal and OpenGl3 are mutually exclusive!
 option(HELLOIMGUI_USE_SDL_METAL "Build HelloImGui for SDL+Metal" OFF)
 
 #------------------------------------------------------------------------------

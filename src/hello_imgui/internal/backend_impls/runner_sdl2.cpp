@@ -1,9 +1,12 @@
 #ifdef HELLOIMGUI_USE_SDL
+#include "runner_sdl2.h"
 
 #ifdef HELLOIMGUI_HAS_OPENGL
-#include "runner_sdl2.h"
 #include <backends/imgui_impl_opengl3.h>
 #include "rendering_opengl3.h"
+#endif
+#ifdef HELLOIMGUI_HAS_METAL
+#include "rendering_metal.h"
 #endif
 
 #include "hello_imgui/hello_imgui_assets.h"
@@ -52,15 +55,32 @@ namespace HelloImGui
                 std::string("RunnerSdlOpenGl3::Impl_InitBackend error ")
                 + SDL_GetError());
         }
+
+        // Enable native IME
+        SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+
         SDL_SetEventFilter(HandleAppEvents, this);
+    }
+
+    void RunnerSdl2::Impl_InitBackend_PostImGuiInit()
+    {
+        #ifdef HELLOIMGUI_HAS_METAL
+        PrepareSdLForMetal_PosImGuiInit();
+        #endif
     }
 
     void RunnerSdl2::Impl_CreateWindow()
     {
         BackendApi::BackendOptions backendOptions;
+#ifdef HELLOIMGUI_HAS_METAL
+        backendOptions.backend3DMode = BackendApi::Backend3dMode::Metal;
+#endif
 
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
         params.backendPointers.sdlWindow = mWindow;
+#ifdef HELLOIMGUI_HAS_METAL
+        PrepareSdLForMetal_WithWindow_PreImGuiInit((SDL_Window *)mWindow);
+#endif
     }
 
     void RunnerSdl2::Impl_PollEvents()
@@ -86,11 +106,15 @@ namespace HelloImGui
 
     void RunnerSdl2::Impl_UpdateAndRenderAdditionalPlatformWindows()
     {
+#ifdef HELLOIMGUI_HAS_OPENGL
         SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
         SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+#endif
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
+#ifdef HELLOIMGUI_HAS_OPENGL
         SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+#endif
     }
 
     void RunnerSdl2::Impl_Cleanup()
@@ -103,7 +127,15 @@ namespace HelloImGui
         SDL_Quit();
     }
 
-    void RunnerSdl2::Impl_SwapBuffers() { SDL_GL_SwapWindow((SDL_Window *)mWindow); }
+    void RunnerSdl2::Impl_SwapBuffers()
+    {
+#ifdef HELLOIMGUI_HAS_OPENGL
+        SDL_GL_SwapWindow((SDL_Window *)mWindow);
+#endif
+#ifdef HELLOIMGUI_HAS_METAL
+        SwapSdlMetalBuffers();
+#endif
+    }
 
 
 
@@ -224,6 +256,15 @@ namespace HelloImGui
     std::string RunnerSdl2::Impl_GlslVersion() { return gOpenGlSetupSdl.GlslVersion(); }
 #endif // HELLOIMGUI_HAS_OPENGL
 
+#ifdef HELLOIMGUI_HAS_METAL
+    void RunnerSdl2::Impl_InitRenderBackendCallbacks()
+    {
+        mRenderingBackendCallbacks = CreateBackendCallbacks_Metal();
+    }
+    void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()
+    {
+    }
+#endif
 
     }  // namespace HelloImGui
 

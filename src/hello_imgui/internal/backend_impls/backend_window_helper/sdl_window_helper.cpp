@@ -87,7 +87,11 @@ namespace HelloImGui { namespace BackendApi
         if (backend3DMode == Backend3dMode::OpenGl)
             window_flags |= SDL_WINDOW_OPENGL;
         else if (backend3DMode == Backend3dMode::Metal)
+        {
+            // Inform SDL that we will be using metal for rendering. Without this hint initialization of metal renderer may fail.
+            SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal");
             window_flags |= SDL_WINDOW_METAL;
+        }
         else if (backend3DMode == Backend3dMode::Vulkan)
             window_flags |= SDL_WINDOW_VULKAN;
         else if (backend3DMode == Backend3dMode::No3d)

@@ -97,22 +97,54 @@ endfunction()
 # Sanity checks: API = him_sanity_checks
 ###################################################################################################
 function(him_sanity_checks)
-    _him_try_select_glfw_if_no_backend_selected()
-
     # use SDL for emscripten
     if (EMSCRIPTEN AND NOT HELLOIMGUI_USE_SDL_OPENGL3 AND NOT HELLOIMGUI_USE_GLFW_OPENGL3)
         set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
         set(HELLOIMGUI_USE_GLFW_OPENGL3 OFF CACHE BOOL "" FORCE)
     endif()
 
+    _him_check_if_no_backend_selected()  # will set HELLOIMGUI_NO_BACKEND_SELECTED to ON if no backend selected
+
+    if (HELLOIMGUI_NO_BACKEND_SELECTED)
+        set(backend_message "
+                HelloImGui: no backend selected!
+                    In order to select your own backend, use one of the cmake options below:
+                    -DHELLOIMGUI_WITH_GLFW=ON             # To download and build glfw automatically
+                    -DHELLOIMGUI_WITH_SDL=ON              # To download and build SDL automatically
+                    -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # To use your own version of GLFW (it should be findable via find_package(glfw3))
+                    -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # To use your own version of SDL (it should be findable via find_package(SDL2))
+                    -DHELLOIMGUI_USE_SDL_METAL=ON         # To use SDL2 + Metal
+
+                    (Note: under Linux, it is advised to use system-wide libraries, and not to use
+                    -DHELLOIMGUI_WITH_GLFW=ON or -DHELLOIMGUI_WITH_SDL=ON)
+        ")
+        message(STATUS "${backend_message}")
+
+        _him_try_select_glfw_if_no_backend_selected() # may change HELLOIMGUI_NO_BACKEND_SELECTED to OFF
+    endif()
+
+    if (HELLOIMGUI_NO_BACKEND_SELECTED)
+        message(FATAL_ERROR "HelloImGui: no backend selected, and could not auto-select one!")
+    endif()
+
     if (HELLOIMGUI_WITH_GLFW)
         set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
     endif()
-    if (HELLOIMGUI_WITH_SDL)
+    if (HELLOIMGUI_WITH_SDL AND NOT HELLOIMGUI_USE_SDL_METAL)
         set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
     endif()
+endfunction()
 
-    _him_shout_if_no_backend()
+function(_him_check_if_no_backend_selected)
+    if (NOT HELLOIMGUI_WITH_GLFW
+        AND NOT HELLOIMGUI_WITH_SDL
+        AND NOT HELLOIMGUI_USE_SDL_OPENGL3
+        AND NOT HELLOIMGUI_USE_GLFW_OPENGL3
+        AND NOT HELLOIMGUI_USE_SDL_METAL
+        AND NOT EMSCRIPTEN
+    )
+        set(HELLOIMGUI_NO_BACKEND_SELECTED ON INTERNAL BOOL "" FORCE)
+    endif()
 endfunction()
 
 function(_him_try_select_glfw_if_no_backend_selected)
@@ -121,62 +153,36 @@ function(_him_try_select_glfw_if_no_backend_selected)
     # either select Glfw automatically if possible, or fail
     #------------------------------------------------------------------------------
     #
-    if (NOT HELLOIMGUI_WITH_GLFW
-        AND NOT HELLOIMGUI_WITH_SDL
-        AND NOT HELLOIMGUI_USE_SDL_OPENGL3
-        AND NOT HELLOIMGUI_USE_GLFW_OPENGL3
-        AND NOT EMSCRIPTEN
-    )
-        set(backend_message "
-                    In order to select your own backend, use one of the cmake options below:
-                    -DHELLOIMGUI_WITH_GLFW=ON             # To download and build glfw automatically
-                    -DHELLOIMGUI_WITH_SDL=ON              # To download and build SDL automatically
-                    -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # To use your own version of GLFW (it should be findable via find_package(glfw3))
-                    -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # To use your own version of SDL (it should be findable via find_package(SDL2))
-
-                    (Note: under Linux, it is advised to use system-wide libraries, and not to use
-                    -DHELLOIMGUI_WITH_GLFW=ON or -DHELLOIMGUI_WITH_SDL=ON)
-    ")
-        if (NOT HELLOIMGUI_USE_GLFW_SYSTEM_LIB)
-            set(HELLOIMGUI_WITH_GLFW ON CACHE BOOL "" FORCE)
-            message(STATUS "
-                HelloImGui: using Glfw as default default backend (it will be downloaded and built inside {CMAKE_CURRENT_BINARY_DIR}/_deps/glfw-*)
+    if (NOT HELLOIMGUI_USE_GLFW_SYSTEM_LIB)
+        set(HELLOIMGUI_WITH_GLFW ON CACHE BOOL "" FORCE)
+        message(STATUS "
+            HelloImGui: using Glfw as default default backend (it will be downloaded and built inside {CMAKE_CURRENT_BINARY_DIR}/_deps/glfw-*)
+            ${backend_message}
+        ")
+        set(HELLOIMGUI_NO_BACKEND_SELECTED OFF INTERNAL BOOL "" FORCE)
+    else()
+        # Check if Glfw can be found
+        find_package(glfw3 QUIET)
+        if (glfw3_FOUND)
+            set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
+            message(STATUS
+                "HelloImGui: using Glfw as default default backend (it was found via find_package(glfw3))
                 ${backend_message}
-            ")
-        else()
-            # Check if Glfw can be found
-            find_package(glfw3 QUIET)
-            if (glfw3_FOUND)
-                set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
-                message(STATUS
-                    "HelloImGui: using Glfw as default default backend (it was found via find_package(glfw3))
-                    ${backend_message}
-                    ")
-            else()
-                set(glfw_help_msg "
-                you can install glfw via your package manager (apt, pacman, etc).
-                For example, on Ubuntu, you can run:
-                    sudo apt install libglfw3-dev
-                on macOS you can run:
-                    brew install glfw3
-            ")
-                message(FATAL_ERROR "
-                        HelloImGui: no backend selected, and could not find Glfw via find_package(glfw3).
-                        ${backend_message} ${glfw_help_msg}
                 ")
-            endif()
+            set(HELLOIMGUI_NO_BACKEND_SELECTED OFF INTERNAL BOOL "" FORCE)
+        else()
+            set(glfw_help_msg "
+            you can install glfw via your package manager (apt, pacman, etc).
+            For example, on Ubuntu, you can run:
+                sudo apt install libglfw3-dev
+            on macOS you can run:
+                brew install glfw3
+        ")
+            message(FATAL_ERROR "
+                    HelloImGui: no backend selected, and could not find Glfw via find_package(glfw3).
+                    ${backend_message} ${glfw_help_msg}
+            ")
         endif()
-    endif()
-endfunction()
-
-function(_him_shout_if_no_backend)
-    if (NOT (HELLOIMGUI_USE_SDL_OPENGL3 OR HELLOIMGUI_USE_GLFW_OPENGL3 OR HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT))
-        message(FATAL_ERROR "Select at least one backend: use either
-        -DHELLOIMGUI_USE_SDL_OPENGL3=ON
-        -DHELLOIMGUI_USE_GLFW_OPENGL3=ON
-        -DHELLOIMGUI_USE_QT=ON
-        -DHELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT=ON
-    ")
     endif()
 endfunction()
 
@@ -332,8 +338,8 @@ function(him_use_metal_backend target)
         ${imgui_backends_dir}/imgui_impl_metal.mm
     )
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_METAL)
-    target_link_libraries(${helloimgui_target} PUBLIC "-framework Metal")
-    target_link_libraries(${helloimgui_target} PUBLIC "-framework MetalKit")
+    target_link_libraries(${helloimgui_target} PUBLIC
+        "-framework Metal -framework MetalKit -framework QuartzCore")
 endfunction()
 
 ###################################################################################################
@@ -349,6 +355,7 @@ function (him_use_sdl2_backend target)
     )
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL)
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL2)
+    target_compile_definitions(${helloimgui_target} PUBLIC _THREAD_SAFE) # flag outputted by sdl2-config --cflags
 endfunction()
 
 

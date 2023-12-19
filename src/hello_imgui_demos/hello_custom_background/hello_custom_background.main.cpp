@@ -1,3 +1,4 @@
+#ifdef HELLOIMGUI_HAS_OPENGL
 #include "hello_imgui/hello_imgui.h"
 #include "imgui.h"
 
@@ -642,3 +643,6 @@ int main(int , char *[])
     HelloImGui::Run(runnerParams);
     return 0;
 }
+#else // HELLOIMGUI_HAS_OPENGL
+int main(int, char **){}
+#endif // HELLOIMGUI_HAS_OPENGL

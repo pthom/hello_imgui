@@ -1,3 +1,4 @@
+#ifdef HELLOIMGUI_HAS_OPENGL
 #include "opengl_screenshot.h"
 #include "imgui.h"
 #include "hello_imgui/hello_imgui_include_opengl.h"
@@ -146,3 +147,4 @@ namespace HelloImGui
 
 
 }
+#endif // HELLOIMGUI_HAS_OPENGL

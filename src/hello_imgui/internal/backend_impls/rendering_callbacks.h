@@ -19,7 +19,7 @@ namespace HelloImGui
         VoidFunction                 Impl_NewFrame_3D =          [] { HIMG_ERROR("Empty function"); };
         std::function<void(ImVec4)>  Impl_Frame_3D_ClearColor =  [] (ImVec4) { HIMG_ERROR("Empty function"); };
         VoidFunction                 Impl_RenderDrawData_To_3D = [] { HIMG_ERROR("Empty function"); };
-        VoidFunction                 Impl_Shutdown =             [] { HIMG_ERROR("Empty function"); };
-        std::function<ImageBuffer()> Impl_ScreenshotRgb =        [] { return ImageBuffer{}; };
+        VoidFunction                 Impl_Shutdown_3D          = [] { HIMG_ERROR("Empty function"); };
+        std::function<ImageBuffer()> Impl_ScreenshotRgb_3D     = [] { return ImageBuffer{}; };
     };
 } // namespace HelloImGui

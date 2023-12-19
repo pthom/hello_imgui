@@ -20,7 +20,7 @@ namespace HelloImGui
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         };
 
-        callbacks.Impl_ScreenshotRgb = []() {
+        callbacks.Impl_ScreenshotRgb_3D = []() {
             return OpenglScreenshotRgb();
         };
 
@@ -31,7 +31,7 @@ namespace HelloImGui
             glClear(GL_COLOR_BUFFER_BIT);
         };
 
-        callbacks.Impl_Shutdown = [] {
+        callbacks.Impl_Shutdown_3D = [] {
             ImGui_ImplOpenGL3_Shutdown();
         };
         return callbacks;

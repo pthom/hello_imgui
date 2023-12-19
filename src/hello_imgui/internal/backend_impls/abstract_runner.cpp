@@ -399,17 +399,18 @@ void AbstractRunner::Setup()
 #else
     ImGui::CreateContext();
 #endif
-
-    ImGui::GetIO().IniFilename = NULL;
-
-    Impl_SetupImgGuiContext();
-    params.callbacks.SetupImGuiConfig();
     if (params.imGuiWindowParams.enableViewports)
     {
 #ifndef __EMSCRIPTEN__
         ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 #endif
     }
+    Impl_InitBackend_PostImGuiInit();
+
+    ImGui::GetIO().IniFilename = NULL;
+
+    Impl_SetupImgGuiContext();
+    params.callbacks.SetupImGuiConfig();
     params.callbacks.SetupImGuiStyle();
 
 #ifdef HELLOIMGUI_WITH_TEST_ENGINE
@@ -799,7 +800,7 @@ void AbstractRunner::TearDown(bool gotException)
         TestEngineCallbacks::TearDown_ImGuiContextAlive();
 #endif
 
-    mRenderingBackendCallbacks.Impl_Shutdown();
+    mRenderingBackendCallbacks.Impl_Shutdown_3D();
     Impl_Cleanup();
 
 

@@ -44,7 +44,10 @@ endfunction()
 ###################################################################################################
 function(him_build_imgui)
     _him_checkout_imgui_submodule_if_needed()
-    _him_do_build_imgui()
+    if (HELLOIMGUI_BUILD_IMGUI)
+        _him_do_build_imgui()
+        _him_install_imgui()
+    endif()
 endfunction()
 
 function(_him_checkout_imgui_submodule_if_needed)
@@ -64,32 +67,30 @@ function(_him_checkout_imgui_submodule_if_needed)
 endfunction()
 
 function(_him_do_build_imgui)
-    if (HELLOIMGUI_BUILD_IMGUI)
-        file(GLOB imgui_sources ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.h ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.cpp)
-        set(imgui_sources ${imgui_sources}
-            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
-            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/imgui_stdlib.h)
-        if (HELLO_IMGUI_IMGUI_SHARED)
-            add_library(imgui SHARED ${imgui_sources})
-            install(TARGETS imgui DESTINATION ./lib/)
-        else()
-            add_library(imgui ${imgui_sources})
-        endif()
-        target_include_directories(imgui PUBLIC ${HELLOIMGUI_IMGUI_SOURCE_DIR})
-        if (MSVC)
-            hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
-        endif()
-
-        # Install
-        if(PROJECT_IS_TOP_LEVEL)
-            install(FILES ${imgui_sources} DESTINATION imgui)
-            install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends DESTINATION imgui)
-            install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp DESTINATION imgui/misc)
-            install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype DESTINATION imgui/misc)
-        endif()
+    file(GLOB imgui_sources ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.h ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.cpp)
+    set(imgui_sources ${imgui_sources}
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/imgui_stdlib.h)
+    if (HELLO_IMGUI_IMGUI_SHARED)
+        add_library(imgui SHARED ${imgui_sources})
+        install(TARGETS imgui DESTINATION ./lib/)
+    else()
+        add_library(imgui ${imgui_sources})
+    endif()
+    target_include_directories(imgui PUBLIC ${HELLOIMGUI_IMGUI_SOURCE_DIR})
+    if (MSVC)
+        hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
     endif()
 endfunction()
 
+function(_him_install_imgui)
+    if(PROJECT_IS_TOP_LEVEL)
+        install(FILES ${imgui_sources} DESTINATION imgui)
+        install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends DESTINATION imgui)
+        install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp DESTINATION imgui/misc)
+        install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype DESTINATION imgui/misc)
+    endif()
+endfunction()
 
 
 ###################################################################################################
@@ -372,15 +373,6 @@ function(_him_fetch_sdl_if_needed)
     endif()
 endfunction()
 
-function(_him_prepare_android_sdl_symlink)
-    # We now have SDL in _deps/sdl-src
-    set(sdl_location ${CMAKE_BINARY_DIR}/_deps/sdl-src)
-    # We need to communicate this location to the function apkCMake_makeSymLinks()
-    # so that it can create the symlinks in the right place:
-    # it will use the variable apkCMake_sdl_symlink_target
-    set(apkCMake_sdl_symlink_target ${CMAKE_BINARY_DIR}/_deps/sdl-src CACHE STRING "" FORCE)
-endfunction()
-
 function(_him_fetch_declare_sdl)
     # iOS and Android were tested with SDL 2.28.5
     # other platforms, not yet
@@ -400,6 +392,14 @@ function(_him_fetch_declare_sdl)
     )
 endfunction()
 
+function(_him_prepare_android_sdl_symlink)
+    # We now have SDL in _deps/sdl-src
+    set(sdl_location ${CMAKE_BINARY_DIR}/_deps/sdl-src)
+    # We need to communicate this location to the function apkCMake_makeSymLinks()
+    # so that it can create the symlinks in the right place:
+    # it will use the variable apkCMake_sdl_symlink_target
+    set(apkCMake_sdl_symlink_target ${CMAKE_BINARY_DIR}/_deps/sdl-src CACHE STRING "" FORCE)
+endfunction()
 
 function(_him_link_sdl target)
     if (need_fetch_make_available_sdl)

@@ -7,6 +7,7 @@
 [![Emscripten](https://github.com/pthom/hello_imgui/workflows/Emscripten/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Emscripten.yml)
 [![StarterTemplate](https://github.com/pthom/hello_imgui/workflows/StarterTemplate/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/StarterTemplate.yml)
 [![Automation](https://github.com/pthom/hello_imgui/workflows/Automation/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Automation.yml)
+[![Metal](https://github.com/pthom/hello_imgui/workflows/Metal/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Metal.yml)
 
 
 # Hello ImGui

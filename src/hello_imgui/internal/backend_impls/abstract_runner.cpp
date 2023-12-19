@@ -608,6 +608,9 @@ void AbstractRunner::CreateFramesAndRender()
     //
     // Rendering logic
     //
+    if (params.callbacks.PreNewFrame)
+        params.callbacks.PreNewFrame();
+
     mRenderingBackendCallbacks.Impl_NewFrame_3D();
     Impl_NewFrame_Backend();
     {
@@ -620,9 +623,6 @@ void AbstractRunner::CreateFramesAndRender()
         if (io.DeltaTime <= 0.f)
             io.DeltaTime = 1.f / 60.f;
     }
-
-    if (params.callbacks.PreNewFrame)
-        params.callbacks.PreNewFrame();
 
     ImGui::NewFrame();
 

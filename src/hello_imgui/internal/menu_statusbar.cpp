@@ -1,3 +1,4 @@
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/internal/docking_details.h"
 
@@ -83,7 +84,7 @@ void ShowStatusBar(RunnerParams & params)
         if (params.appWindowParams.handleEdgeInsets)
             edgeInsets = params.appWindowParams.edgeInsets;
         statusBarSize = ImVec2(viewport->Size.x - edgeInsets.left - edgeInsets.right, statusWindowHeight);
-        statusBarPos = ImVec2(edgeInsets.left, viewport->Size.y - edgeInsets.bottom - statusBarSize.y);
+        statusBarPos = viewport->Pos + ImVec2(edgeInsets.left, viewport->Size.y - edgeInsets.bottom - statusBarSize.y);
     }
 
     ImGui::SetNextWindowPos(statusBarPos);

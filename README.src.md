@@ -396,19 +396,16 @@ into your app source dir, and adapt it to your needs.
  
 ---
 
+## How to build terminal executables under macOS
+
+If you prefer to build regular terminal executables (not app bundles), use the cmake option `-DHELLOIMGUI_MACOS_NO_BUNDLE=ON`.
+
 ## Build and deploy instructions for Android
 
 The Android version uses SDL + OpenGLES3.
 
 _Note: The Android version is currently not actively maintained._
 
-### Download SDL 
-
-You need to download SDL manually for Android, like this:
-
-```bash
-./tools/sdl_download.sh
-```
 
 ### Set Android required environment variables
 
@@ -477,37 +474,12 @@ You can also install the app via command line, like this:
 
 ### Customize for Android
 
+See intructions in [Hello ImGui Template](https://github.com/pthom/hello_imgui_template/).
 
-#### How to build terminal executables under macOS
-
-If you prefer to build regular terminal executables (not app bundles), use the cmake option `-DHELLOIMGUI_MACOS_NO_BUNDLE=ON`.
-
-
-### Android 
-
-For Android, create a folder named "android" beside the application 'CMakeLists.txt'. There, you can add a custom "res/" folder, containing your icons and application settings inside "res/values/".
-
-**Example**
-
-```
-├── android/                                    # android/ is where you customize the Android App
-│    ├── mipmap-source/
-│    │    ├── Readme.md
-│    │    └── ic_launcher.png                     # an icon that helps creating the different sizes
-│    └── res/                                    # anything in the res/ folder will be embedded as a resource
-│             ├── mipmap-hdpi/
-│             │    └── ic_launcher.png                 # icons with different sizes
-│             ├── mipmap-.../
-│             └── values/
-│                 ├── colors.xml
-│                 ├── strings.xml                    # Customize the application icon label here
-│                 └── styles.xml
-```
-
-
--------
 
 # Real world examples
+
+See [Gallery](https://github.com/pthom/hello_imgui/discussions/82)
 
 ## ImGui Manual
 
@@ -520,19 +492,7 @@ Just click on the image below to open it:
 ## Dear ImGui Bundle
 [Dear ImGui Bundle](https://pthom.github.io/imgui_bundle/introduction.html) is a bundle for Dear ImGui, including various powerful libraries from its ecosystem. It is based on HelloImGui.
 
-## CatSight
-
-[CatSight](https://github.com/codecat/catsight) is a cross-platform process memory inspector.
-
 ---
-
-# Alternatives
-
-[OpenFrameworks](https://openframeworks.cc/) and [Cinder](https://libcinder.org/) are alternatives in order to quickly start a C++ application under many platforms.
-
-Being oriented for creative coding, they are much more feature rich, offers some level of native hardware access (camera, accelerometer), but they are also less lightweight than ImGui + HelloImGui.
-
-[sokol_app](https://github.com/floooh/sokol#sokol_apph) is a minimal cross-platform application-wrapper library.
 
 # Online interactive development platform
 

@@ -1,12 +1,9 @@
 #include "hello_imgui/internal/backend_impls/runner_factory.h"
 
-#include "hello_imgui/hello_imgui_error.h"
 #include "hello_imgui/internal/backend_impls/runner_emscripten.h"
 #include "hello_imgui/internal/backend_impls/runner_glfw3.h"
 #include "hello_imgui/internal/backend_impls/runner_qt.h"
 #include "hello_imgui/internal/backend_impls/runner_sdl2.h"
-
-#include <stdexcept>
 
 
 namespace HelloImGui

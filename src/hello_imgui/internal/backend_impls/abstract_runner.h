@@ -15,7 +15,7 @@ namespace HelloImGui
 class AbstractRunner
 {
    public:
-    AbstractRunner(RunnerParams &params_);
+    explicit AbstractRunner(RunnerParams &params_);
     virtual ~AbstractRunner() = default;
 
     RunnerParams & params;
@@ -46,7 +46,7 @@ class AbstractRunner
     // If we want a font to visually render like a font size of 14 we need to multiply its size by this factor
     float DpiFontLoadingFactor();
     // returns the default value that should be stored inside `ImGui::GetIO().FontGlobalScale`
-    float ImGuiDefaultFontGlobalScale();
+    static float ImGuiDefaultFontGlobalScale();
 
     void LayoutSettings_SwitchLayout(const std::string& layoutName);
 
@@ -57,8 +57,8 @@ protected:
     friend std::string GlslVersion();
 
     //
-    // The methods Impl_* are astract
-    // and shall be overriden in the concrete implementations by derivates
+    // The methods Impl_* are abstract
+    // and shall be overriden in the concrete implementations by derived classes
     //
 
     //
@@ -97,7 +97,7 @@ protected:
 private:
     void PrepareWindowGeometry();
     void HandleDpiOnSecondFrame();
-    void ReloadFontIfFailed();
+    void ReloadFontIfFailed() const;
     void MakeWindowSizeRelativeTo96Ppi_IfRequired();
     bool ShallSizeWindowRelativeTo96Ppi();
     bool WantAutoSize();

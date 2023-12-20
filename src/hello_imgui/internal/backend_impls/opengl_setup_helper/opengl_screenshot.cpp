@@ -67,7 +67,7 @@ namespace HelloImGui
     //
 
 
-    void _GlCaptureFramebuffer(
+    void _glCaptureFramebuffer(
         int x, int y, int w, int h,
         float frameBufferScaleY,    // We now need to know the frameBufferScaleY to be able to flip the y coordinate into y2
         unsigned int* pixels)
@@ -84,8 +84,8 @@ namespace HelloImGui
         // Flip vertically
         size_t comp = 4;
         size_t stride = (size_t)w * comp;
-        unsigned char* line_tmp = new unsigned char[stride];
-        unsigned char* line_a = (unsigned char*)pixels;
+        auto* line_tmp = new unsigned char[stride];
+        auto* line_a = (unsigned char*)pixels;
         unsigned char* line_b = (unsigned char*)pixels + (stride * ((size_t)h - 1));
         while (line_a < line_b)
         {
@@ -105,7 +105,7 @@ namespace HelloImGui
 
         ImVec2 framebufferScale(1., 1.f);
         if (ImGui::GetDrawData() != nullptr)
-            framebufferScale = ImGui::GetDrawData()->FramebufferScale; // WARNING WARNING: Sometimes GetDrawData() will return NULL
+            framebufferScale = ImGui::GetDrawData()->FramebufferScale; // WARNING: Sometimes GetDrawData() will return NULL
                                                                        //  when invoked from the CaptureTool window!
         // framebufferScale = ImVec2(2.f, 2.f);                        // Manual hack for when GetDrawData() returns null
 
@@ -115,7 +115,7 @@ namespace HelloImGui
         // if not using scaled frame buffer, perform simple capture
         if (!hasFramebufferScale)
         {
-            _GlCaptureFramebuffer(x, y, w, h, framebufferScale.y, pixels);
+            _glCaptureFramebuffer(x, y, w, h, framebufferScale.y, pixels);
             return true;
         }
 
@@ -129,8 +129,8 @@ namespace HelloImGui
 
         int xs = x_to_scaled(x), ys = y_to_scaled(y), ws = x_to_scaled(w), hs = y_to_scaled(h);
 
-        unsigned int* capturePixels = new unsigned int[ws * hs];
-        _GlCaptureFramebuffer(xs, ys, ws, hs, framebufferScale.y, capturePixels);
+        auto* capturePixels = new unsigned int[ws * hs];
+        _glCaptureFramebuffer(xs, ys, ws, hs, framebufferScale.y, capturePixels);
 
         // 2. Fill pixel from capturePixels: an atrocious and slow loop
         auto get_capture_pixel = [&](int _x, int _y) -> unsigned int {

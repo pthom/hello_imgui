@@ -15,7 +15,6 @@
 #include "hello_imgui/internal/stb_image.h"
 
 #include "backend_window_helper/glfw_window_helper.h"
-#include "hello_imgui/hello_imgui_error.h"
 #include "runner_glfw3.h"
 #include <GLFW/glfw3.h>
 #include <backends/imgui_impl_glfw.h>
@@ -133,7 +132,7 @@ namespace HelloImGui
             GLFWimage icons[1];
             icons[0].width = width;
             icons[0].height = height;
-            icons[0].pixels = image; // GLFWimage expects an array of pixels (unsigned char *)
+            icons[0].pixels = image; // GLFWImage expects an array of pixels (unsigned char *)
 
             glfwSetWindowIcon((GLFWwindow*)mWindow, 1, icons);
 

@@ -236,7 +236,7 @@ Most flags are inherited by children dock spaces.
     };
 
     auto & mainDockSpaceNodeFlags = HelloImGui::GetRunnerParams()->dockingParams.mainDockSpaceNodeFlags;
-    for (auto flag: all_flags)
+    for (const auto& flag: all_flags)
     {
         ImGui::CheckboxFlags(flag.label.c_str(), &mainDockSpaceNodeFlags, flag.flag);
         if (ImGui::IsItemHovered())
@@ -442,7 +442,7 @@ std::vector<HelloImGui::DockableWindow> CreateDockableWindows(AppState& appState
         additionalWindow,
     };
     return dockableWindows;
-};
+}
 
 //
 // 3. Define the layouts:
@@ -477,7 +477,7 @@ std::vector<HelloImGui::DockingParams> CreateAlternativeLayouts(AppState& appSta
         tabsLayout.dockingSplits = {};
     }
     return {alternativeLayout, tabsLayout};
-};
+}
 
 
 //////////////////////////////////////////////////////////////////////////

@@ -1,7 +1,6 @@
 #include "window_geometry_helper.h"
 #include "hello_imgui/internal/hello_imgui_ini_settings.h"
 
-#include <sstream>
 #include <vector>
 #include <string>
 #include <cassert>
@@ -9,11 +8,11 @@
 
 namespace HelloImGui
 {
-    WindowGeometryHelper::WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast, const std::string &windowGeometryIniFilename) :
-        mGeometry(geometry), mRestoreLast(restoreLast), mWindowGeometryIniFilename(windowGeometryIniFilename)
+    WindowGeometryHelper::WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast, std::string windowGeometryIniFilename) :
+        mGeometry(geometry), mRestoreLast(restoreLast), mWindowGeometryIniFilename(std::move(windowGeometryIniFilename))
         {}
 
-    bool WindowGeometryHelper::HasInitialWindowSizeInfo()
+    bool WindowGeometryHelper::HasInitialWindowSizeInfo() const
     {
         if (
             (mGeometry.windowSizeState == WindowSizeState::Maximized)
@@ -121,7 +120,7 @@ namespace HelloImGui
         {
             // If position from coords, search for screen containing the window position
             int foundMonitorIdx = -1;
-            assert(monitorsWorkAreas.size() > 0);
+            assert(!monitorsWorkAreas.empty());
             auto& wantedPosition = geometry.position;
             for (size_t monitorIdx = 0; monitorIdx < monitorsWorkAreas.size(); ++monitorIdx)
             {
@@ -175,7 +174,7 @@ namespace HelloImGui
         return r;
     }
 
-    int WindowGeometryHelper::GetMonitorIndexFromWindowPosition(BackendApi::IBackendWindowHelper *backendWindowHelper, const ScreenPosition& windowPosition)
+    int WindowGeometryHelper::GetMonitorIndexFromWindowPosition(BackendApi::IBackendWindowHelper *backendWindowHelper, const ScreenPosition& windowPosition) const
     {
         if (mGeometry.fullScreenMode != FullScreenMode::NoFullScreen)
             return mGeometry.monitorIdx;

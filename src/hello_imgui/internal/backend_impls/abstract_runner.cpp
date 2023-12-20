@@ -52,7 +52,7 @@ void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 
 
 AbstractRunner::AbstractRunner(RunnerParams &params_)
-    : params(params_) {};
+    : params(params_) {}
 
 // Advanced: ImGui_ImplOpenGL3_CreateFontsTexture might cause an OpenGl error when the font texture is too big
 // We detect it soon after calling ImGui::NewFrame by setting mPotentialFontLoadingError.
@@ -60,7 +60,7 @@ AbstractRunner::AbstractRunner(RunnerParams &params_)
 // size for a crisper rendering) and try to reload the fonts.
 // This only works if the user provided callback LoadAdditionalFonts() uses DpiFontLoadingFactor()
 // to multiply its font size.
-void AbstractRunner::ReloadFontIfFailed()
+void AbstractRunner::ReloadFontIfFailed() const
 {
     fprintf(stderr, "Detected a potential font loading error! You might try to reduce the number of loaded fonts and/or their size!\n");
 #ifdef HELLOIMGUI_HAS_OPENGL
@@ -161,7 +161,7 @@ bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi()
 
 float AbstractRunner::ImGuiDefaultFontGlobalScale()
 {
-    float fontSizeIncreaseFactor = 1.f;
+    float fontSizeIncreaseFactor;
 
 #ifdef __EMSCRIPTEN__
     // Query the brower to ask for devicePixelRatio
@@ -409,7 +409,7 @@ void AbstractRunner::Setup()
     }
     Impl_InitBackend_PostImGuiInit();
 
-    ImGui::GetIO().IniFilename = NULL;
+    ImGui::GetIO().IniFilename = nullptr;
 
     Impl_SetupImgGuiContext();
     params.callbacks.SetupImGuiConfig();
@@ -724,19 +724,21 @@ bool AbstractRunner::ShallIdleThisFrame_Emscripten()
     static double lastRefreshTime = 0.;
     double now = Internal::ClockSeconds();
 
-    bool shallIdleThisFrame = false;
-    if (hasInputEvent)
+    bool shallIdleThisFrame;
     {
-        params.fpsIdling.isIdling = false;
-        shallIdleThisFrame = false;
-    }
-    else
-    {
-        params.fpsIdling.isIdling = true;
-        if ((now - lastRefreshTime) < 1. / params.fpsIdling.fpsIdle)
-            shallIdleThisFrame = true;
-        else
+        if (hasInputEvent)
+        {
+            params.fpsIdling.isIdling = false;
             shallIdleThisFrame = false;
+        }
+        else
+        {
+            params.fpsIdling.isIdling = true;
+            if ((now - lastRefreshTime) < 1. / params.fpsIdling.fpsIdle)
+                shallIdleThisFrame = true;
+            else
+                shallIdleThisFrame = false;
+        }
     }
 
     if (! shallIdleThisFrame)

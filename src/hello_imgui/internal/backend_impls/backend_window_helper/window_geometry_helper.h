@@ -14,9 +14,9 @@ namespace HelloImGui
         bool mRestoreLast;
         std::string mWindowGeometryIniFilename;
 
-        WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast, const std::string& windowGeometryIniFilename);
+        WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast, std::string windowGeometryIniFilename);
 
-        bool HasInitialWindowSizeInfo();
+        bool HasInitialWindowSizeInfo() const;
         ScreenBounds AppWindowBoundsInitial(const std::vector<ScreenBounds>& allMonitorsWorkAreas);
 
         void EnsureWindowFitsMonitor(BackendApi::IBackendWindowHelper* helper, BackendApi::WindowPointer window);
@@ -28,7 +28,7 @@ namespace HelloImGui
         void TrySetWindowSize(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window, ImVec2 userWidgetsSize);
 
     private:
-        int GetMonitorIndexFromWindowPosition(BackendApi::IBackendWindowHelper *backendWindowHelper, const ScreenPosition& windowPosition);
+        int GetMonitorIndexFromWindowPosition(BackendApi::IBackendWindowHelper *backendWindowHelper, const ScreenPosition& windowPosition) const;
     };
 
     struct SearchForMonitorResult

@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Cpp Lib
+    name: Cpp Lib (TestEngine:${{matrix.test_engine}})
     runs-on: macos-latest
     strategy:
       fail-fast: false
@@ -26,5 +26,5 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DHELLOIMGUI_USE_SDL_METAL=ON -DHELLOIMGUI_WITH_TEST_ENGINE=${{ matrix.test_engine }} -DCMAKE_BUILD_TYPE=Release
+          cmake .. -DHELLOIMGUI_USE_SDL_METAL=ON -DHELLOIMGUI_WITH_TEST_ENGINE=${{matrix.test_engine}} -DCMAKE_BUILD_TYPE=Release
           cmake --build . -j 3

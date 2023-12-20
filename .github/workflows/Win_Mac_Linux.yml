@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Cpp Lib
+    name: Cpp Lib ${{matrix.platform}} TestNg:${{matrix.test_engine}}
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false

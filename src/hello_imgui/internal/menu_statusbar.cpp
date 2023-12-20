@@ -114,6 +114,5 @@ void ShowStatusBar(RunnerParams & params)
     ImGui::End();
 }
 
-
 }  // namespace Menu_StatusBar
 }  // namespace HelloImGui

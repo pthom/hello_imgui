@@ -287,12 +287,13 @@ endfunction()
 ###################################################################################################
 # OpenGL Rendering backend: API = him_use_opengl3_backend
 ###################################################################################################
-function(him_use_opengl3_backend target)
+function(him_has_opengl3 target)
     target_sources(${target} PRIVATE
         ${imgui_backends_dir}/imgui_impl_opengl3.h
         ${imgui_backends_dir}/imgui_impl_opengl3.cpp
     )
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_OPENGL)
+    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_OPENGL3)
     set(HELLOIMGUI_HAS_OPENGL ON CACHE BOOL "" FORCE)
 
     if(ANDROID OR IOS)
@@ -326,7 +327,7 @@ endfunction()
 ###################################################################################################
 # Metal Rendering backend: API = him_use_metal_backend
 ###################################################################################################
-function(him_use_metal_backend target)
+function(him_has_metal target)
     target_sources(${target} PRIVATE
         ${imgui_backends_dir}/imgui_impl_metal.h
         ${imgui_backends_dir}/imgui_impl_metal.mm
@@ -535,25 +536,25 @@ function(him_main)
     endif()
 
     if (HELLOIMGUI_USE_SDL_OPENGL3)
-        him_use_opengl3_backend(${helloimgui_target})
+        him_has_opengl3(${helloimgui_target})
         him_use_sdl2_backend(${helloimgui_target})
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_OPENGL3)
     endif()
 
     if (HELLOIMGUI_USE_GLFW_OPENGL3)
-        him_use_opengl3_backend(${helloimgui_target})
+        him_has_opengl3(${helloimgui_target})
         him_use_glfw_backend(${helloimgui_target})
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_OPENGL3)
     endif()
 
     if(HELLOIMGUI_USE_SDL_METAL)
-        him_use_metal_backend(${helloimgui_target})
+        him_has_metal(${helloimgui_target})
         him_use_sdl2_backend(${helloimgui_target})
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_METAL)
     endif()
 
     if(HELLOIMGUI_USE_GLFW_METAL)
-        him_use_metal_backend(${helloimgui_target})
+        him_has_metal(${helloimgui_target})
         him_use_glfw_backend(${helloimgui_target})
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_METAL)
     endif()

@@ -1,6 +1,6 @@
 name: "Metal"
 
-# Test that Metal build works with no specific option on Apple
+# Test that Metal build works on Apple
 on:
   workflow_dispatch:
   pull_request:
@@ -9,12 +9,12 @@ on:
 
 jobs:
   build:
-    name: Cpp Lib (TestEngine:${{matrix.test_engine}})
+    name: Metal
     runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
-        test_engine: [ON, OFF]
+        window_backend: [Glfw, Sdl, Both]
 
     steps:
       - uses: actions/checkout@v3
@@ -26,5 +26,13 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DHELLOIMGUI_USE_SDL_METAL=ON -DHELLOIMGUI_WITH_TEST_ENGINE=${{matrix.test_engine}} -DCMAKE_BUILD_TYPE=Release
+          if [ "${{ matrix.window_backend }}" = "Glfw" ]; then 
+            cmake .. -DHELLOIMGUI_USE_GLFW_METAL=ON  -DCMAKE_BUILD_TYPE=Release; 
+          fi
+          if [ "${{ matrix.window_backend }}" = "Sdl" ]; then 
+            cmake .. -DHELLOIMGUI_USE_SDL_METAL=ON  -DCMAKE_BUILD_TYPE=Release; 
+          fi
+          if [ "${{ matrix.window_backend }}" = "Both" ]; then 
+            cmake .. -DHELLOIMGUI_USE_GLFW_METAL=ON -DHELLOIMGUI_USE_SDL_METAL=ON -DCMAKE_BUILD_TYPE=Release; 
+          fi
           cmake --build . -j 3

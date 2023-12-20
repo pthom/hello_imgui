@@ -7,8 +7,6 @@
 #include <backends/imgui_impl_metal.h>
 #include <array>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "hello_imgui/internal/stb_image.h"
 #include "hello_imgui/hello_imgui.h"
 
 #include <SDL.h>

@@ -252,11 +252,11 @@ void DoCreateFullScreenImGuiWindow(const RunnerParams& runnerParams, bool useDoc
         if (runnerParams.appWindowParams.handleEdgeInsets)
             edgeInsets = runnerParams.appWindowParams.edgeInsets;
         fullScreenPos = viewport->Pos;
-        fullScreenPos.x += edgeInsets.left;
-        fullScreenPos.y += edgeInsets.top;
+        fullScreenPos.x += (float)edgeInsets.left;
+        fullScreenPos.y += (float)edgeInsets.top;
         fullScreenSize = viewport->Size;
-        fullScreenSize.x -= edgeInsets.left + edgeInsets.right;
-        fullScreenSize.y -= edgeInsets.top + edgeInsets.bottom;
+        fullScreenSize.x -= (float)edgeInsets.left + (float)edgeInsets.right;
+        fullScreenSize.y -= (float)edgeInsets.top + (float)edgeInsets.bottom;
         if (imGuiWindowParams.showStatusBar)
             fullScreenSize.y -= ImGui::GetFrameHeight() * 1.35f;
     }

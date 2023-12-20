@@ -83,8 +83,8 @@ void ShowStatusBar(RunnerParams & params)
         EdgeInsets edgeInsets;
         if (params.appWindowParams.handleEdgeInsets)
             edgeInsets = params.appWindowParams.edgeInsets;
-        statusBarSize = ImVec2(viewport->Size.x - edgeInsets.left - edgeInsets.right, statusWindowHeight);
-        statusBarPos = viewport->Pos + ImVec2(edgeInsets.left, viewport->Size.y - edgeInsets.bottom - statusBarSize.y);
+        statusBarSize = ImVec2(viewport->Size.x - (float)edgeInsets.left - (float)edgeInsets.right, statusWindowHeight);
+        statusBarPos = viewport->Pos + ImVec2((float)edgeInsets.left, viewport->Size.y - (float)edgeInsets.bottom - statusBarSize.y);
     }
 
     ImGui::SetNextWindowPos(statusBarPos);

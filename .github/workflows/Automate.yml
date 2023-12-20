@@ -1,6 +1,7 @@
-name: "Automation"
+name: "Automate"
 
-# Run an app with automation thanks to imgui_test_engine / ensure it works
+# Run an app with automation thanks to imgui_test_engine, and ensure it works.
+# i.e. the graphic app is launched, some buttons are clicked, and the app exits with a success code.
 
 on:
   workflow_dispatch:
@@ -10,7 +11,7 @@ on:
 
 jobs:
   build:
-    name: Automation Test
+    name: Automate
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false

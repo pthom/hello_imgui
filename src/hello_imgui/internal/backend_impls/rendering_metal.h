@@ -17,6 +17,16 @@ struct GLFWwindow;
 
 namespace HelloImGui
 {
+    struct MetalGlobals
+    {
+        CAMetalLayer* caMetalLayer = nullptr;
+        id<CAMetalDrawable> caMetalDrawable = nullptr;
+        id<MTLCommandBuffer> mtlCommandBuffer = nullptr;
+        id<MTLCommandQueue> mtlCommandQueue = nullptr;
+        MTLRenderPassDescriptor* mtlRenderPassDescriptor = nullptr;
+        id <MTLRenderCommandEncoder> mtlRenderCommandEncoder = nullptr;
+    };
+    MetalGlobals& GetMetalGlobals();
 
 #ifdef HELLOIMGUI_USE_SDL2
     RenderingCallbacks CreateBackendCallbacks_SdlMetal();
@@ -29,15 +39,7 @@ namespace HelloImGui
     {
         SDL_Window* sdlWindow = nullptr;
         SDL_Renderer* sdlRenderer = nullptr;
-
-        CAMetalLayer* caMetalLayer = nullptr;
-        id<CAMetalDrawable> caMetalDrawable = nullptr;
-        id<MTLCommandBuffer> mtlCommandBuffer = nullptr;
-        id<MTLCommandQueue> mtlCommandQueue = nullptr;
-        MTLRenderPassDescriptor* mtlRenderPassDescriptor = nullptr;
-        id <MTLRenderCommandEncoder> mtlRenderCommandEncoder = nullptr;
     };
-
     SdlMetalGlobals& GetSdlMetalGlobals();
 #endif
 
@@ -51,17 +53,8 @@ namespace HelloImGui
     struct GlfwMetalGlobals
     {
         GLFWwindow* glfwWindow = nullptr;
-
-        id <MTLDevice> mtlDevice = nullptr;
-
-        CAMetalLayer* caMetalLayer = nullptr;
-        id<CAMetalDrawable> caMetalDrawable = nullptr;
-        id<MTLCommandBuffer> mtlCommandBuffer = nullptr;
-        id<MTLCommandQueue> mtlCommandQueue = nullptr;
-        MTLRenderPassDescriptor* mtlRenderPassDescriptor = nullptr;
-        id <MTLRenderCommandEncoder> mtlRenderCommandEncoder = nullptr;
+        id<MTLDevice> mtlDevice = nullptr;
     };
-
     GlfwMetalGlobals& GetGlfwMetalGlobals();
 #endif
 

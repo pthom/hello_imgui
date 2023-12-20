@@ -19,49 +19,50 @@
 
 namespace HelloImGui
 {
-    GlfwMetalGlobals gGlfwMetalGlobals;
+
+    GlfwMetalGlobals& GetGlfwMetalGlobals()
+    {
+            static GlfwMetalGlobals sGlfwMetalGlobals;
+            return sGlfwMetalGlobals;
+    }
 
     void PrepareGlfwForMetal_WithWindow_PreImGuiInit(GLFWwindow* glfwWindow)
     {
+        auto& gMetalGlobals = GetMetalGlobals();
+        auto& gGlfwMetalGlobals = GetGlfwMetalGlobals();
+
         gGlfwMetalGlobals.glfwWindow = glfwWindow;
-//        gGlfwMetalGlobals.sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-//        if (gGlfwMetalGlobals.sdlRenderer == nullptr)
-//        {
-//            bool Error_SdlCreateRenderer_For_Metal = false;
-//            IM_ASSERT(Error_SdlCreateRenderer_For_Metal);
-//            exit(-3);
-//        }
-
-        // Setup Platform/Renderer backends
-//        gGlfwMetalGlobals.caMetalLayer = (__bridge CAMetalLayer*)SDL_RenderGetMetalLayer(gGlfwMetalGlobals.sdlRenderer);
-//        gGlfwMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
-
         gGlfwMetalGlobals.mtlDevice = MTLCreateSystemDefaultDevice();
-        gGlfwMetalGlobals.mtlCommandQueue = [gGlfwMetalGlobals.mtlDevice newCommandQueue];
+        gMetalGlobals.mtlCommandQueue = [gGlfwMetalGlobals.mtlDevice newCommandQueue];
     }
 
     void PrepareGlfwForMetal_PosImGuiInit()
     {
+        auto& gMetalGlobals = GetMetalGlobals();
+
+        auto& gGlfwMetalGlobals = GetGlfwMetalGlobals();
         ImGui_ImplGlfw_InitForOther(gGlfwMetalGlobals.glfwWindow, true);
         ImGui_ImplMetal_Init(gGlfwMetalGlobals.mtlDevice);
 
         NSWindow *nswin = glfwGetCocoaWindow(gGlfwMetalGlobals.glfwWindow);
-        gGlfwMetalGlobals.caMetalLayer = [CAMetalLayer layer];
-        gGlfwMetalGlobals.caMetalLayer.device = gGlfwMetalGlobals.mtlDevice;
-        gGlfwMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
-        nswin.contentView.layer = gGlfwMetalGlobals.caMetalLayer;
+        gMetalGlobals.caMetalLayer = [CAMetalLayer layer];
+        gMetalGlobals.caMetalLayer.device = gGlfwMetalGlobals.mtlDevice;
+        gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+        nswin.contentView.layer = gMetalGlobals.caMetalLayer;
         nswin.contentView.wantsLayer = YES;
 
-        gGlfwMetalGlobals.mtlRenderPassDescriptor = [MTLRenderPassDescriptor new];
+        gMetalGlobals.mtlRenderPassDescriptor = [MTLRenderPassDescriptor new];
     }
 
     void SwapGlfwMetalBuffers()
     {
-        [gGlfwMetalGlobals.mtlRenderCommandEncoder popDebugGroup];
-        [gGlfwMetalGlobals.mtlRenderCommandEncoder endEncoding];
+        auto& gMetalGlobals = GetMetalGlobals();
 
-        [gGlfwMetalGlobals.mtlCommandBuffer presentDrawable:gGlfwMetalGlobals.caMetalDrawable];
-        [gGlfwMetalGlobals.mtlCommandBuffer commit];
+        [gMetalGlobals.mtlRenderCommandEncoder popDebugGroup];
+        [gMetalGlobals.mtlRenderCommandEncoder endEncoding];
+
+        [gMetalGlobals.mtlCommandBuffer presentDrawable:gMetalGlobals.caMetalDrawable];
+        [gMetalGlobals.mtlCommandBuffer commit];
     }
 
     RenderingCallbacks CreateBackendCallbacks_GlfwMetal()
@@ -70,31 +71,35 @@ namespace HelloImGui
 
         callbacks.Impl_NewFrame_3D = []
         {
+            auto& gMetalGlobals = GetMetalGlobals();
+            auto& gGlfwMetalGlobals = GetGlfwMetalGlobals();
+
             auto Vec4_To_Array = [](ImVec4 v) { return std::array<float, 4>{ v.x, v.y, v.z, v.w }; };
 
             int width, height;
             glfwGetFramebufferSize(gGlfwMetalGlobals.glfwWindow, &width, &height);
-            gGlfwMetalGlobals.caMetalLayer.drawableSize = CGSizeMake(width, height);
-            gGlfwMetalGlobals.caMetalDrawable = [gGlfwMetalGlobals.caMetalLayer nextDrawable];
+            gMetalGlobals.caMetalLayer.drawableSize = CGSizeMake(width, height);
+            gMetalGlobals.caMetalDrawable = [gMetalGlobals.caMetalLayer nextDrawable];
 
-            gGlfwMetalGlobals.mtlCommandBuffer = [gGlfwMetalGlobals.mtlCommandQueue commandBuffer];
+            gMetalGlobals.mtlCommandBuffer = [gMetalGlobals.mtlCommandQueue commandBuffer];
             auto clearColor = Vec4_To_Array(HelloImGui::GetRunnerParams()->imGuiWindowParams.backgroundColor);
-            gGlfwMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(clearColor[0] * clearColor[3], clearColor[1] * clearColor[3], clearColor[2] * clearColor[3], clearColor[3]);
-            gGlfwMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].texture = gGlfwMetalGlobals.caMetalDrawable.texture;
-            gGlfwMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-            gGlfwMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
-            gGlfwMetalGlobals.mtlRenderCommandEncoder = [
-                gGlfwMetalGlobals.mtlCommandBuffer renderCommandEncoderWithDescriptor:gGlfwMetalGlobals.mtlRenderPassDescriptor];
-            [gGlfwMetalGlobals.mtlRenderCommandEncoder pushDebugGroup:@"ImGui demo"];
+            gMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(clearColor[0] * clearColor[3], clearColor[1] * clearColor[3], clearColor[2] * clearColor[3], clearColor[3]);
+            gMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].texture = gMetalGlobals.caMetalDrawable.texture;
+            gMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+            gMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+            gMetalGlobals.mtlRenderCommandEncoder = [
+                gMetalGlobals.mtlCommandBuffer renderCommandEncoderWithDescriptor:gMetalGlobals.mtlRenderPassDescriptor];
+            [gMetalGlobals.mtlRenderCommandEncoder pushDebugGroup:@"ImGui demo"];
 
             // Start the Dear ImGui frame
-            ImGui_ImplMetal_NewFrame(gGlfwMetalGlobals.mtlRenderPassDescriptor);
+            ImGui_ImplMetal_NewFrame(gMetalGlobals.mtlRenderPassDescriptor);
             ImGui_ImplGlfw_NewFrame();
         };
 
         callbacks.Impl_RenderDrawData_To_3D = []
         {
-            ImGui_ImplMetal_RenderDrawData(ImGui::GetDrawData(), gGlfwMetalGlobals.mtlCommandBuffer, gGlfwMetalGlobals.mtlRenderCommandEncoder);
+            auto& gMetalGlobals = GetMetalGlobals();
+            ImGui_ImplMetal_RenderDrawData(ImGui::GetDrawData(), gMetalGlobals.mtlCommandBuffer, gMetalGlobals.mtlRenderCommandEncoder);
         };
 
         // Not implemented for Metal
@@ -109,12 +114,6 @@ namespace HelloImGui
         };
         return callbacks;
     }
-
-    GlfwMetalGlobals& GetGlfwMetalGlobals()
-    {
-        return gGlfwMetalGlobals;
-    }
-
 
 } // namespace HelloImGui
 

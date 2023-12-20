@@ -64,9 +64,9 @@ namespace HelloImGui
 
     void RunnerSdl2::Impl_InitBackend_PostImGuiInit()
     {
-        #ifdef HELLOIMGUI_HAS_METAL
-        PrepareSdLForMetal_PosImGuiInit();
-        #endif
+#ifdef HELLOIMGUI_HAS_METAL
+        PrepareSdlForMetal_PosImGuiInit();
+#endif
     }
 
     void RunnerSdl2::Impl_CreateWindow()
@@ -79,7 +79,7 @@ namespace HelloImGui
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
         params.backendPointers.sdlWindow = mWindow;
 #ifdef HELLOIMGUI_HAS_METAL
-        PrepareSdLForMetal_WithWindow_PreImGuiInit((SDL_Window *)mWindow);
+        PrepareSdlForMetal_WithWindow_PreImGuiInit((SDL_Window *)mWindow);
 #endif
     }
 
@@ -259,7 +259,7 @@ namespace HelloImGui
 #ifdef HELLOIMGUI_HAS_METAL
     void RunnerSdl2::Impl_InitRenderBackendCallbacks()
     {
-        mRenderingBackendCallbacks = CreateBackendCallbacks_Metal();
+        mRenderingBackendCallbacks = CreateBackendCallbacks_SdlMetal();
     }
     void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()
     {

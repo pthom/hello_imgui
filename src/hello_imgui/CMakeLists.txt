@@ -111,14 +111,10 @@ function(him_sanity_checks)
         set(backend_message "
                 HelloImGui: no backend selected!
                     In order to select your own backend, use one of the cmake options below:
-                    -DHELLOIMGUI_WITH_GLFW=ON             # To download and build glfw automatically
-                    -DHELLOIMGUI_WITH_SDL=ON              # To download and build SDL automatically
-                    -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # To use your own version of GLFW (it should be findable via find_package(glfw3))
-                    -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # To use your own version of SDL (it should be findable via find_package(SDL2))
-                    -DHELLOIMGUI_USE_SDL_METAL=ON         # To use SDL2 + Metal
-
-                    (Note: under Linux, it is advised to use system-wide libraries, and not to use
-                    -DHELLOIMGUI_WITH_GLFW=ON or -DHELLOIMGUI_WITH_SDL=ON)
+                    -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # Glfw3 + OpenGL3
+                    -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # SDL2 + OpenGL3
+                    -DHELLOIMGUI_USE_GLFW_METAL           # Glfw3 + Metal
+                    -DHELLOIMGUI_USE_SDL_METAL=ON         # SDL2 + Metal
         ")
         message(STATUS "${backend_message}")
 
@@ -134,6 +130,7 @@ function(_him_check_if_no_backend_selected)
     if (NOT HELLOIMGUI_USE_SDL_OPENGL3
         AND NOT HELLOIMGUI_USE_GLFW_OPENGL3
         AND NOT HELLOIMGUI_USE_SDL_METAL
+        AND NOT HELLOIMGUI_USE_GLFW_METAL
     )
         set(HELLOIMGUI_NO_BACKEND_SELECTED ON CACHE INTERNAL "")
     endif()
@@ -178,6 +175,7 @@ function(_him_try_select_glfw_if_no_backend_selected)
         endif()
     endif()
 endfunction()
+
 
 ###################################################################################################
 # Apple related options: API = him_add_apple_options
@@ -274,6 +272,7 @@ function(him_add_android_options)
     endif()
 endfunction()
 
+
 ###################################################################################################
 # Emscripten related options: API = him_add_emscripten_options
 ###################################################################################################
@@ -323,6 +322,7 @@ function(_him_link_opengles_sdl target)
     )
 endfunction()
 
+
 ###################################################################################################
 # Metal Rendering backend: API = him_use_metal_backend
 ###################################################################################################
@@ -336,6 +336,7 @@ function(him_use_metal_backend target)
     target_link_libraries(${helloimgui_target} PUBLIC
         "-framework Metal -framework MetalKit -framework QuartzCore")
 endfunction()
+
 
 ###################################################################################################
 # SDL Windowing backend: API = him_use_sdl2_backend
@@ -550,6 +551,13 @@ function(him_main)
         him_use_sdl2_backend(${helloimgui_target})
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_METAL)
     endif()
+
+    if(HELLOIMGUI_USE_GLFW_METAL)
+        him_use_metal_backend(${helloimgui_target})
+        him_use_glfw_backend(${helloimgui_target})
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_METAL)
+    endif()
+
 
     if(HELLOIMGUI_HAS_METAL AND HELLOIMGUI_HAS_OPENGL)
         message(FATAL_ERROR "HelloImGui: cannot have both Metal and OpenGL backends at the same time")

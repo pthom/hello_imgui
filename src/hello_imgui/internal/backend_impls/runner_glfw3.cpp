@@ -7,10 +7,12 @@
 #include "opengl_setup_helper/opengl_screenshot.h"
 #include "rendering_opengl3.h"
 #endif
+#ifdef HELLOIMGUI_HAS_METAL
+#include "rendering_metal.h"
+#endif
 
 #include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/internal/stb_image.h"
-#include "hello_imgui/hello_imgui_assets.h"
 
 #include "backend_window_helper/glfw_window_helper.h"
 #include "hello_imgui/hello_imgui_error.h"
@@ -18,12 +20,13 @@
 #include <GLFW/glfw3.h>
 #include <backends/imgui_impl_glfw.h>
 #include <imgui.h>
-#include <stdexcept>
+
 
 namespace HelloImGui
 {
+#ifdef HELLOIMGUI_HAS_OPENGL
     BackendApi::OpenGlSetupGlfw gOpenGlHelper;
-
+#endif
 
     static void glfw_error_callback(int error, const char* description)
     {
@@ -49,13 +52,25 @@ namespace HelloImGui
         IM_ASSERT(glfwInitSuccess);
     }
 
+    void RunnerGlfw3::Impl_InitBackend_PostImGuiInit()
+    {
+#ifdef HELLOIMGUI_HAS_METAL
+        PrepareGlfwForMetal_PosImGuiInit();
+#endif
+    }
 
     void RunnerGlfw3::Impl_CreateWindow()
     {
         BackendApi::BackendOptions backendOptions;
+#ifdef HELLOIMGUI_HAS_METAL
+        backendOptions.backend3DMode = BackendApi::Backend3dMode::Metal;
+#endif
 
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
         params.backendPointers.glfwWindow = mWindow;
+#ifdef HELLOIMGUI_HAS_METAL
+        PrepareGlfwForMetal_WithWindow_PreImGuiInit((GLFWwindow *)mWindow);
+#endif
     }
 
     void RunnerGlfw3::Impl_PollEvents()
@@ -92,7 +107,15 @@ namespace HelloImGui
         glfwTerminate();
     }
 
-    void RunnerGlfw3::Impl_SwapBuffers() { glfwSwapBuffers((GLFWwindow *)mWindow); }
+    void RunnerGlfw3::Impl_SwapBuffers()
+    {
+#ifdef HELLOIMGUI_HAS_OPENGL
+        glfwSwapBuffers((GLFWwindow *)mWindow);
+#endif
+#ifdef HELLOIMGUI_HAS_METAL
+        SwapGlfwMetalBuffers();
+#endif
+    }
 
     void RunnerGlfw3::Impl_SetWindowIcon()
     {
@@ -151,6 +174,16 @@ namespace HelloImGui
 
     void RunnerGlfw3::Impl_InitGlLoader() { gOpenGlHelper.InitGlLoader(); }
 #endif // #ifdef HELLOIMGUI_HAS_OPENGL
+
+#ifdef HELLOIMGUI_HAS_METAL
+    void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
+    {
+        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwMetal();
+    }
+    void RunnerGlfw3::Impl_LinkWindowingToRenderingBackend()
+    {
+    }
+#endif
 
 
 }  // namespace HelloImGui

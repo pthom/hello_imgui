@@ -46,11 +46,13 @@ include(hello_imgui_add_app)
 # - HELLOIMGUI_USE_SDL_OPENGL3 will be used for Android, iOS and emscripten
 #------------------------------------------------------------------------------
 # Use Glfw3 + OpenGl3
-option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for GLFW+OpenGL3" OFF)
+option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for Glfw3+OpenGL3" OFF)
 # Use SDL2 + OpenGL3
-option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL+OpenGL3" OFF)
+option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL2+OpenGL3" OFF)
+# Use Glfw3 + Metal (Apple only)
+option(HELLOIMGUI_USE_GLFW_METAL "Build HelloImGui for Glfw3+Metal" OFF)
 # Use SDL2 + Metal (Apple only)
-option(HELLOIMGUI_USE_SDL_METAL "Build HelloImGui for SDL+Metal" OFF)
+option(HELLOIMGUI_USE_SDL_METAL "Build HelloImGui for SDL2+Metal" OFF)
 # Note: Metal and OpenGl3 are mutually exclusive!
 
 

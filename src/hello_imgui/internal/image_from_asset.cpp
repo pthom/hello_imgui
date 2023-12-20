@@ -55,12 +55,16 @@ namespace HelloImGui
 {
 void ImageFromAsset(const char *assetPath, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)
 {
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 0.f, 0.f, 1.f));
     ImGui::Text("ImageFromAsset requires OpenGL");
+    ImGui::PopStyleColor();
 }
 
 bool ImageButtonFromAsset(const char *assetPath, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, int frame_padding, const ImVec4& bg_col, const ImVec4& tint_col)
 {
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 0.f, 0.f, 1.f));
     ImGui::Text("ButtonFromAsset requires OpenGL");
+    ImGui::PopStyleColor();
     return false;
 }
 

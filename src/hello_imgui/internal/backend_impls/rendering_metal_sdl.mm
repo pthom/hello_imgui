@@ -1,4 +1,5 @@
 #ifdef HELLOIMGUI_HAS_METAL
+#ifdef HELLOIMGUI_USE_SDL2
 #include "rendering_metal.h"
 
 #import <Metal/Metal.h>
@@ -10,19 +11,15 @@
 #include "hello_imgui/internal/stb_image.h"
 #include "hello_imgui/hello_imgui.h"
 
-#ifdef HELLOIMGUI_USE_SDL2
 #include <SDL.h>
 #include <backends/imgui_impl_sdl2.h>
-#endif
 
 
 namespace HelloImGui
 {
-    #ifdef HELLOIMGUI_USE_SDL2
-
     SdlMetalGlobals gSdlMetalGlobals;
 
-    void PrepareSdLForMetal_WithWindow_PreImGuiInit(SDL_Window* sdlWindow)
+    void PrepareSdlForMetal_WithWindow_PreImGuiInit(SDL_Window* sdlWindow)
     {
         gSdlMetalGlobals.sdlWindow = sdlWindow;
         gSdlMetalGlobals.sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -38,7 +35,7 @@ namespace HelloImGui
         gSdlMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
     }
 
-    void PrepareSdLForMetal_PosImGuiInit()
+    void PrepareSdlForMetal_PosImGuiInit()
     {
         ImGui_ImplMetal_Init(gSdlMetalGlobals.caMetalLayer.device);
         ImGui_ImplSDL2_InitForMetal(gSdlMetalGlobals.sdlWindow);
@@ -56,7 +53,7 @@ namespace HelloImGui
         [gSdlMetalGlobals.mtlCommandBuffer commit];
     }
 
-    RenderingCallbacks CreateBackendCallbacks_Metal()
+    RenderingCallbacks CreateBackendCallbacks_SdlMetal()
     {
         RenderingCallbacks callbacks;
 
@@ -108,10 +105,7 @@ namespace HelloImGui
         return gSdlMetalGlobals;
     }
 
-
-#endif // #ifdef HELLOIMGUI_USE_SDL2
-
-
 } // namespace HelloImGui
 
+#endif // HELLOIMGUI_USE_SDL2
 #endif // HELLOIMGUI_HAS_METAL

@@ -8,6 +8,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "hello_imgui/internal/stb_image.h"
+#include "hello_imgui/hello_imgui.h"
 
 #ifdef HELLOIMGUI_USE_SDL2
 #include <SDL.h>
@@ -17,97 +18,15 @@
 
 namespace HelloImGui
 {
-    /*
-
-    //
-    // Init SDL
-    //
-
-    // Inform SDL that we will be using metal for rendering. Without this hint initialization of metal renderer may fail.
-    X SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal");
-
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (renderer == nullptr)
-    {
-        printf("Error creating renderer: %s\n", SDL_GetError());
-        return -3;
-    }
-
-    //
-    // X Link SDL / Metal
-    //
-
-    // Setup Platform/Renderer backends
-    CAMetalLayer* layer = (__bridge CAMetalLayer*)SDL_RenderGetMetalLayer(renderer);
-    layer.pixelFormat = MTLPixelFormatBGRA8Unorm;
-    ImGui_ImplMetal_Init(layer.device);
-    ImGui_ImplSDL2_InitForMetal(window);
-
-    id<MTLCommandQueue> commandQueue = [layer.device newCommandQueue];
-    MTLRenderPassDescriptor* renderPassDescriptor = [MTLRenderPassDescriptor new];
-
-    //
-    // X New Frame + Clear color
-    //
-    int width, height;
-    SDL_GetRendererOutputSize(renderer, &width, &height);
-    layer.drawableSize = CGSizeMake(width, height);
-    id<CAMetalDrawable> drawable = [layer nextDrawable];
-
-    id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
-    renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(clear_color[0] * clear_color[3], clear_color[1] * clear_color[3], clear_color[2] * clear_color[3], clear_color[3]);
-    renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
-    renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-    renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
-    id <MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-    [renderEncoder pushDebugGroup:@"ImGui demo"];
-    // Start the Dear ImGui frame
-    ImGui_ImplMetal_NewFrame(renderPassDescriptor);
-
-    //
-    // RenderDrawDataTo3D
-    //
-    ImGui_ImplMetal_RenderDrawData(ImGui::GetDrawData(), commandBuffer, renderEncoder);
-
-    //
-    // Post UpdatePlatformWindows + RenderPlatformWindowsDefault
-    //
-    [renderEncoder popDebugGroup];
-    [renderEncoder endEncoding];
-
-    [commandBuffer presentDrawable:drawable];
-    [commandBuffer commit];
-
-    //
-    // ShutDown
-    //
-    X ImGui_ImplMetal_Shutdown();
-
-    */
-
     #ifdef HELLOIMGUI_USE_SDL2
-
-
-    struct SdlMetalGlobals
-    {
-        SDL_Window* window = nullptr;
-        SDL_Renderer* renderer = nullptr;
-        CAMetalLayer* layer = nullptr;
-        id<CAMetalDrawable> drawable = nullptr;
-        id<MTLCommandBuffer> commandBuffer = nullptr;
-        id<MTLCommandQueue> commandQueue = nullptr;
-        MTLRenderPassDescriptor* renderPassDescriptor = nullptr;
-        id <MTLRenderCommandEncoder> renderEncoder = nullptr;
-        ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    };
 
     SdlMetalGlobals gSdlMetalGlobals;
 
-    void PrepareSdLForMetal_WithWindow_PreImGuiInit(SDL_Window* window)
+    void PrepareSdLForMetal_WithWindow_PreImGuiInit(SDL_Window* sdlWindow)
     {
-        gSdlMetalGlobals.window = window;
-        gSdlMetalGlobals.renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-        if (gSdlMetalGlobals.renderer == nullptr)
+        gSdlMetalGlobals.sdlWindow = sdlWindow;
+        gSdlMetalGlobals.sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        if (gSdlMetalGlobals.sdlRenderer == nullptr)
         {
             bool Error_SdlCreateRenderer_For_Metal = false;
             IM_ASSERT(Error_SdlCreateRenderer_For_Metal);
@@ -115,26 +34,26 @@ namespace HelloImGui
         }
 
         // Setup Platform/Renderer backends
-        gSdlMetalGlobals.layer = (__bridge CAMetalLayer*)SDL_RenderGetMetalLayer(gSdlMetalGlobals.renderer);
-        gSdlMetalGlobals.layer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+        gSdlMetalGlobals.caMetalLayer = (__bridge CAMetalLayer*)SDL_RenderGetMetalLayer(gSdlMetalGlobals.sdlRenderer);
+        gSdlMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
     }
 
     void PrepareSdLForMetal_PosImGuiInit()
     {
-        ImGui_ImplMetal_Init(gSdlMetalGlobals.layer.device);
-        ImGui_ImplSDL2_InitForMetal(gSdlMetalGlobals.window);
+        ImGui_ImplMetal_Init(gSdlMetalGlobals.caMetalLayer.device);
+        ImGui_ImplSDL2_InitForMetal(gSdlMetalGlobals.sdlWindow);
 
-        gSdlMetalGlobals.commandQueue = [gSdlMetalGlobals.layer.device newCommandQueue];
-        gSdlMetalGlobals.renderPassDescriptor = [MTLRenderPassDescriptor new];
+        gSdlMetalGlobals.mtlCommandQueue = [gSdlMetalGlobals.caMetalLayer.device newCommandQueue];
+        gSdlMetalGlobals.mtlRenderPassDescriptor = [MTLRenderPassDescriptor new];
     }
 
     void SwapSdlMetalBuffers()
     {
-        [gSdlMetalGlobals.renderEncoder popDebugGroup];
-        [gSdlMetalGlobals.renderEncoder endEncoding];
+        [gSdlMetalGlobals.mtlRenderCommandEncoder popDebugGroup];
+        [gSdlMetalGlobals.mtlRenderCommandEncoder endEncoding];
 
-        [gSdlMetalGlobals.commandBuffer presentDrawable:gSdlMetalGlobals.drawable];
-        [gSdlMetalGlobals.commandBuffer commit];
+        [gSdlMetalGlobals.mtlCommandBuffer presentDrawable:gSdlMetalGlobals.caMetalDrawable];
+        [gSdlMetalGlobals.mtlCommandBuffer commit];
     }
 
     RenderingCallbacks CreateBackendCallbacks_Metal()
@@ -149,35 +68,33 @@ namespace HelloImGui
             // New Frame + Clear color
             //
             int width, height;
-            SDL_GetRendererOutputSize(gSdlMetalGlobals.renderer, &width, &height);
-            gSdlMetalGlobals.layer.drawableSize = CGSizeMake(width, height);
-            gSdlMetalGlobals.drawable = [gSdlMetalGlobals.layer nextDrawable];
+            SDL_GetRendererOutputSize(gSdlMetalGlobals.sdlRenderer, &width, &height);
+            gSdlMetalGlobals.caMetalLayer.drawableSize = CGSizeMake(width, height);
+            gSdlMetalGlobals.caMetalDrawable = [gSdlMetalGlobals.caMetalLayer nextDrawable];
 
-            gSdlMetalGlobals.commandBuffer = [gSdlMetalGlobals.commandQueue commandBuffer];
-            auto clear_color = Vec4_To_Array(gSdlMetalGlobals.clear_color);
-            gSdlMetalGlobals.renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(clear_color[0] * clear_color[3], clear_color[1] * clear_color[3], clear_color[2] * clear_color[3], clear_color[3]);
-            gSdlMetalGlobals.renderPassDescriptor.colorAttachments[0].texture = gSdlMetalGlobals.drawable.texture;
-            gSdlMetalGlobals.renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-            gSdlMetalGlobals.renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
-            gSdlMetalGlobals.renderEncoder = [gSdlMetalGlobals.commandBuffer renderCommandEncoderWithDescriptor:gSdlMetalGlobals.renderPassDescriptor];
-            [gSdlMetalGlobals.renderEncoder pushDebugGroup:@"ImGui demo"];
+            gSdlMetalGlobals.mtlCommandBuffer = [gSdlMetalGlobals.mtlCommandQueue commandBuffer];
+            auto clearColor = Vec4_To_Array(HelloImGui::GetRunnerParams()->imGuiWindowParams.backgroundColor);
+            gSdlMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(clearColor[0] * clearColor[3], clearColor[1] * clearColor[3], clearColor[2] * clearColor[3], clearColor[3]);
+            gSdlMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].texture = gSdlMetalGlobals.caMetalDrawable.texture;
+            gSdlMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+            gSdlMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+            gSdlMetalGlobals.mtlRenderCommandEncoder = [gSdlMetalGlobals.mtlCommandBuffer renderCommandEncoderWithDescriptor:gSdlMetalGlobals.mtlRenderPassDescriptor];
+            [gSdlMetalGlobals.mtlRenderCommandEncoder pushDebugGroup:@"ImGui demo"];
 
             // Start the Dear ImGui frame
-            ImGui_ImplMetal_NewFrame(gSdlMetalGlobals.renderPassDescriptor);
+            ImGui_ImplMetal_NewFrame(gSdlMetalGlobals.mtlRenderPassDescriptor);
         };
 
         callbacks.Impl_RenderDrawData_To_3D = []
         {
-            ImGui_ImplMetal_RenderDrawData(ImGui::GetDrawData(), gSdlMetalGlobals.commandBuffer, gSdlMetalGlobals.renderEncoder);
+            ImGui_ImplMetal_RenderDrawData(ImGui::GetDrawData(), gSdlMetalGlobals.mtlCommandBuffer, gSdlMetalGlobals.mtlRenderCommandEncoder);
         };
 
         // Not implemented for Metal
         //callbacks.Impl_ScreenshotRgb = []() { ...;};
 
-        callbacks.Impl_Frame_3D_ClearColor = [](ImVec4 clear_color)
-        {
-            gSdlMetalGlobals.clear_color = clear_color;
-        };
+        // This is done at Impl_NewFrame_3D
+        callbacks.Impl_Frame_3D_ClearColor = [](ImVec4 clearColor) { };
 
         callbacks.Impl_Shutdown_3D = []
         {
@@ -185,6 +102,12 @@ namespace HelloImGui
         };
         return callbacks;
     }
+
+    SdlMetalGlobals& GetSdlMetalGlobals()
+    {
+        return gSdlMetalGlobals;
+    }
+
 
 #endif // #ifdef HELLOIMGUI_USE_SDL2
 

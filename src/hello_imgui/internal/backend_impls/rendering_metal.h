@@ -1,9 +1,6 @@
 #pragma once
 #ifdef HELLOIMGUI_HAS_METAL
 
-#import <Metal/Metal.h>
-#import <QuartzCore/QuartzCore.h>
-
 #ifdef HELLOIMGUI_USE_SDL2
 struct SDL_Renderer;
 struct SDL_Window;
@@ -14,6 +11,10 @@ struct GLFWwindow;
 #endif
 
 #include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
+
+#import <Metal/Metal.h>
+#import <QuartzCore/QuartzCore.h>
+
 
 namespace HelloImGui
 {
@@ -28,12 +29,14 @@ namespace HelloImGui
     };
     MetalGlobals& GetMetalGlobals();
 
+    void SwapMetalBuffers();
+    RenderingCallbacksPtr PrepareBackendCallbacksCommon();
+
 #ifdef HELLOIMGUI_USE_SDL2
-    RenderingCallbacks CreateBackendCallbacks_SdlMetal();
+    RenderingCallbacksPtr CreateBackendCallbacks_SdlMetal();
 
     void PrepareSdlForMetal_WithWindow_PreImGuiInit(SDL_Window* window);
     void PrepareSdlForMetal_PosImGuiInit();
-    void SwapSdlMetalBuffers();
 
     struct SdlMetalGlobals
     {
@@ -44,11 +47,10 @@ namespace HelloImGui
 #endif
 
 #ifdef HELLOIMGUI_USE_GLFW3
-    RenderingCallbacks CreateBackendCallbacks_GlfwMetal();
+    RenderingCallbacksPtr CreateBackendCallbacks_GlfwMetal();
 
     void PrepareGlfwForMetal_WithWindow_PreImGuiInit(GLFWwindow* window);
     void PrepareGlfwForMetal_PosImGuiInit();
-    void SwapGlfwMetalBuffers();
 
     struct GlfwMetalGlobals
     {

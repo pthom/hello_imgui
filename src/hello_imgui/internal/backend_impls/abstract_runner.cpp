@@ -613,7 +613,7 @@ void AbstractRunner::CreateFramesAndRender()
     if (params.callbacks.PreNewFrame)
         params.callbacks.PreNewFrame();
 
-    mRenderingBackendCallbacks.Impl_NewFrame_3D();
+    mRenderingBackendCallbacks->Impl_NewFrame_3D();
     Impl_NewFrame_Backend();
     {
         // Workaround against SDL clock that sometimes leads to io.DeltaTime=0.f on emscripten
@@ -646,7 +646,7 @@ void AbstractRunner::CreateFramesAndRender()
     if (params.callbacks.CustomBackground)
         params.callbacks.CustomBackground();
     else
-        mRenderingBackendCallbacks.Impl_Frame_3D_ClearColor(params.imGuiWindowParams.backgroundColor);
+        mRenderingBackendCallbacks->Impl_Frame_3D_ClearColor(params.imGuiWindowParams.backgroundColor);
 
     // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
     // ==> Note: RenderGui() may measure the size of the window and resize it if mIdxFrame==1
@@ -656,7 +656,7 @@ void AbstractRunner::CreateFramesAndRender()
         params.callbacks.BeforeImGuiRender();
 
     ImGui::Render();
-    mRenderingBackendCallbacks. Impl_RenderDrawData_To_3D();
+    mRenderingBackendCallbacks->Impl_RenderDrawData_To_3D();
 
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         Impl_UpdateAndRenderAdditionalPlatformWindows();
@@ -802,7 +802,7 @@ void AbstractRunner::TearDown(bool gotException)
         TestEngineCallbacks::TearDown_ImGuiContextAlive();
 #endif
 
-    mRenderingBackendCallbacks.Impl_Shutdown_3D();
+    mRenderingBackendCallbacks->Impl_Shutdown_3D();
     Impl_Cleanup();
 
 

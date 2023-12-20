@@ -133,10 +133,9 @@ namespace HelloImGui
         SDL_GL_SwapWindow((SDL_Window *)mWindow);
 #endif
 #ifdef HELLOIMGUI_HAS_METAL
-        SwapSdlMetalBuffers();
+        SwapMetalBuffers();
 #endif
     }
-
 
 
     bool RunnerSdl2::priv_HandleMobileDeviceEvent(unsigned int sdl_EventType)

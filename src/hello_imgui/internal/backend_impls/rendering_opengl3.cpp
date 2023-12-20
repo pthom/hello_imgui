@@ -8,32 +8,33 @@
 
 namespace HelloImGui
 {
-    RenderingCallbacks CreateBackendCallbacks_OpenGl3()
+    RenderingCallbacksPtr CreateBackendCallbacks_OpenGl3()
     {
-        RenderingCallbacks callbacks;
+        auto callbacks = std::make_shared<RenderingCallbacks>();
 
-        callbacks.Impl_NewFrame_3D = [] {
+        callbacks->Impl_NewFrame_3D = [] {
             ImGui_ImplOpenGL3_NewFrame();
         };
 
-        callbacks.Impl_RenderDrawData_To_3D = [] {
+        callbacks->Impl_RenderDrawData_To_3D = [] {
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         };
 
-        callbacks.Impl_ScreenshotRgb_3D = []() {
+        callbacks->Impl_ScreenshotRgb_3D = []() {
             return OpenglScreenshotRgb();
         };
 
-        callbacks.Impl_Frame_3D_ClearColor = [](ImVec4 clear_color) {
+        callbacks->Impl_Frame_3D_ClearColor = [](ImVec4 clear_color) {
             auto& io = ImGui::GetIO();
             glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
             glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
             glClear(GL_COLOR_BUFFER_BIT);
         };
 
-        callbacks.Impl_Shutdown_3D = [] {
+        callbacks->Impl_Shutdown_3D = [] {
             ImGui_ImplOpenGL3_Shutdown();
         };
+
         return callbacks;
     }
 

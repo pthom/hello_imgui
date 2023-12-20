@@ -113,7 +113,7 @@ namespace HelloImGui
         glfwSwapBuffers((GLFWwindow *)mWindow);
 #endif
 #ifdef HELLOIMGUI_HAS_METAL
-        SwapGlfwMetalBuffers();
+        SwapMetalBuffers();
 #endif
     }
 

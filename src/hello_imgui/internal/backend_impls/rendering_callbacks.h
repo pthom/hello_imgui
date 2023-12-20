@@ -1,8 +1,10 @@
 #pragma once
 #include "hello_imgui/hello_imgui_error.h"
+#include "hello_imgui/screen_bounds.h"
 #include "hello_imgui/hello_imgui_screenshot.h"
 
 #include <functional>
+#include <memory>
 
 
 namespace HelloImGui
@@ -16,10 +18,13 @@ namespace HelloImGui
     // As a consequence, it is implemented in the Rendering Backend, with #ifdefs
     struct RenderingCallbacks
     {
-        VoidFunction                 Impl_NewFrame_3D =          [] { HIMG_ERROR("Empty function"); };
-        std::function<void(ImVec4)>  Impl_Frame_3D_ClearColor =  [] (ImVec4) { HIMG_ERROR("Empty function"); };
+        VoidFunction                 Impl_NewFrame_3D          = [] { HIMG_ERROR("Empty function"); };
+        std::function<void(ImVec4)>  Impl_Frame_3D_ClearColor  = [] (ImVec4) { HIMG_ERROR("Empty function"); };
         VoidFunction                 Impl_RenderDrawData_To_3D = [] { HIMG_ERROR("Empty function"); };
         VoidFunction                 Impl_Shutdown_3D          = [] { HIMG_ERROR("Empty function"); };
         std::function<ImageBuffer()> Impl_ScreenshotRgb_3D     = [] { return ImageBuffer{}; };
+        std::function<ScreenSize()>  Impl_GetFrameBufferSize;   //= [] { return ScreenSize{0, 0}; };
     };
+
+    using RenderingCallbacksPtr = std::shared_ptr<RenderingCallbacks>;
 } // namespace HelloImGui

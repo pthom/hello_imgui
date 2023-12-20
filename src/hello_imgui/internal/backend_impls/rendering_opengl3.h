@@ -5,7 +5,7 @@
 
 namespace HelloImGui
 {
-    RenderingCallbacks CreateBackendCallbacks_OpenGl3();
+    RenderingCallbacksPtr CreateBackendCallbacks_OpenGl3();
 }
 
 #endif

@@ -11,6 +11,8 @@
 #include <SDL.h>
 #include <backends/imgui_impl_sdl2.h>
 
+#include <tuple>
+
 
 namespace HelloImGui
 {
@@ -51,64 +53,17 @@ namespace HelloImGui
         gMetalGlobals.mtlRenderPassDescriptor = [MTLRenderPassDescriptor new];
     }
 
-    void SwapSdlMetalBuffers()
+    RenderingCallbacksPtr CreateBackendCallbacks_SdlMetal()
     {
-        auto& gMetalGlobals = GetMetalGlobals();
-        [gMetalGlobals.mtlRenderCommandEncoder popDebugGroup];
-        [gMetalGlobals.mtlRenderCommandEncoder endEncoding];
+        auto callbacks = PrepareBackendCallbacksCommon();
 
-        [gMetalGlobals.mtlCommandBuffer presentDrawable:gMetalGlobals.caMetalDrawable];
-        [gMetalGlobals.mtlCommandBuffer commit];
-    }
-
-    RenderingCallbacks CreateBackendCallbacks_SdlMetal()
-    {
-        RenderingCallbacks callbacks;
-
-        callbacks.Impl_NewFrame_3D = []
+        callbacks->Impl_GetFrameBufferSize = []
         {
-            auto& gMetalGlobals = GetMetalGlobals();
-            auto& gSdlMetalGlobals = GetSdlMetalGlobals();
-
-            auto Vec4_To_Array = [](ImVec4 v) { return std::array<float, 4>{ v.x, v.y, v.z, v.w }; };
-
-            //
-            // New Frame + Clear color
-            //
             int width, height;
-            SDL_GetRendererOutputSize(gSdlMetalGlobals.sdlRenderer, &width, &height);
-            gMetalGlobals.caMetalLayer.drawableSize = CGSizeMake(width, height);
-            gMetalGlobals.caMetalDrawable = [gMetalGlobals.caMetalLayer nextDrawable];
-
-            gMetalGlobals.mtlCommandBuffer = [gMetalGlobals.mtlCommandQueue commandBuffer];
-            auto clearColor = Vec4_To_Array(HelloImGui::GetRunnerParams()->imGuiWindowParams.backgroundColor);
-            gMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(clearColor[0] * clearColor[3], clearColor[1] * clearColor[3], clearColor[2] * clearColor[3], clearColor[3]);
-            gMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].texture = gMetalGlobals.caMetalDrawable.texture;
-            gMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-            gMetalGlobals.mtlRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
-            gMetalGlobals.mtlRenderCommandEncoder = [gMetalGlobals.mtlCommandBuffer renderCommandEncoderWithDescriptor:gMetalGlobals.mtlRenderPassDescriptor];
-            [gMetalGlobals.mtlRenderCommandEncoder pushDebugGroup:@"ImGui demo"];
-
-            // Start the Dear ImGui frame
-            ImGui_ImplMetal_NewFrame(gMetalGlobals.mtlRenderPassDescriptor);
+            SDL_GetRendererOutputSize(GetSdlMetalGlobals().sdlRenderer, &width, &height);
+            return ScreenSize{width, height};
         };
 
-        callbacks.Impl_RenderDrawData_To_3D = []
-        {
-            auto& gMetalGlobals = GetMetalGlobals();
-            ImGui_ImplMetal_RenderDrawData(ImGui::GetDrawData(), gMetalGlobals.mtlCommandBuffer, gMetalGlobals.mtlRenderCommandEncoder);
-        };
-
-        // Not implemented for Metal
-        //callbacks.Impl_ScreenshotRgb = []() { ...;};
-
-        // This is done at Impl_NewFrame_3D
-        callbacks.Impl_Frame_3D_ClearColor = [](ImVec4 clearColor) { };
-
-        callbacks.Impl_Shutdown_3D = []
-        {
-            ImGui_ImplMetal_Shutdown();
-        };
         return callbacks;
     }
 

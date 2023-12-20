@@ -35,7 +35,7 @@ class AbstractRunner
     void OnLowMemory();
 
     // For jupyter notebook, which displays a screenshot post execution
-    ImageBuffer ScreenshotRgb() { return mRenderingBackendCallbacks.Impl_ScreenshotRgb_3D(); }
+    ImageBuffer ScreenshotRgb() { return mRenderingBackendCallbacks->Impl_ScreenshotRgb_3D(); }
 
     //
     // Dpi related methods
@@ -92,7 +92,7 @@ protected:
     //
     // Wish should be filled by Impl_InitRenderBackendCallbacks
     virtual void Impl_InitRenderBackendCallbacks() = 0;
-    RenderingCallbacks mRenderingBackendCallbacks;
+    RenderingCallbacksPtr mRenderingBackendCallbacks;
 
 private:
     void PrepareWindowGeometry();

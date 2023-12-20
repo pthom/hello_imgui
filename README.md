@@ -30,7 +30,8 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 * [Theme tweaking](https://www.youtube.com/watch?v=Hhartw0cUjg)
 * Window geometry utilities (autosize, restore window position)
 * [Truly multiplatform](https://traineq.org/HelloImGui_6_Platforms.mp4) (Linux, Windows, MacOS, iOS, Android, emscripten)
-
+* Available windowing backends: SDL2, Glfw3
+* Available graphics backends: OpenGL3, Metal
 
 
 ## Get started in 5 minutes

@@ -161,7 +161,7 @@ bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi()
 
 float AbstractRunner::ImGuiDefaultFontGlobalScale()
 {
-    float fontSizeIncreaseFactor;
+    float fontSizeIncreaseFactor = 1.f;
 
 #ifdef __EMSCRIPTEN__
     // Query the brower to ask for devicePixelRatio

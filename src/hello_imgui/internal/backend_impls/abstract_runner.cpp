@@ -2,7 +2,6 @@
 #include "hello_imgui/internal/hello_imgui_ini_settings.h"
 #include "hello_imgui/internal/docking_details.h"
 #include "hello_imgui/internal/menu_statusbar.h"
-#include "hello_imgui/image_from_asset.h"
 #include "hello_imgui/hello_imgui_theme.h"
 #include "hello_imgui/internal/clock_seconds.h"
 #include "hello_imgui/internal/platform/ini_folder_locations.h"
@@ -15,9 +14,6 @@
 
 #include <chrono>
 #include <cassert>
-#include <fstream>
-#include <sstream>
-#include <thread>
 #include <filesystem>
 
 #if __APPLE__
@@ -41,6 +37,13 @@
 #endif
 
 
+//
+// NOTE: AbstractRunner should *not* care in any case of:
+//   - the Windowing backend (SDL, Glfw, ...)
+//   - the rendering backend (OpenGL, Metal, ...)
+// For legacy reasons, there are still few references to OpenGL in this file, but this needs to be refactored out.
+//
+
 
 namespace HelloImGui
 {
@@ -49,12 +52,11 @@ void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 
 
 AbstractRunner::AbstractRunner(RunnerParams &params_)
-    : params(params_)
-{};
+    : params(params_) {};
 
 // Advanced: ImGui_ImplOpenGL3_CreateFontsTexture might cause an OpenGl error when the font texture is too big
 // We detect it soon after calling ImGui::NewFrame by setting mPotentialFontLoadingError.
-// In that case, we try to set FontGlobalScale to 1 if it is < 1 (i.e stop increasing the font
+// In that case, we try to set FontGlobalScale to 1 if it is < 1 (i.e. stop increasing the font
 // size for a crisper rendering) and try to reload the fonts.
 // This only works if the user provided callback LoadAdditionalFonts() uses DpiFontLoadingFactor()
 // to multiply its font size.
@@ -173,7 +175,7 @@ float AbstractRunner::ImGuiDefaultFontGlobalScale()
     fontSizeIncreaseFactor = windowDevicePixelRatio;
 #endif
 #ifdef HELLOIMGUI_MACOS
-    // Crisp fonts on MacOS:
+    // Crisp fonts on macOS:
     // cf https://github.com/ocornut/imgui/issues/5301
     // Issue with macOS is that it pretends screen has 2x fewer pixels than it actually does.
     // This simplifies application development in most cases, but in our case we happen to render fonts at 1x scale
@@ -268,7 +270,7 @@ std::string AbstractRunner::IniPartsFilename()
         };
 
         if (! params.iniFilename.empty())
-            return params.iniFilename.c_str();
+            return params.iniFilename;
         else
         {
             if (params.iniFilename_useAppWindowTitle && !params.appWindowParams.windowTitle.empty())
@@ -348,7 +350,7 @@ void AbstractRunner::LayoutSettings_SwitchLayout(const std::string& layoutName)
 // Those Layout_XXX functions are called before ImGui::NewFrame()
 void AbstractRunner::LayoutSettings_HandleChanges()
 {
-    static std::string lastLoadedLayout = "";
+    static std::string lastLoadedLayout;
     if (params.dockingParams.layoutName != lastLoadedLayout)
     {
         LayoutSettings_Load();

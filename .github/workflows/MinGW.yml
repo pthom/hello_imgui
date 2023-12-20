@@ -8,6 +8,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        window_backend: [ Glfw, Sdl ]
+
     steps:
     - uses: actions/checkout@master
     - name: Checkout submodules
@@ -28,12 +33,23 @@ jobs:
       run: |
           mkdir build_x86_64
           cd build_x86_64
-          cmake .. -DCMAKE_BUILD_TYPE=Release  -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_x86_64.cmake
+          if [ "${{ matrix.window_backend }}" = "Sdl" ]; then
+            cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_x86_64.cmake -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_USE_SDL_OPENGL3=ON 
+          fi
+          if [ "${{ matrix.window_backend }}" = "Glfw" ]; then
+            cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_x86_64.cmake -DCMAKE_BUILD_TYPE=Release
+          fi
           make -j 4
 
     - name: Build i686
       run: |
         mkdir build_i686
         cd build_i686
-        cmake .. -DCMAKE_BUILD_TYPE=Release  -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_i686.cmake
-        make -j 4
+          if [ "${{ matrix.window_backend }}" = "Sdl" ]; then
+            cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_i686.cmake -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_USE_SDL_OPENGL3=ON 
+          fi
+          if [ "${{ matrix.window_backend }}" = "Glfw" ]; then
+            cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_i686.cmake -DCMAKE_BUILD_TYPE=Release
+          fi
+          make -j 4
+  

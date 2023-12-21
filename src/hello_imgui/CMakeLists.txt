@@ -131,6 +131,7 @@ function(_him_check_if_no_backend_selected)
         AND NOT HELLOIMGUI_USE_GLFW_OPENGL3
         AND NOT HELLOIMGUI_USE_SDL_METAL
         AND NOT HELLOIMGUI_USE_GLFW_METAL
+        AND NOT HELLOIMGUI_USE_GLFW_VULKAN
     )
         set(HELLOIMGUI_NO_BACKEND_SELECTED ON CACHE INTERNAL "")
     endif()
@@ -285,7 +286,7 @@ endfunction()
 
 
 ###################################################################################################
-# OpenGL Rendering backend: API = him_use_opengl3_backend
+# OpenGL Rendering backend: API = him_has_opengl3_backend
 ###################################################################################################
 function(him_has_opengl3 target)
     target_sources(${target} PRIVATE
@@ -325,7 +326,7 @@ endfunction()
 
 
 ###################################################################################################
-# Metal Rendering backend: API = him_use_metal_backend
+# Metal Rendering backend: API = him_has_metal_backend
 ###################################################################################################
 function(him_has_metal target)
     target_sources(${target} PRIVATE
@@ -336,6 +337,21 @@ function(him_has_metal target)
     set(HELLOIMGUI_HAS_METAL ON CACHE BOOL "" FORCE)
     target_link_libraries(${helloimgui_target} PUBLIC
         "-framework Metal -framework MetalKit -framework QuartzCore")
+endfunction()
+
+
+###################################################################################################
+# Vulkan Rendering backend: API = him_has_vulkan
+###################################################################################################
+function(him_has_vulkan target)
+    target_sources(${target} PRIVATE
+        ${imgui_backends_dir}/imgui_impl_vulkan.h
+        ${imgui_backends_dir}/imgui_impl_vulkan.cpp
+    )
+    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_VULKAN)
+    set(HELLOIMGUI_HAS_VULKAN ON CACHE BOOL "" FORCE)
+    find_package(Vulkan REQUIRED)
+    target_link_libraries(${helloimgui_target} PUBLIC Vulkan::Vulkan)
 endfunction()
 
 

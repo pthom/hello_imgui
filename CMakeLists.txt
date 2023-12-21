@@ -53,8 +53,9 @@ option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL2+OpenGL3" OFF)
 option(HELLOIMGUI_USE_GLFW_METAL "Build HelloImGui for Glfw3+Metal" OFF)
 # Use SDL2 + Metal (Apple only)
 option(HELLOIMGUI_USE_SDL_METAL "Build HelloImGui for SDL2+Metal" OFF)
+# Use Glfw3 + Vulkan
+option(HELLOIMGUI_USE_GLFW_VULKAN "Build HelloImGui for Glfw3+Vulkan" OFF)
 # Note: Metal and OpenGl3 are mutually exclusive!
-
 
 #------------------------------------------------------------------------------
 # Automatic download of Glfw3 and SDL2 (provided as a convenience)

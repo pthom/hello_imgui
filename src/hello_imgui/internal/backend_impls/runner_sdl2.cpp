@@ -77,7 +77,7 @@ namespace HelloImGui
 #endif
 
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
-        params.backendPointers.sdlWindow = mWindow;
+        params.backendPointers.sdlWindow = (SDL_Window *)mWindow;
 #ifdef HELLOIMGUI_HAS_METAL
         PrepareSdlForMetal_WithWindow_PreImGuiInit((SDL_Window *)mWindow);
 #endif

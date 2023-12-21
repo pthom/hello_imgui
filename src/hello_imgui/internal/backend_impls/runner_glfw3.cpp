@@ -66,7 +66,7 @@ namespace HelloImGui
 #endif
 
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
-        params.backendPointers.glfwWindow = mWindow;
+        params.backendPointers.glfwWindow = (GLFWwindow *) mWindow;
 #ifdef HELLOIMGUI_HAS_METAL
         PrepareGlfwForMetal_WithWindow_PreImGuiInit((GLFWwindow *)mWindow);
 #endif

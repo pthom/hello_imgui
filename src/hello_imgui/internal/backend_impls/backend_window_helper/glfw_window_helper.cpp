@@ -66,6 +66,11 @@ namespace HelloImGui { namespace BackendApi
 
         // info.backend3DMode: not handled here
 
+        // Note: This is RenderingCallbacks_Impl_Hint_WindowingBackend
+#ifdef HELLOIMGUI_HAS_VULKAN
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+#endif
+
         if (appWindowParams.borderless)
             glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         else

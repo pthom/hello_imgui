@@ -15,6 +15,7 @@ struct GLFWwindow;
 #import <Metal/Metal.h>
 #import <QuartzCore/QuartzCore.h>
 
+// For more info, see "Anatomy of an ImGui app lifecycle (cf ImGui examples)", in rendering_callbacks.h
 
 namespace HelloImGui
 {
@@ -29,7 +30,9 @@ namespace HelloImGui
     };
     MetalGlobals& GetMetalGlobals();
 
+    //  Impl of RenderingCallbacks_Impl_SwapBuffers
     void SwapMetalBuffers();
+
     RenderingCallbacksPtr PrepareBackendCallbacksCommon();
 
 #ifdef HELLOIMGUI_USE_SDL2

@@ -11,7 +11,7 @@
 
 namespace HelloImGui
 {
-
+// For more info, see "Anatomy of an ImGui app lifecycle (cf ImGui examples)", in rendering_callbacks.h
 class AbstractRunner
 {
    public:

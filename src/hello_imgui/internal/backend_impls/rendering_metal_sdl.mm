@@ -22,7 +22,7 @@ namespace HelloImGui
         return sSdlMetalGlobals;
     }
 
-
+    // Below is implementation of RenderingCallbacks_Prepare_WithWindow_PreImGuiInit
     void PrepareSdlForMetal_WithWindow_PreImGuiInit(SDL_Window* sdlWindow)
     {
         auto& gMetalGlobals = GetMetalGlobals();
@@ -41,6 +41,7 @@ namespace HelloImGui
         gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
     }
 
+    // Below is implementation of RenderingCallbacks_Prepare_PosImGuiInit
     void PrepareSdlForMetal_PosImGuiInit()
     {
         auto& gMetalGlobals = GetMetalGlobals();

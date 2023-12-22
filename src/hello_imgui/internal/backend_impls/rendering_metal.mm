@@ -13,6 +13,7 @@ namespace HelloImGui
         return sMetalGlobals;
     }
 
+    //  Impl of RenderingCallbacks_Impl_SwapBuffers
     void SwapMetalBuffers()
     {
         auto& gMetalGlobals = GetMetalGlobals();

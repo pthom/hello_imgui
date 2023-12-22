@@ -53,8 +53,12 @@ namespace HelloImGui
 
     void RunnerGlfw3::Impl_InitBackend_PostImGuiInit()
     {
+        // Below, call of RenderingCallbacks_Prepare_PosImGuiInit
 #ifdef HELLOIMGUI_HAS_METAL
         PrepareGlfwForMetal_PosImGuiInit();
+#endif
+#ifdef HELLOIMGUI_HAS_VULKAN
+        PrepareGlfwForVulkan_PosImGuiInit();
 #endif
     }
 
@@ -64,11 +68,15 @@ namespace HelloImGui
 #ifdef HELLOIMGUI_HAS_METAL
         backendOptions.backend3DMode = BackendApi::Backend3dMode::Metal;
 #endif
-
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
         params.backendPointers.glfwWindow = (GLFWwindow *) mWindow;
+
+    // Note: Below is RenderingCallbacks_Prepare_WithWindow_PreImGuiInit
 #ifdef HELLOIMGUI_HAS_METAL
         PrepareGlfwForMetal_WithWindow_PreImGuiInit((GLFWwindow *)mWindow);
+#endif
+#ifdef HELLOIMGUI_HAS_VULKAN
+        PrepareGlfwForVulkan_WithWindow_PreImGuiInit((GLFWwindow *)mWindow);
 #endif
     }
 
@@ -108,11 +116,15 @@ namespace HelloImGui
 
     void RunnerGlfw3::Impl_SwapBuffers()
     {
+        // Note: call of RenderingCallbacks_Impl_SwapBuffers
 #ifdef HELLOIMGUI_HAS_OPENGL
         glfwSwapBuffers((GLFWwindow *)mWindow);
 #endif
 #ifdef HELLOIMGUI_HAS_METAL
         SwapMetalBuffers();
+#endif
+#ifdef HELLOIMGUI_HAS_VULKAN
+        SwapVulkanBuffers();
 #endif
     }
 

@@ -83,6 +83,7 @@ namespace HelloImGui { namespace BackendApi
             window_pos_sdl[1] = SDL_WINDOWPOS_CENTERED_DISPLAY(realMonitorIdx);
         }
 
+        // Note: This is RenderingCallbacks_Impl_Hint_WindowingBackend
         auto backend3DMode = backendOptions.backend3DMode;
         if (backend3DMode == Backend3dMode::OpenGl)
             window_flags |= SDL_WINDOW_OPENGL;

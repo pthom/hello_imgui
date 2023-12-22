@@ -26,6 +26,7 @@ namespace HelloImGui
             return sGlfwMetalGlobals;
     }
 
+    // Below is implementation of RenderingCallbacks_Prepare_WithWindow_PreImGuiInit
     void PrepareGlfwForMetal_WithWindow_PreImGuiInit(GLFWwindow* glfwWindow)
     {
         auto& gMetalGlobals = GetMetalGlobals();
@@ -36,6 +37,7 @@ namespace HelloImGui
         gMetalGlobals.mtlCommandQueue = [gGlfwMetalGlobals.mtlDevice newCommandQueue];
     }
 
+    // Below is implementation of RenderingCallbacks_Prepare_PosImGuiInit
     void PrepareGlfwForMetal_PosImGuiInit()
     {
         auto& gMetalGlobals = GetMetalGlobals();

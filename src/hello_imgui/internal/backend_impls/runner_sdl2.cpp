@@ -8,6 +8,9 @@
 #ifdef HELLOIMGUI_HAS_METAL
 #include "rendering_metal.h"
 #endif
+#ifdef HELLOIMGUI_HAS_VULKAN
+#include "rendering_vulkan.h"
+#endif
 
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
@@ -79,6 +82,9 @@ namespace HelloImGui
 #ifdef HELLOIMGUI_HAS_METAL
         backendOptions.backend3DMode = BackendApi::Backend3dMode::Metal;
 #endif
+#ifdef HELLOIMGUI_HAS_VULKAN
+        backendOptions.backend3DMode = BackendApi::Backend3dMode::Vulkan;
+#endif
 
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
         params.backendPointers.sdlWindow = (SDL_Window *)mWindow;
@@ -88,7 +94,7 @@ namespace HelloImGui
         PrepareSdlForMetal_WithWindow_PreImGuiInit((SDL_Window *)mWindow);
 #endif
 #ifdef HELLOIMGUI_HAS_VULKAN
-        PrepareGlfwForVulkan_WithWindow_PreImGuiInit((GLFWwindow *)mWindow);
+        PrepareSdlForVulkan_WithWindow_PreImGuiInit((SDL_Window *)mWindow);
 #endif
     }
 
@@ -272,6 +278,15 @@ namespace HelloImGui
     void RunnerSdl2::Impl_InitRenderBackendCallbacks()
     {
         mRenderingBackendCallbacks = CreateBackendCallbacks_SdlMetal();
+    }
+    void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()
+    {
+    }
+#endif
+#ifdef HELLOIMGUI_HAS_VULKAN
+    void RunnerSdl2::Impl_InitRenderBackendCallbacks()
+    {
+        mRenderingBackendCallbacks = CreateBackendCallbacks_SdlVulkan();
     }
     void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()
     {

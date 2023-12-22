@@ -44,6 +44,10 @@ include(hello_imgui_add_app)
 # If you specify no option:
 # - HELLOIMGUI_USE_GLFW_OPENGL3 will be used for Windows, Linux, and macOS
 # - HELLOIMGUI_USE_SDL_OPENGL3 will be used for Android, iOS and emscripten
+#
+# Note:
+# - Only one rendering backend can be used at a time (OpenGL3, Metal or Vulkan)!
+# - You may select multiple windowing backends (for example, you may select both SDL and Glfw3)
 #------------------------------------------------------------------------------
 # Use Glfw3 + OpenGl3
 option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for Glfw3+OpenGL3" OFF)
@@ -55,7 +59,8 @@ option(HELLOIMGUI_USE_GLFW_METAL "Build HelloImGui for Glfw3+Metal" OFF)
 option(HELLOIMGUI_USE_SDL_METAL "Build HelloImGui for SDL2+Metal" OFF)
 # Use Glfw3 + Vulkan
 option(HELLOIMGUI_USE_GLFW_VULKAN "Build HelloImGui for Glfw3+Vulkan" OFF)
-# Note: Metal and OpenGl3 are mutually exclusive!
+# Use SDL2 + Vulkan
+option(HELLOIMGUI_USE_SDL_VULKAN "Build HelloImGui for SDL2+Vulkan" OFF)
 
 #------------------------------------------------------------------------------
 # Automatic download of Glfw3 and SDL2 (provided as a convenience)

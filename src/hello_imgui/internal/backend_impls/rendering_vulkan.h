@@ -9,6 +9,7 @@
 // For more info, see "Anatomy of an ImGui app lifecycle (cf ImGui examples)", in rendering_callbacks.h
 
 struct GLFWwindow;
+struct SDL_Window;
 
 
 namespace HelloImGui
@@ -58,7 +59,12 @@ namespace HelloImGui
 
     void PrepareGlfwForVulkan_WithWindow_PreImGuiInit(GLFWwindow* window);
     void PrepareGlfwForVulkan_PosImGuiInit();
+#endif
+#ifdef HELLOIMGUI_USE_SDL2
+    RenderingCallbacksPtr CreateBackendCallbacks_SdlVulkan();
 
+    void PrepareSdlForVulkan_WithWindow_PreImGuiInit(SDL_Window* window);
+    void PrepareSdlForVulkan_PosImGuiInit();
 #endif
 
 }

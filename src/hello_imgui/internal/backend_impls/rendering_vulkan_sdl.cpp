@@ -1,14 +1,13 @@
-#if defined(HELLOIMGUI_HAS_VULKAN) && defined(HELLOIMGUI_USE_GLFW3)
+#if defined(HELLOIMGUI_HAS_VULKAN) && defined(HELLOIMGUI_USE_SDL2)
 #include "rendering_vulkan.h"
 
-#include <backends/imgui_impl_vulkan.h>
-#include <backends/imgui_impl_glfw.h>
-
-#define GLFW_INCLUDE_NONE
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
+#include <SDL.h>
+#include <SDL_vulkan.h>
 #include <vulkan/vulkan.h>
+
+#include <backends/imgui_impl_vulkan.h>
+#include <backends/imgui_impl_sdl2.h>
+
 
 #include "hello_imgui/hello_imgui_logger.h"
 #include "hello_imgui/hello_imgui.h"
@@ -17,43 +16,39 @@
 namespace HelloImGui
 {
     // Below is implementation of RenderingCallbacks_Prepare_WithWindow_PreImGuiInit
-    void PrepareGlfwForVulkan_WithWindow_PreImGuiInit(GLFWwindow* window)
+    void PrepareSdlForVulkan_WithWindow_PreImGuiInit(SDL_Window* window)
     {
         auto& gVkGlobals = HelloImGui::GetVulkanGlobals();
 
-        if (!glfwVulkanSupported())
-        {
-            IM_ASSERT(0 && "GLFW: Vulkan Not Supported");
-            exit(1);
-        }
-
         ImVector<const char*> extensions;
         uint32_t extensions_count = 0;
-        const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&extensions_count);
-        for (uint32_t i = 0; i < extensions_count; i++)
-            extensions.push_back(glfw_extensions[i]);
+        SDL_Vulkan_GetInstanceExtensions(window, &extensions_count, nullptr);
+        extensions.resize(extensions_count);
+        SDL_Vulkan_GetInstanceExtensions(window, &extensions_count, extensions.Data);
         HelloImGui::VulkanSetup::SetupVulkan(extensions);
 
         // Create Window Surface
         VkSurfaceKHR surface;
-        VkResult err = glfwCreateWindowSurface(gVkGlobals.Instance, window, gVkGlobals.Allocator, &surface);
-        HelloImGui::VulkanSetup::check_vk_result(err);
+        VkResult err;
+        if (SDL_Vulkan_CreateSurface(window, gVkGlobals.Instance, &surface) == 0)
+        {
+            IM_ASSERT(0 && "Failed to create Vulkan surface");
+            exit(1);
+        }
 
         // Create Framebuffers
         int w, h;
-        glfwGetFramebufferSize(window, &w, &h);
+        SDL_GetWindowSize(window, &w, &h);
         ImGui_ImplVulkanH_Window* wd = &gVkGlobals.ImGuiMainWindowData;
         HelloImGui::VulkanSetup::SetupVulkanWindow(wd, surface, w, h);
     }
 
-    void PrepareGlfwForVulkan_PosImGuiInit()
+    void PrepareSdlForVulkan_PosImGuiInit()
     {
         auto & gVkGlobals = HelloImGui::GetVulkanGlobals();
-        auto window = HelloImGui::GetRunnerParams()->backendPointers.glfwWindow;
+        auto window = HelloImGui::GetRunnerParams()->backendPointers.sdlWindow;
         ImGui_ImplVulkanH_Window* wd = &gVkGlobals.ImGuiMainWindowData;
-
-        // Setup Platform/Renderer backends
-        ImGui_ImplGlfw_InitForVulkan(window, true);
+        ImGui_ImplSDL2_InitForVulkan(window);
         ImGui_ImplVulkan_InitInfo init_info = {};
         init_info.Instance = gVkGlobals.Instance;
         init_info.PhysicalDevice = gVkGlobals.PhysicalDevice;
@@ -72,15 +67,15 @@ namespace HelloImGui
     }
 
 
-    RenderingCallbacksPtr CreateBackendCallbacks_GlfwVulkan()
+    RenderingCallbacksPtr CreateBackendCallbacks_SdlVulkan()
     {
         auto callbacks = PrepareBackendCallbacksCommonVulkan();
 
         callbacks->Impl_GetFrameBufferSize = []
         {
-            auto window = HelloImGui::GetRunnerParams()->backendPointers.glfwWindow;
+            auto window = HelloImGui::GetRunnerParams()->backendPointers.sdlWindow;
             int width, height;
-            glfwGetFramebufferSize(window, &width, &height);
+            SDL_GetWindowSize(window, &width, &height);
             return ScreenSize{width, height};
         };
 
@@ -89,4 +84,4 @@ namespace HelloImGui
 
 }
 
-#endif // #if defined(HELLOIMGUI_HAS_VULKAN) && defined(HELLOIMGUI_USE_GLFW3)
+#endif // #if defined(HELLOIMGUI_HAS_VULKAN) && defined(HELLOIMGUI_USE_SDL2)

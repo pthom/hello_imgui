@@ -115,6 +115,8 @@ function(him_sanity_checks)
                     -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # SDL2 + OpenGL3
                     -DHELLOIMGUI_USE_GLFW_METAL           # Glfw3 + Metal
                     -DHELLOIMGUI_USE_SDL_METAL=ON         # SDL2 + Metal
+                    -DHELLOIMGUI_USE_GLFW_VULKAN=ON       # Glfw3 + Vulkan
+                    -DHELLOIMGUI_USE_SDL_VULKAN           # SDL2 + Vulkan
         ")
         message(STATUS "${backend_message}")
 
@@ -132,6 +134,7 @@ function(_him_check_if_no_backend_selected)
         AND NOT HELLOIMGUI_USE_SDL_METAL
         AND NOT HELLOIMGUI_USE_GLFW_METAL
         AND NOT HELLOIMGUI_USE_GLFW_VULKAN
+        AND NOT HELLOIMGUI_USE_SDL_VULKAN
     )
         set(HELLOIMGUI_NO_BACKEND_SELECTED ON CACHE INTERNAL "")
     endif()
@@ -606,6 +609,12 @@ function(him_main)
         him_has_vulkan(${helloimgui_target})
         him_use_glfw_backend(${helloimgui_target})
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_METAL)
+    endif()
+
+    if(HELLOIMGUI_USE_SDL_VULKAN)
+        him_has_vulkan(${helloimgui_target})
+        him_use_sdl2_backend(${helloimgui_target})
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_VULKAN)
     endif()
 
     him_check_only_one_rendering_backend_selected()

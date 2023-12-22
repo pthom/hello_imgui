@@ -11,21 +11,23 @@
 struct GLFWwindow;
 
 
-// Functions from imgui examples/example_glfw_vulkan/main.cpp
-void check_vk_result(VkResult err);
-VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData);
-bool IsExtensionAvailable(const ImVector<VkExtensionProperties>& properties, const char* extension);
-VkPhysicalDevice SetupVulkan_SelectPhysicalDevice();
-void SetupVulkan(ImVector<const char*> instance_extensions);
-void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height);
-void CleanupVulkan();
-void CleanupVulkanWindow();
-void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data);
-void FramePresent(ImGui_ImplVulkanH_Window* wd);
-
-
 namespace HelloImGui
 {
+    // Functions from imgui examples/example_glfw_vulkan/main.cpp
+    namespace VulkanSetup
+    {
+        void check_vk_result(VkResult err);
+        VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData);
+        bool IsExtensionAvailable(const ImVector<VkExtensionProperties>& properties, const char* extension);
+        VkPhysicalDevice SetupVulkan_SelectPhysicalDevice();
+        void SetupVulkan(ImVector<const char*> instance_extensions);
+        void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height);
+        void CleanupVulkan();
+        void CleanupVulkanWindow();
+        void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data);
+        void FramePresent(ImGui_ImplVulkanH_Window* wd);
+    }
+
     // Data
     struct VulkanGlobals
     {
@@ -54,13 +56,6 @@ namespace HelloImGui
 
     void PrepareGlfwForVulkan_WithWindow_PreImGuiInit(GLFWwindow* window);
     void PrepareGlfwForVulkan_PosImGuiInit();
-
-//    struct GlfwMetalGlobals
-//    {
-//        GLFWwindow* glfwWindow = nullptr;
-//        id<MTLDevice> mtlDevice = nullptr;
-//    };
-//    GlfwMetalGlobals& GetGlfwMetalGlobals();
 
 #endif
 

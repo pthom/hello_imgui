@@ -15,20 +15,6 @@
 #include "hello_imgui/hello_imgui_logger.h"
 #include "hello_imgui/hello_imgui.h"
 
-//struct VulkanGlfwGlobals
-//{
-//};
-//
-//VulkanGlfwGlobals& GetVulkanGlfwGlobals()
-//{
-//    static VulkanGlfwGlobals sVulkanGlfwGlobals;
-//    return sVulkanGlfwGlobals;
-//}
-
-
-//static int                      g_MinImageCount = 2;
-//static bool                     g_SwapChainRebuild = false;
-
 
 namespace HelloImGui
 {
@@ -43,7 +29,7 @@ namespace HelloImGui
 
         // Present Main Platform Window
         if (!main_is_minimized)
-            FramePresent(wd);
+            HelloImGui::VulkanSetup::FramePresent(wd);
     }
 
     // Below is implementation of RenderingCallbacks_Prepare_WithWindow_PreImGuiInit
@@ -62,18 +48,18 @@ namespace HelloImGui
         const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&extensions_count);
         for (uint32_t i = 0; i < extensions_count; i++)
             extensions.push_back(glfw_extensions[i]);
-        SetupVulkan(extensions);
+        HelloImGui::VulkanSetup::SetupVulkan(extensions);
 
         // Create Window Surface
         VkSurfaceKHR surface;
         VkResult err = glfwCreateWindowSurface(gVkGlobals.Instance, window, gVkGlobals.Allocator, &surface);
-        check_vk_result(err);
+        HelloImGui::VulkanSetup::check_vk_result(err);
 
         // Create Framebuffers
         int w, h;
         glfwGetFramebufferSize(window, &w, &h);
         ImGui_ImplVulkanH_Window* wd = &gVkGlobals.ImGuiMainWindowData;
-        SetupVulkanWindow(wd, surface, w, h);
+        HelloImGui::VulkanSetup::SetupVulkanWindow(wd, surface, w, h);
     }
 
     void PrepareGlfwForVulkan_PosImGuiInit()
@@ -97,7 +83,7 @@ namespace HelloImGui
         init_info.ImageCount = wd->ImageCount;
         init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
         init_info.Allocator = gVkGlobals.Allocator;
-        init_info.CheckVkResultFn = check_vk_result;
+        init_info.CheckVkResultFn = HelloImGui::VulkanSetup::check_vk_result;
         ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
     }
 
@@ -148,21 +134,21 @@ namespace HelloImGui
             wd->ClearValue.color.float32[2] = clear_color.z * clear_color.w;
             wd->ClearValue.color.float32[3] = clear_color.w;
             if (!main_is_minimized)
-                FrameRender(wd, main_draw_data);
+                HelloImGui::VulkanSetup::FrameRender(wd, main_draw_data);
         };
 
         callbacks->Impl_Shutdown_3D          = []
         {
             auto & gVkGlobals = HelloImGui::GetVulkanGlobals();
             VkResult err = vkDeviceWaitIdle(gVkGlobals.Device);
-            check_vk_result(err);
+            HelloImGui::VulkanSetup::check_vk_result(err);
             ImGui_ImplVulkan_Shutdown();
 
             //ImGui_ImplGlfw_Shutdown();
             // ImGui::DestroyContext();
 
-            CleanupVulkanWindow();
-            CleanupVulkan();
+            HelloImGui::VulkanSetup::CleanupVulkanWindow();
+            HelloImGui::VulkanSetup::CleanupVulkan();
         };
 
         // callbacks->Impl_ScreenshotRgb_3D     = [] { return ImageBuffer{}; };

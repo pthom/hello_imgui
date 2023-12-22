@@ -51,6 +51,8 @@ namespace HelloImGui
     //  Impl of RenderingCallbacks_Impl_SwapBuffers
     void SwapVulkanBuffers();
 
+    RenderingCallbacksPtr PrepareBackendCallbacksCommonVulkan();
+
 #ifdef HELLOIMGUI_USE_GLFW3
     RenderingCallbacksPtr CreateBackendCallbacks_GlfwVulkan();
 

@@ -18,20 +18,6 @@
 
 namespace HelloImGui
 {
-    //  Impl of RenderingCallbacks_Impl_SwapBuffers
-    void SwapVulkanBuffers()
-    {
-        auto & gVkGlobals = HelloImGui::GetVulkanGlobals();
-        ImGui_ImplVulkanH_Window* wd = &gVkGlobals.ImGuiMainWindowData;
-
-        ImDrawData* main_draw_data = ImGui::GetDrawData();
-        const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
-
-        // Present Main Platform Window
-        if (!main_is_minimized)
-            HelloImGui::VulkanSetup::FramePresent(wd);
-    }
-
     // Below is implementation of RenderingCallbacks_Prepare_WithWindow_PreImGuiInit
     void PrepareGlfwForVulkan_WithWindow_PreImGuiInit(GLFWwindow* window)
     {
@@ -90,69 +76,15 @@ namespace HelloImGui
 
     RenderingCallbacksPtr CreateBackendCallbacks_GlfwVulkan()
     {
-        auto callbacks = std::make_shared<RenderingCallbacks>();
+        auto callbacks = PrepareBackendCallbacksCommonVulkan();
 
-        callbacks->Impl_NewFrame_3D          = []
+        callbacks->Impl_GetFrameBufferSize = []
         {
-            auto & gVkGlobals = HelloImGui::GetVulkanGlobals();
             auto window = HelloImGui::GetRunnerParams()->backendPointers.glfwWindow;
-
-            // Resize swap chain?
-            if (gVkGlobals.SwapChainRebuild)
-            {
-                int width, height;
-                glfwGetFramebufferSize(window, &width, &height);
-                if (width > 0 && height > 0)
-                {
-                    ImGui_ImplVulkan_SetMinImageCount(gVkGlobals.MinImageCount);
-                    ImGui_ImplVulkanH_CreateOrResizeWindow(gVkGlobals.Instance, gVkGlobals.PhysicalDevice,
-                                                           gVkGlobals.Device, &gVkGlobals.ImGuiMainWindowData,
-                                                           gVkGlobals.QueueFamily, gVkGlobals.Allocator, width, height,
-                                                           gVkGlobals.MinImageCount);
-                    gVkGlobals.ImGuiMainWindowData.FrameIndex = 0;
-                    gVkGlobals.SwapChainRebuild = false;
-                }
-            }
-
-            // Start the Dear ImGui frame
-            ImGui_ImplVulkan_NewFrame();
-            // ImGui_ImplGlfw_NewFrame();
+            int width, height;
+            glfwGetFramebufferSize(window, &width, &height);
+            return ScreenSize{width, height};
         };
-
-        callbacks->Impl_Frame_3D_ClearColor  = [] (ImVec4) {};
-
-        callbacks->Impl_RenderDrawData_To_3D = []
-        {
-            auto & gVkGlobals = HelloImGui::GetVulkanGlobals();
-            ImGui_ImplVulkanH_Window* wd = &gVkGlobals.ImGuiMainWindowData;
-            ImVec4 clear_color = HelloImGui::GetRunnerParams()->imGuiWindowParams.backgroundColor;
-
-            ImDrawData* main_draw_data = ImGui::GetDrawData();
-            const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
-            wd->ClearValue.color.float32[0] = clear_color.x * clear_color.w;
-            wd->ClearValue.color.float32[1] = clear_color.y * clear_color.w;
-            wd->ClearValue.color.float32[2] = clear_color.z * clear_color.w;
-            wd->ClearValue.color.float32[3] = clear_color.w;
-            if (!main_is_minimized)
-                HelloImGui::VulkanSetup::FrameRender(wd, main_draw_data);
-        };
-
-        callbacks->Impl_Shutdown_3D          = []
-        {
-            auto & gVkGlobals = HelloImGui::GetVulkanGlobals();
-            VkResult err = vkDeviceWaitIdle(gVkGlobals.Device);
-            HelloImGui::VulkanSetup::check_vk_result(err);
-            ImGui_ImplVulkan_Shutdown();
-
-            //ImGui_ImplGlfw_Shutdown();
-            // ImGui::DestroyContext();
-
-            HelloImGui::VulkanSetup::CleanupVulkanWindow();
-            HelloImGui::VulkanSetup::CleanupVulkan();
-        };
-
-        // callbacks->Impl_ScreenshotRgb_3D     = [] { return ImageBuffer{}; };
-        // callbacks->Impl_GetFrameBufferSize;   //= [] { return ScreenSize{0, 0}; };
 
         return callbacks;
     }

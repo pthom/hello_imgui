@@ -100,6 +100,11 @@ namespace HelloImGui { namespace BackendApi
         else
             BACKEND_THROW("Unsupported backend3DMode");
 
+        // From 2.0.18: Enable native IME.
+        #ifdef SDL_HINT_IME_SHOW_UI
+        SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+        #endif
+
         // If the window is created with the SDL_WINDOW_ALLOW_HIGHDPI flag,
         // its size in pixels may differ from its size in screen coordinates on platforms with high-DPI support
         // (e.g. iOS and macOS).

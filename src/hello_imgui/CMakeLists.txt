@@ -356,6 +356,33 @@ endfunction()
 
 
 ###################################################################################################
+# Check only one rendering backend is selected: API = him_check_only_one_backend_selected
+###################################################################################################
+function(him_check_only_one_rendering_backend_selected)
+    # Only one of HELLOIMGUI_HAS_OPENGL, HELLOIMGUI_HAS_METAL, HELLOIMGUI_HAS_VULKAN can be ON
+    # count selected rendering backends
+    set(selected_backends 0)
+    if (HELLOIMGUI_HAS_OPENGL)
+        math(EXPR selected_backends "${selected_backends} + 1")
+    endif()
+    if (HELLOIMGUI_HAS_METAL)
+        math(EXPR selected_backends "${selected_backends} + 1")
+    endif()
+    if (HELLOIMGUI_HAS_VULKAN)
+        math(EXPR selected_backends "${selected_backends} + 1")
+    endif()
+    # selected_backends should be 1
+    if (selected_backends EQUAL 0)
+        message(FATAL_ERROR "HelloImGui: no rendering backend selected")
+    endif()
+    if (NOT selected_backends EQUAL 1)
+        message(FATAL_ERROR "HelloImGui: only one of HELLOIMGUI_HAS_OPENGL, HELLOIMGUI_HAS_METAL, HELLOIMGUI_HAS_VULKAN can be ON")
+    endif()
+endfunction()
+
+
+
+###################################################################################################
 # SDL Windowing backend: API = him_use_sdl2_backend
 ###################################################################################################
 function (him_use_sdl2_backend target)
@@ -575,11 +602,13 @@ function(him_main)
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_METAL)
     endif()
 
-
-    if(HELLOIMGUI_HAS_METAL AND HELLOIMGUI_HAS_OPENGL)
-        message(FATAL_ERROR "HelloImGui: cannot have both Metal and OpenGL backends at the same time")
+    if(HELLOIMGUI_USE_GLFW_VULKAN)
+        him_has_vulkan(${helloimgui_target})
+        him_use_glfw_backend(${helloimgui_target})
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_METAL)
     endif()
 
+    him_check_only_one_rendering_backend_selected()
     him_add_apple_options()
     him_add_linux_options()
     him_add_windows_options()

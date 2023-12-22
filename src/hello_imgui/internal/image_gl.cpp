@@ -1,7 +1,6 @@
 #ifdef HELLOIMGUI_HAS_OPENGL
 
 #include "hello_imgui/hello_imgui_include_opengl.h"
-#define STB_IMAGE_IMPLEMENTATION
 #include "hello_imgui/internal/stb_image.h"
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/image_gl.h"

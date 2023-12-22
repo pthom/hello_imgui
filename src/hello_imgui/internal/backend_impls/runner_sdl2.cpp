@@ -145,6 +145,9 @@ namespace HelloImGui
 #ifdef HELLOIMGUI_HAS_METAL
         SwapMetalBuffers();
 #endif
+#ifdef HELLOIMGUI_HAS_VULKAN
+        SwapVulkanBuffers();
+#endif
     }
 
 

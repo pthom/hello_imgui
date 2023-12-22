@@ -10,6 +10,9 @@
 #ifdef HELLOIMGUI_HAS_METAL
 #include "rendering_metal.h"
 #endif
+#ifdef HELLOIMGUI_HAS_VULKAN
+#include "rendering_vulkan.h"
+#endif
 
 #include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/internal/stb_image.h"
@@ -161,7 +164,7 @@ namespace HelloImGui
     // Rendering Backends (OpenGL, Vulkan, ...)
     //
     ///////////////////////////////////////////////////////////////////////////////////////////////
-#ifdef HELLOIMGUI_HAS_OPENGL
+#if defined(HELLOIMGUI_HAS_OPENGL)
     void RunnerGlfw3::Impl_LinkWindowingToRenderingBackend()
     {
         ImGui_ImplGlfw_InitForOpenGL((GLFWwindow *)mWindow, true);
@@ -184,9 +187,9 @@ namespace HelloImGui
     std::string RunnerGlfw3::Impl_GlslVersion() { return gOpenGlHelper.GlslVersion(); }
 
     void RunnerGlfw3::Impl_InitGlLoader() { gOpenGlHelper.InitGlLoader(); }
-#endif // #ifdef HELLOIMGUI_HAS_OPENGL
 
-#ifdef HELLOIMGUI_HAS_METAL
+#elif defined(HELLOIMGUI_HAS_METAL)
+
     void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
     {
         mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwMetal();
@@ -194,6 +197,16 @@ namespace HelloImGui
     void RunnerGlfw3::Impl_LinkWindowingToRenderingBackend()
     {
     }
+
+#elif defined(HELLOIMGUI_HAS_VULKAN)
+    void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
+    {
+        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwVulkan();
+    }
+    void RunnerGlfw3::Impl_LinkWindowingToRenderingBackend()
+    {
+    }
+
 #endif
 
 

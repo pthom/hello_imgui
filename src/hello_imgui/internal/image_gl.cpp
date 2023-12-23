@@ -5,6 +5,8 @@
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/image_gl.h"
 
+#include <cassert>
+
 namespace HelloImGui
 {
 

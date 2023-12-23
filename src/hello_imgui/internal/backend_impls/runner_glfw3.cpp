@@ -72,7 +72,7 @@ namespace HelloImGui
         backendOptions.backend3DMode = BackendApi::Backend3dMode::Metal;
 #endif
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
-        params.backendPointers.glfwWindow = (GLFWwindow *) mWindow;
+        params.backendPointers.glfwWindow = mWindow;
 
     // Note: Below is RenderingCallbacks_Prepare_WithWindow_PreImGuiInit
 #ifdef HELLOIMGUI_HAS_METAL

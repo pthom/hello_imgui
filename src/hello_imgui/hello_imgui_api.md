@@ -861,14 +861,13 @@ These pointers will be filled when the application starts, and you can use them 
 your application behavior using the selected backend.
 
  Members:
-* `glfwWindow`: GLFWwindow *, default=nullptr_. Pointer to the main GLFW window.
+* `glfwWindow`: _void *, default=nullptr_. Pointer to the main GLFW window (of type `GLFWwindow*`).
   Only filled if the backend is GLFW.
-* `sdlWindow`: SDL_Window *, default=nullptr_. Pointer to the main SDL window.
+* `sdlWindow`: _void *, default=nullptr_. Pointer to the main SDL window (of type `SDL_Window*`).
   Only filled if the backend is SDL (or emscripten + sdl)
 * `sdlGlContext`: _void *, default=nullptr_. Pointer to SDL's GlContext (of type `SDL_GLContext`).
-  Only filled if the backend is SDL + OpenGL (or emscripten + sdl).
+  Only filled if the backend is SDL (or emscripten + sdl)
 
-Note: if using the Metal rendering backend, you can get additional pointers inside `hello_imgui/internal/backend_impls/rendering_metal.h`.
 
 ## Store user settings in the ini file
 

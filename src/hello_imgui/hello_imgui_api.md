@@ -868,6 +868,9 @@ your application behavior using the selected backend.
 * `sdlGlContext`: _void *, default=nullptr_. Pointer to SDL's GlContext (of type `SDL_GLContext`).
   Only filled if the backend is SDL (or emscripten + sdl)
 
+Note: if using the Metal rendering backend, you can find some interesting pointers inside
+ `src/hello_imgui/internal/backend_impls/rendering_metal.h`
+ 
 
 ## Store user settings in the ini file
 

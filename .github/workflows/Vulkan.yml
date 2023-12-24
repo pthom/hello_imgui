@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Metal
+    name: Vulkan
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false

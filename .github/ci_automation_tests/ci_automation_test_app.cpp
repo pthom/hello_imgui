@@ -49,7 +49,7 @@ void QueueAllTests()
         auto engine = HelloImGui::GetImGuiTestEngine();
 
         ImGuiTestEngineIO& test_io = ImGuiTestEngine_GetIO(engine);
-        test_io.ConfigRunSpeed = ImGuiTestRunSpeed_Fast;
+        test_io.ConfigRunSpeed = ImGuiTestRunSpeed_Normal;
 
         ImGuiTestEngine_QueueTest(engine, testOpenMetrics);
         ImGuiTestEngine_QueueTest(engine, testCapture);

@@ -37,157 +37,6 @@
 #endif
 
 
-#define USEHACK
-#ifdef USEHACK
-#include "hello_imgui/internal/backend_impls/rendering_metal.h"
-#include <glfw/glfw3.h>
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_metal.h>
-
-void UserGui()
-{
-    // Our state
-    static bool show_demo_window = true;
-    static bool show_another_window = false;
-
-    // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-    if (show_demo_window)
-        ImGui::ShowDemoWindow(&show_demo_window);
-
-    // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-    {
-        static float f = 0.0f;
-        static int counter = 0;
-
-        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-        ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-        ImGui::Checkbox("Another Window", &show_another_window);
-
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-
-        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-            counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
-
-        ImGui::End();
-    }
-
-    // 3. Show another simple window.
-    if (show_another_window)
-    {
-        ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-        ImGui::Text("Hello from another window!");
-        if (ImGui::Button("Close Me"))
-            show_another_window = false;
-        ImGui::End();
-    }
-
-}
-
-
-void HelloImGui::AbstractRunner::Run()
-{
-    bool useImGuiExample = false;
-    if (useImGuiExample)
-    {
-        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwMetal();
-
-        // Setup Dear ImGui context
-        ImGui::CreateContext();
-        ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;    // Enable Multi-Viewport / Platform Windows
-
-        // Setup window
-        //    glfwSetErrorCallback(glfw_error_callback);
-        if (!glfwInit())
-            return;
-
-        // Create window with graphics context
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+Metal example", nullptr, nullptr);
-        if (window == nullptr)
-            return;
-
-        mWindow = window;
-        PrepareGlfwForMetal(window);                                    // HIMGUI
-    }
-    else
-    {
-        Impl_InitRenderBackendCallbacks();
-
-        InitImGuiContext();
-        SetImGuiPrefs();
-
-        Impl_InitBackend();
-
-        PrepareWindowGeometry();
-        Impl_CreateWindow();
-
-        Impl_SetWindowIcon();
-
-        Impl_LinkWindowRenderingBackend();
-
-        Impl_LinkWindowingToRenderingBackend();
-
-
-//        DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
-//        HelloImGuiIniSettings::LoadHelloImGuiMiscSettings(IniPartsFilename(), &params);
-//        SetLayoutResetIfNeeded();
-//
-//        ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
-
-    }
-
-
-//    Setup();
-//    auto window = (GLFWwindow*)mWindow;
-
-    // Main loop
-    while (!glfwWindowShouldClose((GLFWwindow *)mWindow))
-    {
-        //@autoreleasepool
-        {
-            glfwPollEvents();
-
-            mRenderingBackendCallbacks->Impl_NewFrame_3D();                                   // HIMGUI
-
-
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
-
-            UserGui();
-
-            // Rendering
-            ImGui::Render();
-
-            //ImGui_ImplMetal_RenderDrawData(ImGui::GetDrawData(), commandBuffer, renderEncoder);
-            mRenderingBackendCallbacks->Impl_RenderDrawData_To_3D();                          // HIMGUI
-
-
-            // Update and Render additional Platform Windows
-            if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-            {
-                ImGui::UpdatePlatformWindows();
-                ImGui::RenderPlatformWindowsDefault();
-            }
-
-            SwapMetalBuffers();                                                                 // HIMGUI
-        }
-    }
-
-    // Cleanup
-    ImGui_ImplMetal_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
-    glfwDestroyWindow((GLFWwindow *)mWindow);
-    glfwTerminate();
-}
-#endif
-
-
 //
 // NOTE: AbstractRunner should *not* care in any case of:
 //   - the Windowing backend (SDL, Glfw, ...)
@@ -556,6 +405,7 @@ void AbstractRunner::Setup()
     InitImGuiContext();
     SetImGuiPrefs();
 
+    // Init Windowing backend (SDL, Glfw)
     Impl_InitBackend();
 
 #ifdef HELLOIMGUI_HAS_OPENGL
@@ -588,8 +438,6 @@ void AbstractRunner::Setup()
     // is a good place for the user to install callbacks
     if (params.callbacks.PostInit)
         params.callbacks.PostInit();
-
-    Impl_LinkWindowingToRenderingBackend();
 
     //
     // load fonts & set ImGui::GetIO().FontGlobalScale

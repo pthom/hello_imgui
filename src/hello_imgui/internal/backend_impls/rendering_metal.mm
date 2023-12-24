@@ -23,6 +23,10 @@ namespace HelloImGui
 
         [gMetalGlobals.mtlCommandBuffer presentDrawable:gMetalGlobals.caMetalDrawable];
         [gMetalGlobals.mtlCommandBuffer commit];
+
+        [gMetalGlobals.caMetalDrawable release];
+        [gMetalGlobals.mtlCommandBuffer release];
+        [gMetalGlobals.mtlRenderCommandEncoder release];
     }
 
     RenderingCallbacksPtr PrepareBackendCallbacksCommon()

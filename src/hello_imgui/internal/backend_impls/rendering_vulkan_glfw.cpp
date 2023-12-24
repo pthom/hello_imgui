@@ -49,7 +49,7 @@ namespace HelloImGui
     void PrepareGlfwForVulkan_PosImGuiInit()
     {
         auto & gVkGlobals = HelloImGui::GetVulkanGlobals();
-        auto window = HelloImGui::GetRunnerParams()->backendPointers.glfwWindow;
+        auto window = (GLFWwindow *)HelloImGui::GetRunnerParams()->backendPointers.glfwWindow;
         ImGui_ImplVulkanH_Window* wd = &gVkGlobals.ImGuiMainWindowData;
 
         // Setup Platform/Renderer backends
@@ -78,7 +78,7 @@ namespace HelloImGui
 
         callbacks->Impl_GetFrameBufferSize = []
         {
-            auto window = HelloImGui::GetRunnerParams()->backendPointers.glfwWindow;
+            auto window = (GLFWwindow *) HelloImGui::GetRunnerParams()->backendPointers.glfwWindow;
             int width, height;
             glfwGetFramebufferSize(window, &width, &height);
             return ScreenSize{width, height};

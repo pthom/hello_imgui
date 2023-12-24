@@ -46,7 +46,7 @@ namespace HelloImGui
     void PrepareSdlForVulkan_PosImGuiInit()
     {
         auto & gVkGlobals = HelloImGui::GetVulkanGlobals();
-        auto window = HelloImGui::GetRunnerParams()->backendPointers.sdlWindow;
+        auto window = (SDL_Window *)HelloImGui::GetRunnerParams()->backendPointers.sdlWindow;
         ImGui_ImplVulkanH_Window* wd = &gVkGlobals.ImGuiMainWindowData;
         ImGui_ImplSDL2_InitForVulkan(window);
         ImGui_ImplVulkan_InitInfo init_info = {};
@@ -73,7 +73,7 @@ namespace HelloImGui
 
         callbacks->Impl_GetFrameBufferSize = []
         {
-            auto window = HelloImGui::GetRunnerParams()->backendPointers.sdlWindow;
+            auto window = (SDL_Window *)HelloImGui::GetRunnerParams()->backendPointers.sdlWindow;
             int width, height;
             SDL_GetWindowSize(window, &width, &height);
             return ScreenSize{width, height};

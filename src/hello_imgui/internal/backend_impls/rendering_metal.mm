@@ -24,9 +24,11 @@ namespace HelloImGui
         [gMetalGlobals.mtlCommandBuffer presentDrawable:gMetalGlobals.caMetalDrawable];
         [gMetalGlobals.mtlCommandBuffer commit];
 
-        [gMetalGlobals.caMetalDrawable release];
-        [gMetalGlobals.mtlCommandBuffer release];
-        [gMetalGlobals.mtlRenderCommandEncoder release];
+        // Release may be needed: these were created by Metal during this frame
+        // but not inside an autoreleasepool block
+         [gMetalGlobals.caMetalDrawable release];
+         [gMetalGlobals.mtlCommandBuffer release];
+         [gMetalGlobals.mtlRenderCommandEncoder release];
     }
 
     RenderingCallbacksPtr PrepareBackendCallbacksCommon()

@@ -124,14 +124,14 @@ void SetupVulkan(ImVector<const char*> instance_extensions)
 
         // Setup the debug report callback
 #ifdef IMGUI_VULKAN_DEBUG_REPORT
-        auto vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(gVkGlobals.g_Instance, "vkCreateDebugReportCallbackEXT");
+        auto vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(gVkGlobals.Instance, "vkCreateDebugReportCallbackEXT");
         IM_ASSERT(vkCreateDebugReportCallbackEXT != nullptr);
         VkDebugReportCallbackCreateInfoEXT debug_report_ci = {};
         debug_report_ci.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
         debug_report_ci.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
         debug_report_ci.pfnCallback = debug_report;
         debug_report_ci.pUserData = nullptr;
-        err = vkCreateDebugReportCallbackEXT(gVkGlobals.g_Instance, &debug_report_ci, gVkGlobals.g_Allocator, &DebugReport);
+        err = vkCreateDebugReportCallbackEXT(gVkGlobals.Instance, &debug_report_ci, gVkGlobals.Allocator, &gVkGlobals.DebugReport);
         check_vk_result(err);
 #endif
     }
@@ -255,8 +255,8 @@ void CleanupVulkan()
 
 #ifdef IMGUI_VULKAN_DEBUG_REPORT
     // Remove the debug report callback
-    auto vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(gVkGlobals.g_Instance, "vkDestroyDebugReportCallbackEXT");
-    vkDestroyDebugReportCallbackEXT(gVkGlobals.g_Instance, DebugReport, gVkGlobals.g_Allocator);
+    auto vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(gVkGlobals.Instance, "vkDestroyDebugReportCallbackEXT");
+    vkDestroyDebugReportCallbackEXT(gVkGlobals.Instance, gVkGlobals.DebugReport, gVkGlobals.Allocator);
 #endif // IMGUI_VULKAN_DEBUG_REPORT
 
     vkDestroyDevice(gVkGlobals.Device, gVkGlobals.Allocator);

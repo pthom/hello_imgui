@@ -463,6 +463,15 @@ void AbstractRunner::Setup()
     SetLayoutResetIfNeeded();
 
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
+
+    // Fix issue with ImGui & Viewports: title bar cannot be transparent
+    if (params.imGuiWindowParams.enableViewports)
+    {
+        auto& style = ImGui::GetStyle();
+        style.Colors[ImGuiCol_TitleBg].w = 1.f;
+        style.Colors[ImGuiCol_TitleBgActive].w = 1.f;
+        style.Colors[ImGuiCol_TitleBgCollapsed].w = 1.f;
+    }
 }
 
 void AbstractRunner::SetLayoutResetIfNeeded()

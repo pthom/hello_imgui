@@ -18,7 +18,6 @@ class RunnerGlfw3 : public AbstractRunner
         // Methods related to the Windowing backend (SDL, Glfw, ...)
         //
         void Impl_InitBackend() override;
-        void Impl_LinkWindowRenderingBackend() override;
         void Impl_CreateWindow() override;
         void Impl_PollEvents() override;
         void Impl_NewFrame_Backend() override;

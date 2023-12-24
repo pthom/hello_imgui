@@ -422,7 +422,14 @@ void AbstractRunner::Setup()
 
     Impl_SetWindowIcon();
 
-    Impl_LinkWindowRenderingBackend();
+    // This should be done before Impl_LinkWindowingToRenderingBackend()
+    // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks
+    // will chain the user callbacks with ImGui callbacks; and PostInit()
+    // is a good place for the user to install callbacks
+    if (params.callbacks.PostInit)
+        params.callbacks.PostInit();
+
+    Impl_LinkWindowingToRenderingBackend();
 
     params.callbacks.SetupImGuiConfig();
     params.callbacks.SetupImGuiStyle();
@@ -431,13 +438,6 @@ void AbstractRunner::Setup()
     if (params.useImGuiTestEngine)
         TestEngineCallbacks::Setup();
 #endif
-
-    // This should be done before Impl_SetupPlatformRendererBindings()
-    // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks
-    // will chain the user callbacks with ImGui callbacks; and PostInit()
-    // is a good place for the user to install callbacks
-    if (params.callbacks.PostInit)
-        params.callbacks.PostInit();
 
     //
     // load fonts & set ImGui::GetIO().FontGlobalScale

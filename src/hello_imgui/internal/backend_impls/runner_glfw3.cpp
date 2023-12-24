@@ -54,17 +54,6 @@ namespace HelloImGui
         IM_ASSERT(glfwInitSuccess);
     }
 
-    void RunnerGlfw3::Impl_LinkWindowRenderingBackend()
-    {
-        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
-#ifdef HELLOIMGUI_HAS_METAL
-        PrepareGlfwForMetal((GLFWwindow *) mWindow);
-#endif
-#ifdef HELLOIMGUI_HAS_VULKAN
-        PrepareGlfwForVulkan((GLFWwindow *) mWindow);
-#endif
-    }
-
     void RunnerGlfw3::Impl_CreateWindow()
     {
         BackendApi::BackendOptions backendOptions;
@@ -157,7 +146,7 @@ namespace HelloImGui
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Rendering Backends (OpenGL, Vulkan, ...)
+    // Link with Rendering Backends (OpenGL, Vulkan, ...)
     //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 #if defined(HELLOIMGUI_HAS_OPENGL)
@@ -192,15 +181,19 @@ namespace HelloImGui
     }
     void RunnerGlfw3::Impl_LinkWindowingToRenderingBackend()
     {
+        PrepareGlfwForMetal((GLFWwindow *) mWindow);
     }
 
 #elif defined(HELLOIMGUI_HAS_VULKAN)
     void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
     {
+        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
         mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwVulkan();
     }
     void RunnerGlfw3::Impl_LinkWindowingToRenderingBackend()
     {
+        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
+        PrepareGlfwForVulkan((GLFWwindow *) mWindow);
     }
 
 #endif

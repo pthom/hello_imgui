@@ -65,17 +65,6 @@ namespace HelloImGui
         SDL_SetEventFilter(HandleAppEvents, this);
     }
 
-    void RunnerSdl2::Impl_LinkWindowRenderingBackend()
-    {
-        // Below is a call RenderingCallbacks_LinkWindowingToRenderingBackend
-#ifdef HELLOIMGUI_HAS_METAL
-        PrepareSdlForMetal((SDL_Window*)mWindow);
-#endif
-#ifdef HELLOIMGUI_HAS_VULKAN
-        PrepareSdlForVulkan((SDL_Window*)mWindow);
-#endif
-    }
-
     void RunnerSdl2::Impl_CreateWindow()
     {
         BackendApi::BackendOptions backendOptions;
@@ -237,7 +226,7 @@ namespace HelloImGui
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Rendering Backends (OpenGL, Vulkan, ...)
+    // Link to Rendering Backends (OpenGL, Vulkan, ...)
     //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef HELLOIMGUI_HAS_OPENGL
@@ -273,6 +262,7 @@ namespace HelloImGui
     }
     void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()
     {
+        PrepareSdlForMetal((SDL_Window*)mWindow);
     }
 #endif
 #ifdef HELLOIMGUI_HAS_VULKAN
@@ -282,6 +272,7 @@ namespace HelloImGui
     }
     void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()
     {
+        PrepareSdlForVulkan((SDL_Window*)mWindow);
     }
 #endif
 

@@ -102,10 +102,14 @@ namespace HelloImGui
 
     void RunnerGlfw3::Impl_UpdateAndRenderAdditionalPlatformWindows()
     {
+#ifdef HELLOIMGUI_HAS_OPENGL
         GLFWwindow* backup_current_context = glfwGetCurrentContext();
+#endif
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
+#ifdef HELLOIMGUI_HAS_OPENGL
         glfwMakeContextCurrent(backup_current_context);
+#endif
     }
 
     void RunnerGlfw3::Impl_Cleanup()

@@ -16,7 +16,6 @@ namespace HelloImGui
         void Impl_Select_Gl_Version() override;
         std::string Impl_GlslVersion() override;
         void Impl_InitGlLoader() override;
-        void Impl_SetupImgGuiContext() override;
     };
 
 }  // namespace HelloImGui

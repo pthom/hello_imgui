@@ -37,7 +37,7 @@
 #endif
 
 
-//#define USEHACK
+#define USEHACK
 #ifdef USEHACK
 #include "hello_imgui/internal/backend_impls/rendering_metal.h"
 #include <glfw/glfw3.h>
@@ -90,70 +90,67 @@ void UserGui()
 
 void HelloImGui::AbstractRunner::Run()
 {
-    auto mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwMetal();
+    bool useImGuiExample = false;
+    if (useImGuiExample)
+    {
+        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwMetal();
 
-    // Setup Dear ImGui context
-    ImGui::CreateContext();
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;    // Enable Multi-Viewport / Platform Windows
+        // Setup Dear ImGui context
+        ImGui::CreateContext();
+        ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;    // Enable Multi-Viewport / Platform Windows
 
-    // Setup window
-//    glfwSetErrorCallback(glfw_error_callback);
-    if (!glfwInit())
-        return;
+        // Setup window
+        //    glfwSetErrorCallback(glfw_error_callback);
+        if (!glfwInit())
+            return;
 
-    // Create window with graphics context
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+Metal example", nullptr, nullptr);
-    if (window == nullptr)
-        return;
+        // Create window with graphics context
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+Metal example", nullptr, nullptr);
+        if (window == nullptr)
+            return;
+
+        mWindow = window;
+        PrepareGlfwForMetal(window);                                    // HIMGUI
+    }
+    else
+    {
+        Impl_InitRenderBackendCallbacks();
+
+        InitImGuiContext();
+        SetImGuiPrefs();
+
+        Impl_InitBackend();
+
+        PrepareWindowGeometry();
+        Impl_CreateWindow();
+
+        Impl_SetWindowIcon();
+
+        Impl_LinkWindowRenderingBackend();
+
+        Impl_LinkWindowingToRenderingBackend();
 
 
-    //    id <MTLDevice> device = MTLCreateSystemDefaultDevice();
-    //    id <MTLCommandQueue> commandQueue = [device newCommandQueue];
-    PrepareGlfwForMetal_WithWindow_PreImGuiInit(window);                                    // HIMGUI
+//        DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
+//        HelloImGuiIniSettings::LoadHelloImGuiMiscSettings(IniPartsFilename(), &params);
+//        SetLayoutResetIfNeeded();
+//
+//        ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
 
-    // Setup Platform/Renderer backends
-    //    ImGui_ImplGlfw_InitForOther(window, true);
-    //    ImGui_ImplMetal_Init(device);
-    //    NSWindow *nswin = glfwGetCocoaWindow(window);
-    //    CAMetalLayer *layer = [CAMetalLayer layer];
-    //    layer.device = device;
-    //    layer.pixelFormat = MTLPixelFormatBGRA8Unorm;
-    //    nswin.contentView.layer = layer;
-    //    nswin.contentView.wantsLayer = YES;
-    //
-    //    MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor new];
-    PrepareGlfwForMetal_PosImGuiInit();                                                // HIMGUI
+    }
 
 
+//    Setup();
+//    auto window = (GLFWwindow*)mWindow;
 
     // Main loop
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose((GLFWwindow *)mWindow))
     {
         //@autoreleasepool
         {
-            // Poll and handle events (inputs, window resize, etc.)
-            // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-            // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
-            // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
-            // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
             glfwPollEvents();
 
-            //            int width, height;
-            //            glfwGetFramebufferSize(window, &width, &height);
-            //            layer.drawableSize = CGSizeMake(width, height);
-            //            id<CAMetalDrawable> drawable = [layer nextDrawable];
-            //
-            //            id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
-            //            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(clear_color[0] * clear_color[3], clear_color[1] * clear_color[3], clear_color[2] * clear_color[3], clear_color[3]);
-            //            renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
-            //            renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-            //            renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
-            //            id <MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-            //            [renderEncoder pushDebugGroup:@"ImGui demo"];
-            //
-            //            // Start the Dear ImGui frame
-            //            ImGui_ImplMetal_NewFrame(renderPassDescriptor);
             mRenderingBackendCallbacks->Impl_NewFrame_3D();                                   // HIMGUI
 
 
@@ -176,17 +173,7 @@ void HelloImGui::AbstractRunner::Run()
                 ImGui::RenderPlatformWindowsDefault();
             }
 
-
-            //            [renderEncoder popDebugGroup];
-            //            [renderEncoder endEncoding];
-            //            [commandBuffer presentDrawable:drawable];
-            //            [commandBuffer commit];
             SwapMetalBuffers();                                                                 // HIMGUI
-
-
-            //             id<CAMetalDrawable> drawable = [layer nextDrawable];
-            //             id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
-            //             id <MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
         }
     }
 
@@ -195,7 +182,7 @@ void HelloImGui::AbstractRunner::Run()
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwDestroyWindow(window);
+    glfwDestroyWindow((GLFWwindow *)mWindow);
     glfwTerminate();
 }
 #endif
@@ -538,28 +525,36 @@ void AbstractRunner::LayoutSettings_Save()
     HelloImGuiIniSettings::SaveDockableWindowsVisibility(IniPartsFilename(), params.dockingParams);
 }
 
+void AbstractRunner::InitImGuiContext()
+{
+    IMGUI_CHECKVERSION();
+#ifdef HELLO_IMGUI_IMGUI_SHARED
+    auto ctx = ImGui::CreateContext();
+    GImGui = ctx;
+    ImGui::SetCurrentContext(ctx);
+    ImGui::SetAllocatorFunctions(MyMallocWrapper, MyFreeWrapper);
+#else
+    ImGui::CreateContext();
+#endif
+}
+
+void AbstractRunner::SetImGuiPrefs()
+{
+    if (params.imGuiWindowParams.enableViewports)
+    {
+#ifndef __EMSCRIPTEN__
+        ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+#endif
+    }
+    ImGui::GetIO().IniFilename = nullptr;
+}
+
 void AbstractRunner::Setup()
 {
     Impl_InitRenderBackendCallbacks();
 
-    // Create ImGui Context
-    {
-        IMGUI_CHECKVERSION();
-#ifdef HELLO_IMGUI_IMGUI_SHARED
-        auto ctx = ImGui::CreateContext();
-        GImGui = ctx;
-        ImGui::SetCurrentContext(ctx);
-        ImGui::SetAllocatorFunctions(MyMallocWrapper, MyFreeWrapper);
-#else
-        ImGui::CreateContext();
-#endif
-        if (params.imGuiWindowParams.enableViewports)
-        {
-#ifndef __EMSCRIPTEN__
-            ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-#endif
-        }
-    }
+    InitImGuiContext();
+    SetImGuiPrefs();
 
     Impl_InitBackend();
 
@@ -579,9 +574,6 @@ void AbstractRunner::Setup()
 
     Impl_LinkWindowRenderingBackend();
 
-    ImGui::GetIO().IniFilename = nullptr;
-
-    Impl_SetupImgGuiContext();
     params.callbacks.SetupImGuiConfig();
     params.callbacks.SetupImGuiStyle();
 

@@ -35,14 +35,6 @@ namespace HelloImGui
         emscripten_set_main_loop_arg(emscripten_imgui_main_loop, NULL, params.emscripten_fps, true);
     }
 
-    void RunnerEmscripten::Impl_SetupImgGuiContext()
-    {
-        AbstractRunner::Impl_SetupImgGuiContext();
-        // For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the
-        // imgui.ini file. You may manually call LoadIniSettingsFromMemory() to load settings from your own storage.
-        ImGui::GetIO().IniFilename = NULL;
-    }
-
     void RunnerEmscripten::Impl_Select_Gl_Version()
     {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);

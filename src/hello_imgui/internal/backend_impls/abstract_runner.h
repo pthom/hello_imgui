@@ -67,7 +67,6 @@ protected:
     virtual void Impl_InitBackend() = 0;
     virtual void Impl_LinkWindowRenderingBackend() {};
     virtual void Impl_CreateWindow() = 0;
-    virtual void Impl_SetupImgGuiContext() {}
     virtual void Impl_PollEvents() = 0;
     virtual void Impl_NewFrame_Backend() = 0;
     virtual void Impl_UpdateAndRenderAdditionalPlatformWindows() = 0;
@@ -95,6 +94,9 @@ protected:
     RenderingCallbacksPtr mRenderingBackendCallbacks;
 
 private:
+    void InitImGuiContext();
+    void SetImGuiPrefs();
+
     void PrepareWindowGeometry();
     void HandleDpiOnSecondFrame();
     void ReloadFontIfFailed() const;

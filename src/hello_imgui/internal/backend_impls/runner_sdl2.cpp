@@ -65,14 +65,14 @@ namespace HelloImGui
         SDL_SetEventFilter(HandleAppEvents, this);
     }
 
-    void RunnerSdl2::Impl_InitBackend_PostImGuiInit()
+    void RunnerSdl2::Impl_LinkWindowRenderingBackend()
     {
-        // Below is a call RenderingCallbacks_Prepare_PosImGuiInit
+        // Below is a call RenderingCallbacks_LinkWindowingToRenderingBackend
 #ifdef HELLOIMGUI_HAS_METAL
-        PrepareSdlForMetal_PosImGuiInit();
+        PrepareSdlForMetal((SDL_Window*)mWindow);
 #endif
 #ifdef HELLOIMGUI_HAS_VULKAN
-        PrepareSdlForVulkan_PosImGuiInit();
+        PrepareSdlForVulkan((SDL_Window*)mWindow);
 #endif
     }
 
@@ -88,14 +88,6 @@ namespace HelloImGui
 
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
         params.backendPointers.sdlWindow = mWindow;
-
-    // Note: Below is RenderingCallbacks_Prepare_WithWindow_PreImGuiInit
-#ifdef HELLOIMGUI_HAS_METAL
-        PrepareSdlForMetal_WithWindow_PreImGuiInit((SDL_Window *)mWindow);
-#endif
-#ifdef HELLOIMGUI_HAS_VULKAN
-        PrepareSdlForVulkan_WithWindow_PreImGuiInit((SDL_Window *)mWindow);
-#endif
     }
 
     void RunnerSdl2::Impl_PollEvents()

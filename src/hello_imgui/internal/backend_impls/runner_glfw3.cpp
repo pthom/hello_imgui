@@ -54,14 +54,14 @@ namespace HelloImGui
         IM_ASSERT(glfwInitSuccess);
     }
 
-    void RunnerGlfw3::Impl_InitBackend_PostImGuiInit()
+    void RunnerGlfw3::Impl_LinkWindowRenderingBackend()
     {
-        // Below, call of RenderingCallbacks_Prepare_PosImGuiInit
+        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
 #ifdef HELLOIMGUI_HAS_METAL
-        PrepareGlfwForMetal_PosImGuiInit();
+        PrepareGlfwForMetal((GLFWwindow *) mWindow);
 #endif
 #ifdef HELLOIMGUI_HAS_VULKAN
-        PrepareGlfwForVulkan_PosImGuiInit();
+        PrepareGlfwForVulkan((GLFWwindow *) mWindow);
 #endif
     }
 
@@ -73,14 +73,6 @@ namespace HelloImGui
 #endif
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
         params.backendPointers.glfwWindow = mWindow;
-
-    // Note: Below is RenderingCallbacks_Prepare_WithWindow_PreImGuiInit
-#ifdef HELLOIMGUI_HAS_METAL
-        PrepareGlfwForMetal_WithWindow_PreImGuiInit((GLFWwindow *)mWindow);
-#endif
-#ifdef HELLOIMGUI_HAS_VULKAN
-        PrepareGlfwForVulkan_WithWindow_PreImGuiInit((GLFWwindow *)mWindow);
-#endif
     }
 
     void RunnerGlfw3::Impl_PollEvents()

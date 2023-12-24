@@ -65,7 +65,7 @@ protected:
     // Methods related to the Windowing backend (SDL, Glfw, ...)
     //
     virtual void Impl_InitBackend() = 0;
-    virtual void Impl_InitBackend_PostImGuiInit() {};
+    virtual void Impl_LinkWindowRenderingBackend() {};
     virtual void Impl_CreateWindow() = 0;
     virtual void Impl_SetupImgGuiContext() {}
     virtual void Impl_PollEvents() = 0;

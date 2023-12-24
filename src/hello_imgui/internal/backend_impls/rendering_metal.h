@@ -38,8 +38,7 @@ namespace HelloImGui
 #ifdef HELLOIMGUI_USE_SDL2
     RenderingCallbacksPtr CreateBackendCallbacks_SdlMetal();
 
-    void PrepareSdlForMetal_WithWindow_PreImGuiInit(SDL_Window* window);
-    void PrepareSdlForMetal_PosImGuiInit();
+    void PrepareSdlForMetal(SDL_Window* window);
 
     struct SdlMetalGlobals
     {
@@ -52,8 +51,7 @@ namespace HelloImGui
 #ifdef HELLOIMGUI_USE_GLFW3
     RenderingCallbacksPtr CreateBackendCallbacks_GlfwMetal();
 
-    void PrepareGlfwForMetal_WithWindow_PreImGuiInit(GLFWwindow* window);
-    void PrepareGlfwForMetal_PosImGuiInit();
+    void PrepareGlfwForMetal(GLFWwindow* window);
 
     struct GlfwMetalGlobals
     {

@@ -16,59 +16,58 @@
 
 namespace HelloImGui
 {
-    // Below is implementation of RenderingCallbacks_Prepare_WithWindow_PreImGuiInit
-    void PrepareGlfwForVulkan_WithWindow_PreImGuiInit(GLFWwindow* window)
+    // Below is implementation of RenderingCallbacks_LinkWindowingToRenderingBackend
+    void PrepareGlfwForVulkan(GLFWwindow* window)
     {
         auto& gVkGlobals = HelloImGui::GetVulkanGlobals();
 
-        if (!glfwVulkanSupported())
         {
-            IM_ASSERT(0 && "GLFW: Vulkan Not Supported");
-            exit(1);
+            if (!glfwVulkanSupported())
+            {
+                IM_ASSERT(0 && "GLFW: Vulkan Not Supported");
+                exit(1);
+            }
+
+            ImVector<const char*> extensions;
+            uint32_t extensions_count = 0;
+            const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&extensions_count);
+            for (uint32_t i = 0; i < extensions_count; i++)
+                extensions.push_back(glfw_extensions[i]);
+            HelloImGui::VulkanSetup::SetupVulkan(extensions);
+
+            // Create Window Surface
+            VkSurfaceKHR surface;
+            VkResult err = glfwCreateWindowSurface(gVkGlobals.Instance, window, gVkGlobals.Allocator, &surface);
+            HelloImGui::VulkanSetup::check_vk_result(err);
+
+            // Create Framebuffers
+            int w, h;
+            glfwGetFramebufferSize(window, &w, &h);
+            ImGui_ImplVulkanH_Window* wd = &gVkGlobals.ImGuiMainWindowData;
+            HelloImGui::VulkanSetup::SetupVulkanWindow(wd, surface, w, h);
         }
 
-        ImVector<const char*> extensions;
-        uint32_t extensions_count = 0;
-        const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&extensions_count);
-        for (uint32_t i = 0; i < extensions_count; i++)
-            extensions.push_back(glfw_extensions[i]);
-        HelloImGui::VulkanSetup::SetupVulkan(extensions);
+        {
+            ImGui_ImplVulkanH_Window* wd = &gVkGlobals.ImGuiMainWindowData;
 
-        // Create Window Surface
-        VkSurfaceKHR surface;
-        VkResult err = glfwCreateWindowSurface(gVkGlobals.Instance, window, gVkGlobals.Allocator, &surface);
-        HelloImGui::VulkanSetup::check_vk_result(err);
-
-        // Create Framebuffers
-        int w, h;
-        glfwGetFramebufferSize(window, &w, &h);
-        ImGui_ImplVulkanH_Window* wd = &gVkGlobals.ImGuiMainWindowData;
-        HelloImGui::VulkanSetup::SetupVulkanWindow(wd, surface, w, h);
-    }
-
-    void PrepareGlfwForVulkan_PosImGuiInit()
-    {
-        auto & gVkGlobals = HelloImGui::GetVulkanGlobals();
-        auto window = (GLFWwindow *)HelloImGui::GetRunnerParams()->backendPointers.glfwWindow;
-        ImGui_ImplVulkanH_Window* wd = &gVkGlobals.ImGuiMainWindowData;
-
-        // Setup Platform/Renderer backends
-        ImGui_ImplGlfw_InitForVulkan(window, true);
-        ImGui_ImplVulkan_InitInfo init_info = {};
-        init_info.Instance = gVkGlobals.Instance;
-        init_info.PhysicalDevice = gVkGlobals.PhysicalDevice;
-        init_info.Device = gVkGlobals.Device;
-        init_info.QueueFamily = gVkGlobals.QueueFamily;
-        init_info.Queue = gVkGlobals.Queue;
-        init_info.PipelineCache = gVkGlobals.PipelineCache;
-        init_info.DescriptorPool = gVkGlobals.DescriptorPool;
-        init_info.Subpass = 0;
-        init_info.MinImageCount = gVkGlobals.MinImageCount;
-        init_info.ImageCount = wd->ImageCount;
-        init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
-        init_info.Allocator = gVkGlobals.Allocator;
-        init_info.CheckVkResultFn = HelloImGui::VulkanSetup::check_vk_result;
-        ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
+            // Setup Platform/Renderer backends
+            ImGui_ImplGlfw_InitForVulkan(window, true);
+            ImGui_ImplVulkan_InitInfo init_info = {};
+            init_info.Instance = gVkGlobals.Instance;
+            init_info.PhysicalDevice = gVkGlobals.PhysicalDevice;
+            init_info.Device = gVkGlobals.Device;
+            init_info.QueueFamily = gVkGlobals.QueueFamily;
+            init_info.Queue = gVkGlobals.Queue;
+            init_info.PipelineCache = gVkGlobals.PipelineCache;
+            init_info.DescriptorPool = gVkGlobals.DescriptorPool;
+            init_info.Subpass = 0;
+            init_info.MinImageCount = gVkGlobals.MinImageCount;
+            init_info.ImageCount = wd->ImageCount;
+            init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+            init_info.Allocator = gVkGlobals.Allocator;
+            init_info.CheckVkResultFn = HelloImGui::VulkanSetup::check_vk_result;
+            ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
+        }
     }
 
 

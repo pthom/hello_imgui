@@ -26,34 +26,29 @@ namespace HelloImGui
             return sGlfwMetalGlobals;
     }
 
-    // Below is implementation of RenderingCallbacks_Prepare_WithWindow_PreImGuiInit
-    void PrepareGlfwForMetal_WithWindow_PreImGuiInit(GLFWwindow* glfwWindow)
+    // Below is implementation of RenderingCallbacks_LinkWindowingToRenderingBackend
+    void PrepareGlfwForMetal(GLFWwindow* glfwWindow)
     {
         auto& gMetalGlobals = GetMetalGlobals();
         auto& gGlfwMetalGlobals = GetGlfwMetalGlobals();
+        {
+            gGlfwMetalGlobals.glfwWindow = glfwWindow;
+            gGlfwMetalGlobals.mtlDevice = MTLCreateSystemDefaultDevice();
+            gMetalGlobals.mtlCommandQueue = [gGlfwMetalGlobals.mtlDevice newCommandQueue];
+        }
+        {
+            ImGui_ImplGlfw_InitForOther(gGlfwMetalGlobals.glfwWindow, true);
+            ImGui_ImplMetal_Init(gGlfwMetalGlobals.mtlDevice);
 
-        gGlfwMetalGlobals.glfwWindow = glfwWindow;
-        gGlfwMetalGlobals.mtlDevice = MTLCreateSystemDefaultDevice();
-        gMetalGlobals.mtlCommandQueue = [gGlfwMetalGlobals.mtlDevice newCommandQueue];
-    }
+            NSWindow* nswin = glfwGetCocoaWindow(gGlfwMetalGlobals.glfwWindow);
+            gMetalGlobals.caMetalLayer = [CAMetalLayer layer];
+            gMetalGlobals.caMetalLayer.device = gGlfwMetalGlobals.mtlDevice;
+            gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+            nswin.contentView.layer = gMetalGlobals.caMetalLayer;
+            nswin.contentView.wantsLayer = YES;
 
-    // Below is implementation of RenderingCallbacks_Prepare_PosImGuiInit
-    void PrepareGlfwForMetal_PosImGuiInit()
-    {
-        auto& gMetalGlobals = GetMetalGlobals();
-
-        auto& gGlfwMetalGlobals = GetGlfwMetalGlobals();
-        ImGui_ImplGlfw_InitForOther(gGlfwMetalGlobals.glfwWindow, true);
-        ImGui_ImplMetal_Init(gGlfwMetalGlobals.mtlDevice);
-
-        NSWindow *nswin = glfwGetCocoaWindow(gGlfwMetalGlobals.glfwWindow);
-        gMetalGlobals.caMetalLayer = [CAMetalLayer layer];
-        gMetalGlobals.caMetalLayer.device = gGlfwMetalGlobals.mtlDevice;
-        gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
-        nswin.contentView.layer = gMetalGlobals.caMetalLayer;
-        nswin.contentView.wantsLayer = YES;
-
-        gMetalGlobals.mtlRenderPassDescriptor = [MTLRenderPassDescriptor new];
+            gMetalGlobals.mtlRenderPassDescriptor = [MTLRenderPassDescriptor new];
+        }
     }
 
     RenderingCallbacksPtr CreateBackendCallbacks_GlfwMetal()

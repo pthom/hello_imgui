@@ -544,6 +544,7 @@ void AbstractRunner::Setup()
 
     // Create ImGui Context
     {
+        IMGUI_CHECKVERSION();
 #ifdef HELLO_IMGUI_IMGUI_SHARED
         auto ctx = ImGui::CreateContext();
         GImGui = ctx;
@@ -576,9 +577,7 @@ void AbstractRunner::Setup()
 
     Impl_SetWindowIcon();
 
-    IMGUI_CHECKVERSION();
-
-    Impl_InitBackend_PostImGuiInit();
+    Impl_LinkWindowRenderingBackend();
 
     ImGui::GetIO().IniFilename = nullptr;
 

@@ -21,6 +21,9 @@ namespace HelloImGui
     //     - "-->": Events related to the windowing backend (SDL, Glfw, ...)
     //    int main()
     //    {
+    //        // Init ImGui: ImGui::CreateContext(), etc. This is done inside
+    //        // --> AbstractRunner::Setup()
+    //
     //        // Init Windowing Backend (SDL, Glfw, ...): call glfwInit() or SDL_Init()
     //        // See: AbstractRunner::Impl_InitBackend()
     //
@@ -30,13 +33,9 @@ namespace HelloImGui
     //        //       - SdlWindowHelper::CreateWindow() or GlfwWindowHelper::CreateWindow()
     //        //              which may set some renderer specific hints
     //        //             ==> search for RenderingCallbacks_Impl_Hint_WindowingBackend in the code
-    //        //     - Then some possible  rendering callback customization
-    //                ==> search for RenderingCallbacks_Prepare_WithWindow_PreImGuiInit in the code
     //
-    //        // Init ImGui: ImGui::CreateContext(), etc. This is done inside
-    //        // --> AbstractRunner::Setup()
-    ////      //   Configure rendering backend Post ImGui Init
-    //        //    ==> search for RenderingCallbacks_Prepare_PosImGuiInit in the code
+    //        //   --> Call AbstractRunner::Impl_LinkWindowingToRenderingBackend
+    //        //    ==> search for RenderingCallbacks_LinkWindowingToRenderingBackend in the code
     //
     //        // This loop control is inside AbstractRunner::Run()
     //        //     its body is inside --> AbstractRunner::CreateFramesAndRender()
@@ -88,8 +87,7 @@ namespace HelloImGui
     //
     // "Callbacks" that are dependent on the combination Rendering backend (OpenGL, Metal, Vulkan) + Windowing Backend (Glfw, SDL):
     //     Search for RenderingCallbacks_Impl_Hint_WindowingBackend in the code
-    //     Search for RenderingCallbacks_Prepare_WithWindow_PreImGuiInit in the code
-    //     Search for RenderingCallbacks_Prepare_PosImGuiInit in the code
+    //     Search for RenderingCallbacks_LinkWindowingToRenderingBackend in the code
     //     Search for RenderingCallbacks_Impl_SwapBuffers in the code
     //
     struct RenderingCallbacks

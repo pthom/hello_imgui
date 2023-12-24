@@ -22,37 +22,35 @@ namespace HelloImGui
         return sSdlMetalGlobals;
     }
 
-    // Below is implementation of RenderingCallbacks_Prepare_WithWindow_PreImGuiInit
-    void PrepareSdlForMetal_WithWindow_PreImGuiInit(SDL_Window* sdlWindow)
+    // Below is implementation of RenderingCallbacks_LinkWindowingToRenderingBackend
+    void PrepareSdlForMetal(SDL_Window* sdlWindow)
     {
         auto& gMetalGlobals = GetMetalGlobals();
         auto& gSdlMetalGlobals = GetSdlMetalGlobals();
-        gSdlMetalGlobals.sdlWindow = sdlWindow;
-        gSdlMetalGlobals.sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-        if (gSdlMetalGlobals.sdlRenderer == nullptr)
+
         {
-            bool Error_SdlCreateRenderer_For_Metal = false;
-            IM_ASSERT(Error_SdlCreateRenderer_For_Metal);
-            exit(-3);
+            gSdlMetalGlobals.sdlWindow = sdlWindow;
+            gSdlMetalGlobals.sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+            if (gSdlMetalGlobals.sdlRenderer == nullptr)
+            {
+                bool Error_SdlCreateRenderer_For_Metal = false;
+                IM_ASSERT(Error_SdlCreateRenderer_For_Metal);
+                exit(-3);
+            }
+
+            // Setup Platform/Renderer backends
+            gMetalGlobals.caMetalLayer = (__bridge CAMetalLayer*)SDL_RenderGetMetalLayer(gSdlMetalGlobals.sdlRenderer);
+            gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
         }
+        {
+            ImGui_ImplMetal_Init(gMetalGlobals.caMetalLayer.device);
+            ImGui_ImplSDL2_InitForMetal(gSdlMetalGlobals.sdlWindow);
 
-        // Setup Platform/Renderer backends
-        gMetalGlobals.caMetalLayer = (__bridge CAMetalLayer*)SDL_RenderGetMetalLayer(gSdlMetalGlobals.sdlRenderer);
-        gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+            gMetalGlobals.mtlCommandQueue = [gMetalGlobals.caMetalLayer.device newCommandQueue];
+            gMetalGlobals.mtlRenderPassDescriptor = [MTLRenderPassDescriptor new];
+        }
     }
 
-    // Below is implementation of RenderingCallbacks_Prepare_PosImGuiInit
-    void PrepareSdlForMetal_PosImGuiInit()
-    {
-        auto& gMetalGlobals = GetMetalGlobals();
-        auto& gSdlMetalGlobals = GetSdlMetalGlobals();
-
-        ImGui_ImplMetal_Init(gMetalGlobals.caMetalLayer.device);
-        ImGui_ImplSDL2_InitForMetal(gSdlMetalGlobals.sdlWindow);
-
-        gMetalGlobals.mtlCommandQueue = [gMetalGlobals.caMetalLayer.device newCommandQueue];
-        gMetalGlobals.mtlRenderPassDescriptor = [MTLRenderPassDescriptor new];
-    }
 
     RenderingCallbacksPtr CreateBackendCallbacks_SdlMetal()
     {

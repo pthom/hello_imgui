@@ -56,15 +56,11 @@ namespace HelloImGui
 
 #ifdef HELLOIMGUI_USE_GLFW3
     RenderingCallbacksPtr CreateBackendCallbacks_GlfwVulkan();
-
-    void PrepareGlfwForVulkan_WithWindow_PreImGuiInit(GLFWwindow* window);
-    void PrepareGlfwForVulkan_PosImGuiInit();
+    void PrepareGlfwForVulkan(GLFWwindow* window);
 #endif
 #ifdef HELLOIMGUI_USE_SDL2
     RenderingCallbacksPtr CreateBackendCallbacks_SdlVulkan();
-
-    void PrepareSdlForVulkan_WithWindow_PreImGuiInit(SDL_Window* window);
-    void PrepareSdlForVulkan_PosImGuiInit();
+    void PrepareSdlForVulkan(SDL_Window* window);
 #endif
 
 }

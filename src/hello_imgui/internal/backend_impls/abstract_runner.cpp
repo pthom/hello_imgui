@@ -394,7 +394,12 @@ void AbstractRunner::Setup()
     ImGui::CreateContext();
 #endif
 
+
+#ifndef IMGUI_BUNDLE_PYTHON_API
     ImGui::GetIO().IniFilename = NULL;
+#else
+    ImGui::GetIO().IniFilename = "";
+#endif
 
     Impl_SetupImgGuiContext();
     params.callbacks.SetupImGuiConfig();

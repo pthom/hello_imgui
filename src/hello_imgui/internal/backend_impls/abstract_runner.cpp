@@ -395,7 +395,12 @@ void AbstractRunner::SetImGuiPrefs()
         ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 #endif
     }
-    ImGui::GetIO().IniFilename = nullptr;
+
+    #ifndef IMGUI_BUNDLE_PYTHON_API
+        ImGui::GetIO().IniFilename = NULL;
+    #else
+        ImGui::GetIO().IniFilename = "";
+    #endif
 }
 
 void AbstractRunner::Setup()
@@ -734,7 +739,7 @@ bool AbstractRunner::ShallIdleThisFrame_Emscripten()
     ImGuiContext& g = *GImGui;
     bool hasInputEvent =  ! g.InputEventsQueue.empty();
 
-    if (! params.fpsIdling.enableIdling)
+    if (! params.fpsIdling.enableIdling || (params.fpsIdling.fpsIdle <= 0.f) )
     {
         params.fpsIdling.isIdling = false;
         return false;

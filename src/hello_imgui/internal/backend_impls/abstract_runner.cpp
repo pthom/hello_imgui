@@ -711,7 +711,7 @@ bool AbstractRunner::ShallIdleThisFrame_Emscripten()
     ImGuiContext& g = *GImGui;
     bool hasInputEvent =  ! g.InputEventsQueue.empty();
 
-    if (! params.fpsIdling.enableIdling)
+    if (! params.fpsIdling.enableIdling || (params.fpsIdling.fpsIdle <= 0.f) )
     {
         params.fpsIdling.isIdling = false;
         return false;

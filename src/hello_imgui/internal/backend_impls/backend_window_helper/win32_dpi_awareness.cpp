@@ -113,7 +113,6 @@ namespace Internal
                                                                        "SetThreadDpiAwarenessContext"))
             {
                 SetThreadDpiAwarenessContextFn(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-                return;
             }
         }
         if (_IsWindows8Point1OrGreater())

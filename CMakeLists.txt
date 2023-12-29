@@ -66,6 +66,12 @@ option(HELLOIMGUI_USE_SDL_VULKAN "Build HelloImGui for SDL2+Vulkan" OFF)
 # Automatic download of Glfw3 and SDL2 (provided as a convenience)
 # (disabled by default on Linux, which prefers to use the system libraries,
 # enabled by default on other platforms)
+# Note: SDL and Glfw3 will be downloaded if:
+#   - HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED or HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED is ON
+#   - HELLOIMGUI_USE_SDL_XXXX or HELLOIMGUI_USE_GLFW_XXXX is ON
+#   - find_package(glfw3 or SDL2) fails. If a system library is found, or a user library provided
+#     in a path added to CMAKE_PREFIX_PATH, it will be used instead
+#   - In the case of Glfw3, if a target named glfw is already defined, it will be used instead
 #------------------------------------------------------------------------------
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     set(autodownload_default OFF)

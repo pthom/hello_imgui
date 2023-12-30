@@ -34,6 +34,11 @@ include(${CMAKE_CURRENT_LIST_DIR}/hello_imgui_cmake/utils/cache_hello_imgui_path
 # Make cmake function `hello_imgui_add_app` available
 include(hello_imgui_add_app)
 
+# HELLOIMGUI_ADD_APP_WITH_INSTALL: if ON, hello_imgui_add_app will add install() instructions for the app.
+# On desktop platforms, it will install the "app exe" and the "assets" folder in the install folder.
+# (this works under Windows, Linux; and macOS if HELLOIMGUI_MACOS_NO_BUNDLE is ON)
+option(HELLOIMGUI_ADD_APP_WITH_INSTALL "Add cmake install() instructions with hello_imgui_add_app" ON)
+
 
 ###############################################################################
 # HelloImGui Build options
@@ -127,7 +132,7 @@ option(HELLOIMGUI_WITH_TEST_ENGINE "Provide ImGui Test engine" OFF)
 message(STATUS "HELLOIMGUI_WITH_TEST_ENGINE=${HELLOIMGUI_WITH_TEST_ENGINE}")
 
 #------------------------------------------------------------------------------
-# Instructions: how to enable Esmcripten multihtread support
+# Instructions: how to enable Emscripten multithreading support
 #------------------------------------------------------------------------------
 if (EMSCRIPTEN)
     # 1. set HELLOIMGUI_EMSCRIPTEN_PTHREAD to ON to enable support for multithreading

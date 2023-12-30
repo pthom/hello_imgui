@@ -1,0 +1,11 @@
+# hello_imgui_bundle_assets_from_folder for Android
+function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
+    message(VERBOSE "hello_imgui_bundle_assets_from_folder ${app_name} ${assets_folder}")
+    FILE(GLOB children ${assets_folder}/*)
+    if (DEFINED HELLO_IMGUI_ANDROID_ASSETS_FOLDER)
+        foreach(child ${children})
+            message(VERBOSE "    Copying ${child}")
+            FILE(COPY ${child} DESTINATION ${HELLO_IMGUI_ANDROID_ASSETS_FOLDER})
+        endforeach()
+    endif()
+endfunction()

@@ -47,6 +47,10 @@ namespace internal
 
 } // namespace HelloImGui
 
+
+#elif defined(HELLOIMGUI_HAS_VULKAN)
+// See image_from_asset_vulkan.cpp
+
 #else // #ifdef HELLOIMGUI_HAS_OPENGL
 
 #include "imgui.h"

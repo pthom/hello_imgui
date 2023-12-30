@@ -46,6 +46,11 @@ namespace HelloImGui
         ImGui_ImplVulkanH_Window ImGuiMainWindowData;
         int                      MinImageCount = 2;
         bool                     SwapChainRebuild = false;
+
+        // The maximum number of image sampler descriptor and descriptor set is set at startup
+        // Yoy may need to increase these values if you use a lot of images in your application.
+        uint32_t                 PoolCreateInfo_PoolSizes = 100;
+        uint32_t                 PoolCreateInfo_MaxSets = 100;
     };
     VulkanGlobals& GetVulkanGlobals();
 

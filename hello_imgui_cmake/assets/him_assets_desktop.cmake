@@ -5,17 +5,6 @@
 #     - install the assets folder and the app exe to the install directory
 #     - set the debugger working directory to the output directory (for Win32)
 
-function(hello_imgui_get_real_output_directory app_name r)
-    # Warning: RUNTIME_OUTPUT_DIRECTORY is stable, but RUNTIME_OUTPUT_DIRECTORY_CONFIG can vary between Debug/Release configs
-    # cf https://cmake.org/cmake/help/latest/prop_tgt/RUNTIME_OUTPUT_DIRECTORY_CONFIG.html
-    get_property(runtime_output_directory TARGET ${app_name} PROPERTY RUNTIME_OUTPUT_DIRECTORY)
-    if ("${runtime_output_directory}" STREQUAL "")
-        set(${r} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
-    else()
-        set(${r} ${runtime_output_directory} PARENT_SCOPE)
-    endif()
-endfunction()
-
 
 function(_do_copy_asset app_name src dst)
     hello_imgui_get_real_output_directory(${app_name} real_output_directory)

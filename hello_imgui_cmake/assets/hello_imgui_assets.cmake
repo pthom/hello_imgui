@@ -10,6 +10,18 @@ else()
 endif()
 
 
+function(hello_imgui_get_real_output_directory app_name r)
+    # Warning: RUNTIME_OUTPUT_DIRECTORY is stable, but RUNTIME_OUTPUT_DIRECTORY_CONFIG can vary between Debug/Release configs
+    # cf https://cmake.org/cmake/help/latest/prop_tgt/RUNTIME_OUTPUT_DIRECTORY_CONFIG.html
+    get_property(runtime_output_directory TARGET ${app_name} PROPERTY RUNTIME_OUTPUT_DIRECTORY)
+    if ("${runtime_output_directory}" STREQUAL "")
+        set(${r} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
+    else()
+        set(${r} ${runtime_output_directory} PARENT_SCOPE)
+    endif()
+endfunction()
+
+
 function(hello_imgui_file_glob_recurse_relative out_file_list folder)
     FILE(GLOB_RECURSE files_fullpath ${folder}/*)
     set(files_relativepath "")

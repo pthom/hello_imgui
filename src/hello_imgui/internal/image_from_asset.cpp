@@ -60,7 +60,7 @@ namespace HelloImGui
         {
             // Load the image using stbi_load_from_memory
             auto assetData = LoadAssetFileData(assetPath);
-            assert(assetData.data != nullptr);
+            IM_ASSERT(assetData.data != nullptr);
             unsigned char*image_data_rgba = stbi_load_from_memory(
                 (unsigned char *)assetData.data, (int)assetData.dataSize,
                 &concreteImage->Width, &concreteImage->Height, NULL, 4);

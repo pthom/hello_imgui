@@ -166,8 +166,7 @@ function(_him_try_select_glfw_if_no_backend_selected)
         if (glfw3_FOUND)
             set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
             message(STATUS
-                "HelloImGui: using Glfw as default default backend (it was found via find_package(glfw3))
-                ${backend_message}
+                "HelloImGui: using HELLOIMGUI_USE_GLFW_OPENGL3 as default default backend (glfw was found via find_package(glfw3))
                 ")
             set(HELLOIMGUI_NO_BACKEND_SELECTED OFF CACHE INTERNAL "")
         else()

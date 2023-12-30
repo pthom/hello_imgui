@@ -1,7 +1,7 @@
 #include "image_from_asset.h"
 
 
-#if !defined(HELLOIMGUI_HAS_VULKAN) && !defined(HELLOIMGUI_HAS_OPENGL) && !defined(HELLOIMGUI_HAS_METAL)
+#if !defined(HELLOIMGUI_HAS_VULKAN) && !defined(HELLOIMGUI_HAS_OPENGL) && !defined(HELLOIMGUI_HAS_METAL) && !defined(HELLOIMGUI_HAS_DIRECTX11)
 
 #include "imgui.h"
 

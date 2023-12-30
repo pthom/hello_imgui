@@ -5,15 +5,15 @@
 #include "SDL.h"
 #endif
 
+#include "hello_imgui/dpi_aware.h"
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/hello_imgui_error.h"
-#include "hello_imgui/icons_font_awesome.h"
-#include "hello_imgui/image_gl.h"
-#include "hello_imgui/image_from_asset.h"
-#include "hello_imgui/runner_params.h"
 #include "hello_imgui/hello_imgui_logger.h"
+#include "hello_imgui/icons_font_awesome.h"
+#include "hello_imgui/image_from_asset.h"
+// #include "hello_imgui/image_gl_deprecated.h"
 #include "hello_imgui/imgui_theme.h"
-#include "hello_imgui/dpi_aware.h"
+#include "hello_imgui/runner_params.h"
 #include <string>
 
 #include <cstddef>

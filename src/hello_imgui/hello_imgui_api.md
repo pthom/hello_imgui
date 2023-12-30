@@ -832,6 +832,12 @@ See [image_from_asset.h](image_from_asset.h).
 * `HelloImGui::ImageFromAsset(const char *assetPath, size, ...)`: will display a static image from the assets.
 * `bool HelloImGui::ImageButtonFromAsset(const char *assetPath, size, ...)`: will display a button using an image from the assets.
 * `ImTextureID HelloImGui::ImTextureIdFromAsset(const char *assetPath)`: will return a texture ID for an image loaded from the assets.
+* `ImVec2 HelloImGui::ImageSizeFromAsset(const char *assetPath)`: will return the size of an image loaded from the assets.
+* `ImVec2 HelloImGui::ImageProportionalSize(const ImVec2& askedSize, const ImVec2& imageSize)`:
+   Will return the displayed size of an image.
+   if askedSize.x or askedSize.y is 0, then the corresponding dimension will be computed from the image size, keeping the aspect ratio.
+   if askedSize.x>0 and askedSize.y> 0, then the image will be scaled to fit exactly the askedSize, thus potentially changing the aspect ratio.
+   Note: this function is used internally by ImageFromAsset and ImageButtonFromAsset, so you don't need to call it directly.
 
 Images are loaded when first displayed, and then cached (they will be freed just before the application exits).
 
@@ -848,8 +854,6 @@ then, you can display "my_image.jpg", using:
 ```cpp
 HelloImGui::ImageFromAsset("my_image.jpg");
 ```
-
-*Note: HelloImGui::ImageFromAsset only works with OpenGL backends. It will throw an exception on other backends*
 
 
 ## Backend Pointers

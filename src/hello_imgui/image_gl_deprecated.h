@@ -7,6 +7,7 @@
 
 /**
 @@md#HelloImGui::ImageGl
+    Deprecated!!!
 
     Image loading utilities, based on stb_image. They work *only with OpenGL backends*.
 

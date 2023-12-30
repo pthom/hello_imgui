@@ -1,7 +1,7 @@
 #include "image_from_asset.h"
 
 #ifdef HELLOIMGUI_HAS_OPENGL
-#include "hello_imgui/image_gl.h"
+#include "hello_imgui/image_gl_deprecated.h"
 
 #include <string>
 #include <unordered_map>

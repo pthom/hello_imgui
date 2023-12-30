@@ -10,6 +10,7 @@
 #include "hello_imgui/hello_imgui_assets.h"
 #include "imgui.h"
 #include "hello_imgui/hello_imgui_assets.h"
+#include "hello_imgui/hello_imgui_logger.h"
 #include "hello_imgui/internal/stb_image.h"
 
 #include <string>
@@ -40,34 +41,38 @@ namespace HelloImGui
         if (gImageFromAssetMap.find(assetPath) != gImageFromAssetMap.end())
             return gImageFromAssetMap.at(assetPath);
 
-        ImageAbstractPtr image;
+        ImageAbstractPtr concreteImage;
 #ifdef HELLOIMGUI_HAS_OPENGL
-        image = std::make_shared<ImageOpenGl>();
+        concreteImage = std::make_shared<ImageOpenGl>();
 #elif defined(HELLOIMGUI_HAS_DIRECTX11)
-        image = std::make_shared<ImageDx11>();
+        concreteImage = std::make_shared<ImageDx11>();
 #elif defined(HELLOIMGUI_HAS_METAL)
-        image = std::make_shared<ImageMetal>();
+        concreteImage = std::make_shared<ImageMetal>();
 #elif defined(HELLOIMGUI_HAS_VULKAN)
-        image = std::make_shared<ImageVulkan>();
+        concreteImage = std::make_shared<ImageVulkan>();
 #else
-#error "No graphics API defined"
+        HelloImGui::Log(LogLevel::Warning, "ImageFromAsset: not implemented for this rendering backend!");
+        concreteImage = nullptr;
 #endif
+        gImageFromAssetMap[assetPath] = concreteImage;
 
-        gImageFromAssetMap[assetPath] = image;
-
-        // Load the image using stbi_load_from_memory
-        auto assetData = LoadAssetFileData(assetPath);
-        assert(assetData.data != nullptr);
-        unsigned char*image_data_rgba = stbi_load_from_memory(
-            (unsigned char *)assetData.data, (int)assetData.dataSize,
-            &image->Width, &image->Height, NULL, 4);
-        if (image_data_rgba == NULL)
+        if (concreteImage != nullptr)
         {
-            IM_ASSERT(false && "ImageDx11: Failed to load image!");
-            throw std::runtime_error("ImageAbstract: Failed to load image!");
+            // Load the image using stbi_load_from_memory
+            auto assetData = LoadAssetFileData(assetPath);
+            assert(assetData.data != nullptr);
+            unsigned char*image_data_rgba = stbi_load_from_memory(
+                (unsigned char *)assetData.data, (int)assetData.dataSize,
+                &concreteImage->Width, &concreteImage->Height, NULL, 4);
+            if (image_data_rgba == NULL)
+            {
+                IM_ASSERT(false && "ImageDx11: Failed to load image!");
+                throw std::runtime_error("ImageAbstract: Failed to load image!");
+            }
+
+            concreteImage->_impl_StoreTexture(concreteImage->Width, concreteImage->Height, image_data_rgba);
         }
 
-        image->_impl_StoreTexture(image->Width, image->Height, image_data_rgba);
         return gImageFromAssetMap.at(assetPath);
     }
 
@@ -78,16 +83,28 @@ namespace HelloImGui
         const ImVec2& uv0, const ImVec2& uv1,
         const ImVec4& tint_col, const ImVec4& border_col)
     {
-        auto textureId = ImTextureIdFromAsset(assetPath);
-        auto imageSize = ImageSizeFromAsset(assetPath);
+        auto cachedImage = _GetCachedImage(assetPath);
+        if (cachedImage == nullptr)
+        {
+            ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), "ImageFromAsset: fail!");
+            return;
+        }
+        auto textureId = cachedImage->TextureID();
+        auto imageSize = ImVec2((float)cachedImage->Width, (float)cachedImage->Height);
         ImVec2 displayedSize = ImageProportionalSize(size, imageSize);
         ImGui::Image(textureId, displayedSize, uv0, uv1, tint_col, border_col);
     }
 
     bool ImageButtonFromAsset(const char *assetPath, const ImVec2& size, const ImVec2& uv0,  const ImVec2& uv1, int frame_padding, const ImVec4& bg_col, const ImVec4& tint_col)
     {
-        auto textureId = ImTextureIdFromAsset(assetPath);
-        auto imageSize = ImageSizeFromAsset(assetPath);
+        auto cachedImage = _GetCachedImage(assetPath);
+        if (cachedImage == nullptr)
+        {
+            ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), "ImageButtonFromAsset: fail!");
+            return false;
+        }
+        auto textureId = cachedImage->TextureID();
+        auto imageSize = ImVec2((float)cachedImage->Width, (float)cachedImage->Height);
         ImVec2 displayedSize = ImageProportionalSize(size, imageSize);
         bool clicked = ImGui::ImageButton(textureId, displayedSize, uv0, uv1, frame_padding, bg_col, tint_col);
         return clicked;
@@ -96,12 +113,16 @@ namespace HelloImGui
     ImTextureID ImTextureIdFromAsset(const char *assetPath)
     {
         auto cachedImage = _GetCachedImage(assetPath);
+        if (cachedImage == nullptr)
+            return ImTextureID(0);
         return cachedImage->TextureID();
     }
 
     ImVec2 ImageSizeFromAsset(const char *assetPath)
     {
         auto cachedImage = _GetCachedImage(assetPath);
+        if (cachedImage == nullptr)
+            return ImVec2(0.f, 0.f);
         return ImVec2((float)cachedImage->Width, (float)cachedImage->Height);
     }
 

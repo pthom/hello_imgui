@@ -105,6 +105,16 @@ function(him_sanity_checks)
         set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
     endif()
 
+    # Legacy options: HELLOIMGUI_WITH_SDL and HELLOIMGUI_WITH_GLFW
+    if (HELLOIMGUI_WITH_SDL)
+        message(WARNING "HELLOIMGUI_WITH_SDL is deprecated, use HELLOIMGUI_USE_SDL_OPENGL3 instead")
+        set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
+    endif()
+    if (HELLOIMGUI_WITH_GLFW)
+        message(WARNING "HELLOIMGUI_WITH_GLFW is deprecated, use DHELLOIMGUI_USE_GLFW_OPENGL3 instead")
+        set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
+    endif()
+
     _him_check_if_no_backend_selected()  # will set HELLOIMGUI_NO_BACKEND_SELECTED to ON if no backend selected
 
     if (HELLOIMGUI_NO_BACKEND_SELECTED)
@@ -411,7 +421,7 @@ function(_him_fetch_sdl_if_needed)
     endif()
 
     # Fetch SDL if:
-    # option HELLOIMGUI_WITH_SDL was passed
+    # option HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED was passed
     # and SDL not available by find_package
     # and HELLOIMGUI_USE_SDL_SYSTEM_LIB is OFF
     if (HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED AND NOT TARGET sdl AND NOT EMSCRIPTEN)

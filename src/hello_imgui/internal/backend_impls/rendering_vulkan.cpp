@@ -81,10 +81,6 @@ namespace HelloImGui
             VkResult err = vkDeviceWaitIdle(gVkGlobals.Device);
             HelloImGui::VulkanSetup::check_vk_result(err);
             ImGui_ImplVulkan_Shutdown();
-
-            //ImGui_ImplGlfw_Shutdown();
-            // ImGui::DestroyContext();
-
             HelloImGui::VulkanSetup::CleanupVulkanWindow();
             HelloImGui::VulkanSetup::CleanupVulkan();
         };

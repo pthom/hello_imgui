@@ -3,8 +3,6 @@
 
 #include "imgui.h"
 #include "hello_imgui/internal/backend_impls/rendering_vulkan.h"
-#include "hello_imgui/internal/stb_image.h"
-#include "hello_imgui/hello_imgui_assets.h"
 
 // Inspired from https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples#example-for-vulkan-users
 // WARNING: THIS IS ONE WAY TO DO THIS AMONG MANY, and provided for informational purpose.
@@ -29,25 +27,14 @@ namespace HelloImGui
         return 0xFFFFFFFF; // Unable to find memoryType
     }
 
-    ImageVk::ImageVk(const char *assetPath)
+    ImageVk::ImageVk(int width, int height, unsigned char* image_data_rgba)
     {
         VulkanGlobals& vkGlobals = GetVulkanGlobals();
         
         auto &self = *this;
 
-        // Load the image using stbi_load_from_memory
-        // ...
-        auto assetData = LoadAssetFileData(assetPath);
-        assert(assetData.data != nullptr);
-
-        unsigned char*image_data = stbi_load_from_memory(
-            (unsigned char *)assetData.data, (int)assetData.dataSize,
-            &self.Width, &self.Height, NULL, 4);
-
-        if (image_data == NULL) {
-            IM_ASSERT(false && "ImageVk: Failed to load image!");
-            return;
-        }
+        self.Width = width;
+        self.Height = height;
 
 
         // Calculate allocation size (in number of bytes)
@@ -145,7 +132,7 @@ namespace HelloImGui
             void* map = NULL;
             err = vkMapMemory(vkGlobals.Device, self.UploadBufferMemory, 0, image_size, 0, &map);
             VulkanSetup::check_vk_result(err);
-            memcpy(map, image_data, image_size);
+            memcpy(map, image_data_rgba, image_size);
             VkMappedMemoryRange range[1] = {};
             range[0].sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
             range[0].memory = self.UploadBufferMemory;
@@ -154,9 +141,6 @@ namespace HelloImGui
             VulkanSetup::check_vk_result(err);
             vkUnmapMemory(vkGlobals.Device, self.UploadBufferMemory);
         }
-
-        // Release image memory using stb
-        stbi_image_free(image_data);
 
         // Create a command buffer that will perform following steps when hit in the command queue.
         // TODO: this works in the example, but may need input if this is an acceptable way to access the pool/create the command buffer.

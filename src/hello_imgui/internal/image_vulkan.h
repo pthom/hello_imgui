@@ -8,13 +8,13 @@ namespace HelloImGui
 {
     struct ImageVk
     {
-        ImageVk(const char *assetPath);
+        ImageVk(int width, int height, unsigned char* image_data_rgba);
         ~ImageVk();
 
         VkDescriptorSet DS;         // Descriptor set: this is what you'll pass to Image()
         int             Width = 0;
         int             Height = 0;
-        int             Channels = 4;
+        static constexpr int Channels = 4; // We intentionally only support RGBA for now
 
         // Need to keep track of these to properly cleanup
         VkImageView     ImageView = nullptr;

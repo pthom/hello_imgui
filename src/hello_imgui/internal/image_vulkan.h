@@ -10,7 +10,7 @@ namespace HelloImGui
     struct ImageVulkan: public ImageAbstract
     {
         ImageVulkan() = default;
-        ~ImageVulkan();
+        ~ImageVulkan() override;
 
         ImTextureID TextureID() override;
         void _impl_StoreTexture(int width, int height, unsigned char* image_data_rgba) override;

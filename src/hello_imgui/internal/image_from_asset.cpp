@@ -14,6 +14,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <stdexcept>
 
 
 namespace HelloImGui
@@ -42,7 +43,7 @@ namespace HelloImGui
         ImageAbstractPtr image;
 #ifdef HELLOIMGUI_HAS_OPENGL
         image = std::make_shared<ImageOpenGl>();
-#elif defined(HELLOIMGUI_HAS_DX11)
+#elif defined(HELLOIMGUI_HAS_DIRECTX11)
         image = std::make_shared<ImageDx11>();
 #elif defined(HELLOIMGUI_HAS_METAL)
         image = std::make_shared<ImageMetal>();

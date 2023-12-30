@@ -12,7 +12,7 @@ namespace HelloImGui
     struct ImageMetal: public ImageAbstract
     {
         ImageMetal() = default;
-        ~ImageMetal();
+        ~ImageMetal() override;
 
         ImTextureID TextureID() override;
         void _impl_StoreTexture(int width, int height, unsigned char* image_data_rgba) override;

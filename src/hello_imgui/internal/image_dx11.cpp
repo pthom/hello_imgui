@@ -7,8 +7,7 @@
 
 namespace HelloImGui
 {
-    ImageDx11::ImageDx11(int width, int height, unsigned char* image_data_rgba):
-        Width(width), Height(height)
+    void ImageDx11::_impl_StoreTexture(int width, int height, unsigned char* image_data_rgba)
     {
         auto& gDx11Globals =  GetDx11Globals();
 
@@ -47,6 +46,11 @@ namespace HelloImGui
     {
         if (ShaderResourceView)
             ShaderResourceView->Release();
+    }
+
+    ImTextureID ImageDx11::TextureID()
+    {
+        return (ImTextureID)(uintptr_t)(ShaderResourceView);
     }
 
 }

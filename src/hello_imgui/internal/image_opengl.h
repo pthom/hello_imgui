@@ -10,7 +10,7 @@ namespace HelloImGui
     struct ImageOpenGl: public ImageAbstract
     {
         ImageOpenGl() = default;
-        ~ImageOpenGl();
+        ~ImageOpenGl() override;
 
         ImTextureID TextureID() override;
         void _impl_StoreTexture(int width, int height, unsigned char* image_data_rgba) override;

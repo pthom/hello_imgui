@@ -53,11 +53,18 @@ option(HELLOIMGUI_ADD_APP_WITH_INSTALL "Add cmake install() instructions with he
 # Note:
 # - Only one rendering backend can be used at a time (OpenGL3, Metal or Vulkan)!
 # - You may select multiple windowing backends (for example, you may select both SDL and Glfw3)
+# - Backends using OpenGL3 as a renderer are easier to use, and are recommended, especially for beginners.
 #------------------------------------------------------------------------------
+# Standard backends:
 # Use Glfw3 + OpenGl3
 option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for Glfw3+OpenGL3" OFF)
 # Use SDL2 + OpenGL3
 option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL2+OpenGL3" OFF)
+
+# Advanced backends, for experienced users:
+#   Vulkan, Metal, and DirectX11 do work, but you may need to customize the rendering code inside HelloImGui:
+#   see src/hello_imgui/internal/backend_impls/rendering_xxxx.[h,cpp]
+#   (using those backends probably implies that you want to heavily customize the rendering code)
 # Use Glfw3 + Metal (Apple only)
 option(HELLOIMGUI_USE_GLFW_METAL "Build HelloImGui for Glfw3+Metal" OFF)
 # Use SDL2 + Metal (Apple only)
@@ -68,9 +75,7 @@ option(HELLOIMGUI_USE_GLFW_VULKAN "Build HelloImGui for Glfw3+Vulkan" OFF)
 option(HELLOIMGUI_USE_SDL_VULKAN "Build HelloImGui for SDL2+Vulkan" OFF)
 # Use SDL + DirectX 11
 option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build HelloImGui for SDL2+DirectX11" OFF)
-
-
-# Experimental backends below! DirectX12 was not tested, although it does compile!
+# Experimental! DirectX12 was not tested, although it does compile!
 option(HELLOIMGUI_USE_SDL_DIRECTX12 "Build HelloImGui for SDL2+DirectX12" OFF)
 
 

@@ -448,7 +448,7 @@ function(_him_fetch_declare_sdl)
 
     message(STATUS "Fetching SDL version ${sdl_version}")
     include(FetchContent)
-    Set(FETCHCONTENT_QUIET FALSE)
+    # Set(FETCHCONTENT_QUIET FALSE)
     FetchContent_Declare(sdl
         GIT_REPOSITORY    https://github.com/libsdl-org/SDL.git
         GIT_TAG           release-${sdl_version}
@@ -531,7 +531,7 @@ function(_him_fetch_glfw_if_needed)
     if (shall_fetch_glfw)
         message(STATUS "HelloImGui: downloading and building glfw")
         include(FetchContent)
-        Set(FETCHCONTENT_QUIET FALSE)
+        # Set(FETCHCONTENT_QUIET FALSE)
         FetchContent_Declare(glfw
             GIT_REPOSITORY    https://github.com/glfw/glfw.git
             GIT_TAG           3.3.8

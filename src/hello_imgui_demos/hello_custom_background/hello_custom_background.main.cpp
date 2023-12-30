@@ -7,6 +7,7 @@
 
 #include <iostream>        // for std::cerr
 #include <unordered_map>   // for UniformsList
+#include <memory>          // for std::unique_ptr
 
 
 /******************************************************************************

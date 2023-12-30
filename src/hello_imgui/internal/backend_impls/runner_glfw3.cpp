@@ -13,6 +13,9 @@
 #ifdef HELLOIMGUI_HAS_VULKAN
 #include "rendering_vulkan.h"
 #endif
+#ifdef HELLOIMGUI_HAS_DIRECTX12
+#include "rendering_dx12.h"
+#endif
 
 #include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/internal/stb_image.h"
@@ -196,6 +199,17 @@ namespace HelloImGui
         PrepareGlfwForVulkan((GLFWwindow *) mWindow);
     }
 
+#elif defined(HELLOIMGUI_HAS_DIRECTX12)
+    void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
+    {
+        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
+        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwDx12();
+    }
+    void RunnerGlfw3::Impl_LinkWindowingToRenderingBackend()
+    {
+        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
+        PrepareGlfwForDx12((GLFWwindow *) mWindow);
+    }
 #endif
 
 

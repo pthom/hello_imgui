@@ -67,6 +67,10 @@ option(HELLOIMGUI_USE_GLFW_VULKAN "Build HelloImGui for Glfw3+Vulkan" OFF)
 # Use SDL2 + Vulkan
 option(HELLOIMGUI_USE_SDL_VULKAN "Build HelloImGui for SDL2+Vulkan" OFF)
 
+# Experimental backends below! DirectX12 was not tested, although it does compile!
+option(HELLOIMGUI_USE_GLFW_DIRECTX12 "Build HelloImGui for Glfw3+DirectX12" OFF)
+option(HELLOIMGUI_USE_SDL_DIRECTX12 "Build HelloImGui for SDL2+DirectX12" OFF)
+
 #------------------------------------------------------------------------------
 # Automatic download of Glfw3 and SDL2 (provided as a convenience)
 # (disabled by default on Linux, which prefers to use the system libraries,

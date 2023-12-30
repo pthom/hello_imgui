@@ -11,6 +11,10 @@
 #ifdef HELLOIMGUI_HAS_VULKAN
 #include "rendering_vulkan.h"
 #endif
+#ifdef HELLOIMGUI_HAS_DIRECTX12
+#include "rendering_dx12.h"
+#endif
+
 
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
@@ -273,6 +277,16 @@ namespace HelloImGui
     void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()
     {
         PrepareSdlForVulkan((SDL_Window*)mWindow);
+    }
+#endif
+#ifdef HELLOIMGUI_HAS_DIRECTX12
+    void RunnerSdl2::Impl_InitRenderBackendCallbacks()
+    {
+        mRenderingBackendCallbacks = CreateBackendCallbacks_SdlDx12();
+    }
+    void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()
+    {
+        PrepareSdlForDx12((SDL_Window*)mWindow);
     }
 #endif
 

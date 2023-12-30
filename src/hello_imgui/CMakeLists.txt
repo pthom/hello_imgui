@@ -130,7 +130,7 @@ function(him_sanity_checks)
         ")
         message(STATUS "${backend_message}")
 
-        _him_try_select_glfw_if_no_backend_selected() # may change HELLOIMGUI_NO_BACKEND_SELECTED to OFF
+        _him_try_select_glfw_opengl3_if_no_backend_selected() # may change HELLOIMGUI_NO_BACKEND_SELECTED to OFF
     endif()
 
     if (HELLOIMGUI_NO_BACKEND_SELECTED)
@@ -145,12 +145,14 @@ function(_him_check_if_no_backend_selected)
         AND NOT HELLOIMGUI_USE_GLFW_METAL
         AND NOT HELLOIMGUI_USE_GLFW_VULKAN
         AND NOT HELLOIMGUI_USE_SDL_VULKAN
+        AND NOT HELLOIMGUI_USE_GLFW_DIRECTX12
+        AND NOT HELLOIMGUI_USE_SDL_DIRECTX12
     )
         set(HELLOIMGUI_NO_BACKEND_SELECTED ON CACHE INTERNAL "")
     endif()
 endfunction()
 
-function(_him_try_select_glfw_if_no_backend_selected)
+function(_him_try_select_glfw_opengl3_if_no_backend_selected)
     #------------------------------------------------------------------------------
     # Backend check: If no backend option is selected,
     # either select Glfw automatically if possible, or fail
@@ -364,6 +366,20 @@ endfunction()
 
 
 ###################################################################################################
+# DirectX12 Rendering backend: API = him_has_directx12
+###################################################################################################
+function(him_has_directx12 target)
+    target_sources(${target} PRIVATE
+            ${imgui_backends_dir}/imgui_impl_dx12.h
+            ${imgui_backends_dir}/imgui_impl_dx12.cpp
+    )
+    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_DIRECTX12)
+    set(HELLOIMGUI_HAS_DIRECTX12 ON CACHE BOOL "" FORCE)
+    target_link_libraries(${helloimgui_target} PUBLIC d3d12.lib dxgi.lib)
+endfunction()
+
+
+###################################################################################################
 # Check only one rendering backend is selected: API = him_check_only_one_backend_selected
 ###################################################################################################
 function(him_check_only_one_rendering_backend_selected)
@@ -379,12 +395,15 @@ function(him_check_only_one_rendering_backend_selected)
     if (HELLOIMGUI_HAS_VULKAN)
         math(EXPR selected_backends "${selected_backends} + 1")
     endif()
+    if (HELLOIMGUI_HAS_DIRECTX12)
+        math(EXPR selected_backends "${selected_backends} + 1")
+    endif()
     # selected_backends should be 1
     if (selected_backends EQUAL 0)
         message(FATAL_ERROR "HelloImGui: no rendering backend selected")
     endif()
     if (NOT selected_backends EQUAL 1)
-        message(FATAL_ERROR "HelloImGui: only one of HELLOIMGUI_HAS_OPENGL, HELLOIMGUI_HAS_METAL, HELLOIMGUI_HAS_VULKAN can be ON")
+        message(FATAL_ERROR "HelloImGui: only one of HELLOIMGUI_HAS_OPENGL, HELLOIMGUI_HAS_METAL, HELLOIMGUI_HAS_VULKAN, HELLOIMGUI_HAS_DIRECTX12 can be ON")
     endif()
 endfunction()
 
@@ -621,6 +640,18 @@ function(him_main)
         him_use_sdl2_backend(${helloimgui_target})
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_VULKAN)
     endif()
+
+    if(HELLOIMGUI_USE_GLFW_DIRECTX12)
+        him_has_directx12(${helloimgui_target})
+        him_use_glfw_backend(${helloimgui_target})
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_DIRECTX12)
+    endif()
+
+    if(HELLOIMGUI_USE_SDL_DIRECTX12)
+        him_has_directx12(${helloimgui_target})
+        him_use_sdl2_backend(${helloimgui_target})
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_DIRECTX12)
+    endif ()
 
     him_check_only_one_rendering_backend_selected()
     him_add_apple_options()

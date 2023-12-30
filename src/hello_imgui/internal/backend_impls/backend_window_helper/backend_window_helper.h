@@ -6,6 +6,11 @@
 #include <optional>
 #include <vector>
 
+#ifdef _WIN32
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+#endif
 
 #define BACKEND_THROW_IMPL(msg) \
     { \

@@ -12,6 +12,11 @@
 #include "SDL.h"
 #include "SDL_main.h"
 
+#ifdef _WIN32
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+#endif
 
 namespace HelloImGui { namespace BackendApi
 {

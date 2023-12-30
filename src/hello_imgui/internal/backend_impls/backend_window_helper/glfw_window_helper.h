@@ -3,6 +3,12 @@
 
 #include "backend_window_helper.h"
 
+#ifdef _WIN32
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+#endif
+
 
 namespace HelloImGui { namespace BackendApi
 {

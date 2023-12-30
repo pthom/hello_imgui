@@ -1,3 +1,7 @@
+// Important DirectX12 was not tested
+// (developed on a MacBook M1 computer, which does not support DirectX12)
+// Testers and feedback is welcome.
+
 #ifdef HELLOIMGUI_HAS_DIRECTX12
 #include "rendering_dx12.h"
 #include "hello_imgui/hello_imgui.h"

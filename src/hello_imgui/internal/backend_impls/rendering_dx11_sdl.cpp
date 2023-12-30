@@ -1,7 +1,7 @@
-#if defined(HELLOIMGUI_HAS_DIRECTX12) && defined(HELLOIMGUI_USE_SDL2)
-#include "rendering_dx12.h"
+#if defined(HELLOIMGUI_HAS_DIRECTX11) && defined(HELLOIMGUI_USE_SDL2)
+#include "rendering_dx11.h"
 
-#include <backends/imgui_impl_dx12.h>
+#include <backends/imgui_impl_dx11.h>
 #include <backends/imgui_impl_sdl2.h>
 
 #include <SDL.h>
@@ -14,10 +14,9 @@
 namespace HelloImGui
 {
     // Below is implementation of RenderingCallbacks_LinkWindowingToRenderingBackend
-    void PrepareSdlForDx12(SDL_Window* window)
+    void PrepareSdlForDx11(SDL_Window* window)
     {
-        auto & gDxGlobals = GetDx12Globals();
-
+        auto & gDx11Globals = GetDx11Globals();
 
         HWND hwnd;
         {
@@ -33,26 +32,21 @@ namespace HelloImGui
         }
 
         // Initialize Direct3D
-        if (! Dx12Setup::CreateDeviceD3D(hwnd))
+        if (! Dx11Setup::CreateDeviceD3D(hwnd))
         {
-            Dx12Setup::CleanupDeviceD3D();
-            //::UnregisterClassW(wc.lpszClassName, wc.hInstance);
+            Dx11Setup::CleanupDeviceD3D();
             IM_ASSERT(false && "CreateDeviceD3D failed");
             throw std::runtime_error("CreateDeviceD3D failed");
         }
 
         ImGui_ImplSDL2_InitForD3D(window);
-        ImGui_ImplDX12_Init(gDxGlobals.pd3dDevice, NUM_FRAMES_IN_FLIGHT,
-                            DXGI_FORMAT_R8G8B8A8_UNORM, gDxGlobals.pd3dSrvDescHeap,
-                            gDxGlobals.pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
-                            gDxGlobals.pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
-
+        ImGui_ImplDX11_Init(gDx11Globals.pd3dDevice, gDx11Globals.pd3dDeviceContext);
     }
 
 
-    RenderingCallbacksPtr CreateBackendCallbacks_SdlDx12()
+    RenderingCallbacksPtr CreateBackendCallbacks_SdlDx11()
     {
-        auto callbacks = PrepareBackendCallbacksCommonDx12();
+        auto callbacks = PrepareBackendCallbacksCommonDx11();
 
         callbacks->Impl_GetFrameBufferSize = []
         {
@@ -67,4 +61,4 @@ namespace HelloImGui
 
 }
 
-#endif // #if defined(HELLOIMGUI_HAS_DIRECTX12) && defined(HELLOIMGUI_USE_GLFW3)
+#endif // #if defined(HELLOIMGUI_HAS_DIRECTX11) && defined(HELLOIMGUI_USE_GLFW3)

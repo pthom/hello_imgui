@@ -1,6 +1,6 @@
 name: "Vulkan"
 
-# Test that Metal build works on Apple
+# Test that Vulkan builds work
 on:
   workflow_dispatch:
   pull_request:

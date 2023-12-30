@@ -127,6 +127,7 @@ function(him_sanity_checks)
                     -DHELLOIMGUI_USE_SDL_METAL=ON         # SDL2 + Metal
                     -DHELLOIMGUI_USE_GLFW_VULKAN=ON       # Glfw3 + Vulkan
                     -DHELLOIMGUI_USE_SDL_VULKAN           # SDL2 + Vulkan
+                    ...
         ")
         message(STATUS "${backend_message}")
 
@@ -145,7 +146,7 @@ function(_him_check_if_no_backend_selected)
         AND NOT HELLOIMGUI_USE_GLFW_METAL
         AND NOT HELLOIMGUI_USE_GLFW_VULKAN
         AND NOT HELLOIMGUI_USE_SDL_VULKAN
-        AND NOT HELLOIMGUI_USE_GLFW_DIRECTX12
+        AND NOT HELLOIMGUI_USE_SDL_DIRECTX11
         AND NOT HELLOIMGUI_USE_SDL_DIRECTX12
     )
         set(HELLOIMGUI_NO_BACKEND_SELECTED ON CACHE INTERNAL "")
@@ -366,6 +367,20 @@ endfunction()
 
 
 ###################################################################################################
+# DirectX11 Rendering backend: API = him_has_directx11
+###################################################################################################
+function(him_has_directx11 target)
+    target_sources(${target} PRIVATE
+            ${imgui_backends_dir}/imgui_impl_dx11.h
+            ${imgui_backends_dir}/imgui_impl_dx11.cpp
+    )
+    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_DIRECTX11)
+    set(HELLOIMGUI_HAS_DIRECTX11 ON CACHE BOOL "" FORCE)
+    target_link_libraries(${helloimgui_target} PUBLIC d3d11.lib)
+endfunction()
+
+
+###################################################################################################
 # DirectX12 Rendering backend: API = him_has_directx12
 ###################################################################################################
 function(him_has_directx12 target)
@@ -393,6 +408,9 @@ function(him_check_only_one_rendering_backend_selected)
         math(EXPR selected_backends "${selected_backends} + 1")
     endif()
     if (HELLOIMGUI_HAS_VULKAN)
+        math(EXPR selected_backends "${selected_backends} + 1")
+    endif()
+    if (HELLOIMGUI_HAS_DIRECTX11)
         math(EXPR selected_backends "${selected_backends} + 1")
     endif()
     if (HELLOIMGUI_HAS_DIRECTX12)
@@ -641,11 +659,11 @@ function(him_main)
         target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_VULKAN)
     endif()
 
-    if(HELLOIMGUI_USE_GLFW_DIRECTX12)
-        him_has_directx12(${helloimgui_target})
-        him_use_glfw_backend(${helloimgui_target})
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_DIRECTX12)
-    endif()
+    if(HELLOIMGUI_USE_SDL_DIRECTX11)
+        him_has_directx11(${helloimgui_target})
+        him_use_sdl2_backend(${helloimgui_target})
+        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_DIRECTX11)
+    endif ()
 
     if(HELLOIMGUI_USE_SDL_DIRECTX12)
         him_has_directx12(${helloimgui_target})

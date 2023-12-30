@@ -10,6 +10,7 @@
 [![Automate](https://github.com/pthom/hello_imgui/workflows/Automate/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Automate.yml)
 [![Metal](https://github.com/pthom/hello_imgui/workflows/Metal/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Metal.yml)
 [![Vulkan](https://github.com/pthom/hello_imgui/workflows/Vulkan/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Vulkan.yml)
+[![DirectX](https://github.com/pthom/hello_imgui/workflows/DirectX/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/DirectX.yml)
 
 
 # Hello ImGui

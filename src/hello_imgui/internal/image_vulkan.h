@@ -1,22 +1,23 @@
 #pragma once
 #ifdef HELLOIMGUI_HAS_VULKAN
 
+#include "image_abstract.h"
 #include <vulkan/vulkan.h>
 #include <memory>
 
 namespace HelloImGui
 {
-    struct ImageVk
+    struct ImageVulkan: public ImageAbstract
     {
-        ImageVk(int width, int height, unsigned char* image_data_rgba);
-        ~ImageVk();
+        ImageVulkan() = default;
+        ~ImageVulkan();
 
-        VkDescriptorSet DS;         // Descriptor set: this is what you'll pass to Image()
-        int             Width = 0;
-        int             Height = 0;
+        ImTextureID TextureID() override;
+        void _impl_StoreTexture(int width, int height, unsigned char* image_data_rgba) override;
+
+        // Specific to Vulkan
+        VkDescriptorSet DS;
         static constexpr int Channels = 4; // We intentionally only support RGBA for now
-
-        // Need to keep track of these to properly cleanup
         VkImageView     ImageView = nullptr;
         VkImage         Image = nullptr;
         VkDeviceMemory  ImageMemory = nullptr;
@@ -24,8 +25,6 @@ namespace HelloImGui
         VkBuffer        UploadBuffer = nullptr;
         VkDeviceMemory  UploadBufferMemory = nullptr;
     };
-
-    using ImageVkPtr = std::shared_ptr<ImageVk>;
 }
 
 #endif // #ifdef HELLOIMGUI_HAS_VULKAN

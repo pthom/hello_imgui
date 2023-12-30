@@ -27,18 +27,14 @@ namespace HelloImGui
         return 0xFFFFFFFF; // Unable to find memoryType
     }
 
-    ImageVk::ImageVk(int width, int height, unsigned char* image_data_rgba)
+    void ImageVulkan::_impl_StoreTexture(int width, int height, unsigned char* image_data_rgba)
     {
         VulkanGlobals& vkGlobals = GetVulkanGlobals();
         
         auto &self = *this;
 
-        self.Width = width;
-        self.Height = height;
-
-
         // Calculate allocation size (in number of bytes)
-        size_t image_size = self.Width * self.Height * self.Channels;
+        size_t image_size = width * height * self.Channels;
 
         VkResult err;
 
@@ -48,8 +44,8 @@ namespace HelloImGui
             info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
             info.imageType = VK_IMAGE_TYPE_2D;
             info.format = VK_FORMAT_R8G8B8A8_UNORM;
-            info.extent.width = self.Width;
-            info.extent.height = self.Height;
+            info.extent.width = width;
+            info.extent.height = height;
             info.extent.depth = 1;
             info.mipLevels = 1;
             info.arrayLayers = 1;
@@ -220,7 +216,7 @@ namespace HelloImGui
     }
 
     // Destructor to clean up Vulkan resources
-    ImageVk::~ImageVk()
+    ImageVulkan::~ImageVulkan()
     {
         VulkanGlobals& vkGlobals = GetVulkanGlobals();
         auto& self = *this;
@@ -233,6 +229,13 @@ namespace HelloImGui
         vkFreeMemory(vkGlobals.Device, self.ImageMemory, nullptr);
         ImGui_ImplVulkan_RemoveTexture(self.DS);
     }
+
+    ImTextureID ImageVulkan::TextureID()
+    {
+        return (ImTextureID)DS;
+        //return (ImTextureID)(intptr_t)ImageView;
+    }
+
 
 }
 

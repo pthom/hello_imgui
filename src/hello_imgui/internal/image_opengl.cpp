@@ -6,8 +6,7 @@
 
 namespace HelloImGui
 {
-    ImageOpenGl::ImageOpenGl(int width, int height, unsigned char* image_data_rgba):
-        Width(width), Height(height)
+    void ImageOpenGl::_impl_StoreTexture(int width, int height, unsigned char* image_data_rgba)
     {
         auto& self = *this;
         glGenTextures(1, &self.TextureId);
@@ -20,8 +19,14 @@ namespace HelloImGui
 #endif
         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-                     Width,
-                     Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data_rgba);
+                     width,
+                     height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data_rgba);
+    }
+
+    ImTextureID ImageOpenGl::TextureID()
+    {
+        auto& self = *this;
+        return (ImTextureID)(intptr_t)self.TextureId;
     }
 
     ImageOpenGl::~ImageOpenGl()

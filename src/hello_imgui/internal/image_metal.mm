@@ -7,8 +7,7 @@
 namespace HelloImGui
 {
 
-    ImageMetal::ImageMetal(int width, int height, unsigned char* image_data_rgba)
-        : Width(width), Height(height)
+    void ImageMetal::_impl_StoreTexture(int width, int height, unsigned char* image_data_rgba)
     {
         auto gMetalGlobals = GetMetalGlobals();
 
@@ -33,6 +32,12 @@ namespace HelloImGui
     {
         [Texture release];
     }
+
+    ImTextureID ImageMetal::TextureID()
+    {
+        return (ImTextureID)Texture;
+    }
+
 }
 
 #endif // #ifdef HELLOIMGUI_HAS_VULKAN

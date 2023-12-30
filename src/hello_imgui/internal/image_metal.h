@@ -1,23 +1,24 @@
 #pragma once
 #ifdef HELLOIMGUI_HAS_METAL
 
+#include "image_abstract.h"
+
 #include <Metal/Metal.h>
 #include <QuartzCore/CAMetalLayer.h>
 #include <memory>
 
 namespace HelloImGui
 {
-    struct ImageMetal
+    struct ImageMetal: public ImageAbstract
     {
-        ImageMetal(int width, int height, unsigned char* image_data_rgba);
+        ImageMetal() = default;
         ~ImageMetal();
 
-        id<MTLTexture> Texture;
-        int Width;
-        int Height;
-    };
+        ImTextureID TextureID() override;
+        void _impl_StoreTexture(int width, int height, unsigned char* image_data_rgba) override;
 
-    using ImageMetalPtr = std::shared_ptr<ImageMetal>;
+        id<MTLTexture> Texture;
+    };
 }
 
 #endif // #ifdef HELLOIMGUI_HAS_METAL

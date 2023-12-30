@@ -89,4 +89,9 @@ function(hello_imgui_platform_customization app_name assets_location)
         hello_imgui_ios_copy_resources(${app_name} ${assets_location})
         hello_imgui_ios_add_icons(${app_name} ${assets_location})
     endif()
+
+    # Install app to install directory
+    if (MACOSX AND HELLOIMGUI_ADD_APP_WITH_INSTALL)
+        install(TARGETS ${app_name} DESTINATION ${CMAKE_INSTALL_PREFIX})
+    endif()
 endfunction()

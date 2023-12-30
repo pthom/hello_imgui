@@ -35,8 +35,8 @@ include(${CMAKE_CURRENT_LIST_DIR}/hello_imgui_cmake/utils/cache_hello_imgui_path
 include(hello_imgui_add_app)
 
 # HELLOIMGUI_ADD_APP_WITH_INSTALL: if ON, hello_imgui_add_app will add install() instructions for the app.
+# (this works under Windows, Linux, macOS, and emscripten)
 # On desktop platforms, it will install the "app exe" and the "assets" folder in the install folder.
-# (this works under Windows, Linux; and macOS if HELLOIMGUI_MACOS_NO_BUNDLE is ON)
 option(HELLOIMGUI_ADD_APP_WITH_INSTALL "Add cmake install() instructions with hello_imgui_add_app" ON)
 
 

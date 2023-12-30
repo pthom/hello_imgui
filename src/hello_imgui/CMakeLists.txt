@@ -158,11 +158,7 @@ function(_him_try_select_glfw_if_no_backend_selected)
     #
     if (HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED)
         set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
-        message(STATUS "
-            HelloImGui: using HELLOIMGUI_USE_GLFW_OPENGL3 as default default backend
-            (Glfw3 will be downloaded and built inside {CMAKE_CURRENT_BINARY_DIR}/_deps/glfw-*)
-            ${backend_message}
-        ")
+        message(STATUS "HelloImGui: using HELLOIMGUI_USE_GLFW_OPENGL3 as default default backend")
         set(HELLOIMGUI_NO_BACKEND_SELECTED OFF CACHE INTERNAL "")
     else()
         # Check if Glfw can be found

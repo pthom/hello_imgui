@@ -30,6 +30,7 @@ namespace HelloImGui
 
         {
             gSdlMetalGlobals.sdlWindow = sdlWindow;
+            gMetalGlobals.mtlDevice = MTLCreateSystemDefaultDevice();
             gSdlMetalGlobals.sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
             if (gSdlMetalGlobals.sdlRenderer == nullptr)
             {

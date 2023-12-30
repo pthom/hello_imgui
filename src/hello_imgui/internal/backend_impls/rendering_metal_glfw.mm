@@ -33,16 +33,16 @@ namespace HelloImGui
         auto& gGlfwMetalGlobals = GetGlfwMetalGlobals();
         {
             gGlfwMetalGlobals.glfwWindow = glfwWindow;
-            gGlfwMetalGlobals.mtlDevice = MTLCreateSystemDefaultDevice();
-            gMetalGlobals.mtlCommandQueue = [gGlfwMetalGlobals.mtlDevice newCommandQueue];
+            gMetalGlobals.mtlDevice = MTLCreateSystemDefaultDevice();
+            gMetalGlobals.mtlCommandQueue = [gMetalGlobals.mtlDevice newCommandQueue];
         }
         {
             ImGui_ImplGlfw_InitForOther(gGlfwMetalGlobals.glfwWindow, true);
-            ImGui_ImplMetal_Init(gGlfwMetalGlobals.mtlDevice);
+            ImGui_ImplMetal_Init(gMetalGlobals.mtlDevice);
 
             NSWindow* nswin = glfwGetCocoaWindow(gGlfwMetalGlobals.glfwWindow);
             gMetalGlobals.caMetalLayer = [CAMetalLayer layer];
-            gMetalGlobals.caMetalLayer.device = gGlfwMetalGlobals.mtlDevice;
+            gMetalGlobals.caMetalLayer.device = gMetalGlobals.mtlDevice;
             gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
             nswin.contentView.layer = gMetalGlobals.caMetalLayer;
             nswin.contentView.wantsLayer = YES;

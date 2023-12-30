@@ -1,7 +1,7 @@
 #include "image_from_asset.h"
 
 
-#if !defined(HELLOIMGUI_HAS_VULKAN) && !defined(HELLOIMGUI_HAS_OPENGL)
+#if !defined(HELLOIMGUI_HAS_VULKAN) && !defined(HELLOIMGUI_HAS_OPENGL) && !defined(HELLOIMGUI_HAS_METAL)
 
 #include "imgui.h"
 
@@ -38,4 +38,5 @@ namespace HelloImGui
         void Free_ImageFromAssetMap() {}
     }
 } // namespace HelloImGui
-#endif // #if !defined(HELLOIMGUI_HAS_VULKAN) && !defined(HELLOIMGUI_HAS_OPENGL)
+
+#endif

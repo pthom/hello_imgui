@@ -27,6 +27,7 @@ namespace HelloImGui
         id<MTLCommandQueue> mtlCommandQueue = nullptr;
         MTLRenderPassDescriptor* mtlRenderPassDescriptor = nullptr;
         id <MTLRenderCommandEncoder> mtlRenderCommandEncoder = nullptr;
+        id<MTLDevice> mtlDevice = nullptr;
     };
     MetalGlobals& GetMetalGlobals();
 
@@ -56,7 +57,6 @@ namespace HelloImGui
     struct GlfwMetalGlobals
     {
         GLFWwindow* glfwWindow = nullptr;
-        id<MTLDevice> mtlDevice = nullptr;
     };
     GlfwMetalGlobals& GetGlfwMetalGlobals();
 #endif

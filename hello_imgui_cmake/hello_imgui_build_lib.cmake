@@ -104,9 +104,10 @@ function(him_sanity_checks)
         set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
     endif()
 
-    _him_check_if_no_backend_selected()  # will set HELLOIMGUI_NO_BACKEND_SELECTED to ON if no backend selected
+    _him_check_if_no_backend_selected(no_backend_selected)
 
-    if (HELLOIMGUI_NO_BACKEND_SELECTED)
+    if (no_backend_selected)
+        message(FATAL_ERROR "ARGHH3")
         set(backend_message "
                 HelloImGui: no backend selected!
                     In order to select your own backend, use one of the cmake options below:
@@ -120,15 +121,16 @@ function(him_sanity_checks)
         ")
         message(STATUS "${backend_message}")
 
-        _him_try_select_glfw_opengl3_if_no_backend_selected() # may change HELLOIMGUI_NO_BACKEND_SELECTED to OFF
+        _him_try_select_glfw_opengl3_if_no_backend_selected()
     endif()
 
-    if (HELLOIMGUI_NO_BACKEND_SELECTED)
+    _him_check_if_no_backend_selected(no_backend_selected)
+    if (no_backend_selected)
         message(FATAL_ERROR "HelloImGui: no backend selected, and could not auto-select one!")
     endif()
 endfunction()
 
-function(_him_check_if_no_backend_selected) # will set HELLOIMGUI_NO_BACKEND_SELECTED to ON if no backend selected
+function(_him_check_if_no_backend_selected out_result) # will set out_result to ON if no backend selected
     if (NOT HELLOIMGUI_USE_SDL_OPENGL3
         AND NOT HELLOIMGUI_USE_GLFW_OPENGL3
         AND NOT HELLOIMGUI_USE_SDL_METAL
@@ -138,7 +140,9 @@ function(_him_check_if_no_backend_selected) # will set HELLOIMGUI_NO_BACKEND_SEL
         AND NOT HELLOIMGUI_USE_SDL_DIRECTX11
         AND NOT HELLOIMGUI_USE_SDL_DIRECTX12
     )
-        set(HELLOIMGUI_NO_BACKEND_SELECTED ON CACHE INTERNAL "")
+        set(${out_result} ON PARENT_SCOPE)
+    else()
+        set(${out_result} OFF PARENT_SCOPE)
     endif()
 endfunction()
 
@@ -171,7 +175,6 @@ function(_him_try_select_glfw_opengl3_if_no_backend_selected)
     if (HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED)
         set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
         message(STATUS "HelloImGui: using HELLOIMGUI_USE_GLFW_OPENGL3 as default default backend")
-        set(HELLOIMGUI_NO_BACKEND_SELECTED OFF CACHE INTERNAL "")
     else()
         # Check if Glfw can be found
         find_package(glfw3 QUIET)
@@ -180,7 +183,6 @@ function(_him_try_select_glfw_opengl3_if_no_backend_selected)
             message(STATUS
                 "HelloImGui: using HELLOIMGUI_USE_GLFW_OPENGL3 as default default backend (glfw was found via find_package(glfw3))
                 ")
-            set(HELLOIMGUI_NO_BACKEND_SELECTED OFF CACHE INTERNAL "")
         else()
             set(glfw_help_msg "
             you can install glfw via your package manager (apt, pacman, etc).

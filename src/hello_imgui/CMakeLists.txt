@@ -432,6 +432,7 @@ endfunction()
 ###################################################################################################
 function (him_use_sdl2_backend target)
     _him_fetch_sdl_if_needed()
+#    _him_fail_if_sdl_not_found()
     _him_link_sdl(${helloimgui_target})
 
     target_sources(${target} PRIVATE
@@ -442,7 +443,6 @@ function (him_use_sdl2_backend target)
     target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL2)
     target_compile_definitions(${helloimgui_target} PUBLIC _THREAD_SAFE) # flag outputted by sdl2-config --cflags
 endfunction()
-
 
 function(_him_fetch_sdl_if_needed)
     set(shall_fetch_sdl OFF)
@@ -517,19 +517,8 @@ function(_him_link_sdl target)
     elseif(TARGET SDL2-static)
         target_link_libraries(${target} PUBLIC SDL2-static)
     else()
-        find_package(SDL2)
-        if (SDL2_FOUND AND (TARGET SDL2::SDL2))
-            target_link_libraries(${target} PUBLIC SDL2::SDL2 SDL2::SDL2main)
-        else()
-            if (NOT DEFINED SDL2_INCLUDE_DIRS)
-                set(SDL2_INCLUDE_DIRS /usr/include/SDL2)
-            endif()
-            target_include_directories(${target}  PUBLIC ${SDL2_INCLUDE_DIRS})
-            if (DEFINED SDL2_LIBDIR)
-                target_link_directories(${target} PUBLIC ${SDL2_LIBDIR})
-            endif()
-            target_link_libraries(${target} PUBLIC SDL2 SDL2main)
-        endif()
+        find_package(SDL2 REQUIRED)
+        target_link_libraries(${target} PUBLIC SDL2::SDL2 SDL2::SDL2main)
     endif()
 
     if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")

@@ -293,10 +293,8 @@ make -j
 
 In order to select your own backend, use one of the cmake options below:
 ```bash
-cmake .. -DHELLOIMGUI_WITH_GLFW=ON            # To download and build glfw automatically
-cmake .. -DHELLOIMGUI_WITH_SDL=ON             # To download and build SDL automatically
-cmake .. -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # To use your own version of GLFW (it should be findable via find_package(glfw3))
-cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # To use your own version of SDL (it should be findable via find_package(SDL2))
+cmake .. -DHELLOIMGUI_USE_GLFW_OPENGL3=ON
+cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON
 ```
 
 

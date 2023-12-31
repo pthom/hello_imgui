@@ -83,7 +83,7 @@ endfunction()
 
 
 ###################################################################################################
-# Sanity checks: API = him_sanity_checks
+# Sanity checks: API = him_sanity_checks + him_get_active_backends (displayed after configure)
 ###################################################################################################
 function(him_sanity_checks)
     # use SDL for emscripten
@@ -140,6 +140,26 @@ function(_him_check_if_no_backend_selected) # will set HELLOIMGUI_NO_BACKEND_SEL
     )
         set(HELLOIMGUI_NO_BACKEND_SELECTED ON CACHE INTERNAL "")
     endif()
+endfunction()
+
+function(him_get_active_backends out_selected_backends)
+    set(all_backends
+    HELLOIMGUI_USE_SDL_OPENGL3
+    HELLOIMGUI_USE_GLFW_OPENGL3
+    HELLOIMGUI_USE_SDL_METAL
+    HELLOIMGUI_USE_GLFW_METAL
+    HELLOIMGUI_USE_GLFW_VULKAN
+    HELLOIMGUI_USE_SDL_VULKAN
+    HELLOIMGUI_USE_SDL_DIRECTX11
+    HELLOIMGUI_USE_SDL_DIRECTX12
+    )
+    set(selected_backends "")
+    foreach(backend ${all_backends})
+        if (${backend})
+            set(selected_backends "${selected_backends} ${backend}")
+        endif()
+    endforeach()
+    set(${out_selected_backends} ${selected_backends} PARENT_SCOPE)
 endfunction()
 
 function(_him_try_select_glfw_opengl3_if_no_backend_selected)
@@ -658,4 +678,7 @@ function(him_main_add_hello_imgui_library)
     him_add_emscripten_options()
     him_add_misc_options()
     him_install()
+
+    him_get_active_backends(selected_backends)
+    message(STATUS "HelloImGui backends: ${selected_backends}")
 endfunction()

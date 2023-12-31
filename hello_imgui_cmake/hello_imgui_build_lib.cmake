@@ -107,7 +107,6 @@ function(him_sanity_checks)
     _him_check_if_no_backend_selected(no_backend_selected)
 
     if (no_backend_selected)
-        message(FATAL_ERROR "ARGHH3")
         set(backend_message "
                 HelloImGui: no backend selected!
                     In order to select your own backend, use one of the cmake options below:

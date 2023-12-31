@@ -6,20 +6,14 @@ include(${HELLOIMGUI_BASEPATH}/external/OpenGL_Loaders/glad.cmake)
 include(${HELLOIMGUI_BASEPATH}/src/hello_imgui_test_engine_integration/hello_imgui_test_engine_cmake.cmake)
 
 
-# Set target name
-set(helloimgui_target hello_imgui)
-message(STATUS "Library ${helloimgui_target}")
-
-
 # Enable objective-c++ for apple. This is global and cannot (yet) be done in a function.
 if (APPLE)
     enable_language(OBJC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -x objective-c++")
 endif()
 
-# Global variable for this file
-set(imgui_backends_dir ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends)
-
+# Global variables for this file
+message(STATUS "Library ${HELLOIMGUI_TARGET}")
 
 ###################################################################################################
 # Add library and sources: API = him_add_hello_imgui
@@ -30,12 +24,12 @@ function(him_add_hello_imgui)
     else()
         file(GLOB_RECURSE sources *.h *.cpp *.c)
     endif()
-    add_library(${helloimgui_target} ${sources})
+    add_library(${HELLOIMGUI_TARGET} ${sources})
     if(APPLE AND NOT IOS)
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_MACOS)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_MACOS)
     endif()
-    target_include_directories(${helloimgui_target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/..)
-    target_link_libraries(${helloimgui_target} PUBLIC imgui)
+    target_include_directories(${HELLOIMGUI_TARGET} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/..)
+    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui)
 endfunction()
 
 
@@ -200,29 +194,29 @@ endfunction()
 
 function(_him_link_apple_frameworks)
     if (IOS)
-        target_link_libraries(${helloimgui_target} PUBLIC "-framework UIKit")
+        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC "-framework UIKit")
     endif ()
     if (APPLE AND NOT IOS) # If mac
-        target_link_libraries(${helloimgui_target} PUBLIC "-framework AppKit -framework IOKit")
+        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC "-framework AppKit -framework IOKit")
     endif()
     if (APPLE)
-        target_link_libraries(${helloimgui_target} PUBLIC "-framework Foundation")
+        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC "-framework Foundation")
     endif()
 endfunction()
 
 function(_him_add_ios_compile_definitions)
     if (IOS)
-        target_compile_definitions(${helloimgui_target} PUBLIC IOS)
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_IOS)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC IOS)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_IOS)
         # this is a hack because imgui_impl_opengl3.cpp does not include <TargetConditional.h>
         # and thus TARGET_OS_IOS is not found as it should be
-        target_compile_definitions(${helloimgui_target} PRIVATE TARGET_OS_IOS)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PRIVATE TARGET_OS_IOS)
     endif()
 endfunction()
 
 function(_him_add_app_bundle_compile_definitions)
     if (IOS OR (MACOSX AND NOT HELLOIMGUI_MACOS_NO_BUNDLE))
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_INSIDE_APPLE_BUNDLE)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_INSIDE_APPLE_BUNDLE)
     endif()
 endfunction()
 
@@ -232,8 +226,8 @@ endfunction()
 ###################################################################################################
 function(him_add_linux_options)
     if (UNIX AND NOT EMSCRIPTEN  AND NOT APPLE AND NOT ANDROID)
-        target_link_libraries(${helloimgui_target} PUBLIC stdc++ dl)
-        target_link_libraries(${helloimgui_target} PUBLIC X11)
+        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC stdc++ dl)
+        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC X11)
     endif()
 endfunction()
 
@@ -248,14 +242,14 @@ endfunction()
 
 function(_him_msvc_group_sources)
     if (MSVC)
-        hello_imgui_msvc_target_group_sources(${helloimgui_target})
-        hello_imgui_msvc_target_set_folder(${helloimgui_target} ${HELLOIMGUI_SOLUTIONFOLDER})
+        hello_imgui_msvc_target_group_sources(${HELLOIMGUI_TARGET})
+        hello_imgui_msvc_target_set_folder(${HELLOIMGUI_TARGET} ${HELLOIMGUI_SOLUTIONFOLDER})
     endif()
 endfunction()
 
 function(_him_win_add_auto_win_main)
     if (HELLOIMGUI_WIN32_AUTO_WINMAIN)
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_WIN32_AUTO_WINMAIN)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_WIN32_AUTO_WINMAIN)
     endif()
 endfunction()
 
@@ -269,8 +263,8 @@ endfunction()
 
 function(_him_add_mobile_compile_definitions)
     if(ANDROID OR IOS)
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_CANNOTQUIT)
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_MOBILEDEVICE)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_CANNOTQUIT)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_MOBILEDEVICE)
     endif()
 endfunction()
 
@@ -290,8 +284,8 @@ endfunction()
 ###################################################################################################
 function(him_add_emscripten_options)
     if (EMSCRIPTEN)
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLES3)
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_CANNOTQUIT)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLES3)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_CANNOTQUIT)
     endif()
 endfunction()
 
@@ -301,19 +295,19 @@ endfunction()
 ###################################################################################################
 function(him_has_opengl3 target)
     target_sources(${target} PRIVATE
-        ${imgui_backends_dir}/imgui_impl_opengl3.h
-        ${imgui_backends_dir}/imgui_impl_opengl3.cpp
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.h
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
     )
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_OPENGL)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_OPENGL3)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_OPENGL)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_OPENGL3)
     set(HELLOIMGUI_HAS_OPENGL ON CACHE BOOL "" FORCE)
 
     if(ANDROID OR IOS)
-        _him_link_opengles_sdl(${helloimgui_target})
+        _him_link_opengles_sdl(${HELLOIMGUI_TARGET})
     endif()
     if (HELLOIMGUI_USE_GLAD)
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
-        target_link_libraries(${helloimgui_target} PUBLIC glad)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
+        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glad)
     endif()
     if (HELLOIMGUI_USE_GLAD)
         him_install_glad()
@@ -341,12 +335,12 @@ endfunction()
 ###################################################################################################
 function(him_has_metal target)
     target_sources(${target} PRIVATE
-        ${imgui_backends_dir}/imgui_impl_metal.h
-        ${imgui_backends_dir}/imgui_impl_metal.mm
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.h
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.mm
     )
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_METAL)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_METAL)
     set(HELLOIMGUI_HAS_METAL ON CACHE BOOL "" FORCE)
-    target_link_libraries(${helloimgui_target} PUBLIC
+    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC
         "-framework Metal -framework MetalKit -framework QuartzCore")
 endfunction()
 
@@ -356,13 +350,13 @@ endfunction()
 ###################################################################################################
 function(him_has_vulkan target)
     target_sources(${target} PRIVATE
-        ${imgui_backends_dir}/imgui_impl_vulkan.h
-        ${imgui_backends_dir}/imgui_impl_vulkan.cpp
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.h
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
     )
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_VULKAN)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_VULKAN)
     set(HELLOIMGUI_HAS_VULKAN ON CACHE BOOL "" FORCE)
     find_package(Vulkan REQUIRED)
-    target_link_libraries(${helloimgui_target} PUBLIC Vulkan::Vulkan)
+    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC Vulkan::Vulkan)
 endfunction()
 
 
@@ -371,12 +365,12 @@ endfunction()
 ###################################################################################################
 function(him_has_directx11 target)
     target_sources(${target} PRIVATE
-            ${imgui_backends_dir}/imgui_impl_dx11.h
-            ${imgui_backends_dir}/imgui_impl_dx11.cpp
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx11.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx11.cpp
     )
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_DIRECTX11)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_DIRECTX11)
     set(HELLOIMGUI_HAS_DIRECTX11 ON CACHE BOOL "" FORCE)
-    target_link_libraries(${helloimgui_target} PUBLIC d3d11.lib)
+    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC d3d11.lib)
 endfunction()
 
 
@@ -385,12 +379,12 @@ endfunction()
 ###################################################################################################
 function(him_has_directx12 target)
     target_sources(${target} PRIVATE
-            ${imgui_backends_dir}/imgui_impl_dx12.h
-            ${imgui_backends_dir}/imgui_impl_dx12.cpp
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx12.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx12.cpp
     )
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_HAS_DIRECTX12)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_DIRECTX12)
     set(HELLOIMGUI_HAS_DIRECTX12 ON CACHE BOOL "" FORCE)
-    target_link_libraries(${helloimgui_target} PUBLIC d3d12.lib dxgi.lib)
+    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC d3d12.lib dxgi.lib)
 endfunction()
 
 
@@ -433,15 +427,15 @@ endfunction()
 function (him_use_sdl2_backend target)
     _him_fetch_sdl_if_needed()
 #    _him_fail_if_sdl_not_found()
-    _him_link_sdl(${helloimgui_target})
+    _him_link_sdl(${HELLOIMGUI_TARGET})
 
     target_sources(${target} PRIVATE
-        ${imgui_backends_dir}/imgui_impl_sdl2.h
-        ${imgui_backends_dir}/imgui_impl_sdl2.cpp
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.h
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
     )
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL2)
-    target_compile_definitions(${helloimgui_target} PUBLIC _THREAD_SAFE) # flag outputted by sdl2-config --cflags
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL2)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC _THREAD_SAFE) # flag outputted by sdl2-config --cflags
 endfunction()
 
 function(_him_fetch_sdl_if_needed)
@@ -535,14 +529,14 @@ function(him_use_glfw_backend target)
     if (NOT TARGET glfw) # if glfw is not built as part of the whole build, find it
         find_package(glfw3 CONFIG REQUIRED)
     endif()
-    target_link_libraries(${helloimgui_target} PUBLIC glfw)
+    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glfw)
 
     target_sources(${target} PRIVATE
-        ${imgui_backends_dir}/imgui_impl_glfw.h
-        ${imgui_backends_dir}/imgui_impl_glfw.cpp
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.h
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
     )
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW)
-    target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW3)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW3)
 endfunction()
 
 function(_him_fetch_glfw_if_needed)
@@ -583,8 +577,8 @@ endfunction()
 
 function(_him_add_imgui_shared_compile_definitions)
     if (HELLO_IMGUI_IMGUI_SHARED)
-        target_compile_definitions(${helloimgui_target} PRIVATE GImGui=GImGuiFromHelloImGui)
-        target_compile_definitions(${helloimgui_target} PRIVATE HELLO_IMGUI_IMGUI_SHARED)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PRIVATE GImGui=GImGuiFromHelloImGui)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PRIVATE HELLO_IMGUI_IMGUI_SHARED)
     endif()
 endfunction()
 
@@ -594,7 +588,7 @@ endfunction()
 ###################################################################################################
 function(him_install)
     if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
-        install(TARGETS ${helloimgui_target} DESTINATION ./lib/)
+        install(TARGETS ${HELLOIMGUI_TARGET} DESTINATION ./lib/)
         file(GLOB headers *.h)
         install(FILES ${headers} DESTINATION ./include/hello_imgui/)
     endif()
@@ -613,51 +607,51 @@ function(him_main)
     endif()
 
     if (HELLOIMGUI_USE_SDL_OPENGL3)
-        him_has_opengl3(${helloimgui_target})
-        him_use_sdl2_backend(${helloimgui_target})
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_OPENGL3)
+        him_has_opengl3(${HELLOIMGUI_TARGET})
+        him_use_sdl2_backend(${HELLOIMGUI_TARGET})
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL_OPENGL3)
     endif()
 
     if (HELLOIMGUI_USE_GLFW_OPENGL3)
-        him_has_opengl3(${helloimgui_target})
-        him_use_glfw_backend(${helloimgui_target})
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_OPENGL3)
+        him_has_opengl3(${HELLOIMGUI_TARGET})
+        him_use_glfw_backend(${HELLOIMGUI_TARGET})
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW_OPENGL3)
     endif()
 
     if(HELLOIMGUI_USE_SDL_METAL)
-        him_has_metal(${helloimgui_target})
-        him_use_sdl2_backend(${helloimgui_target})
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_METAL)
+        him_has_metal(${HELLOIMGUI_TARGET})
+        him_use_sdl2_backend(${HELLOIMGUI_TARGET})
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL_METAL)
     endif()
 
     if(HELLOIMGUI_USE_GLFW_METAL)
-        him_has_metal(${helloimgui_target})
-        him_use_glfw_backend(${helloimgui_target})
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_METAL)
+        him_has_metal(${HELLOIMGUI_TARGET})
+        him_use_glfw_backend(${HELLOIMGUI_TARGET})
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW_METAL)
     endif()
 
     if(HELLOIMGUI_USE_GLFW_VULKAN)
-        him_has_vulkan(${helloimgui_target})
-        him_use_glfw_backend(${helloimgui_target})
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_GLFW_METAL)
+        him_has_vulkan(${HELLOIMGUI_TARGET})
+        him_use_glfw_backend(${HELLOIMGUI_TARGET})
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW_METAL)
     endif()
 
     if(HELLOIMGUI_USE_SDL_VULKAN)
-        him_has_vulkan(${helloimgui_target})
-        him_use_sdl2_backend(${helloimgui_target})
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_VULKAN)
+        him_has_vulkan(${HELLOIMGUI_TARGET})
+        him_use_sdl2_backend(${HELLOIMGUI_TARGET})
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL_VULKAN)
     endif()
 
     if(HELLOIMGUI_USE_SDL_DIRECTX11)
-        him_has_directx11(${helloimgui_target})
-        him_use_sdl2_backend(${helloimgui_target})
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_DIRECTX11)
+        him_has_directx11(${HELLOIMGUI_TARGET})
+        him_use_sdl2_backend(${HELLOIMGUI_TARGET})
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL_DIRECTX11)
     endif ()
 
     if(HELLOIMGUI_USE_SDL_DIRECTX12)
-        him_has_directx12(${helloimgui_target})
-        him_use_sdl2_backend(${helloimgui_target})
-        target_compile_definitions(${helloimgui_target} PUBLIC HELLOIMGUI_USE_SDL_DIRECTX12)
+        him_has_directx12(${HELLOIMGUI_TARGET})
+        him_use_sdl2_backend(${HELLOIMGUI_TARGET})
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL_DIRECTX12)
     endif ()
 
     him_check_only_one_rendering_backend_selected()
@@ -678,3 +672,4 @@ endfunction()
 # *above we only define functions (and sadly some global variables)*
 ###################################################################################################
 him_main()
+

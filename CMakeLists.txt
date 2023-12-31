@@ -172,6 +172,8 @@ endif()
 #------------------------------------------------------------------------------
 # Advanced build options / HelloImGui
 #------------------------------------------------------------------------------
+set(HELLOIMGUI_TARGET hello_imgui CACHE STRING "Name of the hello_imgui target")
+
 option(HELLOIMGUI_BUILD_DOCS "Build docs" OFF)
 mark_as_advanced(HELLOIMGUI_BUILD_DOCS)
 

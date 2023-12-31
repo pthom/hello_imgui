@@ -572,6 +572,6 @@ nohup.out
 # vcpkg
 vcpkg/
 
-build-*/
 build/
+build*/
 build_*/

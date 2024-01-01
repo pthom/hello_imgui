@@ -4,7 +4,11 @@
 
 namespace HelloImGui
 {
-    void HandleBorderlessResizable(
+    void HandleBorderlessMovable(
         BackendApi::WindowPointer window,
-        BackendApi::IBackendWindowHelper * backendWindowHelper);
+        BackendApi::IBackendWindowHelper * backendWindowHelper,
+        bool borderlessMovable,
+        bool borderlessResizable,
+        ImVec4 borderlessHighlightColor
+    );
 }

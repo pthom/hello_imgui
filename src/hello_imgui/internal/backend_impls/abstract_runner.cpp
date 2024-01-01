@@ -1,12 +1,12 @@
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
-#include "hello_imgui/internal/hello_imgui_ini_settings.h"
-#include "hello_imgui/internal/docking_details.h"
-#include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/hello_imgui_theme.h"
+#include "hello_imgui/internal/borderless_movable.h"
 #include "hello_imgui/internal/clock_seconds.h"
+#include "hello_imgui/internal/docking_details.h"
+#include "hello_imgui/internal/hello_imgui_ini_settings.h"
+#include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/internal/platform/ini_folder_locations.h"
 #include "imgui.h"
-#include "hello_imgui/internal/borderless_resizable.h"
 
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
 #include "imgui_internal.h"
@@ -506,7 +506,11 @@ void AbstractRunner::RenderGui()
         Menu_StatusBar::ShowMenu(params);
 
     if (params.appWindowParams.borderless) // Need to add params.appWindowParams.borderlessResizable
-        HandleBorderlessResizable(mWindow, mBackendWindowHelper.get());
+        HandleBorderlessMovable(mWindow,
+                                mBackendWindowHelper.get(),
+                                params.appWindowParams.borderlessMovable,
+                                params.appWindowParams.borderlessResizable,
+                                params.appWindowParams.borderlessHighlightColor);
 
     if (params.callbacks.ShowGui)
     {

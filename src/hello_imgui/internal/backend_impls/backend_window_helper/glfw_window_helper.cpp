@@ -216,5 +216,11 @@ namespace HelloImGui { namespace BackendApi
         return (visible == 0);
     }
 
+//    void truc(WindowPointer window)
+//    {
+//        glfwCur
+//
+//    }
+
 }} // namespace HelloImGui { namespace BackendApi
 #endif // #ifdef HELLOIMGUI_USE_GLFW

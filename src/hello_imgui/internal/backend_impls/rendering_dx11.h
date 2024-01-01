@@ -1,6 +1,15 @@
 #pragma once
 #ifdef HELLOIMGUI_HAS_DIRECTX11
 
+///
+// Warning, there is a known issue with DirectX11 and HelloImGui:
+// The framebuffer size is badly adjusted upon resizing the window (issue close to https://github.com/ocornut/imgui/issues/4870)
+//
+// Also, since AbstractRunner::HandleDpiOnSecondFrame() will resize the window on the second frame,
+// widgets may appear too big at startup if using HighDPI.
+//
+
+
 #include <backends/imgui_impl_dx11.h>
 #include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
 

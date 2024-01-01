@@ -3,7 +3,7 @@
 #include "hello_imgui/hello_imgui.h"
 
 #include <d3d11.h>
-
+#include <iostream>
 
 namespace HelloImGui
 {
@@ -19,6 +19,7 @@ namespace HelloImGui
         // Helper functions to use DirectX11
         bool CreateDeviceD3D(HWND hWnd)
         {
+            std::cout << "DirectX11 support for HelloImGui is experimental and may fail with HighDPI. See rendering_dx11.h for more info\n";
             auto& gDx11Globals = GetDx11Globals();
 
             // Setup swap chain

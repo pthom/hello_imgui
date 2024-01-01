@@ -50,7 +50,7 @@ namespace HelloImGui
     //
     //                // Create a new frame in ImGui and in the platform Backend
     //                // (for example ImGui_ImplGlfw_NewFrame() + ImGui::NewFrame()))
-    //                // --> AbstractRunner::Impl_NewFrame_Backend()
+    //                // --> AbstractRunner::Impl_NewFrame_PlatformBackend()
     //
     //                // Show widgets with ImGui (user code)
     //

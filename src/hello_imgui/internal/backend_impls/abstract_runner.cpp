@@ -646,7 +646,7 @@ void AbstractRunner::CreateFramesAndRender()
         params.callbacks.PreNewFrame();
 
     mRenderingBackendCallbacks->Impl_NewFrame_3D();
-    Impl_NewFrame_Backend();
+    Impl_NewFrame_PlatformBackend();
     {
         // Workaround against SDL clock that sometimes leads to io.DeltaTime=0.f on emscripten
         // (which fails to an `IM_ASSERT(io.DeltaTime) > 0` in ImGui::NewFrame())

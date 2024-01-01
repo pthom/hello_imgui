@@ -20,7 +20,7 @@ class RunnerGlfw3 : public AbstractRunner
         void Impl_InitPlatformBackend() override;
         void Impl_CreateWindow() override;
         void Impl_PollEvents() override;
-        void Impl_NewFrame_Backend() override;
+        void Impl_NewFrame_PlatformBackend() override;
         void Impl_UpdateAndRenderAdditionalPlatformWindows() override;
         void Impl_Cleanup() override;
         void Impl_SwapBuffers() override;

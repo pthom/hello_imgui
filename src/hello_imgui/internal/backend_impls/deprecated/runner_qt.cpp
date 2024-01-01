@@ -173,7 +173,7 @@ void RunnerQt::Impl_NewFrame_3D()
 {
 }
 
-void RunnerQt::Impl_NewFrame_Backend()
+void RunnerQt::Impl_NewFrame_PlatformBackend()
 {
 }
 

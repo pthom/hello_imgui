@@ -235,7 +235,7 @@ namespace HelloImGui
         HelloImGui::FreeAssetFileData(&imageAsset);
     }
 
-    void RunnerSdl2::Impl_NewFrame_Backend() { ImGui_ImplSDL2_NewFrame(); }
+    void RunnerSdl2::Impl_NewFrame_PlatformBackend() { ImGui_ImplSDL2_NewFrame(); }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //

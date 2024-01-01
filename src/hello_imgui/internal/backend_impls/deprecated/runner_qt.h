@@ -28,7 +28,7 @@ class RunnerQt : public AbstractRunner
 
     void Impl_PollEvents() override;
     void Impl_NewFrame_3D() override;
-    void Impl_NewFrame_Backend() override;
+    void Impl_NewFrame_PlatformBackend() override;
     void Impl_Frame_3D_ClearColor() override;
     void Impl_RenderDrawData_To_3D() override;
     void Impl_UpdateAndRenderAdditionalPlatformWindows() override;

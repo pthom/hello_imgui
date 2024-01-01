@@ -67,7 +67,7 @@ protected:
     virtual void Impl_InitPlatformBackend() = 0;
     virtual void Impl_CreateWindow() = 0;
     virtual void Impl_PollEvents() = 0;
-    virtual void Impl_NewFrame_Backend() = 0;
+    virtual void Impl_NewFrame_PlatformBackend() = 0;
     virtual void Impl_UpdateAndRenderAdditionalPlatformWindows() = 0;
     virtual void Impl_SwapBuffers() = 0;
     virtual void Impl_Cleanup() = 0;

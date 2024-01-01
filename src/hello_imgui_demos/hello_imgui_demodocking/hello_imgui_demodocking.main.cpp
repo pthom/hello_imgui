@@ -498,6 +498,7 @@ int main(int, char**)
     runnerParams.imGuiWindowParams.menuAppTitle = "Docking Demo";
     runnerParams.appWindowParams.windowGeometry.size = {1000, 900};
     runnerParams.appWindowParams.restorePreviousGeometry = true;
+    runnerParams.appWindowParams.borderless = true;
 
     // Load additional font
     runnerParams.callbacks.LoadAdditionalFonts = LoadFonts;

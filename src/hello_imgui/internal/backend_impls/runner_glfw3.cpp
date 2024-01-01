@@ -49,7 +49,7 @@ namespace HelloImGui
         mBackendWindowHelper = std::make_unique<BackendApi::GlfwWindowHelper>();
     }
 
-    void RunnerGlfw3::Impl_InitBackend()
+    void RunnerGlfw3::Impl_InitPlatformBackend()
     {
         glfwSetErrorCallback(glfw_error_callback);
 #ifdef __APPLE__
@@ -164,7 +164,7 @@ namespace HelloImGui
     //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 #if defined(HELLOIMGUI_HAS_OPENGL)
-    void RunnerGlfw3::Impl_LinkWindowingToRenderingBackend()
+    void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
     {
         ImGui_ImplGlfw_InitForOpenGL((GLFWwindow *)mWindow, true);
         ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
@@ -193,7 +193,7 @@ namespace HelloImGui
     {
         mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwMetal();
     }
-    void RunnerGlfw3::Impl_LinkWindowingToRenderingBackend()
+    void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
     {
         PrepareGlfwForMetal((GLFWwindow *) mWindow);
     }
@@ -204,7 +204,7 @@ namespace HelloImGui
         // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
         mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwVulkan();
     }
-    void RunnerGlfw3::Impl_LinkWindowingToRenderingBackend()
+    void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
     {
         // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
         PrepareGlfwForVulkan((GLFWwindow *) mWindow);
@@ -216,7 +216,7 @@ namespace HelloImGui
 //        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
 //        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwDx11();
 //    }
-//    void RunnerGlfw3::Impl_LinkWindowingToRenderingBackend()
+//    void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
 //    {
 //        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
 //        PrepareGlfwForDx11((GLFWwindow *) mWindow);
@@ -228,7 +228,7 @@ namespace HelloImGui
 //        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
 //        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwDx12();
 //    }
-//    void RunnerGlfw3::Impl_LinkWindowingToRenderingBackend()
+//    void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
 //    {
 //        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
 //        PrepareGlfwForDx12((GLFWwindow *) mWindow);

@@ -15,9 +15,9 @@ class RunnerGlfw3 : public AbstractRunner
 
        protected:
         //
-        // Methods related to the Windowing backend (SDL, Glfw, ...)
+        // Methods related to the platform backend (SDL, Glfw, ...)
         //
-        void Impl_InitBackend() override;
+        void Impl_InitPlatformBackend() override;
         void Impl_CreateWindow() override;
         void Impl_PollEvents() override;
         void Impl_NewFrame_Backend() override;
@@ -27,9 +27,9 @@ class RunnerGlfw3 : public AbstractRunner
         void Impl_SetWindowIcon() override;
 
         //
-        // Linking the windowing backend (SDL, Glfw, ...) to the rendering backend (OpenGL, ...)
+        // Linking the platform backend (SDL, Glfw, ...) to the rendering backend (OpenGL, ...)
         //
-        void Impl_LinkWindowingToRenderingBackend() override;
+        void Impl_LinkPlatformAndRenderBackends() override;
         // Specific to OpenGL
         #ifdef HELLOIMGUI_HAS_OPENGL
             void Impl_Select_Gl_Version() override;

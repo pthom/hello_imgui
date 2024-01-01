@@ -52,8 +52,8 @@ option(HELLOIMGUI_ADD_APP_WITH_INSTALL "Add cmake install() instructions with he
 #
 # Note:
 # - Only one rendering backend can be used at a time (OpenGL3, Metal or Vulkan)!
-# - You may select multiple windowing backends (for example, you may select both SDL and Glfw3)
-# - Backends using OpenGL3 as a renderer are easier to use, and are recommended, especially for beginners.
+# - You may select multiple platform backends (for example, you may select both SDL and Glfw3)
+# - Combinations using OpenGL3 as a renderer are easier to use, and are recommended, especially for beginners.
 #------------------------------------------------------------------------------
 # Standard backends:
 # Use Glfw3 + OpenGl3

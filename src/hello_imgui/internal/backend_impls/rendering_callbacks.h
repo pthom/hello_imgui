@@ -18,14 +18,14 @@ namespace HelloImGui
     // =====================================================
     //
     //     - "==>": Events related to the rendering backend (OpenGL, Metal, Vulkan, DirectX, ...)
-    //     - "-->": Events related to the windowing backend (SDL, Glfw, ...)
+    //     - "-->": Events related to the platform backend (SDL, Glfw, ...)
     //    int main()
     //    {
     //        // Init ImGui: ImGui::CreateContext(), etc. This is done inside
     //        // --> AbstractRunner::Setup()
     //
-    //        // Init Windowing Backend (SDL, Glfw, ...): call glfwInit() or SDL_Init()
-    //        // See: AbstractRunner::Impl_InitBackend()
+    //        // Init platform Backend (SDL, Glfw, ...): call glfwInit() or SDL_Init()
+    //        // See: AbstractRunner::Impl_InitPlatformBackend()
     //
     //        // Create Window, for Sdl or Glfw:
     //        // --> AbstractRunner::Impl_CreateWindow())
@@ -34,7 +34,7 @@ namespace HelloImGui
     //        //              which may set some renderer specific hints
     //        //             ==> search for RenderingCallbacks_Impl_Hint_WindowingBackend in the code
     //
-    //        //   --> Call AbstractRunner::Impl_LinkWindowingToRenderingBackend
+    //        //   --> Call AbstractRunner::Impl_LinkPlatformAndRenderBackends
     //        //    ==> search for RenderingCallbacks_LinkWindowingToRenderingBackend in the code
     //
     //        // This loop control is inside AbstractRunner::Run()
@@ -42,13 +42,13 @@ namespace HelloImGui
     //        while( ! appFinished)
     //        {
     //
-    //                // Poll windowing backend events
+    //                // Poll platform backend events
     //                //   --> inside AbstractRunner::Impl_PollEvents()
     //
     //                // Create a new frame in the rendering backend
     //                //  ==> call RenderingCallbacks.Impl_NewFrame_3D
     //
-    //                // Create a new frame in ImGui and in the Windowing Backend
+    //                // Create a new frame in ImGui and in the platform Backend
     //                // (for example ImGui_ImplGlfw_NewFrame() + ImGui::NewFrame()))
     //                // --> AbstractRunner::Impl_NewFrame_Backend()
     //
@@ -74,7 +74,7 @@ namespace HelloImGui
     //        // Shutdown ImGui
     //        ImGui::DestroyContext();
     //
-    //        // Shutdown Windowing Backend
+    //        // Shutdown platform Backend
     //        // --> AbstractRunner::Impl_Cleanup()
     //
     //        // Shutdown rendering backend
@@ -82,7 +82,7 @@ namespace HelloImGui
     //    }
 
     //
-    // There is no Init backend here, since it needs to account for the Windowing Backend and the Rendering Backend.
+    // There is no Init backend here, since it needs to account for the Platform Backend and the Rendering Backend.
     // As a consequence, it is implemented in the Rendering Backend, with #ifdefs
     //
     // "Callbacks" that are dependent on the combination Rendering backend (OpenGL, Metal, Vulkan) + Windowing Backend (Glfw, SDL):

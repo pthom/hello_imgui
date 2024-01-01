@@ -136,7 +136,7 @@ void RunnerQt::RunQGuiApplication()
 }
 
 
-void RunnerQt::Impl_InitBackend()
+void RunnerQt::Impl_InitPlatformBackend()
 {
 }
 

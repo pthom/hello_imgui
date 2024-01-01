@@ -18,7 +18,7 @@ class RunnerQt : public AbstractRunner
     void RunQGuiApplication();
 
    protected:
-    void Impl_InitBackend() override;
+    void Impl_InitPlatformBackend() override;
     void Impl_Select_Gl_Version() override;
     std::string Impl_GlslVersion() override;
     void Impl_CreateWindow() override;

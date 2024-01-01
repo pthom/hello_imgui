@@ -62,9 +62,9 @@ protected:
     //
 
     //
-    // Methods related to the Windowing backend (SDL, Glfw, ...)
+    // Methods related to the platform backend (SDL, Glfw, ...)
     //
-    virtual void Impl_InitBackend() = 0;
+    virtual void Impl_InitPlatformBackend() = 0;
     virtual void Impl_CreateWindow() = 0;
     virtual void Impl_PollEvents() = 0;
     virtual void Impl_NewFrame_Backend() = 0;
@@ -74,9 +74,9 @@ protected:
     virtual void Impl_SetWindowIcon() {}
 
     //
-    // Linking the windowing backend (SDL, Glfw, ...) to the rendering backend (OpenGL, ...)
+    // Linking the platform backend (SDL, Glfw, ...) to the rendering backend (OpenGL, ...)
     //
-    virtual void Impl_LinkWindowingToRenderingBackend() = 0;
+    virtual void Impl_LinkPlatformAndRenderBackends() = 0;
     // Specific to OpenGL
     #ifdef HELLOIMGUI_HAS_OPENGL
         virtual void Impl_Select_Gl_Version() = 0;

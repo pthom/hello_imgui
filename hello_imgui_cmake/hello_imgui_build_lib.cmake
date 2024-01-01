@@ -438,7 +438,7 @@ endfunction()
 
 
 ###################################################################################################
-# SDL Windowing backend: API = him_use_sdl2_backend
+# SDL platform backend: API = him_use_sdl2_backend
 ###################################################################################################
 function (him_use_sdl2_backend target)
     _him_fetch_sdl_if_needed()
@@ -538,7 +538,7 @@ endfunction()
 
 
 ###################################################################################################
-# Glfw Windowing backend: API = him_use_glfw_backend
+# Glfw platform backend: API = him_use_glfw_backend
 ###################################################################################################
 function(him_use_glfw_backend target)
     _him_fetch_glfw_if_needed()

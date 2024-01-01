@@ -39,7 +39,7 @@
 
 //
 // NOTE: AbstractRunner should *not* care in any case of:
-//   - the Windowing backend (SDL, Glfw, ...)
+//   - the platform backend (SDL, Glfw, ...)
 //   - the rendering backend (OpenGL, Metal, ...)
 // For legacy reasons, there are still few references to OpenGL in this file, but this needs to be refactored out.
 //
@@ -410,8 +410,8 @@ void AbstractRunner::Setup()
     InitImGuiContext();
     SetImGuiPrefs();
 
-    // Init Windowing backend (SDL, Glfw)
-    Impl_InitBackend();
+    // Init platform backend (SDL, Glfw)
+    Impl_InitPlatformBackend();
 
 #ifdef HELLOIMGUI_HAS_OPENGL
     Impl_Select_Gl_Version();
@@ -427,14 +427,14 @@ void AbstractRunner::Setup()
 
     Impl_SetWindowIcon();
 
-    // This should be done before Impl_LinkWindowingToRenderingBackend()
+    // This should be done before Impl_LinkPlatformAndRenderBackends()
     // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks
     // will chain the user callbacks with ImGui callbacks; and PostInit()
     // is a good place for the user to install callbacks
     if (params.callbacks.PostInit)
         params.callbacks.PostInit();
 
-    Impl_LinkWindowingToRenderingBackend();
+    Impl_LinkPlatformAndRenderBackends();
 
     params.callbacks.SetupImGuiConfig();
     params.callbacks.SetupImGuiStyle();

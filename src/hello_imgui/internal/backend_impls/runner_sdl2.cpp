@@ -53,7 +53,7 @@ namespace HelloImGui
     }
 
 
-    void RunnerSdl2::Impl_InitBackend()
+    void RunnerSdl2::Impl_InitPlatformBackend()
     {
         auto flags = SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER;
 #ifdef __EMSCRIPTEN__
@@ -62,7 +62,7 @@ namespace HelloImGui
         if (SDL_Init(flags) != 0)
         {
             HIMG_ERROR(
-                std::string("RunnerSdlOpenGl3::Impl_InitBackend error ")
+                std::string("RunnerSdlOpenGl3::Impl_InitPlatformBackend error ")
                 + SDL_GetError());
         }
 
@@ -248,7 +248,7 @@ namespace HelloImGui
         mRenderingBackendCallbacks = CreateBackendCallbacks_OpenGl3();
     }
 
-    void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()
+    void RunnerSdl2::Impl_LinkPlatformAndRenderBackends()
     {
         ImGui_ImplSDL2_InitForOpenGL((SDL_Window *)mWindow, mGlContext);
         ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
@@ -273,7 +273,7 @@ namespace HelloImGui
     {
         mRenderingBackendCallbacks = CreateBackendCallbacks_SdlMetal();
     }
-    void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()
+    void RunnerSdl2::Impl_LinkPlatformAndRenderBackends()
     {
         PrepareSdlForMetal((SDL_Window*)mWindow);
     }
@@ -283,7 +283,7 @@ namespace HelloImGui
     {
         mRenderingBackendCallbacks = CreateBackendCallbacks_SdlVulkan();
     }
-    void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()
+    void RunnerSdl2::Impl_LinkPlatformAndRenderBackends()
     {
         PrepareSdlForVulkan((SDL_Window*)mWindow);
     }
@@ -293,7 +293,7 @@ namespace HelloImGui
     {
         mRenderingBackendCallbacks = CreateBackendCallbacks_SdlDx11();
     }
-    void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()
+    void RunnerSdl2::Impl_LinkPlatformAndRenderBackends()
     {
         PrepareSdlForDx11((SDL_Window*)mWindow);
     }
@@ -303,7 +303,7 @@ namespace HelloImGui
     {
         mRenderingBackendCallbacks = CreateBackendCallbacks_SdlDx12();
     }
-    void RunnerSdl2::Impl_LinkWindowingToRenderingBackend()
+    void RunnerSdl2::Impl_LinkPlatformAndRenderBackends()
     {
         PrepareSdlForDx12((SDL_Window*)mWindow);
     }

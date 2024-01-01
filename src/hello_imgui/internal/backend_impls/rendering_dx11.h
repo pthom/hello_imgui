@@ -39,8 +39,8 @@ namespace HelloImGui
     RenderingCallbacksPtr PrepareBackendCallbacksCommonDx11();
 
 #ifdef HELLOIMGUI_USE_GLFW3
-//    RenderingCallbacksPtr CreateBackendCallbacks_GlfwDx11();
-//    void PrepareGlfwForDx11(GLFWwindow* window);
+    RenderingCallbacksPtr CreateBackendCallbacks_GlfwDx11();
+    void PrepareGlfwForDx11(GLFWwindow* window);
 #endif
 #ifdef HELLOIMGUI_USE_SDL2
     RenderingCallbacksPtr CreateBackendCallbacks_SdlDx11();

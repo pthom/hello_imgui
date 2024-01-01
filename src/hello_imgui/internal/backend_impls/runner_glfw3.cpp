@@ -15,9 +15,9 @@
 #endif
 
 // DirectX unsupported with Glfw
-//#ifdef HELLOIMGUI_HAS_DIRECTX11
-//#include "rendering_dx11.h"
-//#endif
+#ifdef HELLOIMGUI_HAS_DIRECTX11
+#include "rendering_dx11.h"
+#endif
 //#ifdef HELLOIMGUI_HAS_DIRECTX12
 //#include "rendering_dx12.h"
 //#endif
@@ -87,7 +87,7 @@ namespace HelloImGui
             params.appShallExit = true;
     }
 
-    void RunnerGlfw3::Impl_NewFrame_Backend() { ImGui_ImplGlfw_NewFrame(); }
+    void RunnerGlfw3::Impl_NewFrame_PlatformBackend() { ImGui_ImplGlfw_NewFrame(); }
 
     void RunnerGlfw3::Impl_UpdateAndRenderAdditionalPlatformWindows()
     {
@@ -122,9 +122,9 @@ namespace HelloImGui
 #ifdef HELLOIMGUI_HAS_VULKAN
         SwapVulkanBuffers();
 #endif
-//#ifdef HELLOIMGUI_HAS_DIRECTX11
-//        SwapDx11Buffers();
-//#endif
+#ifdef HELLOIMGUI_HAS_DIRECTX11
+        SwapDx11Buffers();
+#endif
 //#ifdef HELLOIMGUI_HAS_DIRECTX12
 //        SwapDx12Buffers();
 //#endif
@@ -210,18 +210,18 @@ namespace HelloImGui
         PrepareGlfwForVulkan((GLFWwindow *) mWindow);
     }
 
-//#elif defined(HELLOIMGUI_HAS_DIRECTX11)
-//    void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
-//    {
-//        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
-//        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwDx11();
-//    }
-//    void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
-//    {
-//        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
-//        PrepareGlfwForDx11((GLFWwindow *) mWindow);
-//    }
-//
+#elif defined(HELLOIMGUI_HAS_DIRECTX11)
+    void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
+    {
+        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
+        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwDx11();
+    }
+    void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
+    {
+        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
+        PrepareGlfwForDx11((GLFWwindow *) mWindow);
+    }
+
 //#elif defined(HELLOIMGUI_HAS_DIRECTX12)
 //    void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
 //    {

@@ -136,6 +136,7 @@ function(him_get_available_backends out_var)
         HELLOIMGUI_USE_GLFW_VULKAN
         HELLOIMGUI_USE_SDL_VULKAN
         HELLOIMGUI_USE_SDL_DIRECTX11
+        HELLOIMGUI_USE_GLFW_DIRECTX11
         HELLOIMGUI_USE_SDL_DIRECTX12
 
         PARENT_SCOPE
@@ -662,6 +663,12 @@ function(him_main_add_hello_imgui_library)
         him_has_directx11(${HELLOIMGUI_TARGET})
         him_use_sdl2_backend(${HELLOIMGUI_TARGET})
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL_DIRECTX11)
+    endif ()
+
+    if(HELLOIMGUI_USE_GLFW_DIRECTX11)
+        him_has_directx11(${HELLOIMGUI_TARGET})
+        him_use_glfw_backend(${HELLOIMGUI_TARGET})
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW_DIRECTX11)
     endif ()
 
     if(HELLOIMGUI_USE_SDL_DIRECTX12)

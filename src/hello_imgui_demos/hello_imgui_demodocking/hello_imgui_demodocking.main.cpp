@@ -498,6 +498,11 @@ int main(int, char**)
     runnerParams.imGuiWindowParams.menuAppTitle = "Docking Demo";
     runnerParams.appWindowParams.windowGeometry.size = {1000, 900};
     runnerParams.appWindowParams.restorePreviousGeometry = true;
+    
+    // Our application uses a borderless window, but is movable/resizable
+    runnerParams.appWindowParams.borderless = true;
+    runnerParams.appWindowParams.borderlessMovable = true;
+    runnerParams.appWindowParams.borderlessResizable = true;
 
     // Load additional font
     runnerParams.callbacks.LoadAdditionalFonts = LoadFonts;

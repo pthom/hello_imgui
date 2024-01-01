@@ -73,9 +73,9 @@ option(HELLOIMGUI_USE_SDL_METAL "Build HelloImGui for SDL2+Metal" OFF)
 option(HELLOIMGUI_USE_GLFW_VULKAN "Build HelloImGui for Glfw3+Vulkan" OFF)
 # Use SDL2 + Vulkan
 option(HELLOIMGUI_USE_SDL_VULKAN "Build HelloImGui for SDL2+Vulkan" OFF)
-# Use SDL2 + DirectX 11
+# Use SDL2 + DirectX 11 (Note: there is a known issue with DirectX11, see src/hello_imgui/internal/backend_impls/rendering_dx11.h)
 option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build HelloImGui for SDL2+DirectX11" OFF)
-# Use Glfw3 + DirectX 11
+# Use Glfw3 + DirectX 11 (Note: there is a known issue with DirectX11, see src/hello_imgui/internal/backend_impls/rendering_dx11.h)
 option(HELLOIMGUI_USE_GLFW_DIRECTX11 "Build HelloImGui for Glfw3+DirectX11" OFF)
 # Experimental! DirectX12 was not tested, although it does compile!
 option(HELLOIMGUI_USE_SDL_DIRECTX12 "Build HelloImGui for SDL2+DirectX12" OFF)

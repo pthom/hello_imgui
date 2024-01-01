@@ -331,37 +331,28 @@ Members:
    _Note: on a mobile device, the application will always be full screen._
 * `restorePreviousGeometry`: _bool, default=false_.
   If true, then save & restore windowGeometry from last run (the geometry will be written in imgui_app_window.ini)
-* `borderless`: _bool, default = false_. Should the window have borders. This is taken into account at
-creation.
-* `resizable`: _bool, default = false_. Should the window have borders. This is taken into account at
-creation.
+* `resizable`: _bool, default = false_. Should the window be resizable. This is taken into account at
+  creation.
 * `hidden`: _bool, default = false_. Should the window be hidden. This is taken into account dynamically (you
-can show/hide the window with this). Full screen windows cannot be hidden.@@md
+  can show/hide the window with this). Full screen windows cannot be hidden.
+
+* `borderless`: _bool, default = false_. Should the window have borders. This is taken into account at creation.
+* `borderlessMovable`: _bool, default = true_. If the window is borderless, should it be movable.
+   If so, a drag zone is displayed at the top of the window when the mouse is over it.
+* `borderlessResizable`: _bool, default = true_. If the window is borderless, should it be resizable.
+   If so, a drag zone is displayed at the bottom-right of the window when the mouse is over it.
+* `borderlessHighlightColor`: _ImVec4, default = ImVec4(0.2f, 0.4f, 1.f, 0.f)_.
+   Color of the highlight displayed on resize/move zones. If borderlessHighlightColor.w==0,
+   then the highlightColor will be automatically set to ImGui::GetColorU32(ImGuiCol_TitleBgActive, 0.6f)
+
 * `edgeInsets`: _EdgeInsets_. iOS only, out values filled by HelloImGui:
   if there is a notch on the iPhone, you should not display inside these insets.
   HelloImGui handles this automatically, if handleEdgeInsets is true and
   if runnerParams.imGuiWindowParams.defaultImGuiWindowType is not NoDefaultWindow.
   (warning, these values are updated only after a few frames, they are typically 0 for the first 4 frames)
 * `handleEdgeInsets`: _bool, default = true_. iOS only, if true, HelloImGui will handle the edgeInsets.
-**/
-struct AppWindowParams
-{
-    std::string windowTitle;
 
-    WindowGeometry windowGeometry;
 
-    // if true, then save & restore from last run
-    bool restorePreviousGeometry = false;
-
-    bool borderless = false;
-    bool resizable = true;
-    bool hidden = false;
-
-    EdgeInsets edgeInsets;
-    bool       handleEdgeInsets = true;
-};
-
-}  // namespace HelloImGui
 ### WindowGeometry
 
 

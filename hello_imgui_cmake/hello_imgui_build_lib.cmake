@@ -109,15 +109,13 @@ function(him_sanity_checks)
     if (no_backend_selected)
         set(backend_message "
                 HelloImGui: no backend selected!
-                    In order to select your own backend, use one of the cmake options below:
-                    -DHELLOIMGUI_USE_GLFW_OPENGL3=ON      # Glfw3 + OpenGL3
-                    -DHELLOIMGUI_USE_SDL_OPENGL3=ON       # SDL2 + OpenGL3
-                    -DHELLOIMGUI_USE_GLFW_METAL           # Glfw3 + Metal
-                    -DHELLOIMGUI_USE_SDL_METAL=ON         # SDL2 + Metal
-                    -DHELLOIMGUI_USE_GLFW_VULKAN=ON       # Glfw3 + Vulkan
-                    -DHELLOIMGUI_USE_SDL_VULKAN           # SDL2 + Vulkan
-                    ...
-        ")
+                    In order to select your own backend, use one of the cmake options below:")
+        him_get_available_backends(available_backends)
+        foreach(backend ${available_backends})
+            set(backend_message "${backend_message}
+                        -D${backend}=ON")
+        endforeach()
+
         message(STATUS "${backend_message}")
 
         _him_try_select_glfw_opengl3_if_no_backend_selected()
@@ -129,35 +127,37 @@ function(him_sanity_checks)
     endif()
 endfunction()
 
-function(_him_check_if_no_backend_selected out_result) # will set out_result to ON if no backend selected
-    if (NOT HELLOIMGUI_USE_SDL_OPENGL3
-        AND NOT HELLOIMGUI_USE_GLFW_OPENGL3
-        AND NOT HELLOIMGUI_USE_SDL_METAL
-        AND NOT HELLOIMGUI_USE_GLFW_METAL
-        AND NOT HELLOIMGUI_USE_GLFW_VULKAN
-        AND NOT HELLOIMGUI_USE_SDL_VULKAN
-        AND NOT HELLOIMGUI_USE_SDL_DIRECTX11
-        AND NOT HELLOIMGUI_USE_SDL_DIRECTX12
+function(him_get_available_backends out_var)
+    set(${out_var}
+        HELLOIMGUI_USE_SDL_OPENGL3
+        HELLOIMGUI_USE_GLFW_OPENGL3
+        HELLOIMGUI_USE_SDL_METAL
+        HELLOIMGUI_USE_GLFW_METAL
+        HELLOIMGUI_USE_GLFW_VULKAN
+        HELLOIMGUI_USE_SDL_VULKAN
+        HELLOIMGUI_USE_SDL_DIRECTX11
+        HELLOIMGUI_USE_SDL_DIRECTX12
+
+        PARENT_SCOPE
     )
-        set(${out_result} ON PARENT_SCOPE)
-    else()
-        set(${out_result} OFF PARENT_SCOPE)
-    endif()
+endfunction()
+
+function(_him_check_if_no_backend_selected out_var) # will set out_result to ON if no backend selected
+    set(result ON)
+
+    him_get_available_backends(available_backends)
+    foreach(backend ${available_backends})
+        if(${backend})
+            set(result OFF)
+        endif()
+    endforeach()
+    set(${out_var} ${result} PARENT_SCOPE)
+    message(STATUS "_him_check_if_no_backend_selected return ${result}")
 endfunction()
 
 function(him_get_active_backends out_selected_backends)
-    set(all_backends
-    HELLOIMGUI_USE_SDL_OPENGL3
-    HELLOIMGUI_USE_GLFW_OPENGL3
-    HELLOIMGUI_USE_SDL_METAL
-    HELLOIMGUI_USE_GLFW_METAL
-    HELLOIMGUI_USE_GLFW_VULKAN
-    HELLOIMGUI_USE_SDL_VULKAN
-    HELLOIMGUI_USE_SDL_DIRECTX11
-    HELLOIMGUI_USE_SDL_DIRECTX12
-    )
     set(selected_backends "")
-    foreach(backend ${all_backends})
+    foreach(backend ${HELLOIMGUI_AVAILABLE_BACKENDS})
         if (${backend})
             set(selected_backends "${selected_backends} ${backend}")
         endif()

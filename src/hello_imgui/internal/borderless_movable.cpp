@@ -26,11 +26,11 @@ namespace HelloImGui
             // Update dragging state
             ImVec2 mousePos = ImGui::GetMousePos();
             static bool isDragging = false;
-            if (dragArea.Contains(mousePos) && !isDragging && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+            if (dragArea.Contains(mousePos) && !isDragging && ImGui::IsMouseDown(ImGuiMouseButton_Left))
             {
                 isDragging = true;
             }
-            if (!ImGui::IsMouseDragging(ImGuiMouseButton_Left) && isDragging)
+            if (!ImGui::IsMouseDown(ImGuiMouseButton_Left) && isDragging)
                 isDragging = false;
 
             // Draw drag zone
@@ -70,9 +70,9 @@ namespace HelloImGui
             // Update dragging state
             static bool isDragging = false;
             ImVec2 mousePos = ImGui::GetIO().MousePos;
-            if (dragArea.Contains(mousePos) && !isDragging && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+            if (dragArea.Contains(mousePos) && !isDragging && ImGui::IsMouseDown(ImGuiMouseButton_Left))
                 isDragging = true;
-            if (!ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+            if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
                 isDragging = false;
 
             // Draw drag zone

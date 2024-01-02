@@ -84,8 +84,9 @@ option(HELLOIMGUI_USE_SDL_DIRECTX12 "Build HelloImGui for SDL2+DirectX12" OFF)
 # Options / Freetype
 #------------------------------------------------------------------------------
 set(freetype_default ON)
-if(ANDROID)
+if(ANDROID OR MINGW)
     # Freetype is not available on Android. The mix SDL + Freetype cause issues (cannot find SDL.h)
+    # Freetype currently fails to build on MinGW
     set(freetype_default OFF)
 endif()
 # Note: to reduce wasm size, you may want to disable freetype on emscripten.

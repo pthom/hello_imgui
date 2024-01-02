@@ -13,6 +13,7 @@
 #include "hello_imgui/image_from_asset.h"
 // #include "hello_imgui/image_gl_deprecated.h"
 #include "hello_imgui/imgui_theme.h"
+#include "hello_imgui/hello_imgui_font.h"
 #include "hello_imgui/runner_params.h"
 #include <string>
 

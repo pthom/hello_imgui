@@ -457,7 +457,7 @@ void AbstractRunner::Setup()
     ImGui::GetIO().Fonts->Build();
     {
         // Reset FontGlobalScale if we did not use HelloImGui font loading mechanism
-        if (! HelloImGui::ImGuiDefaultSettings::DidCallHelloImGuiLoadFontTTF())
+        if (! HelloImGui::DidCallHelloImGuiLoadFontTTF())
         {
             float dpiFactor = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
             ImGui::GetIO().FontGlobalScale = dpiFactor;

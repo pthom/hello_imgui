@@ -49,7 +49,7 @@ struct AppState
 //////////////////////////////////////////////////////////////////////////
 //    Additional fonts handling
 //////////////////////////////////////////////////////////////////////////
-ImFont * gTitleFont;
+ImFont * gTitleFont = nullptr;
 ImFont * gEmojisFont = nullptr;
 void LoadFonts() // This is called by runnerParams.callbacks.LoadAdditionalFonts
 {
@@ -58,12 +58,15 @@ void LoadFonts() // This is called by runnerParams.callbacks.LoadAdditionalFonts
     // Then load the title font
     gTitleFont = HelloImGui::LoadFontTTF("fonts/DroidSans.ttf", 18.f);
 
+
     // Then load an emoji font
     //gEmojisFont = HelloImGui::LoadEmojiFont("fonts/seguiemj.ttf", 30.f, false);
-    gEmojisFont = HelloImGui::LoadEmojiFont("fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf", 20.f, false);
+    //gEmojisFont = HelloImGui::LoadEmojiFont("fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf", 20.f, false);
     //gEmojisFont = HelloImGui::LoadEmojiFont("fonts/OpenMoji-color-colr0_svg.ttf", 30.f, false);
+    //gEmojisFont = HelloImGui::LoadEmojiFont("fonts/NotoEmoji-Regular.ttf", 20.f, false);
+    //gEmojisFont = HelloImGui::LoadEmojiFont("fonts/TwitterColorEmoji-SVGinOT.ttf", 20.f, false);
 
-    //gEmojisFont = HelloImGui::LoadEmojiFont("fonts/noto-untouchedsvg.ttf", 30.f, false);
+    gEmojisFont = HelloImGui::LoadEmojiFontFromAssetFileTTF("fonts/noto-untouchedsvg.ttf", 30.f, false);
 
 }
 
@@ -276,11 +279,12 @@ void DemoAssets()
     ImGui::PushFont(gTitleFont); ImGui::Text("Hello"); ImGui::PopFont();
     HelloImGui::ImageFromAsset("world.jpg", HelloImGui::EmToVec2(3.f, 3.f));
 
+    ImGui::Text("Some Emojis");
     ImGui::PushFont(gEmojisFont);
-    ImGui::Text(u8"A");
-    ImGui::Text(u8"\U0000260F");//🌴
-    ImGui::Text("\U0001F334");//🌴
-    ImGui::Text("B");
+    ImGui::Text(u8"\U0001F334");//🌴
+    ImGui::SameLine();
+    ImGui::Text(u8"\U0000270C\U0000FE0F");//✌️
+    ImGui::Text(u8"\U00002764\U0000FE0F");//❤️
     ImGui::PopFont(); // thumbs up 🌴
 }
 

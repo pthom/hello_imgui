@@ -43,7 +43,12 @@ namespace HelloImGui
             NSWindow* nswin = glfwGetCocoaWindow(gGlfwMetalGlobals.glfwWindow);
             gMetalGlobals.caMetalLayer = [CAMetalLayer layer];
             gMetalGlobals.caMetalLayer.device = gMetalGlobals.mtlDevice;
-            gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+
+            // gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+            gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatRGBA16Float;
+            gMetalGlobals.caMetalLayer.wantsExtendedDynamicRangeContent = YES;
+            gMetalGlobals.caMetalLayer.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceExtendedSRGB);
+
             nswin.contentView.layer = gMetalGlobals.caMetalLayer;
             nswin.contentView.wantsLayer = YES;
 

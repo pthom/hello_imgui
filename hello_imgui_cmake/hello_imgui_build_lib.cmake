@@ -91,24 +91,50 @@ function(_him_add_freetype_to_imgui)
 
     # Note: also change add_imgui.cmake in bundle!
 
-    include(FetchContent)
+    #
+    # 1. Build or find freetype (if downloaded, make sure it is static)
+    #
+    set(download_freetype OFF)
+    if (HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
+        find_package(freetype QUIET)
+        if (NOT freetype_FOUND)
+            set(download_freetype ON)
+        endif()
+    endif()
+    if(HELLOIMGUI_FREETYPE_STATIC)
+        set(download_freetype ON)
+    endif()
 
-    # Get freetype
-    include(FetchContent)
-    FetchContent_Declare(
-        freetype
-        GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git
-        GIT_TAG        VER-2-13-2
-        GIT_PROGRESS TRUE
-    )
-    FetchContent_MakeAvailable(freetype)
-    target_link_libraries(imgui PUBLIC freetype)
+    if (download_freetype)
+        message(STATUS "HelloImGui: downloading and building freetype")
 
-#    find_package(Freetype REQUIRED)
-#    target_link_libraries(imgui PUBLIC Freetype::Freetype)
+        set(backup_shared_lib ${BUILD_SHARED_LIBS})
+        set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
+        include(FetchContent)
+        FetchContent_Declare(
+            freetype
+            GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git
+            GIT_TAG        VER-2-13-2
+            GIT_PROGRESS TRUE
+        )
+        FetchContent_MakeAvailable(freetype)
+        set(freetype_linked_library freetype)
 
+        set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
+    else()
+        find_package(Freetype REQUIRED)
+        set(freetype_linked_library Freetype::Freetype)
+    endif()
+
+    target_link_libraries(imgui PUBLIC ${freetype_linked_library})
+
+    #
+    # 2. Build lunasvg (static)
+    #
     # Fetch and build lunasvg
+    set(backup_shared_lib ${BUILD_SHARED_LIBS})
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
     include(FetchContent)
     FetchContent_Declare(lunasvg
         GIT_REPOSITORY https://github.com/sammycage/lunasvg
@@ -117,13 +143,15 @@ function(_him_add_freetype_to_imgui)
     )
     FetchContent_MakeAvailable(lunasvg)
     target_link_libraries(imgui PUBLIC lunasvg)
+    set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
 
-    # Add freetype support to imgui
+    #
+    # 3. Add freetype and LunaSvg support to imgui
+    #    with support for wchar32 (for emojis, and other unicode characters)
     target_sources(imgui PRIVATE
         ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.cpp
         ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.h)
     target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE IMGUI_ENABLE_FREETYPE_LUNASVG)
-
     target_compile_definitions(imgui PUBLIC IMGUI_USE_WCHAR32)
 endfunction()
 

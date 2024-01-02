@@ -44,7 +44,7 @@ option(HELLOIMGUI_ADD_APP_WITH_INSTALL "Add cmake install() instructions with he
 # HelloImGui Build options
 ###############################################################################
 
-#------------------------------------------------------------------------------
+################################################################################
 # Available backends combinations: HelloImGui needs to use at least one of them.
 # If you specify no option:
 # - HELLOIMGUI_USE_GLFW_OPENGL3 will be used for Windows, Linux, and macOS
@@ -54,7 +54,7 @@ option(HELLOIMGUI_ADD_APP_WITH_INSTALL "Add cmake install() instructions with he
 # - Only one rendering backend can be used at a time (OpenGL3, Metal or Vulkan)!
 # - You may select multiple platform backends (for example, you may select both SDL and Glfw3)
 # - Combinations using OpenGL3 as a renderer are easier to use, and are recommended, especially for beginners.
-#------------------------------------------------------------------------------
+################################################################################
 # Standard backends:
 # Use Glfw3 + OpenGl3
 option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for Glfw3+OpenGL3" OFF)
@@ -79,6 +79,11 @@ option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build HelloImGui for SDL2+DirectX11" OFF)
 option(HELLOIMGUI_USE_GLFW_DIRECTX11 "Build HelloImGui for Glfw3+DirectX11" OFF)
 # Experimental! DirectX12 was not tested, although it does compile!
 option(HELLOIMGUI_USE_SDL_DIRECTX12 "Build HelloImGui for SDL2+DirectX12" OFF)
+
+#------------------------------------------------------------------------------
+# Options / Freetype
+#------------------------------------------------------------------------------
+option(HELLOIMGUI_USE_FREETYPE "Use freetype for text rendering" OFF)
 
 
 #------------------------------------------------------------------------------

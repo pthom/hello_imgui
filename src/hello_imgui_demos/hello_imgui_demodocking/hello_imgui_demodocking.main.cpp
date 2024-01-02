@@ -50,12 +50,21 @@ struct AppState
 //    Additional fonts handling
 //////////////////////////////////////////////////////////////////////////
 ImFont * gTitleFont;
+ImFont * gEmojisFont = nullptr;
 void LoadFonts() // This is called by runnerParams.callbacks.LoadAdditionalFonts
 {
     // First, load the default font (the default font should be loaded first)
     HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons();
     // Then load the title font
     gTitleFont = HelloImGui::LoadFontTTF("fonts/DroidSans.ttf", 18.f);
+
+    // Then load an emoji font
+    //gEmojisFont = HelloImGui::LoadEmojiFont("fonts/seguiemj.ttf", 30.f, false);
+    gEmojisFont = HelloImGui::LoadEmojiFont("fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf", 20.f, false);
+    //gEmojisFont = HelloImGui::LoadEmojiFont("fonts/OpenMoji-color-colr0_svg.ttf", 30.f, false);
+
+    //gEmojisFont = HelloImGui::LoadEmojiFont("fonts/noto-untouchedsvg.ttf", 30.f, false);
+
 }
 
 
@@ -266,6 +275,13 @@ void DemoAssets()
 {
     ImGui::PushFont(gTitleFont); ImGui::Text("Hello"); ImGui::PopFont();
     HelloImGui::ImageFromAsset("world.jpg", HelloImGui::EmToVec2(3.f, 3.f));
+
+    ImGui::PushFont(gEmojisFont);
+    ImGui::Text(u8"A");
+    ImGui::Text(u8"\U0000260F");//🌴
+    ImGui::Text("\U0001F334");//🌴
+    ImGui::Text("B");
+    ImGui::PopFont(); // thumbs up 🌴
 }
 
 // The Gui of the demo feature window
@@ -584,8 +600,9 @@ int main(int, char**)
     //###############################################################################################
     // Part 4: Run the app
     //###############################################################################################
+    runnerParams.appWindowParams.borderless = false;
+    runnerParams.callbacks.ShowGui = []() {    ImGui::ShowDemoWindow();};
     HelloImGui::Run(runnerParams); // Note: with ImGuiBundle, it is also possible to use ImmApp::Run(...)
-
 
     return 0;
 }

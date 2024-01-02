@@ -7,6 +7,12 @@ namespace HelloImGui
 {
 ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange = false, ImFontConfig config = ImFontConfig());
 ImFont* LoadFontTTF_WithFontAwesomeIcons(const std::string & fontFilename, float fontSize, bool useFullGlyphRange = false, ImFontConfig configFont = ImFontConfig(), ImFontConfig configIcons = ImFontConfig());
+
+#ifdef IMGUI_ENABLE_FREETYPE
+ImFont* LoadEmojiFont(const std::string & fontFilename, float fontSize, bool mergeToLastFont);
+#endif
+
+
 ImFont* MergeFontAwesomeToLastFont(float fontSize, ImFontConfig config = ImFontConfig());
 
 namespace ImGuiDefaultSettings

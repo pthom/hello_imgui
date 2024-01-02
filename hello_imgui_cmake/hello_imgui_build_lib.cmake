@@ -67,9 +67,64 @@ function(_him_do_build_imgui)
         add_library(imgui ${imgui_sources})
     endif()
     target_include_directories(imgui PUBLIC ${HELLOIMGUI_IMGUI_SOURCE_DIR})
+
+    if (HELLOIMGUI_USE_FREETYPE)
+        _him_add_freetype_to_imgui()
+    endif()
+
     if (MSVC)
         hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
     endif()
+endfunction()
+
+function(_him_add_freetype_to_imgui)
+    # Add freetype + lunasvg to imgui
+    # This is especially useful to support emojis (possibly colored) in imgui
+    # See doc:
+    #     https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#using-colorful-glyphsemojis
+    # We have to
+    # - add imgui_freetype.cpp and imgui_freetype.h to imgui
+    # - enable freetype in imgui via IMGUI_ENABLE_FREETYPE
+    # - enable lunasvg in imgui via IMGUI_ENABLE_FREETYPE_LUNASVG
+    # - add lunasvg to imgui
+    # - define IMGUI_USE_WCHAR32 in imgui
+
+    # Note: also change add_imgui.cmake in bundle!
+
+    include(FetchContent)
+
+    # Get freetype
+    include(FetchContent)
+    FetchContent_Declare(
+        freetype
+        GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git
+        GIT_TAG        VER-2-13-2
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(freetype)
+    target_link_libraries(imgui PUBLIC freetype)
+
+#    find_package(Freetype REQUIRED)
+#    target_link_libraries(imgui PUBLIC Freetype::Freetype)
+
+
+    # Fetch and build lunasvg
+    include(FetchContent)
+    FetchContent_Declare(lunasvg
+        GIT_REPOSITORY https://github.com/sammycage/lunasvg
+        GIT_TAG        v2.3.9
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(lunasvg)
+    target_link_libraries(imgui PUBLIC lunasvg)
+
+    # Add freetype support to imgui
+    target_sources(imgui PRIVATE
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.cpp
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.h)
+    target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE IMGUI_ENABLE_FREETYPE_LUNASVG)
+
+    target_compile_definitions(imgui PUBLIC IMGUI_USE_WCHAR32)
 endfunction()
 
 function(_him_install_imgui)

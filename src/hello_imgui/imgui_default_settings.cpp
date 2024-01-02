@@ -19,7 +19,7 @@ ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFu
 {
     if (!HelloImGui::AssetExists(fontFilename))
     {
-        HIMG_LOG(std::string("Cannot find font ") + fontFilename);
+        fprintf(stderr, "Cannot find font %s\n", fontFilename.c_str());
         return nullptr;
     }
     AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());

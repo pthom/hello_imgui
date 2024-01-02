@@ -83,8 +83,11 @@ option(HELLOIMGUI_USE_SDL_DIRECTX12 "Build HelloImGui for SDL2+DirectX12" OFF)
 #------------------------------------------------------------------------------
 # Options / Freetype
 #------------------------------------------------------------------------------
-option(HELLOIMGUI_USE_FREETYPE "Use freetype for text rendering" ON)
-
+set(freetype_default ON)
+if(IOS OR ANDROID)
+    set(freetype_default OFF)
+endif()
+option(HELLOIMGUI_USE_FREETYPE "Use freetype for text rendering" ${freetype_default})
 
 #------------------------------------------------------------------------------
 # Automatic download of Glfw3, SDL2, and Freetype (provided as a convenience)
@@ -109,7 +112,6 @@ endif()
 option(HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED "Download and build GLFW if needed" ${autodownload_default})
 option(HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED "Download and build GLFW if needed" ${autodownload_default})
 option(HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED "Download and build Freetype if needed" ${autodownload_default})
-
 option(HELLOIMGUI_FREETYPE_STATIC "Force static linking of freetype (only used for python bindings)" OFF)
 
 
@@ -266,3 +268,5 @@ endif()
 if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
     install(FILES README.md DESTINATION .)
 endif()
+
+message(STATUS "HELLOIMGUI_USE_FREETYPE=${HELLOIMGUI_USE_FREETYPE}")

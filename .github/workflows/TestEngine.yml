@@ -22,9 +22,9 @@ jobs:
         with:
           submodules: true
 
-      - name: apt install xorg-dev  libglfw3-dev (ubuntu only)
+      - name: apt install xorg-dev  libglfw3-dev libfreetype-dev (ubuntu only)
         if: ${{ matrix.platform == 'ubuntu-latest' }}
-        run: sudo apt-get update && sudo apt-get install -y xorg-dev  libglfw3-dev
+        run: sudo apt-get update && sudo apt-get install -y xorg-dev  libglfw3-dev libfreetype-dev
 
       - name: Build and install
         shell: bash

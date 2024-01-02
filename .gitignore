@@ -575,3 +575,4 @@ vcpkg/
 build/
 build*/
 build_*/
+.vscode/

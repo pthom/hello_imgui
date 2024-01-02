@@ -96,7 +96,7 @@ function(_him_add_freetype_to_imgui)
     #
     set(download_freetype OFF)
     if (HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
-        find_package(freetype QUIET)
+        find_package(freetype 2.12 QUIET)
         if (NOT freetype_FOUND)
             set(download_freetype ON)
         endif()
@@ -123,7 +123,15 @@ function(_him_add_freetype_to_imgui)
 
         set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
     else()
-        find_package(Freetype REQUIRED)
+        find_package(freetype 2.12 QUIET)
+        if(NOT freetype_FOUND AND NOT HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
+            message(STATUS "
+                HelloImGui: freetype not found. You may set
+                    -DHELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED=ON
+                to download and build freetype automatically
+            ")
+        endif()
+        find_package(Freetype 2.12 REQUIRED)
         set(freetype_linked_library Freetype::Freetype)
     endif()
 

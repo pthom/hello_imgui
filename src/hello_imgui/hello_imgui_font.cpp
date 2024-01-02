@@ -16,8 +16,6 @@
 #endif
 
 
-#include "SDL.h"
-
 // Patch ImGui font loading with sensible defaults
 //    - Do not require static
 namespace ImGui_SensibleFont

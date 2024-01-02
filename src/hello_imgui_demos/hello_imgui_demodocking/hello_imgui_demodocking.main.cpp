@@ -58,7 +58,7 @@ void LoadFonts() // This is called by runnerParams.callbacks.LoadAdditionalFonts
     // Then load the title font
     gTitleFont = HelloImGui::LoadFontTTF("fonts/DroidSans.ttf", 18.f);
 
-
+#ifdef IMGUI_ENABLE_FREETYPE
     // Then load an emoji font
     //gEmojisFont = HelloImGui::LoadEmojiFont("fonts/seguiemj.ttf", 30.f, false);
     //gEmojisFont = HelloImGui::LoadEmojiFont("fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf", 20.f, false);
@@ -67,7 +67,7 @@ void LoadFonts() // This is called by runnerParams.callbacks.LoadAdditionalFonts
     //gEmojisFont = HelloImGui::LoadEmojiFont("fonts/TwitterColorEmoji-SVGinOT.ttf", 20.f, false);
 
     gEmojisFont = HelloImGui::LoadEmojiFontFromAssetFileTTF("fonts/noto-untouchedsvg.ttf", 30.f, false);
-
+#endif
 }
 
 
@@ -279,6 +279,7 @@ void DemoAssets()
     ImGui::PushFont(gTitleFont); ImGui::Text("Hello"); ImGui::PopFont();
     HelloImGui::ImageFromAsset("world.jpg", HelloImGui::EmToVec2(3.f, 3.f));
 
+#ifdef IMGUI_ENABLE_FREETYPE
     ImGui::Text("Some Emojis");
     ImGui::PushFont(gEmojisFont);
     ImGui::Text(u8"\U0001F334");//🌴
@@ -286,6 +287,7 @@ void DemoAssets()
     ImGui::Text(u8"\U0000270C\U0000FE0F");//✌️
     ImGui::Text(u8"\U00002764\U0000FE0F");//❤️
     ImGui::PopFont(); // thumbs up 🌴
+#endif
 }
 
 // The Gui of the demo feature window

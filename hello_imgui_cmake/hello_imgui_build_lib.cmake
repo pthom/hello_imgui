@@ -112,6 +112,10 @@ function(_him_add_freetype_to_imgui)
         set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
         include(FetchContent)
+        if(IOS)
+            set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
+            set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
+        endif()
         FetchContent_Declare(
             freetype
             GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git

@@ -41,7 +41,10 @@ namespace HelloImGui
 
             // Setup Platform/Renderer backends
             gMetalGlobals.caMetalLayer = (__bridge CAMetalLayer*)SDL_RenderGetMetalLayer(gSdlMetalGlobals.sdlRenderer);
-            gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+            // gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+            gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatRGBA16Float;
+            gMetalGlobals.caMetalLayer.wantsExtendedDynamicRangeContent = YES;
+            gMetalGlobals.caMetalLayer.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceExtendedSRGB);
         }
         {
             ImGui_ImplMetal_Init(gMetalGlobals.caMetalLayer.device);

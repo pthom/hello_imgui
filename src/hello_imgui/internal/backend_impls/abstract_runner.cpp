@@ -507,11 +507,17 @@ void AbstractRunner::RenderGui()
         Menu_StatusBar::ShowMenu(params);
 
     if (params.appWindowParams.borderless) // Need to add params.appWindowParams.borderlessResizable
-        HandleBorderlessMovable(mWindow,
+    {
+        bool shouldClose = HandleBorderlessMovable(mWindow,
                                 mBackendWindowHelper.get(),
                                 params.appWindowParams.borderlessMovable,
                                 params.appWindowParams.borderlessResizable,
-                                params.appWindowParams.borderlessHighlightColor);
+                                params.appWindowParams.borderlessClosable,
+                                params.appWindowParams.borderlessHighlightColor
+        );
+        if (shouldClose)
+            params.appShallExit = true;
+    }
 
     if (params.callbacks.ShowGui)
     {

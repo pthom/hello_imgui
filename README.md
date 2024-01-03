@@ -181,7 +181,7 @@ Anything in the assets/ folder located beside the app's CMakeLists will be embed
 └── hello_globe.main.cpp
 ├── CMakeLists.txt
 ├── assets/
-│    └── world.jpg
+│    └── world.png
 ```
 (even on iOS and emscripten).
 
@@ -195,7 +195,7 @@ int main(int , char *[])
 {
     auto guiFunction = []() {
         ImGui::Text("Hello, ");                    // Display a simple label
-        HelloImGui::ImageFromAsset("world.jpg");   // Display a static image
+        HelloImGui::ImageFromAsset("world.png");   // Display a static image
         if (ImGui::Button("Bye!"))                 // Display a button
             // and immediately handle its action if it is clicked!
             HelloImGui::GetRunnerParams()->appShallExit = true;

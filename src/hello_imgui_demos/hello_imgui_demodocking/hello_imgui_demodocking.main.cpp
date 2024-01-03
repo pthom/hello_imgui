@@ -668,7 +668,7 @@ int main(int, char**)
     // First, tell HelloImGui that we want full screen dock space (this will create "MainDockSpace")
     runnerParams.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::ProvideFullScreenDockSpace;
     // In this demo, we also demonstrate multiple viewports: you can drag windows outside out the main window in order to put their content into new native windows
-    runnerParams.imGuiWindowParams.enableViewports = false;
+    runnerParams.imGuiWindowParams.enableViewports = true;
     // Set the default layout
     runnerParams.dockingParams = CreateDefaultLayout(appState);
     // Add alternative layouts

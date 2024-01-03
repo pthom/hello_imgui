@@ -176,6 +176,7 @@ namespace HelloImGui
             }
 
             // Resize window if dragging
+            int minAcceptableWindowSize = 60;
             if (isDragging)
             {
                 ImVec2 dragDelta = ImGui::GetMouseDragDelta(0);
@@ -183,9 +184,31 @@ namespace HelloImGui
                 auto windowBounds = backendWindowHelper->GetWindowBounds(window);
                 windowBounds.size[0] += (int)dragDelta.x;
                 windowBounds.size[1] += (int)dragDelta.y;
+                printf("windowBounds.size = %d x %d\n", windowBounds.size[0], windowBounds.size[1]);
+                if (windowBounds.size[0] < minAcceptableWindowSize)
+                {
+                    windowBounds.size[0] = minAcceptableWindowSize;
+                    isDragging = false;
+                }
+                if (windowBounds.size[1] < minAcceptableWindowSize)
+                {
+                    windowBounds.size[1] = minAcceptableWindowSize;
+                    isDragging = false;
+                }
                 backendWindowHelper->SetWindowBounds(window, windowBounds);
                 ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
             }
+
+#ifdef HELLOIMGUI_USE_SDL
+            // With borderless windows, SDL is able to let window resize themselves to 0,
+            // and they are then impossible to resize! So we force a minimum size here:
+            auto windowBounds = backendWindowHelper->GetWindowBounds(window);
+            if (windowBounds.size[0] < minAcceptableWindowSize)
+                windowBounds.size[0] = minAcceptableWindowSize;
+            if (windowBounds.size[1] < minAcceptableWindowSize)
+                windowBounds.size[1] = minAcceptableWindowSize;
+            backendWindowHelper->SetWindowBounds(window, windowBounds);
+#endif
 
             // Set mouse cursor: (not visible under glfw < 3.4, which does not implement this cursor)
             if (dragArea.Contains(mousePos) || isDragging)

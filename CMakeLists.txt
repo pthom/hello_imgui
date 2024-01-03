@@ -272,4 +272,7 @@ if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
     install(FILES README.md DESTINATION .)
 endif()
 
-message(STATUS "HELLOIMGUI_USE_FREETYPE=${HELLOIMGUI_USE_FREETYPE}")
+#------------------------------------------------------------------------------
+# Log info
+#------------------------------------------------------------------------------
+him_log_configuration()

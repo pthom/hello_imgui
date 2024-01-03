@@ -8,7 +8,9 @@
 #
 ###################################################################################################
 
-
+# allows the linking of a target in a different directory
+# Needed to add freetype to the imgui target, if it is build externally
+cmake_policy(SET CMP0079 NEW)
 
 ###################################################################################################
 # Add library and sources: API = him_add_hello_imgui
@@ -36,6 +38,9 @@ function(him_build_imgui)
     if (HELLOIMGUI_BUILD_IMGUI)
         _him_do_build_imgui()
         _him_install_imgui()
+    endif()
+    if (HELLOIMGUI_USE_FREETYPE)
+        _him_add_freetype_to_imgui()
     endif()
 endfunction()
 
@@ -67,10 +72,6 @@ function(_him_do_build_imgui)
         add_library(imgui ${imgui_sources})
     endif()
     target_include_directories(imgui PUBLIC ${HELLOIMGUI_IMGUI_SOURCE_DIR})
-
-    if (HELLOIMGUI_USE_FREETYPE)
-        _him_add_freetype_to_imgui()
-    endif()
 
     if (MSVC)
         hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
@@ -730,7 +731,7 @@ endfunction()
 function(him_log_configuration)
     him_get_active_backends(selected_backends)
     set(msg "
-    hello_imgui build options:
+    Hello ImGui build options:
     ===========================================================================
     Backends:                       ${selected_backends}
     ---------------------------------------------------------------------------

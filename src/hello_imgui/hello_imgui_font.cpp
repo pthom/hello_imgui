@@ -106,13 +106,14 @@ namespace ImGui_SensibleFont
     ImFont* AddFontFromFileTTF(
         const char* filename,
         float font_size,
+        bool adjust_font_size_for_dpi,
         const ImFontConfig& font_cfg = ImFontConfig(),
         const ImVector<ImWchar[2]> & glyph_ranges = {}
     )
     {
         ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
         static_font_config->FontDataOwnedByAtlas = false;
-        float font_size_pixels_adjusted = font_size * FontLoadingFactor();
+        float font_size_pixels_adjusted = adjust_font_size_for_dpi ? font_size * FontLoadingFactor(): font_size;
         return ImGui::GetIO().Fonts->AddFontFromFileTTF(filename, font_size_pixels_adjusted, static_font_config);
     }
 
@@ -120,13 +121,14 @@ namespace ImGui_SensibleFont
         void* font_data,
         int font_data_size,
         float font_size,
+        bool adjust_font_size_for_dpi,
         const ImFontConfig& font_cfg = ImFontConfig(),
         const ImVector<ImWchar[2]> & glyph_ranges = {}
     )
     {
         ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
         static_font_config->FontDataOwnedByAtlas = false;
-        float font_size_pixels_adjusted = font_size * FontLoadingFactor();
+        float font_size_pixels_adjusted = adjust_font_size_for_dpi ? font_size * FontLoadingFactor(): font_size;
 
         return ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
             font_data, font_data_size, font_size_pixels_adjusted, static_font_config);
@@ -136,13 +138,14 @@ namespace ImGui_SensibleFont
         void* font_data,
         int font_data_size,
         float font_size,
+        bool adjust_font_size_for_dpi,
         const ImFontConfig& font_cfg = ImFontConfig(),
         const ImVector<ImWchar[2]> & glyph_ranges = {}
     )
     {
         ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
         static_font_config->FontDataOwnedByAtlas = true;
-        float font_size_pixels_adjusted = font_size * FontLoadingFactor();
+        float font_size_pixels_adjusted = adjust_font_size_for_dpi ? font_size * FontLoadingFactor(): font_size;
         return ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
             font_data, font_data_size, font_size_pixels_adjusted, static_font_config);
     }
@@ -153,50 +156,68 @@ namespace HelloImGui
 {
     bool gDidCallHelloImGuiLoadFontTTF = false;
 
-    ImFont* LoadFontFromFileTTF(
-        const std::string& filename,
-        float fontSize,
-        bool mergeToLastFont,
-        const ImFontConfig& fontConfig,
-        const ImVector<ImWchar[2]> & glyphRanges)
+    ImFont* LoadFont(const std::string & fontFilename, float fontSize, const FontLoadingParams& params_)
     {
-        ImFontConfig font_cfg_copy = fontConfig;
-        font_cfg_copy.MergeMode = mergeToLastFont;
-        ImFont* font = ImGui_SensibleFont::AddFontFromFileTTF(filename.c_str(), fontSize, font_cfg_copy, glyphRanges);
         gDidCallHelloImGuiLoadFontTTF = true;
-        return font;
-    }
 
-    ImFont* LoadFontFromAssetFileTTF(
-        const std::string& filename,
-        float fontSize,
-        bool mergeToLastFont,
-        const ImFontConfig& fontConfig,
-        const ImVector<ImWchar[2]> & glyphRanges)
-    {
-        if (!HelloImGui::AssetExists(filename))
+        FontLoadingParams params = params_;
+
+        if (params.useFullGlyphRange)
         {
-            fprintf(stderr, "Cannot find font %s\n", filename.c_str());
-            return nullptr;
+            params.glyphRanges.clear();
+            params.glyphRanges.push_back({ 0x0001, 0xFFFF });
+            if (params.reduceMemoryUsageIfFullGlyphRange)
+                params.fontConfig.OversampleH = params.fontConfig.OversampleV = 1;
         }
-        AssetFileData fontData = LoadAssetFileData(filename.c_str());
 
-        ImFontConfig font_cfg_copy = fontConfig;
-        font_cfg_copy.MergeMode = mergeToLastFont;
-        ImFont* font = ImGui_SensibleFont::AddFontFromMemoryTTF_KeepOwnership(
-            fontData.data, (int)fontData.dataSize, fontSize, font_cfg_copy, glyphRanges);
+        if (params.loadColor)
+        {
+#ifdef IMGUI_ENABLE_FREETYPE
+            params.fontConfig.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_LoadColor;
+#else
+            IM_ASSERT(false && "FontLoadingParmas.loadColor requires freetype (IMGUI_ENABLE_FREETYPE)");
+            return nullptr;
+#endif
+        }
 
-        gDidCallHelloImGuiLoadFontTTF = true;
-        FreeAssetFileData(&fontData);
+        params.fontConfig.MergeMode = params.mergeToLastFont;
+
+        ImFont* font = nullptr;
+        if (params.insideAssets)
+        {
+            AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());
+            font = ImGui_SensibleFont::AddFontFromMemoryTTF_KeepOwnership(
+                fontData.data, fontData.dataSize, fontSize, params.adjustSizeToDpi, params.fontConfig, params.glyphRanges);
+            FreeAssetFileData(&fontData);
+        }
+        else
+        {
+            font = ImGui_SensibleFont::AddFontFromFileTTF(
+                fontFilename.c_str(), fontSize, params.adjustSizeToDpi, params.fontConfig, params.glyphRanges);
+        }
+
+        if (params.mergeFontAwesome)
+        {
+            IM_ASSERT(params.insideAssets && "FontLoadingParmas.mergeFontAwesome requires params.insideAssets");
+            static std::string faFile = "fonts/fontawesome-webfont.ttf";
+            FontLoadingParams fontLoadingParamsFa;
+            fontLoadingParamsFa.fontConfig = params.fontConfigFontAwesome;
+            fontLoadingParamsFa.mergeToLastFont = true;
+            fontLoadingParamsFa.glyphRanges.push_back({ ICON_MIN_FA, ICON_MAX_FA });
+            font = LoadFont(faFile, fontSize, fontLoadingParamsFa);
+        }
+
         return font;
     }
+
 
     ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange, ImFontConfig config)
     {
-        ImVector<ImWchar[2]> glyph_ranges;
+        FontLoadingParams fontLoadingParams;
         if (useFullGlyphRange)
-            glyph_ranges.push_back({0x0020, 0xFFFF});
-        ImFont *font = LoadFontFromAssetFileTTF(fontFilename, fontSize, false, config, glyph_ranges);
+            fontLoadingParams.glyphRanges.push_back({0x0020, 0xFFFF});
+        fontLoadingParams.fontConfig = config;
+        ImFont* font = LoadFont(fontFilename, fontSize, fontLoadingParams);
         return font;
     }
 
@@ -207,48 +228,30 @@ namespace HelloImGui
         ImFontConfig configFont,
         ImFontConfig configIcons)
     {
-        ImFont *font = LoadFontTTF(fontFilename, fontSize, useFullGlyphRange, configFont);
-        if (font == nullptr)
-            return nullptr;
-        font = MergeFontAwesomeToLastFont(fontSize, configIcons);
+        FontLoadingParams fontLoadingParams;
+        if (useFullGlyphRange)
+            fontLoadingParams.glyphRanges.push_back({0x0020, 0xFFFF});
+        fontLoadingParams.fontConfig = configFont;
+        fontLoadingParams.mergeFontAwesome = true;
+        fontLoadingParams.fontConfigFontAwesome = configIcons;
+
+        ImFont* font = LoadFont(fontFilename, fontSize, fontLoadingParams);
         return font;
     }
 
     ImFont* MergeFontAwesomeToLastFont(float fontSize, ImFontConfig config)
     {
         static std::string faFile = "fonts/fontawesome-webfont.ttf";
-        ImVector<ImWchar[2]> glyph_ranges;
-        glyph_ranges.push_back({ ICON_MIN_FA, ICON_MAX_FA });
-        ImFont* font = LoadFontFromAssetFileTTF(faFile, fontSize, true, config, glyph_ranges);
+
+        FontLoadingParams fontLoadingParams;
+        fontLoadingParams.mergeToLastFont = true;
+        fontLoadingParams.fontConfig = config;
+        fontLoadingParams.fontConfig.MergeMode = true;
+        fontLoadingParams.glyphRanges.push_back({ ICON_MIN_FA, ICON_MAX_FA });
+
+        ImFont* font = LoadFont(faFile, fontSize, fontLoadingParams);
         return font;
     }
-
-
-#ifdef IMGUI_ENABLE_FREETYPE
-    ImFont* LoadEmojiFontFromAssetFileTTF(
-        const std::string & fontFilename,
-        float fontSize,
-        bool mergeToLastFont,
-        const ImVector<ImWchar[2]> & glyph_ranges)
-    {
-        static ImWchar fullGlyphRange[2] = { 0x1, 0x1FFFF };
-
-        ImVector<ImWchar[2]> glyph_ranges_copy = glyph_ranges;
-        if (glyph_ranges_copy.empty())
-            glyph_ranges_copy.push_back(fullGlyphRange);
-
-        auto createEmojiConfig = []() -> ImFontConfig {
-            ImFontConfig cfg;
-            cfg.OversampleH = cfg.OversampleV = 1;
-            cfg.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_LoadColor;
-            return cfg;
-        };
-
-        ImFontConfig emojiConfig = createEmojiConfig();
-        ImFont *font = LoadFontFromAssetFileTTF(fontFilename, fontSize, mergeToLastFont, emojiConfig, glyph_ranges_copy);
-        return font;
-    }
-    #endif
 
 
     bool DidCallHelloImGuiLoadFontTTF()

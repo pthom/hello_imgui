@@ -454,7 +454,8 @@ void AbstractRunner::Setup()
     // LoadAdditionalFonts will load fonts and resize them by 1./FontGlobalScale
     // (if and only if it uses HelloImGui::LoadFontTTF instead of ImGui's font loading functions)
     params.callbacks.LoadAdditionalFonts();
-    ImGui::GetIO().Fonts->Build();
+    bool buildSuccess = ImGui::GetIO().Fonts->Build();
+    IM_ASSERT(buildSuccess && "ImGui::GetIO().Fonts->Build() failed!");
     {
         // Reset FontGlobalScale if we did not use HelloImGui font loading mechanism
         if (! HelloImGui::DidCallHelloImGuiLoadFontTTF())

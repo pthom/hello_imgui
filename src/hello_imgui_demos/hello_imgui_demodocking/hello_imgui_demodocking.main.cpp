@@ -28,6 +28,10 @@ It demonstrates how to:
 #else
 #define U8_TO_CHAR(x) x
 #endif
+// And then, we need to tell gcc to stop validating format string (it gets confused by the u8"" string)
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wformat"
+#endif
 
 
 //////////////////////////////////////////////////////////////////////////

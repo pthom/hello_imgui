@@ -1,13 +1,15 @@
 /*
-A more complex app demo,
+A more complex app demo
 
-It demonstrates:
-- How to use a specific application state (instead of using static variables)
-- How to set up a complex docking layouts (with several possible layouts):
-- How to use the status bar
-- How to use default menus (App and view menu), and how to customize them
-- How to display a log window
-- How to load additional fonts
+It demonstrates how to:
+- set up a complex docking layouts (with several possible layouts):
+- use the status bar
+- use default menus (App and view menu), and how to customize them
+- display a log window
+- load additional fonts, possibly colored, and with emojis
+- use a specific application state (instead of using static variables)
+- save some additional user settings within imgui ini file
+- use borderless windows, that are movable and resizable
 */
 
 #include "hello_imgui/hello_imgui.h"
@@ -58,7 +60,7 @@ void LoadFonts(AppState& appState) // This is called by runnerParams.callbacks.L
     // First, load the default font (the default font should be loaded first)
     HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons();
     // Then load the other fonts
-    appState.TitleFont = HelloImGui::LoadFontTTF("fonts/DroidSans.ttf", 18.f);
+    appState.TitleFont = HelloImGui::LoadFont("fonts/DroidSans.ttf", 18.f);
 
     HelloImGui::FontLoadingParams fontLoadingParamsEmoji;
     fontLoadingParamsEmoji.useFullGlyphRange = true;
@@ -602,7 +604,7 @@ int main(int, char**)
 
     // Hello ImGui params (they hold the settings as well as the Gui callbacks)
     HelloImGui::RunnerParams runnerParams;
-    runnerParams.appWindowParams.windowTitle = "Docking demo";
+    runnerParams.appWindowParams.windowTitle = "Docking Demo";
     runnerParams.imGuiWindowParams.menuAppTitle = "Docking Demo";
     runnerParams.appWindowParams.windowGeometry.size = {1000, 900};
     runnerParams.appWindowParams.restorePreviousGeometry = true;
@@ -611,6 +613,7 @@ int main(int, char**)
     runnerParams.appWindowParams.borderless = true;
     runnerParams.appWindowParams.borderlessMovable = true;
     runnerParams.appWindowParams.borderlessResizable = true;
+    runnerParams.appWindowParams.borderlessClosable = true;
 
     // Load additional font
     runnerParams.callbacks.LoadAdditionalFonts = [&appState]() { LoadFonts(appState); };

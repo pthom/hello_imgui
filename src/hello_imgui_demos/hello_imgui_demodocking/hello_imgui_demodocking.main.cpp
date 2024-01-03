@@ -115,14 +115,14 @@ void SaveMyAppSettings(const AppState& appState)
 void DemoHideWindow(AppState& appState)
 {
     ImGui::PushFont(appState.TitleFont); ImGui::Text("Hide app window"); ImGui::PopFont();
-    ImGui::TextWrapped("By clicking the button below, you can hide the window for 3 seconds.");
-
     static double lastHideTime = -1.;
     if (ImGui::Button("Hide"))
     {
         lastHideTime =  ImGui::GetTime();
         HelloImGui::GetRunnerParams()->appWindowParams.hidden = true;
     }
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("By clicking this button, you can hide the window for 3 seconds.");
     if (lastHideTime > 0.)
     {
         double now = ImGui::GetTime();
@@ -154,13 +154,15 @@ void DemoShowAdditionalWindow(AppState& appState)
             additionalWindowPtr->isVisible = true;
         }
     }
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("By clicking this button, you can show an additional window");
 }
 
-void DemoBasicWidgets(AppState& appState)
+void DemoLogs(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont); ImGui::Text("Basic widgets demo"); ImGui::PopFont();
-    ImGui::TextWrapped("The widgets below will interact with the log window");
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("Log Demo"); ImGui::PopFont();
 
+    ImGui::BeginGroup();
     // Edit a float using a slider from 0.0f to 1.0f
     bool changed = ImGui::SliderFloat("float", &appState.f, 0.0f, 1.0f);
     if (changed)
@@ -175,22 +177,29 @@ void DemoBasicWidgets(AppState& appState)
 
     ImGui::SameLine();
     ImGui::Text("counter = %d", appState.counter);
+    ImGui::EndGroup();
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("These widgets will interact with the log window");
 }
 
 void DemoUserSettings(AppState& appState)
 {
     ImGui::PushFont(appState.TitleFont); ImGui::Text("User settings"); ImGui::PopFont();
-    ImGui::TextWrapped("The values below are stored in the application settings ini file and restored at startup");
+    ImGui::BeginGroup();
     ImGui::SetNextItemWidth(HelloImGui::EmSize(7.f));
     ImGui::InputText("Name", &appState.myAppSettings.name);
     ImGui::SetNextItemWidth(HelloImGui::EmSize(7.f));
     ImGui::SliderInt("Value", &appState.myAppSettings.value, 0, 100);
+    ImGui::EndGroup();
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("The values below are stored in the application settings ini file and restored at startup");
+
 }
 
 void DemoRocket(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont); ImGui::Text("Rocket demo"); ImGui::PopFont();
-    ImGui::TextWrapped("How to show a progress bar in the status bar");
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("Status Bar Demo"); ImGui::PopFont();
+    ImGui::BeginGroup();
     if (appState.rocket_state == AppState::RocketState::Init)
     {
         if (ImGui::Button(ICON_FA_ROCKET" Launch rocket"))
@@ -219,6 +228,9 @@ void DemoRocket(AppState& appState)
             appState.rocket_progress = 0.f;
         }
     }
+    ImGui::EndGroup();
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("Look at the status bar after clicking");
 }
 
 void DemoDockingFlags(AppState& appState)
@@ -299,14 +311,6 @@ void DemoFonts(AppState& appState)
     ImGui::BeginGroup();
     {
         ImGui::PushFont(appState.EmojiFont);
-        // 🌴 (Palm Tree Emoji)
-        ImGui::Text(u8"\U0001F334");
-        ImGui::SameLine();
-
-        // 🚀 (Rocket Emoji)
-        ImGui::Text(u8"\U0001F680");
-        ImGui::SameLine();
-
         // ✌️ (Victory Hand Emoji)
         ImGui::Text(u8"\U0000270C\U0000FE0F");
         ImGui::SameLine();
@@ -314,13 +318,22 @@ void DemoFonts(AppState& appState)
         // ❤️ (Red Heart Emoji)
         ImGui::Text(u8"\U00002764\U0000FE0F");
         ImGui::SameLine();
+
+#ifdef IMGUI_USE_WCHAR32
+        // 🌴 (Palm Tree Emoji)
+        ImGui::Text(u8"\U0001F334");
+        ImGui::SameLine();
+
+        // 🚀 (Rocket Emoji)
+        ImGui::Text(u8"\U0001F680");
+        ImGui::SameLine();
+#endif
+
         ImGui::PopFont();
     }
     ImGui::EndGroup();
     if (ImGui::IsItemHovered())
         ImGui::SetTooltip("Example with NotoEmoji font");
-
-    ImGui::NewLine();
 
 #ifdef IMGUI_ENABLE_FREETYPE
     ImGui::Text("Colored Fonts");
@@ -332,6 +345,30 @@ void DemoFonts(AppState& appState)
 #endif
 }
 
+void DemoThemes(AppState& appState)
+{
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("Themes"); ImGui::PopFont();
+    auto& tweakedTheme = HelloImGui::GetRunnerParams()->imGuiWindowParams.tweakedTheme;
+
+    ImGui::BeginGroup();
+    ImVec2 buttonSize = HelloImGui::EmToVec2(7.f, 0.f);
+    if (ImGui::Button("Cherry", buttonSize))
+    {
+        tweakedTheme.Theme = ImGuiTheme::ImGuiTheme_Cherry;
+        ImGuiTheme::ApplyTweakedTheme(tweakedTheme);
+    }
+    if (ImGui::Button("DarculaDarker", buttonSize))
+    {
+        tweakedTheme.Theme = ImGuiTheme::ImGuiTheme_DarculaDarker;
+        ImGuiTheme::ApplyTweakedTheme(tweakedTheme);
+    }
+    ImGui::EndGroup();
+    if (ImGui::IsItemHovered())
+            ImGui::SetTooltip(
+                "There are lots of other themes: look at the menu View/Theme\n"
+                "The selected theme is remembered and restored at startup"
+            );
+}
 
 // The Gui of the demo feature window
 void GuiWindowDemoFeatures(AppState& appState)
@@ -340,7 +377,7 @@ void GuiWindowDemoFeatures(AppState& appState)
     ImGui::Separator();
     DemoAssets(appState);
     ImGui::Separator();
-    DemoBasicWidgets(appState);
+    DemoLogs(appState);
     ImGui::Separator();
     DemoRocket(appState);
     ImGui::Separator();
@@ -349,6 +386,8 @@ void GuiWindowDemoFeatures(AppState& appState)
     DemoHideWindow(appState);
     ImGui::Separator();
     DemoShowAdditionalWindow(appState);
+    ImGui::Separator();
+    DemoThemes(appState);
     ImGui::Separator();
 }
 

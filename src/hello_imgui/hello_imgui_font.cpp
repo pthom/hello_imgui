@@ -128,19 +128,24 @@ namespace HelloImGui
 
 
 
-    ImFont* LoadFont(const std::string & fontFilename, float fontSize, const FontLoadingParams& params_)
+    ImFont* LoadFont(const std::string & fontFilename, float fontSize_, const FontLoadingParams& params_)
     {
         gDidCallHelloImGuiLoadFontTTF = true;
 
         FontLoadingParams params = params_;
 
+        float fontSize = fontSize_;
         if (params.adjustSizeToDpi)
             fontSize *= FontLoadingFactor();
 
         if (params.useFullGlyphRange)
         {
             params.glyphRanges.clear();
+#ifdef IMGUI_USE_WCHAR32
+            params.glyphRanges.push_back({ 0x0001, 0x1FFFF });
+#else
             params.glyphRanges.push_back({ 0x0001, 0xFFFF });
+#endif
             if (params.reduceMemoryUsageIfFullGlyphRange)
                 params.fontConfig.OversampleH = params.fontConfig.OversampleV = 1;
         }
@@ -180,12 +185,11 @@ namespace HelloImGui
             fontLoadingParamsFa.mergeToLastFont = true;
             fontLoadingParamsFa.adjustSizeToDpi = params.adjustSizeToDpi;
             fontLoadingParamsFa.glyphRanges.push_back({ ICON_MIN_FA, ICON_MAX_FA });
-            font = LoadFont(faFile, fontSize, fontLoadingParamsFa);
+            font = LoadFont(faFile, fontSize_, fontLoadingParamsFa);
         }
 
         return font;
     }
-
 
     ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange, ImFontConfig config)
     {

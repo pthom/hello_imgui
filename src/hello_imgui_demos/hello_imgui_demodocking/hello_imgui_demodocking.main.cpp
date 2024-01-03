@@ -296,7 +296,7 @@ void DemoAssets(AppState& appState)
     ImGui::Dummy(HelloImGui::EmToVec2(0.f, 0.45f));
     ImGui::Text("Hello");
     HelloImGui::EndGroupColumn();
-    HelloImGui::ImageFromAsset("world.png", HelloImGui::EmToVec2(2.5f, 2.5f));
+    HelloImGui::ImageFromAsset("images/world.png", HelloImGui::EmToVec2(2.5f, 2.5f));
 }
 
 void DemoFonts(AppState& appState)
@@ -313,20 +313,20 @@ void DemoFonts(AppState& appState)
     {
         ImGui::PushFont(appState.EmojiFont);
         // ✌️ (Victory Hand Emoji)
-        ImGui::Text(u8"\U0000270C\U0000FE0F");
+        ImGui::Text("\U0000270C\U0000FE0F");
         ImGui::SameLine();
 
         // ❤️ (Red Heart Emoji)
-        ImGui::Text(u8"\U00002764\U0000FE0F");
+        ImGui::Text("\U00002764\U0000FE0F");
         ImGui::SameLine();
 
 #ifdef IMGUI_USE_WCHAR32
         // 🌴 (Palm Tree Emoji)
-        ImGui::Text(u8"\U0001F334");
+        ImGui::Text("\U0001F334");
         ImGui::SameLine();
 
         // 🚀 (Rocket Emoji)
-        ImGui::Text(u8"\U0001F680");
+        ImGui::Text("\U0001F680");
         ImGui::SameLine();
 #endif
 

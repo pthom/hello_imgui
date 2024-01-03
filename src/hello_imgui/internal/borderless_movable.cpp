@@ -76,7 +76,7 @@ namespace HelloImGui
                 ImRect btnArea(btnPos, btnPos + btnSize);
 
                 auto colorButton = ImGui::GetColorU32(ImGuiCol_Button, 0.95f);
-                colorButton = 0xFF000099;
+                colorButton = 0xFF0000BB;
                 ImGui::GetForegroundDrawList()->AddCircleFilled(
                     btnArea.GetCenter(),
                     btnSize.x * 0.5f,

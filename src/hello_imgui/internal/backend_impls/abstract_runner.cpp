@@ -508,6 +508,7 @@ void AbstractRunner::RenderGui()
 
     if (params.appWindowParams.borderless) // Need to add params.appWindowParams.borderlessResizable
     {
+#if !defined(HELLOIMGUI_MOBILEDEVICE) && !defined(__EMSCRIPTEN__)
         bool shouldClose = HandleBorderlessMovable(mWindow,
                                 mBackendWindowHelper.get(),
                                 params.appWindowParams.borderlessMovable,
@@ -517,6 +518,7 @@ void AbstractRunner::RenderGui()
         );
         if (shouldClose)
             params.appShallExit = true;
+#endif
     }
 
     if (params.callbacks.ShowGui)

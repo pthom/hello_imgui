@@ -9,9 +9,6 @@ namespace HelloImGui
     bool HandleBorderlessMovable(
         BackendApi::WindowPointer window,
         BackendApi::IBackendWindowHelper * backendWindowHelper,
-        bool borderlessMovable,
-        bool borderlessResizable,
-        bool borderlessClosable,
-        ImVec4 borderlessHighlightColor
+        const HelloImGui::RunnerParams& runnerParams
     );
 }

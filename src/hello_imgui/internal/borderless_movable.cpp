@@ -9,12 +9,22 @@ namespace HelloImGui
     bool HandleBorderlessMovable(
         BackendApi::WindowPointer window,
         BackendApi::IBackendWindowHelper * backendWindowHelper,
-        bool borderlessMovable,
-        bool borderlessResizable,
-        bool borderlessClosable,
-        ImVec4 borderlessHighlightColor)
+        const HelloImGui::RunnerParams& runnerParams
+        )
     {
+        // - If using viewports, the mouse position is absolute, and we can confidently move the window
+        //   knowing that the mouse position will not be affected.
+        // - If not using viewports, the mouse position is relative to the window, and the window may
+        //   jump from position to position when dragged: MouseDelta is not reliable in this case
+        // => in this case, we do not move the window
+        bool isMousePositionAbsolute = ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable;
+
         bool shouldClose = false;
+
+        bool borderlessMovable = runnerParams.appWindowParams.borderlessMovable;
+        bool borderlessResizable = runnerParams.appWindowParams.borderlessResizable;
+        bool borderlessClosable = runnerParams.appWindowParams.borderlessClosable;
+        ImVec4 borderlessHighlightColor = runnerParams.appWindowParams.borderlessHighlightColor;
 
         ImU32 highlightColorU32 = ImGui::GetColorU32(borderlessHighlightColor);
         if (borderlessHighlightColor.w == 0.f)
@@ -29,9 +39,13 @@ namespace HelloImGui
             // Update dragging state
             ImVec2 mousePos = ImGui::GetMousePos();
             static bool isDragging = false;
+
+            static ImVec2 mouseDragLastPos; // used to store DragDelta when isMousePositionAbsolute==false
+
             if (dragArea.Contains(mousePos) && !isDragging && ImGui::IsMouseDown(ImGuiMouseButton_Left))
             {
                 isDragging = true;
+                mouseDragLastPos = mousePos;
             }
             if (!ImGui::IsMouseDown(ImGuiMouseButton_Left) && isDragging)
                 isDragging = false;
@@ -49,13 +63,25 @@ namespace HelloImGui
             // Move window if dragging
             if (isDragging)
             {
-                ImVec2 dragDelta = ImGui::GetMouseDragDelta(0);
-                ImGui::ResetMouseDragDelta(0);
+                ImVec2 dragDelta;
+                if (isMousePositionAbsolute)
+                {
+                    dragDelta = ImGui::GetMouseDragDelta(0);
+                    ImGui::ResetMouseDragDelta(0);
+                    ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
+                }
+                else
+                {
+                    dragDelta = mousePos - mouseDragLastPos;
+                    // take the window movement into account, since our future mouse position
+                    // will be relative to the moved window!
+                    mouseDragLastPos = mousePos - dragDelta;
+                }
+
                 auto windowBounds = backendWindowHelper->GetWindowBounds(window);
-                windowBounds.position[0] += (int)dragDelta.x;
-                windowBounds.position[1] += (int)dragDelta.y;
+                windowBounds.position[0] += (int)(dragDelta.x);
+                windowBounds.position[1] += (int)(dragDelta.y);
                 backendWindowHelper->SetWindowBounds(window, windowBounds);
-                ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
             }
 
             // Set mouse cursor: probably not visible for moving (the cursor will be the classic arrow)
@@ -75,8 +101,8 @@ namespace HelloImGui
                 ImVec2 btnPos(topRight.x - btnSize.x, topRight.y);
                 ImRect btnArea(btnPos, btnPos + btnSize);
 
-                auto colorButton = ImGui::GetColorU32(ImGuiCol_Button, 0.95f);
-                colorButton = 0xFF0000BB;
+                //auto colorButton = ImGui::GetColorU32(ImGuiCol_Button, 0.95f);
+                ImU32 colorButton = 0xFF0000BB;
                 ImGui::GetForegroundDrawList()->AddCircleFilled(
                     btnArea.GetCenter(),
                     btnSize.x * 0.5f,

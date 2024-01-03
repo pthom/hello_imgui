@@ -39,7 +39,6 @@ namespace ImGui_SensibleFont
         all_cfgs.push_back(font_cfg);
         ImFontConfig* font_cfg_static = &(all_cfgs.back());
 
-
         if (glyph_ranges.empty())
             font_cfg_static->GlyphRanges = nullptr;
         else
@@ -67,7 +66,31 @@ namespace ImGui_SensibleFont
         return font_cfg_static;
     }
 
+    ImFont* AddFontFromFileTTF(const char* filename, float font_size_pixels, const ImFontConfig& font_cfg = ImFontConfig(), const ImVector<ImWchar[2]> & glyph_ranges = {})
+    {
+        ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
+        static_font_config->FontDataOwnedByAtlas = false;
+        return ImGui::GetIO().Fonts->AddFontFromFileTTF(filename, font_size_pixels, static_font_config);
+    }
 
+    ImFont* AddFontFromMemoryTTF(void* font_data, int font_data_size, float font_size_pixels, const ImFontConfig& font_cfg = ImFontConfig(), const ImVector<ImWchar[2]> & glyph_ranges = {})
+    {
+        ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
+        return ImGui::GetIO().Fonts->AddFontFromMemoryTTF(font_data, font_data_size, font_size_pixels, static_font_config);
+    }
+
+    ImFont* AddFontFromMemoryTTF_KeepOwnership(void* font_data, int font_data_size, float font_size_pixels, const ImFontConfig& font_cfg = ImFontConfig(), const ImVector<ImWchar[2]> & glyph_ranges = {})
+    {
+        ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
+        static_font_config->FontDataOwnedByAtlas = false;
+        return ImGui::GetIO().Fonts->AddFontFromMemoryTTF(font_data, font_data_size, font_size_pixels, static_font_config);
+    }
+}
+
+
+namespace HelloImGui
+{
+    bool gDidCallHelloImGuiLoadFontTTF = false;
 
     float WindowContentScale()
     {
@@ -81,7 +104,7 @@ namespace ImGui_SensibleFont
         float targetPpi = 96.f;
         return ddpi / targetPpi;
 
-         // On glfw, it could be:
+        // On glfw, it could be:
         float xscale, yscale;
         glfwGetWindowContentScale((GLFWwindow *) window, &xscale, &yscale);
         if (xscale > yscale)
@@ -89,7 +112,7 @@ namespace ImGui_SensibleFont
         else
             return yscale;
         */
-        return 1.f;
+            return 1.f;
     }
 
     // A factor applied to font loading size, to account for HighDPI
@@ -103,64 +126,16 @@ namespace ImGui_SensibleFont
         return HelloImGui::DpiFontLoadingFactor();
     }
 
-    ImFont* AddFontFromFileTTF(
-        const char* filename,
-        float font_size,
-        bool adjust_font_size_for_dpi,
-        const ImFontConfig& font_cfg = ImFontConfig(),
-        const ImVector<ImWchar[2]> & glyph_ranges = {}
-    )
-    {
-        ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
-        static_font_config->FontDataOwnedByAtlas = false;
-        float font_size_pixels_adjusted = adjust_font_size_for_dpi ? font_size * FontLoadingFactor(): font_size;
-        return ImGui::GetIO().Fonts->AddFontFromFileTTF(filename, font_size_pixels_adjusted, static_font_config);
-    }
 
-    ImFont* AddFontFromMemoryTTF_KeepOwnership(
-        void* font_data,
-        int font_data_size,
-        float font_size,
-        bool adjust_font_size_for_dpi,
-        const ImFontConfig& font_cfg = ImFontConfig(),
-        const ImVector<ImWchar[2]> & glyph_ranges = {}
-    )
-    {
-        ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
-        static_font_config->FontDataOwnedByAtlas = false;
-        float font_size_pixels_adjusted = adjust_font_size_for_dpi ? font_size * FontLoadingFactor(): font_size;
-
-        return ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
-            font_data, font_data_size, font_size_pixels_adjusted, static_font_config);
-    }
-
-    ImFont* AddFontFromMemoryTTF_TransferOwnerShip(
-        void* font_data,
-        int font_data_size,
-        float font_size,
-        bool adjust_font_size_for_dpi,
-        const ImFontConfig& font_cfg = ImFontConfig(),
-        const ImVector<ImWchar[2]> & glyph_ranges = {}
-    )
-    {
-        ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
-        static_font_config->FontDataOwnedByAtlas = true;
-        float font_size_pixels_adjusted = adjust_font_size_for_dpi ? font_size * FontLoadingFactor(): font_size;
-        return ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
-            font_data, font_data_size, font_size_pixels_adjusted, static_font_config);
-    }
-}
-
-
-namespace HelloImGui
-{
-    bool gDidCallHelloImGuiLoadFontTTF = false;
 
     ImFont* LoadFont(const std::string & fontFilename, float fontSize, const FontLoadingParams& params_)
     {
         gDidCallHelloImGuiLoadFontTTF = true;
 
         FontLoadingParams params = params_;
+
+        if (params.adjustSizeToDpi)
+            fontSize *= FontLoadingFactor();
 
         if (params.useFullGlyphRange)
         {
@@ -187,13 +162,13 @@ namespace HelloImGui
         {
             AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());
             font = ImGui_SensibleFont::AddFontFromMemoryTTF_KeepOwnership(
-                fontData.data, fontData.dataSize, fontSize, params.adjustSizeToDpi, params.fontConfig, params.glyphRanges);
+                fontData.data, fontData.dataSize, fontSize, params.fontConfig, params.glyphRanges);
             FreeAssetFileData(&fontData);
         }
         else
         {
             font = ImGui_SensibleFont::AddFontFromFileTTF(
-                fontFilename.c_str(), fontSize, params.adjustSizeToDpi, params.fontConfig, params.glyphRanges);
+                fontFilename.c_str(), fontSize, params.fontConfig, params.glyphRanges);
         }
 
         if (params.mergeFontAwesome)
@@ -203,6 +178,7 @@ namespace HelloImGui
             FontLoadingParams fontLoadingParamsFa;
             fontLoadingParamsFa.fontConfig = params.fontConfigFontAwesome;
             fontLoadingParamsFa.mergeToLastFont = true;
+            fontLoadingParamsFa.adjustSizeToDpi = params.adjustSizeToDpi;
             fontLoadingParamsFa.glyphRanges.push_back({ ICON_MIN_FA, ICON_MAX_FA });
             font = LoadFont(faFile, fontSize, fontLoadingParamsFa);
         }

@@ -1,4 +1,5 @@
 #pragma once
+#include "hello_imgui/imgui_default_settings.h"
 #include <functional>
 
 namespace HelloImGui
@@ -29,13 +30,6 @@ VoidFunction AppendCallback(const VoidFunction& previousCallback, const VoidFunc
 inline VoidFunction EmptyVoidFunction() { return {}; }
 inline AnyEventCallback EmptyEventCallback() {return {}; }
 
-}
-
-
-#include "hello_imgui/imgui_default_settings.h"
-
-namespace HelloImGui
-{
 
 /**
 @@md#MobileCallbacks

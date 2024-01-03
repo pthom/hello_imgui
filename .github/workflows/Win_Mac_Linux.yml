@@ -23,9 +23,9 @@ jobs:
         with:
           submodules: true
 
-      - name: apt install xorg-dev  libglfw3-dev libsdl2-dev (ubuntu only)
+      - name: apt install xorg-dev  libglfw3-dev libsdl2-dev libfreetype-dev (ubuntu only)
         if: ${{ matrix.platform == 'ubuntu-latest' }}
-        run: sudo apt-get update && sudo apt-get install -y xorg-dev  libglfw3-dev libsdl2-dev
+        run: sudo apt-get update && sudo apt-get install -y xorg-dev  libglfw3-dev libsdl2-dev libfreetype-dev
 
       - name: Build and install
         shell: bash
@@ -33,9 +33,9 @@ jobs:
           mkdir build
           cd build
           if [ "${{ matrix.window_backend }}" = "Sdl" ]; then
-            cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON -DCMAKE_BUILD_TYPE=Release
+            cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON  -DHELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED=ON -DCMAKE_BUILD_TYPE=Release
           fi
           if [ "${{ matrix.window_backend }}" = "Glfw" ]; then
-            cmake .. -DCMAKE_BUILD_TYPE=Release
+            cmake .. -DHELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED=ON -DCMAKE_BUILD_TYPE=Release
           fi
           cmake --build . -j 3

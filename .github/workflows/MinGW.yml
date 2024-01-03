@@ -27,7 +27,7 @@ jobs:
         sudo update-alternatives --set i686-w64-mingw32-gcc /usr/bin/i686-w64-mingw32-gcc-posix
 
 #    - name: Setup interactive tmate session
-#      uses: mxschmitt/action-tmate@v2
+#      uses: mxschmitt/action-tmate@v3
 
     - name: Build x86_64
       run: |

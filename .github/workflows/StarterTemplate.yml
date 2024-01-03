@@ -22,14 +22,14 @@ jobs:
 #    - name: Setup interactive tmate session
 #      uses: mxschmitt/action-tmate@v3
 
-    - name: apt install xorg-dev  libglfw3-dev (ubuntu only)
+    - name: apt install xorg-dev  libglfw3-dev libfreetype-dev(ubuntu only)
       if: ${{ matrix.platform == 'ubuntu-latest' }}
-      run: sudo apt-get update && sudo apt-get install -y xorg-dev  libglfw3-dev
+      run: sudo apt-get update && sudo apt-get install -y xorg-dev  libglfw3-dev libfreetype-dev
 
     - name: Build _example_integration
       run: |
         cd _example_integration
         mkdir build 
         cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Release
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED=ON
         cmake --build . --config Release

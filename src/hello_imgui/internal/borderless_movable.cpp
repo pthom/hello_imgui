@@ -6,13 +6,16 @@
 
 namespace HelloImGui
 {
-    void HandleBorderlessMovable(
+    bool HandleBorderlessMovable(
         BackendApi::WindowPointer window,
         BackendApi::IBackendWindowHelper * backendWindowHelper,
         bool borderlessMovable,
         bool borderlessResizable,
+        bool borderlessClosable,
         ImVec4 borderlessHighlightColor)
     {
+        bool shouldClose = false;
+
         ImU32 highlightColorU32 = ImGui::GetColorU32(borderlessHighlightColor);
         if (borderlessHighlightColor.w == 0.f)
             highlightColorU32 = ImGui::GetColorU32(ImGuiCol_TitleBg, 0.6f);
@@ -58,6 +61,64 @@ namespace HelloImGui
             // Set mouse cursor: probably not visible for moving (the cursor will be the classic arrow)
             if (dragArea.Contains(mousePos) || isDragging)
                 ImGui::SetMouseCursor(ImGuiMouseCursor_Arrow);
+
+            // Close button at the top-right of the window
+            if (borderlessClosable && dragArea.Contains(mousePos))
+            {
+                ImVec2 margin(ImGui::GetFontSize() * 0.2f, ImGui::GetFontSize() * 0.2f);
+                ImVec2 topRight(
+                    ImGui::GetMainViewport()->Pos.x + ImGui::GetMainViewport()->Size.x - margin.x,
+                    ImGui::GetMainViewport()->Pos.y + margin.y
+                    );
+
+                ImVec2 btnSize(ImGui::GetFontSize() * 1.f, ImGui::GetFontSize() * 1.f);
+                ImVec2 btnPos(topRight.x - btnSize.x, topRight.y);
+                ImRect btnArea(btnPos, btnPos + btnSize);
+
+                auto colorButton = ImGui::GetColorU32(ImGuiCol_Button, 0.95f);
+                colorButton = 0xFF0000BB;
+                ImGui::GetForegroundDrawList()->AddCircleFilled(
+                    btnArea.GetCenter(),
+                    btnSize.x * 0.5f,
+                    colorButton
+                );
+
+                bool mouseHoverButton = btnArea.Contains(mousePos);
+
+                if (true)
+                {
+                    // Draw a cross in the circle
+                    ImVec2 crossSize(btnSize.x * 0.4f, btnSize.y * 0.4f);
+                    ImVec2 crossPos(btnArea.GetCenter().x - crossSize.x * 0.55f, btnArea.GetCenter().y - crossSize.y * 0.5f);
+                    ImRect crossArea(crossPos, crossPos + crossSize);
+                    ImGui::GetForegroundDrawList()->AddLine(
+                        crossArea.Min,
+                        crossArea.Max,
+                        ImGui::GetColorU32(ImGuiCol_Text),
+                        1.5f
+                    );
+                    ImGui::GetForegroundDrawList()->AddLine(
+                        ImVec2(crossArea.Min.x, crossArea.Max.y),
+                        ImVec2(crossArea.Max.x, crossArea.Min.y),
+                        ImGui::GetColorU32(ImGuiCol_Text),
+                        1.5f
+                    );
+                }
+
+                // Handle click: if the mouse was pressed down on the button and released on the button, then close the window
+                static bool clickedDownOnButton = false;
+                if (mouseHoverButton && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+                {
+                    clickedDownOnButton = true;
+                }
+                if (ImGui::IsMouseReleased(ImGuiMouseButton_Left) && mouseHoverButton && clickedDownOnButton)
+                {
+                    clickedDownOnButton = false;
+                    shouldClose = true;
+                }
+                if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+                    clickedDownOnButton = false;
+            }
         }
 
         // Drag zone at the bottom-right of the window
@@ -104,7 +165,8 @@ namespace HelloImGui
             if (dragArea.Contains(mousePos) || isDragging)
                 ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNWSE);
         }
+        return shouldClose;
     }
-}
+} // namespace HelloImGui
 
 

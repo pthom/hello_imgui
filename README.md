@@ -181,7 +181,7 @@ Anything in the assets/ folder located beside the app's CMakeLists will be embed
 └── hello_globe.main.cpp
 ├── CMakeLists.txt
 ├── assets/
-│    └── world.jpg
+│    └── world.png
 ```
 (even on iOS and emscripten).
 
@@ -195,7 +195,7 @@ int main(int , char *[])
 {
     auto guiFunction = []() {
         ImGui::Text("Hello, ");                    // Display a simple label
-        HelloImGui::ImageFromAsset("world.jpg");   // Display a static image
+        HelloImGui::ImageFromAsset("world.png");   // Display a static image
         if (ImGui::Button("Bye!"))                 // Display a button
             // and immediately handle its action if it is clicked!
             HelloImGui::GetRunnerParams()->appShallExit = true;
@@ -460,7 +460,7 @@ By default, the application will be presented inside an empty html page.
 You can adapt this page by modyfing the "shell": copy the file [hello_imgui_cmake/emscripten/shell.emscripten.html](hello_imgui_cmake/emscripten/shell.emscripten.html)
 into your app source dir, and adapt it to your needs. 
  
----
+
 
 ## How to build terminal executables under macOS
 
@@ -500,7 +500,7 @@ Run the following commands:
 ```bash
 mkdir build_android
 cd build_android
-../tools/android/cmake_arm-android.sh
+../tools/android/cmake_arm-android.sh ..
 ```
 
 Your build directory will now look like this:

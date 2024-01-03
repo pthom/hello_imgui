@@ -454,10 +454,11 @@ void AbstractRunner::Setup()
     // LoadAdditionalFonts will load fonts and resize them by 1./FontGlobalScale
     // (if and only if it uses HelloImGui::LoadFontTTF instead of ImGui's font loading functions)
     params.callbacks.LoadAdditionalFonts();
-    ImGui::GetIO().Fonts->Build();
+    bool buildSuccess = ImGui::GetIO().Fonts->Build();
+    IM_ASSERT(buildSuccess && "ImGui::GetIO().Fonts->Build() failed!");
     {
         // Reset FontGlobalScale if we did not use HelloImGui font loading mechanism
-        if (! HelloImGui::ImGuiDefaultSettings::DidCallHelloImGuiLoadFontTTF())
+        if (! HelloImGui::DidCallHelloImGuiLoadFontTTF())
         {
             float dpiFactor = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
             ImGui::GetIO().FontGlobalScale = dpiFactor;
@@ -506,11 +507,19 @@ void AbstractRunner::RenderGui()
         Menu_StatusBar::ShowMenu(params);
 
     if (params.appWindowParams.borderless) // Need to add params.appWindowParams.borderlessResizable
-        HandleBorderlessMovable(mWindow,
+    {
+#if !defined(HELLOIMGUI_MOBILEDEVICE) && !defined(__EMSCRIPTEN__)
+        bool shouldClose = HandleBorderlessMovable(mWindow,
                                 mBackendWindowHelper.get(),
                                 params.appWindowParams.borderlessMovable,
                                 params.appWindowParams.borderlessResizable,
-                                params.appWindowParams.borderlessHighlightColor);
+                                params.appWindowParams.borderlessClosable,
+                                params.appWindowParams.borderlessHighlightColor
+        );
+        if (shouldClose)
+            params.appShallExit = true;
+#endif
+    }
 
     if (params.callbacks.ShowGui)
     {

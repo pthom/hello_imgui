@@ -8,7 +8,9 @@
 #
 ###################################################################################################
 
-
+# allows the linking of a target in a different directory
+# Needed to add freetype to the imgui target, if it is build externally
+cmake_policy(SET CMP0079 NEW)
 
 ###################################################################################################
 # Add library and sources: API = him_add_hello_imgui
@@ -36,6 +38,9 @@ function(him_build_imgui)
     if (HELLOIMGUI_BUILD_IMGUI)
         _him_do_build_imgui()
         _him_install_imgui()
+    endif()
+    if (HELLOIMGUI_USE_FREETYPE)
+        _him_add_freetype_to_imgui()
     endif()
 endfunction()
 
@@ -67,9 +72,106 @@ function(_him_do_build_imgui)
         add_library(imgui ${imgui_sources})
     endif()
     target_include_directories(imgui PUBLIC ${HELLOIMGUI_IMGUI_SOURCE_DIR})
+
     if (MSVC)
         hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
     endif()
+endfunction()
+
+function(_him_add_freetype_to_imgui)
+    # Add freetype + lunasvg to imgui
+    # This is especially useful to support emojis (possibly colored) in imgui
+    # See doc:
+    #     https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#using-colorful-glyphsemojis
+    # We have to
+    # - add imgui_freetype.cpp and imgui_freetype.h to imgui
+    # - enable freetype in imgui via IMGUI_ENABLE_FREETYPE
+    # - enable lunasvg in imgui via IMGUI_ENABLE_FREETYPE_LUNASVG
+    # - add lunasvg to imgui
+    # - define IMGUI_USE_WCHAR32 in imgui
+
+    # Note: also change add_imgui.cmake in bundle!
+
+    #
+    # 1. Build or find freetype (if downloaded, make sure it is static)
+    #
+    set(download_freetype OFF)
+    if (HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
+        find_package(Freetype 2.12 QUIET)
+        if (NOT Freetype_FOUND)
+            set(download_freetype ON)
+        endif()
+    endif()
+    if(HELLOIMGUI_FREETYPE_STATIC)
+        set(download_freetype ON)
+    endif()
+
+    if (download_freetype)
+        message(STATUS "HelloImGui: downloading and building freetype")
+
+        set(backup_shared_lib ${BUILD_SHARED_LIBS})
+        set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+
+        include(FetchContent)
+        if(IOS)
+            set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
+            set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
+        endif()
+        FetchContent_Declare(
+            freetype
+            GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git
+            GIT_TAG        VER-2-13-2
+            GIT_PROGRESS TRUE
+        )
+        FetchContent_MakeAvailable(freetype)
+        set(freetype_linked_library freetype)
+
+        set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
+    else()
+        find_package(Freetype 2.12 QUIET)
+        if(NOT Freetype_FOUND AND NOT HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
+            message(STATUS "
+                HelloImGui: freetype not found. You may set
+                    -DHELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED=ON
+                to download and build freetype automatically
+            ")
+        endif()
+        find_package(Freetype 2.12 REQUIRED)
+        set(freetype_linked_library Freetype::Freetype)
+    endif()
+
+    target_link_libraries(imgui PUBLIC ${freetype_linked_library})
+
+    if(download_freetype)
+        set(HELLOIMGUI_FREETYPE_SELECTED_INFO "Downloaded VER-2-13-2" CACHE INTERNAL "" FORCE)
+    else()
+        set(HELLOIMGUI_FREETYPE_SELECTED_INFO "Use system Library" CACHE INTERNAL "" FORCE)
+    endif()
+
+    #
+    # 2. Build lunasvg (static)
+    #
+    # Fetch and build lunasvg
+    set(backup_shared_lib ${BUILD_SHARED_LIBS})
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+    include(FetchContent)
+    FetchContent_Declare(lunasvg
+        GIT_REPOSITORY https://github.com/sammycage/lunasvg
+        GIT_TAG        v2.3.9
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(lunasvg)
+    target_link_libraries(imgui PUBLIC lunasvg)
+    set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
+
+    #
+    # 3. Add freetype and LunaSvg support to imgui
+    #    with support for wchar32 (for emojis, and other unicode characters)
+    target_sources(imgui PRIVATE
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.cpp
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.h)
+    target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE IMGUI_ENABLE_FREETYPE_LUNASVG)
+    target_compile_definitions(imgui PUBLIC IMGUI_USE_WCHAR32)
 endfunction()
 
 function(_him_install_imgui)
@@ -158,7 +260,8 @@ endfunction()
 
 function(him_get_active_backends out_selected_backends)
     set(selected_backends "")
-    foreach(backend ${HELLOIMGUI_AVAILABLE_BACKENDS})
+    him_get_available_backends(available_backends)
+    foreach(backend ${available_backends})
         if (${backend})
             set(selected_backends "${selected_backends} ${backend}")
         endif()
@@ -450,6 +553,8 @@ function (him_use_sdl2_backend target)
         ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.h
         ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
     )
+    set(HELLOIMGUI_USE_SDL2 ON CACHE INTERNAL "" FORCE)
+    set(HELLOIMGUI_USE_SDL ON CACHE INTERNAL "" FORCE)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL2)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC _THREAD_SAFE) # flag outputted by sdl2-config --cflags
@@ -482,6 +587,8 @@ function(_him_fetch_sdl_if_needed)
         else()
             FetchContent_MakeAvailable(sdl)
         endif()
+    else()
+        set(HELLOIMGUI_SDL_SELECTED_INFO "Use system Library" CACHE INTERNAL "" FORCE)
     endif()
 endfunction()
 
@@ -502,6 +609,7 @@ function(_him_fetch_declare_sdl)
         GIT_TAG           release-${sdl_version}
         GIT_PROGRESS TRUE
     )
+    set(HELLOIMGUI_SDL_SELECTED_INFO "Downloaded ${sdl_version}" CACHE INTERNAL "" FORCE)
 endfunction()
 
 function(_him_prepare_android_sdl_symlink)
@@ -552,6 +660,8 @@ function(him_use_glfw_backend target)
         ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.h
         ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
     )
+    set(HELLOIMGUI_USE_GLFW ON CACHE INTERNAL "" FORCE)
+    set(HELLOIMGUI_USE_GLFW3 ON CACHE INTERNAL "" FORCE)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW3)
 endfunction()
@@ -580,6 +690,9 @@ function(_him_fetch_glfw_if_needed)
         set(GLFW_BUILD_DOCS OFF)
         set(GLFW_INSTALL OFF)
         FetchContent_MakeAvailable(glfw)
+        set(HELLOIMGUI_GLFW_SELECTED_INFO "Downloaded 3.3.8" CACHE INTERNAL "" FORCE)
+    else()
+        set(HELLOIMGUI_GLFW_SELECTED_INFO "Use system Library" CACHE INTERNAL "" FORCE)
     endif()
 
 endfunction()
@@ -611,6 +724,63 @@ function(him_install)
     endif()
 endfunction()
 
+
+###################################################################################################
+# Log Configuration at the end of the configuration: API = him_log_configuration
+###################################################################################################
+function(him_log_configuration)
+    him_get_active_backends(selected_backends)
+    set(msg "
+    Hello ImGui build options:
+    ===========================================================================
+    Backends:                       ${selected_backends}
+    ---------------------------------------------------------------------------
+    Options:
+    HELLOIMGUI_USE_FREETYPE:        ${HELLOIMGUI_USE_FREETYPE}  (${HELLOIMGUI_FREETYPE_SELECTED_INFO})
+    HELLOIMGUI_WITH_TEST_ENGINE:    ${HELLOIMGUI_WITH_TEST_ENGINE}
+    BUILD_DEMOS - TESTS - DOCS:     ${HELLOIMGUI_BUILD_DEMOS} - ${HELLOIMGUI_BUILD_TESTS} - ${HELLOIMGUI_BUILD_DOCS}
+    ---------------------------------------------------------------------------
+    Config:
+    HELLOIMGUI_USE_GLAD:            ${HELLOIMGUI_USE_GLAD}
+    Build ImGui - ImGui source dir: ${HELLOIMGUI_BUILD_IMGUI} - ${HELLOIMGUI_IMGUI_SOURCE_DIR}")
+
+    if(EMSCRIPTEN)
+        set(msg "${msg}
+    ---------------------------------------------------------------------------
+    Emscripten options
+    HELLOIMGUI_EMSCRIPTEN_PTHREAD:  ${HELLOIMGUI_EMSCRIPTEN_PTHREAD}
+    HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH: ${HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH}")
+    endif ()
+
+    if(HELLOIMGUI_USE_SDL)
+        set(msg "${msg}
+    ---------------------------------------------------------------------------
+    SDL:                            ${HELLOIMGUI_SDL_SELECTED_INFO}")
+    endif()
+
+    if(HELLOIMGUI_USE_GLFW)
+        set(msg "${msg}
+    ---------------------------------------------------------------------------
+    Glfw:                           ${HELLOIMGUI_GLFW_SELECTED_INFO}")
+    endif()
+
+    if(WIN32)
+        set(msg "${msg}
+    ---------------------------------------------------------------------------
+    Windows info
+    HELLOIMGUI_WIN32_NO_CONSOLE:    ${HELLOIMGUI_WIN32_NO_CONSOLE}
+    HELLOIMGUI_WIN32_AUTO_WINMAIN:  ${HELLOIMGUI_WIN32_AUTO_WINMAIN}")
+    endif()
+
+    if(MACOSX)
+        set(msg "${msg}
+    ---------------------------------------------------------------------------
+    macOS info
+    HELLOIMGUI_MACOS_NO_BUNDLE:     ${HELLOIMGUI_MACOS_NO_BUNDLE}")
+    endif()
+
+    message(STATUS "${msg}")
+endfunction()
 
 ###################################################################################################
 # Main: API = him_main_add_hello_imgui_library

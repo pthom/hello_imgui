@@ -44,7 +44,7 @@ option(HELLOIMGUI_ADD_APP_WITH_INSTALL "Add cmake install() instructions with he
 # HelloImGui Build options
 ###############################################################################
 
-#------------------------------------------------------------------------------
+################################################################################
 # Available backends combinations: HelloImGui needs to use at least one of them.
 # If you specify no option:
 # - HELLOIMGUI_USE_GLFW_OPENGL3 will be used for Windows, Linux, and macOS
@@ -54,7 +54,7 @@ option(HELLOIMGUI_ADD_APP_WITH_INSTALL "Add cmake install() instructions with he
 # - Only one rendering backend can be used at a time (OpenGL3, Metal or Vulkan)!
 # - You may select multiple platform backends (for example, you may select both SDL and Glfw3)
 # - Combinations using OpenGL3 as a renderer are easier to use, and are recommended, especially for beginners.
-#------------------------------------------------------------------------------
+################################################################################
 # Standard backends:
 # Use Glfw3 + OpenGl3
 option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for Glfw3+OpenGL3" OFF)
@@ -80,17 +80,32 @@ option(HELLOIMGUI_USE_GLFW_DIRECTX11 "Build HelloImGui for Glfw3+DirectX11" OFF)
 # Experimental! DirectX12 was not tested, although it does compile!
 option(HELLOIMGUI_USE_SDL_DIRECTX12 "Build HelloImGui for SDL2+DirectX12" OFF)
 
+#------------------------------------------------------------------------------
+# Options / Freetype
+#------------------------------------------------------------------------------
+set(freetype_default ON)
+if(ANDROID OR MINGW)
+    # Freetype is not available on Android. The mix SDL + Freetype cause issues (cannot find SDL.h)
+    # Freetype currently fails to build on MinGW
+    set(freetype_default OFF)
+endif()
+# Note: to reduce wasm size, you may want to disable freetype on emscripten.
+option(HELLOIMGUI_USE_FREETYPE "Use freetype for text rendering" ${freetype_default})
 
 #------------------------------------------------------------------------------
-# Automatic download of Glfw3 and SDL2 (provided as a convenience)
+# Automatic download of Glfw3, SDL2, and Freetype (provided as a convenience)
 # (disabled by default on Linux, which prefers to use the system libraries,
 # enabled by default on other platforms)
-# Note: SDL and Glfw3 will be downloaded if:
+# Note:
+# - SDL and Glfw3 will be downloaded if:
 #   - HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED or HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED is ON
 #   - HELLOIMGUI_USE_SDL_XXXX or HELLOIMGUI_USE_GLFW_XXXX is ON
 #   - find_package(glfw3 or SDL2) fails. If a system library is found, or a user library provided
 #     in a path added to CMAKE_PREFIX_PATH, it will be used instead
 #   - In the case of Glfw3, if a target named glfw is already defined, it will be used instead
+# - Freetype will be downloaded if:
+#   - HELLOIMGUI_DOWNLOAD_FREETYPE is ON, HELLOIMGUI_USE_FREETYPE is ON, and find_package(freetype) fails
+#   - Or of HELLOIMGUI_FREETYPE_STATIC is ON
 #------------------------------------------------------------------------------
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     set(autodownload_default OFF)
@@ -99,6 +114,8 @@ else()
 endif()
 option(HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED "Download and build GLFW if needed" ${autodownload_default})
 option(HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED "Download and build GLFW if needed" ${autodownload_default})
+option(HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED "Download and build Freetype if needed" ${autodownload_default})
+option(HELLOIMGUI_FREETYPE_STATIC "Force static linking of freetype (only used for python bindings)" OFF)
 
 
 #------------------------------------------------------------------------------
@@ -254,3 +271,8 @@ endif()
 if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
     install(FILES README.md DESTINATION .)
 endif()
+
+#------------------------------------------------------------------------------
+# Log info
+#------------------------------------------------------------------------------
+him_log_configuration()

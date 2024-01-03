@@ -1,90 +1,29 @@
-#include "hello_imgui/icons_font_awesome.h"
-#include "hello_imgui/internal/menu_statusbar.h"
-#include "hello_imgui/hello_imgui.h"
-#include "hello_imgui/hello_imgui_assets.h"
-#include "imgui.h"
-#include <string>
-#include <map>
-#include <stdlib.h>
-#ifdef IOS
-#include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
-#endif
+#include "imgui_default_settings.h"
+#include "hello_imgui_assets.h"
+#include "hello_imgui_font.h"
 
 
 namespace HelloImGui
 {
-bool gDidCallHelloImGuiLoadFontTTF = false;
-
-ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange, ImFontConfig config)
-{
-    if (!HelloImGui::AssetExists(fontFilename))
-    {
-        HIMG_LOG(std::string("Cannot find font ") + fontFilename);
-        return nullptr;
-    }
-    AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());
-
-    config.FontDataOwnedByAtlas = false;
-    if (useFullGlyphRange) {
-        static ImWchar glyphRange[3] = { 0x20, 0xFFFF, 0 };
-        config.GlyphRanges = glyphRange;
-    }
-
-    float fontSizeAdjusted = HelloImGui::DpiFontLoadingFactor() * fontSize;
-    ImFont * font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSizeAdjusted, &config);
-    if (font == nullptr)
-        fprintf(stderr, "Cannot load font %s\n", fontFilename.c_str());
-    FreeAssetFileData(&fontData);
-    gDidCallHelloImGuiLoadFontTTF = true;
-    return font;
-}
-
-ImFont* LoadFontTTF_WithFontAwesomeIcons(const std::string & fontFilename, float fontSize, bool useFullGlyphRange, ImFontConfig configFont, ImFontConfig configIcons)
-{
-    ImFont *font = LoadFontTTF(fontFilename, fontSize, useFullGlyphRange, configFont);
-    if (font == nullptr)
-        return nullptr;
-    font = MergeFontAwesomeToLastFont(fontSize, configIcons);
-    return font;
-}
-
-ImFont* MergeFontAwesomeToLastFont(float fontSize, ImFontConfig config)
-{
-    static std::string faFile = "fonts/fontawesome-webfont.ttf";
-
-    AssetFileData fontData = LoadAssetFileData(faFile.c_str());
-
-    static const ImWchar icon_fa_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-    config.MergeMode = true;
-    config.FontDataOwnedByAtlas = false;
-    float fontSizeAdjusted = HelloImGui::DpiFontLoadingFactor() * fontSize;
-
-    auto font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
-        fontData.data, (int)fontData.dataSize, fontSizeAdjusted, &config, icon_fa_ranges);
-
-    if (font == nullptr)
-        HIMG_ERROR(std::string("Cannot load ") + faFile);
-    FreeAssetFileData(&fontData);
-    return font;
-}
 
 
 namespace ImGuiDefaultSettings
 {
 
-bool DidCallHelloImGuiLoadFontTTF()
-{
-    return HelloImGui::gDidCallHelloImGuiLoadFontTTF;
-}
 
 void LoadDefaultFont_WithFontAwesomeIcons()
 {
     std::string fontFilename = "fonts/DroidSans.ttf";
     if (HelloImGui::AssetExists(fontFilename))
     {
-        float fontSize = 15.f;
-        ImFont* font = LoadFontTTF_WithFontAwesomeIcons(fontFilename, fontSize, false);
-        (void)font;
+        FontLoadingParams fontLoadingParams;
+        fontLoadingParams.mergeFontAwesome = true;
+        ImFont* font = LoadFont(fontFilename, 15.f, fontLoadingParams);
+        (void) font;
+    }
+    else
+    {
+        ImGui::GetIO().Fonts->AddFontDefault();
     }
 }
 

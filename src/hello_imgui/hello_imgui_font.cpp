@@ -9,18 +9,19 @@
 #include "misc/freetype/imgui_freetype.h"
 #endif
 
-
-
 #ifdef IOS
 #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
 #endif
+
 
 
 // Patch ImGui font loading with sensible defaults
 //    - Do not require static
 namespace ImGui_SensibleFont
 {
-    static ImFontConfig* MakeStaticFontConfig(const ImFontConfig& font_cfg, const ImVector<ImWchar[2]> & glyph_ranges = {})
+    using ImWcharPair = std::array<ImWchar, 2>;
+
+    static ImFontConfig* MakeStaticFontConfig(const ImFontConfig& font_cfg, const ImVector<ImWcharPair> & glyph_ranges = {})
     {
         // Storage for pointers that will be used by ImGui::GetIO().Fonts->AddFontFromMemoryTTF
         // (and which are required to persist during the application lifetime)
@@ -66,26 +67,26 @@ namespace ImGui_SensibleFont
         return font_cfg_static;
     }
 
-    ImFont* AddFontFromFileTTF(const char* filename, float font_size_pixels, const ImFontConfig& font_cfg = ImFontConfig(), const ImVector<ImWchar[2]> & glyph_ranges = {})
+    ImFont* AddFontFromFileTTF(const char* filename, float font_size_pixels, const ImFontConfig& font_cfg = ImFontConfig(), const ImVector<ImWcharPair> & glyph_ranges = {})
     {
         ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
         static_font_config->FontDataOwnedByAtlas = false;
         return ImGui::GetIO().Fonts->AddFontFromFileTTF(filename, font_size_pixels, static_font_config);
     }
 
-    ImFont* AddFontFromMemoryTTF(void* font_data, int font_data_size, float font_size_pixels, const ImFontConfig& font_cfg = ImFontConfig(), const ImVector<ImWchar[2]> & glyph_ranges = {})
+    ImFont* AddFontFromMemoryTTF(void* font_data, int font_data_size, float font_size_pixels, const ImFontConfig& font_cfg = ImFontConfig(), const ImVector<ImWcharPair> & glyph_ranges = {})
     {
         ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
         return ImGui::GetIO().Fonts->AddFontFromMemoryTTF(font_data, font_data_size, font_size_pixels, static_font_config);
     }
 
-    ImFont* AddFontFromMemoryTTF_KeepOwnership(void* font_data, int font_data_size, float font_size_pixels, const ImFontConfig& font_cfg = ImFontConfig(), const ImVector<ImWchar[2]> & glyph_ranges = {})
+    ImFont* AddFontFromMemoryTTF_KeepOwnership(void* font_data, int font_data_size, float font_size_pixels, const ImFontConfig& font_cfg = ImFontConfig(), const ImVector<ImWcharPair> & glyph_ranges = {})
     {
         ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
         static_font_config->FontDataOwnedByAtlas = false;
         return ImGui::GetIO().Fonts->AddFontFromMemoryTTF(font_data, font_data_size, font_size_pixels, static_font_config);
     }
-}
+} // namespace ImGui_SensibleFont
 
 
 namespace HelloImGui
@@ -127,7 +128,6 @@ namespace HelloImGui
     }
 
 
-
     ImFont* LoadFont(const std::string & fontFilename, float fontSize_, const FontLoadingParams& params_)
     {
         gDidCallHelloImGuiLoadFontTTF = true;
@@ -163,17 +163,22 @@ namespace HelloImGui
         params.fontConfig.MergeMode = params.mergeToLastFont;
 
         ImFont* font = nullptr;
+
+        ImVector<ImWcharPair> glyphRangesImVector;
+        for(const auto& v: params.glyphRanges)
+            glyphRangesImVector.push_back(v);
+
         if (params.insideAssets)
         {
             AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());
             font = ImGui_SensibleFont::AddFontFromMemoryTTF_KeepOwnership(
-                fontData.data, fontData.dataSize, fontSize, params.fontConfig, params.glyphRanges);
+                fontData.data, fontData.dataSize, fontSize, params.fontConfig, glyphRangesImVector);
             FreeAssetFileData(&fontData);
         }
         else
         {
             font = ImGui_SensibleFont::AddFontFromFileTTF(
-                fontFilename.c_str(), fontSize, params.fontConfig, params.glyphRanges);
+                fontFilename.c_str(), fontSize, params.fontConfig, glyphRangesImVector);
         }
 
         if (params.mergeFontAwesome)

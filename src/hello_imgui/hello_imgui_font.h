@@ -1,9 +1,13 @@
 #pragma once
 #include "imgui.h"
 #include <string>
+#include <vector>
+#include <array>
 
 namespace HelloImGui
 {
+    using ImWcharPair = std::array<ImWchar, 2>;
+
     // Font loading parameters: several options are available (color, merging, range, ...)
     struct FontLoadingParams
     {
@@ -29,7 +33,7 @@ namespace HelloImGui
         //    - if empty, the default glyph range will be used
         //    - you can specify several ranges
         // (will be translated and stored as a static ImWChar* inside fontConfig)
-        ImVector<ImWchar[2]> glyphRanges = {};
+        std::vector<ImWcharPair> glyphRanges = {};
 
         // ImGui native font config to use
         ImFontConfig fontConfig = ImFontConfig();

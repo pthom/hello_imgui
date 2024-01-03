@@ -61,8 +61,6 @@ void LoadFonts(AppState& appState) // This is called by runnerParams.callbacks.L
     appState.TitleFont = HelloImGui::LoadFontTTF("fonts/DroidSans.ttf", 18.f);
     appState.EmojiFont = HelloImGui::LoadFont("fonts/NotoEmoji-Regular.ttf", 24.f,
                                               HelloImGui::FontLoadingParams{ .useFullGlyphRange = true });
-//    appState.EmojiFont = HelloImGui::LoadFont("fonts/noto-untouchedsvg.ttf", 24.f,
-//                                              HelloImGui::FontLoadingParams{ .useFullGlyphRange = true, .loadColor = true });
 #ifdef IMGUI_ENABLE_FREETYPE
     // Found at https://www.colorfonts.wtf/
     appState.ColorFont = HelloImGui::LoadFont("fonts/Playbox/Playbox-FREE.otf", 24.f,

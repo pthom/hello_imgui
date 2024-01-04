@@ -27,7 +27,7 @@ namespace HelloImGui
     }
 
     // Below is implementation of RenderingCallbacks_LinkWindowingToRenderingBackend
-    void PrepareGlfwForMetal(GLFWwindow* glfwWindow)
+    void PrepareGlfwForMetal(GLFWwindow* glfwWindow, const RendererBackendOptions& rendererBackendOptions)
     {
         auto& gMetalGlobals = GetMetalGlobals();
         auto& gGlfwMetalGlobals = GetGlfwMetalGlobals();
@@ -44,10 +44,14 @@ namespace HelloImGui
             gMetalGlobals.caMetalLayer = [CAMetalLayer layer];
             gMetalGlobals.caMetalLayer.device = gMetalGlobals.mtlDevice;
 
-            // gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
-            gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatRGBA16Float;
-            gMetalGlobals.caMetalLayer.wantsExtendedDynamicRangeContent = YES;
-            gMetalGlobals.caMetalLayer.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceExtendedSRGB);
+            if (rendererBackendOptions.metalOptions.fixmeDummyOptionName)
+            {
+                gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatRGBA16Float;
+                gMetalGlobals.caMetalLayer.wantsExtendedDynamicRangeContent = YES;
+                gMetalGlobals.caMetalLayer.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceExtendedSRGB);
+            }
+            else
+                gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
 
             nswin.contentView.layer = gMetalGlobals.caMetalLayer;
             nswin.contentView.wantsLayer = YES;

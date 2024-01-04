@@ -30,6 +30,7 @@
   * [Display images](#display-images)
       * [HelloImGui::ImageFromAsset](#helloimguiimagefromasset)
   * [Backend Pointers](#backend-pointers)
+  * [Renderer Backend Options](#renderer-backend-options)
   * [Store user settings in the ini file](#store-user-settings-in-the-ini-file)
   * [Switch between several layouts](#switch-between-several-layouts)
 
@@ -128,12 +129,16 @@ int main(){
    List of possible additional layout for the applications. Only used in advanced cases when several layouts are available.
 * `rememberSelectedAlternativeLayout`: _bool, default=true_
    Shall the application remember the last selected layout. Only used in advanced cases when several layouts are available.
-* `backendPointers`: _see [backend_pointers.h](backend_pointers.h)_.
+
+ * `backendPointers`: _see [backend_pointers.h](backend_pointers.h)_.
    A struct that contains optional pointers to the backend implementations. These pointers will be filled
    when the application starts
 * `backendType`: _enum BackendType, default=BackendType::FirstAvailable_
   Select the wanted platform backend type between `Sdl`, `Glfw`. Only useful when multiple backend are compiled
   and available.
+* `rendererBackendOptions`: _see [renderer_backend_options.h](renderer_backend_options.h)_.
+  Options for the renderer backend (with specific options for each renderer backend. Currently used for Metal)
+
 * `fpsIdling`: _FpsIdling_. Idling parameters (set fpsIdling.enableIdling to false to disable Idling)
 * `useImGuiTestEngine`: _bool, default=false_.
   Set this to true if you intend to use imgui_test_engine (please read note below)
@@ -865,11 +870,26 @@ your application behavior using the selected backend.
 * `sdlGlContext`: _void *, default=nullptr_. Pointer to SDL's GlContext (of type `SDL_GLContext`).
   Only filled if the backend is SDL (or emscripten + sdl)
 
+
+## Renderer Backend Options
+
+
+**RendererBackendOptions** is a struct that contains options for the renderer backend (Metal, Vulkan, DirectX, ...).
+ Members:
+* `metalOptions`: _MetalOptions_. Options for the Metal backend (only filled if the Metal backend is available)
+
+
+**MetalOptions** is a struct that contains options for the Metal backend.
+ Members:
+* `fixmeDummyOptionName`: _bool, default=false_. Dummy option for Metal backend (to be completed)
+
+
 Note: If using the Metal, Vulkan or DirectX rendering backend, you can find some interesting pointers inside
  `src/hello_imgui/internal/backend_impls/rendering_metal.h`
  `src/hello_imgui/internal/backend_impls/rendering_vulkan.h`
  `src/hello_imgui/internal/backend_impls/rendering_dx11.h`
  `src/hello_imgui/internal/backend_impls/rendering_dx12.h`
+
 
 ## Store user settings in the ini file
 

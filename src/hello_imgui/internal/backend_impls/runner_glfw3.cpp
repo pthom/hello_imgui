@@ -195,7 +195,7 @@ namespace HelloImGui
     }
     void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
     {
-        PrepareGlfwForMetal((GLFWwindow *) mWindow);
+        PrepareGlfwForMetal((GLFWwindow *) mWindow, params.rendererBackendOptions);
     }
 
 #elif defined(HELLOIMGUI_HAS_VULKAN)

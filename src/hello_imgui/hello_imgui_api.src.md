@@ -139,6 +139,10 @@ See [image_from_asset.h](image_from_asset.h).
 
 @import "backend_pointers.h" {md_id=BackendPointers}
 
+## Renderer Backend Options
+
+@import "renderer_backend_options.h" {md_id=RendererBackendOptions}
+
 ## Store user settings in the ini file
 
 See [hello_imgui.h](hello_imgui.h).

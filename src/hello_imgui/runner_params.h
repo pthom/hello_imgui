@@ -4,6 +4,8 @@
 #include "hello_imgui/runner_callbacks.h"
 #include "hello_imgui/docking_params.h"
 #include "hello_imgui/backend_pointers.h"
+#include "hello_imgui/renderer_backend_options.h"
+
 
 #include <vector>
 
@@ -103,12 +105,16 @@ struct FpsIdling
    List of possible additional layout for the applications. Only used in advanced cases when several layouts are available.
 * `rememberSelectedAlternativeLayout`: _bool, default=true_
    Shall the application remember the last selected layout. Only used in advanced cases when several layouts are available.
-* `backendPointers`: _see [backend_pointers.h](backend_pointers.h)_.
+
+ * `backendPointers`: _see [backend_pointers.h](backend_pointers.h)_.
    A struct that contains optional pointers to the backend implementations. These pointers will be filled
    when the application starts
 * `backendType`: _enum BackendType, default=BackendType::FirstAvailable_
   Select the wanted platform backend type between `Sdl`, `Glfw`. Only useful when multiple backend are compiled
   and available.
+* `rendererBackendOptions`: _see [renderer_backend_options.h](renderer_backend_options.h)_.
+  Options for the renderer backend (with specific options for each renderer backend. Currently used for Metal)
+
 * `fpsIdling`: _FpsIdling_. Idling parameters (set fpsIdling.enableIdling to false to disable Idling)
 * `useImGuiTestEngine`: _bool, default=false_.
   Set this to true if you intend to use imgui_test_engine (please read note below)
@@ -152,6 +158,7 @@ struct RunnerParams
 
     BackendPointers backendPointers;
     BackendType backendType = BackendType::FirstAvailable;
+    RendererBackendOptions rendererBackendOptions;
 
     FpsIdling fpsIdling;
 

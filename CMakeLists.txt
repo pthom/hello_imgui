@@ -205,13 +205,6 @@ mark_as_advanced(HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT)
 option(HELLO_IMGUI_IMGUI_SHARED "Use imgui as a shared library" OFF)
 mark_as_advanced(HELLO_IMGUI_IMGUI_SHARED)
 
-if (IOS OR EMSCRIPTEN)
-    set(need_opengl_loader OFF)
-else()
-    set(need_opengl_loader ON)
-endif()
-option(HELLOIMGUI_USE_GLAD "Use Glad OpenGl loader" ${need_opengl_loader})
-
 ###############################################################################
 # End of options
 ###############################################################################

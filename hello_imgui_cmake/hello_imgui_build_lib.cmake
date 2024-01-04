@@ -425,11 +425,16 @@ function(him_has_opengl3 target)
     if(ANDROID OR IOS)
         _him_link_opengl_es_sdl(${HELLOIMGUI_TARGET})
     endif()
+
+    if (IOS OR EMSCRIPTEN)
+        set(HELLOIMGUI_USE_GLAD OFF CACHE INTERNAL "" FORCE)
+    else()
+        set(HELLOIMGUI_USE_GLAD ON CACHE INTERNAL "" FORCE)
+    endif()
+
     if (HELLOIMGUI_USE_GLAD)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
         target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glad)
-    endif()
-    if (HELLOIMGUI_USE_GLAD)
         him_install_glad()
     endif()
 endfunction()
@@ -730,54 +735,68 @@ endfunction()
 ###################################################################################################
 function(him_log_configuration)
     him_get_active_backends(selected_backends)
+
+    # set imgui_source_dir to the relative path of HELLOIMGUI_IMGUI_SOURCE_DIR versus this project
+    file(RELATIVE_PATH imgui_source_dir ${HELLOIMGUI_BASEPATH} ${HELLOIMGUI_IMGUI_SOURCE_DIR})
+
     set(msg "
-    Hello ImGui build options:
     ===========================================================================
-    Backends:                       ${selected_backends}
+        Hello ImGui build options:
+    ===========================================================================
+      Backends: ${selected_backends}
     ---------------------------------------------------------------------------
-    Options:
-    HELLOIMGUI_USE_FREETYPE:        ${HELLOIMGUI_USE_FREETYPE}  (${HELLOIMGUI_FREETYPE_SELECTED_INFO})
-    HELLOIMGUI_WITH_TEST_ENGINE:    ${HELLOIMGUI_WITH_TEST_ENGINE}
-    BUILD_DEMOS - TESTS - DOCS:     ${HELLOIMGUI_BUILD_DEMOS} - ${HELLOIMGUI_BUILD_TESTS} - ${HELLOIMGUI_BUILD_DOCS}
+      Options:
+        HELLOIMGUI_USE_FREETYPE:        ${HELLOIMGUI_USE_FREETYPE}  (${HELLOIMGUI_FREETYPE_SELECTED_INFO})
+        HELLOIMGUI_WITH_TEST_ENGINE:    ${HELLOIMGUI_WITH_TEST_ENGINE}
+        BUILD_DEMOS - TESTS - DOCS:     ${HELLOIMGUI_BUILD_DEMOS} - ${HELLOIMGUI_BUILD_TESTS} - ${HELLOIMGUI_BUILD_DOCS}
     ---------------------------------------------------------------------------
-    Config:
-    HELLOIMGUI_USE_GLAD:            ${HELLOIMGUI_USE_GLAD}
-    Build ImGui - ImGui source dir: ${HELLOIMGUI_BUILD_IMGUI} - ${HELLOIMGUI_IMGUI_SOURCE_DIR}")
+      ImGui:
+        Build ImGui:                    ${HELLOIMGUI_BUILD_IMGUI}
+        ImGui source dir:               ${imgui_source_dir}")
 
     if(EMSCRIPTEN)
         set(msg "${msg}
     ---------------------------------------------------------------------------
-    Emscripten options
-    HELLOIMGUI_EMSCRIPTEN_PTHREAD:  ${HELLOIMGUI_EMSCRIPTEN_PTHREAD}
-    HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH: ${HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH}")
+      Emscripten options
+        HELLOIMGUI_EMSCRIPTEN_PTHREAD:  ${HELLOIMGUI_EMSCRIPTEN_PTHREAD}
+        HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH: ${HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH}")
     endif ()
 
-    if(HELLOIMGUI_USE_SDL)
+    if(HELLOIMGUI_HAS_OPENGL)
         set(msg "${msg}
     ---------------------------------------------------------------------------
-    SDL:                            ${HELLOIMGUI_SDL_SELECTED_INFO}")
+      OpenGL - use glad loader          ${HELLOIMGUI_USE_GLAD}")
     endif()
 
+    set(msg "${msg}
+    ---------------------------------------------------------------------------
+      Platform Backend(s):")
+    if(HELLOIMGUI_USE_SDL)
+        set(msg "${msg}
+        SDL:                            ${HELLOIMGUI_SDL_SELECTED_INFO}")
+    endif()
     if(HELLOIMGUI_USE_GLFW)
         set(msg "${msg}
-    ---------------------------------------------------------------------------
-    Glfw:                           ${HELLOIMGUI_GLFW_SELECTED_INFO}")
+        Glfw:                           ${HELLOIMGUI_GLFW_SELECTED_INFO}")
     endif()
 
     if(WIN32)
         set(msg "${msg}
     ---------------------------------------------------------------------------
-    Windows info
-    HELLOIMGUI_WIN32_NO_CONSOLE:    ${HELLOIMGUI_WIN32_NO_CONSOLE}
-    HELLOIMGUI_WIN32_AUTO_WINMAIN:  ${HELLOIMGUI_WIN32_AUTO_WINMAIN}")
+      Windows:
+        HELLOIMGUI_WIN32_NO_CONSOLE:    ${HELLOIMGUI_WIN32_NO_CONSOLE}
+        HELLOIMGUI_WIN32_AUTO_WINMAIN:  ${HELLOIMGUI_WIN32_AUTO_WINMAIN}")
     endif()
 
     if(MACOSX)
         set(msg "${msg}
     ---------------------------------------------------------------------------
-    macOS info
-    HELLOIMGUI_MACOS_NO_BUNDLE:     ${HELLOIMGUI_MACOS_NO_BUNDLE}")
+      macOS:
+        HELLOIMGUI_MACOS_NO_BUNDLE:     ${HELLOIMGUI_MACOS_NO_BUNDLE}")
     endif()
+
+    set(msg "${msg}
+    ===========================================================================")
 
     message(STATUS "${msg}")
 endfunction()

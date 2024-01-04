@@ -21,14 +21,6 @@ def repeat(s, nb):
     return r
 
 
-def toc_link():
-    toc_image = "docs/toc.png"
-    # <div style="text-align: right"> your-text-here </div>
-    image_link = f"[![TOC]({toc_image})](#TOC)"
-    r = f"{image_link}\n"
-    return r
-
-
 def is_header_line(line):
     return line.startswith("#") and not (line.startswith("#include"))
 
@@ -112,7 +104,6 @@ def process_md_file(input_file, output_file):
         elif line.startswith("[TOC]"):
             content = content + make_toc(input_file)
         elif is_header_line(line):
-            # content = content + line + toc_link() # too ugly
             content = content + line
         else:
             content = content + line

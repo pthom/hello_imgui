@@ -2,7 +2,7 @@
 #
 # This file contains the main CMake logic that is used to build HelloImGui
 #
-# It is included by src/hello_imgui/CMakelists.txt, which will call
+# It is included by src/hello_imgui/CMakeLists.txt, which will call
 #    him_main_add_hello_imgui_library()
 # which is defined a the bottom of this file
 #
@@ -423,7 +423,7 @@ function(him_has_opengl3 target)
     set(HELLOIMGUI_HAS_OPENGL ON CACHE BOOL "" FORCE)
 
     if(ANDROID OR IOS)
-        _him_link_opengles_sdl(${HELLOIMGUI_TARGET})
+        _him_link_opengl_es_sdl(${HELLOIMGUI_TARGET})
     endif()
     if (HELLOIMGUI_USE_GLAD)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
@@ -434,7 +434,7 @@ function(him_has_opengl3 target)
     endif()
 endfunction()
 
-function(_him_link_opengles_sdl target)
+function(_him_link_opengl_es_sdl target)
     if(IOS)
         target_link_libraries(${target} PUBLIC "-framework OpenGLES")
     elseif(ANDROID)

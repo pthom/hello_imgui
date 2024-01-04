@@ -115,7 +115,7 @@ namespace HelloImGui
                 {
                     // Draw a cross in the circle
                     ImVec2 crossSize(btnSize.x * 0.4f, btnSize.y * 0.4f);
-                    ImVec2 crossPos(btnArea.GetCenter().x - crossSize.x * 0.55f, btnArea.GetCenter().y - crossSize.y * 0.5f);
+                    ImVec2 crossPos(btnArea.GetCenter().x - crossSize.x * 0.55f, btnArea.GetCenter().y - crossSize.y * 0.55f);
                     ImRect crossArea(crossPos, crossPos + crossSize);
                     ImGui::GetForegroundDrawList()->AddLine(
                         crossArea.Min,
@@ -199,16 +199,24 @@ namespace HelloImGui
                 ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
             }
 
-#ifdef HELLOIMGUI_USE_SDL
             // With borderless windows, SDL is able to let window resize themselves to 0,
             // and they are then impossible to resize! So we force a minimum size here:
-            auto windowBounds = backendWindowHelper->GetWindowBounds(window);
-            if (windowBounds.size[0] < minAcceptableWindowSize)
-                windowBounds.size[0] = minAcceptableWindowSize;
-            if (windowBounds.size[1] < minAcceptableWindowSize)
-                windowBounds.size[1] = minAcceptableWindowSize;
-            backendWindowHelper->SetWindowBounds(window, windowBounds);
-#endif
+            {
+                bool tooSmall = false;
+                auto windowBounds = backendWindowHelper->GetWindowBounds(window);
+                if (windowBounds.size[0] < minAcceptableWindowSize)
+                {
+                    windowBounds.size[0] = minAcceptableWindowSize;
+                    tooSmall = true;
+                }
+                if (windowBounds.size[1] < minAcceptableWindowSize)
+                {
+                    windowBounds.size[1] = minAcceptableWindowSize;
+                    tooSmall = true;
+                }
+                if (tooSmall)
+                    backendWindowHelper->SetWindowBounds(window, windowBounds);
+            }
 
             // Set mouse cursor: (not visible under glfw < 3.4, which does not implement this cursor)
             if (dragArea.Contains(mousePos) || isDragging)

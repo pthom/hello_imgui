@@ -32,6 +32,7 @@ namespace HelloImGui
         // the ranges of glyphs to load:
         //    - if empty, the default glyph range will be used
         //    - you can specify several ranges
+        //    - intervals bounds are inclusive
         // (will be translated and stored as a static ImWChar* inside fontConfig)
         std::vector<ImWcharPair> glyphRanges = {};
 

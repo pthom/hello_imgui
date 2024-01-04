@@ -15,78 +15,82 @@
 
 
 
-// Patch ImGui font loading with sensible defaults
-//    - Do not require static
 namespace ImGui_SensibleFont
 {
-    using ImWcharPair = std::array<ImWchar, 2>;
+/*
+    // Extract from imgui.h doc:
+    // Common pitfalls:
+    // 1. If you pass a 'glyph_ranges' array to AddFont*** functions, you need to make sure that your array persist up until the
+    //   atlas is build (when calling GetTexData*** or Build()). We only copy the pointer, not the data.
+    // 2. Important: By default, AddFontFromMemoryTTF() takes ownership of the data. Even though we are not writing to it, we will free the pointer on destruction.
+    //   You can set font_cfg->FontDataOwnedByAtlas=false to keep ownership of your data, and it won't be freed,
+    // 3. Even though many functions are suffixed with "TTF", OTF data is supported just as well.
+    // This is an old API, and it is currently awkward for those and various other reasons! We will address them in the future!
 
-    static ImFontConfig* MakeStaticFontConfig(const ImFontConfig& font_cfg, const ImVector<ImWcharPair> & glyph_ranges = {})
+    The functions below address the first pitfall, by storing the glyph_ranges in a static vector.
+    It also tries to address the second pitfall, by adding an overload AddFontFromMemoryTTF_KeepOwnership, so that the pitfall can be seen by looking at the declarations.
+    (Note: AddFontFromMemoryCompressedTTF and AddFontFromMemoryCompressedBase85TTF do not have this pitfall)
+
+    They
+    // IMGUI_API ImFont*           AddFontFromFileTTF(const char* filename, float size_pixels, const ImFontConfig* font_cfg = NULL, const ImWchar* glyph_ranges = NULL);
+    // IMGUI_API ImFont*           AddFontFromMemoryTTF(void* font_data, int font_data_size, float size_pixels, const ImFontConfig* font_cfg = NULL, const ImWchar* glyph_ranges = NULL); // Note: Transfer ownership of 'ttf_data' to ImFontAtlas! Will be deleted after destruction of the atlas. Set font_cfg->FontDataOwnedByAtlas=false to keep ownership of your data and it won't be freed.
+
+*/
+
+    static void StoreStaticGlyphRange(ImFontConfig* font_cfg, const ImVector<ImWchar> & glyph_ranges = {})
     {
-        // Storage for pointers that will be used by ImGui::GetIO().Fonts->AddFontFromMemoryTTF
-        // (and which are required to persist during the application lifetime)
-        static ImVector<ImFontConfig> all_cfgs;
-        static ImVector<ImVector<ImWchar>> all_glyph_ranges;
-        bool first_time = all_cfgs.Capacity == 0;
+        // *Static* storage for pointers that will be used by ImGui::GetIO().Fonts->AddFontFromMemoryTTF, and which are required to persist until the Font Atlas is built, which happens much later after calling AddFontFromXXX
+        //
+        //                  *Open question: should the storage use "static" or "thread_local"?*
+        //
+        static ImVector<ImVector<ImWchar>> all_glyph_ranges; // This is kept alive, until the app exits. However, it is small.
+        constexpr int max_size = 100;  // Arbitrary limit: if you load more than 100 fonts, you may want to increase this number
+        bool first_time = all_glyph_ranges.Capacity == 0;
+
         if (first_time)
         {
-            // try to make sure that our static vector will not be moved in memory. Yeah, I know...
-            // If you use more than 100 fonts, you may want to increase this number (...)
-            all_cfgs.reserve(100);
-            all_glyph_ranges.reserve(100);
+            // Make sure that our static vector will not be moved in memory, unless the user load more than 100 fonts
+            all_glyph_ranges.reserve(max_size);
         }
 
         // Add font config to static storage
-        all_cfgs.push_back(font_cfg);
-        ImFontConfig* font_cfg_static = &(all_cfgs.back());
-
         if (glyph_ranges.empty())
-            font_cfg_static->GlyphRanges = nullptr;
+            font_cfg->GlyphRanges = nullptr;
         else
         {
-            // Doc from imgui.h:
-            //    const ImWchar*  GlyphRanges;            // NULL
-            //    THE ARRAY DATA NEEDS TO PERSIST AS LONG AS THE FONT IS ALIVE.
-            //    Pointer to a user-provided list of Unicode range
-            //    (2 value per range, values are inclusive, zero-terminated list).
-            // Add an empty vector for the glyph ranges
             all_glyph_ranges.push_back({});
             ImVector<ImWchar> & glyph_ranges_static = all_glyph_ranges.back();
-
-            // Populate the glyph ranges
-            for (const auto & glyph_range : glyph_ranges)
-            {
-                glyph_ranges_static.push_back(glyph_range[0]);
-                glyph_ranges_static.push_back(glyph_range[1]);
-            }
-            glyph_ranges_static.push_back(0); // Zero-terminate the array
-
-            font_cfg_static->GlyphRanges = glyph_ranges_static.Data;
+            glyph_ranges_static = glyph_ranges;
+            font_cfg->GlyphRanges = glyph_ranges_static.Data;
         }
 
-        return font_cfg_static;
+        IM_ASSERT(all_glyph_ranges.Size <= max_size && "Too many fonts loaded");
     }
 
-    ImFont* AddFontFromFileTTF(const char* filename, float font_size_pixels, const ImFontConfig& font_cfg = ImFontConfig(), const ImVector<ImWcharPair> & glyph_ranges = {})
+
+    ImFont* AddFontFromFileTTF_2(const char* filename, float font_size_pixels, ImFontConfig* font_cfg = NULL, const ImVector<ImWchar> & glyph_ranges = {})
     {
-        ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
-        static_font_config->FontDataOwnedByAtlas = false;
-        return ImGui::GetIO().Fonts->AddFontFromFileTTF(filename, font_size_pixels, static_font_config);
+        if (font_cfg != NULL && !glyph_ranges.empty())
+            StoreStaticGlyphRange(font_cfg, glyph_ranges);
+        return ImGui::GetIO().Fonts->AddFontFromFileTTF(filename, font_size_pixels, font_cfg);
     }
 
-    ImFont* AddFontFromMemoryTTF(void* font_data, int font_data_size, float font_size_pixels, const ImFontConfig& font_cfg = ImFontConfig(), const ImVector<ImWcharPair> & glyph_ranges = {})
+    ImFont* AddFontFromMemoryTTF_2(void* font_data, int font_data_size, float font_size_pixels, ImFontConfig* font_cfg = NULL, const ImVector<ImWchar> & glyph_ranges = {})
     {
-        ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
-        return ImGui::GetIO().Fonts->AddFontFromMemoryTTF(font_data, font_data_size, font_size_pixels, static_font_config);
+        if (font_cfg != NULL && !glyph_ranges.empty())
+            StoreStaticGlyphRange(font_cfg, glyph_ranges);
+        return ImGui::GetIO().Fonts->AddFontFromMemoryTTF(font_data, font_data_size, font_size_pixels, font_cfg);
     }
 
-    ImFont* AddFontFromMemoryTTF_KeepOwnership(void* font_data, int font_data_size, float font_size_pixels, const ImFontConfig& font_cfg = ImFontConfig(), const ImVector<ImWcharPair> & glyph_ranges = {})
+    ImFont* AddFontFromMemoryTTF_2_KeepOwnership(void* font_data, int font_data_size, float font_size_pixels, ImFontConfig* font_cfg = NULL, const ImVector<ImWchar> & glyph_ranges = {})
     {
-        ImFontConfig* static_font_config = MakeStaticFontConfig(font_cfg, glyph_ranges);
-        static_font_config->FontDataOwnedByAtlas = false;
-        return ImGui::GetIO().Fonts->AddFontFromMemoryTTF(font_data, font_data_size, font_size_pixels, static_font_config);
+        if (font_cfg != NULL && !glyph_ranges.empty())
+            StoreStaticGlyphRange(font_cfg, glyph_ranges);
+        font_cfg->FontDataOwnedByAtlas = false;
+        return ImGui::GetIO().Fonts->AddFontFromMemoryTTF(font_data, font_data_size, font_size_pixels, font_cfg);
     }
 } // namespace ImGui_SensibleFont
+
 
 
 namespace HelloImGui
@@ -164,21 +168,30 @@ namespace HelloImGui
 
         ImFont* font = nullptr;
 
-        ImVector<ImWcharPair> glyphRangesImVector;
-        for(const auto& v: params.glyphRanges)
-            glyphRangesImVector.push_back(v);
+        // Populate the glyph ranges for ImGui:
+        // 2 value per range, values are inclusive, zero-terminated list
+        ImVector<ImWchar> glyphRangesImVector;
+        if (! params.glyphRanges.empty())
+        {
+            for (const auto & glyph_range_interval : params.glyphRanges)
+            {
+                glyphRangesImVector.push_back(glyph_range_interval[0]);
+                glyphRangesImVector.push_back(glyph_range_interval[1]);
+            }
+            glyphRangesImVector.push_back(0); // Zero-terminate the array
+        }
 
         if (params.insideAssets)
         {
             AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());
-            font = ImGui_SensibleFont::AddFontFromMemoryTTF_KeepOwnership(
-                fontData.data, fontData.dataSize, fontSize, params.fontConfig, glyphRangesImVector);
+            font = ImGui_SensibleFont::AddFontFromMemoryTTF_2_KeepOwnership(
+                fontData.data, fontData.dataSize, fontSize, &params.fontConfig, glyphRangesImVector);
             FreeAssetFileData(&fontData);
         }
         else
         {
-            font = ImGui_SensibleFont::AddFontFromFileTTF(
-                fontFilename.c_str(), fontSize, params.fontConfig, glyphRangesImVector);
+            font = ImGui_SensibleFont::AddFontFromFileTTF_2(
+                fontFilename.c_str(), fontSize, &params.fontConfig, glyphRangesImVector);
         }
 
         if (params.mergeFontAwesome)

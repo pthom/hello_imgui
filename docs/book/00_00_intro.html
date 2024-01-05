@@ -7,8 +7,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Hello ImGui &#8212; Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
   
   
   
@@ -62,9 +63,10 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
-    <link rel="index" title="Index" href="#" />
+    <script>DOCUMENTATION_OPTIONS.pagename = '00_00_intro';</script>
+    <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Get started in 5 minutes" href="05_05_get_started.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -148,7 +150,7 @@ const thebe_selector_output = ".output, .cell_output"
 
   
 
-<a class="navbar-brand logo" href="00_00_intro.html">
+<a class="navbar-brand logo" href="#">
   
   
   
@@ -168,8 +170,8 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
-            <li class="toctree-l1">
-                <a class="reference internal" href="00_00_intro.html">
+            <li class="toctree-l1 current active">
+                <a class="reference internal" href="#">
                     Hello ImGui
                 </a>
             </li>
@@ -260,7 +262,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/pthom/hello_imgui/issues/new?title=Issue%20on%20page%20%2Fgenindex.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/pthom/hello_imgui/issues/new?title=Issue%20on%20page%20%2F00_00_intro.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -272,6 +274,54 @@ const thebe_selector_output = ".output, .cell_output"
   </span>
 <span class="btn__text-container">Open issue</span>
 </a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/00_00_intro.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
 </li>
       
   </ul>
@@ -313,7 +363,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -324,11 +376,23 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1></h1>
+    <h1>Hello ImGui</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dear-imgui-bundle-sister-library">Dear ImGui Bundle - Sister library</a><ul class="nav section-nav flex-column">
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ci-status">CI Status</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -338,13 +402,91 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-
-<h1 id="index">Index</h1>
-
-<div class="genindex-jumpbox">
- 
+  <section class="tex2jax_ignore mathjax_ignore" id="hello-imgui">
+<h1>Hello ImGui<a class="headerlink" href="#hello-imgui" title="Permalink to this heading">#</a></h1>
+<p>Hello ImGui is a library that enables quickly write multiplatform apps with the simplicity of a “Hello World” app. It is based on <a class="reference external" href="https://github.com/ocornut/imgui">Dear ImGui</a>.</p>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Set up a project in 5 minutes</p></li>
+<li><p>Advanced layout handling: handle multiple layouts (each of which will remember the user modifications and the list of opened windows). See <a class="reference external" href="https://www.youtube.com/watch?v=XKxmz__F4ow">demo video</a></p></li>
+<li><p>Embed assets on all platforms</p></li>
+<li><p>Power Save mode: reduce FPS when application is idle</p></li>
+<li><p><a class="reference external" href="https://www.youtube.com/watch?v=Hhartw0cUjg">Theme tweaking</a></p></li>
+<li><p>Window geometry utilities (autosize, restore window position)</p></li>
+<li><p><a class="reference external" href="https://traineq.org/HelloImGui_6_Platforms.mp4">Truly multiplatform</a> (Linux, Windows, MacOS, iOS, Android, emscripten)</p></li>
+<li><p>Available windowing backends: SDL2, Glfw3</p></li>
+<li><p>Available graphics backends: OpenGL3, Metal</p></li>
+</ul>
+</section>
+<section id="dear-imgui-bundle-sister-library">
+<h2>Dear ImGui Bundle - Sister library<a class="headerlink" href="#dear-imgui-bundle-sister-library" title="Permalink to this heading">#</a></h2>
+<a class="reference internal image-reference" href="https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png"><img alt="https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png" class="align-left" src="https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png" style="width: 200px;" /></a>
+<p><em>Do you want an easy way to use Dear ImGui with additional widgets, and in Python?</em></p>
+<p>Dear ImGui Bundle, is a sister library, based on Hello ImGui, provides lots of additional widgets (<a class="reference external" href="https://github.com/ocornut/imgui.git">imgui</a>, <a class="reference external" href="https://github.com/epezent/implot">implot</a>, <a class="reference external" href="https://github.com/thedmd/imgui-node-editor">imgui-node-editor</a>, <a class="reference external" href="https://github.com/pthom/ImFileDialog.git">ImFileDialog</a>, <a class="reference external" href="https://github.com/BalazsJako/ImGuiColorTextEdit">ImGuiColorTextEdit</a>, <a class="reference external" href="https://github.com/mekhontsev/imgui_md.git">imgui_md</a>), as well as complete python bindings.</p>
+<p>See ImGuiBundle’s  <a class="reference external" href="https://github.com/pthom/imgui_bundle/tree/main/demos_cpp">C++ demos</a> and <a class="reference external" href="https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos">Python demos</a>.</p>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="05_05_get_started.html">Get started in 5 minutes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_10_demos.html">Demos</a></li>
+</ul>
 </div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="10_02_assets.html">Assets &amp; App customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_02_assets.html#app-customization">App customization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_05_api.html">Full usage instructions and API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="60_05_build.html">Build instructions</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="90_05_gallery.html">Real world examples</a></li>
+</ul>
+</div>
+</section>
+<section id="ci-status">
+<h2>CI Status<a class="headerlink" href="#ci-status" title="Permalink to this heading">#</a></h2>
+<p><strong>Desktop platforms, with OpenGL Rendering</strong><br/>
+<a class="reference external" href="https://github.com/pthom/hello_imgui/actions/workflows/Win_Mac_Linux.yml"><img alt="Win_Mac_Linux" src="https://github.com/pthom/hello_imgui/workflows/Win_Mac_Linux/badge.svg" /></a>
+<a class="reference external" href="https://github.com/pthom/hello_imgui/actions/workflows/MinGW.yml"><img alt="MinGW" src="https://github.com/pthom/hello_imgui/workflows/MinGW/badge.svg" /></a></p>
+<p><strong>Mobile and web</strong><br/>
+<a class="reference external" href="https://github.com/pthom/hello_imgui/actions/workflows/iOS.yml"><img alt="iOS" src="https://github.com/pthom/hello_imgui/workflows/iOS/badge.svg" /></a>
+<a class="reference external" href="https://github.com/pthom/hello_imgui/actions/workflows/Android.yml"><img alt="Android" src="https://github.com/pthom/hello_imgui/workflows/Android/badge.svg" /></a>
+<a class="reference external" href="https://github.com/pthom/hello_imgui/actions/workflows/Emscripten.yml"><img alt="Emscripten" src="https://github.com/pthom/hello_imgui/workflows/Emscripten/badge.svg" /></a></p>
+<p><strong>Other rendering backends</strong><br/>
+<a class="reference external" href="https://github.com/pthom/hello_imgui/actions/workflows/Metal.yml"><img alt="Metal" src="https://github.com/pthom/hello_imgui/workflows/Metal/badge.svg" /></a>
+<a class="reference external" href="https://github.com/pthom/hello_imgui/actions/workflows/Vulkan.yml"><img alt="Vulkan" src="https://github.com/pthom/hello_imgui/workflows/Vulkan/badge.svg" /></a>
+<a class="reference external" href="https://github.com/pthom/hello_imgui/actions/workflows/DirectX.yml"><img alt="DirectX" src="https://github.com/pthom/hello_imgui/workflows/DirectX/badge.svg" /></a></p>
+<p><strong>Other</strong><br/>
+<a class="reference external" href="https://github.com/pthom/hello_imgui/actions/workflows/TestEngine.yml"><img alt="TestEngine" src="https://github.com/pthom/hello_imgui/workflows/TestEngine/badge.svg" /></a>
+<a class="reference external" href="https://github.com/pthom/hello_imgui/actions/workflows/Automate.yml"><img alt="Automate" src="https://github.com/pthom/hello_imgui/workflows/Automate/badge.svg" /></a>
+<a class="reference external" href="https://github.com/pthom/hello_imgui/actions/workflows/StarterTemplate.yml"><img alt="StarterTemplate" src="https://github.com/pthom/hello_imgui/workflows/StarterTemplate/badge.svg" /></a></p>
+</section>
+</section>
 
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
 
                 </article>
               
@@ -356,6 +498,15 @@ document.write(`
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="right-next"
+       href="05_05_get_started.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Get started in 5 minutes</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -363,7 +514,24 @@ document.write(`
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"></div>
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dear-imgui-bundle-sister-library">Dear ImGui Bundle - Sister library</a><ul class="nav section-nav flex-column">
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ci-status">CI Status</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

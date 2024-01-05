@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Markdown Files &#8212; Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
+    <title>Assets &amp; App customization &#8212; Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
   
   
   
@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -62,11 +63,11 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'markdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '10_02_assets';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Content with notebooks" href="notebooks.html" />
-    <link rel="prev" title="Welcome to your Jupyter Book" href="intro.html" />
+    <link rel="next" title="Full usage instructions and API" href="10_05_api.html" />
+    <link rel="prev" title="Demos" href="05_10_demos.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -150,7 +151,7 @@ const thebe_selector_output = ".output, .cell_output"
 
   
 
-<a class="navbar-brand logo" href="intro.html">
+<a class="navbar-brand logo" href="00_00_intro.html">
   
   
   
@@ -171,16 +172,26 @@ const thebe_selector_output = ".output, .cell_output"
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
-                <a class="reference internal" href="intro.html">
-                    Welcome to your Jupyter Book
+                <a class="reference internal" href="00_00_intro.html">
+                    Hello ImGui
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Installation</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05_05_get_started.html">Get started in 5 minutes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_10_demos.html">Demos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Usage</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Markdown Files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks.html">Content with notebooks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="markdown-notebooks.html">Notebooks with MyST Markdown</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Assets &amp; App customization</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="10_05_api.html">Full usage instructions and API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="60_05_build.html">Build instructions</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="90_05_gallery.html">Real world examples</a></li>
 </ul>
 
     </div>
@@ -252,7 +263,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/pthom/hello_imgui/issues/new?title=Issue%20on%20page%20%2Fmarkdown.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/pthom/hello_imgui/issues/new?title=Issue%20on%20page%20%2F10_02_assets.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -282,7 +293,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="_sources/markdown.md" target="_blank"
+      <li><a href="_sources/10_02_assets.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -366,7 +377,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Markdown Files</h1>
+    <h1>Assets & App customization</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -376,11 +387,10 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-myst">What is MyST?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-roles-and-directives">Sample Roles and Directives</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#citations">Citations</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learn-more">Learn more</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Assets &amp; App customization</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#app-customization">App customization</a></li>
 </ul>
+
             </nav>
         </div>
     </div>
@@ -391,52 +401,48 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="markdown-files">
-<h1>Markdown Files<a class="headerlink" href="#markdown-files" title="Permalink to this heading">#</a></h1>
-<p>Whether you write your book’s content in Jupyter Notebooks (<code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>) or
-in regular markdown files (<code class="docutils literal notranslate"><span class="pre">.md</span></code>), you’ll write in the same flavor of markdown
-called <strong>MyST Markdown</strong>.
-This is a simple file to help you get started and show off some syntax.</p>
-<section id="what-is-myst">
-<h2>What is MyST?<a class="headerlink" href="#what-is-myst" title="Permalink to this heading">#</a></h2>
-<p>MyST stands for “Markedly Structured Text”. It
-is a slight variation on a flavor of markdown called “CommonMark” markdown,
-with small syntax extensions to allow you to write <strong>roles</strong> and <strong>directives</strong>
-in the Sphinx ecosystem.</p>
-<p>For more about MyST, see <a class="reference external" href="https://jupyterbook.org/content/myst.html">the MyST Markdown Overview</a>.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="assets-app-customization">
+<h1>Assets &amp; App customization<a class="headerlink" href="#assets-app-customization" title="Permalink to this heading">#</a></h1>
+<p>Anything in the assets/ folder located beside the app’s CMakeLists will be embedded
+on mobile devices and emscripten, i.e. they will be bundled together with the app;
+and you can access them via <code class="docutils literal notranslate"><span class="pre">assetFileFullPath(const</span> <span class="pre">std::string&amp;</span> <span class="pre">assetRelativeFilename)</span></code>.</p>
+<p>Typical content of the assets/ folder:</p>
+<p>The default fonts are available inside <a class="reference external" href="https://github.com/pthom/hello_imgui/tree/master/hello_imgui_assets">hello_imgui_assets</a>.</p>
 </section>
-<section id="sample-roles-and-directives">
-<h2>Sample Roles and Directives<a class="headerlink" href="#sample-roles-and-directives" title="Permalink to this heading">#</a></h2>
-<p>Roles and directives are two of the most powerful tools in Jupyter Book. They
-are kind of like functions, but written in a markup language. They both
-serve a similar purpose, but <strong>roles are written in one line</strong>, whereas
-<strong>directives span many lines</strong>. They both accept different kinds of inputs,
-and what they do with those inputs depends on the specific role or directive
-that is being called.</p>
-<p>Here is a “note” directive:</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Here is a note</p>
+<section class="tex2jax_ignore mathjax_ignore" id="app-customization">
+<h1>App customization<a class="headerlink" href="#app-customization" title="Permalink to this heading">#</a></h1>
+<p>The subfolder <code class="docutils literal notranslate"><span class="pre">assets/app_settings</span></code> located beside your app’s CMakeLists can store some settings: app icon, app name, etc.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>assets/
+├── app_settings/
+│    ├── icon.png          # If present, this will be used as the app icon.
+│    │                     # Tt should be a square image, of large size, at least 256x256.
+│    │                     # This works on macOS, iOS, windows, linux, and emscripten 
+│    │                     # and it will automatically 
+│    │                     # be converted to the correct format.
+│    │
+│    ├── apple/
+│    │    ├── Info.plist    # Will be used as the app Info.plist for iOS and macOS
+│    │    │                      # (if absent, HelloImGui will provide a default one)
+│    │    │
+│    │    ├── Info.ios.plist     # (optional, used on iOS if present)
+│    │    ├── Info.macos.plist   # (optional, used on macOS if present) 
+│    │ 
+│    └── emscripten/
+│        ├── shell.emscripten.html # Emscripten shell file
+│        │                         #   (this file will be cmake &quot;configured&quot;
+│        │                         #    to add the name and favicon) 
+│        └── custom.js             # Any custom file here will be deployed
+│                                  #   in the emscripten build folder
+│
+├── fonts/
+│    ├── DroidSans.ttf                 # default fonts 
+│    └── fontawesome-webfont.ttf  # used by HelloImGui
+├── images/
+│      ├── whatever.jpg             # add any file you like in whatever folder you like
+
+</pre></div>
 </div>
-<p>It will be rendered in a special box when you build your book.</p>
-<p>Here is an inline directive to refer to a document: <a class="reference internal" href="markdown-notebooks.html"><span class="doc">Notebooks with MyST Markdown</span></a>.</p>
-</section>
-<section id="citations">
-<h2>Citations<a class="headerlink" href="#citations" title="Permalink to this heading">#</a></h2>
-<p>You can also cite references that are stored in a <code class="docutils literal notranslate"><span class="pre">bibtex</span></code> file. For example,
-the following syntax: <code class="docutils literal notranslate"><span class="pre">{cite}`holdgraf_evidence_2014`</span></code> will render like
-this: <a href="#id1"><span class="problematic" id="id2">holdgraf_evidence_2014</span></a>.</p>
-<p>Moreover, you can insert a bibliography into your page with this syntax:
-The <code class="docutils literal notranslate"><span class="pre">{bibliography}</span></code> directive must be used for all the <code class="docutils literal notranslate"><span class="pre">{cite}</span></code> roles to
-render properly.
-For example, if the references for your book are stored in <code class="docutils literal notranslate"><span class="pre">references.bib</span></code>,
-then the bibliography is inserted with:</p>
-</section>
-<section id="learn-more">
-<h2>Learn more<a class="headerlink" href="#learn-more" title="Permalink to this heading">#</a></h2>
-<p>This is just a simple starter to get you started.
-You can learn a lot more at <a class="reference external" href="https://jupyterbook.org">jupyterbook.org</a>.</p>
-</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -470,20 +476,20 @@ You can learn a lot more at <a class="reference external" href="https://jupyterb
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="intro.html"
+       href="05_10_demos.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Welcome to your Jupyter Book</p>
+        <p class="prev-next-title">Demos</p>
       </div>
     </a>
     <a class="right-next"
-       href="notebooks.html"
+       href="10_05_api.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Content with notebooks</p>
+        <p class="prev-next-title">Full usage instructions and API</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -503,11 +509,10 @@ You can learn a lot more at <a class="reference external" href="https://jupyterb
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-myst">What is MyST?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-roles-and-directives">Sample Roles and Directives</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#citations">Citations</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learn-more">Learn more</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Assets &amp; App customization</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#app-customization">App customization</a></li>
 </ul>
+
   </nav></div>
 
 </div></div>

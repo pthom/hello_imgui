@@ -1,0 +1,743 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Build instructions &#8212; Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '60_05_build';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Real world examples" href="90_05_gallery.html" />
+    <link rel="prev" title="Full usage instructions and API" href="10_05_api.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <header>
+  
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
+  
+  </header>
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="00_00_intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo_hello_imgui.png" class="logo__image only-light" alt="Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui - Home"/>
+    <script>document.write(`<img src="_static/logo_hello_imgui.png" class="logo__image only-dark" alt="Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="00_00_intro.html">
+                    Hello ImGui
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05_05_get_started.html">Get started in 5 minutes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_10_demos.html">Demos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_02_assets.html">Assets &amp; App customization</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="10_05_api.html">Full usage instructions and API</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Build instructions</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="90_05_gallery.html">Real world examples</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/pthom/hello_imgui" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/pthom/hello_imgui/issues/new?title=Issue%20on%20page%20%2F60_05_build.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/60_05_build.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Build instructions</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supported-platforms-and-backends">Supported platforms and backends</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#clone-the-repository">Clone the repository</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#easy-build-on-desktop-platforms-using-glfw">Easy build on desktop platforms using Glfw</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-build-select-your-preferred-backend">Custom build: select your preferred backend</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-for-windows-use-int-main-int-char">Build for Windows: use <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">main(int,</span> <span class="pre">char**)</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-instructions-for-ios">Build instructions for iOS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-instructions-for-emscripten">Build instructions for emscripten</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-the-requirements-emsdk">Install the requirements (emsdk)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build-for-emscripten">Build for emscripten</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#customizing-the-emscripten-build">Customizing the emscripten build</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-build-terminal-executables-under-macos">How to build terminal executables under macOS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-and-deploy-instructions-for-android">Build and deploy instructions for Android</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#set-android-required-environment-variables">Set Android required environment variables</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-cmake-in-order-to-create-an-android-studio-project">Run cmake in order to create an Android studio project</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-for-android">Customize for Android</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="build-instructions">
+<h1>Build instructions<a class="headerlink" href="#build-instructions" title="Permalink to this heading">#</a></h1>
+<section id="supported-platforms-and-backends">
+<h2>Supported platforms and backends<a class="headerlink" href="#supported-platforms-and-backends" title="Permalink to this heading">#</a></h2>
+<p><strong>Platforms:</strong>  Windows, Linux, OSX, iOS, Emscripten, Android (poorly supported)</p>
+<p><strong>Backends:</strong>: SDL2 + OpenGL 3 or OpenGLES3 for mobile devices, Glfw3 + OpenGL 3</p>
+</section>
+<section id="clone-the-repository">
+<h2>Clone the repository<a class="headerlink" href="#clone-the-repository" title="Permalink to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/pthom/hello_imgui.git
+<span class="nb">cd</span><span class="w"> </span>hello_imgui
+git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w"> </span>--init
+</pre></div>
+</div>
+</section>
+<section id="easy-build-on-desktop-platforms-using-glfw">
+<h2>Easy build on desktop platforms using Glfw<a class="headerlink" href="#easy-build-on-desktop-platforms-using-glfw" title="Permalink to this heading">#</a></h2>
+<p>On Desktop platforms (Linux, MacOS, Windows), if  you do not specify any backend option, HelloImGui will automatically download Glfw and link with it.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build<span class="w"> </span>
+cmake<span class="w"> </span>..
+make<span class="w"> </span>-j
+</pre></div>
+</div>
+</section>
+<section id="custom-build-select-your-preferred-backend">
+<h2>Custom build: select your preferred backend<a class="headerlink" href="#custom-build-select-your-preferred-backend" title="Permalink to this heading">#</a></h2>
+<p>In order to select your own backend, use one of the cmake options below:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>..<span class="w"> </span>-DHELLOIMGUI_USE_GLFW_OPENGL3<span class="o">=</span>ON
+cmake<span class="w"> </span>..<span class="w"> </span>-DHELLOIMGUI_USE_SDL_OPENGL3<span class="o">=</span>ON
+</pre></div>
+</div>
+</section>
+<section id="build-for-windows-use-int-main-int-char">
+<h2>Build for Windows: use <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">main(int,</span> <span class="pre">char**)</span></code><a class="headerlink" href="#build-for-windows-use-int-main-int-char" title="Permalink to this heading">#</a></h2>
+<p>Under windows, Hello ImGui will automatically provide a <a class="reference download internal" download="" href="_downloads/4af1447f07138c0eb1b6df8b09b1f41d/HelloImGui_WinMain.cpp"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">WinMain()</span></code> function</span></a> that will call main, and expects its signature to be <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">main(int,</span> <span class="pre">char**)</span></code>. You may get a linker error if your main function signature is for example <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">main()</span></code>.</p>
+<p>You can disable this via cmake by passing <code class="docutils literal notranslate"><span class="pre">-DHELLOIMGUI_WIN32_AUTO_WINMAIN=OFF</span></code> as a command line cmake option. In this case, write your own <code class="docutils literal notranslate"><span class="pre">WinMain</span></code> under windows.</p>
+<p>Warning: if using SDL, you will need to <code class="docutils literal notranslate"><span class="pre">#define</span> <span class="pre">SDL_MAIN_HANDLED</span></code> before any inclusion of SDL.h (to refrain SDL from #defining  <code class="docutils literal notranslate"><span class="pre">#define</span> <span class="pre">main</span> <span class="pre">SDL_main</span></code>)</p>
+</section>
+<section id="build-instructions-for-ios">
+<h2>Build instructions for iOS<a class="headerlink" href="#build-instructions-for-ios" title="Permalink to this heading">#</a></h2>
+<p>“SDL + OpenGL ES3” is currently the preferred backend for iOS.</p>
+<p>This project uses the <a class="reference external" href="https://github.com/leetal/ios-cmake">ios-cmake</a> toolchain which is a submodule in the folder <a class="reference external" href="https://github.com/pthom/hello_imgui/tree/master">hello_imgui_cmake/</a>.</p>
+<ol class="arabic simple">
+<li><p>Launch cmake with correct team and bundle url parts:</p></li>
+</ol>
+<p>Adapt the command below, by:</p>
+<ul class="simple">
+<li><p>adding your own development team Id after <code class="docutils literal notranslate"><span class="pre">-DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=</span></code> ,</p></li>
+<li><p>setting HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART (for example <code class="docutils literal notranslate"><span class="pre">-DHELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART=com.org_name_or_email</span></code>)</p></li>
+<li><p>setting the correct platform (-DPLATFORM): see <a class="github reference external" href="https://github.com/leetal/ios-cmake">leetal/ios-cmake</a> (-DPLATFORM=OS64COMBINED will build for iOS and its simulator).</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build_ios_sdl
+<span class="nb">cd</span><span class="w"> </span>build_ios_sdl
+cmake<span class="w"> </span>..<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-GXcode<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-DCMAKE_TOOLCHAIN_FILE<span class="o">=</span>../hello_imgui_cmake/ios-cmake/ios.toolchain.cmake<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-DHELLOIMGUI_USE_SDL_OPENGL3<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-DPLATFORM<span class="o">=</span>OS64COMBINED<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM<span class="o">=</span>...<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-DHELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART<span class="o">=</span>...<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>..
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="build-instructions-for-emscripten">
+<h2>Build instructions for emscripten<a class="headerlink" href="#build-instructions-for-emscripten" title="Permalink to this heading">#</a></h2>
+<blockquote>
+<div><p><a class="reference external" href="https://emscripten.org/">emscripten</a> is a toolchain for compiling to asm.js and WebAssembly, built using LLVM, that lets you run C and C++ on the web at near-native speed without plugins.</p>
+</div></blockquote>
+<section id="install-the-requirements-emsdk">
+<h3>Install the requirements (emsdk)<a class="headerlink" href="#install-the-requirements-emsdk" title="Permalink to this heading">#</a></h3>
+<p>You can either install emsdk following <a class="reference external" href="https://emscripten.org/docs/getting_started/downloads.html">the instruction on the emscripten website</a> or you can use the script <a class="reference download internal" download="" href="_downloads/93bb9ad2801a2d3d46877f812e5f97de/install_emscripten.sh"><span class="xref download myst">tools/emscripten/install_emscripten.sh</span></a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>../tools/emscripten/install_emscripten.sh
+</pre></div>
+</div>
+<p>This script will download and install emscripten into <code class="docutils literal notranslate"><span class="pre">~/emsdk</span></code></p>
+</section>
+<section id="build-for-emscripten">
+<h3>Build for emscripten<a class="headerlink" href="#build-for-emscripten" title="Permalink to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Add emsdk to your shell path;</p></li>
+</ol>
+<p>You need to <strong>source</strong> the script ~/emsdk/emsdk_env.sh</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>~/emsdk/emsdk_env.sh
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Run cmake, using “emcmake”:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build_emscripten
+<span class="nb">cd</span><span class="w"> </span>build_emscripten
+emcmake<span class="w"> </span>cmake<span class="w"> </span>..
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Build</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Test your emscripten application</p></li>
+</ol>
+<p>You will need a web server. Python provides a basic web server that is easy to usen which you can launch like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>build_emscripten
+python3<span class="w"> </span>-m<span class="w"> </span>http.server
+</pre></div>
+</div>
+<p>Open a browser, and navigate to <a class="reference external" href="http://localhost:8000">http://localhost:8000</a>.</p>
+<p>For example, the docking demo will be available at
+<a class="reference external" href="http://localhost:8000/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html">http://localhost:8000/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html</a></p>
+</section>
+<section id="customizing-the-emscripten-build">
+<h3>Customizing the emscripten build<a class="headerlink" href="#customizing-the-emscripten-build" title="Permalink to this heading">#</a></h3>
+<p>Refer to the <a class="reference external" href="https://emscripten.org/">emscripten docs</a></p>
+<p>By default, the application will be presented inside an empty html page.
+You can adapt this page by modyfing the “shell”: copy the file <a class="reference download internal" download="" href="_downloads/37590554e21554d5ea27aaaf90ec60f5/shell.emscripten.html"><span class="xref download myst">hello_imgui_cmake/emscripten/shell.emscripten.html</span></a>
+into your app source dir, and adapt it to your needs.</p>
+</section>
+</section>
+<section id="how-to-build-terminal-executables-under-macos">
+<h2>How to build terminal executables under macOS<a class="headerlink" href="#how-to-build-terminal-executables-under-macos" title="Permalink to this heading">#</a></h2>
+<p>If you prefer to build regular terminal executables (not app bundles), use the cmake option <code class="docutils literal notranslate"><span class="pre">-DHELLOIMGUI_MACOS_NO_BUNDLE=ON</span></code>.</p>
+</section>
+<section id="build-and-deploy-instructions-for-android">
+<h2>Build and deploy instructions for Android<a class="headerlink" href="#build-and-deploy-instructions-for-android" title="Permalink to this heading">#</a></h2>
+<p>The Android version uses SDL + OpenGLES3.</p>
+<p><em>Note: The Android version is currently not actively maintained.</em></p>
+<section id="set-android-required-environment-variables">
+<h3>Set Android required environment variables<a class="headerlink" href="#set-android-required-environment-variables" title="Permalink to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">ANDROID_HOME</span><span class="o">=</span>/path/to/AndroidSdk
+<span class="nb">export</span><span class="w"> </span><span class="nv">ANDROID_NDK_HOME</span><span class="o">=</span>/path/to/AndroidNdk
+</pre></div>
+</div>
+<p>For example (MacOS):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">ANDROID_HOME</span><span class="o">=</span>/Users/Me/Library/Android/sdk
+<span class="nb">export</span><span class="w"> </span><span class="nv">ANDROID_NDK_HOME</span><span class="o">=</span>/Users/Me//Library/Android/sdk/ndk/21.3.6528147
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">ANDROID_NDK_HOME</span></code> is unset, by default, the scripts will look for Android-ndk inside <code class="docutils literal notranslate"><span class="pre">$ANDROID_HOME/ndk-bundle</span></code>.</p>
+</section>
+<section id="run-cmake-in-order-to-create-an-android-studio-project">
+<h3>Run cmake in order to create an Android studio project<a class="headerlink" href="#run-cmake-in-order-to-create-an-android-studio-project" title="Permalink to this heading">#</a></h3>
+<p>The script <a class="reference download internal" download="" href="_downloads/075525ae8f5c89a0604448c8214a1c0f/cmake_arm-android.sh"><span class="xref download myst">tools/android/cmake_arm-android.sh</span></a>  will invoke cmake with the android toolchain, and also <em>create an Android Studio project</em> which
+is multiarch (arm64-v8a, armeabi-v7a, etc), via the option <code class="docutils literal notranslate"><span class="pre">-DHELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT=ON</span></code> (see <a class="reference download internal" download="" href="_downloads/3c54e8d2b47b68ee6a30a0def4fb7e32/_impl_cmake_android.sh"><span class="xref download myst">tools/android/_impl_cmake_android.sh</span></a>)</p>
+<p>Run the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build_android
+<span class="nb">cd</span><span class="w"> </span>build_android
+../tools/android/cmake_arm-android.sh<span class="w"> </span>..
+</pre></div>
+</div>
+<p>Your build directory will now look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>build_android/
+├── CMakeCache.txt
+├── ...
+├── hello-imgui-demo-classic_AndroidStudio/
+├── hello_imgui_demo_minimal_AndroidStudio/
+├── hello_imgui_demodocking_AndroidStudio/
+├── hello_world_AndroidStudio/
+├── ...
+</pre></div>
+</div>
+<p>The folders “xxxx_AndroidStudio” contain Android Studio projects, which you can use to build and debug your app.</p>
+<p>You can now open (for example) the project hello_imgui_demodocking_AndroidStudio with Android Studio and run it / debug it.</p>
+<p>You can also build the project manually via gradlew like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home<span class="w"> </span>
+<span class="nb">cd</span><span class="w"> </span>hello_imgui_demodocking_AndroidStudio
+./gradlew<span class="w"> </span>build
+</pre></div>
+</div>
+<p><em>Note: (you need to first set JAVA_HOME to the correct java version (Android requires exactly jdk8), the path given here is for MacOS users, where adoptopenjdk provides the correct version)</em></p>
+<p>You can also install the app via command line, like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./gradlew<span class="w"> </span>installDebug
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="customize-for-android">
+<h3>Customize for Android<a class="headerlink" href="#customize-for-android" title="Permalink to this heading">#</a></h3>
+<p>See intructions in <a class="reference external" href="https://github.com/pthom/hello_imgui_template/">Hello ImGui Template</a>.</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="10_05_api.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Full usage instructions and API</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="90_05_gallery.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Real world examples</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supported-platforms-and-backends">Supported platforms and backends</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#clone-the-repository">Clone the repository</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#easy-build-on-desktop-platforms-using-glfw">Easy build on desktop platforms using Glfw</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-build-select-your-preferred-backend">Custom build: select your preferred backend</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-for-windows-use-int-main-int-char">Build for Windows: use <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">main(int,</span> <span class="pre">char**)</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-instructions-for-ios">Build instructions for iOS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-instructions-for-emscripten">Build instructions for emscripten</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-the-requirements-emsdk">Install the requirements (emsdk)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build-for-emscripten">Build for emscripten</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#customizing-the-emscripten-build">Customizing the emscripten build</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-build-terminal-executables-under-macos">How to build terminal executables under macOS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-and-deploy-instructions-for-android">Build and deploy instructions for Android</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#set-android-required-environment-variables">Set Android required environment variables</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-cmake-in-order-to-create-an-android-studio-project">Run cmake in order to create an Android studio project</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-for-android">Customize for Android</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Pascal Thomet
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

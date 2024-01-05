@@ -2,11 +2,18 @@
 # Learn more at https://jupyterbook.org/customize/toc.html
 
 format: jb-book
-root: intro
+root: 00_00_intro
 
 parts:
-  - caption: Installation
+  - caption: Get Started
     chapters:
-      - file: markdown
-      - file: notebooks
-      - file: markdown-notebooks
+      - file: 05_05_get_started
+      - file: 05_10_demos
+  - caption: Usage
+    chapters:
+      - file: 10_02_assets
+      - file: 10_05_api
+      - file: 60_05_build
+  - caption: Examples
+    chapters:
+      - file: 90_05_gallery

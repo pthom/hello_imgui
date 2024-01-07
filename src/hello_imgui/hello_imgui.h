@@ -53,18 +53,6 @@ Three signatures are provided:
   Runs an application, using simpler params.
 
 * `HelloImGui::Run(guiFunction, windowTitle, windowSize, windowSizeAuto=false, restoreLastWindowGeometry=false, fpsIdle=10)`
-
-
-__Other utilities:__
-
-* `HelloImGui::GetRunnerParams()`:
-  a convenience function that will return the runnerParams of the current application
-
-* `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
-  May differ from ImGui::GetIO().FrameRate, since one can choose the duration for the calculation of the mean value of the fps
-
-* `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance of ImGuiTestEngine that was
-  initialized by HelloImGui (iif ImGui Test Engine is active).
 @@md
 */
     void Run(RunnerParams &runnerParams);
@@ -80,6 +68,20 @@ __Other utilities:__
         float fpsIdle = 10.f
     );
 
+
+/**
+@@md#GetRunnerParams
+
+* `HelloImGui::GetRunnerParams()`:
+  a convenience function that will return the runnerParams of the current application
+
+* `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
+  May differ from ImGui::GetIO().FrameRate, since one can choose the duration for the calculation of the mean value of the fps
+
+* `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance of ImGuiTestEngine that was
+  initialized by HelloImGui (iif ImGui Test Engine is active).
+@@md
+**/
     RunnerParams *GetRunnerParams();
 
     // Returns the current FrameRate. May differ from ImGui::GetIO().FrameRate,
@@ -93,7 +95,7 @@ __Other utilities:__
 @@md#HelloImGui::Layouts
 
  In advanced cases when several layouts are available, you can switch between layouts.
-(see demo inside [hello_imgui_demodocking.main.cpp](../hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp))
+(see demo inside [hello_imgui_demodocking.main.cpp](https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp))
 
 * `SwitchLayout(layoutName)`
   Changes the application current layout. Only used in advanced cases when several layouts are available,

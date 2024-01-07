@@ -1,0 +1,668 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Get started &#8212; Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '05_05_get_started';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="doc_api.html" />
+    <link rel="prev" title="Hello ImGui" href="00_00_intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <header>
+  
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
+  
+  </header>
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="00_00_intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo_hello_imgui.png" class="logo__image only-light" alt="Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui - Home"/>
+    <script>document.write(`<img src="_static/logo_hello_imgui.png" class="logo__image only-dark" alt="Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="00_00_intro.html">
+                    Hello ImGui
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Get started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_api.html">API</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="doc_params.html">Application parameters</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="60_05_build.html">Build instructions</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/pthom/hello_imgui" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/pthom/hello_imgui/issues/new?title=Issue%20on%20page%20%2F05_05_get_started.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/05_05_get_started.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Get started</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motto">Motto</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starter-template">Starter template</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cmake-utility-hello-imgui-add-app">CMake utility: hello_imgui_add_app</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#assets-and-app-customization">Assets and app customization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#immediate-gui-mode">Immediate GUI mode</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="get-started">
+<h1>Get started<a class="headerlink" href="#get-started" title="Permalink to this heading">#</a></h1>
+<section id="motto">
+<h2>Motto<a class="headerlink" href="#motto" title="Permalink to this heading">#</a></h2>
+<p>The minimum code to start developing a GUI app should be… minimal. Here is a multiplatform Hello World in 7 lines.</p>
+<p><em>6 lines of C++</em></p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hello_imgui/hello_imgui.h&quot;</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">Run</span><span class="p">(</span>
+<span class="w">        </span><span class="p">[]{</span><span class="w"> </span><span class="n">ImGui</span><span class="o">::</span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">);</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="c1">// Gui code</span>
+<span class="w">        </span><span class="s">&quot;Hello!&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w">                     </span><span class="c1">// Window title + Window size auto</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><em>1 line of CMake</em></p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">hello_imgui_add_app</span><span class="p">(</span><span class="s">hello_world</span><span class="w"> </span><span class="s">hello_world.cpp</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="starter-template">
+<h2>Starter template<a class="headerlink" href="#starter-template" title="Permalink to this heading">#</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><a class="reference external" href="https://github.com/pthom/hello_imgui_template">The starter template</a> will get you started in 5 minutes, and shows how to embed assets, customize the app icon (etc.), on all platforms.
+It is recommended to use it as a starting point for your own project.</p>
+</div>
+<p>With this starter template, you do not need to clone HelloImGui, as it (optionally) can be downloaded and built automatically during CMake configure time.</p>
+<p>See this extract from the CMakelists.txt file of the template:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="c"># Build hello_imgui</span>
+<span class="c"># =================</span>
+<span class="c"># 1/  Option 1: if you added hello_imgui as a subfolder, you can add it to your project with:</span>
+<span class="c">#     add_subdirectory(external/hello_imgui)</span>
+
+<span class="c"># 2/  Option 2: simply fetch hello_imgui during the build</span>
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">TARGET</span><span class="w"> </span><span class="s">hello_imgui</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">message</span><span class="p">(</span><span class="s">STATUS</span><span class="w"> </span><span class="s2">&quot;Fetching hello_imgui&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">include</span><span class="p">(</span><span class="s">FetchContent</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">FetchContent_Declare</span><span class="p">(</span><span class="s">hello_imgui</span><span class="w"> </span><span class="s">GIT_REPOSITORY</span><span class="w"> </span><span class="s">https://github.com/pthom/hello_imgui.git</span><span class="w"> </span><span class="s">GIT_TAG</span><span class="w"> </span><span class="s">master</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">FetchContent_MakeAvailable</span><span class="p">(</span><span class="s">hello_imgui</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+
+<span class="c"># Build your app</span>
+<span class="c"># ==============</span>
+<span class="nb">hello_imgui_add_app</span><span class="p">(</span><span class="s">hello_world</span><span class="w"> </span><span class="s">hello_world.main.cpp</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="cmake-utility-hello-imgui-add-app">
+<h2>CMake utility: hello_imgui_add_app<a class="headerlink" href="#cmake-utility-hello-imgui-add-app" title="Permalink to this heading">#</a></h2>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="c"># hello_imgui_add_app is a helper function, similar to cmake&#39;s &quot;add_executable&quot;</span>
+<span class="c">#</span>
+<span class="c"># Usage:</span>
+<span class="c">#     hello_imgui_add_app(app_name file1.cpp file2.cpp ...)</span>
+<span class="c"># Or:</span>
+<span class="c">#     hello_imgui_add_app(app_name file1.cpp file2.cpp ... ASSETS_LOCATION &quot;path/to/assets&quot;)</span>
+<span class="c"># (By default, ASSETS_LOCATION is &quot;assets&quot;, which means that the assets will be searched in the &quot;assets&quot; folder,</span>
+<span class="c"># relative to the location of the CMakeLists.txt file)</span>
+<span class="c">#</span>
+<span class="c"># Features:</span>
+<span class="c">#     * It will automatically link the target to the required libraries (hello_imgui, OpenGl, glad, etc)</span>
+<span class="c">#     * It will embed the assets (for desktop, mobile, and emscripten apps)</span>
+<span class="c">#     * It will perform additional customization (app icon and name on mobile platforms, etc)</span>
+<span class="c">#</span>
+</pre></div>
+</div>
+</section>
+<section id="assets-and-app-customization">
+<h2>Assets and app customization<a class="headerlink" href="#assets-and-app-customization" title="Permalink to this heading">#</a></h2>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span> 
+
+Anything in the assets/ folder located beside the app&#39;s CMakeLists will be bundled 
+together with the app (for macOS, iOS, Android, Emscripten).
+The files in assets/app_settings/ will be used to generate the app icon, 
+and the app settings.
+
+<span class="sb">```</span>
+<span class="sb">assets/</span>
+<span class="sb">├── world.jpg                   # A custom asset. Any file or folder here will be deployed </span>
+<span class="sb">│                               # with the app.</span>
+<span class="sb">├── fonts/</span>
+<span class="sb">│    ├── DroidSans.ttf           # Default fonts used by HelloImGui</span>
+<span class="sb">│    └── fontawesome-webfont.ttf # (if not found, the default ImGui font will be used)</span>
+<span class="sb">│               </span>
+<span class="sb">├── app_settings/               # Application settings</span>
+<span class="sb">│    ├── icon.png               # This will be the app icon, it should be square</span>
+<span class="sb">│    │                          # and at least 256x256. It will  be converted</span>
+<span class="sb">│    │                          # to the right format, for each platform (except Android)</span>
+<span class="sb">│    ├── apple/</span>
+<span class="sb">│    │    │── Info.plist         # macOS and iOS app settings</span>
+<span class="sb">│    │    │                      # (or Info.ios.plist + Info.macos.plist)</span>
+<span class="sb">│    │    └── Resources/</span>
+<span class="sb">│    │      └── ios/             # iOS specific settings: storyboard</span>
+<span class="sb">│    │        └── LaunchScreen.storyboard</span>
+<span class="sb">│    │</span>
+<span class="sb">│    ├── android/                # Android app settings: any file placed here will be deployed </span>
+<span class="sb">│    │   │── AndroidManifest.xml # (Optional manifest, HelloImGui will generate one if missing)</span>
+<span class="sb">│    │   └── res/                </span>
+<span class="sb">│    │       └── mipmap-xxxhdpi/ # Optional icons for different resolutions</span>
+<span class="sb">│    │           └── ...         # Use Android Studio to generate them: </span>
+<span class="sb">│    │                           # right click on res/ =&gt; New &gt; Image Asset</span>
+<span class="sb">│    └── emscripten/</span>
+<span class="sb">│      ├── shell.emscripten.html # Emscripten shell file</span>
+<span class="sb">│      │                         #   (this file will be cmake &quot;configured&quot;</span>
+<span class="sb">│      │                         #    to add the name and favicon) </span>
+<span class="sb">│      └── custom.js             # Any custom file here will be deployed</span>
+<span class="sb">│                                #   in the emscripten build folder</span>
+<span class="sb">```</span>
+</pre></div>
+</div>
+</section>
+<section id="immediate-gui-mode">
+<h2>Immediate GUI mode<a class="headerlink" href="#immediate-gui-mode" title="Permalink to this heading">#</a></h2>
+<p>Hello ImGui is based on <a class="reference external" href="https://github.com/ocornut/imgui">Dear ImGui</a>, which is a library for immediate mode GUI programming.</p>
+<p>With an Immediate mode GUI you can for example display a button and handle the click event in one line of code:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hello_imgui/hello_imgui.h&quot;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">guiFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ImGui</span><span class="o">::</span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Hello, &quot;</span><span class="p">);</span><span class="w">                    </span><span class="c1">// Display a simple label</span>
+<span class="w">        </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">ImageFromAsset</span><span class="p">(</span><span class="s">&quot;world.png&quot;</span><span class="p">);</span><span class="w">   </span><span class="c1">// Display a static image</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ImGui</span><span class="o">::</span><span class="n">Button</span><span class="p">(</span><span class="s">&quot;Bye!&quot;</span><span class="p">))</span><span class="w">                 </span><span class="c1">// Display a button</span>
+<span class="w">            </span><span class="c1">// and immediately handle its action if it is clicked!</span>
+<span class="w">            </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">GetRunnerParams</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">appShallExit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">     </span><span class="p">};</span>
+<span class="w">    </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">Run</span><span class="p">(</span><span class="n">guiFunction</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hello, globe&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html">ImGui Manual</a> is a great resource to learn interactively about all the widgets provided by Dear ImGui.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="00_00_intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Hello ImGui</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="doc_api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motto">Motto</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starter-template">Starter template</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cmake-utility-hello-imgui-add-app">CMake utility: hello_imgui_add_app</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#assets-and-app-customization">Assets and app customization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#immediate-gui-mode">Immediate GUI mode</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Pascal Thomet
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

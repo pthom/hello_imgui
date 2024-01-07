@@ -95,54 +95,61 @@ function(_him_add_freetype_to_imgui)
     #
     # 1. Build or find freetype (if downloaded, make sure it is static)
     #
-    set(download_freetype OFF)
-    if (HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
-        find_package(Freetype 2.12 QUIET)
-        if (NOT Freetype_FOUND)
+    if(TARGET freetype)
+        message(STATUS "HelloImGui: using freetype target")
+        set(freetype_linked_library freetype)
+    else()
+        set(download_freetype OFF)
+        if (HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
+            find_package(Freetype 2.12 QUIET)
+            if (NOT Freetype_FOUND)
+                set(download_freetype ON)
+            endif()
+        endif()
+        if(HELLOIMGUI_FREETYPE_STATIC)
             set(download_freetype ON)
         endif()
-    endif()
-    if(HELLOIMGUI_FREETYPE_STATIC)
-        set(download_freetype ON)
-    endif()
 
-    if (download_freetype)
-        message(STATUS "HelloImGui: downloading and building freetype")
+        if (download_freetype)
+            message(STATUS "HelloImGui: downloading and building freetype")
 
-        set(backup_shared_lib ${BUILD_SHARED_LIBS})
-        set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+            set(backup_shared_lib ${BUILD_SHARED_LIBS})
+            set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
-        include(FetchContent)
-        if(IOS)
-            set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
-            set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
+            include(FetchContent)
+            if(IOS)
+                set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
+                set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
+            endif()
+            FetchContent_Declare(
+                freetype
+                GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git
+                GIT_TAG        VER-2-13-2
+                GIT_PROGRESS TRUE
+            )
+            FetchContent_MakeAvailable(freetype)
+            set(freetype_linked_library freetype)
+
+            set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
+        else()
+            find_package(Freetype 2.12 QUIET)
+            if(NOT Freetype_FOUND AND NOT HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
+                message(STATUS "
+                    HelloImGui: freetype not found. You may set
+                        -DHELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED=ON
+                    to download and build freetype automatically
+                ")
+            endif()
+            find_package(Freetype 2.12 REQUIRED)
+            set(freetype_linked_library Freetype::Freetype)
         endif()
-        FetchContent_Declare(
-            freetype
-            GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git
-            GIT_TAG        VER-2-13-2
-            GIT_PROGRESS TRUE
-        )
-        FetchContent_MakeAvailable(freetype)
-        set(freetype_linked_library freetype)
-
-        set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
-    else()
-        find_package(Freetype 2.12 QUIET)
-        if(NOT Freetype_FOUND AND NOT HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
-            message(STATUS "
-                HelloImGui: freetype not found. You may set
-                    -DHELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED=ON
-                to download and build freetype automatically
-            ")
-        endif()
-        find_package(Freetype 2.12 REQUIRED)
-        set(freetype_linked_library Freetype::Freetype)
     endif()
 
     target_link_libraries(imgui PUBLIC ${freetype_linked_library})
 
-    if(download_freetype)
+    if(TARGET freetype)
+        set(HELLOIMGUI_FREETYPE_SELECTED_INFO "Use target freetype" CACHE INTERNAL "" FORCE)
+    elseif(download_freetype)
         set(HELLOIMGUI_FREETYPE_SELECTED_INFO "Downloaded VER-2-13-2" CACHE INTERNAL "" FORCE)
     else()
         set(HELLOIMGUI_FREETYPE_SELECTED_INFO "Use system Library" CACHE INTERNAL "" FORCE)
@@ -152,17 +159,19 @@ function(_him_add_freetype_to_imgui)
     # 2. Build lunasvg (static)
     #
     # Fetch and build lunasvg
-    set(backup_shared_lib ${BUILD_SHARED_LIBS})
-    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-    include(FetchContent)
-    FetchContent_Declare(lunasvg
-        GIT_REPOSITORY https://github.com/sammycage/lunasvg
-        GIT_TAG        v2.3.9
-        GIT_PROGRESS TRUE
-    )
-    FetchContent_MakeAvailable(lunasvg)
+    if(NOT TARGET lunasvg)
+        set(backup_shared_lib ${BUILD_SHARED_LIBS})
+        set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+        include(FetchContent)
+        FetchContent_Declare(lunasvg
+            GIT_REPOSITORY https://github.com/sammycage/lunasvg
+            GIT_TAG        v2.3.9
+            GIT_PROGRESS TRUE
+        )
+        FetchContent_MakeAvailable(lunasvg)
+        set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
+    endif()
     target_link_libraries(imgui PUBLIC lunasvg)
-    set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
 
     #
     # 3. Add freetype and LunaSvg support to imgui

@@ -5,7 +5,7 @@ function(hello_imgui_apple_bundle_add_files_from_folder app_name assets_folder l
     foreach(asset ${assets})
         file(RELATIVE_PATH asset_relative ${assets_folder} ${asset})
         get_filename_component(asset_dir ${asset_relative} DIRECTORY)
-        set_source_files_properties (
+        set_source_files_properties(
             ${asset}
             PROPERTIES
             MACOSX_PACKAGE_LOCATION ${location_in_bundle}/${asset_dir}

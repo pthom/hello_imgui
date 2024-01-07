@@ -185,7 +185,7 @@ namespace HelloImGui
         {
             AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());
             font = ImGui_SensibleFont::AddFontFromMemoryTTF_2_KeepOwnership(
-                fontData.data, fontData.dataSize, fontSize, &params.fontConfig, glyphRangesImVector);
+                fontData.data, (int)fontData.dataSize, fontSize, &params.fontConfig, glyphRangesImVector);
             FreeAssetFileData(&fontData);
         }
         else

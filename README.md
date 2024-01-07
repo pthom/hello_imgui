@@ -60,7 +60,7 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 
 The docking demo show how to handle complex layouts, use themes, store user settings, reduce FPS and CPU usage when idling, load fonts and icons, and much more
 
-![](images/docking.jpg)
+![](https://github.com/pthom/hello_imgui/blob/book/docs_src/images/docking.jpg?raw=true)
 
 [Online demo](https://traineq.org/ImGuiBundle/emscripten/bin/demo_docking.html) - [Source](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp) - Video tutorial: [how to handle multiple complex layouts](https://www.youtube.com/watch?v=XKxmz__F4ow)
 
@@ -68,7 +68,7 @@ The docking demo show how to handle complex layouts, use themes, store user sett
 
 How to use a custom 3D background in your app
 
-![](images/custom_background.jpg)
+![](https://github.com/pthom/hello_imgui/blob/book/docs_src/images/custom_background.jpg?raw=true≥)
 
 [Online demo](https://traineq.org/ImGuiBundle/emscripten/bin/demo_custom_background.html) - [Source](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_custom_background/hello_custom_background.main.cpp)
 
@@ -77,7 +77,7 @@ How to use a custom 3D background in your app
 
 [ImGui Manual](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html) is an interactive Manual for Dear ImGui, built with Hello ImGui.
 
-[![](images/manual.jpg)](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html)
+[![](https://github.com/pthom/hello_imgui/blob/book/docs_src/images/manual.jpg?raw=true)](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html)
 
 [Online manual](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html) -
 [Source](https://github.com/pthom/imgui_manual)
@@ -98,10 +98,7 @@ How to use a custom 3D background in your app
 
 [Dear ImGui Bundle](https://pthom.github.io/imgui_bundle/), a full-fledged library, built on top of Hello ImGui, provides lots of additional widgets ([imgui](https://github.com/ocornut/imgui.git), [implot](https://github.com/epezent/implot), [imgui-node-editor](https://github.com/thedmd/imgui-node-editor), [ImFileDialog](https://github.com/pthom/ImFileDialog.git), [ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit), [imgui_md](https://github.com/mekhontsev/imgui_md.git)), as well as complete python bindings.
 
-```{image} https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png
----
-width: 200px
-```
+<img src="https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png" width=200>
 
 [online interactive demo](https://traineq.org/ImGuiBundle/emscripten/bin/demo_imgui_bundle.html) - [Source for C++ demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_cpp) - [Source for Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_python)
 

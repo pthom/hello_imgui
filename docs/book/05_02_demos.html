@@ -7,7 +7,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Search - Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Demos &#8212; Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
   
   
   
@@ -61,12 +63,11 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'search';</script>
-  <script src="_static/searchtools.js"></script>
-  <script src="_static/language_data.js"></script>
-  <script src="searchindex.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '05_02_demos';</script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Get started" href="05_05_starter_template.html" />
+    <link rel="prev" title="Hello ImGui" href="00_00_intro.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -103,7 +104,7 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
-      action="#"
+      action="search.html"
       method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
   <input type="search"
@@ -177,8 +178,8 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="05_02_demos.html">Demos</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Demos</a></li>
 <li class="toctree-l1"><a class="reference internal" href="05_05_starter_template.html">Get started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="05_10_motto.html">Motto</a></li>
 </ul>
@@ -263,7 +264,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/pthom/hello_imgui/issues/new?title=Issue%20on%20page%20%2Fsearch.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/pthom/hello_imgui/issues/new?title=Issue%20on%20page%20%2F05_02_demos.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -275,6 +276,54 @@ const thebe_selector_output = ".output, .cell_output"
   </span>
 <span class="btn__text-container">Open issue</span>
 </a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/05_02_demos.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
 </li>
       
   </ul>
@@ -316,7 +365,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -325,42 +376,75 @@ document.write(`
 </div>
               
               
-  <div class="bd-search-container">
-    <h1>Search</h1>
-    <noscript>
-      <div class="admonition error">
-        <p class="admonition-title">Error</p>
-        <p>Please activate JavaScript to enable the search functionality.</p>
-      </div>
-    </noscript>
-    
-<form class="bd-search d-flex align-items-center"
-      action="#"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         id="search-input"
-         placeholder="Search this book..."
-         aria-label="Search this book..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    <div id="search-results"></div>
-  </div>
-  <script>
-    // Activate the search field on page load
-    let searchInput = document.querySelector("form.bd-search input");
-    if (searchInput) {
-        searchInput.focus();
-        searchInput.select();
-        console.log("[PST]: Set focus on search field.");
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Demos</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-demo-advanced-layout-fps-theme-etc">Complete demo - advanced layout, FPS, theme, etc:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-custom-background">Demo - custom background</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="demos">
+<h1>Demos<a class="headerlink" href="#demos" title="Permalink to this heading">#</a></h1>
+<section id="complete-demo-advanced-layout-fps-theme-etc">
+<h2>Complete demo - advanced layout, FPS, theme, etc:<a class="headerlink" href="#complete-demo-advanced-layout-fps-theme-etc" title="Permalink to this heading">#</a></h2>
+<p>The C++ demo file <a class="reference download internal" download="" href="_downloads/bdd5e1729ff1f688d6894e6b56ba4f2e/hello_imgui_demodocking.main.cpp"><span class="xref download myst">hello_imgui_demodocking.main.cpp</span></a> demonstrates:</p>
+<ul class="simple">
+<li><p>How to handle complex layouts: you can define several layouts and switch between them:  each layout which will remember the user modifications and the list of opened windows</p></li>
+<li><p>How to use theming</p></li>
+<li><p>How to store you own user settings in the app ini file</p></li>
+<li><p>How to add a status bar and a log window</p></li>
+<li><p>How to set an adaptative FPS for your application (to reduce CPU usage)</p></li>
+</ul>
+<p>You can try this demo online via an <a class="reference external" href="https://traineq.org/HelloImGui/bin/hello_imgui_demodocking.html">emscripten web demo</a>. It is also available <a class="reference external" href="https://github.com/pthom/imgui_bundle/blob/main/bindings/imgui_bundle/demos_python/demos_immapp/demo_docking.py">in python</a>, inside <a class="reference external" href="https://github.com/pthom/imgui_bundle">Dear ImGui Bundle</a></p>
+<p>Also, see this video that give more explanations on <a class="reference external" href="https://www.youtube.com/watch?v=XKxmz__F4ow">how to handle multiple complex layouts</a></p>
+</section>
+<section id="demo-custom-background">
+<h2>Demo - custom background<a class="headerlink" href="#demo-custom-background" title="Permalink to this heading">#</a></h2>
+<a class="reference internal image-reference" href="_images/custom_background.jpg"><img alt="_images/custom_background.jpg" class="align-left" src="_images/custom_background.jpg" style="width: 200px;" /></a>
+<p>The C++ demo file <a class="reference download internal" download="" href="_downloads/2c8e10076bb4b2e6d68868f871083b4c/hello_custom_background.main.cpp"><span class="xref download myst">hello_custom_background.main.cpp</span></a> demonstrates how to use a custom 3D background.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
     }
-  </script>
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
 
               
               
@@ -369,6 +453,24 @@ document.write(`
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="00_00_intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Hello ImGui</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="05_05_starter_template.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Get started</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -376,7 +478,21 @@ document.write(`
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"></div>
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-demo-advanced-layout-fps-theme-etc">Complete demo - advanced layout, FPS, theme, etc:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-custom-background">Demo - custom background</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

@@ -7,8 +7,9 @@ root: 00_00_intro
 parts:
   - caption: Get Started
     chapters:
-      - file: 05_05_get_started
-      - file: 05_10_demos
+      - file: 05_02_demos
+      - file: 05_05_starter_template
+      - file: 05_10_motto
   - caption: Usage
     chapters:
       - file: 10_02_assets

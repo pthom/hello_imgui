@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Get started in 5 minutes &#8212; Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
+    <title>Get started &#8212; Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
   
   
   
@@ -63,11 +63,11 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '05_05_get_started';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '05_05_starter_template';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Demos" href="05_10_demos.html" />
-    <link rel="prev" title="Hello ImGui" href="00_00_intro.html" />
+    <link rel="next" title="Motto" href="05_10_motto.html" />
+    <link rel="prev" title="Demos" href="05_02_demos.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -179,8 +179,9 @@ const thebe_selector_output = ".output, .cell_output"
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Get started in 5 minutes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_10_demos.html">Demos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_02_demos.html">Demos</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Get started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_10_motto.html">Motto</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Usage</span></p>
 <ul class="nav bd-sidenav">
@@ -263,7 +264,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/pthom/hello_imgui/issues/new?title=Issue%20on%20page%20%2F05_05_get_started.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/pthom/hello_imgui/issues/new?title=Issue%20on%20page%20%2F05_05_starter_template.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -293,7 +294,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="_sources/05_05_get_started.md" target="_blank"
+      <li><a href="_sources/05_05_starter_template.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -377,7 +378,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Get started in 5 minutes</h1>
+    <h1>Get started</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -387,13 +388,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hello-world">Hello, world!</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starter-template">Starter template</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#handle-events-and-include-assets">Handle events and include assets:</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#include-assets">include assets</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handle-events">handle events</a></li>
-</ul>
-</li>
 </ul>
             </nav>
         </div>
@@ -405,42 +400,11 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="get-started-in-5-minutes">
-<h1>Get started in 5 minutes<a class="headerlink" href="#get-started-in-5-minutes" title="Permalink to this heading">#</a></h1>
-<section id="hello-world">
-<h2>Hello, world!<a class="headerlink" href="#hello-world" title="Permalink to this heading">#</a></h2>
-<p>Hello World in 7 lines of C++ / CMake:</p>
-<p><a class="reference external" href="https://traineq.org/HelloImGui/bin/hello_world.html">Online demo</a></p>
-<p>Save this as <code class="docutils literal notranslate"><span class="pre">hello_world.main.cpp</span></code></p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hello_imgui/hello_imgui.h&quot;</span>
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">Run</span><span class="p">(</span>
-<span class="w">        </span><span class="p">[]{</span><span class="w"> </span><span class="n">ImGui</span><span class="o">::</span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">);</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="c1">// Gui code</span>
-<span class="w">        </span><span class="s">&quot;Hello!&quot;</span><span class="p">,</span><span class="w">                            </span><span class="c1">// Window title</span>
-<span class="w">        </span><span class="nb">true</span><span class="p">);</span><span class="w">                               </span><span class="c1">// Window size auto</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>Save this as <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code></p>
-<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">3.12</span><span class="p">)</span>
-<span class="nb">project</span><span class="p">(</span><span class="s">helloworld_with_helloimgui</span><span class="p">)</span>
-<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_CXX_STANDARD</span><span class="w"> </span><span class="s">17</span><span class="p">)</span>
-<span class="c"># Fetch hello_imgui during the build</span>
-<span class="nb">include</span><span class="p">(</span><span class="s">FetchContent</span><span class="p">)</span>
-<span class="nb">FetchContent_Declare</span><span class="p">(</span><span class="s">hello_imgui</span><span class="w"> </span><span class="s">GIT_REPOSITORY</span><span class="w"> </span><span class="s">https://github.com/pthom/hello_imgui.git</span><span class="w"> </span><span class="s">GIT_TAG</span><span class="w"> </span><span class="s">master</span><span class="p">)</span>
-<span class="nb">FetchContent_MakeAvailable</span><span class="p">(</span><span class="s">hello_imgui</span><span class="p">)</span>
-<span class="c"># Build your app</span>
-<span class="nb">hello_imgui_add_app</span><span class="p">(</span><span class="s">hello_world</span><span class="w"> </span><span class="s">hello_world.main.cpp</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Now, build and run with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build</span>
-mkdir<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cmake<span class="w"> </span>..<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cmake<span class="w"> </span>--build<span class="w"> </span>.<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span>
-<span class="c1"># Run the build hello_world app</span>
-./hello_world
-</pre></div>
-</div>
-<p>That’s it!</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="get-started">
+<h1>Get started<a class="headerlink" href="#get-started" title="Permalink to this heading">#</a></h1>
+<section id="starter-template">
+<h2>Starter template<a class="headerlink" href="#starter-template" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://github.com/pthom/hello_imgui_template">The starter template</a> will get you started in 5 minutes, and shows how to embed assets, customize the app icon (etc.), on all platforms.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="reference download internal" download="" href="_downloads/4efbb18d02f3bfc369489750b81f043d/hello_imgui_add_app.cmake"><span class="xref download myst">hello_imgui_add_app</span></a> is a CMake helper function, similar to cmake’s “add_executable” which will:</p>
@@ -451,47 +415,6 @@ mkdir<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&
 </ul>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">hello_imgui_add_app(app_name</span> <span class="pre">file1.cpp</span> <span class="pre">file2.cpp</span> <span class="pre">...)</span></code></p>
 </div>
-</section>
-<section id="starter-template">
-<h2>Starter template<a class="headerlink" href="#starter-template" title="Permalink to this heading">#</a></h2>
-<p><a class="reference external" href="https://github.com/pthom/hello_imgui_template">The starter template</a> will get you started in 5 minutes, and shows how to embed assets, customize the app icon (etc.), on all platforms.</p>
-</section>
-<section id="handle-events-and-include-assets">
-<h2>Handle events and include assets:<a class="headerlink" href="#handle-events-and-include-assets" title="Permalink to this heading">#</a></h2>
-<img src="../images/hello_globe.jpg" width="150">
-<section id="include-assets">
-<h3>include assets<a class="headerlink" href="#include-assets" title="Permalink to this heading">#</a></h3>
-<p>Anything in the assets/ folder located beside the app’s CMakeLists will be embedded in the app:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>└── hello_globe.main.cpp
-├── CMakeLists.txt
-├── assets/
-│    └── world.png
-</pre></div>
-</div>
-<p>(even on iOS and emscripten).</p>
-</section>
-<section id="handle-events">
-<h3>handle events<a class="headerlink" href="#handle-events" title="Permalink to this heading">#</a></h3>
-<p>Dear ImGui uses the Immediate Gui paradigm: each button, each widget returns true if the user interacted with it.</p>
-<blockquote>
-<div><p>hello_globe.main.cpp</p>
-</div></blockquote>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hello_imgui/hello_imgui.h&quot;</span>
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">[])</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">guiFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">ImGui</span><span class="o">::</span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Hello, &quot;</span><span class="p">);</span><span class="w">                    </span><span class="c1">// Display a simple label</span>
-<span class="w">        </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">ImageFromAsset</span><span class="p">(</span><span class="s">&quot;world.png&quot;</span><span class="p">);</span><span class="w">   </span><span class="c1">// Display a static image</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ImGui</span><span class="o">::</span><span class="n">Button</span><span class="p">(</span><span class="s">&quot;Bye!&quot;</span><span class="p">))</span><span class="w">                 </span><span class="c1">// Display a button</span>
-<span class="w">            </span><span class="c1">// and immediately handle its action if it is clicked!</span>
-<span class="w">            </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">GetRunnerParams</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">appShallExit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
-<span class="w">     </span><span class="p">};</span>
-<span class="w">    </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">Run</span><span class="p">(</span><span class="n">guiFunction</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hello, globe&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</section>
 </section>
 </section>
 
@@ -526,20 +449,20 @@ mkdir<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="00_00_intro.html"
+       href="05_02_demos.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Hello ImGui</p>
+        <p class="prev-next-title">Demos</p>
       </div>
     </a>
     <a class="right-next"
-       href="05_10_demos.html"
+       href="05_10_motto.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Demos</p>
+        <p class="prev-next-title">Motto</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -559,13 +482,7 @@ mkdir<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hello-world">Hello, world!</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starter-template">Starter template</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#handle-events-and-include-assets">Handle events and include assets:</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#include-assets">include assets</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handle-events">handle events</a></li>
-</ul>
-</li>
 </ul>
   </nav></div>
 

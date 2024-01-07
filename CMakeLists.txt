@@ -23,15 +23,21 @@ include(${CMAKE_CURRENT_LIST_DIR}/hello_imgui_cmake/utils/cache_hello_imgui_path
 ###############################################################################
 # hello_imgui_add_app
 ###############################################################################
+#
 # hello_imgui_add_app is a helper function, similar to cmake's "add_executable"
+#
 # Usage:
-# hello_imgui_add_app(app_name file1.cpp file2.cpp ...)
+#     hello_imgui_add_app(app_name file1.cpp file2.cpp ...)
+# Or:
+#     hello_imgui_add_app(app_name file1.cpp file2.cpp ... ASSETS_LOCATION "path/to/assets")
+# (By default, ASSETS_LOCATION is "assets", which means that the assets will be searched in the "assets" folder,
+# relative to the location of the CMakeLists.txt file)
 #
 # Features:
 #     * It will automatically link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
 #     * It will embed the assets (for desktop, mobile, and emscripten apps)
 #     * It will perform additional customization (app icon and name on mobile platforms, etc)
-# Make cmake function `hello_imgui_add_app` available
+#
 include(hello_imgui_add_app)
 
 # HELLOIMGUI_ADD_APP_WITH_INSTALL: if ON, hello_imgui_add_app will add install() instructions for the app.
@@ -257,7 +263,7 @@ endif()
 if (HELLOIMGUI_BUILD_DOCS)
     add_custom_target(hello_imgui_build_doc ALL
         ${PROJECT_SOURCE_DIR}/tools/doc/process_md_docs.py
-        COMMENT "Generating md doc files"
+        COMMENT "Generating doc"
     )
 endif()
 

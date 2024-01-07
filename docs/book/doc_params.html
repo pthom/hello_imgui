@@ -1,0 +1,1175 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Application parameters &#8212; Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'doc_params';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Build instructions" href="60_05_build.html" />
+    <link rel="prev" title="API" href="doc_api.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <header>
+  
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
+  
+  </header>
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="00_00_intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo_hello_imgui.png" class="logo__image only-light" alt="Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui - Home"/>
+    <script>document.write(`<img src="_static/logo_hello_imgui.png" class="logo__image only-dark" alt="Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="00_00_intro.html">
+                    Hello ImGui
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05_05_get_started.html">Get started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_api.html">API</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Application parameters</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="60_05_build.html">Build instructions</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/pthom/hello_imgui" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/pthom/hello_imgui/issues/new?title=Issue%20on%20page%20%2Fdoc_params.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/doc_params.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Application parameters</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Application parameters</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#runnerparams">RunnerParams</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-runner-params">Simple runner params</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-params">Full params</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#fps-idling">Fps Idling</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#runner-callbacks">Runner callbacks</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mobilecallbacks">MobileCallbacks</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#application-window-params">Application window params</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#appwindowparams">AppWindowParams</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#windowgeometry">WindowGeometry</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#imgui-window-params">ImGui window params</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imguiwindowparams">ImGuiWindowParams</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#default-window-types">Default window types</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#docking">Docking</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docking-params-example-usage">Docking Params: Example usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docking-splits">Docking Splits</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dockable-window">Dockable window</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docking-params">Docking Params</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#backend-pointers">Backend Pointers</a></li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="application-parameters">
+<h1>Application parameters<a class="headerlink" href="#application-parameters" title="Permalink to this heading">#</a></h1>
+<p><em>RunnerParams</em> contains all the settings and callbacks in order to run an application.
+The diagram below summarize all the possible settings and callbacks (which are explained in detail later in this document).</p>
+<p><a class="reference external" href="https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png"><img alt="diagram" src="https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png" /></a></p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="runnerparams">
+<h1>RunnerParams<a class="headerlink" href="#runnerparams" title="Permalink to this heading">#</a></h1>
+<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h">runner_params.h</a>.</p>
+<section id="simple-runner-params">
+<h2>Simple runner params<a class="headerlink" href="#simple-runner-params" title="Permalink to this heading">#</a></h2>
+<p><strong>SimpleRunnerParams</strong> is a struct that contains simpler params adapted for simple use cases.</p>
+<p>Members:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">guiFunction</span></code>: <em>VoidFunction</em>.
+Function that renders the Gui.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowTitle</span></code>: <em>string, default=””</em>.
+Title of the application window</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowSizeAuto</span></code>: <em>bool, default=false</em>.
+If true, the size of the window will be computed from its widgets.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowRestorePreviousGeometry</span></code>: <em>bool, default=true</em>.
+If true, restore the size and position of the window between runs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowSize</span></code>: <em>ScreenSize, default={800, 600}</em>.
+Size of the window</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fpsIdle</span></code>: <em>float, default=9</em>.
+FPS of the application when idle (set to 0 for full speed).</p></li>
+</ul>
+<p>For example, this is sufficient to run an application:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">MyGui</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">ImGui</span><span class="o">::</span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Hello, world&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ImGui</span><span class="o">::</span><span class="n">Button</span><span class="p">(</span><span class="s">&quot;Exit&quot;</span><span class="p">))</span>
+<span class="w">        </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">GetRunnerParams</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">appShallExit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(){</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">SimpleRunnerParams</span><span class="w"> </span><span class="p">{.</span><span class="n">guiFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyGui</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">windowSizeAuto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">windowTitle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Example&quot;</span><span class="p">};</span>
+<span class="w">    </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">Run</span><span class="p">(</span><span class="n">params</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="full-params">
+<h2>Full params<a class="headerlink" href="#full-params" title="Permalink to this heading">#</a></h2>
+<p><strong>RunnerParams</strong> is a struct that contains all the settings and callbacks needed to run an application.</p>
+<p>Members:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">callbacks</span></code>: <em>see runner_callbacks.h</em>
+callbacks.ShowGui() will render the gui, ShowMenus() will show the menus, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">appWindowParams</span></code>: <em>see app_window_params.h</em>
+application Window Params (position, size, title)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imGuiWindowParams</span></code>: <em>see imgui_window_params.h</em>
+imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dockingParams</span></code>: <em>see docking_params.h</em>
+dockable windows content and layout</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">alternativeDockingLayouts</span></code>: <em>vector<DockingParams>, default=empty</em>
+List of possible additional layout for the applications. Only used in advanced cases when several layouts are available.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rememberSelectedAlternativeLayout</span></code>: <em>bool, default=true</em>
+Shall the application remember the last selected layout. Only used in advanced cases when several layouts are available.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">backendPointers</span></code>: <em>see backend_pointers.h</em>
+A struct that contains optional pointers to the backend implementations. These pointers will be filled
+when the application starts</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">backendType</span></code>: <em>enum BackendType, default=BackendType::FirstAvailable</em>
+Select the wanted platform backend type between <code class="docutils literal notranslate"><span class="pre">Sdl</span></code>, <code class="docutils literal notranslate"><span class="pre">Glfw</span></code>. Only useful when multiple backend are compiled
+and available.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fpsIdling</span></code>: <em>FpsIdling</em>. Idling parameters (set fpsIdling.enableIdling to false to disable Idling)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">useImGuiTestEngine</span></code>: <em>bool, default=false</em>.
+Set this to true if you intend to use imgui_test_engine (please read note below)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iniFolderType</span></code>: <em>IniFolderType, default = IniFolderType::CurrentFolder</em>
+Sets the folder where imgui will save its params.
+(possible values are: CurrentFolder, AppUserConfigFolder, DocumentsFolder, HomeFolder, TempFolder, AppExecutableFolder)
+AppUserConfigFolder is [Home]/AppData/Roaming under Windows, ~/.config under Linux, ~/Library/Application Support”
+under macOS)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iniFilename</span></code>: <em>string, default = “”</em>
+Sets the ini filename under which imgui will save its params. Its path is relative to the path given by iniFolderType,
+and can include a subfolder (which will be created if needed).
+If iniFilename empty, then it will be derived from appWindowParams.windowTitle (if both are empty, the ini filename will be imgui.ini).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iniFilename_useAppWindowTitle</span></code>: <em>bool, default = true</em>.
+Shall the iniFilename be derived from appWindowParams.windowTitle (if not empty)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">appShallExit</span></code>: <em>bool, default=false</em>.
+During execution, set this to true to exit the app.
+<em>Note: ‘appShallExit’ has no effect on Mobile Devices (iOS, Android) and under emscripten, since these apps
+shall not exit.</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">emscripten_fps</span></code>: <em>int, default = 0</em>.
+Set the application refresh rate (only used on emscripten: 0 stands for “let the app or the browser decide”)</p></li>
+</ul>
+<p>Notes about the use of <a class="reference external" href="https://github.com/ocornut/imgui_test_engine">Dear ImGui Test &amp; Automation Engine</a>:</p>
+<ul class="simple">
+<li><p>HelloImGui must be compiled with the option HELLOIMGUI_WITH_TEST_ENGINE (-DHELLOIMGUI_WITH_TEST_ENGINE=ON)</p></li>
+<li><p>See demo in src/hello_imgui_demos/hello_imgui_demo_test_engine.</p></li>
+<li><p>imgui_test_engine is subject to a <a class="reference external" href="https://github.com/ocornut/imgui_test_engine/blob/main/imgui_test_engine/LICENSE.txt">specific license</a>
+(TL;DR: free for individuals, educational, open-source and small businesses uses. Paid for larger businesses.)</p></li>
+</ul>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="fps-idling">
+<h1>Fps Idling<a class="headerlink" href="#fps-idling" title="Permalink to this heading">#</a></h1>
+<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h">runner_params.h</a>.</p>
+<p><strong>FpsIdling</strong> is a struct that contains Fps Idling parameters</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fpsIdle</span></code>: <em>float, default=9</em>.
+ImGui applications can consume a lot of CPU, since they update the screen very frequently.
+In order to reduce the CPU usage, the FPS is reduced when no user interaction is detected.
+This is ok most of the time but if you are displaying animated widgets (for example a live video),
+you may want to ask for a faster refresh: either increase fpsIdle, or set it to 0 for maximum refresh speed
+(you can change this value during the execution depending on your application refresh needs)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">enableIdling</span></code>: <em>bool, default=true</em>.
+Set this to false to disable idling (this can be changed dynamically during execution)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">isIdling</span></code>: bool (dynamically updated during execution)
+This bool will be updated during the application execution, and will be set to true when it is idling.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rememberEnableIdling</span></code>: <em>bool, default=true</em>.
+If true, the last value of enableIdling is restored from the settings at startup.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="runner-callbacks">
+<h1>Runner callbacks<a class="headerlink" href="#runner-callbacks" title="Permalink to this heading">#</a></h1>
+<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_callbacks.h">runner_callbacks.h</a>.</p>
+<p><strong>RunnerCallbacks</strong> is a struct that contains the callbacks that are called by the application</p>
+<p><em>Members</em></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">ShowGui</span></code>: <em>VoidFunction, default=empty</em>.
+Fill it with a function that will add your widgets.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ShowMenus</span></code>: <em>VoidFunction, default=empty</em>.
+A function that will render your menus. Fill it with a function that will add ImGui menus by calling:
+<em>ImGui::BeginMenu(…) / ImGui::MenuItem(…) / ImGui::EndMenu()</em></p>
+<p><em>Notes:</em></p>
+<ul class="simple">
+<li><p>you do not need to call <em>ImGui::BeginMenuBar</em> and <em>ImGui::EndMenuBar</em></p></li>
+<li><p>Some default menus can be provided: see <em>ImGuiWindowParams</em> options
+(<em>showMenuBar, showMenu_App_QuitAbout, showMenu_View</em>)</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ShowAppMenuItems</span></code>: <em>VoidFunction, default=empty</em>.
+A function that will render items that will be placed in the App menu.
+They will be placed before the “Quit” MenuItem, which is added automatically by HelloImGui.
+This will be displayed only if ImGuiWindowParams.showMenu_App is true</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ShowStatus</span></code>: <em>VoidFunction, default=empty</em>.
+A function that will add items to the status bar. Use small items (ImGui::Text for example),
+since the height of the status is 30. Also, remember to call ImGui::SameLine() between items.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PostInit</span></code>: <em>VoidFunction, default=empty</em>.
+You can here add a function that will be called once after OpenGL and ImGui are inited, but before
+the backend callback are initialized.
+If you, for instance, want to add your own glfw callbacks, you should use this function to do so.”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BeforeExit</span></code>: <em>VoidFunction, default=empty</em>.
+You can here add a function that will be called once before exiting (when OpenGL and ImGui are
+still inited)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BeforeExit_PostCleanup</span></code>: <em>VoidFunction, default=empty</em>.
+You can here add a function that will be called once before exiting (after OpenGL and ImGui have been deinited)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PreNewFrame</span></code>: <em>VoidFunction, default=empty</em>.
+You can here add a function that will be called at each frame, and before the call to ImGui::NewFrame().
+It is a good place to dynamically add new fonts, or dynamically add new dockable windows.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BeforeImGuiRender</span></code>: <em>VoidFunction, default=empty</em>.
+You can here add a function that will be called at each frame, after the user Gui code,
+and just before the call to ImGui::Render() (which will also call ImGui::EndFrame()).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AfterSwap</span></code>: <em>VoidFunction, default=empty</em>.
+You can here add a function that will be called at each frame, after the Gui was rendered
+and swapped to the screen.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CustomBackground</span></code>: <em>VoidFunction, default=empty</em>.
+By default, the background is cleared using ImGuiWindowParams.backgroundColor. If set, this function
+instead gives you full control over the background that is drawn behind the Gui. An example use case
+is if you have a 3D application like a mesh editor, or game, and just want the Gui to be drawn on top
+of that content.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AnyBackendEventCallback</span></code>: <em>AnyBackendCallback, default=empty</em>.
+Callbacks for events from a specific backend. <em>Only implemented for SDL, where the event
+will be of type ‘SDL_Event *’</em>
+This callback should return true if the event was handled and shall not be processed further.
+Note: in the case of GLFW, you should use register them in <code class="docutils literal notranslate"><span class="pre">PostInit</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LoadAdditionalFonts</span></code>: <em>VoidFunction, default=_LoadDefaultFont_WithFontAwesome</em>.
+A function that is called once, when fonts are ready to be loaded.
+By default, <em>LoadDefaultFont_WithFontAwesome</em> is called but you can copy and customize it.
+(LoadDefaultFont_WithFontAwesome will load from assets/fonts/ but reverts to the ImGui embedded font if not found)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SetupImGuiConfig</span></code>: <em>VoidFunction, default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig</em>.
+If needed, change ImGui config via SetupImGuiConfig (enable docking, gamepad, etc)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SetupImGuiStyle</span></code>: <em>VoidFunction, default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig</em>.
+If needed, setup your own style by providing your own SetupImGuiStyle callback</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RegisterTests</span></code>: <em>VoidFunction, default=empty</em>.
+A function that is called once ImGuiTestEngine is ready to be filled with tests and automations definitions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mobileCallbacks</span></code>: <em><em>MobileCallbacks</em></em>. Callbacks that are called by the application
+when running under “Android, iOS and WinRT”.
+Notes:</p>
+<ul class="simple">
+<li><p>‘mobileCallbacks’ is present only if the target device is a mobile device (iOS, Android).
+Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">HELLOIMGUI_MOBILEDEVICE</span></code> to detect this.</p></li>
+<li><p>These events are currently handled only with SDL backend.</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>VoidFunctionPointer</strong> can hold any void(void) function.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">VoidFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><strong>AnyEventCallback</strong> can hold any bool(void *) function.
+It is designed to handle callbacks for a specific backend.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">AnyEventCallback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">backendEvent</span><span class="p">)</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><strong>AppendCallback</strong> can compose two callbacks. Use this when you want to set a callback and keep the (maybe) preexisting one.</p>
+<section id="mobilecallbacks">
+<h2>MobileCallbacks<a class="headerlink" href="#mobilecallbacks" title="Permalink to this heading">#</a></h2>
+<p><strong>MobileCallbacks</strong> is a struct that contains callbacks that are called by the application
+when running under “Android, iOS and WinRT”.
+These events are specific to mobile and embedded devices that have different requirements
+than your usual desktop application. These events must be handled quickly,
+since often the OS needs an immediate response and will terminate your process shortly
+after sending the event if you do not handle them apprpriately.</p>
+<p>Note: on mobile devices, it is not possible to “Quit” an application, it can only be put on Pause.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">OnDestroy</span></code>: <em>VoidFunction, default=empty</em>. The application is being terminated by the OS.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OnLowMemory</span></code>: <em>VoidFunction, default=empty</em>. The application is low on memory, free memory if possible.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OnPause</span></code>: <em>VoidFunction, default=empty</em>. The application is about to enter the background.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OnResume</span></code>: <em>VoidFunction, default=empty</em>. The application is has come to foreground and is now interactive.</p></li>
+</ul>
+<p>Note: ‘OnPause’ and ‘OnResume’ are called twice consecutively under iOS (before and after entering background
+or foreground).</p>
+</section>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="application-window-params">
+<h1>Application window params<a class="headerlink" href="#application-window-params" title="Permalink to this heading">#</a></h1>
+<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/app_window_params.h">app_window_params.h</a>.</p>
+<section id="appwindowparams">
+<h2>AppWindowParams<a class="headerlink" href="#appwindowparams" title="Permalink to this heading">#</a></h2>
+<p><strong>AppWindowParams</strong> is a struct that defines the application window display params.
+See <a class="reference external" href="https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png">doc_src/hello_imgui_diagram.png</a>
+for details.</p>
+<p>Members:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">windowTitle</span></code>: <em>string, default=””</em>. Title of the application window</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowGeometry</span></code>: <em>WindowGeometry</em>
+Enables to precisely set the window geometry (position, monitor, size, full screen, fake full screen, etc.)
+<em>Note: on a mobile device, the application will always be full screen.</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">restorePreviousGeometry</span></code>: <em>bool, default=false</em>.
+If true, then save &amp; restore windowGeometry from last run (the geometry will be written in imgui_app_window.ini)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">resizable</span></code>: <em>bool, default = false</em>. Should the window be resizable. This is taken into account at
+creation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hidden</span></code>: <em>bool, default = false</em>. Should the window be hidden. This is taken into account dynamically (you
+can show/hide the window with this). Full screen windows cannot be hidden.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">borderless</span></code>: <em>bool, default = false</em>. Should the window have borders. This is taken into account at creation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">borderlessMovable</span></code>: <em>bool, default = true</em>. If the window is borderless, should it be movable.
+If so, a drag zone is displayed at the top of the window when the mouse is over it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">borderlessResizable</span></code>: <em>bool, default = true</em>. If the window is borderless, should it be resizable.
+If so, a drag zone is displayed at the bottom-right of the window when the mouse is over it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">borderlessClosable</span></code>: <em>bool, default = false</em>. If the window is borderless, should it have a close button.
+If so, a close button is displayed at the top-right of the window when the mouse is over it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">borderlessHighlightColor</span></code>: <em>ImVec4, default = ImVec4(0.2f, 0.4f, 1.f, 0.f)</em>.
+Color of the highlight displayed on resize/move zones. If borderlessHighlightColor.w==0,
+then the highlightColor will be automatically set to ImGui::GetColorU32(ImGuiCol_TitleBgActive, 0.6f)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edgeInsets</span></code>: <em>EdgeInsets</em>. iOS only, out values filled by HelloImGui:
+if there is a notch on the iPhone, you should not display inside these insets.
+HelloImGui handles this automatically, if handleEdgeInsets is true and
+if runnerParams.imGuiWindowParams.defaultImGuiWindowType is not NoDefaultWindow.
+(warning, these values are updated only after a few frames, they are typically 0 for the first 4 frames)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handleEdgeInsets</span></code>: <em>bool, default = true</em>. iOS only, if true, HelloImGui will handle the edgeInsets.</p></li>
+</ul>
+</section>
+<section id="windowgeometry">
+<h2>WindowGeometry<a class="headerlink" href="#windowgeometry" title="Permalink to this heading">#</a></h2>
+<p><strong>WindowGeometry</strong> is a struct that defines the window geometry.</p>
+<p>Members:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: <em>int[2], default=”{800, 600}”</em>. Size of the application window
+used if fullScreenMode==NoFullScreen and sizeAuto==false</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sizeAuto</span></code>: <em>bool, default=false</em>
+If true, adapt the app window size to the presented widgets.
+After the first frame was displayed, HelloImGui will measure its size,
+and the backend application window will be resized. As a consequence, the application window size may
+vary between the first and the second frame.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fullScreenMode</span></code>: <em>FullScreenMode, default=NoFullScreen</em>.
+You can choose between several full screen modes:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">     </span><span class="n">NoFullScreen</span><span class="p">,</span>
+<span class="w">     </span><span class="n">FullScreen</span><span class="p">,</span><span class="w">                    </span><span class="c1">// Full screen with specified resolution</span>
+<span class="w">     </span><span class="n">FullScreenDesktopResolution</span><span class="p">,</span><span class="w">   </span><span class="c1">// Full screen with current desktop mode &amp; resolution</span>
+<span class="w">     </span><span class="n">FullMonitorWorkArea</span><span class="w">            </span><span class="c1">// Fake full screen, maximized window on the selected monitor</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">positionMode</span></code>: <em>WindowPositionMode, default = OsDefault</em>.
+You can choose between several window position modes:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">     </span><span class="n">OsDefault</span><span class="p">,</span>
+<span class="w">     </span><span class="n">MonitorCenter</span><span class="p">,</span>
+<span class="w">     </span><span class="n">FromCoords</span><span class="p">,</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">monitorIdx</span></code>: <em>int, default = 0</em>.
+used if positionMode==MonitorCenter or if fullScreenMode!=NoFullScreen</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowSizeState</span></code>: <em>WindowSizeState, default=Standard</em>
+You can choose between several window size states:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">     </span><span class="n">Standard</span><span class="p">,</span>
+<span class="w">     </span><span class="n">Minimized</span><span class="p">,</span>
+<span class="w">     </span><span class="n">Maximized</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowSizeMeasureMode</span></code>: <em>WindowSizeMeasureMode</em>, default=RelativeTo96Ppi
+how the window size is specified:</p>
+<ul class="simple">
+<li><p>RelativeTo96Ppi enables to give screen size that are independant from the screen density.
+For example, a window size expressed as 800x600 will correspond to a size
+- 800x600 (in screen coords) if the monitor dpi is 96
+- 1600x120 (in screen coords) if the monitor dpi is 192
+(this works with Glfw. With SDL, it only works under windows)</p></li>
+<li><p>ScreenCoords: measure window size in screen coords
+(Note: screen coordinates might differ from real pixels on high dpi screen)</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">resizeAppWindowAtNextFrame</span></code>: <em>bool</em>, default=false;
+If you set this to flag to true at any point during the execution, the application window
+will then try to resize based on its content on the next displayed frame,
+and this flag will subsequently be set to false.
+Example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Will resize the app window at next displayed frame</span>
+<span class="n">HelloImGui</span><span class="o">::</span><span class="n">GetRunnerParams</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">appWindowParams</span><span class="p">.</span><span class="n">windowGeometry</span><span class="p">.</span><span class="n">resizeAppWindowAtNextFrame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Note: this flag is intended to be used during execution, not at startup (use sizeAuto at startup).</p>
+</li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="imgui-window-params">
+<h1>ImGui window params<a class="headerlink" href="#imgui-window-params" title="Permalink to this heading">#</a></h1>
+<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/imgui_window_params.h">imgui_window_params.h</a>.</p>
+<section id="imguiwindowparams">
+<h2>ImGuiWindowParams<a class="headerlink" href="#imguiwindowparams" title="Permalink to this heading">#</a></h2>
+<p><strong>ImGuiWindowParams</strong> is a struct that defines the ImGui inner windows params
+These settings affect the imgui inner windows inside the application window.
+In order to change the application window settings, change the <em>AppWindowsParams</em></p>
+<p>Members:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">defaultImGuiWindowType</span></code>: <em>DefaultImGuiWindowType, default=ProvideFullScreenWindow</em>.
+By default, a full window is provided in the background. You can still
+add windows on top of it, since the Z-order of this background window is always behind</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">backgroundColor</span></code>: <em>ImVec4, default=ImVec4(0.45f, 0.55f, 0.60f, 1.00f)</em>.
+This is the “clearColor”, visible if defaultImGuiWindowType is not ProvideFullScreenWindow.
+Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full
+control over what is drawn behind the Gui.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">showMenuBar</span></code>: <em>bool, default=false</em>.
+Show Menu bar on top of imgui main window.
+In order to fully customize the menu, set showMenuBar to true, and set showMenu_App and showMenu_View params to false.
+Then, implement the callback <code class="docutils literal notranslate"><span class="pre">RunnerParams.callbacks.ShowMenus</span></code> which can optionally call <code class="docutils literal notranslate"><span class="pre">HelloImGui::ShowViewMenu</span></code>
+and <code class="docutils literal notranslate"><span class="pre">HelloImGui::ShowAppMenu</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">showMenu_App</span></code>: <em>bool, default=true</em>.
+If menu bar is shown, include or not the default app menu</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">showMenu_App_Quit</span></code>: <em>bool, default=true</em>.
+Include or not a “Quit” item in the default app menu.
+Set this to false if you intend to provide your own quit callback with possible user confirmation
+(and implement it inside RunnerCallbacks.ShowAppMenuItems)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">showMenu_View</span></code>: <em>bool, default=true</em>.
+If menu bar is shown, include or not the default <em>View</em> menu, that enables to change the layout and
+set the docked windows and status bar visibility)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">showStatusBar</span></code>: <em>bool, default=false</em>.
+Flag that enable to show a Status bar at the bottom. You can customize the status bar
+via RunnerCallbacks.ShowStatus()</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">showStatus_Fps</span></code>: <em>bool, default=true</em>. If set, display the FPS in the status bar.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rememberStatusBarSettings</span></code>: <em>bool, default=true</em>. If set, showStatusBar and showStatus_Fps are stored in the application settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">configWindowsMoveFromTitleBarOnly</span></code>: <em>bool, default=true</em>.
+Make windows only movable from the title bar</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">enableViewports</span></code>: <em>bool, default=false</em>. Enable multiple viewports (i.e multiple native windows)
+If true, you can drag windows outside out the main window in order to put their content into new native windows.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">menuAppTitle</span></code>: <em>string, default=””</em>. Set the title of the App menu. If empty, this menu name will use
+the “windowTitle” from AppWindowParams</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tweakedTheme</span></code>: <em>ImGuiTheme::ImGuiTweakedTheme</em>.
+Change the ImGui theme. Several themes are available, you can query the list by calling
+HelloImGui::AvailableThemes()</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">showMenu_View_Themes</span></code>: <em>bool, default=true</em>.
+Show theme selection in view menu</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rememberTheme</span></code>: <em>bool, default=true</em>.
+Remember selected theme</p></li>
+</ul>
+</section>
+<section id="default-window-types">
+<h2>Default window types<a class="headerlink" href="#default-window-types" title="Permalink to this heading">#</a></h2>
+<p><strong>DefaultImGuiWindowType</strong> is an enum class that defines whether or not a full screen background window is provided.</p>
+<p>Values:</p>
+<ul class="simple">
+<li><p><em>ProvideFullScreenWindow</em>: a full window is provided in the background</p></li>
+<li><p><em>ProvideFullScreenDockSpace</em>: a full screen dockspace is provided in the background</p></li>
+<li><p><em>NoDefaultWindow</em>: No default window is provided (except for ImGui’s default “debug” window)</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="docking">
+<h1>Docking<a class="headerlink" href="#docking" title="Permalink to this heading">#</a></h1>
+<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/docking_params.h">docking_params.h</a>.</p>
+<p>HelloImGui makes it easy to use dockable windows (based on ImGui <a class="reference external" href="https://github.com/ocornut/imgui/tree/docking">docking branch</a>).</p>
+<p>You can define several layouts and switch between them:  each layout which will remember the user modifications and the list of opened windows</p>
+<p>HelloImGui will then provide a “View” menu with options to show/hide the dockable windows, restore the default layout, switch between layouts, etc.</p>
+<p><img alt="demo docking" src="https://traineq.org/ImGuiBundle/HelloImGuiLayout.gif" /></p>
+<ul class="simple">
+<li><p>Source for this example: <a class="reference external" href="https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_imgui_demodocking">src/hello_imgui_demos/hello_imgui_demodocking</a></p></li>
+<li><p><a class="reference external" href="https://www.youtube.com/watch?v=XKxmz__F4ow">Video explanation on YouTube</a> (5 minutes)</p></li>
+</ul>
+<p>The different available layouts are provided inside RunnerParams via the two members below:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">RunnerParams</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="n">DockingParams</span><span class="w"> </span><span class="n">dockingParams</span><span class="p">;</span><span class="w">                            </span><span class="c1">// default layout of the application</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DockingParams</span><span class="o">&gt;</span><span class="w"> </span><span class="n">alternativeDockingLayouts</span><span class="p">;</span><span class="w">   </span><span class="c1">// optional alternative layouts</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>And <code class="docutils literal notranslate"><span class="pre">DockingParams</span></code> contains members that define a layout:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">DockingParams</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">layoutName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Default&quot;</span><span class="p">;</span><span class="w">          </span><span class="c1">// displayed name of the layout</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DockingSplit</span><span class="o">&gt;</span><span class="w"> </span><span class="n">dockingSplits</span><span class="p">;</span><span class="w">     </span><span class="c1">// list of splits (which define spaces where the windows will be placed)</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DockableWindow</span><span class="o">&gt;</span><span class="w"> </span><span class="n">dockableWindows</span><span class="p">;</span><span class="w"> </span><span class="c1">// list of windows (with their gui code, and specifying in which space they will be placed)</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Inside DockingParams, the member <code class="docutils literal notranslate"><span class="pre">dockingSplits</span></code> specifies the layout, and the member <code class="docutils literal notranslate"><span class="pre">dockableWindows</span></code>
+specifies the list of dockable windows, along with their default location, and their code (given by lambdas).</p>
+<section id="docking-params-example-usage">
+<h2>Docking Params: Example usage<a class="headerlink" href="#docking-params-example-usage" title="Permalink to this heading">#</a></h2>
+<p>Below is an example that shows how to instantiate a layout:</p>
+<ol class="arabic simple">
+<li><p>First, define the docking splits:</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">DockingSplit</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CreateDefaultDockingSplits</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">//     Here, we want to split &quot;MainDockSpace&quot; (which is provided automatically) into three zones, like this:</span>
+<span class="w">    </span><span class="c1">//    ___________________________________________</span>
+<span class="w">    </span><span class="c1">//    |        |                                |</span>
+<span class="w">    </span><span class="c1">//    | Command|                                |</span>
+<span class="w">    </span><span class="c1">//    | Space  |    MainDockSpace               |</span>
+<span class="w">    </span><span class="c1">//    |        |                                |</span>
+<span class="w">    </span><span class="c1">//    |        |                                |</span>
+<span class="w">    </span><span class="c1">//    |        |                                |</span>
+<span class="w">    </span><span class="c1">//    -------------------------------------------</span>
+<span class="w">    </span><span class="c1">//    |     MiscSpace                           |</span>
+<span class="w">    </span><span class="c1">//    -------------------------------------------</span>
+<span class="w">    </span><span class="c1">//</span>
+
+<span class="w">    </span><span class="c1">// add a space named &quot;MiscSpace&quot; whose height is 25% of the app height.</span>
+<span class="w">    </span><span class="c1">// This will split the preexisting default dockspace &quot;MainDockSpace&quot; in two parts.</span>
+<span class="w">    </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">DockingSplit</span><span class="w"> </span><span class="n">splitMainMisc</span><span class="p">;</span>
+<span class="w">    </span><span class="n">splitMainMisc</span><span class="p">.</span><span class="n">initialDock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;MainDockSpace&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">splitMainMisc</span><span class="p">.</span><span class="n">newDock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;MiscSpace&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">splitMainMisc</span><span class="p">.</span><span class="n">direction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImGuiDir_Down</span><span class="p">;</span>
+<span class="w">    </span><span class="n">splitMainMisc</span><span class="p">.</span><span class="n">ratio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.25f</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Then, add a space to the left which occupies a column whose width is 25% of the app width</span>
+<span class="w">    </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">DockingSplit</span><span class="w"> </span><span class="n">splitMainCommand</span><span class="p">;</span>
+<span class="w">    </span><span class="n">splitMainCommand</span><span class="p">.</span><span class="n">initialDock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;MainDockSpace&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">splitMainCommand</span><span class="p">.</span><span class="n">newDock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;CommandSpace&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">splitMainCommand</span><span class="p">.</span><span class="n">direction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImGuiDir_Left</span><span class="p">;</span>
+<span class="w">    </span><span class="n">splitMainCommand</span><span class="p">.</span><span class="n">ratio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.25f</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">DockingSplit</span><span class="o">&gt;</span><span class="w"> </span><span class="n">splits</span><span class="w"> </span><span class="p">{</span><span class="n">splitMainMisc</span><span class="p">,</span><span class="w"> </span><span class="n">splitMainCommand</span><span class="p">};</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">splits</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Then, define the dockable windows:</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">DockableWindow</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CreateDockableWindows</span><span class="p">(</span><span class="n">AppState</span><span class="o">&amp;</span><span class="w"> </span><span class="n">appState</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// A Command panel named &quot;Commands&quot; will be placed in &quot;CommandSpace&quot;. Its Gui is provided calls &quot;CommandGui&quot;</span>
+<span class="w">    </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">DockableWindow</span><span class="w"> </span><span class="n">commandsWindow</span><span class="p">;</span>
+<span class="w">    </span><span class="n">commandsWindow</span><span class="p">.</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Commands&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">commandsWindow</span><span class="p">.</span><span class="n">dockSpaceName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;CommandSpace&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">commandsWindow</span><span class="p">.</span><span class="n">GuiFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">]</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">CommandGui</span><span class="p">(</span><span class="n">appState</span><span class="p">);</span><span class="w"> </span><span class="p">};</span>
+
+<span class="w">    </span><span class="c1">// A Log window named &quot;Logs&quot; will be placed in &quot;MiscSpace&quot;. It uses the HelloImGui logger gui</span>
+<span class="w">    </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">DockableWindow</span><span class="w"> </span><span class="n">logsWindow</span><span class="p">;</span>
+<span class="w">    </span><span class="n">logsWindow</span><span class="p">.</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Logs&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">logsWindow</span><span class="p">.</span><span class="n">dockSpaceName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;MiscSpace&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">logsWindow</span><span class="p">.</span><span class="n">GuiFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">LogGui</span><span class="p">();</span><span class="w"> </span><span class="p">};</span>
+
+<span class="w">    </span><span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Finally, fill the RunnerParams</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">RunnerParams</span><span class="w"> </span><span class="n">runnerParams</span><span class="p">;</span>
+<span class="n">runnerParams</span><span class="p">.</span><span class="n">imGuiWindowParams</span><span class="p">.</span><span class="n">defaultImGuiWindowType</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">DefaultImGuiWindowType</span><span class="o">::</span><span class="n">ProvideFullScreenDockSpace</span><span class="p">;</span>
+
+<span class="n">runnerParams</span><span class="p">.</span><span class="n">dockingParams</span><span class="p">.</span><span class="n">dockingSplits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultDockingSplits</span><span class="p">();</span>
+<span class="n">runnerParams</span><span class="p">.</span><span class="n">dockingParams</span><span class="p">.</span><span class="n">dockableWindows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDockableWindows</span><span class="p">();</span>
+
+
+<span class="n">HelloImGui</span><span class="o">::</span><span class="n">Run</span><span class="p">(</span><span class="n">runnerParams</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="docking-splits">
+<h2>Docking Splits<a class="headerlink" href="#docking-splits" title="Permalink to this heading">#</a></h2>
+<p><strong>DockingSplit</strong> is a struct that defines the way the docking splits should be applied on the screen
+in order to create new Dock Spaces. <em>DockingParams</em> contains a <em>vector[DockingSplit]</em>,
+in order to partition the screen at your will.</p>
+<p><em>Members:</em></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">initialDock</span></code>: <em>DockSpaceName (aka string)</em></p>
+<p>id of the space that should be split.
+At the start, there is only one Dock Space named “MainDockSpace”.
+You should start by partitioning this space, in order to create a new dock space.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">newDock</span></code>: <em>DockSpaceName (aka string)</em>. id of the new dock space that will be created.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">direction</span></code>: <em>ImGuiDir_ (enum with ImGuiDir_Down, ImGuiDir_Down, ImGuiDir_Left, ImGuiDir_Right)</em>.
+Direction where this dock space should be created.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ratio</span></code>: <em>float, default=0.25f</em>. Ratio of the initialDock size that should be used by the new dock space.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nodeFlags</span></code>: <em>ImGuiDockNodeFlags_ (enum)</em>. Flags to apply to the new dock space (enable/disable resizing, splitting, tab bar, etc.)</p></li>
+</ul>
+</section>
+<section id="dockable-window">
+<h2>Dockable window<a class="headerlink" href="#dockable-window" title="Permalink to this heading">#</a></h2>
+<p><strong>DockableWindow</strong> is a struct that represents a window that can be docked.</p>
+<p><em>Members:</em></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">label</span></code>: <em>string</em>. Title of the window.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dockSpaceName</span></code>: <em>DockSpaceName (aka string)</em>. Id of the dock space where this window
+should initially be placed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GuiFunction</span></code>: <em>VoidFunction</em>. Any function that will render this window’s Gui.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">isVisible</span></code>: <em>bool, default=true</em>. Flag that indicates whether this window is visible or not.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rememberIsVisible</span></code>: <em>bool, default=true</em>. Flag that indicates whether the window visibility should be saved in settings or not.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">canBeClosed</span></code>: <em>bool, default=true</em>. Flag that indicates whether the user can close this window.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">callBeginEnd</span></code>: <em>bool, default=true</em>. Flag that indicates whether ImGui::Begin and ImGui::End
+calls should be added automatically (with the given “label”). Set to false if you want to call
+ImGui::Begin/End yourself</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">includeInViewMenu</span></code>: <em>bool, default=true</em>. Flag that indicates whether this window should be mentioned
+in the view menu.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imGuiWindowFlags</span></code>: <em>ImGuiWindowFlags, default=0</em>. Window flags, see enum ImGuiWindowFlags_</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowSize</span></code>: <em>ImVec2, default=(0.f, 0.f) (i.e let the app decide)</em>. Window size (unused if docked)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowSizeCondition</span></code>: <em>ImGuiCond, default=ImGuiCond_FirstUseEver</em>. When to apply the window size.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowPos</span></code>: <em>ImVec2, default=(0.f, 0.f) (i.e let the app decide)</em>. Window position (unused if docked)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">windowPosCondition</span></code>: <em>ImGuiCond, default=ImGuiCond_FirstUseEver</em>. When to apply the window position.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">focusWindowAtNextFrame</span></code>: <em>bool, default = false</em>. If set to true this window will be focused at the next frame.</p></li>
+</ul>
+</section>
+<section id="docking-params">
+<h2>Docking Params<a class="headerlink" href="#docking-params" title="Permalink to this heading">#</a></h2>
+<p><strong>DockingParams</strong> contains all the settings concerning the docking,
+together <em>with the Gui functions for the docked windows</em>.</p>
+<p><em>Members:</em></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dockingSplits</span></code>: <em>vector[DockingSplit]</em>.
+Defines the way docking splits should be applied on the screen in order to create new Dock Spaces</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dockableWindows</span></code>: <em>vector[DockableWindow]</em>.
+List of the dockable windows, together with their Gui code</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layoutName</span></code>: <em>string, default=”default”</em>.
+Displayed name of the layout. Only used in advanced cases when several layouts are available.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layoutCondition</span></code>: <em>enum DockingLayoutCondition, default=DockingLayoutCondition::FirstUseEver</em>.
+When to apply the docking layout. Choose between FirstUseEver (apply once, then keep user preference),
+ApplicationStart (always reapply at application start), and Never.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mainDockSpaceNodeFlags</span></code>: <em>ImGuiDockNodeFlags (enum), default=ImGuiDockNodeFlags_PassthruCentralNode</em>
+Flags to apply to the main dock space (enable/disable resizing, splitting, tab bar, etc.).
+Most flags are inherited by children dock spaces. You can also set flags for specific dock spaces via <code class="docutils literal notranslate"><span class="pre">DockingSplit.nodeFlags</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layoutReset</span></code>: <em>bool, default=false</em>.
+Reset layout on next frame, i.e. drop the layout customizations which were applied manually by the user.
+(layoutReset will be set to false after applying)</p></li>
+</ul>
+<p><em>Helpers:</em></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">DockableWindow</span> <span class="pre">*</span> <span class="pre">dockableWindowOfName(const</span> <span class="pre">std::string</span> <span class="pre">&amp;</span> <span class="pre">name)</span></code>: returns a pointer to a dockable window</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">focusDockableWindow(const</span> <span class="pre">std::string&amp;</span> <span class="pre">name)</span></code>: will focus a dockable window (and make its tab visible if needed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">optional&lt;ImGuiID&gt;</span> <span class="pre">dockSpaceIdFromName(const</span> <span class="pre">std::string&amp;</span> <span class="pre">dockSpaceName)</span></code>: may return the ImGuiID corresponding
+to the dockspace with this name.
+<strong>Warning</strong>: this will work reliably only if layoutCondition = DockingLayoutCondition::ApplicationStart. In other
+cases, the ID may be cached by ImGui himself at the first run, and HelloImGui will <em>not</em> know it on subsequent runs!</p></li>
+</ul>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="backend-pointers">
+<h1>Backend Pointers<a class="headerlink" href="#backend-pointers" title="Permalink to this heading">#</a></h1>
+<p><strong>BackendPointers</strong> is a struct that contains optional pointers to the backend implementations (for SDL and GLFW).</p>
+<p>These pointers will be filled when the application starts, and you can use them to customize
+your application behavior using the selected backend.</p>
+<p>Members:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">glfwWindow</span></code>: <em>void *, default=nullptr</em>. Pointer to the main GLFW window (of type <code class="docutils literal notranslate"><span class="pre">GLFWwindow*</span></code>).
+Only filled if the backend is GLFW.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sdlWindow</span></code>: <em>void *, default=nullptr</em>. Pointer to the main SDL window (of type <code class="docutils literal notranslate"><span class="pre">SDL_Window*</span></code>).
+Only filled if the backend is SDL (or emscripten + sdl)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sdlGlContext</span></code>: <em>void *, default=nullptr</em>. Pointer to SDL’s GlContext (of type <code class="docutils literal notranslate"><span class="pre">SDL_GLContext</span></code>).
+Only filled if the backend is SDL (or emscripten + sdl)</p></li>
+</ul>
+<p>Note: If using the Metal, Vulkan or DirectX rendering backend, you can find some interesting pointers inside
+<code class="docutils literal notranslate"><span class="pre">src/hello_imgui/internal/backend_impls/rendering_metal.h</span></code>
+<code class="docutils literal notranslate"><span class="pre">src/hello_imgui/internal/backend_impls/rendering_vulkan.h</span></code>
+<code class="docutils literal notranslate"><span class="pre">src/hello_imgui/internal/backend_impls/rendering_dx11.h</span></code>
+<code class="docutils literal notranslate"><span class="pre">src/hello_imgui/internal/backend_impls/rendering_dx12.h</span></code></p>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="doc_api.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">API</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="60_05_build.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Build instructions</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Application parameters</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#runnerparams">RunnerParams</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-runner-params">Simple runner params</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-params">Full params</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#fps-idling">Fps Idling</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#runner-callbacks">Runner callbacks</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mobilecallbacks">MobileCallbacks</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#application-window-params">Application window params</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#appwindowparams">AppWindowParams</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#windowgeometry">WindowGeometry</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#imgui-window-params">ImGui window params</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imguiwindowparams">ImGuiWindowParams</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#default-window-types">Default window types</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#docking">Docking</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docking-params-example-usage">Docking Params: Example usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docking-splits">Docking Splits</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dockable-window">Dockable window</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docking-params">Docking Params</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#backend-pointers">Backend Pointers</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Pascal Thomet
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

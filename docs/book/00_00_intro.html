@@ -66,7 +66,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = '00_00_intro';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Demos" href="05_02_demos.html" />
+    <link rel="next" title="Get started" href="05_05_get_started.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -176,22 +176,25 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="05_02_demos.html">Demos</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_05_starter_template.html">Get started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_10_motto.html">Motto</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Usage</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="10_02_assets.html">Assets &amp; App customization</a></li>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05_05_get_started.html">Get started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_api.html">API</a></li>
 
-<li class="toctree-l1"><a class="reference internal" href="10_05_api.html">Full usage instructions and API</a></li>
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="doc_params.html">Application parameters</a></li>
+
+
+
+
+
+
+
 <li class="toctree-l1"><a class="reference internal" href="60_05_build.html">Build instructions</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="90_05_gallery.html">Real world examples</a></li>
 </ul>
 
     </div>
@@ -387,17 +390,18 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Hello ImGui</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dear-imgui-bundle-sister-library">Dear ImGui Bundle - Sister library</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ci-status">CI Status</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demos-real-world-apps">Demos &amp; real world apps</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-layout">Advanced layout</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-3d-background">Custom 3D background</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#imgui-manual">ImGui Manual</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rpn-calculator">RPN Calculator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starter-template">Starter template</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dear-imgui-bundle">Dear ImGui Bundle</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#theme-tweaking">Theme tweaking</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#table-of-contents">Table of contents</a><ul class="visible nav section-nav flex-column">
 </ul>
-</li>
-</ul>
-
             </nav>
         </div>
     </div>
@@ -410,35 +414,8 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="hello-imgui">
 <h1>Hello ImGui<a class="headerlink" href="#hello-imgui" title="Permalink to this heading">#</a></h1>
-<p>Hello ImGui is a library that enables quickly write multiplatform apps with the simplicity of a “Hello World” app. It is based on <a class="reference external" href="https://github.com/ocornut/imgui">Dear ImGui</a>.</p>
-<section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Advanced layout handling: <a class="reference external" href="https://traineq.org/ImGuiBundle/emscripten/bin/demo_docking.html">Online Demo</a> - <a class="reference external" href="https://www.youtube.com/watch?v=XKxmz__F4ow">Video tutorial</a> - <a class="reference download internal" download="" href="_downloads/bdd5e1729ff1f688d6894e6b56ba4f2e/hello_imgui_demodocking.main.cpp"><span class="xref download myst">Code</span></a></p></li>
-<li><p>Window geometry utilities (autosize, restore window position)</p></li>
-<li><p>Save application settings: window position, layout, opened windows, theme, user defined custom settings</p></li>
-<li><p>Embed assets on all platforms (desktop, mobile, web)</p></li>
-<li><p>Customize application icon on all platforms</p></li>
-<li><p>Advanced font support: icons, emojis and colored fonts</p></li>
-<li><p>Integration with ImGui Test Engine: automate and test your apps</p></li>
-<li><p>Power Save mode: reduce FPS when application is idle</p></li>
-<li><p><a class="reference external" href="https://www.youtube.com/watch?v=Hhartw0cUjg">Theme tweaking</a></p></li>
-<li><p><a class="reference external" href="https://traineq.org/HelloImGui_6_Platforms.mp4">Truly multiplatform</a> (Linux, Windows, MacOS, iOS, Android, emscripten)</p></li>
-<li><p>Support for movable and resizable borderless windows</p></li>
-<li><p>Available platform backends: SDL2, Glfw3</p></li>
-<li><p>Available rendering backends: OpenGL3, Metal, Vulkan, DirectX</p></li>
-<li><p>Set up a project in 5 minutes</p></li>
-</ul>
-</section>
-<section id="dear-imgui-bundle-sister-library">
-<h2>Dear ImGui Bundle - Sister library<a class="headerlink" href="#dear-imgui-bundle-sister-library" title="Permalink to this heading">#</a></h2>
-<a class="reference internal image-reference" href="https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png"><img alt="https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png" class="align-left" src="https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png" style="width: 200px;" /></a>
-<p><em>Do you want an easy way to use Dear ImGui with additional widgets, and in Python?</em></p>
-<p>Dear ImGui Bundle, is a sister library, based on Hello ImGui, provides lots of additional widgets (<a class="reference external" href="https://github.com/ocornut/imgui.git">imgui</a>, <a class="reference external" href="https://github.com/epezent/implot">implot</a>, <a class="reference external" href="https://github.com/thedmd/imgui-node-editor">imgui-node-editor</a>, <a class="reference external" href="https://github.com/pthom/ImFileDialog.git">ImFileDialog</a>, <a class="reference external" href="https://github.com/BalazsJako/ImGuiColorTextEdit">ImGuiColorTextEdit</a>, <a class="reference external" href="https://github.com/mekhontsev/imgui_md.git">imgui_md</a>), as well as complete python bindings.</p>
-<p>See ImGuiBundle’s  <a class="reference external" href="https://github.com/pthom/imgui_bundle/tree/main/demos_cpp">C++ demos</a> and <a class="reference external" href="https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos">Python demos</a>.</p>
-</section>
-<section id="ci-status">
-<h2>CI Status<a class="headerlink" href="#ci-status" title="Permalink to this heading">#</a></h2>
+<p>Hello ImGui is a library that enables quickly write multiplatform apps with the simplicity of a “Hello World” app. Although being extremely easy to use, it can be used to create complex and customizable applications. It is based on <a class="reference external" href="https://github.com/ocornut/imgui">Dear ImGui</a>.</p>
+<p><strong>CI Status</strong></p>
 <table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>OpenGL</p></th>
@@ -462,32 +439,79 @@ document.write(`
 </tr>
 </tbody>
 </table>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h2>
+<p><strong>Multiplatform utilities</strong></p>
+<ul class="simple">
+<li><p>Truly multiplatform: Linux, Windows, macOS, iOS, Android, emscripten (with 4 lines of CMake code)</p></li>
+<li><p>Easily embed assets on all platforms (no code required)</p></li>
+<li><p>Customize app settings (icon and app name for mobile platforms, etc.- no code required)</p></li>
+<li><p>Customize application icon on all platforms (including mobile and macOS - no code required)</p></li>
+</ul>
+<p><strong>Dear ImGui Tweaks</strong></p>
+<ul class="simple">
+<li><p>Power Save mode: reduce FPS when idling</p></li>
+<li><p>High DPI support: scale UI according to DPI, whatever the platform</p></li>
+<li><p>Advanced layout handling: dockable windows, multiple layouts</p></li>
+<li><p>Window geometry utilities: autosize application window, restore app window position</p></li>
+<li><p>Theme tweaking: extensive list of additional themes</p></li>
+<li><p>Support for movable and resizable borderless windows</p></li>
+<li><p>Advanced font support: icons, emojis and colored fonts</p></li>
+<li><p>Integration with ImGui Test Engine: automate and test your apps</p></li>
+<li><p>Save user settings: window position, layout, opened windows, theme, user defined custom settings</p></li>
+<li><p>Easily add a custom 3D background to your app</p></li>
+</ul>
+<p><strong>Backends</strong></p>
+<ul class="simple">
+<li><p>Available platform backends: SDL2, Glfw3</p></li>
+<li><p>Available rendering backends: OpenGL3, Metal, Vulkan, DirectX</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="demos-real-world-apps">
+<h2>Demos &amp; real world apps<a class="headerlink" href="#demos-real-world-apps" title="Permalink to this heading">#</a></h2>
+<section id="advanced-layout">
+<h3>Advanced layout<a class="headerlink" href="#advanced-layout" title="Permalink to this heading">#</a></h3>
+<p>The docking demo show how to handle complex layouts, use themes, store user settings, reduce FPS and CPU usage when idling, load fonts and icons, and much more</p>
+<p><img alt="" src="_images/docking.jpg" /></p>
+<p><a class="reference external" href="https://traineq.org/ImGuiBundle/emscripten/bin/demo_docking.html">Online demo</a> - <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp">Source</a> - Video tutorial: <a class="reference external" href="https://www.youtube.com/watch?v=XKxmz__F4ow">how to handle multiple complex layouts</a></p>
+</section>
+<section id="custom-3d-background">
+<h3>Custom 3D background<a class="headerlink" href="#custom-3d-background" title="Permalink to this heading">#</a></h3>
+<p>How to use a custom 3D background in your app</p>
+<p><img alt="" src="_images/custom_background.jpg" /></p>
+<p><a class="reference external" href="https://traineq.org/ImGuiBundle/emscripten/bin/demo_custom_background.html">Online demo</a> - <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_custom_background/hello_custom_background.main.cpp">Source</a></p>
+</section>
+<section id="imgui-manual">
+<h3>ImGui Manual<a class="headerlink" href="#imgui-manual" title="Permalink to this heading">#</a></h3>
+<p><a class="reference external" href="https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html">ImGui Manual</a> is an interactive Manual for Dear ImGui, built with Hello ImGui.</p>
+<p><a class="reference external" href="https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html"><img alt="" src="_images/manual.jpg" /></a></p>
+<p><a class="reference external" href="https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html">Online manual</a> -
+<a class="reference external" href="https://github.com/pthom/imgui_manual">Source</a></p>
+</section>
+<section id="rpn-calculator">
+<h3>RPN Calculator<a class="headerlink" href="#rpn-calculator" title="Permalink to this heading">#</a></h3>
+<p><a class="reference external" href="https://pthom.github.io/imgui_rpn_calculator/">RPN Calculator</a> is a simple RPN calculator, built, built to demonstrate how easy a multiplatform app can be built with Hello ImGui.</p>
+<p><img alt="" src="https://github.com/pthom/rpn_calculator/blob/main/screenshot.png?raw=true" /></p>
+<p><a class="reference external" href="https://traineq.org/HelloImGui/rpn/rpn_calculator.html">Online demo</a> - <a class="reference external" href="https://github.com/pthom/rpn_calculator/">Source</a> - <a class="reference external" href="https://www.youtube.com/watch?v=dArP4lBnOr8">Video tutorial</a></p>
+</section>
+<section id="starter-template">
+<h3>Starter template<a class="headerlink" href="#starter-template" title="Permalink to this heading">#</a></h3>
+<p><a class="reference external" href="https://github.com/pthom/hello_imgui_template">The starter template</a> will get you started in 5 minutes, and shows how to embed assets, customize the app icon (etc.), on all platforms.</p>
+</section>
+<section id="dear-imgui-bundle">
+<h3>Dear ImGui Bundle<a class="headerlink" href="#dear-imgui-bundle" title="Permalink to this heading">#</a></h3>
+<p><a class="reference external" href="https://pthom.github.io/imgui_bundle/">Dear ImGui Bundle</a>, a full-fledged library, built on top of Hello ImGui, provides lots of additional widgets (<a class="reference external" href="https://github.com/ocornut/imgui.git">imgui</a>, <a class="reference external" href="https://github.com/epezent/implot">implot</a>, <a class="reference external" href="https://github.com/thedmd/imgui-node-editor">imgui-node-editor</a>, <a class="reference external" href="https://github.com/pthom/ImFileDialog.git">ImFileDialog</a>, <a class="reference external" href="https://github.com/BalazsJako/ImGuiColorTextEdit">ImGuiColorTextEdit</a>, <a class="reference external" href="https://github.com/mekhontsev/imgui_md.git">imgui_md</a>), as well as complete python bindings.</p>
+<a class="reference internal image-reference" href="https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png"><img alt="https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png" src="https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png" style="width: 200px;" /></a>
+<p><a class="reference external" href="https://traineq.org/ImGuiBundle/emscripten/bin/demo_imgui_bundle.html">online interactive demo</a> - <a class="reference external" href="https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_cpp">Source for C++ demos</a> - <a class="reference external" href="https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_python">Source for Python demos</a></p>
+</section>
+<section id="theme-tweaking">
+<h3>Theme tweaking<a class="headerlink" href="#theme-tweaking" title="Permalink to this heading">#</a></h3>
+<p>How to use the theme tweaking utilities provided by Hello ImGui</p>
+<p><a class="reference external" href="https://www.youtube.com/watch?v=4f_-3DDcAZk">Online video tutorial</a></p>
 </section>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="table-of-contents">
-<h1>Table of contents<a class="headerlink" href="#table-of-contents" title="Permalink to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="05_02_demos.html">Demos</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_05_starter_template.html">Get started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_10_motto.html">Motto</a></li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Usage</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="10_02_assets.html">Assets &amp; App customization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="10_02_assets.html#app-customization">App customization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="10_05_api.html">Full usage instructions and API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="60_05_build.html">Build instructions</a></li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="90_05_gallery.html">Real world examples</a></li>
-</ul>
 </div>
 </section>
 
@@ -522,11 +546,11 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="right-next"
-       href="05_02_demos.html"
+       href="05_05_get_started.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Demos</p>
+        <p class="prev-next-title">Get started</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -546,17 +570,18 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Hello ImGui</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dear-imgui-bundle-sister-library">Dear ImGui Bundle - Sister library</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ci-status">CI Status</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demos-real-world-apps">Demos &amp; real world apps</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-layout">Advanced layout</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-3d-background">Custom 3D background</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#imgui-manual">ImGui Manual</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rpn-calculator">RPN Calculator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starter-template">Starter template</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dear-imgui-bundle">Dear ImGui Bundle</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#theme-tweaking">Theme tweaking</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#table-of-contents">Table of contents</a><ul class="visible nav section-nav flex-column">
 </ul>
-</li>
-</ul>
-
   </nav></div>
 
 </div></div>

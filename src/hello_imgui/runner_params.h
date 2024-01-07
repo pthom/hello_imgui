@@ -91,19 +91,19 @@ struct FpsIdling
 **RunnerParams** is a struct that contains all the settings and callbacks needed to run an application.
 
  Members:
-* `callbacks`: _see [runner_callbacks.h](runner_callbacks.h)_.
+* `callbacks`: _see runner_callbacks.h_
    callbacks.ShowGui() will render the gui, ShowMenus() will show the menus, etc.
-* `appWindowParams`: _see [app_window_params.h](app_window_params.h)_.
+* `appWindowParams`: _see app_window_params.h_
    application Window Params (position, size, title)
-* `imGuiWindowParams`: _see [imgui_window_params.h](imgui_window_params.h)_.
+* `imGuiWindowParams`: _see imgui_window_params.h_
    imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)
-* `dockingParams`: _see [docking_params.h](docking_params.h)_.
+* `dockingParams`: _see docking_params.h_
    dockable windows content and layout
 * `alternativeDockingLayouts`: _vector<DockingParams>, default=empty_
    List of possible additional layout for the applications. Only used in advanced cases when several layouts are available.
 * `rememberSelectedAlternativeLayout`: _bool, default=true_
    Shall the application remember the last selected layout. Only used in advanced cases when several layouts are available.
-* `backendPointers`: _see [backend_pointers.h](backend_pointers.h)_.
+* `backendPointers`: _see backend_pointers.h_
    A struct that contains optional pointers to the backend implementations. These pointers will be filled
    when the application starts
 * `backendType`: _enum BackendType, default=BackendType::FirstAvailable_

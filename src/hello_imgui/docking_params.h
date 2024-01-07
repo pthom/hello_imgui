@@ -21,7 +21,7 @@ HelloImGui will then provide a "View" menu with options to show/hide the dockabl
 
 ![demo docking](https://traineq.org/ImGuiBundle/HelloImGuiLayout.gif)
 
-* Source for this example: [src/hello_imgui_demos/hello_imgui_demodocking](../../src/hello_imgui_demos/hello_imgui_demodocking)
+* Source for this example: [src/hello_imgui_demos/hello_imgui_demodocking](https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_imgui_demodocking)
 * [Video explanation on YouTube](https://www.youtube.com/watch?v=XKxmz__F4ow) (5 minutes)
 
 

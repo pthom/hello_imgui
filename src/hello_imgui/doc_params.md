@@ -1,83 +1,16 @@
-<span id="TOC"/></span>
-
-* [API](#api)
-  * [HelloImGui::Run()](#helloimguirun)
-  * [Runner params](#runner-params)
-      * [Diagram](#diagram)
-      * [RunnerParams](#runnerparams)
-        * [Simple runner params](#simple-runner-params)
-        * [Full params](#full-params)
-      * [Fps Idling](#fps-idling)
-  * [Runner callbacks](#runner-callbacks)
-      * [RunnerCallbacks](#runnercallbacks)
-      * [MobileCallbacks](#mobilecallbacks)
-  * [Application window params](#application-window-params)
-    * [AppWindowParams](#appwindowparams)
-    * [WindowGeometry](#windowgeometry)
-  * [ImGui window params](#imgui-window-params)
-      * [ImGuiWindowParams](#imguiwindowparams)
-      * [Default window types](#default-window-types)
-  * [Docking](#docking)
-      * [Docking Params: Example usage](#docking-params-example-usage)
-      * [Docking Splits](#docking-splits)
-      * [Dockable window](#dockable-window)
-      * [Docking Params](#docking-params)
-  * [Handling screen with high DPI: items positioning and font loading](#handling-screen-with-high-dpi-items-positioning-and-font-loading)
-  * [Applications assets](#applications-assets)
-      * [Assets Files structure](#assets-files-structure)
-      * [Load Assets as data buffer](#load-assets-as-data-buffer)
-      * [Get assets path](#get-assets-path)
-  * [Display images](#display-images)
-      * [HelloImGui::ImageFromAsset](#helloimguiimagefromasset)
-  * [Backend Pointers](#backend-pointers)
-  * [Store user settings in the ini file](#store-user-settings-in-the-ini-file)
-  * [Switch between several layouts](#switch-between-several-layouts)
-
-# API
-
-## HelloImGui::Run()
-
-See [hello_imgui.h](hello_imgui.h).
-
-
-__HelloImGui::Run()__ will run an application with a single call.
-
-Three signatures are provided:
-
-* `HelloImGui::Run(RunnerParams &)`: full signature, the most customizable version.
-  Runs an application whose params and Gui are provided by runnerParams.
-
-* `HelloImGui::Run(const SimpleRunnerParams&)`:
-  Runs an application, using simpler params.
-
-* `HelloImGui::Run(guiFunction, windowTitle, windowSize, windowSizeAuto=false, restoreLastWindowGeometry=false, fpsIdle=10)`
-
-
-__Other utilities:__
-
-* `HelloImGui::GetRunnerParams()`:
-  a convenience function that will return the runnerParams of the current application
-
-* `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
-  May differ from ImGui::GetIO().FrameRate, since one can choose the duration for the calculation of the mean value of the fps
-
-* `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance of ImGuiTestEngine that was
-  initialized by HelloImGui (iif ImGui Test Engine is active).
-
-## Runner params
-
-See [runner_params.h](runner_params.h).
-
-#### Diagram
+# Application parameters
 
 _RunnerParams_ contains all the settings and callbacks in order to run an application. 
 The diagram below summarize all the possible settings and callbacks (which are explained in detail later in this document).
 
-![a](doc_src/hello_imgui_diagram.png)
+[![diagram](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png)](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png)
 
-#### RunnerParams
+# RunnerParams
 
-##### Simple runner params
+See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h).
+
+
+## Simple runner params
 
 **SimpleRunnerParams** is a struct that contains simpler params adapted for simple use cases.
 
@@ -111,24 +44,24 @@ int main(){
 ```
 
 
-##### Full params
+## Full params
 
 **RunnerParams** is a struct that contains all the settings and callbacks needed to run an application.
 
  Members:
-* `callbacks`: _see [runner_callbacks.h](runner_callbacks.h)_.
+* `callbacks`: _see runner_callbacks.h_
    callbacks.ShowGui() will render the gui, ShowMenus() will show the menus, etc.
-* `appWindowParams`: _see [app_window_params.h](app_window_params.h)_.
+* `appWindowParams`: _see app_window_params.h_
    application Window Params (position, size, title)
-* `imGuiWindowParams`: _see [imgui_window_params.h](imgui_window_params.h)_.
+* `imGuiWindowParams`: _see imgui_window_params.h_
    imgui window params (use docking, showMenuBar, ProvideFullScreenWindow, etc)
-* `dockingParams`: _see [docking_params.h](docking_params.h)_.
+* `dockingParams`: _see docking_params.h_
    dockable windows content and layout
 * `alternativeDockingLayouts`: _vector<DockingParams>, default=empty_
    List of possible additional layout for the applications. Only used in advanced cases when several layouts are available.
 * `rememberSelectedAlternativeLayout`: _bool, default=true_
    Shall the application remember the last selected layout. Only used in advanced cases when several layouts are available.
-* `backendPointers`: _see [backend_pointers.h](backend_pointers.h)_.
+* `backendPointers`: _see backend_pointers.h_
    A struct that contains optional pointers to the backend implementations. These pointers will be filled
    when the application starts
 * `backendType`: _enum BackendType, default=BackendType::FirstAvailable_
@@ -164,7 +97,11 @@ Notes about the use of [Dear ImGui Test & Automation Engine](https://github.com/
   (TL;DR: free for individuals, educational, open-source and small businesses uses. Paid for larger businesses.)
 
 
-#### Fps Idling
+
+# Fps Idling
+
+See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h).
+
 
 **FpsIdling** is a struct that contains Fps Idling parameters
 
@@ -181,16 +118,13 @@ Notes about the use of [Dear ImGui Test & Automation Engine](https://github.com/
 * `rememberEnableIdling`: _bool, default=true_.
   If true, the last value of enableIdling is restored from the settings at startup.
 
-See [runner_params.h](runner_params.h).
-
 
 ----
 
-## Runner callbacks
+# Runner callbacks
 
-See [runner_callbacks.h](runner_callbacks.h).
+See [runner_callbacks.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_callbacks.h).
 
-#### RunnerCallbacks
 
 
  **RunnerCallbacks** is a struct that contains the callbacks that are called by the application
@@ -290,7 +224,7 @@ using AnyEventCallback = std::function<bool(void * backendEvent)>
 
 **AppendCallback** can compose two callbacks. Use this when you want to set a callback and keep the (maybe) preexisting one.
 
-#### MobileCallbacks
+## MobileCallbacks
 
 
 **MobileCallbacks** is a struct that contains callbacks that are called by the application
@@ -313,11 +247,11 @@ using AnyEventCallback = std::function<bool(void * backendEvent)>
 
 ----
 
-## Application window params
+# Application window params
 
-See [app_window_params.h](app_window_params.h).
+See [app_window_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/app_window_params.h).
 
-### AppWindowParams
+## AppWindowParams
 
 
 __AppWindowParams__ is a struct that defines the application window display params.
@@ -355,7 +289,7 @@ Members:
 * `handleEdgeInsets`: _bool, default = true_. iOS only, if true, HelloImGui will handle the edgeInsets.
 
 
-### WindowGeometry
+## WindowGeometry
 
 
 __WindowGeometry__ is a struct that defines the window geometry.
@@ -412,16 +346,15 @@ Members:
   // Will resize the app window at next displayed frame
   HelloImGui::GetRunnerParams()->appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = true;
   ```
-
-  :::Note: this flag is intended to be used during execution, not at startup (use sizeAuto at startup):::
+  Note: this flag is intended to be used during execution, not at startup (use sizeAuto at startup).
 
 ----
 
-## ImGui window params
+# ImGui window params
 
-See [imgui_window_params.h](imgui_window_params.h).
+See [imgui_window_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/imgui_window_params.h).
 
-#### ImGuiWindowParams
+## ImGuiWindowParams
 
 
 __ImGuiWindowParams__ is a struct that defines the ImGui inner windows params
@@ -480,7 +413,7 @@ In order to change the application window settings, change the _AppWindowsParams
   * `rememberTheme`: _bool, default=true_.
     Remember selected theme
 
-#### Default window types
+## Default window types
 
 
 __DefaultImGuiWindowType__ is an enum class that defines whether or not a full screen background window is provided.
@@ -493,9 +426,9 @@ __DefaultImGuiWindowType__ is an enum class that defines whether or not a full s
 
 ----
 
-## Docking
+# Docking
 
-See [docking_params.h](docking_params.h).
+See [docking_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/docking_params.h).
 
 
 HelloImGui makes it easy to use dockable windows (based on ImGui [docking branch](https://github.com/ocornut/imgui/tree/docking)).
@@ -506,7 +439,7 @@ HelloImGui will then provide a "View" menu with options to show/hide the dockabl
 
 ![demo docking](https://traineq.org/ImGuiBundle/HelloImGuiLayout.gif)
 
-* Source for this example: [src/hello_imgui_demos/hello_imgui_demodocking](../../src/hello_imgui_demos/hello_imgui_demodocking)
+* Source for this example: [src/hello_imgui_demos/hello_imgui_demodocking](https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_imgui_demodocking)
 * [Video explanation on YouTube](https://www.youtube.com/watch?v=XKxmz__F4ow) (5 minutes)
 
 
@@ -537,7 +470,7 @@ Inside DockingParams, the member `dockingSplits` specifies the layout, and the m
  specifies the list of dockable windows, along with their default location, and their code (given by lambdas).
 
 
-#### Docking Params: Example usage
+## Docking Params: Example usage
 
 
 Below is an example that shows how to instantiate a layout:
@@ -616,7 +549,7 @@ HelloImGui::Run(runnerParams);
 ```
 
 
-#### Docking Splits
+## Docking Splits
 
 
 **DockingSplit** is a struct that defines the way the docking splits should be applied on the screen
@@ -638,7 +571,7 @@ Direction where this dock space should be created.
 * `nodeFlags`: *ImGuiDockNodeFlags_ (enum)*. Flags to apply to the new dock space (enable/disable resizing, splitting, tab bar, etc.)
 
 
-#### Dockable window
+## Dockable window
 
 
 **DockableWindow** is a struct that represents a window that can be docked.
@@ -665,7 +598,7 @@ _Members:_
 * `focusWindowAtNextFrame`: _bool, default = false_. If set to true this window will be focused at the next frame.
 
 
-#### Docking Params
+## Docking Params
 
 
 **DockingParams** contains all the settings concerning the docking,
@@ -698,158 +631,7 @@ _Members:_
    **Warning**: this will work reliably only if layoutCondition = DockingLayoutCondition::ApplicationStart. In other
    cases, the ID may be cached by ImGui himself at the first run, and HelloImGui will *not* know it on subsequent runs!
 
----
-
-## Handling screen with high DPI: items positioning and font loading
-
-
-Special care must be taken in order to correctly handle screen with high DPI (for example, almost all recent laptops screens).
-Otherwise, widgets might be misplaced or too small, and font rendering might be blurry or too small.
-
-### How to position widgets on a window in a Dpi independent way
-
-Using ImVec2 with fixed values is *almost always a bad idea* if you intend your application to be used on high DPI screens.
-Instead you can:
-* either multiply those values by ImGui::GetFontSize()
-* or use `HelloImGui::EmToVec2(x, y)` which will do this multiplication for you. Em stand for the `em` measurements,
-   as used in CSS: 1em simply correspond to the current font height.
-
-
-### How to load fonts for a crisp font rendering and a correct size
-
-HelloImGui provides `HelloImGui::DpiFontLoadingFactor()` which corresponds to:
-    `DpiWindowSizeFactor() * 1.f / ImGui::GetIO().FontGlobalScale`
-              where DpiWindowSizeFactor() is equal to `CurrentScreenPixelPerInch / 96` under windows and linux, 1 under macOS
-
-==> When loading fonts, multiply their size by this factor!
-
-### More details on DPI handling with different OS and backends
-
-Let's consider screen whose physical pixel resolution is 3600x2000, but which will displayed with a scaling factor of 200%,
- so that widgets do not look too small on it.
-
-The way it is handled depends on the OS:
-- On MacOS, the screen will be seen as having a resolution of 1800x1000, and the OS handles the resizing by itself.
-- On Linux, and on Windows if the application is DPI aware, the screen will be seen as having a resolution of 3600x2000.
-- On Windows if the application is not DPI aware, the screen will be seen as having a resolution of 1800x1000
-
-By default, if using the glfw backend, applications will be Dpi aware under windows.
-Sdl applications are normally not Dpi aware. However HelloImGui makes them Dpi aware when using the sdl backend.
-
-
-### HelloImGui Dpi aware C++ API
-
-`HelloImGui::EmSize()` (C++) and `hello_imgui.em_size()` (Python) return the visible font size on the screen.
-For reproducible results, even on HighDPI screens, always scale your widgets and windows relatively to this size.
- It is somewhat comparable to the [em CSS Unit](https://lyty.dev/css/css-unit.html).
-
-`HelloImGui::EmToVec2(x, y)` (C++) and `hello_imgui.em_to_vec2(x,y)` (Python) return an ImVec2 that you can use
- to size or place your widgets in a DPI independent way.
-
-`HelloImGui::EmSize(nbLines)` (C++) and `hello_imgui.em_size(nb_lines)` (Python) return a size corresponding to nbLines text lines
-
-`HelloImGui::DpiFontLoadingFactor()` (C++) and `hello_imgui.dpi_font_loading_factor()` (Python) return a factor by
- which you shall multiply your font sizes when loading fonts manually with _ImGui::GetIO().Fonts->AddFont..._
- HelloImGui::LoadFontTTF does this by default.
-
-`HelloImGui::ImGuiDefaultFontGlobalScale()` (C++) and `hello_imgui.imgui_default_font_global_scale()` (Python) returns the
- default value that should be stored inside `ImGui::GetIO().FontGlobalScale`.
- Under windows and linux, this is always 1: no rescaling should be done by ImGui. Under macOS and emscripten,
- this can be < 1 (for example it will be 0.5 if the dpi scaling is 200%)
-
-----
-
-## Applications assets
-
-See [hello_imgui_assets.h](hello_imgui_assets.h).
-
-#### Assets Files structure
-
-
-Assets located beside the application CMakeLists are embedded automatically.
-
-For example, you can have the following project structure:
-```
-my_app/
-├── CMakeLists.txt        # Your app's CMakeLists
-├── assets/               # Its assets: for mobile devices and emscripten
-│         └── fonts/            # they are embedded automatically by hello_imgui_add_app.cmake
-│             └── my_font.ttf
-├── my_app.main.cpp       # Its source code
-```
-
-Then you can load the asset "fonts/my_font.ttf", on all platforms.
-
-
-#### Load Assets as data buffer
-
-
-* `AssetFileData LoadAssetFileData(const char *assetPath)` will load an entire asset file into memory.
- This works on all platforms, including android.
- ```cpp
-    struct AssetFileData
-    {
-        void * data = nullptr;
-        size_t dataSize = 0;
-    };
- ```
-* `FreeAssetFileData(AssetFileData * assetFileData)` will free the memory.
-  Note: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
-  and will free the memory for you.
-
-
-#### Get assets path
-
-
-`std::string AssetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
-
-This works under all platforms __except Android__.
-For compatibility with Android and other platforms, prefer to use `LoadAssetFileData` whenever possible.
-
-* Under iOS it will give a path in the app bundle (/private/XXX/....)
-* Under emscripten, it will be stored in the virtual filesystem at "/"
-* Under Android, assetFileFullPath is *not* implemented, and will throw an error:
-  assets can be compressed under android, and you cannot use standard file operations!
-  Use LoadAssetFileData instead
-
-
-----
-
-## Display images
-
-#### HelloImGui::ImageFromAsset
-
-See [image_from_asset.h](image_from_asset.h).
-
-
-* `HelloImGui::ImageFromAsset(const char *assetPath, size, ...)`: will display a static image from the assets.
-* `bool HelloImGui::ImageButtonFromAsset(const char *assetPath, size, ...)`: will display a button using an image from the assets.
-* `ImTextureID HelloImGui::ImTextureIdFromAsset(const char *assetPath)`: will return a texture ID for an image loaded from the assets.
-* `ImVec2 HelloImGui::ImageSizeFromAsset(const char *assetPath)`: will return the size of an image loaded from the assets.
-* `ImVec2 HelloImGui::ImageProportionalSize(const ImVec2& askedSize, const ImVec2& imageSize)`:
-   Will return the displayed size of an image.
-   if askedSize.x or askedSize.y is 0, then the corresponding dimension will be computed from the image size, keeping the aspect ratio.
-   if askedSize.x>0 and askedSize.y> 0, then the image will be scaled to fit exactly the askedSize, thus potentially changing the aspect ratio.
-   Note: this function is used internally by ImageFromAsset and ImageButtonFromAsset, so you don't need to call it directly.
-
-Images are loaded when first displayed, and then cached (they will be freed just before the application exits).
-
-For example, given this files structure:
-```
-├── CMakeLists.txt
-├── assets/
-│   └── my_image.jpg
-└── my_app.main.cpp
-```
-
-then, you can display "my_image.jpg", using:
-
-```cpp
-HelloImGui::ImageFromAsset("my_image.jpg");
-```
-
-
-## Backend Pointers
+# Backend Pointers
 
 
 **BackendPointers** is a struct that contains optional pointers to the backend implementations (for SDL and GLFW).
@@ -871,32 +653,3 @@ Note: If using the Metal, Vulkan or DirectX rendering backend, you can find some
  `src/hello_imgui/internal/backend_impls/rendering_dx11.h`
  `src/hello_imgui/internal/backend_impls/rendering_dx12.h`
 
-## Store user settings in the ini file
-
-See [hello_imgui.h](hello_imgui.h).
-
-
-You may store additional user settings in the application settings. This is provided as a convenience only,
-and it is not intended to store large quantities of text data. Use sparingly.
-
-* `SaveUserPref(string userPrefName, string userPrefContent)`:
-  Shall be called in the callback runnerParams.callbacks.BeforeExit
-
-* `string LoadUserPref(string& userPrefName)`
-  Shall be called in the callback runnerParams.callbacks.PostInit
-
-## Switch between several layouts
-
-See [hello_imgui.h](hello_imgui.h).
-
-
- In advanced cases when several layouts are available, you can switch between layouts.
-(see demo inside [hello_imgui_demodocking.main.cpp](../hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp))
-
-* `SwitchLayout(layoutName)`
-  Changes the application current layout. Only used in advanced cases when several layouts are available,
-  i.e. if you filled runnerParams.alternativeDockingLayouts.
-* `CurrentLayoutName()`: returns the name of the current layout
-
-
-----

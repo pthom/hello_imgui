@@ -45,12 +45,14 @@ include(hello_imgui_add_app)
 # On desktop platforms, it will install the "app exe" and the "assets" folder in the install folder.
 option(HELLOIMGUI_ADD_APP_WITH_INSTALL "Add cmake install() instructions with hello_imgui_add_app" ON)
 
+# </hello_imgui_add_app>  # do not remove this line (used by the script that generates the documentation)
 
 ###############################################################################
 # HelloImGui Build options
 ###############################################################################
 
 ################################################################################
+# <Backends> # do not remove this line (used by the script that generates the documentation)
 # Available backends combinations: HelloImGui needs to use at least one of them.
 # If you specify no option:
 # - HELLOIMGUI_USE_GLFW_OPENGL3 will be used for Windows, Linux, and macOS
@@ -58,8 +60,10 @@ option(HELLOIMGUI_ADD_APP_WITH_INSTALL "Add cmake install() instructions with he
 #
 # Note:
 # - Only one rendering backend can be used at a time (OpenGL3, Metal or Vulkan)!
-# - You may select multiple platform backends (for example, you may select both SDL and Glfw3)
-# - Combinations using OpenGL3 as a renderer are easier to use, and are recommended, especially for beginners.
+# - You may select multiple platform backends
+#   (for example, you may select both SDL and Glfw3)
+# - Combinations using OpenGL3 as a renderer are easier to use,
+#   and are recommended, especially for beginners.
 ################################################################################
 # Standard backends:
 # Use Glfw3 + OpenGl3
@@ -86,6 +90,9 @@ option(HELLOIMGUI_USE_GLFW_DIRECTX11 "Build HelloImGui for Glfw3+DirectX11" OFF)
 # Experimental! DirectX12 was not tested, although it does compile!
 option(HELLOIMGUI_USE_SDL_DIRECTX12 "Build HelloImGui for SDL2+DirectX12" OFF)
 
+# </Backends>  # do not remove this line (used by the script that generates the documentation)
+
+
 #------------------------------------------------------------------------------
 # Options / Freetype
 #------------------------------------------------------------------------------
@@ -99,19 +106,38 @@ endif()
 option(HELLOIMGUI_USE_FREETYPE "Use freetype for text rendering" ${freetype_default})
 
 #------------------------------------------------------------------------------
+# <Dependencies> # do not remove this line (used by the script that generates the documentation)
 # Automatic download of Glfw3, SDL2, and Freetype (provided as a convenience)
-# (disabled by default on Linux, which prefers to use the system libraries,
+#
+# (this is disabled by default on Linux, which prefers to use the system libraries,
 # enabled by default on other platforms)
+#
 # Note:
-# - SDL and Glfw3 will be downloaded if:
+#
+# SDL and Glfw3 will be downloaded only if:
+# -----------------------------------------
 #   - HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED or HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED is ON
 #   - HELLOIMGUI_USE_SDL_XXXX or HELLOIMGUI_USE_GLFW_XXXX is ON
-#   - find_package(glfw3 or SDL2) fails. If a system library is found, or a user library provided
-#     in a path added to CMAKE_PREFIX_PATH, it will be used instead
-#   - In the case of Glfw3, if a target named glfw is already defined, it will be used instead
-# - Freetype will be downloaded if:
-#   - HELLOIMGUI_DOWNLOAD_FREETYPE is ON, HELLOIMGUI_USE_FREETYPE is ON, and find_package(freetype) fails
-#   - Or of HELLOIMGUI_FREETYPE_STATIC is ON
+#   - SDL and/or Glfw3 were not added as CMake target
+#     (add_subdirectory(external/SDL) or add_subdirectory(external/glfw) for example)
+#   - find_package(glfw3 or SDL2) fails. If a system library is found,
+#     or a user library provided in a path added to CMAKE_PREFIX_PATH,
+#     it will be used instead
+#
+# - Freetype will be downloaded only if:
+# --------------------------------------
+#   - HELLOIMGUI_DOWNLOAD_FREETYPE is ON, HELLOIMGUI_USE_FREETYPE is ON
+#   - Freetype was not added as a CMake target
+#         (add_subdirectory(external/freetype) for example)
+#   - find_package(freetype) fails
+#   (it will also be forcibly downloaded if HELLOIMGUI_FREETYPE_STATIC is ON)
+#
+#
+# Automatic download of SDL2, Glfw3, and Freetype is disabled by default on Linux,
+# because it is recommended to use the system libraries instead:
+# On ubuntu, you can install them with:
+#    sudo apt install libglfw3-dev libsdl2-dev libfreetype-dev
+#
 #------------------------------------------------------------------------------
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     set(autodownload_default OFF)
@@ -123,6 +149,7 @@ option(HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED "Download and build GLFW if needed" ${a
 option(HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED "Download and build Freetype if needed" ${autodownload_default})
 option(HELLOIMGUI_FREETYPE_STATIC "Force static linking of freetype (only used for python bindings)" OFF)
 
+# </Dependencies>  # do not remove this line (used by the script that generates the documentation)
 
 #------------------------------------------------------------------------------
 # Options / Windows: provide WinMain automatically

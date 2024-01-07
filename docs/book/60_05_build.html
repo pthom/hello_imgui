@@ -390,23 +390,17 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supported-platforms-and-backends">Supported platforms and backends</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#clone-the-repository">Clone the repository</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#easy-build-on-desktop-platforms-using-glfw">Easy build on desktop platforms using Glfw</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-build-select-your-preferred-backend">Custom build: select your preferred backend</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-for-windows-use-int-main-int-char">Build for Windows: use <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">main(int,</span> <span class="pre">char**)</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-instructions-for-ios">Build instructions for iOS</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-instructions-for-emscripten">Build instructions for emscripten</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-the-requirements-emsdk">Install the requirements (emsdk)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build-for-emscripten">Build for emscripten</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#customizing-the-emscripten-build">Customizing the emscripten build</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-build-terminal-executables-under-macos">How to build terminal executables under macOS</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-and-deploy-instructions-for-android">Build and deploy instructions for Android</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#set-android-required-environment-variables">Set Android required environment variables</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-cmake-in-order-to-create-an-android-studio-project">Run cmake in order to create an Android studio project</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-for-android">Customize for Android</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-hello-imgui-and-its-demos">Build Hello ImGui and its demos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-your-application-using-helloimgui">Build your application using HelloImGui</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-backends">Available backends</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#helloimgui-dependencies">HelloImGui dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hello-imgui-cmake-options">Hello ImGui CMake options:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#os-specific-instructions">OS specific instructions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#windows-instructions">Windows instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ios-instructions">iOS instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emscripten-instructions">Emscripten instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#macos-instructions">macOS instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#android-instructions">Android instructions</a></li>
 </ul>
 </li>
 </ul>
@@ -422,186 +416,171 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="build-instructions">
 <h1>Build instructions<a class="headerlink" href="#build-instructions" title="Permalink to this heading">#</a></h1>
-<section id="supported-platforms-and-backends">
-<h2>Supported platforms and backends<a class="headerlink" href="#supported-platforms-and-backends" title="Permalink to this heading">#</a></h2>
-<p><strong>Platforms:</strong>  Windows, Linux, OSX, iOS, Emscripten, Android (poorly supported)</p>
-<p><strong>Backends:</strong>: SDL2 + OpenGL 3 or OpenGLES3 for mobile devices, Glfw3 + OpenGL 3</p>
-</section>
-<section id="clone-the-repository">
-<h2>Clone the repository<a class="headerlink" href="#clone-the-repository" title="Permalink to this heading">#</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/pthom/hello_imgui.git
+<section id="build-hello-imgui-and-its-demos">
+<h2>Build Hello ImGui and its demos<a class="headerlink" href="#build-hello-imgui-and-its-demos" title="Permalink to this heading">#</a></h2>
+<p>On almost all platforms, HelloImGui can be compiled with simple commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="sb">```</span>bash
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/pthom/hello_imgui.git
 <span class="nb">cd</span><span class="w"> </span>hello_imgui
-git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w"> </span>--init
-</pre></div>
-</div>
-</section>
-<section id="easy-build-on-desktop-platforms-using-glfw">
-<h2>Easy build on desktop platforms using Glfw<a class="headerlink" href="#easy-build-on-desktop-platforms-using-glfw" title="Permalink to this heading">#</a></h2>
-<p>On Desktop platforms (Linux, MacOS, Windows), if  you do not specify any backend option, HelloImGui will automatically download Glfw and link with it.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build
-<span class="nb">cd</span><span class="w"> </span>build<span class="w"> </span>
-cmake<span class="w"> </span>..
+mkdir<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>..<span class="w"> </span>
 make<span class="w"> </span>-j
 </pre></div>
 </div>
+<p>This will compile the HelloImGui library, and the demos (which will be located in the build/bin/ folder).</p>
 </section>
-<section id="custom-build-select-your-preferred-backend">
-<h2>Custom build: select your preferred backend<a class="headerlink" href="#custom-build-select-your-preferred-backend" title="Permalink to this heading">#</a></h2>
-<p>In order to select your own backend, use one of the cmake options below:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>..<span class="w"> </span>-DHELLOIMGUI_USE_GLFW_OPENGL3<span class="o">=</span>ON
-cmake<span class="w"> </span>..<span class="w"> </span>-DHELLOIMGUI_USE_SDL_OPENGL3<span class="o">=</span>ON
+<section id="build-your-application-using-helloimgui">
+<h2>Build your application using HelloImGui<a class="headerlink" href="#build-your-application-using-helloimgui" title="Permalink to this heading">#</a></h2>
+<p>To build an application that uses HelloImGui, you can either place HelloImGui inside your project (for example as a submodule), or it can be downloaded and built automatically by cmake.</p>
+<p>In any case, follow the build instructions given in the <a class="reference external" href="https://github.com/pthom/hello_imgui_template">HelloImGui Starter Template</a></p>
+</section>
+<section id="available-backends">
+<h2>Available backends<a class="headerlink" href="#available-backends" title="Permalink to this heading">#</a></h2>
+<p>See documentation below (extract from <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/CMakeLists.txt">CMakeLists.txt</a>):</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="c"># Available backends combinations: HelloImGui needs to use at least one of them.</span>
+<span class="c"># If you specify no option:</span>
+<span class="c"># - HELLOIMGUI_USE_GLFW_OPENGL3 will be used for Windows, Linux, and macOS</span>
+<span class="c"># - HELLOIMGUI_USE_SDL_OPENGL3 will be used for Android, iOS and emscripten</span>
+<span class="c">#</span>
+<span class="c"># Note:</span>
+<span class="c"># - Only one rendering backend can be used at a time (OpenGL3, Metal or Vulkan)!</span>
+<span class="c"># - You may select multiple platform backends</span>
+<span class="c">#   (for example, you may select both SDL and Glfw3)</span>
+<span class="c"># - Combinations using OpenGL3 as a renderer are easier to use,</span>
+<span class="c">#   and are recommended, especially for beginners.</span>
+<span class="c">################################################################################</span>
+<span class="c"># Standard backends:</span>
+<span class="c"># Use Glfw3 + OpenGl3</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_GLFW_OPENGL3</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for Glfw3+OpenGL3&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Use SDL2 + OpenGL3</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_SDL_OPENGL3</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for SDL2+OpenGL3&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+
+<span class="c"># Advanced backends, for experienced users:</span>
+<span class="c">#   Vulkan, Metal, and DirectX11 do work, but you may need to customize the rendering code inside HelloImGui:</span>
+<span class="c">#   see src/hello_imgui/internal/backend_impls/rendering_xxxx.[h,cpp]</span>
+<span class="c">#   (using those backends probably implies that you want to heavily customize the rendering code)</span>
+<span class="c"># Use Glfw3 + Metal (Apple only)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_GLFW_METAL</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for Glfw3+Metal&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Use SDL2 + Metal (Apple only)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_SDL_METAL</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for SDL2+Metal&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Use Glfw3 + Vulkan</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_GLFW_VULKAN</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for Glfw3+Vulkan&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Use SDL2 + Vulkan</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_SDL_VULKAN</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for SDL2+Vulkan&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Use SDL2 + DirectX 11 (Note: there is a known issue with DirectX11, see src/hello_imgui/internal/backend_impls/rendering_dx11.h)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_SDL_DIRECTX11</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for SDL2+DirectX11&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Use Glfw3 + DirectX 11 (Note: there is a known issue with DirectX11, see src/hello_imgui/internal/backend_impls/rendering_dx11.h)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_GLFW_DIRECTX11</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for Glfw3+DirectX11&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Experimental! DirectX12 was not tested, although it does compile!</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_SDL_DIRECTX12</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for SDL2+DirectX12&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In order to select your own backend, use one of the afore mentioned backend combinations, for example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>..<span class="w"> </span>-HELLOIMGUI_USE_SDL_OPENGL3<span class="o">=</span>ON
 </pre></div>
 </div>
 </section>
-<section id="build-for-windows-use-int-main-int-char">
-<h2>Build for Windows: use <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">main(int,</span> <span class="pre">char**)</span></code><a class="headerlink" href="#build-for-windows-use-int-main-int-char" title="Permalink to this heading">#</a></h2>
+<section id="helloimgui-dependencies">
+<h2>HelloImGui dependencies<a class="headerlink" href="#helloimgui-dependencies" title="Permalink to this heading">#</a></h2>
+<p>HelloImGui depends on the following libraries:</p>
+<ul class="simple">
+<li><p><strong>Glfw3 or SDL2</strong>, depending on the platform backend you selected</p></li>
+<li><p><strong>Freetype</strong>, for font rendering, if HELLOIMGUI_USE_FREETYPE is ON, which is the default</p></li>
+</ul>
+<p>Those dependencies may be downloaded and built automatically by cmake, or you can provide your own version of those libraries.</p>
+<p>See documentation below (extract from <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/CMakeLists.txt">CMakeLists.txt</a>):</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="c"># Automatic download of Glfw3, SDL2, and Freetype (provided as a convenience)</span>
+<span class="c">#</span>
+<span class="c"># (this is disabled by default on Linux, which prefers to use the system libraries,</span>
+<span class="c"># enabled by default on other platforms)</span>
+<span class="c">#</span>
+<span class="c"># Note:</span>
+<span class="c">#</span>
+<span class="c"># SDL and Glfw3 will be downloaded only if:</span>
+<span class="c"># -----------------------------------------</span>
+<span class="c">#   - HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED or HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED is ON</span>
+<span class="c">#   - HELLOIMGUI_USE_SDL_XXXX or HELLOIMGUI_USE_GLFW_XXXX is ON</span>
+<span class="c">#   - SDL and/or Glfw3 were not added as CMake target</span>
+<span class="c">#     (add_subdirectory(external/SDL) or add_subdirectory(external/glfw) for example)</span>
+<span class="c">#   - find_package(glfw3 or SDL2) fails. If a system library is found,</span>
+<span class="c">#     or a user library provided in a path added to CMAKE_PREFIX_PATH,</span>
+<span class="c">#     it will be used instead</span>
+<span class="c">#</span>
+<span class="c"># - Freetype will be downloaded only if:</span>
+<span class="c"># --------------------------------------</span>
+<span class="c">#   - HELLOIMGUI_DOWNLOAD_FREETYPE is ON, HELLOIMGUI_USE_FREETYPE is ON</span>
+<span class="c">#   - Freetype was not added as a CMake target</span>
+<span class="c">#         (add_subdirectory(external/freetype) for example)</span>
+<span class="c">#   - find_package(freetype) fails</span>
+<span class="c">#   (it will also be forcibly downloaded if HELLOIMGUI_FREETYPE_STATIC is ON)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># Automatic download of SDL2, Glfw3, and Freetype is disabled by default on Linux,</span>
+<span class="c"># because it is recommended to use the system libraries instead:</span>
+<span class="c"># On ubuntu, you can install them with:</span>
+<span class="c">#    sudo apt install libglfw3-dev libsdl2-dev libfreetype-dev</span>
+<span class="c">#</span>
+<span class="c">#------------------------------------------------------------------------------</span>
+<span class="nb">if</span><span class="p">(</span><span class="s">CMAKE_SYSTEM_NAME</span><span class="w"> </span><span class="s">MATCHES</span><span class="w"> </span><span class="s2">&quot;Linux&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">set</span><span class="p">(</span><span class="s">autodownload_default</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="nb">else</span><span class="p">()</span>
+<span class="w">    </span><span class="nb">set</span><span class="p">(</span><span class="s">autodownload_default</span><span class="w"> </span><span class="s">ON</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED</span><span class="w"> </span><span class="s2">&quot;Download and build GLFW if needed&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">autodownload_default</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED</span><span class="w"> </span><span class="s2">&quot;Download and build GLFW if needed&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">autodownload_default</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED</span><span class="w"> </span><span class="s2">&quot;Download and build Freetype if needed&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">autodownload_default</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_FREETYPE_STATIC</span><span class="w"> </span><span class="s2">&quot;Force static linking of freetype (only used for python bindings)&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="hello-imgui-cmake-options">
+<h2>Hello ImGui CMake options:<a class="headerlink" href="#hello-imgui-cmake-options" title="Permalink to this heading">#</a></h2>
+<p>The <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/CMakeLists.txt">CMakelists.txt</a> file is heavily documented.</p>
+<p>Below are the most important options:</p>
+<p><strong>Freetype</strong> (default: ON, except for Android and Mingw)</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_FREETYPE</span><span class="w"> </span><span class="s2">&quot;Use freetype for text rendering&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">freetype_default</span><span class="o">}</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>ImGui Test Engine</strong> (default: OFF)</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_WITH_TEST_ENGINE</span><span class="w"> </span><span class="s2">&quot;Provide ImGui Test engine&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="os-specific-instructions">
+<h2>OS specific instructions<a class="headerlink" href="#os-specific-instructions" title="Permalink to this heading">#</a></h2>
+<section id="windows-instructions">
+<h3>Windows instructions<a class="headerlink" href="#windows-instructions" title="Permalink to this heading">#</a></h3>
 <p>Under windows, Hello ImGui will automatically provide a <a class="reference download internal" download="" href="_downloads/4af1447f07138c0eb1b6df8b09b1f41d/HelloImGui_WinMain.cpp"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">WinMain()</span></code> function</span></a> that will call main, and expects its signature to be <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">main(int,</span> <span class="pre">char**)</span></code>. You may get a linker error if your main function signature is for example <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">main()</span></code>.</p>
 <p>You can disable this via cmake by passing <code class="docutils literal notranslate"><span class="pre">-DHELLOIMGUI_WIN32_AUTO_WINMAIN=OFF</span></code> as a command line cmake option. In this case, write your own <code class="docutils literal notranslate"><span class="pre">WinMain</span></code> under windows.</p>
 <p>Warning: if using SDL, you will need to <code class="docutils literal notranslate"><span class="pre">#define</span> <span class="pre">SDL_MAIN_HANDLED</span></code> before any inclusion of SDL.h (to refrain SDL from #defining  <code class="docutils literal notranslate"><span class="pre">#define</span> <span class="pre">main</span> <span class="pre">SDL_main</span></code>)</p>
 </section>
-<section id="build-instructions-for-ios">
-<h2>Build instructions for iOS<a class="headerlink" href="#build-instructions-for-ios" title="Permalink to this heading">#</a></h2>
+<section id="ios-instructions">
+<h3>iOS instructions<a class="headerlink" href="#ios-instructions" title="Permalink to this heading">#</a></h3>
 <p>“SDL + OpenGL ES3” is currently the preferred backend for iOS.</p>
-<p>This project uses the <a class="reference external" href="https://github.com/leetal/ios-cmake">ios-cmake</a> toolchain which is a submodule in the folder <a class="reference external" href="https://github.com/pthom/hello_imgui/tree/master">hello_imgui_cmake/</a>.</p>
-<ol class="arabic simple">
-<li><p>Launch cmake with correct team and bundle url parts:</p></li>
-</ol>
-<p>Adapt the command below, by:</p>
-<ul class="simple">
-<li><p>adding your own development team Id after <code class="docutils literal notranslate"><span class="pre">-DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=</span></code> ,</p></li>
-<li><p>setting HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART (for example <code class="docutils literal notranslate"><span class="pre">-DHELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART=com.org_name_or_email</span></code>)</p></li>
-<li><p>setting the correct platform (-DPLATFORM): see <a class="github reference external" href="https://github.com/leetal/ios-cmake">leetal/ios-cmake</a> (-DPLATFORM=OS64COMBINED will build for iOS and its simulator).</p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build_ios_sdl
-<span class="nb">cd</span><span class="w"> </span>build_ios_sdl
-cmake<span class="w"> </span>..<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-GXcode<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-DCMAKE_TOOLCHAIN_FILE<span class="o">=</span>../hello_imgui_cmake/ios-cmake/ios.toolchain.cmake<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-DHELLOIMGUI_USE_SDL_OPENGL3<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-DPLATFORM<span class="o">=</span>OS64COMBINED<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM<span class="o">=</span>...<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-DHELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART<span class="o">=</span>...<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>..
-</pre></div>
-</div>
+<p>This project uses the <a class="reference external" href="https://github.com/leetal/ios-cmake">ios-cmake</a> toolchain which is a submodule in the folder <a class="reference external" href="https://github.com/pthom/hello_imgui/tree/master/hello_imgui_cmake">hello_imgui_cmake/</a>.</p>
+<p>See compilation instructions in the <a class="reference external" href="https://github.com/pthom/hello_imgui_template">HelloImGui Starter Template</a></p>
 </section>
-<hr class="docutils" />
-<section id="build-instructions-for-emscripten">
-<h2>Build instructions for emscripten<a class="headerlink" href="#build-instructions-for-emscripten" title="Permalink to this heading">#</a></h2>
+<section id="emscripten-instructions">
+<h3>Emscripten instructions<a class="headerlink" href="#emscripten-instructions" title="Permalink to this heading">#</a></h3>
 <blockquote>
 <div><p><a class="reference external" href="https://emscripten.org/">emscripten</a> is a toolchain for compiling to asm.js and WebAssembly, built using LLVM, that lets you run C and C++ on the web at near-native speed without plugins.</p>
 </div></blockquote>
-<section id="install-the-requirements-emsdk">
-<h3>Install the requirements (emsdk)<a class="headerlink" href="#install-the-requirements-emsdk" title="Permalink to this heading">#</a></h3>
-<p>You can either install emsdk following <a class="reference external" href="https://emscripten.org/docs/getting_started/downloads.html">the instruction on the emscripten website</a> or you can use the script <a class="reference download internal" download="" href="_downloads/93bb9ad2801a2d3d46877f812e5f97de/install_emscripten.sh"><span class="xref download myst">tools/emscripten/install_emscripten.sh</span></a>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>../tools/emscripten/install_emscripten.sh
-</pre></div>
-</div>
-<p>This script will download and install emscripten into <code class="docutils literal notranslate"><span class="pre">~/emsdk</span></code></p>
-</section>
-<section id="build-for-emscripten">
-<h3>Build for emscripten<a class="headerlink" href="#build-for-emscripten" title="Permalink to this heading">#</a></h3>
-<ol class="arabic simple">
-<li><p>Add emsdk to your shell path;</p></li>
-</ol>
-<p>You need to <strong>source</strong> the script ~/emsdk/emsdk_env.sh</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>~/emsdk/emsdk_env.sh
-</pre></div>
-</div>
-<ol class="arabic simple" start="2">
-<li><p>Run cmake, using “emcmake”:</p></li>
-</ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build_emscripten
-<span class="nb">cd</span><span class="w"> </span>build_emscripten
-emcmake<span class="w"> </span>cmake<span class="w"> </span>..
-</pre></div>
-</div>
-<ol class="arabic simple" start="3">
-<li><p>Build</p></li>
-</ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span>
-</pre></div>
-</div>
-<ol class="arabic simple" start="4">
-<li><p>Test your emscripten application</p></li>
-</ol>
-<p>You will need a web server. Python provides a basic web server that is easy to usen which you can launch like this:</p>
+<p>See compilation instruction in the <a class="reference external" href="https://github.com/pthom/hello_imgui_template">HelloImGui Starter Template</a></p>
+<p>To test your emscripten application, you will need a web server. Python provides a basic web server that is easy to usen which you can launch like this:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>build_emscripten
 python3<span class="w"> </span>-m<span class="w"> </span>http.server
 </pre></div>
 </div>
 <p>Open a browser, and navigate to <a class="reference external" href="http://localhost:8000">http://localhost:8000</a>.</p>
-<p>For example, the docking demo will be available at
-<a class="reference external" href="http://localhost:8000/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html">http://localhost:8000/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.html</a></p>
 </section>
-<section id="customizing-the-emscripten-build">
-<h3>Customizing the emscripten build<a class="headerlink" href="#customizing-the-emscripten-build" title="Permalink to this heading">#</a></h3>
-<p>Refer to the <a class="reference external" href="https://emscripten.org/">emscripten docs</a></p>
-<p>By default, the application will be presented inside an empty html page.
-You can adapt this page by modyfing the “shell”: copy the file <a class="reference download internal" download="" href="_downloads/37590554e21554d5ea27aaaf90ec60f5/shell.emscripten.html"><span class="xref download myst">hello_imgui_cmake/emscripten/shell.emscripten.html</span></a>
-into your app source dir, and adapt it to your needs.</p>
-</section>
-</section>
-<section id="how-to-build-terminal-executables-under-macos">
-<h2>How to build terminal executables under macOS<a class="headerlink" href="#how-to-build-terminal-executables-under-macos" title="Permalink to this heading">#</a></h2>
+<section id="macos-instructions">
+<h3>macOS instructions<a class="headerlink" href="#macos-instructions" title="Permalink to this heading">#</a></h3>
 <p>If you prefer to build regular terminal executables (not app bundles), use the cmake option <code class="docutils literal notranslate"><span class="pre">-DHELLOIMGUI_MACOS_NO_BUNDLE=ON</span></code>.</p>
 </section>
-<section id="build-and-deploy-instructions-for-android">
-<h2>Build and deploy instructions for Android<a class="headerlink" href="#build-and-deploy-instructions-for-android" title="Permalink to this heading">#</a></h2>
+<section id="android-instructions">
+<h3>Android instructions<a class="headerlink" href="#android-instructions" title="Permalink to this heading">#</a></h3>
 <p>The Android version uses SDL + OpenGLES3.</p>
-<p><em>Note: The Android version is currently not actively maintained.</em></p>
-<section id="set-android-required-environment-variables">
-<h3>Set Android required environment variables<a class="headerlink" href="#set-android-required-environment-variables" title="Permalink to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">ANDROID_HOME</span><span class="o">=</span>/path/to/AndroidSdk
-<span class="nb">export</span><span class="w"> </span><span class="nv">ANDROID_NDK_HOME</span><span class="o">=</span>/path/to/AndroidNdk
-</pre></div>
-</div>
-<p>For example (MacOS):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">ANDROID_HOME</span><span class="o">=</span>/Users/Me/Library/Android/sdk
-<span class="nb">export</span><span class="w"> </span><span class="nv">ANDROID_NDK_HOME</span><span class="o">=</span>/Users/Me//Library/Android/sdk/ndk/21.3.6528147
-</pre></div>
-</div>
-<p>If <code class="docutils literal notranslate"><span class="pre">ANDROID_NDK_HOME</span></code> is unset, by default, the scripts will look for Android-ndk inside <code class="docutils literal notranslate"><span class="pre">$ANDROID_HOME/ndk-bundle</span></code>.</p>
-</section>
-<section id="run-cmake-in-order-to-create-an-android-studio-project">
-<h3>Run cmake in order to create an Android studio project<a class="headerlink" href="#run-cmake-in-order-to-create-an-android-studio-project" title="Permalink to this heading">#</a></h3>
-<p>The script <a class="reference download internal" download="" href="_downloads/075525ae8f5c89a0604448c8214a1c0f/cmake_arm-android.sh"><span class="xref download myst">tools/android/cmake_arm-android.sh</span></a>  will invoke cmake with the android toolchain, and also <em>create an Android Studio project</em> which
-is multiarch (arm64-v8a, armeabi-v7a, etc), via the option <code class="docutils literal notranslate"><span class="pre">-DHELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT=ON</span></code> (see <a class="reference download internal" download="" href="_downloads/3c54e8d2b47b68ee6a30a0def4fb7e32/_impl_cmake_android.sh"><span class="xref download myst">tools/android/_impl_cmake_android.sh</span></a>)</p>
-<p>Run the following commands:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build_android
-<span class="nb">cd</span><span class="w"> </span>build_android
-../tools/android/cmake_arm-android.sh<span class="w"> </span>..
-</pre></div>
-</div>
-<p>Your build directory will now look like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>build_android/
-├── CMakeCache.txt
-├── ...
-├── hello-imgui-demo-classic_AndroidStudio/
-├── hello_imgui_demo_minimal_AndroidStudio/
-├── hello_imgui_demodocking_AndroidStudio/
-├── hello_world_AndroidStudio/
-├── ...
-</pre></div>
-</div>
-<p>The folders “xxxx_AndroidStudio” contain Android Studio projects, which you can use to build and debug your app.</p>
-<p>You can now open (for example) the project hello_imgui_demodocking_AndroidStudio with Android Studio and run it / debug it.</p>
-<p>You can also build the project manually via gradlew like this:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home<span class="w"> </span>
-<span class="nb">cd</span><span class="w"> </span>hello_imgui_demodocking_AndroidStudio
-./gradlew<span class="w"> </span>build
-</pre></div>
-</div>
-<p><em>Note: (you need to first set JAVA_HOME to the correct java version (Android requires exactly jdk8), the path given here is for MacOS users, where adoptopenjdk provides the correct version)</em></p>
-<p>You can also install the app via command line, like this:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./gradlew<span class="w"> </span>installDebug
-</pre></div>
-</div>
-</section>
-<hr class="docutils" />
-<section id="customize-for-android">
-<h3>Customize for Android<a class="headerlink" href="#customize-for-android" title="Permalink to this heading">#</a></h3>
-<p>See intructions in <a class="reference external" href="https://github.com/pthom/hello_imgui_template/">Hello ImGui Template</a>.</p>
+<p>See compilation instructions in the <a class="reference external" href="https://github.com/pthom/hello_imgui_template">HelloImGui Starter Template</a></p>
 </section>
 </section>
 </section>
@@ -661,23 +640,17 @@ is multiarch (arm64-v8a, armeabi-v7a, etc), via the option <code class="docutils
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supported-platforms-and-backends">Supported platforms and backends</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#clone-the-repository">Clone the repository</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#easy-build-on-desktop-platforms-using-glfw">Easy build on desktop platforms using Glfw</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-build-select-your-preferred-backend">Custom build: select your preferred backend</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-for-windows-use-int-main-int-char">Build for Windows: use <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">main(int,</span> <span class="pre">char**)</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-instructions-for-ios">Build instructions for iOS</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-instructions-for-emscripten">Build instructions for emscripten</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-the-requirements-emsdk">Install the requirements (emsdk)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build-for-emscripten">Build for emscripten</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#customizing-the-emscripten-build">Customizing the emscripten build</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-build-terminal-executables-under-macos">How to build terminal executables under macOS</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-and-deploy-instructions-for-android">Build and deploy instructions for Android</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#set-android-required-environment-variables">Set Android required environment variables</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-cmake-in-order-to-create-an-android-studio-project">Run cmake in order to create an Android studio project</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-for-android">Customize for Android</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-hello-imgui-and-its-demos">Build Hello ImGui and its demos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-your-application-using-helloimgui">Build your application using HelloImGui</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-backends">Available backends</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#helloimgui-dependencies">HelloImGui dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hello-imgui-cmake-options">Hello ImGui CMake options:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#os-specific-instructions">OS specific instructions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#windows-instructions">Windows instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ios-instructions">iOS instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emscripten-instructions">Emscripten instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#macos-instructions">macOS instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#android-instructions">Android instructions</a></li>
 </ul>
 </li>
 </ul>

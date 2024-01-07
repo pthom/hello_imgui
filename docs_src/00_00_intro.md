@@ -35,7 +35,7 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 
 The docking demo show how to handle complex layouts, use themes, store user settings, reduce FPS and CPU usage when idling, load fonts and icons, and much more
 
-![](https://github.com/pthom/hello_imgui/blob/book/docs_src/images/docking.jpg?raw=true)
+![](https://github.com/pthom/hello_imgui/blob/master/docs_src/images/docking.jpg?raw=true)
 
 [Online demo](https://traineq.org/ImGuiBundle/emscripten/bin/demo_docking.html) - [Source](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp) - Video tutorial: [how to handle multiple complex layouts](https://www.youtube.com/watch?v=XKxmz__F4ow)
 
@@ -43,7 +43,7 @@ The docking demo show how to handle complex layouts, use themes, store user sett
 
 How to use a custom 3D background in your app
 
-![](https://github.com/pthom/hello_imgui/blob/book/docs_src/images/custom_background.jpg?raw=true≥)
+![](https://github.com/pthom/hello_imgui/blob/master/docs_src/images/custom_background.jpg?raw=true≥)
 
 [Online demo](https://traineq.org/ImGuiBundle/emscripten/bin/demo_custom_background.html) - [Source](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_custom_background/hello_custom_background.main.cpp)
 
@@ -52,7 +52,7 @@ How to use a custom 3D background in your app
 
 [ImGui Manual](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html) is an interactive Manual for Dear ImGui, built with Hello ImGui.
 
-[![](https://github.com/pthom/hello_imgui/blob/book/docs_src/images/manual.jpg?raw=true)](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html)
+[![](https://github.com/pthom/hello_imgui/blob/master/docs_src/images/manual.jpg?raw=true)](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html)
 
 [Online manual](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html) -
 [Source](https://github.com/pthom/imgui_manual)

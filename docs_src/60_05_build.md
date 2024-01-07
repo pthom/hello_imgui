@@ -24,7 +24,7 @@ In any case, follow the build instructions given in the [HelloImGui Starter Temp
 ## Available backends
 
 See documentation below (extract from [CMakeLists.txt](https://github.com/pthom/hello_imgui/blob/master/CMakeLists.txt)): 
-```{literalinclude} ../../CMakeLists.txt
+```{literalinclude} ../CMakeLists.txt
 :language: cmake
 :start-after: <Backends>
 :end-before: </Backends>
@@ -48,7 +48,7 @@ Those dependencies may be downloaded and built automatically by cmake, or you ca
 
 See documentation below (extract from [CMakeLists.txt](https://github.com/pthom/hello_imgui/blob/master/CMakeLists.txt)):
 
-```{literalinclude} ../../CMakeLists.txt
+```{literalinclude} ../CMakeLists.txt
 :language: cmake
 :start-after: <Dependencies>
 :end-before: </Dependencies>
@@ -75,7 +75,7 @@ option(HELLOIMGUI_WITH_TEST_ENGINE "Provide ImGui Test engine" OFF)
 
 ### Windows instructions
 
-Under windows, Hello ImGui will automatically provide a [`WinMain()` function](../../hello_imgui_cmake/HelloImGui_WinMain.cpp) that will call main, and expects its signature to be `int main(int, char**)`. You may get a linker error if your main function signature is for example `int main()`.
+Under windows, Hello ImGui will automatically provide a [`WinMain()` function](../hello_imgui_cmake/HelloImGui_WinMain.cpp) that will call main, and expects its signature to be `int main(int, char**)`. You may get a linker error if your main function signature is for example `int main()`.
 
 You can disable this via cmake by passing `-DHELLOIMGUI_WIN32_AUTO_WINMAIN=OFF` as a command line cmake option. In this case, write your own `WinMain` under windows.
 

@@ -31,7 +31,7 @@ With this starter template, you do not need to clone HelloImGui, as it (optional
 
 See this extract from the CMakelists.txt file of the template:
 
-```{literalinclude} ../../_example_integration/CMakeLists.txt
+```{literalinclude} ../_example_integration/CMakeLists.txt
 :language: cmake
 :start-at: Build hello_imgui
 :end-at: hello_imgui_add_app
@@ -40,7 +40,7 @@ See this extract from the CMakelists.txt file of the template:
 
 ## CMake utility: hello_imgui_add_app
 
-```{literalinclude} ../../CMakeLists.txt
+```{literalinclude} ../CMakeLists.txt
 :language: cmake
 :start-at: hello_imgui_add_app is a helper function
 :end-before: include(hello_imgui_add_app)
@@ -49,7 +49,7 @@ See this extract from the CMakelists.txt file of the template:
 
 ## Assets and app customization
 
-```{literalinclude} ../../_example_integration/Readme.md
+```{literalinclude} ../_example_integration/Readme.md
 :language: markdown
 :start-after: Assets folder structure
 :end-before: Build instructions
@@ -61,7 +61,7 @@ Hello ImGui is based on [Dear ImGui](https://github.com/ocornut/imgui), which is
 
 With an Immediate mode GUI you can for example display a button and handle the click event in one line of code:
 
-```{literalinclude} ../../src/hello_imgui_demos/hello_globe/hello_globe.main.cpp
+```{literalinclude} ../src/hello_imgui_demos/hello_globe/hello_globe.main.cpp
 :language: cpp
 ```
 

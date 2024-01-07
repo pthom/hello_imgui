@@ -2,33 +2,6 @@
 
 Hello ImGui is a library that enables quickly write multiplatform apps with the simplicity of a "Hello World" app. Although being extremely easy to use, it can be used to create complex and customizable applications. It is based on [Dear ImGui](https://github.com/ocornut/imgui).
 
-**CI Status**
-```{list-table}
-:header-rows: 1
-
-* - OpenGL
-  - Mobile and web
-  - Alternate rendering
-  - Misc
-
-* - [![Win_Mac_Linux](https://github.com/pthom/hello_imgui/workflows/Win_Mac_Linux/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Win_Mac_Linux.yml)
-    [![MinGW](https://github.com/pthom/hello_imgui/workflows/MinGW/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/MinGW.yml)
-
-  - [![iOS](https://github.com/pthom/hello_imgui/workflows/iOS/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/iOS.yml)
-[![Android](https://github.com/pthom/hello_imgui/workflows/Android/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Android.yml)
-[![Emscripten](https://github.com/pthom/hello_imgui/workflows/Emscripten/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Emscripten.yml)
-
-  - [![Metal](https://github.com/pthom/hello_imgui/workflows/Metal/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Metal.yml)
-[![Vulkan](https://github.com/pthom/hello_imgui/workflows/Vulkan/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Vulkan.yml)
-[![DirectX](https://github.com/pthom/hello_imgui/workflows/DirectX/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/DirectX.yml)
-
-  - [![TestEngine](https://github.com/pthom/hello_imgui/workflows/TestEngine/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/TestEngine.yml)
-[![Automate](https://github.com/pthom/hello_imgui/workflows/Automate/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Automate.yml)
-[![StarterTemplate](https://github.com/pthom/hello_imgui/workflows/StarterTemplate/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/StarterTemplate.yml)
-
-```
-
-
 ## Features
 
 **Multiplatform utilities**

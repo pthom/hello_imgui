@@ -112,10 +112,24 @@ def process_md_file(input_file, output_file):
         f.write(content)
 
 
+def process_main_readme(repo_dir: str):
+    with open(repo_dir + "README.src.md", "r") as f:
+        readme_src_content = f.read()
+    with open(repo_dir + "/docs_src/00_00_intro.md", "r") as f:
+        intro_content = f.read()
+
+    readme_content = readme_src_content.replace("<!-- INTRO -->", intro_content)
+
+    with open(repo_dir + "README.md", "w") as f:
+        f.write(readme_content)
+
+
 if __name__ == "__main__":
     this_dir = os.path.dirname(os.path.realpath(__file__)) + "/"
     repo_dir = this_dir + "/../../"
     hello_imgui_dir = repo_dir + "/src/hello_imgui/"
+
+    process_main_readme(repo_dir)
 
     process_md_file(hello_imgui_dir + "doc_params.src.md", hello_imgui_dir + "doc_params.md")
     process_md_file(hello_imgui_dir + "doc_api.src.md", hello_imgui_dir + "doc_api.md")

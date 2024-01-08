@@ -90,6 +90,11 @@ git add docs/book/
 git commit -m "Update docs / $(date '+%Y-%m-%d') / $(date '+%H:%M:%S')"
 if [[ $? -ne 0 ]]; then
     echo "ERROR: ******** Error commit (no doc change?) ********"
+    git checkout master
+    if [[ $? -ne 0 ]]; then
+        echo "ERROR: ******** Error going back to master branch ********"
+        exit 2
+    fi
     exit 1
 fi
 git push

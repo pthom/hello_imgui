@@ -105,7 +105,6 @@ private:
     // Logic for idling
     void IdleBySleeping();
     bool ShallIdleThisFrame_Emscripten();
-    std::string IniPartsFilename();
 
     void SetLayoutResetIfNeeded();
 

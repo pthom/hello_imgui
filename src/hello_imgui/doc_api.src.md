@@ -49,7 +49,19 @@ See [image_from_asset.h](https://github.com/pthom/hello_imgui/blob/master/src/he
 
 ----
 
-## Utility functions
+# Ini settings location
+
+```cpp
+@import "runner_params.h" {md_id=IniFolderType}
+```
+
+```cpp
+@import "runner_params.h" {md_id=IniIniSettingsLocation}
+```
+
+----
+
+# Utility functions
 
 ```cpp
 @import "hello_imgui.h" {md_id=UtilityFunctions}

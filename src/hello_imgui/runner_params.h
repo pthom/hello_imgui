@@ -18,13 +18,24 @@ enum class BackendType
     Glfw,
 };
 
+// @@md#IniFolderType
 
-// IniFolderType: "Where to store the ini file for the application settings"
-// Note: RunnerParams contains the following members, which are used to compute the ini file location:
-//           iniFolderType                   (IniFolderType::CurrentFolder by default)
-//           iniFilename                     (empty string by default)
-//           iniFilename_useAppWindowTitle   (true by default: iniFilename is derived from appWindowParams.windowTitle)
-// iniFilename may contain a subfolder (which will be created inside the iniFolderType folder if needed)
+// IniFolderType is an enum which describle where is the base path to store
+// the ini file for the application settings.
+//
+// You can use IniFolderLocation(iniFolderType) to get the corresponding path.
+//
+// RunnerParams contains the following members, which are used to compute
+// the ini file location:
+//     iniFolderType           (IniFolderType::CurrentFolder by default)
+//     iniFilename             (empty string by default)
+//     iniFilename_useAppWindowTitle
+//         (true by default: iniFilename is derived from
+//          appWindowParams.windowTitle)
+//
+// iniFilename may contain a subfolder
+// (which will be created inside the iniFolderType folder if needed)
+//
 enum class IniFolderType
 {
     // CurrentFolder: the folder where the application is executed
@@ -56,6 +67,8 @@ enum class IniFolderType
 
 // Returns the path corresponding to the given IniFolderType
 std::string IniFolderLocation(IniFolderType iniFolderType);
+
+// @@md
 
 
 // @@md#FpsIdling
@@ -200,6 +213,20 @@ struct RunnerParams
     // (only used on emscripten: 0 stands for "let the app or the browser decide")
     int emscripten_fps = 0;
 };
+// @@md
+
+
+// @@md#IniIniSettingsLocation
+
+// IniSettingsLocation returns the path to the ini file for the application settings.
+std::string IniSettingsLocation(const RunnerParams& runnerParams);
+
+// HasIniSettings returns true if the ini file for the application settings exists.
+bool HasIniSettings(const RunnerParams& runnerParams);
+
+// DeleteIniSettings deletes the ini file for the application settings.
+void DeleteIniSettings(const RunnerParams& runnerParams);
+
 // @@md
 
 

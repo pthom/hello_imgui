@@ -34,17 +34,6 @@ if [[ "$CURRENT_BRANCH" != "master" ]]; then
 fi
 echo "OK, we are on the master branch"
 
-# Check that master is up to date with origin
-#git fetch
-#LOCAL=$(git rev-parse @)
-#REMOTE=$(git rev-parse @{u})
-#BASE=$(git merge-base @ @{u})
-#if [[ $LOCAL != $REMOTE ]]; then
-#    echo "Please update your master branch"
-#    exit 1
-#fi
-#echo "OK, master is up to date with origin"
-
 # Check that master is up to date with origin or ahead of it
 git fetch
 LOCAL=$(git rev-parse @)
@@ -52,18 +41,17 @@ REMOTE=$(git rev-parse @{u})
 BASE=$(git merge-base @ @{u})
 
 if [[ $LOCAL = $REMOTE ]]; then
-    echo "- Master is up to date with origin."
+    echo "Master is up to date with origin."
 elif [[ $LOCAL = $BASE ]]; then
-    echo "ERROR: ******** Master is behind origin. Please update your master branch. ********"
+    echo "Master is behind origin. Please update your master branch."
     exit 1
 elif [[ $REMOTE = $BASE ]]; then
-    echo "- Master is ahead of origin."
+    echo "Master is ahead of origin."
 else
-    echo "ERROR: ******** Master has diverged from origin. ********"
+    echo "Master has diverged from origin."
     exit 1
 fi
 echo "OK, master is up to date with origin or ahead of it"
-
 echo "=================================================="
 echo "Processing docs"
 echo "=================================================="

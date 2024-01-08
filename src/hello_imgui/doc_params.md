@@ -563,7 +563,7 @@ See [imgui_window_params.h](https://github.com/pthom/hello_imgui/blob/master/src
 // In order to change the application window settings, change the `AppWindowsParams`
 struct ImGuiWindowParams
 {
-    // ------------ Main Options  ------------------
+    // ------------ Main Options  -------------------------------------------------------
 
     // defaultImGuiWindowType: (enum DefaultImGuiWindowType)
     // Choose between:
@@ -584,38 +584,11 @@ struct ImGuiWindowParams
     // in order to put their content into new native windows.
     bool enableViewports = false;
 
-    // If defaultImGuiWindowType = ProvideFullScreenWindow or ProvideFullScreenDockSpace,
-    // you can set the position and size of the background window:
-    //    - fullScreenWindow_MarginTopLeft is the window position
-    //    - fullScreenWindow_MarginBottomRight is the margin between
-    //      the "application window" bottom right corner
-    //      and the "imgui background window" bottom right corner
-    // Important note:
-    //     In order to be Dpi aware, those size are in *em units*, not in pixels,
-    //     i.e. in multiples of the font size!
-    //     (see HelloImGui::EmToVec2)
-    ImVec2 fullScreenWindow_MarginTopLeft     = ImVec2(0.f, 0.f);
-    ImVec2 fullScreenWindow_MarginBottomRight = ImVec2(0.f, 0.f);
-
     // Make windows only movable from the title bar
     bool configWindowsMoveFromTitleBarOnly = true;
 
 
-    // ------------ Theme -----------------------------------
-
-    // tweakedTheme: (enum ImGuiTheme::ImGuiTweakedTheme)
-    // Changes the ImGui theme. Several themes are available, you can query the list
-    // by calling HelloImGui::AvailableThemes()
-    ImGuiTheme::ImGuiTweakedTheme tweakedTheme;
-
-    // backgroundColor:
-    // This is the "clearColor", visible if defaultImGuiWindowType!=ProvideFullScreenWindow.
-    // Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full
-    // control over what is drawn behind the Gui.
-    ImVec4 backgroundColor = ImVec4(0.f, 0.f, 0.f, 0.f);
-
-
-    // ------------ Menus & Status bar ---------------------
+    // ------------ Menus & Status bar --------------------------------------------------
 
     // Set the title of the App menu. If empty, the menu name will use
     // the "windowTitle" from AppWindowParams//
@@ -654,6 +627,36 @@ struct ImGuiWindowParams
     bool showStatus_Fps = true;
     // If set, showStatusBar and showStatus_Fps are stored in the application settings.
     bool rememberStatusBarSettings = true;
+
+
+    // ------------ Change the dockspace or background window size -----------------------
+
+    // If defaultImGuiWindowType = ProvideFullScreenWindow or ProvideFullScreenDockSpace,
+    // you can set the position and size of the background window:
+    //    - fullScreenWindow_MarginTopLeft is the window position
+    //    - fullScreenWindow_MarginBottomRight is the margin between
+    //      the "application window" bottom right corner
+    //      and the "imgui background window" bottom right corner
+    // Important note:
+    //     In order to be Dpi aware, those size are in *em units*, not in pixels,
+    //     i.e. in multiples of the font size! (See HelloImGui::EmToVec2)
+    ImVec2 fullScreenWindow_MarginTopLeft     = ImVec2(0.f, 0.f);
+    ImVec2 fullScreenWindow_MarginBottomRight = ImVec2(0.f, 0.f);
+
+
+    // ------------ Theme ---------------------------------------------------------------
+
+    // tweakedTheme: (enum ImGuiTheme::ImGuiTweakedTheme)
+    // Changes the ImGui theme. Several themes are available, you can query the list
+    // by calling HelloImGui::AvailableThemes()
+    ImGuiTheme::ImGuiTweakedTheme tweakedTheme;
+
+    // backgroundColor:
+    // This is the "clearColor", visible if defaultImGuiWindowType!=ProvideFullScreenWindow.
+    // Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full
+    // control over what is drawn behind the Gui.
+    ImVec4 backgroundColor = ImVec4(0.f, 0.f, 0.f, 0.f);
+
 };
 ```
 

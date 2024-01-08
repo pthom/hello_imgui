@@ -985,7 +985,7 @@ It is designed to handle callbacks for a specific backend.</p>
 <span class="c1">// In order to change the application window settings, change the `AppWindowsParams`</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">ImGuiWindowParams</span>
 <span class="p">{</span>
-<span class="w">    </span><span class="c1">// ------------ Main Options  ------------------</span>
+<span class="w">    </span><span class="c1">// ------------ Main Options  -------------------------------------------------------</span>
 
 <span class="w">    </span><span class="c1">// defaultImGuiWindowType: (enum DefaultImGuiWindowType)</span>
 <span class="w">    </span><span class="c1">// Choose between:</span>
@@ -1006,38 +1006,11 @@ It is designed to handle callbacks for a specific backend.</p>
 <span class="w">    </span><span class="c1">// in order to put their content into new native windows.</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">enableViewports</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 
-<span class="w">    </span><span class="c1">// If defaultImGuiWindowType = ProvideFullScreenWindow or ProvideFullScreenDockSpace,</span>
-<span class="w">    </span><span class="c1">// you can set the position and size of the background window:</span>
-<span class="w">    </span><span class="c1">//    - fullScreenWindow_MarginTopLeft is the window position</span>
-<span class="w">    </span><span class="c1">//    - fullScreenWindow_MarginBottomRight is the margin between</span>
-<span class="w">    </span><span class="c1">//      the &quot;application window&quot; bottom right corner</span>
-<span class="w">    </span><span class="c1">//      and the &quot;imgui background window&quot; bottom right corner</span>
-<span class="w">    </span><span class="c1">// Important note:</span>
-<span class="w">    </span><span class="c1">//     In order to be Dpi aware, those size are in *em units*, not in pixels,</span>
-<span class="w">    </span><span class="c1">//     i.e. in multiples of the font size!</span>
-<span class="w">    </span><span class="c1">//     (see HelloImGui::EmToVec2)</span>
-<span class="w">    </span><span class="n">ImVec2</span><span class="w"> </span><span class="n">fullScreenWindow_MarginTopLeft</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">);</span>
-<span class="w">    </span><span class="n">ImVec2</span><span class="w"> </span><span class="n">fullScreenWindow_MarginBottomRight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">);</span>
-
 <span class="w">    </span><span class="c1">// Make windows only movable from the title bar</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">configWindowsMoveFromTitleBarOnly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
 
 
-<span class="w">    </span><span class="c1">// ------------ Theme -----------------------------------</span>
-
-<span class="w">    </span><span class="c1">// tweakedTheme: (enum ImGuiTheme::ImGuiTweakedTheme)</span>
-<span class="w">    </span><span class="c1">// Changes the ImGui theme. Several themes are available, you can query the list</span>
-<span class="w">    </span><span class="c1">// by calling HelloImGui::AvailableThemes()</span>
-<span class="w">    </span><span class="n">ImGuiTheme</span><span class="o">::</span><span class="n">ImGuiTweakedTheme</span><span class="w"> </span><span class="n">tweakedTheme</span><span class="p">;</span>
-
-<span class="w">    </span><span class="c1">// backgroundColor:</span>
-<span class="w">    </span><span class="c1">// This is the &quot;clearColor&quot;, visible if defaultImGuiWindowType!=ProvideFullScreenWindow.</span>
-<span class="w">    </span><span class="c1">// Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full</span>
-<span class="w">    </span><span class="c1">// control over what is drawn behind the Gui.</span>
-<span class="w">    </span><span class="n">ImVec4</span><span class="w"> </span><span class="n">backgroundColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">);</span>
-
-
-<span class="w">    </span><span class="c1">// ------------ Menus &amp; Status bar ---------------------</span>
+<span class="w">    </span><span class="c1">// ------------ Menus &amp; Status bar --------------------------------------------------</span>
 
 <span class="w">    </span><span class="c1">// Set the title of the App menu. If empty, the menu name will use</span>
 <span class="w">    </span><span class="c1">// the &quot;windowTitle&quot; from AppWindowParams//</span>
@@ -1076,6 +1049,36 @@ It is designed to handle callbacks for a specific backend.</p>
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">showStatus_Fps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
 <span class="w">    </span><span class="c1">// If set, showStatusBar and showStatus_Fps are stored in the application settings.</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">rememberStatusBarSettings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+
+<span class="w">    </span><span class="c1">// ------------ Change the dockspace or background window size -----------------------</span>
+
+<span class="w">    </span><span class="c1">// If defaultImGuiWindowType = ProvideFullScreenWindow or ProvideFullScreenDockSpace,</span>
+<span class="w">    </span><span class="c1">// you can set the position and size of the background window:</span>
+<span class="w">    </span><span class="c1">//    - fullScreenWindow_MarginTopLeft is the window position</span>
+<span class="w">    </span><span class="c1">//    - fullScreenWindow_MarginBottomRight is the margin between</span>
+<span class="w">    </span><span class="c1">//      the &quot;application window&quot; bottom right corner</span>
+<span class="w">    </span><span class="c1">//      and the &quot;imgui background window&quot; bottom right corner</span>
+<span class="w">    </span><span class="c1">// Important note:</span>
+<span class="w">    </span><span class="c1">//     In order to be Dpi aware, those size are in *em units*, not in pixels,</span>
+<span class="w">    </span><span class="c1">//     i.e. in multiples of the font size! (See HelloImGui::EmToVec2)</span>
+<span class="w">    </span><span class="n">ImVec2</span><span class="w"> </span><span class="n">fullScreenWindow_MarginTopLeft</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ImVec2</span><span class="w"> </span><span class="n">fullScreenWindow_MarginBottomRight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">);</span>
+
+
+<span class="w">    </span><span class="c1">// ------------ Theme ---------------------------------------------------------------</span>
+
+<span class="w">    </span><span class="c1">// tweakedTheme: (enum ImGuiTheme::ImGuiTweakedTheme)</span>
+<span class="w">    </span><span class="c1">// Changes the ImGui theme. Several themes are available, you can query the list</span>
+<span class="w">    </span><span class="c1">// by calling HelloImGui::AvailableThemes()</span>
+<span class="w">    </span><span class="n">ImGuiTheme</span><span class="o">::</span><span class="n">ImGuiTweakedTheme</span><span class="w"> </span><span class="n">tweakedTheme</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// backgroundColor:</span>
+<span class="w">    </span><span class="c1">// This is the &quot;clearColor&quot;, visible if defaultImGuiWindowType!=ProvideFullScreenWindow.</span>
+<span class="w">    </span><span class="c1">// Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full</span>
+<span class="w">    </span><span class="c1">// control over what is drawn behind the Gui.</span>
+<span class="w">    </span><span class="n">ImVec4</span><span class="w"> </span><span class="n">backgroundColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">);</span>
+
 <span class="p">};</span>
 </pre></div>
 </div>

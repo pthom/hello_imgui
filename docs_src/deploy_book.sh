@@ -1,7 +1,9 @@
 #!/bin/bash
 
-SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
+# This script will update the docs inside docs/book/ in the docs branch
+# and push the changes to the remote repository
 
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
 REPO_DIR=$SCRIPT_DIR/..
 
 # Exit on error
@@ -11,6 +13,8 @@ set -e
 
 cd "$REPO_DIR" || exit
 
+
+echo "=================================================="
 echo "Checking status of the repository"
 echo "=================================================="
 
@@ -18,7 +22,7 @@ echo "=================================================="
 if [[ -n $(git status -s --untracked-files=no) ]]; then
     echo "Please commit all changes before deploying"
     git status -s --untracked-files=no
-    exit
+    exit 1
 fi
 echo "OK, all changes are committed; master in sync with origin"
 
@@ -26,7 +30,7 @@ echo "OK, all changes are committed; master in sync with origin"
 CURRENT_BRANCH=$(git branch --show-current)
 if [[ "$CURRENT_BRANCH" != "master" ]]; then
     echo "Please deploy from master"
-    exit
+    exit 1
 fi
 echo "OK, we are on the master branch"
 
@@ -37,17 +41,24 @@ REMOTE=$(git rev-parse @{u})
 BASE=$(git merge-base @ @{u})
 if [[ $LOCAL != $REMOTE ]]; then
     echo "Please update your master branch"
-    exit
+    exit 1
 fi
 echo "OK, master is up to date with origin"
 
 
+
+echo "=================================================="
 echo "Processing docs"
 echo "=================================================="
 
-# Checkout docs branch and merge master into it
+# Checkout docs branch and merge master into it (committing any changes)
 git checkout docs
-git merge master
+# Merge master into docs with standard merge commit message
+git merge master --no-edit
+if [[ $? -ne 0 ]]; then
+    echo "Error when merging master into docs branch. Check for merge conflicts."
+    exit 1
+fi
 echo "- merged master branch into docs branch"
 
 
@@ -57,20 +68,36 @@ echo "- merged master branch into docs branch"
 # Check python presence in the venv/ directory
 if [[ ! -f "$REPO_DIR/venv/bin/python" ]]; then
     echo "Please create the virtual environment first"
-    exit
+    exit 1
 fi
 # Activate the virtual environment
 source "$REPO_DIR/venv/bin/activate"
 # Run the script
 python "$REPO_DIR/tools/doc/process_md_docs.py"
+if [[ $? -ne 0 ]]; then
+    echo "Error building docs"
+    exit 1
+fi
 echo "- built docs ($REPO_DIR/tools/doc/process_md_docs.py)"
 
 # commit with message "Update docs / date / time"
 git add docs/book/
 git commit -m "Update docs / $(date '+%Y-%m-%d') / $(date '+%H:%M:%S')"
+if [[ $? -ne 0 ]]; then
+    echo "Error commit (no doc change?)"
+    exit 1
+fi
 git push
+if [[ $? -ne 0 ]]; then
+    echo "Error during push"
+    exit 1
+fi
 echo "- committed and pushed docs"
 
 # Checkout master branch
 git checkout master
+if [[ $? -ne 0 ]]; then
+    echo "Error checking out master branch"
+    exit 1
+fi
 echo "- checked out master branch"

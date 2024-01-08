@@ -6,12 +6,8 @@ HelloImGui is extremely easy to use: there is **one** main function in the API, 
 
 @import "hello_imgui.h" {md_id=HelloImGui::Run}
 
-Although the API is extremely simple, it is highly customizable, and you can set many options by filling the elements in the `RunnerParams` struct, or in the simpler  `SimpleRunnerParams`.
-
-## Get current runner params
-@import "hello_imgui.h" {md_id=GetRunnerParams}
-
 ----
+
 # Place widgets in a DPI-aware way
 
 @import "dpi_aware.h" {md_id=DocEmToVec2}
@@ -33,26 +29,58 @@ See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/he
 See [hello_imgui_assets.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui_assets.h).
 
 ## Load Assets as data buffer
+
+```cpp
 @import "hello_imgui_assets.h" {md_id=LoadAssetFileData}
+```
 
 ## Get assets path
+
+```cpp
 @import "hello_imgui_assets.h" {md_id=assetFileFullPath}
+```
+
 
 ## Display images from assets
 See [image_from_asset.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/image_from_asset.h).
+```cpp
 @import "image_from_asset.h" {md_id=HelloImGui::ImageFromAsset}
+```
+
+----
+
+## Utility functions
+
+```cpp
+@import "hello_imgui.h" {md_id=UtilityFunctions}
+```
 
 ----
 # Switch between several layouts
 See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h).
+    
+```cpp
 @import "hello_imgui.h" {md_id=HelloImGui::Layouts}
+```
 
 ----
 
 # Store user settings in the ini file
 See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h).
-@import "hello_imgui.h" {md_id=HelloImGui::UserPref}
 
+```cpp
+@import "hello_imgui.h" {md_id=HelloImGui::UserPref}
+```
+
+----
+
+# Customize Hello ImGui Menus
+
+@import "hello_imgui.h" {md_id=MenuIntro}
+
+```cpp
+@import "hello_imgui.h" {md_id=MenuFunctions}
+```
 
 ---
 

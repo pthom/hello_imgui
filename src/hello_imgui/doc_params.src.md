@@ -11,18 +11,24 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 
 ## Simple runner params
+
+```cpp
 @import "runner_params.h" {md_id=SimpleRunnerParams}
+```
 
 ## Full params
-@import "runner_params.h" {md_id=RunnerParams}
 
+```cpp
+@import "runner_params.h" {md_id=RunnerParams}
+```
 
 # Fps Idling
 
 See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h).
 
+```cpp
 @import "runner_params.h" {md_id=FpsIdling}
-
+```
 
 ----
 
@@ -30,14 +36,17 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 See [runner_callbacks.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_callbacks.h).
 
-
+```cpp
 @import "runner_callbacks.h" {md_id=RunnerCallbacks}
+```
 
 @import "runner_callbacks.h" {md_id=VoidFunction_AnyEventCallback}
 
 ## MobileCallbacks
 
+```cpp
 @import "runner_callbacks.h" {md_id=MobileCallbacks}
+```
 
 ----
 
@@ -47,12 +56,15 @@ See [app_window_params.h](https://github.com/pthom/hello_imgui/blob/master/src/h
 
 ## AppWindowParams
 
+```cpp
 @import "app_window_params.h" {md_id=AppWindowParams}
+```
 
 ## WindowGeometry
 
+```cpp
 @import "app_window_params.h" {md_id=WindowGeometry}
-
+```
 ----
 
 # ImGui window params
@@ -85,17 +97,24 @@ See [docking_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hell
 
 ## Docking Splits
 
+```cpp
 @import "docking_params.h" {md_id=DockingSplit}
+```
 
 ## Dockable window
 
+```cpp
 @import "docking_params.h" {md_id=DockableWindow}
+```
 
 ## Docking Params
 
+```cpp
 @import "docking_params.h" {md_id=DockingParams}
+```
 
 # Backend Pointers
 
+```cpp
 @import "backend_pointers.h" {md_id=BackendPointers}
-
+```

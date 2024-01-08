@@ -16,21 +16,16 @@ Three signatures are provided:
   Runs an application, using simpler params.
 
 * `HelloImGui::Run(guiFunction, windowTitle, windowSize, windowSizeAuto=false, restoreLastWindowGeometry=false, fpsIdle=10)`
+  Runs an application, by providing the Gui function, the window title, etc.
 
-Although the API is extremely simple, it is highly customizable, and you can set many options by filling the elements in the `RunnerParams` struct, or in the simpler  `SimpleRunnerParams`.
+Although the API is extremely simple, it is highly customizable, and you can set many options by filling
+the elements in the `RunnerParams` struct, or in the simpler  `SimpleRunnerParams`.
 
-## Get current runner params
+__HelloImGui::GetRunnerParams()__  will return the runnerParams of the current application.
 
-* `HelloImGui::GetRunnerParams()`:
-  a convenience function that will return the runnerParams of the current application
-
-* `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
-  May differ from ImGui::GetIO().FrameRate, since one can choose the duration for the calculation of the mean value of the fps
-
-* `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance of ImGuiTestEngine that was
-  initialized by HelloImGui (iif ImGui Test Engine is active).
 
 ----
+
 # Place widgets in a DPI-aware way
 
 
@@ -122,90 +117,197 @@ See [hello_imgui_assets.h](https://github.com/pthom/hello_imgui/blob/master/src/
 
 ## Load Assets as data buffer
 
-* `AssetFileData LoadAssetFileData(const char *assetPath)` will load an entire asset file into memory.
- This works on all platforms, including android.
- ```cpp
-    struct AssetFileData
-    {
-        void * data = nullptr;
-        size_t dataSize = 0;
-    };
- ```
-* `FreeAssetFileData(AssetFileData * assetFileData)` will free the memory.
-  Note: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
-  and will free the memory for you.
+```cpp
 
+struct AssetFileData
+{
+    void * data = nullptr;
+    size_t dataSize = 0;
+};
+
+// LoadAssetFileData(const char *assetPath)`
+// Will load an entire asset file into memory. This works on all platforms,
+// including android.
+AssetFileData LoadAssetFileData(const char *assetPath);
+
+// FreeAssetFileData(AssetFileData *)
+// Will free the memory.
+// Note: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
+// and will free the memory for you.
+void FreeAssetFileData(AssetFileData * assetFileData);
+```
 
 ## Get assets path
 
-`std::string AssetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
+```cpp
 
-This works under all platforms __except Android__.
-For compatibility with Android and other platforms, prefer to use `LoadAssetFileData` whenever possible.
+//`std::string AssetFileFullPath(const std::string& assetRelativeFilename)`
+// will return the path to assets.
+//
+// This works under all platforms *except Android*
+// For compatibility with Android and other platforms, prefer to use `LoadAssetFileData`
+// whenever possible.
+//    * Under iOS it will give a path in the app bundle (/private/XXX/....)
+//    * Under emscripten, it will be stored in the virtual filesystem at "/"
+//    * Under Android, assetFileFullPath is *not* implemented, and will throw an error:
+//      assets can be compressed under android, and you can't use standard file operations!
+//      Use LoadAssetFileData instead
+std::string AssetFileFullPath(const std::string& assetRelativeFilename,
+                              bool assertIfNotFound = true);
 
-* Under iOS it will give a path in the app bundle (/private/XXX/....)
-* Under emscripten, it will be stored in the virtual filesystem at "/"
-* Under Android, assetFileFullPath is *not* implemented, and will throw an error:
-  assets can be compressed under android, and you cannot use standard file operations!
-  Use LoadAssetFileData instead
+// Returns true if this asset file exists
+bool AssetExists(const std::string& assetRelativeFilename);
+
+// Sets the assets folder location
+// (when using this, automatic assets installation on mobile platforms may not work)
+void SetAssetsFolder(const std::string& folder);
+
+```
 
 
 ## Display images from assets
 See [image_from_asset.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/image_from_asset.h).
+```cpp
 
-* `HelloImGui::ImageFromAsset(const char *assetPath, size, ...)`: will display a static image from the assets.
-* `bool HelloImGui::ImageButtonFromAsset(const char *assetPath, size, ...)`: will display a button using an image from the assets.
-* `ImTextureID HelloImGui::ImTextureIdFromAsset(const char *assetPath)`: will return a texture ID for an image loaded from the assets.
-* `ImVec2 HelloImGui::ImageSizeFromAsset(const char *assetPath)`: will return the size of an image loaded from the assets.
-* `ImVec2 HelloImGui::ImageProportionalSize(const ImVec2& askedSize, const ImVec2& imageSize)`:
-   Will return the displayed size of an image.
-   if askedSize.x or askedSize.y is 0, then the corresponding dimension will be computed from the image size, keeping the aspect ratio.
-   if askedSize.x>0 and askedSize.y> 0, then the image will be scaled to fit exactly the askedSize, thus potentially changing the aspect ratio.
-   Note: this function is used internally by ImageFromAsset and ImageButtonFromAsset, so you don't need to call it directly.
+//
+//Images are loaded when first displayed, and then cached
+// (they will be freed just before the application exits).
+//
+//For example, given this files structure:
+//```
+//├── CMakeLists.txt
+//├── assets/
+//│         └── my_image.jpg
+//└── my_app.main.cpp
+//```
+//
+//then, you can display "my_image.jpg", using:
+//
+//    ```cpp
+//    HelloImGui::ImageFromAsset("my_image.jpg");
+//    ```
 
-Images are loaded when first displayed, and then cached (they will be freed just before the application exits).
 
-For example, given this files structure:
+// `HelloImGui::ImageFromAsset(const char *assetPath, size, ...)`: 
+// will display a static image from the assets.
+void ImageFromAsset(const char *assetPath, const ImVec2& size = ImVec2(0, 0),
+                    const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1),
+                    const ImVec4& tint_col = ImVec4(1,1,1,1),
+                    const ImVec4& border_col = ImVec4(0,0,0,0));
+
+// `bool HelloImGui::ImageButtonFromAsset(const char *assetPath, size, ...)`:
+// will display a button using an image from the assets.
+bool ImageButtonFromAsset(const char *assetPath, const ImVec2& size = ImVec2(0, 0),
+                          const ImVec2& uv0 = ImVec2(0, 0),  const ImVec2& uv1 = ImVec2(1,1),
+                          int frame_padding = -1,
+                          const ImVec4& bg_col = ImVec4(0,0,0,0),
+                          const ImVec4& tint_col = ImVec4(1,1,1,1));
+
+// `ImTextureID HelloImGui::ImTextureIdFromAsset(assetPath)`:
+// will return a texture ID for an image loaded from the assets.
+ImTextureID ImTextureIdFromAsset(const char *assetPath);
+
+// `ImVec2 HelloImGui::ImageSizeFromAsset(assetPath)`:
+// will return the size of an image loaded from the assets.
+ImVec2 ImageSizeFromAsset(const char *assetPath);
+
+// `ImVec2 HelloImGui::ImageProportionalSize(askedSize, imageSize)`:
+//  will return the displayed size of an image.
+//     - if askedSize.x or askedSize.y is 0, then the corresponding dimension
+//       will be computed from the image size, keeping the aspect ratio.
+//     - if askedSize.x>0 and askedSize.y> 0, then the image will be scaled to fit
+//       exactly the askedSize, thus potentially changing the aspect ratio.
+//  Note: this function is used internally by ImageFromAsset and ImageButtonFromAsset,
+//        so you don't need to call it directly.
+ImVec2 ImageProportionalSize(const ImVec2& askedSize, const ImVec2& imageSize);
+
 ```
-├── CMakeLists.txt
-├── assets/
-│   └── my_image.jpg
-└── my_app.main.cpp
-```
 
-then, you can display "my_image.jpg", using:
+----
+
+## Utility functions
 
 ```cpp
-HelloImGui::ImageFromAsset("my_image.jpg");
-```
 
+
+// `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
+//  May differ from ImGui::GetIO().FrameRate, since one can choose the duration
+//  for the calculation of the mean value of the fps
+//  Returns the current FrameRate. May differ from ImGui::GetIO().FrameRate,
+//  since one can choose the duration for the calculation of the mean value of the fps
+//  (Will only lead to accurate values if you call it at each frame)
+float FrameRate(float durationForMean = 0.5f);
+
+// `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance
+//  of ImGuiTestEngine that was initialized by HelloImGui
+//  (iif ImGui Test Engine is active).
+ImGuiTestEngine* GetImGuiTestEngine();
+```
 
 ----
 # Switch between several layouts
 See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h).
+    
+```cpp
 
- In advanced cases when several layouts are available, you can switch between layouts.
-(see demo inside [hello_imgui_demodocking.main.cpp](https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp))
+// In advanced cases when several layouts are available, you can switch between layouts.
+// See demo inside
+//     https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp
 
-* `SwitchLayout(layoutName)`
-  Changes the application current layout. Only used in advanced cases when several layouts are available,
-  i.e. if you filled runnerParams.alternativeDockingLayouts.
-* `CurrentLayoutName()`: returns the name of the current layout
+// `SwitchLayout(layoutName)`
+//  Changes the application current layout. Only used in advanced cases
+//  when several layouts are available, i.e. if you filled
+//      runnerParams.alternativeDockingLayouts.
+void           SwitchLayout(const std::string& layoutName);
+
+// `CurrentLayoutName()`: returns the name of the current layout
+std::string    CurrentLayoutName();
+```
 
 ----
 
 # Store user settings in the ini file
 See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h).
 
-You may store additional user settings in the application settings. This is provided as a convenience only,
-and it is not intended to store large quantities of text data. Use sparingly.
+```cpp
 
-* `SaveUserPref(string userPrefName, string userPrefContent)`:
-  Shall be called in the callback runnerParams.callbacks.BeforeExit
+// You may store additional user settings in the application settings.
+// This is provided as a convenience only, and it is not intended to store large
+// quantities of text data. Use sparingly.
 
-* `string LoadUserPref(string& userPrefName)`
-  Shall be called in the callback runnerParams.callbacks.PostInit
+// `SaveUserPref(string userPrefName, string userPrefContent)`:
+//  Shall be called in the callback runnerParams.callbacks.BeforeExit
+void        SaveUserPref(const std::string& userPrefName, const std::string& userPrefContent);
 
+// `string LoadUserPref(string& userPrefName)`
+//  Shall be called in the callback runnerParams.callbacks.PostInit
+std::string LoadUserPref(const std::string& userPrefName);
+```
+
+----
+
+# Customize Hello ImGui Menus
+
+
+Hello ImGui provides a default menu and status bar, which you can customize by using the params:
+        `RunnerParams.imGuiWindowParams.` `showMenuBar` / `showMenu_App` / `showMenu_View`
+
+If you want to fully customize the menu:
+* set `showMenuBar` to true, then set `showMenu_App` and `showMenu_View` params to false
+* implement the callback `RunnerParams.callbacks.ShowMenus`:
+  it can optionally call `ShowViewMenu` and `ShowAppMenu` (see below).
+
+
+```cpp
+
+// `ShowViewMenu(RunnerParams & runnerParams)`:
+// shows the View menu (where you can select the layout and docked windows visibility
+void ShowViewMenu(RunnerParams & runnerParams);
+
+// `ShowAppMenu(RunnerParams & runnerParams)`:
+// shows the default App menu (including the Quit item)
+void ShowAppMenu(RunnerParams & runnerParams);
+```
 
 ---
 

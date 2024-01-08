@@ -187,6 +187,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
+
 <li class="toctree-l1"><a class="reference internal" href="doc_params.html">Application parameters</a></li>
 
 
@@ -392,20 +393,19 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">API</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#run-application">Run Application</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-current-runner-params">Get current runner params</a></li>
-</ul>
-</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#run-application">Run Application</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#place-widgets-in-a-dpi-aware-way">Place widgets in a DPI-aware way</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#load-fonts">Load fonts</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#applications-assets">Applications assets</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-assets-as-data-buffer">Load Assets as data buffer</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-assets-path">Get assets path</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-images-from-assets">Display images from assets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-functions">Utility functions</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#switch-between-several-layouts">Switch between several layouts</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#store-user-settings-in-the-ini-file">Store user settings in the ini file</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-hello-imgui-menus">Customize Hello ImGui Menus</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-screens-with-high-dpi">Handling screens with high DPI</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#details-on-dpi-handling-on-different-os">Details on DPI handling on different OS</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dpi-aware-font-scaling">Dpi aware Font scaling</a></li>
@@ -436,20 +436,12 @@ document.write(`
 Runs an application whose params and Gui are provided by runnerParams.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">HelloImGui::Run(const</span> <span class="pre">SimpleRunnerParams&amp;)</span></code>:
 Runs an application, using simpler params.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">HelloImGui::Run(guiFunction,</span> <span class="pre">windowTitle,</span> <span class="pre">windowSize,</span> <span class="pre">windowSizeAuto=false,</span> <span class="pre">restoreLastWindowGeometry=false,</span> <span class="pre">fpsIdle=10)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HelloImGui::Run(guiFunction,</span> <span class="pre">windowTitle,</span> <span class="pre">windowSize,</span> <span class="pre">windowSizeAuto=false,</span> <span class="pre">restoreLastWindowGeometry=false,</span> <span class="pre">fpsIdle=10)</span></code>
+Runs an application, by providing the Gui function, the window title, etc.</p></li>
 </ul>
-<p>Although the API is extremely simple, it is highly customizable, and you can set many options by filling the elements in the <code class="docutils literal notranslate"><span class="pre">RunnerParams</span></code> struct, or in the simpler  <code class="docutils literal notranslate"><span class="pre">SimpleRunnerParams</span></code>.</p>
-<section id="get-current-runner-params">
-<h2>Get current runner params<a class="headerlink" href="#get-current-runner-params" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">HelloImGui::GetRunnerParams()</span></code>:
-a convenience function that will return the runnerParams of the current application</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">FrameRate(durationForMean</span> <span class="pre">=</span> <span class="pre">0.5)</span></code>: Returns the current FrameRate.
-May differ from ImGui::GetIO().FrameRate, since one can choose the duration for the calculation of the mean value of the fps</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ImGuiTestEngine*</span> <span class="pre">GetImGuiTestEngine()</span></code>: returns a pointer to the global instance of ImGuiTestEngine that was
-initialized by HelloImGui (iif ImGui Test Engine is active).</p></li>
-</ul>
-</section>
+<p>Although the API is extremely simple, it is highly customizable, and you can set many options by filling
+the elements in the <code class="docutils literal notranslate"><span class="pre">RunnerParams</span></code> struct, or in the simpler  <code class="docutils literal notranslate"><span class="pre">SimpleRunnerParams</span></code>.</p>
+<p><strong>HelloImGui::GetRunnerParams()</strong>  will return the runnerParams of the current application.</p>
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="place-widgets-in-a-dpi-aware-way">
@@ -536,60 +528,122 @@ with the <a class="reference external" href="https://lyty.dev/css/css-unit.html"
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui_assets.h">hello_imgui_assets.h</a>.</p>
 <section id="load-assets-as-data-buffer">
 <h2>Load Assets as data buffer<a class="headerlink" href="#load-assets-as-data-buffer" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">AssetFileData</span> <span class="pre">LoadAssetFileData(const</span> <span class="pre">char</span> <span class="pre">*assetPath)</span></code> will load an entire asset file into memory.
-This works on all platforms, including android.</p></li>
-</ul>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">   </span><span class="k">struct</span><span class="w"> </span><span class="nc">AssetFileData</span>
-<span class="w">   </span><span class="p">{</span>
-<span class="w">       </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
-<span class="w">       </span><span class="kt">size_t</span><span class="w"> </span><span class="n">dataSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">   </span><span class="p">};</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">AssetFileData</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">dataSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// LoadAssetFileData(const char *assetPath)`</span>
+<span class="c1">// Will load an entire asset file into memory. This works on all platforms,</span>
+<span class="c1">// including android.</span>
+<span class="n">AssetFileData</span><span class="w"> </span><span class="nf">LoadAssetFileData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">assetPath</span><span class="p">);</span>
+
+<span class="c1">// FreeAssetFileData(AssetFileData *)</span>
+<span class="c1">// Will free the memory.</span>
+<span class="c1">// Note: &quot;ImGui::GetIO().Fonts-&gt;AddFontFromMemoryTTF&quot; takes ownership of the data</span>
+<span class="c1">// and will free the memory for you.</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">FreeAssetFileData</span><span class="p">(</span><span class="n">AssetFileData</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">assetFileData</span><span class="p">);</span>
 </pre></div>
 </div>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">FreeAssetFileData(AssetFileData</span> <span class="pre">*</span> <span class="pre">assetFileData)</span></code> will free the memory.
-Note: “ImGui::GetIO().Fonts-&gt;AddFontFromMemoryTTF” takes ownership of the data
-and will free the memory for you.</p></li>
-</ul>
 </section>
 <section id="get-assets-path">
 <h2>Get assets path<a class="headerlink" href="#get-assets-path" title="Permalink to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">std::string</span> <span class="pre">AssetFileFullPath(const</span> <span class="pre">std::string&amp;</span> <span class="pre">assetRelativeFilename)</span></code> will return the path to assets.</p>
-<p>This works under all platforms <strong>except Android</strong>.
-For compatibility with Android and other platforms, prefer to use <code class="docutils literal notranslate"><span class="pre">LoadAssetFileData</span></code> whenever possible.</p>
-<ul class="simple">
-<li><p>Under iOS it will give a path in the app bundle (/private/XXX/….)</p></li>
-<li><p>Under emscripten, it will be stored in the virtual filesystem at “/”</p></li>
-<li><p>Under Android, assetFileFullPath is <em>not</em> implemented, and will throw an error:
-assets can be compressed under android, and you cannot use standard file operations!
-Use LoadAssetFileData instead</p></li>
-</ul>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//`std::string AssetFileFullPath(const std::string&amp; assetRelativeFilename)`</span>
+<span class="c1">// will return the path to assets.</span>
+<span class="c1">//</span>
+<span class="c1">// This works under all platforms *except Android*</span>
+<span class="c1">// For compatibility with Android and other platforms, prefer to use `LoadAssetFileData`</span>
+<span class="c1">// whenever possible.</span>
+<span class="c1">//    * Under iOS it will give a path in the app bundle (/private/XXX/....)</span>
+<span class="c1">//    * Under emscripten, it will be stored in the virtual filesystem at &quot;/&quot;</span>
+<span class="c1">//    * Under Android, assetFileFullPath is *not* implemented, and will throw an error:</span>
+<span class="c1">//      assets can be compressed under android, and you can&#39;t use standard file operations!</span>
+<span class="c1">//      Use LoadAssetFileData instead</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">AssetFileFullPath</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">assetRelativeFilename</span><span class="p">,</span>
+<span class="w">                              </span><span class="kt">bool</span><span class="w"> </span><span class="n">assertIfNotFound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+
+<span class="c1">// Returns true if this asset file exists</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">AssetExists</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">assetRelativeFilename</span><span class="p">);</span>
+
+<span class="c1">// Sets the assets folder location</span>
+<span class="c1">// (when using this, automatic assets installation on mobile platforms may not work)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SetAssetsFolder</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">folder</span><span class="p">);</span>
+</pre></div>
+</div>
 </section>
 <section id="display-images-from-assets">
 <h2>Display images from assets<a class="headerlink" href="#display-images-from-assets" title="Permalink to this heading">#</a></h2>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/image_from_asset.h">image_from_asset.h</a>.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">HelloImGui::ImageFromAsset(const</span> <span class="pre">char</span> <span class="pre">*assetPath,</span> <span class="pre">size,</span> <span class="pre">...)</span></code>: will display a static image from the assets.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">HelloImGui::ImageButtonFromAsset(const</span> <span class="pre">char</span> <span class="pre">*assetPath,</span> <span class="pre">size,</span> <span class="pre">...)</span></code>: will display a button using an image from the assets.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ImTextureID</span> <span class="pre">HelloImGui::ImTextureIdFromAsset(const</span> <span class="pre">char</span> <span class="pre">*assetPath)</span></code>: will return a texture ID for an image loaded from the assets.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ImVec2</span> <span class="pre">HelloImGui::ImageSizeFromAsset(const</span> <span class="pre">char</span> <span class="pre">*assetPath)</span></code>: will return the size of an image loaded from the assets.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ImVec2</span> <span class="pre">HelloImGui::ImageProportionalSize(const</span> <span class="pre">ImVec2&amp;</span> <span class="pre">askedSize,</span> <span class="pre">const</span> <span class="pre">ImVec2&amp;</span> <span class="pre">imageSize)</span></code>:
-Will return the displayed size of an image.
-if askedSize.x or askedSize.y is 0, then the corresponding dimension will be computed from the image size, keeping the aspect ratio.
-if askedSize.x&gt;0 and askedSize.y&gt; 0, then the image will be scaled to fit exactly the askedSize, thus potentially changing the aspect ratio.
-Note: this function is used internally by ImageFromAsset and ImageButtonFromAsset, so you don’t need to call it directly.</p></li>
-</ul>
-<p>Images are loaded when first displayed, and then cached (they will be freed just before the application exits).</p>
-<p>For example, given this files structure:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>├── CMakeLists.txt
-├── assets/
-│   └── my_image.jpg
-└── my_app.main.cpp
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//</span>
+<span class="c1">//Images are loaded when first displayed, and then cached</span>
+<span class="c1">// (they will be freed just before the application exits).</span>
+<span class="c1">//</span>
+<span class="c1">//For example, given this files structure:</span>
+<span class="c1">//```</span>
+<span class="c1">//├── CMakeLists.txt</span>
+<span class="c1">//├── assets/</span>
+<span class="c1">//│         └── my_image.jpg</span>
+<span class="c1">//└── my_app.main.cpp</span>
+<span class="c1">//```</span>
+<span class="c1">//</span>
+<span class="c1">//then, you can display &quot;my_image.jpg&quot;, using:</span>
+<span class="c1">//</span>
+<span class="c1">//    ```cpp</span>
+<span class="c1">//    HelloImGui::ImageFromAsset(&quot;my_image.jpg&quot;);</span>
+<span class="c1">//    ```</span>
+
+
+<span class="c1">// `HelloImGui::ImageFromAsset(const char *assetPath, size, ...)`: </span>
+<span class="c1">// will display a static image from the assets.</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ImageFromAsset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">assetPath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">uv0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">uv1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec4</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tint_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec4</span><span class="o">&amp;</span><span class="w"> </span><span class="n">border_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">));</span>
+
+<span class="c1">// `bool HelloImGui::ImageButtonFromAsset(const char *assetPath, size, ...)`:</span>
+<span class="c1">// will display a button using an image from the assets.</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">ImageButtonFromAsset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">assetPath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+<span class="w">                          </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">uv0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">uv1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+<span class="w">                          </span><span class="kt">int</span><span class="w"> </span><span class="n">frame_padding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span>
+<span class="w">                          </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec4</span><span class="o">&amp;</span><span class="w"> </span><span class="n">bg_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+<span class="w">                          </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec4</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tint_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">));</span>
+
+<span class="c1">// `ImTextureID HelloImGui::ImTextureIdFromAsset(assetPath)`:</span>
+<span class="c1">// will return a texture ID for an image loaded from the assets.</span>
+<span class="n">ImTextureID</span><span class="w"> </span><span class="nf">ImTextureIdFromAsset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">assetPath</span><span class="p">);</span>
+
+<span class="c1">// `ImVec2 HelloImGui::ImageSizeFromAsset(assetPath)`:</span>
+<span class="c1">// will return the size of an image loaded from the assets.</span>
+<span class="n">ImVec2</span><span class="w"> </span><span class="nf">ImageSizeFromAsset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">assetPath</span><span class="p">);</span>
+
+<span class="c1">// `ImVec2 HelloImGui::ImageProportionalSize(askedSize, imageSize)`:</span>
+<span class="c1">//  will return the displayed size of an image.</span>
+<span class="c1">//     - if askedSize.x or askedSize.y is 0, then the corresponding dimension</span>
+<span class="c1">//       will be computed from the image size, keeping the aspect ratio.</span>
+<span class="c1">//     - if askedSize.x&gt;0 and askedSize.y&gt; 0, then the image will be scaled to fit</span>
+<span class="c1">//       exactly the askedSize, thus potentially changing the aspect ratio.</span>
+<span class="c1">//  Note: this function is used internally by ImageFromAsset and ImageButtonFromAsset,</span>
+<span class="c1">//        so you don&#39;t need to call it directly.</span>
+<span class="n">ImVec2</span><span class="w"> </span><span class="nf">ImageProportionalSize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">askedSize</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">imageSize</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>then, you can display “my_image.jpg”, using:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">ImageFromAsset</span><span class="p">(</span><span class="s">&quot;my_image.jpg&quot;</span><span class="p">);</span>
+</section>
+<hr class="docutils" />
+<section id="utility-functions">
+<h2>Utility functions<a class="headerlink" href="#utility-functions" title="Permalink to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.</span>
+<span class="c1">//  May differ from ImGui::GetIO().FrameRate, since one can choose the duration</span>
+<span class="c1">//  for the calculation of the mean value of the fps</span>
+<span class="c1">//  Returns the current FrameRate. May differ from ImGui::GetIO().FrameRate,</span>
+<span class="c1">//  since one can choose the duration for the calculation of the mean value of the fps</span>
+<span class="c1">//  (Will only lead to accurate values if you call it at each frame)</span>
+<span class="kt">float</span><span class="w"> </span><span class="nf">FrameRate</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">durationForMean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5f</span><span class="p">);</span>
+
+<span class="c1">// `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance</span>
+<span class="c1">//  of ImGuiTestEngine that was initialized by HelloImGui</span>
+<span class="c1">//  (iif ImGui Test Engine is active).</span>
+<span class="n">ImGuiTestEngine</span><span class="o">*</span><span class="w"> </span><span class="nf">GetImGuiTestEngine</span><span class="p">();</span>
 </pre></div>
 </div>
 </section>
@@ -598,27 +652,59 @@ Note: this function is used internally by ImageFromAsset and ImageButtonFromAsse
 <section class="tex2jax_ignore mathjax_ignore" id="switch-between-several-layouts">
 <h1>Switch between several layouts<a class="headerlink" href="#switch-between-several-layouts" title="Permalink to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h">hello_imgui.h</a>.</p>
-<p>In advanced cases when several layouts are available, you can switch between layouts.
-(see demo inside <a class="reference external" href="https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp">hello_imgui_demodocking.main.cpp</a>)</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">SwitchLayout(layoutName)</span></code>
-Changes the application current layout. Only used in advanced cases when several layouts are available,
-i.e. if you filled runnerParams.alternativeDockingLayouts.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">CurrentLayoutName()</span></code>: returns the name of the current layout</p></li>
-</ul>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// In advanced cases when several layouts are available, you can switch between layouts.</span>
+<span class="c1">// See demo inside</span>
+<span class="c1">//     https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp</span>
+
+<span class="c1">// `SwitchLayout(layoutName)`</span>
+<span class="c1">//  Changes the application current layout. Only used in advanced cases</span>
+<span class="c1">//  when several layouts are available, i.e. if you filled</span>
+<span class="c1">//      runnerParams.alternativeDockingLayouts.</span>
+<span class="kt">void</span><span class="w">           </span><span class="nf">SwitchLayout</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">layoutName</span><span class="p">);</span>
+
+<span class="c1">// `CurrentLayoutName()`: returns the name of the current layout</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w">    </span><span class="nf">CurrentLayoutName</span><span class="p">();</span>
+</pre></div>
+</div>
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="store-user-settings-in-the-ini-file">
 <h1>Store user settings in the ini file<a class="headerlink" href="#store-user-settings-in-the-ini-file" title="Permalink to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h">hello_imgui.h</a>.</p>
-<p>You may store additional user settings in the application settings. This is provided as a convenience only,
-and it is not intended to store large quantities of text data. Use sparingly.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// You may store additional user settings in the application settings.</span>
+<span class="c1">// This is provided as a convenience only, and it is not intended to store large</span>
+<span class="c1">// quantities of text data. Use sparingly.</span>
+
+<span class="c1">// `SaveUserPref(string userPrefName, string userPrefContent)`:</span>
+<span class="c1">//  Shall be called in the callback runnerParams.callbacks.BeforeExit</span>
+<span class="kt">void</span><span class="w">        </span><span class="nf">SaveUserPref</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">userPrefName</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">userPrefContent</span><span class="p">);</span>
+
+<span class="c1">// `string LoadUserPref(string&amp; userPrefName)`</span>
+<span class="c1">//  Shall be called in the callback runnerParams.callbacks.PostInit</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">LoadUserPref</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">userPrefName</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="customize-hello-imgui-menus">
+<h1>Customize Hello ImGui Menus<a class="headerlink" href="#customize-hello-imgui-menus" title="Permalink to this heading">#</a></h1>
+<p>Hello ImGui provides a default menu and status bar, which you can customize by using the params:
+<code class="docutils literal notranslate"><span class="pre">RunnerParams.imGuiWindowParams.</span></code> <code class="docutils literal notranslate"><span class="pre">showMenuBar</span></code> / <code class="docutils literal notranslate"><span class="pre">showMenu_App</span></code> / <code class="docutils literal notranslate"><span class="pre">showMenu_View</span></code></p>
+<p>If you want to fully customize the menu:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">SaveUserPref(string</span> <span class="pre">userPrefName,</span> <span class="pre">string</span> <span class="pre">userPrefContent)</span></code>:
-Shall be called in the callback runnerParams.callbacks.BeforeExit</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">LoadUserPref(string&amp;</span> <span class="pre">userPrefName)</span></code>
-Shall be called in the callback runnerParams.callbacks.PostInit</p></li>
+<li><p>set <code class="docutils literal notranslate"><span class="pre">showMenuBar</span></code> to true, then set <code class="docutils literal notranslate"><span class="pre">showMenu_App</span></code> and <code class="docutils literal notranslate"><span class="pre">showMenu_View</span></code> params to false</p></li>
+<li><p>implement the callback <code class="docutils literal notranslate"><span class="pre">RunnerParams.callbacks.ShowMenus</span></code>:
+it can optionally call <code class="docutils literal notranslate"><span class="pre">ShowViewMenu</span></code> and <code class="docutils literal notranslate"><span class="pre">ShowAppMenu</span></code> (see below).</p></li>
 </ul>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `ShowViewMenu(RunnerParams &amp; runnerParams)`:</span>
+<span class="c1">// shows the View menu (where you can select the layout and docked windows visibility</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ShowViewMenu</span><span class="p">(</span><span class="n">RunnerParams</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">runnerParams</span><span class="p">);</span>
+
+<span class="c1">// `ShowAppMenu(RunnerParams &amp; runnerParams)`:</span>
+<span class="c1">// shows the default App menu (including the Quit item)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ShowAppMenu</span><span class="p">(</span><span class="n">RunnerParams</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">runnerParams</span><span class="p">);</span>
+</pre></div>
+</div>
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="handling-screens-with-high-dpi">
@@ -723,20 +809,19 @@ under windows and linux, 1 under macOS</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">API</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#run-application">Run Application</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-current-runner-params">Get current runner params</a></li>
-</ul>
-</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#run-application">Run Application</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#place-widgets-in-a-dpi-aware-way">Place widgets in a DPI-aware way</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#load-fonts">Load fonts</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#applications-assets">Applications assets</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-assets-as-data-buffer">Load Assets as data buffer</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-assets-path">Get assets path</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-images-from-assets">Display images from assets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-functions">Utility functions</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#switch-between-several-layouts">Switch between several layouts</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#store-user-settings-in-the-ini-file">Store user settings in the ini file</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-hello-imgui-menus">Customize Hello ImGui Menus</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-screens-with-high-dpi">Handling screens with high DPI</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#details-on-dpi-handling-on-different-os">Details on DPI handling on different OS</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dpi-aware-font-scaling">Dpi aware Font scaling</a></li>

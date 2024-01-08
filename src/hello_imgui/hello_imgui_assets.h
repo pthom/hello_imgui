@@ -24,64 +24,60 @@ Then you can load the asset "fonts/my_font.ttf", on all platforms.
 */
 
 
-/**
-@@md#LoadAssetFileData
+// @@md#LoadAssetFileData
 
-* `AssetFileData LoadAssetFileData(const char *assetPath)` will load an entire asset file into memory.
- This works on all platforms, including android.
- ```cpp
-    struct AssetFileData
-    {
-        void * data = nullptr;
-        size_t dataSize = 0;
-    };
- ```
-* `FreeAssetFileData(AssetFileData * assetFileData)` will free the memory.
-  Note: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
-  and will free the memory for you.
-
-@@md
-**/
 struct AssetFileData
 {
     void * data = nullptr;
     size_t dataSize = 0;
 };
 
+// LoadAssetFileData(const char *assetPath)`
+// Will load an entire asset file into memory. This works on all platforms,
+// including android.
 AssetFileData LoadAssetFileData(const char *assetPath);
+
+// FreeAssetFileData(AssetFileData *)
+// Will free the memory.
+// Note: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
+// and will free the memory for you.
 void FreeAssetFileData(AssetFileData * assetFileData);
+// @@md
 
 
+// @@md#assetFileFullPath
 
-/**
-@@md#assetFileFullPath
-
-`std::string AssetFileFullPath(const std::string& assetRelativeFilename)` will return the path to assets.
-
-This works under all platforms __except Android__.
-For compatibility with Android and other platforms, prefer to use `LoadAssetFileData` whenever possible.
-
-* Under iOS it will give a path in the app bundle (/private/XXX/....)
-* Under emscripten, it will be stored in the virtual filesystem at "/"
-* Under Android, assetFileFullPath is *not* implemented, and will throw an error:
-  assets can be compressed under android, and you cannot use standard file operations!
-  Use LoadAssetFileData instead
-
-@@md
-*/
-std::string AssetFileFullPath(const std::string& assetRelativeFilename, bool assertIfNotFound = true);
-inline std::string assetFileFullPath(const std::string& assetRelativeFilename, bool assertIfNotFound = true)
-    { return AssetFileFullPath(assetRelativeFilename, assertIfNotFound); }
+//`std::string AssetFileFullPath(const std::string& assetRelativeFilename)`
+// will return the path to assets.
+//
+// This works under all platforms *except Android*
+// For compatibility with Android and other platforms, prefer to use `LoadAssetFileData`
+// whenever possible.
+//    * Under iOS it will give a path in the app bundle (/private/XXX/....)
+//    * Under emscripten, it will be stored in the virtual filesystem at "/"
+//    * Under Android, assetFileFullPath is *not* implemented, and will throw an error:
+//      assets can be compressed under android, and you can't use standard file operations!
+//      Use LoadAssetFileData instead
+std::string AssetFileFullPath(const std::string& assetRelativeFilename,
+                              bool assertIfNotFound = true);
 
 // Returns true if this asset file exists
 bool AssetExists(const std::string& assetRelativeFilename);
 
-extern std::string gAssetsSubfolderFolderName;  // "assets" by default
-
 // Sets the assets folder location
 // (when using this, automatic assets installation on mobile platforms may not work)
-void SetAssetsFolder(const char* folder);
 void SetAssetsFolder(const std::string& folder);
-void overrideAssetsFolder(const char* folder); // synonym
+
+// @@md
+
+
+
+// Legacy API, kept for compatibility
+void SetAssetsFolder(const char* folder);
+inline std::string assetFileFullPath(const std::string& assetRelativeFilename, bool assertIfNotFound = true)
+    { return AssetFileFullPath(assetRelativeFilename, assertIfNotFound); }
+void overrideAssetsFolder(const char* folder); // synonym of SetAssetsFolder
+
+extern std::string gAssetsSubfolderFolderName;  // "assets" by default
 
 } // namespace HelloImGui

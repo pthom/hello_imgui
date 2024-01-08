@@ -1,0 +1,885 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>API &#8212; Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'doc_api';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Application parameters" href="doc_params.html" />
+    <link rel="prev" title="Get started" href="05_05_get_started.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <header>
+  
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
+  
+  </header>
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="00_00_intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo_hello_imgui_small.png" class="logo__image only-light" alt="Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui - Home"/>
+    <script>document.write(`<img src="_static/logo_hello_imgui_small.png" class="logo__image only-dark" alt="Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="00_00_intro.html">
+                    Hello ImGui
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05_05_get_started.html">Get started</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">API</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="doc_params.html">Application parameters</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="60_05_build.html">Build instructions</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/pthom/hello_imgui" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/pthom/hello_imgui/issues/new?title=Issue%20on%20page%20%2Fdoc_api.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/doc_api.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>API</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">API</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#run-application">Run Application</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#place-widgets-in-a-dpi-aware-way">Place widgets in a DPI-aware way</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#load-fonts">Load fonts</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#applications-assets">Applications assets</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-assets-as-data-buffer">Load Assets as data buffer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-assets-path">Get assets path</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-images-from-assets">Display images from assets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-functions">Utility functions</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#switch-between-several-layouts">Switch between several layouts</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#store-user-settings-in-the-ini-file">Store user settings in the ini file</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-hello-imgui-menus">Customize Hello ImGui Menus</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-screens-with-high-dpi">Handling screens with high DPI</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#details-on-dpi-handling-on-different-os">Details on DPI handling on different OS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dpi-aware-font-scaling">Dpi aware Font scaling</a></li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this heading">#</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="run-application">
+<h1>Run Application<a class="headerlink" href="#run-application" title="Permalink to this heading">#</a></h1>
+<p>HelloImGui is extremely easy to use: there is <strong>one</strong> main function in the API, with three overloads.</p>
+<p><strong>HelloImGui::Run()</strong> will run an application with a single call.</p>
+<p>Three signatures are provided:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">HelloImGui::Run(RunnerParams</span> <span class="pre">&amp;)</span></code>: full signature, the most customizable version.
+Runs an application whose params and Gui are provided by runnerParams.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HelloImGui::Run(const</span> <span class="pre">SimpleRunnerParams&amp;)</span></code>:
+Runs an application, using simpler params.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HelloImGui::Run(guiFunction,</span> <span class="pre">windowTitle,</span> <span class="pre">windowSize,</span> <span class="pre">windowSizeAuto=false,</span> <span class="pre">restoreLastWindowGeometry=false,</span> <span class="pre">fpsIdle=10)</span></code>
+Runs an application, by providing the Gui function, the window title, etc.</p></li>
+</ul>
+<p>Although the API is extremely simple, it is highly customizable, and you can set many options by filling
+the elements in the <code class="docutils literal notranslate"><span class="pre">RunnerParams</span></code> struct, or in the simpler  <code class="docutils literal notranslate"><span class="pre">SimpleRunnerParams</span></code>.</p>
+<p><strong>HelloImGui::GetRunnerParams()</strong>  will return the runnerParams of the current application.</p>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="place-widgets-in-a-dpi-aware-way">
+<h1>Place widgets in a DPI-aware way<a class="headerlink" href="#place-widgets-in-a-dpi-aware-way" title="Permalink to this heading">#</a></h1>
+<p>Special care must be taken in order to correctly handle screen with high DPI (for example, almost all recent laptops screens).</p>
+<p>Using ImVec2 with fixed values is <em>almost always a bad idea</em> if you intend your application to be used on high DPI screens!
+Otherwise, widgets might be misplaced or too small on different screens and/or OSes.</p>
+<p>Instead you should use scale your widgets and windows relatively to the font size, as is done
+with the <a class="reference external" href="https://lyty.dev/css/css-unit.html">em CSS Unit</a>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//  __HelloImGui::EmToVec2()__ returns an ImVec2 that you can use to size</span>
+<span class="c1">//  or place your widgets in a DPI independent way.</span>
+<span class="c1">//  Values are in multiples of the font size (i.e. as in the em CSS unit).</span>
+<span class="n">ImVec2</span><span class="w"> </span><span class="nf">EmToVec2</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+<span class="n">ImVec2</span><span class="w"> </span><span class="nf">EmToVec2</span><span class="p">(</span><span class="n">ImVec2</span><span class="w"> </span><span class="n">v</span><span class="p">);</span>
+
+<span class="c1">// __HelloImGui::EmSize()__ returns the visible font size on the screen.</span>
+<span class="kt">float</span><span class="w"> </span><span class="nf">EmSize</span><span class="p">();</span>
+<span class="c1">// __HelloImGui::EmSize(nbLines)__ returns a size corresponding to nbLines text lines</span>
+<span class="kt">float</span><span class="w"> </span><span class="nf">EmSize</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">nbLines</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="load-fonts">
+<h1>Load fonts<a class="headerlink" href="#load-fonts" title="Permalink to this heading">#</a></h1>
+<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui_font.h">hello_imgui_font.h</a>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">// When loading fonts, use HelloImGui::LoadFont(fontFilename, fontSize, fontLoadingParams)</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">// Font loading parameters: several options are available (color, merging, range, ...)</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">FontLoadingParams</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// if true, the font size will be adjusted automatically to account for HighDPI</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">adjustSizeToDpi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c1">// if true, the font will be loaded with the full glyph range</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">useFullGlyphRange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">        </span><span class="c1">// if set, fontConfig.GlyphRanges, and</span>
+<span class="w">        </span><span class="c1">//   fontConfig.OversampleH / fontConfig.OversampleV will be set to 1</span>
+<span class="w">        </span><span class="c1">//   when useFullGlyphRange is true (this is useful to save memory)</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">reduceMemoryUsageIfFullGlyphRange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c1">// if true, the font will be merged to the last font</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">mergeToLastFont</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c1">// if true, the font will be loaded using colors</span>
+<span class="w">        </span><span class="c1">// (requires freetype, enabled by IMGUI_ENABLE_FREETYPE)</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">loadColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c1">// if true, the font will be loaded using HelloImGui asset system.</span>
+<span class="w">        </span><span class="c1">// Otherwise, it will be loaded from the filesystem</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">insideAssets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c1">// the ranges of glyphs to load:</span>
+<span class="w">        </span><span class="c1">//    - if empty, the default glyph range will be used</span>
+<span class="w">        </span><span class="c1">//    - you can specify several ranges</span>
+<span class="w">        </span><span class="c1">//    - intervals bounds are inclusive</span>
+<span class="w">        </span><span class="c1">// (will be translated and stored as a static ImWChar* inside fontConfig)</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ImWcharPair</span><span class="o">&gt;</span><span class="w"> </span><span class="n">glyphRanges</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+
+<span class="w">        </span><span class="c1">// ImGui native font config to use</span>
+<span class="w">        </span><span class="n">ImFontConfig</span><span class="w"> </span><span class="n">fontConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImFontConfig</span><span class="p">();</span>
+
+<span class="w">        </span><span class="c1">// if true, the font will be loaded and then FontAwesome icons will be merged to it</span>
+<span class="w">        </span><span class="c1">// (deprecated, use mergeToLastFont instead, and load in two steps)</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">mergeFontAwesome</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">        </span><span class="n">ImFontConfig</span><span class="w"> </span><span class="n">fontConfigFontAwesome</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImFontConfig</span><span class="p">();</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="c1">// When loading fonts, use HelloImGui::LoadFont(FontLoadingParams)</span>
+<span class="w">    </span><span class="c1">// ===============================================================</span>
+<span class="w">    </span><span class="c1">// instead of ImGui::GetIO().Fonts-&gt;AddFontFromFileTTF(), because it will</span>
+<span class="w">    </span><span class="c1">// automatically adjust the font size to account for HighDPI, and will spare</span>
+<span class="w">    </span><span class="c1">// you headaches when trying to get consistent font size across different OSes.</span>
+<span class="w">    </span><span class="c1">// see FontLoadingParams and ImFontConfig</span>
+<span class="w">    </span><span class="n">ImFont</span><span class="o">*</span><span class="w"> </span><span class="nf">LoadFont</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">fontFilename</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">fontSize</span><span class="p">,</span>
+<span class="w">                     </span><span class="k">const</span><span class="w"> </span><span class="n">FontLoadingParams</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="applications-assets">
+<h1>Applications assets<a class="headerlink" href="#applications-assets" title="Permalink to this heading">#</a></h1>
+<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui_assets.h">hello_imgui_assets.h</a>.</p>
+<section id="load-assets-as-data-buffer">
+<h2>Load Assets as data buffer<a class="headerlink" href="#load-assets-as-data-buffer" title="Permalink to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">AssetFileData</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">dataSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// LoadAssetFileData(const char *assetPath)`</span>
+<span class="c1">// Will load an entire asset file into memory. This works on all platforms,</span>
+<span class="c1">// including android.</span>
+<span class="n">AssetFileData</span><span class="w"> </span><span class="nf">LoadAssetFileData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">assetPath</span><span class="p">);</span>
+
+<span class="c1">// FreeAssetFileData(AssetFileData *)</span>
+<span class="c1">// Will free the memory.</span>
+<span class="c1">// Note: &quot;ImGui::GetIO().Fonts-&gt;AddFontFromMemoryTTF&quot; takes ownership of the data</span>
+<span class="c1">// and will free the memory for you.</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">FreeAssetFileData</span><span class="p">(</span><span class="n">AssetFileData</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">assetFileData</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="get-assets-path">
+<h2>Get assets path<a class="headerlink" href="#get-assets-path" title="Permalink to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//`std::string AssetFileFullPath(const std::string&amp; assetRelativeFilename)`</span>
+<span class="c1">// will return the path to assets.</span>
+<span class="c1">//</span>
+<span class="c1">// This works under all platforms *except Android*</span>
+<span class="c1">// For compatibility with Android and other platforms, prefer to use `LoadAssetFileData`</span>
+<span class="c1">// whenever possible.</span>
+<span class="c1">//    * Under iOS it will give a path in the app bundle (/private/XXX/....)</span>
+<span class="c1">//    * Under emscripten, it will be stored in the virtual filesystem at &quot;/&quot;</span>
+<span class="c1">//    * Under Android, assetFileFullPath is *not* implemented, and will throw an error:</span>
+<span class="c1">//      assets can be compressed under android, and you can&#39;t use standard file operations!</span>
+<span class="c1">//      Use LoadAssetFileData instead</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">AssetFileFullPath</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">assetRelativeFilename</span><span class="p">,</span>
+<span class="w">                              </span><span class="kt">bool</span><span class="w"> </span><span class="n">assertIfNotFound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+
+<span class="c1">// Returns true if this asset file exists</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">AssetExists</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">assetRelativeFilename</span><span class="p">);</span>
+
+<span class="c1">// Sets the assets folder location</span>
+<span class="c1">// (when using this, automatic assets installation on mobile platforms may not work)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SetAssetsFolder</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">folder</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="display-images-from-assets">
+<h2>Display images from assets<a class="headerlink" href="#display-images-from-assets" title="Permalink to this heading">#</a></h2>
+<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/image_from_asset.h">image_from_asset.h</a>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//</span>
+<span class="c1">//Images are loaded when first displayed, and then cached</span>
+<span class="c1">// (they will be freed just before the application exits).</span>
+<span class="c1">//</span>
+<span class="c1">//For example, given this files structure:</span>
+<span class="c1">//```</span>
+<span class="c1">//├── CMakeLists.txt</span>
+<span class="c1">//├── assets/</span>
+<span class="c1">//│         └── my_image.jpg</span>
+<span class="c1">//└── my_app.main.cpp</span>
+<span class="c1">//```</span>
+<span class="c1">//</span>
+<span class="c1">//then, you can display &quot;my_image.jpg&quot;, using:</span>
+<span class="c1">//</span>
+<span class="c1">//    ```cpp</span>
+<span class="c1">//    HelloImGui::ImageFromAsset(&quot;my_image.jpg&quot;);</span>
+<span class="c1">//    ```</span>
+
+
+<span class="c1">// `HelloImGui::ImageFromAsset(const char *assetPath, size, ...)`: </span>
+<span class="c1">// will display a static image from the assets.</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ImageFromAsset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">assetPath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">uv0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">uv1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec4</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tint_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec4</span><span class="o">&amp;</span><span class="w"> </span><span class="n">border_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">));</span>
+
+<span class="c1">// `bool HelloImGui::ImageButtonFromAsset(const char *assetPath, size, ...)`:</span>
+<span class="c1">// will display a button using an image from the assets.</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">ImageButtonFromAsset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">assetPath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+<span class="w">                          </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">uv0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">uv1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+<span class="w">                          </span><span class="kt">int</span><span class="w"> </span><span class="n">frame_padding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span>
+<span class="w">                          </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec4</span><span class="o">&amp;</span><span class="w"> </span><span class="n">bg_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+<span class="w">                          </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec4</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tint_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">));</span>
+
+<span class="c1">// `ImTextureID HelloImGui::ImTextureIdFromAsset(assetPath)`:</span>
+<span class="c1">// will return a texture ID for an image loaded from the assets.</span>
+<span class="n">ImTextureID</span><span class="w"> </span><span class="nf">ImTextureIdFromAsset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">assetPath</span><span class="p">);</span>
+
+<span class="c1">// `ImVec2 HelloImGui::ImageSizeFromAsset(assetPath)`:</span>
+<span class="c1">// will return the size of an image loaded from the assets.</span>
+<span class="n">ImVec2</span><span class="w"> </span><span class="nf">ImageSizeFromAsset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">assetPath</span><span class="p">);</span>
+
+<span class="c1">// `ImVec2 HelloImGui::ImageProportionalSize(askedSize, imageSize)`:</span>
+<span class="c1">//  will return the displayed size of an image.</span>
+<span class="c1">//     - if askedSize.x or askedSize.y is 0, then the corresponding dimension</span>
+<span class="c1">//       will be computed from the image size, keeping the aspect ratio.</span>
+<span class="c1">//     - if askedSize.x&gt;0 and askedSize.y&gt; 0, then the image will be scaled to fit</span>
+<span class="c1">//       exactly the askedSize, thus potentially changing the aspect ratio.</span>
+<span class="c1">//  Note: this function is used internally by ImageFromAsset and ImageButtonFromAsset,</span>
+<span class="c1">//        so you don&#39;t need to call it directly.</span>
+<span class="n">ImVec2</span><span class="w"> </span><span class="nf">ImageProportionalSize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">askedSize</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ImVec2</span><span class="o">&amp;</span><span class="w"> </span><span class="n">imageSize</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="utility-functions">
+<h2>Utility functions<a class="headerlink" href="#utility-functions" title="Permalink to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.</span>
+<span class="c1">//  May differ from ImGui::GetIO().FrameRate, since one can choose the duration</span>
+<span class="c1">//  for the calculation of the mean value of the fps</span>
+<span class="c1">//  Returns the current FrameRate. May differ from ImGui::GetIO().FrameRate,</span>
+<span class="c1">//  since one can choose the duration for the calculation of the mean value of the fps</span>
+<span class="c1">//  (Will only lead to accurate values if you call it at each frame)</span>
+<span class="kt">float</span><span class="w"> </span><span class="nf">FrameRate</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">durationForMean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5f</span><span class="p">);</span>
+
+<span class="c1">// `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance</span>
+<span class="c1">//  of ImGuiTestEngine that was initialized by HelloImGui</span>
+<span class="c1">//  (iif ImGui Test Engine is active).</span>
+<span class="n">ImGuiTestEngine</span><span class="o">*</span><span class="w"> </span><span class="nf">GetImGuiTestEngine</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="switch-between-several-layouts">
+<h1>Switch between several layouts<a class="headerlink" href="#switch-between-several-layouts" title="Permalink to this heading">#</a></h1>
+<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h">hello_imgui.h</a>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// In advanced cases when several layouts are available, you can switch between layouts.</span>
+<span class="c1">// See demo inside</span>
+<span class="c1">//     https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp</span>
+
+<span class="c1">// `SwitchLayout(layoutName)`</span>
+<span class="c1">//  Changes the application current layout. Only used in advanced cases</span>
+<span class="c1">//  when several layouts are available, i.e. if you filled</span>
+<span class="c1">//      runnerParams.alternativeDockingLayouts.</span>
+<span class="kt">void</span><span class="w">           </span><span class="nf">SwitchLayout</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">layoutName</span><span class="p">);</span>
+
+<span class="c1">// `CurrentLayoutName()`: returns the name of the current layout</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w">    </span><span class="nf">CurrentLayoutName</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="store-user-settings-in-the-ini-file">
+<h1>Store user settings in the ini file<a class="headerlink" href="#store-user-settings-in-the-ini-file" title="Permalink to this heading">#</a></h1>
+<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h">hello_imgui.h</a>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// You may store additional user settings in the application settings.</span>
+<span class="c1">// This is provided as a convenience only, and it is not intended to store large</span>
+<span class="c1">// quantities of text data. Use sparingly.</span>
+
+<span class="c1">// `SaveUserPref(string userPrefName, string userPrefContent)`:</span>
+<span class="c1">//  Shall be called in the callback runnerParams.callbacks.BeforeExit</span>
+<span class="kt">void</span><span class="w">        </span><span class="nf">SaveUserPref</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">userPrefName</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">userPrefContent</span><span class="p">);</span>
+
+<span class="c1">// `string LoadUserPref(string&amp; userPrefName)`</span>
+<span class="c1">//  Shall be called in the callback runnerParams.callbacks.PostInit</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">LoadUserPref</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">userPrefName</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="customize-hello-imgui-menus">
+<h1>Customize Hello ImGui Menus<a class="headerlink" href="#customize-hello-imgui-menus" title="Permalink to this heading">#</a></h1>
+<p>Hello ImGui provides a default menu and status bar, which you can customize by using the params:
+<code class="docutils literal notranslate"><span class="pre">RunnerParams.imGuiWindowParams.</span></code> <code class="docutils literal notranslate"><span class="pre">showMenuBar</span></code> / <code class="docutils literal notranslate"><span class="pre">showMenu_App</span></code> / <code class="docutils literal notranslate"><span class="pre">showMenu_View</span></code></p>
+<p>If you want to fully customize the menu:</p>
+<ul class="simple">
+<li><p>set <code class="docutils literal notranslate"><span class="pre">showMenuBar</span></code> to true, then set <code class="docutils literal notranslate"><span class="pre">showMenu_App</span></code> and <code class="docutils literal notranslate"><span class="pre">showMenu_View</span></code> params to false</p></li>
+<li><p>implement the callback <code class="docutils literal notranslate"><span class="pre">RunnerParams.callbacks.ShowMenus</span></code>:
+it can optionally call <code class="docutils literal notranslate"><span class="pre">ShowViewMenu</span></code> and <code class="docutils literal notranslate"><span class="pre">ShowAppMenu</span></code> (see below).</p></li>
+</ul>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `ShowViewMenu(RunnerParams &amp; runnerParams)`:</span>
+<span class="c1">// shows the View menu (where you can select the layout and docked windows visibility</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ShowViewMenu</span><span class="p">(</span><span class="n">RunnerParams</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">runnerParams</span><span class="p">);</span>
+
+<span class="c1">// `ShowAppMenu(RunnerParams &amp; runnerParams)`:</span>
+<span class="c1">// shows the default App menu (including the Quit item)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ShowAppMenu</span><span class="p">(</span><span class="n">RunnerParams</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">runnerParams</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="handling-screens-with-high-dpi">
+<h1>Handling screens with high DPI<a class="headerlink" href="#handling-screens-with-high-dpi" title="Permalink to this heading">#</a></h1>
+<p><em>Note: This part is relevant only for more advanced usages. If you use <code class="docutils literal notranslate"><span class="pre">HelloImGui::LoadFont()</span></code>, and always use <code class="docutils literal notranslate"><span class="pre">HelloImGui::EmToVec2()</span></code> to place widgets, you do not need to worry about DPI handling</em></p>
+<section id="details-on-dpi-handling-on-different-os">
+<h2>Details on DPI handling on different OS<a class="headerlink" href="#details-on-dpi-handling-on-different-os" title="Permalink to this heading">#</a></h2>
+<p>Let’s consider screen whose physical pixel resolution is 3600x2000, but which will displayed with a scaling factor of 200%, so that widgets do not look too small on it.</p>
+<p>The way it is handled depends on the OS:</p>
+<ul class="simple">
+<li><p>On MacOS, the screen will be seen as having a resolution of 1800x1000, and the OS handles the resizing by itself.</p></li>
+<li><p>On Linux, and on Windows if the application is DPI aware, the screen will be seen as having a resolution of 3600x2000.</p></li>
+<li><p>On Windows if the application is not DPI aware, the screen will be seen as having a resolution of 1800x1000</p></li>
+</ul>
+<p>By default, if using the glfw backend, applications will be Dpi aware under windows.
+Sdl applications are normally not Dpi aware. However HelloImGui makes them Dpi aware when using the sdl backend.</p>
+</section>
+<section id="dpi-aware-font-scaling">
+<h2>Dpi aware Font scaling<a class="headerlink" href="#dpi-aware-font-scaling" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">HelloImGui::LoadFont()</span></code> will load fonts with the correct size, taking into account the DPI scaling.</p>
+<p>If you prefer to use <code class="docutils literal notranslate"><span class="pre">ImGui::GetIO().Fonts-&gt;AddFontFromFileTTF()</span></code>, there are two things to know:</p>
+<ol class="arabic simple">
+<li><p>You should adjust <code class="docutils literal notranslate"><span class="pre">ImGui::GetIO().FontGlobalScale</span></code>:</p></li>
+</ol>
+<p>Under windows and linux, it should be is 1: no rescaling should be done by ImGui.
+Under macOS and emscripten, it may need to bet set to 0.5 (for example it will be 0.5 if the dpi scaling is 200%
+on a macOS retina screen)</p>
+<p><code class="docutils literal notranslate"><span class="pre">HelloImGui::ImGuiDefaultFontGlobalScale()</span></code> returns the default value that should be stored inside <code class="docutils literal notranslate"><span class="pre">ImGui::GetIO().FontGlobalScale</span></code>.</p>
+<ol class="arabic simple" start="2">
+<li><p>You should adjust the font size when loading a font:</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">HelloImGui::DpiFontLoadingFactor()</span></code> returns a factor by which you shall multiply your font sizes when loading them.</p>
+<p><code class="docutils literal notranslate"><span class="pre">HelloImGui::DpiFontLoadingFactor()</span></code> corresponds to:
+<code class="docutils literal notranslate"><span class="pre">DpiWindowSizeFactor()</span> <span class="pre">*</span> <span class="pre">1.f</span> <span class="pre">/</span> <span class="pre">ImGui::GetIO().FontGlobalScale</span></code></p>
+<p>where DpiWindowSizeFactor() is equal to <code class="docutils literal notranslate"><span class="pre">CurrentScreenPixelPerInch</span> <span class="pre">/</span> <span class="pre">96</span></code>
+under windows and linux, 1 under macOS</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="05_05_get_started.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Get started</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="doc_params.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Application parameters</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">API</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#run-application">Run Application</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#place-widgets-in-a-dpi-aware-way">Place widgets in a DPI-aware way</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#load-fonts">Load fonts</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#applications-assets">Applications assets</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-assets-as-data-buffer">Load Assets as data buffer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-assets-path">Get assets path</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-images-from-assets">Display images from assets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-functions">Utility functions</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#switch-between-several-layouts">Switch between several layouts</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#store-user-settings-in-the-ini-file">Store user settings in the ini file</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-hello-imgui-menus">Customize Hello ImGui Menus</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-screens-with-high-dpi">Handling screens with high DPI</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#details-on-dpi-handling-on-different-os">Details on DPI handling on different OS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dpi-aware-font-scaling">Dpi aware Font scaling</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Pascal Thomet
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

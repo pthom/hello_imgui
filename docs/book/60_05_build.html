@@ -1,0 +1,711 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Build instructions &#8212; Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '60_05_build';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Application parameters" href="doc_params.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <header>
+  
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
+  
+  </header>
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="00_00_intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo_hello_imgui_small.png" class="logo__image only-light" alt="Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui - Home"/>
+    <script>document.write(`<img src="_static/logo_hello_imgui_small.png" class="logo__image only-dark" alt="Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="00_00_intro.html">
+                    Hello ImGui
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05_05_get_started.html">Get started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_api.html">API</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="doc_params.html">Application parameters</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Build instructions</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/pthom/hello_imgui" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/pthom/hello_imgui/issues/new?title=Issue%20on%20page%20%2F60_05_build.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/60_05_build.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Build instructions</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-hello-imgui-and-its-demos">Build Hello ImGui and its demos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-your-application-using-hello-imgui">Build your application using Hello ImGui</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-backends">Available backends</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hello-imgui-dependencies">Hello ImGui dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hello-imgui-cmake-options">Hello ImGui CMake options</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#os-specific-instructions">OS specific instructions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#windows-instructions">Windows instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ios-instructions">iOS instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emscripten-instructions">Emscripten instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#macos-instructions">macOS instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#android-instructions">Android instructions</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="build-instructions">
+<h1>Build instructions<a class="headerlink" href="#build-instructions" title="Permalink to this heading">#</a></h1>
+<section id="build-hello-imgui-and-its-demos">
+<h2>Build Hello ImGui and its demos<a class="headerlink" href="#build-hello-imgui-and-its-demos" title="Permalink to this heading">#</a></h2>
+<p>On almost all platforms, HelloImGui can be compiled with simple commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="sb">```</span>bash
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/pthom/hello_imgui.git
+<span class="nb">cd</span><span class="w"> </span>hello_imgui
+mkdir<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>..<span class="w"> </span>
+make<span class="w"> </span>-j
+</pre></div>
+</div>
+<p>This will compile the HelloImGui library, and the demos (which will be located in the build/bin/ folder).</p>
+</section>
+<section id="build-your-application-using-hello-imgui">
+<h2>Build your application using Hello ImGui<a class="headerlink" href="#build-your-application-using-hello-imgui" title="Permalink to this heading">#</a></h2>
+<p>To build an application that uses HelloImGui, you can either place HelloImGui inside your project (for example as a submodule), or it can be downloaded and built automatically by cmake.</p>
+<p>In any case, follow the build instructions given in the <a class="reference external" href="https://github.com/pthom/hello_imgui_template">HelloImGui Starter Template</a></p>
+</section>
+<section id="available-backends">
+<h2>Available backends<a class="headerlink" href="#available-backends" title="Permalink to this heading">#</a></h2>
+<p>See documentation below (extract from <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/CMakeLists.txt">CMakeLists.txt</a>):</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="c"># Available backends combinations: HelloImGui needs to use at least one of them.</span>
+<span class="c"># If you specify no option:</span>
+<span class="c"># - HELLOIMGUI_USE_GLFW_OPENGL3 will be used for Windows, Linux, and macOS</span>
+<span class="c"># - HELLOIMGUI_USE_SDL_OPENGL3 will be used for Android, iOS and emscripten</span>
+<span class="c">#</span>
+<span class="c"># Note:</span>
+<span class="c"># - Only one rendering backend can be used at a time (OpenGL3, Metal or Vulkan)!</span>
+<span class="c"># - You may select multiple platform backends</span>
+<span class="c">#   (for example, you may select both SDL and Glfw3)</span>
+<span class="c"># - Combinations using OpenGL3 as a renderer are easier to use,</span>
+<span class="c">#   and are recommended, especially for beginners.</span>
+<span class="c">################################################################################</span>
+<span class="c"># Standard backends:</span>
+<span class="c"># Use Glfw3 + OpenGl3</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_GLFW_OPENGL3</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for Glfw3+OpenGL3&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Use SDL2 + OpenGL3</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_SDL_OPENGL3</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for SDL2+OpenGL3&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+
+<span class="c"># Advanced backends, for experienced users:</span>
+<span class="c">#   Vulkan, Metal, and DirectX11 do work, but you may need to customize the rendering code inside HelloImGui:</span>
+<span class="c">#   see src/hello_imgui/internal/backend_impls/rendering_xxxx.[h,cpp]</span>
+<span class="c">#   (using those backends probably implies that you want to heavily customize the rendering code)</span>
+<span class="c"># Use Glfw3 + Metal (Apple only)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_GLFW_METAL</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for Glfw3+Metal&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Use SDL2 + Metal (Apple only)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_SDL_METAL</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for SDL2+Metal&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Use Glfw3 + Vulkan</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_GLFW_VULKAN</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for Glfw3+Vulkan&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Use SDL2 + Vulkan</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_SDL_VULKAN</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for SDL2+Vulkan&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Use SDL2 + DirectX 11 (Note: there is a known issue with DirectX11, see src/hello_imgui/internal/backend_impls/rendering_dx11.h)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_SDL_DIRECTX11</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for SDL2+DirectX11&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Use Glfw3 + DirectX 11 (Note: there is a known issue with DirectX11, see src/hello_imgui/internal/backend_impls/rendering_dx11.h)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_GLFW_DIRECTX11</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for Glfw3+DirectX11&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="c"># Experimental! DirectX12 was not tested, although it does compile!</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_SDL_DIRECTX12</span><span class="w"> </span><span class="s2">&quot;Build HelloImGui for SDL2+DirectX12&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In order to select your own backend, use one of the afore mentioned backend combinations, for example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>..<span class="w"> </span>-HELLOIMGUI_USE_SDL_OPENGL3<span class="o">=</span>ON
+</pre></div>
+</div>
+</section>
+<section id="hello-imgui-dependencies">
+<h2>Hello ImGui dependencies<a class="headerlink" href="#hello-imgui-dependencies" title="Permalink to this heading">#</a></h2>
+<p>HelloImGui depends on the following libraries:</p>
+<ul class="simple">
+<li><p><strong>Glfw3 or SDL2</strong>, depending on the platform backend you selected</p></li>
+<li><p><strong>Freetype</strong>, for font rendering, if HELLOIMGUI_USE_FREETYPE is ON, which is the default</p></li>
+</ul>
+<p>Those dependencies may be downloaded and built automatically by cmake, or you can provide your own version of those libraries.</p>
+<p>See documentation below (extract from <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/CMakeLists.txt">CMakeLists.txt</a>):</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="c"># Automatic download of Glfw3, SDL2, and Freetype (provided as a convenience)</span>
+<span class="c">#</span>
+<span class="c"># (this is disabled by default on Linux, which prefers to use the system libraries,</span>
+<span class="c"># enabled by default on other platforms)</span>
+<span class="c">#</span>
+<span class="c"># Note:</span>
+<span class="c">#</span>
+<span class="c"># SDL and Glfw3 will be downloaded only if:</span>
+<span class="c"># -----------------------------------------</span>
+<span class="c">#   - HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED or HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED is ON</span>
+<span class="c">#   - HELLOIMGUI_USE_SDL_XXXX or HELLOIMGUI_USE_GLFW_XXXX is ON</span>
+<span class="c">#   - SDL and/or Glfw3 were not added as CMake target</span>
+<span class="c">#     (add_subdirectory(external/SDL) or add_subdirectory(external/glfw) for example)</span>
+<span class="c">#   - find_package(glfw3 or SDL2) fails. If a system library is found,</span>
+<span class="c">#     or a user library provided in a path added to CMAKE_PREFIX_PATH,</span>
+<span class="c">#     it will be used instead</span>
+<span class="c">#</span>
+<span class="c"># - Freetype will be downloaded only if:</span>
+<span class="c"># --------------------------------------</span>
+<span class="c">#   - HELLOIMGUI_DOWNLOAD_FREETYPE is ON, HELLOIMGUI_USE_FREETYPE is ON</span>
+<span class="c">#   - Freetype was not added as a CMake target</span>
+<span class="c">#         (add_subdirectory(external/freetype) for example)</span>
+<span class="c">#   - find_package(freetype) fails</span>
+<span class="c">#   (it will also be forcibly downloaded if HELLOIMGUI_FREETYPE_STATIC is ON)</span>
+<span class="c">#</span>
+<span class="c">#</span>
+<span class="c"># Automatic download of SDL2, Glfw3, and Freetype is disabled by default on Linux,</span>
+<span class="c"># because it is recommended to use the system libraries instead:</span>
+<span class="c"># On ubuntu, you can install them with:</span>
+<span class="c">#    sudo apt install libglfw3-dev libsdl2-dev libfreetype-dev</span>
+<span class="c">#</span>
+<span class="c">#------------------------------------------------------------------------------</span>
+<span class="nb">if</span><span class="p">(</span><span class="s">CMAKE_SYSTEM_NAME</span><span class="w"> </span><span class="s">MATCHES</span><span class="w"> </span><span class="s2">&quot;Linux&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">set</span><span class="p">(</span><span class="s">autodownload_default</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+<span class="nb">else</span><span class="p">()</span>
+<span class="w">    </span><span class="nb">set</span><span class="p">(</span><span class="s">autodownload_default</span><span class="w"> </span><span class="s">ON</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED</span><span class="w"> </span><span class="s2">&quot;Download and build GLFW if needed&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">autodownload_default</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED</span><span class="w"> </span><span class="s2">&quot;Download and build GLFW if needed&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">autodownload_default</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED</span><span class="w"> </span><span class="s2">&quot;Download and build Freetype if needed&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">autodownload_default</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_FREETYPE_STATIC</span><span class="w"> </span><span class="s2">&quot;Force static linking of freetype (only used for python bindings)&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="hello-imgui-cmake-options">
+<h2>Hello ImGui CMake options<a class="headerlink" href="#hello-imgui-cmake-options" title="Permalink to this heading">#</a></h2>
+<p>The <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/CMakeLists.txt">CMakelists.txt</a> file is heavily documented.</p>
+<p>Below are the most important options:</p>
+<p><strong>Freetype</strong> (default: ON, except for Android and Mingw)</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_USE_FREETYPE</span><span class="w"> </span><span class="s2">&quot;Use freetype for text rendering&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">freetype_default</span><span class="o">}</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>ImGui Test Engine</strong> (default: OFF)</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_WITH_TEST_ENGINE</span><span class="w"> </span><span class="s2">&quot;Provide ImGui Test engine&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="os-specific-instructions">
+<h2>OS specific instructions<a class="headerlink" href="#os-specific-instructions" title="Permalink to this heading">#</a></h2>
+<section id="windows-instructions">
+<h3>Windows instructions<a class="headerlink" href="#windows-instructions" title="Permalink to this heading">#</a></h3>
+<p>Under windows, Hello ImGui will automatically provide a <a class="reference download internal" download="" href="_downloads/f4eaa4ce5a71caa065915b4517c02d16/HelloImGui_WinMain.cpp"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">WinMain()</span></code> function</span></a> that will call main, and expects its signature to be <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">main(int,</span> <span class="pre">char**)</span></code>. You may get a linker error if your main function signature is for example <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">main()</span></code>.</p>
+<p>You can disable this via cmake by passing <code class="docutils literal notranslate"><span class="pre">-DHELLOIMGUI_WIN32_AUTO_WINMAIN=OFF</span></code> as a command line cmake option. In this case, write your own <code class="docutils literal notranslate"><span class="pre">WinMain</span></code> under windows.</p>
+<p>Warning: if using SDL, you will need to <code class="docutils literal notranslate"><span class="pre">#define</span> <span class="pre">SDL_MAIN_HANDLED</span></code> before any inclusion of SDL.h (to refrain SDL from #defining  <code class="docutils literal notranslate"><span class="pre">#define</span> <span class="pre">main</span> <span class="pre">SDL_main</span></code>)</p>
+</section>
+<section id="ios-instructions">
+<h3>iOS instructions<a class="headerlink" href="#ios-instructions" title="Permalink to this heading">#</a></h3>
+<p>“SDL + OpenGL ES3” is currently the preferred backend for iOS.</p>
+<p>This project uses the <a class="reference external" href="https://github.com/leetal/ios-cmake">ios-cmake</a> toolchain which is a submodule in the folder <a class="reference external" href="https://github.com/pthom/hello_imgui/tree/master/hello_imgui_cmake">hello_imgui_cmake/</a>.</p>
+<p>See compilation instructions in the <a class="reference external" href="https://github.com/pthom/hello_imgui_template">HelloImGui Starter Template</a></p>
+</section>
+<section id="emscripten-instructions">
+<h3>Emscripten instructions<a class="headerlink" href="#emscripten-instructions" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p><a class="reference external" href="https://emscripten.org/">emscripten</a> is a toolchain for compiling to asm.js and WebAssembly, built using LLVM, that lets you run C and C++ on the web at near-native speed without plugins.</p>
+</div></blockquote>
+<p>See compilation instruction in the <a class="reference external" href="https://github.com/pthom/hello_imgui_template">HelloImGui Starter Template</a></p>
+<p>To test your emscripten application, you will need a web server. Python provides a basic web server that is easy to usen which you can launch like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>build_emscripten
+python3<span class="w"> </span>-m<span class="w"> </span>http.server
+</pre></div>
+</div>
+<p>Open a browser, and navigate to <a class="reference external" href="http://localhost:8000">http://localhost:8000</a>.</p>
+</section>
+<section id="macos-instructions">
+<h3>macOS instructions<a class="headerlink" href="#macos-instructions" title="Permalink to this heading">#</a></h3>
+<p>If you prefer to build regular terminal executables (not app bundles), use the cmake option <code class="docutils literal notranslate"><span class="pre">-DHELLOIMGUI_MACOS_NO_BUNDLE=ON</span></code>.</p>
+</section>
+<section id="android-instructions">
+<h3>Android instructions<a class="headerlink" href="#android-instructions" title="Permalink to this heading">#</a></h3>
+<p>The Android version uses SDL + OpenGLES3.</p>
+<p>See compilation instructions in the <a class="reference external" href="https://github.com/pthom/hello_imgui_template">HelloImGui Starter Template</a></p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="doc_params.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Application parameters</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-hello-imgui-and-its-demos">Build Hello ImGui and its demos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-your-application-using-hello-imgui">Build your application using Hello ImGui</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-backends">Available backends</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hello-imgui-dependencies">Hello ImGui dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hello-imgui-cmake-options">Hello ImGui CMake options</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#os-specific-instructions">OS specific instructions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#windows-instructions">Windows instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ios-instructions">iOS instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emscripten-instructions">Emscripten instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#macos-instructions">macOS instructions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#android-instructions">Android instructions</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Pascal Thomet
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

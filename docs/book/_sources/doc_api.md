@@ -61,11 +61,7 @@ float EmSize(float nbLines);
 See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui_font.h).
 ```cpp
     //
-    // When loading fonts, use HelloImGui::LoadFont(FontLoadingParams)
-    // ===============================================================
-    // instead of ImGui::GetIO().Fonts->AddFontFromFileTTF(), because it will
-    // automatically adjust the font size to account for HighDPI, and will spare
-    // you headaches when trying to get consistent font size across different OSes.
+    // When loading fonts, use HelloImGui::LoadFont(fontFilename, fontSize, fontLoadingParams)
     //
     // Font loading parameters: several options are available (color, merging, range, ...)
     struct FontLoadingParams
@@ -107,7 +103,11 @@ See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/he
         ImFontConfig fontConfigFontAwesome = ImFontConfig();
     };
 
-    // Generic font loading function, with many options:
+    // When loading fonts, use HelloImGui::LoadFont(FontLoadingParams)
+    // ===============================================================
+    // instead of ImGui::GetIO().Fonts->AddFontFromFileTTF(), because it will
+    // automatically adjust the font size to account for HighDPI, and will spare
+    // you headaches when trying to get consistent font size across different OSes.
     // see FontLoadingParams and ImFontConfig
     ImFont* LoadFont(const std::string & fontFilename, float fontSize,
                      const FontLoadingParams & params = {});

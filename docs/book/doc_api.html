@@ -477,11 +477,7 @@ with the <a class="reference external" href="https://lyty.dev/css/css-unit.html"
 <h1>Load fonts<a class="headerlink" href="#load-fonts" title="Permalink to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui_font.h">hello_imgui_font.h</a>.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">//</span>
-<span class="w">    </span><span class="c1">// When loading fonts, use HelloImGui::LoadFont(FontLoadingParams)</span>
-<span class="w">    </span><span class="c1">// ===============================================================</span>
-<span class="w">    </span><span class="c1">// instead of ImGui::GetIO().Fonts-&gt;AddFontFromFileTTF(), because it will</span>
-<span class="w">    </span><span class="c1">// automatically adjust the font size to account for HighDPI, and will spare</span>
-<span class="w">    </span><span class="c1">// you headaches when trying to get consistent font size across different OSes.</span>
+<span class="w">    </span><span class="c1">// When loading fonts, use HelloImGui::LoadFont(fontFilename, fontSize, fontLoadingParams)</span>
 <span class="w">    </span><span class="c1">//</span>
 <span class="w">    </span><span class="c1">// Font loading parameters: several options are available (color, merging, range, ...)</span>
 <span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">FontLoadingParams</span>
@@ -523,7 +519,11 @@ with the <a class="reference external" href="https://lyty.dev/css/css-unit.html"
 <span class="w">        </span><span class="n">ImFontConfig</span><span class="w"> </span><span class="n">fontConfigFontAwesome</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImFontConfig</span><span class="p">();</span>
 <span class="w">    </span><span class="p">};</span>
 
-<span class="w">    </span><span class="c1">// Generic font loading function, with many options:</span>
+<span class="w">    </span><span class="c1">// When loading fonts, use HelloImGui::LoadFont(FontLoadingParams)</span>
+<span class="w">    </span><span class="c1">// ===============================================================</span>
+<span class="w">    </span><span class="c1">// instead of ImGui::GetIO().Fonts-&gt;AddFontFromFileTTF(), because it will</span>
+<span class="w">    </span><span class="c1">// automatically adjust the font size to account for HighDPI, and will spare</span>
+<span class="w">    </span><span class="c1">// you headaches when trying to get consistent font size across different OSes.</span>
 <span class="w">    </span><span class="c1">// see FontLoadingParams and ImFontConfig</span>
 <span class="w">    </span><span class="n">ImFont</span><span class="o">*</span><span class="w"> </span><span class="nf">LoadFont</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">fontFilename</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">fontSize</span><span class="p">,</span>
 <span class="w">                     </span><span class="k">const</span><span class="w"> </span><span class="n">FontLoadingParams</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>

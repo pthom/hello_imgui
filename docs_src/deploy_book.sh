@@ -129,3 +129,4 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 echo "- deploy_book: - checked out master branch"
+echo "- deploy_book: - SUCCESS!"

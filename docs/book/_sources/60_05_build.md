@@ -15,7 +15,7 @@ make -j
 
 This will compile the HelloImGui library, and the demos (which will be located in the build/bin/ folder).
 
-## Build your application using HelloImGui
+## Build your application using Hello ImGui
 
 To build an application that uses HelloImGui, you can either place HelloImGui inside your project (for example as a submodule), or it can be downloaded and built automatically by cmake.
 
@@ -54,7 +54,7 @@ See documentation below (extract from [CMakeLists.txt](https://github.com/pthom/
 :end-before: </Dependencies>
 ```
 
-## Hello ImGui CMake options:
+## Hello ImGui CMake options
 
 The [CMakelists.txt](https://github.com/pthom/hello_imgui/blob/master/CMakeLists.txt) file is heavily documented.
 

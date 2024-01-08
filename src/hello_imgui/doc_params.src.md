@@ -61,11 +61,15 @@ See [imgui_window_params.h](https://github.com/pthom/hello_imgui/blob/master/src
 
 ## ImGuiWindowParams
 
+```cpp
 @import "imgui_window_params.h" {md_id=ImGuiWindowParams}
+```
 
 ## Default window types
 
+```cpp
 @import "imgui_window_params.h" {md_id=DefaultImGuiWindowType}
+```
 
 ----
 

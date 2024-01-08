@@ -758,61 +758,84 @@ Example:</p>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/imgui_window_params.h">imgui_window_params.h</a>.</p>
 <section id="imguiwindowparams">
 <h2>ImGuiWindowParams<a class="headerlink" href="#imguiwindowparams" title="Permalink to this heading">#</a></h2>
-<p><strong>ImGuiWindowParams</strong> is a struct that defines the ImGui inner windows params
-These settings affect the imgui inner windows inside the application window.
-In order to change the application window settings, change the <em>AppWindowsParams</em></p>
-<p>Members:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">defaultImGuiWindowType</span></code>: <em>DefaultImGuiWindowType, default=ProvideFullScreenWindow</em>.
-By default, a full window is provided in the background. You can still
-add windows on top of it, since the Z-order of this background window is always behind</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">backgroundColor</span></code>: <em>ImVec4, default=ImVec4(0.45f, 0.55f, 0.60f, 1.00f)</em>.
-This is the “clearColor”, visible if defaultImGuiWindowType is not ProvideFullScreenWindow.
-Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full
-control over what is drawn behind the Gui.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">showMenuBar</span></code>: <em>bool, default=false</em>.
-Show Menu bar on top of imgui main window.
-In order to fully customize the menu, set showMenuBar to true, and set showMenu_App and showMenu_View params to false.
-Then, implement the callback <code class="docutils literal notranslate"><span class="pre">RunnerParams.callbacks.ShowMenus</span></code> which can optionally call <code class="docutils literal notranslate"><span class="pre">HelloImGui::ShowViewMenu</span></code>
-and <code class="docutils literal notranslate"><span class="pre">HelloImGui::ShowAppMenu</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">showMenu_App</span></code>: <em>bool, default=true</em>.
-If menu bar is shown, include or not the default app menu</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">showMenu_App_Quit</span></code>: <em>bool, default=true</em>.
-Include or not a “Quit” item in the default app menu.
-Set this to false if you intend to provide your own quit callback with possible user confirmation
-(and implement it inside RunnerCallbacks.ShowAppMenuItems)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">showMenu_View</span></code>: <em>bool, default=true</em>.
-If menu bar is shown, include or not the default <em>View</em> menu, that enables to change the layout and
-set the docked windows and status bar visibility)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">showStatusBar</span></code>: <em>bool, default=false</em>.
-Flag that enable to show a Status bar at the bottom. You can customize the status bar
-via RunnerCallbacks.ShowStatus()</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">showStatus_Fps</span></code>: <em>bool, default=true</em>. If set, display the FPS in the status bar.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">rememberStatusBarSettings</span></code>: <em>bool, default=true</em>. If set, showStatusBar and showStatus_Fps are stored in the application settings.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">configWindowsMoveFromTitleBarOnly</span></code>: <em>bool, default=true</em>.
-Make windows only movable from the title bar</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">enableViewports</span></code>: <em>bool, default=false</em>. Enable multiple viewports (i.e multiple native windows)
-If true, you can drag windows outside out the main window in order to put their content into new native windows.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">menuAppTitle</span></code>: <em>string, default=””</em>. Set the title of the App menu. If empty, this menu name will use
-the “windowTitle” from AppWindowParams</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tweakedTheme</span></code>: <em>ImGuiTheme::ImGuiTweakedTheme</em>.
-Change the ImGui theme. Several themes are available, you can query the list by calling
-HelloImGui::AvailableThemes()</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">showMenu_View_Themes</span></code>: <em>bool, default=true</em>.
-Show theme selection in view menu</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">rememberTheme</span></code>: <em>bool, default=true</em>.
-Remember selected theme</p></li>
-</ul>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `ImGuiWindowParams` is a struct that defines the ImGui inner windows params</span>
+<span class="c1">// These settings affect the imgui inner windows inside the application window.</span>
+<span class="c1">// In order to change the application window settings, change the `AppWindowsParams`</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">ImGuiWindowParams</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// By default, a full window is provided in the background. You can still add windows</span>
+<span class="w">    </span><span class="c1">// on top of it, since the Z-order of this background window is always behind</span>
+<span class="w">    </span><span class="n">DefaultImGuiWindowType</span><span class="w"> </span><span class="n">defaultImGuiWindowType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DefaultImGuiWindowType</span><span class="o">::</span><span class="n">ProvideFullScreenWindow</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// This is the &quot;clearColor&quot;, visible if defaultImGuiWindowType is not ProvideFullScreenWindow.</span>
+<span class="w">    </span><span class="c1">// Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full</span>
+<span class="w">    </span><span class="c1">// control over what is drawn behind the Gui.</span>
+<span class="w">    </span><span class="n">ImVec4</span><span class="w"> </span><span class="n">backgroundColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Show Menu bar on top of imgui main window.</span>
+<span class="w">    </span><span class="c1">// In order to fully customize the menu, set showMenuBar to true, and set showMenu_App</span>
+<span class="w">    </span><span class="c1">// and showMenu_View params to false. Then, implement the callback</span>
+<span class="w">    </span><span class="c1">// `RunnerParams.callbacks.ShowMenus`</span>
+<span class="w">    </span><span class="c1">// which can optionally call `HelloImGui::ShowViewMenu` and `HelloImGui::ShowAppMenu`.</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">showMenuBar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">//  If menu bar is shown, include or not the default app menu</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">showMenu_App</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Include or not a &quot;Quit&quot; item in the default app menu.</span>
+<span class="w">    </span><span class="c1">// Set this to false if you intend to provide your own quit callback</span>
+<span class="w">    </span><span class="c1">// with possible user confirmation</span>
+<span class="w">    </span><span class="c1">// (and implement it inside RunnerCallbacks.ShowAppMenuItems)</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">showMenu_App_Quit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// If menu bar is shown, include or not the default _View_ menu, that enables</span>
+<span class="w">    </span><span class="c1">// to change the layout and set the docked windows and status bar visibility)</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">showMenu_View</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Flag that enable to show a Status bar at the bottom. You can customize</span>
+<span class="w">    </span><span class="c1">// the status bar via RunnerCallbacks.ShowStatus()</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">showStatusBar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// If set, display the FPS in the status bar.</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">showStatus_Fps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// If set, showStatusBar and showStatus_Fps are stored in the application settings.</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">rememberStatusBarSettings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Make windows only movable from the title bar</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">configWindowsMoveFromTitleBarOnly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Enable multiple viewports (i.e multiple native windows).</span>
+<span class="w">    </span><span class="c1">// If true, you can drag windows outside the main window, in order to put their content</span>
+<span class="w">    </span><span class="c1">// into new native windows.</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">enableViewports</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Set the title of the App menu. If empty, the menu name will use</span>
+<span class="w">    </span><span class="c1">// the &quot;windowTitle&quot; from AppWindowParams//</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">menuAppTitle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Change the ImGui theme. Several themes are available, you can query the list</span>
+<span class="w">    </span><span class="c1">// by calling HelloImGui::AvailableThemes()</span>
+<span class="w">    </span><span class="n">ImGuiTheme</span><span class="o">::</span><span class="n">ImGuiTweakedTheme</span><span class="w"> </span><span class="n">tweakedTheme</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Show theme selection in view menu</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">showMenu_View_Themes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// `rememberTheme`: _bool, default=true_. Remember selected theme</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">rememberTheme</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
 </section>
 <section id="default-window-types">
 <h2>Default window types<a class="headerlink" href="#default-window-types" title="Permalink to this heading">#</a></h2>
-<p><strong>DefaultImGuiWindowType</strong> is an enum class that defines whether or not a full screen background window is provided.</p>
-<p>Values:</p>
-<ul class="simple">
-<li><p><em>ProvideFullScreenWindow</em>: a full window is provided in the background</p></li>
-<li><p><em>ProvideFullScreenDockSpace</em>: a full screen dockspace is provided in the background</p></li>
-<li><p><em>NoDefaultWindow</em>: No default window is provided (except for ImGui’s default “debug” window)</p></li>
-</ul>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `DefaultImGuiWindowType` is an enum class that defines whether a full screen background</span>
+<span class="c1">// window is provided or not</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">DefaultImGuiWindowType</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// `ProvideFullScreenWindow`: a full window is provided in the background</span>
+<span class="w">    </span><span class="n">ProvideFullScreenWindow</span><span class="p">,</span>
+<span class="w">    </span><span class="c1">// `ProvideFullScreenDockSpace`: a full screen dockspace is provided in the background</span>
+<span class="w">    </span><span class="n">ProvideFullScreenDockSpace</span><span class="p">,</span>
+<span class="w">    </span><span class="c1">// `NoDefaultWindow`: No default window is provided (except for ImGui&#39;s default &quot;debug&quot; window)</span>
+<span class="w">    </span><span class="n">NoDefaultWindow</span>
+<span class="p">};</span>
+</pre></div>
+</div>
 </section>
 </section>
 <hr class="docutils" />

@@ -106,7 +106,7 @@ struct ImGuiWindowParams
     //      the "application window" bottom right corner
     //      and the "imgui background window" bottom right corner
     // Important note:
-    //     In order to be Dpi aware, those size are in *em units*, not in pixels,
+    //     In order to be Dpi aware, those sizes are in *em units*, not in pixels,
     //     i.e. in multiples of the font size! (See HelloImGui::EmToVec2)
     ImVec2 fullScreenWindow_MarginTopLeft     = ImVec2(0.f, 0.f);
     ImVec2 fullScreenWindow_MarginBottomRight = ImVec2(0.f, 0.f);

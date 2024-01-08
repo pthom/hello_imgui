@@ -176,6 +176,7 @@ struct RunnerParams
 };
 ```
 
+
 # Fps Idling
 
 See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h).

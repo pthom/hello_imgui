@@ -188,6 +188,8 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
+
+
 <li class="toctree-l1"><a class="reference internal" href="doc_params.html">Application parameters</a></li>
 
 
@@ -400,9 +402,10 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-assets-as-data-buffer">Load Assets as data buffer</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-assets-path">Get assets path</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-images-from-assets">Display images from assets</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-functions">Utility functions</a></li>
 </ul>
 </li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#ini-settings-location">Ini settings location</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-functions">Utility functions</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#switch-between-several-layouts">Switch between several layouts</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#store-user-settings-in-the-ini-file">Store user settings in the ini file</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-hello-imgui-menus">Customize Hello ImGui Menus</a></li>
@@ -631,9 +634,73 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 </pre></div>
 </div>
 </section>
+</section>
 <hr class="docutils" />
-<section id="utility-functions">
-<h2>Utility functions<a class="headerlink" href="#utility-functions" title="Permalink to this heading">#</a></h2>
+<section class="tex2jax_ignore mathjax_ignore" id="ini-settings-location">
+<h1>Ini settings location<a class="headerlink" href="#ini-settings-location" title="Permalink to this heading">#</a></h1>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// IniFolderType is an enum which describle where is the base path to store</span>
+<span class="c1">// the ini file for the application settings.</span>
+<span class="c1">//</span>
+<span class="c1">// You can use IniFolderLocation(iniFolderType) to get the corresponding path.</span>
+<span class="c1">//</span>
+<span class="c1">// RunnerParams contains the following members, which are used to compute</span>
+<span class="c1">// the ini file location:</span>
+<span class="c1">//     iniFolderType           (IniFolderType::CurrentFolder by default)</span>
+<span class="c1">//     iniFilename             (empty string by default)</span>
+<span class="c1">//     iniFilename_useAppWindowTitle</span>
+<span class="c1">//         (true by default: iniFilename is derived from</span>
+<span class="c1">//          appWindowParams.windowTitle)</span>
+<span class="c1">//</span>
+<span class="c1">// iniFilename may contain a subfolder</span>
+<span class="c1">// (which will be created inside the iniFolderType folder if needed)</span>
+<span class="c1">//</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">IniFolderType</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// CurrentFolder: the folder where the application is executed</span>
+<span class="w">    </span><span class="c1">// (convenient for development, but not recommended for production)</span>
+<span class="w">    </span><span class="n">CurrentFolder</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">// AppUserConfigFolder:</span>
+<span class="w">    </span><span class="c1">//      AppData under Windows (Example: C:\Users\[Username]\AppData\Roaming under windows)</span>
+<span class="w">    </span><span class="c1">//      ~/.config under Linux</span>
+<span class="w">    </span><span class="c1">//      &quot;~/Library/Application Support&quot; under macOS</span>
+<span class="w">    </span><span class="c1">// (recommended for production, if settings do not need to be easily accessible by the user)</span>
+<span class="w">    </span><span class="n">AppUserConfigFolder</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">// AppExecutableFolder: the folder where the application executable is located</span>
+<span class="w">    </span><span class="c1">// (this may be different from CurrentFolder if the application is launched from a shortcut)</span>
+<span class="w">    </span><span class="c1">// (convenient for development, but not recommended for production)</span>
+<span class="w">    </span><span class="n">AppExecutableFolder</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">// HomeFolder: the user home folder</span>
+<span class="w">    </span><span class="c1">// (recommended for production, if settings need to be easily accessible by the user)</span>
+<span class="w">    </span><span class="n">HomeFolder</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">// DocumentsFolder: the user documents folder</span>
+<span class="w">    </span><span class="n">DocumentsFolder</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">// TempFolder: the system temp folder</span>
+<span class="w">    </span><span class="n">TempFolder</span>
+<span class="p">};</span>
+
+<span class="c1">// Returns the path corresponding to the given IniFolderType</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">IniFolderLocation</span><span class="p">(</span><span class="n">IniFolderType</span><span class="w"> </span><span class="n">iniFolderType</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// IniSettingsLocation returns the path to the ini file for the application settings.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">IniSettingsLocation</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">RunnerParams</span><span class="o">&amp;</span><span class="w"> </span><span class="n">runnerParams</span><span class="p">);</span>
+
+<span class="c1">// HasIniSettings returns true if the ini file for the application settings exists.</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">HasIniSettings</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">RunnerParams</span><span class="o">&amp;</span><span class="w"> </span><span class="n">runnerParams</span><span class="p">);</span>
+
+<span class="c1">// DeleteIniSettings deletes the ini file for the application settings.</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DeleteIniSettings</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">RunnerParams</span><span class="o">&amp;</span><span class="w"> </span><span class="n">runnerParams</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="utility-functions">
+<h1>Utility functions<a class="headerlink" href="#utility-functions" title="Permalink to this heading">#</a></h1>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.</span>
 <span class="c1">//  May differ from ImGui::GetIO().FrameRate, since one can choose the duration</span>
 <span class="c1">//  for the calculation of the mean value of the fps</span>
@@ -648,7 +715,6 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 <span class="n">ImGuiTestEngine</span><span class="o">*</span><span class="w"> </span><span class="nf">GetImGuiTestEngine</span><span class="p">();</span>
 </pre></div>
 </div>
-</section>
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="switch-between-several-layouts">
@@ -818,9 +884,10 @@ under windows and linux, 1 under macOS</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-assets-as-data-buffer">Load Assets as data buffer</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-assets-path">Get assets path</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-images-from-assets">Display images from assets</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-functions">Utility functions</a></li>
 </ul>
 </li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#ini-settings-location">Ini settings location</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-functions">Utility functions</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#switch-between-several-layouts">Switch between several layouts</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#store-user-settings-in-the-ini-file">Store user settings in the ini file</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-hello-imgui-menus">Customize Hello ImGui Menus</a></li>

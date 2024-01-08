@@ -35,6 +35,9 @@ struct AssetFileData
 // LoadAssetFileData(const char *assetPath)`
 // Will load an entire asset file into memory. This works on all platforms,
 // including android.
+// You *have* to call FreeAssetFileData to free the memory, except if you use
+// ImGui::GetIO().Fonts->AddFontFromMemoryTTF, which will take ownership of the
+// data and free it for you.
 AssetFileData LoadAssetFileData(const char *assetPath);
 
 // FreeAssetFileData(AssetFileData *)

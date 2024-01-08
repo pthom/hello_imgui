@@ -4,3 +4,8 @@ cmake-build-*/
 .idea/
 venv*/
 .DS_Store
+_example_integration/
+src/
+external/
+hello_imgui_cmake/
+

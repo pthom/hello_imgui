@@ -3,7 +3,7 @@
 
 title: Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui
 author: Pascal Thomet
-logo: ../logo/logo_hello_imgui.png
+logo: ../logo/logo_hello_imgui_small.png
 copyright: "2024"
 
 # Force re-execution of notebooks on each build.

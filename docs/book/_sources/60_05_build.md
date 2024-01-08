@@ -37,7 +37,7 @@ cmake .. -HELLOIMGUI_USE_SDL_OPENGL3=ON
 ```
 
 
-## HelloImGui dependencies
+## Hello ImGui dependencies
 
 HelloImGui depends on the following libraries:
 

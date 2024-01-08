@@ -12,6 +12,4 @@ fi
 
 cd $SCRIPT_DIR
 rm -rf _build
-rm -rf $REPO_DIR/docs/book
 $PYTHON_BIN_DIR/jupyter-book build .
-cp -a _build/html $REPO_DIR/docs/book

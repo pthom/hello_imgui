@@ -1,3 +1,4 @@
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "hello_imgui/internal/docking_details.h"
 #include "imgui.h"
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
@@ -259,6 +260,14 @@ void DoCreateFullScreenImGuiWindow(const RunnerParams& runnerParams, bool useDoc
         fullScreenSize.y -= (float)edgeInsets.top + (float)edgeInsets.bottom;
         if (imGuiWindowParams.showStatusBar)
             fullScreenSize.y -= ImGui::GetFrameHeight() * 1.35f;
+    }
+
+    // Take fullScreenWindow_MarginTopLeft and fullScreenWindow_MarginBottomRight into account
+    {
+        fullScreenPos += HelloImGui::EmToVec2(imGuiWindowParams.fullScreenWindow_MarginTopLeft);
+        fullScreenSize -= HelloImGui::EmToVec2(
+            imGuiWindowParams.fullScreenWindow_MarginTopLeft + imGuiWindowParams.fullScreenWindow_MarginBottomRight
+            );
     }
 
     ImGui::SetNextWindowPos(fullScreenPos);

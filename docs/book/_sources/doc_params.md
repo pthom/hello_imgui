@@ -565,33 +565,57 @@ struct ImGuiWindowParams
 {
     // ------------ Main Options  ------------------
 
-    // By default, a full window is provided in the background. You can still add windows
-    // on top of it, since the Z-order of this background window is always behind
+    // defaultImGuiWindowType: (enum DefaultImGuiWindowType)
+    // Choose between:
+    //    - ProvideFullScreenWindow (default)
+    //      a full window is provided in the background
+    //      You can still add windows on top of it, since the Z-order
+    //      of this background window is always behind
+    //    - ProvideFullScreenDockSpace:
+    //      a full screen dockspace is provided in the background
+    //      (use this if you intend to use docking)
+    //    - NoDefaultWindow:
+    //      no default window is provided
     DefaultImGuiWindowType defaultImGuiWindowType =
         DefaultImGuiWindowType::ProvideFullScreenWindow;
 
+    // enableViewports: Enable multiple viewports (i.e. multiple native windows)
+    // If true, you can drag windows outside the main window,
+    // in order to put their content into new native windows.
+    bool enableViewports = false;
+
+    // If defaultImGuiWindowType = ProvideFullScreenWindow or ProvideFullScreenDockSpace,
+    // you can set the position and size of the background window:
+    //    - fullScreenWindow_MarginTopLeft is the window position
+    //    - fullScreenWindow_MarginBottomRight is the margin between
+    //      the "application window" bottom right corner
+    //      and the "imgui background window" bottom right corner
+    // Important note:
+    //     In order to be Dpi aware, those size are in *em units*, not in pixels,
+    //     i.e. in multiples of the font size!
+    //     (see HelloImGui::EmToVec2)
+    ImVec2 fullScreenWindow_MarginTopLeft     = ImVec2(0.f, 0.f);
+    ImVec2 fullScreenWindow_MarginBottomRight = ImVec2(0.f, 0.f);
+
+    // Make windows only movable from the title bar
+    bool configWindowsMoveFromTitleBarOnly = true;
+
+
+    // ------------ Theme -----------------------------------
+
+    // tweakedTheme: (enum ImGuiTheme::ImGuiTweakedTheme)
+    // Changes the ImGui theme. Several themes are available, you can query the list
+    // by calling HelloImGui::AvailableThemes()
+    ImGuiTheme::ImGuiTweakedTheme tweakedTheme;
+
+    // backgroundColor:
     // This is the "clearColor", visible if defaultImGuiWindowType!=ProvideFullScreenWindow.
     // Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full
     // control over what is drawn behind the Gui.
     ImVec4 backgroundColor = ImVec4(0.f, 0.f, 0.f, 0.f);
 
-    // Make windows only movable from the title bar
-    bool configWindowsMoveFromTitleBarOnly = true;
 
-    // Enable multiple viewports (i.e multiple native windows).
-    // If true, you can drag windows outside the main window,
-    // in order to put their content into new native windows.
-    bool enableViewports = false;
-
-
-    // ------------ Theme -----------------------------------
-
-    // Change the ImGui theme. Several themes are available, you can query the list
-    // by calling HelloImGui::AvailableThemes()
-    ImGuiTheme::ImGuiTweakedTheme tweakedTheme;
-
-
-    // ------------ Menu & Status bar  ---------------------
+    // ------------ Menus & Status bar ---------------------
 
     // Set the title of the App menu. If empty, the menu name will use
     // the "windowTitle" from AppWindowParams//

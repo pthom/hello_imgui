@@ -1,5 +1,0 @@
-include(hello_imgui_add_app)
-hello_imgui_add_app(hello_imgui_demodocking hello_imgui_demodocking.main.cpp ASSETS_LOCATION assets)
-if (EMSCRIPTEN)
-    hello_imgui_set_emscripten_target_initial_memory_megabytes(hello_imgui_demodocking 120)
-endif()

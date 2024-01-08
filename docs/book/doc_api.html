@@ -446,11 +446,13 @@ the elements in the <code class="docutils literal notranslate"><span class="pre"
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="place-widgets-in-a-dpi-aware-way">
 <h1>Place widgets in a DPI-aware way<a class="headerlink" href="#place-widgets-in-a-dpi-aware-way" title="Permalink to this heading">#</a></h1>
-<p>Special care must be taken in order to correctly handle screen with high DPI (for example, almost all recent laptops screens).</p>
-<p>Using ImVec2 with fixed values is <em>almost always a bad idea</em> if you intend your application to be used on high DPI screens!
+<p>Special care must be taken in order to correctly handle screen with high DPI
+(for example, almost all recent laptops screens).</p>
+<p>Using ImVec2 with fixed values is <em>almost always a bad idea</em> if you intend your
+application to be used on high DPI screens!
 Otherwise, widgets might be misplaced or too small on different screens and/or OSes.</p>
-<p>Instead you should use scale your widgets and windows relatively to the font size, as is done
-with the <a class="reference external" href="https://lyty.dev/css/css-unit.html">em CSS Unit</a>.</p>
+<p>Instead you should use scale your widgets and windows relatively to the font size,
+as is done with the <a class="reference external" href="https://lyty.dev/css/css-unit.html">em CSS Unit</a>.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//  __HelloImGui::EmToVec2()__ returns an ImVec2 that you can use to size</span>
 <span class="c1">//  or place your widgets in a DPI independent way.</span>
 <span class="c1">//  Values are in multiples of the font size (i.e. as in the em CSS unit).</span>

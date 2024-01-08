@@ -34,7 +34,7 @@ Special care must be taken in order to correctly handle screen with high DPI
 
 Using ImVec2 with fixed values is *almost always a bad idea* if you intend your
 application to be used on high DPI screens!
-Otherwise, widgets might be misplaced or too small on different screens and/or OSes.
+Otherwise, widgets might be misplaced or too small on different screens and/or OS.
 
 Instead you should use scale your widgets and windows relatively to the font size,
 as is done with the [em CSS Unit](https://lyty.dev/css/css-unit.html).

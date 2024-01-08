@@ -14,6 +14,7 @@ REPO_DIR=$SCRIPT_DIR/..
 cd "$REPO_DIR" || exit
 
 
+
 echo "=================================================="
 echo "Checking status of the repository"
 echo "=================================================="
@@ -52,6 +53,9 @@ else
     exit 1
 fi
 echo "OK, master is up to date with origin or ahead of it"
+
+
+
 echo "=================================================="
 echo "Processing docs"
 echo "=================================================="

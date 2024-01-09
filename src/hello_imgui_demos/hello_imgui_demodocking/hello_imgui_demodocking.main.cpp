@@ -620,7 +620,7 @@ int main(int, char**)
     HelloImGui::RunnerParams runnerParams;
     runnerParams.appWindowParams.windowTitle = "Docking Demo";
     runnerParams.imGuiWindowParams.menuAppTitle = "Docking Demo";
-    runnerParams.appWindowParams.windowGeometry.size = {1000, 900};
+    runnerParams.appWindowParams.windowGeometry.size = {1200, 1000};
     runnerParams.appWindowParams.restorePreviousGeometry = true;
     
     // Our application uses a borderless window, but is movable/resizable
@@ -660,6 +660,19 @@ int main(int, char**)
     //
     runnerParams.callbacks.PostInit = [&appState]   { LoadMyAppSettings(appState);};
     runnerParams.callbacks.BeforeExit = [&appState] { SaveMyAppSettings(appState);};
+
+    //
+    // Change style
+    //
+    // 1. Change theme
+    auto& tweakedTheme = runnerParams.imGuiWindowParams.tweakedTheme;
+    tweakedTheme.Theme = ImGuiTheme::ImGuiTheme_MaterialFlat;
+    tweakedTheme.Tweaks.Rounding = 10.f;
+    // 2. Customize ImGui style at startup
+    runnerParams.callbacks.SetupImGuiStyle = []() {
+        // Reduce spacing between items ((8, 4) by default)
+        ImGui::GetStyle().ItemSpacing = ImVec2(6.f, 4.f);
+    };
 
     //###############################################################################################
     // Part 2: Define the application layout and windows
@@ -709,6 +722,7 @@ int main(int, char**)
     //###############################################################################################
     // Part 4: Run the app
     //###############################################################################################
+    HelloImGui::DeleteIniSettings(runnerParams);
     HelloImGui::Run(runnerParams); // Note: with ImGuiBundle, it is also possible to use ImmApp::Run(...)
 
     return 0;

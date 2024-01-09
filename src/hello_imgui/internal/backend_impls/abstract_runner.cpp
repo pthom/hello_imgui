@@ -381,7 +381,6 @@ void AbstractRunner::Setup()
     Impl_LinkPlatformAndRenderBackends();
 
     params.callbacks.SetupImGuiConfig();
-    params.callbacks.SetupImGuiStyle();
 
 #ifdef HELLOIMGUI_WITH_TEST_ENGINE
     if (params.useImGuiTestEngine)
@@ -422,6 +421,7 @@ void AbstractRunner::Setup()
         style.Colors[ImGuiCol_TitleBgActive].w = 1.f;
         style.Colors[ImGuiCol_TitleBgCollapsed].w = 1.f;
     }
+    params.callbacks.SetupImGuiStyle();
 }
 
 void AbstractRunner::SetLayoutResetIfNeeded()

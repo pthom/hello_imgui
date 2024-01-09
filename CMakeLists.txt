@@ -4,7 +4,7 @@ else()
     cmake_minimum_required(VERSION 3.10)
 endif()
 
-project(HelloImGui LANGUAGES C CXX VERSION "1.0.0")
+project(HelloImGui LANGUAGES C CXX VERSION "1.3.0") # 1.3.0 WIP
 set(CMAKE_CXX_STANDARD 17)
 
 if (IOS)

@@ -130,6 +130,9 @@ struct AssetFileData
 // LoadAssetFileData(const char *assetPath)`
 // Will load an entire asset file into memory. This works on all platforms,
 // including android.
+// You *have* to call FreeAssetFileData to free the memory, except if you use
+// ImGui::GetIO().Fonts->AddFontFromMemoryTTF, which will take ownership of the
+// data and free it for you.
 AssetFileData LoadAssetFileData(const char *assetPath);
 
 // FreeAssetFileData(AssetFileData *)
@@ -227,7 +230,50 @@ ImVec2 ImageProportionalSize(const ImVec2& askedSize, const ImVec2& imageSize);
 
 ----
 
-# Ini settings location
+# Utility functions
+
+```cpp
+
+
+// `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
+//  May differ from ImGui::GetIO().FrameRate, since one can choose the duration
+//  for the calculation of the mean value of the fps
+//  Returns the current FrameRate. May differ from ImGui::GetIO().FrameRate,
+//  since one can choose the duration for the calculation of the mean value of the fps
+//  (Will only lead to accurate values if you call it at each frame)
+float FrameRate(float durationForMean = 0.5f);
+
+// `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance
+//  of ImGuiTestEngine that was initialized by HelloImGui
+//  (iif ImGui Test Engine is active).
+ImGuiTestEngine* GetImGuiTestEngine();
+```
+
+----
+# Switch between several layouts
+See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h).
+    
+```cpp
+
+// In advanced cases when several layouts are available, you can switch between layouts.
+// See demo inside
+//     https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp
+
+// `SwitchLayout(layoutName)`
+//  Changes the application current layout. Only used in advanced cases
+//  when several layouts are available, i.e. if you filled
+//      runnerParams.alternativeDockingLayouts.
+void           SwitchLayout(const std::string& layoutName);
+
+// `CurrentLayoutName()`: returns the name of the current layout
+std::string    CurrentLayoutName();
+```
+
+----
+
+# Ini settings
+
+## Ini settings location
 
 ```cpp
 
@@ -296,48 +342,7 @@ void DeleteIniSettings(const RunnerParams& runnerParams);
 
 ----
 
-# Utility functions
-
-```cpp
-
-
-// `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
-//  May differ from ImGui::GetIO().FrameRate, since one can choose the duration
-//  for the calculation of the mean value of the fps
-//  Returns the current FrameRate. May differ from ImGui::GetIO().FrameRate,
-//  since one can choose the duration for the calculation of the mean value of the fps
-//  (Will only lead to accurate values if you call it at each frame)
-float FrameRate(float durationForMean = 0.5f);
-
-// `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance
-//  of ImGuiTestEngine that was initialized by HelloImGui
-//  (iif ImGui Test Engine is active).
-ImGuiTestEngine* GetImGuiTestEngine();
-```
-
-----
-# Switch between several layouts
-See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h).
-    
-```cpp
-
-// In advanced cases when several layouts are available, you can switch between layouts.
-// See demo inside
-//     https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp
-
-// `SwitchLayout(layoutName)`
-//  Changes the application current layout. Only used in advanced cases
-//  when several layouts are available, i.e. if you filled
-//      runnerParams.alternativeDockingLayouts.
-void           SwitchLayout(const std::string& layoutName);
-
-// `CurrentLayoutName()`: returns the name of the current layout
-std::string    CurrentLayoutName();
-```
-
-----
-
-# Store user settings in the ini file
+## Store user settings in the ini file
 See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h).
 
 ```cpp

@@ -189,7 +189,6 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
-
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Application parameters</a></li>
 
 
@@ -402,6 +401,7 @@ document.write(`
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#fps-idling">Fps Idling</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#runner-callbacks">Runner callbacks</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#edge-toolbars-callbacks">Edge Toolbars Callbacks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mobilecallbacks">MobileCallbacks</a></li>
 </ul>
 </li>
@@ -650,6 +650,16 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <section class="tex2jax_ignore mathjax_ignore" id="runner-callbacks">
 <h1>Runner callbacks<a class="headerlink" href="#runner-callbacks" title="Permalink to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_callbacks.h">runner_callbacks.h</a>.</p>
+<p><strong>VoidFunctionPointer</strong> can hold any void(void) function.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">VoidFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><strong>AnyEventCallback</strong> can hold any bool(void *) function.
+It is designed to handle callbacks for a specific backend.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">AnyEventCallback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">backendEvent</span><span class="p">)</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><strong>AppendCallback</strong> can compose two callbacks. Use this when you want to set a callback and keep the (maybe) preexisting one.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//</span>
 <span class="c1">// RunnerCallbacks is a struct that contains the callbacks</span>
 <span class="c1">// that are called by the application</span>
@@ -680,6 +690,10 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="c1">//  Use small items (ImGui::Text for example), since the height of the status is 30.</span>
 <span class="w">    </span><span class="c1">//  Also, remember to call ImGui::SameLine() between items.</span>
 <span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">ShowStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// EdgesToolbars: A map that contains the definition of toolbars</span>
+<span class="w">    </span><span class="c1">// that can be placed on the edges of the App window</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">EdgeToolbarType</span><span class="p">,</span><span class="w"> </span><span class="n">EdgeToolbar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">edgesToolbars</span><span class="p">;</span>
 
 
 <span class="w">    </span><span class="c1">// --------------- Startup sequence callbacks -------------------</span>
@@ -773,16 +787,51 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="p">};</span>
 </pre></div>
 </div>
-<p><strong>VoidFunctionPointer</strong> can hold any void(void) function.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">VoidFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="o">&gt;</span>
+<section id="edge-toolbars-callbacks">
+<h2>Edge Toolbars Callbacks<a class="headerlink" href="#edge-toolbars-callbacks" title="Permalink to this heading">#</a></h2>
+<p>More details on <code class="docutils literal notranslate"><span class="pre">RunnerParams.edgesToolbars</span></code> (a dictionary of <code class="docutils literal notranslate"><span class="pre">EdgeToolbar</span></code>, per edge type)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">RunnerCallbacks</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="c1">// EdgesToolbars: A map that contains the definition of toolbars</span>
+<span class="w">    </span><span class="c1">// that can be placed on the edges of the App window</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">EdgeToolbarType</span><span class="p">,</span><span class="w"> </span><span class="n">EdgeToolbar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">edgesToolbars</span><span class="p">;</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="p">};</span>
 </pre></div>
 </div>
-<p><strong>AnyEventCallback</strong> can hold any bool(void *) function.
-It is designed to handle callbacks for a specific backend.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">AnyEventCallback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">backendEvent</span><span class="p">)</span><span class="o">&gt;</span>
+<p>Where:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// EdgeToolbarType: location of an Edge Toolbar</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">EdgeToolbarType</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Top</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Bottom</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Left</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Right</span>
+<span class="p">};</span>
+
+<span class="c1">// EdgeToolbar :a toolbar that can be placed on the edges of the App window</span>
+<span class="c1">// It will be placed in a non-dockable window</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">EdgeToolbar</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">ShowToolbar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// height or width the top toolbar, in em units</span>
+<span class="w">    </span><span class="c1">// (i.e. multiples of the default font size, to be Dpi aware)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">sizeEm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.5f</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Padding inside the window, in em units</span>
+<span class="w">    </span><span class="n">ImVec2</span><span class="w"> </span><span class="n">WindowPaddingEm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mf">0.3f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.3f</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Window background color, only used if WindowBg.w &gt; 0</span>
+<span class="w">    </span><span class="n">ImVec4</span><span class="w"> </span><span class="n">WindowBg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">EdgeToolbarType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">AllEdgeToolbarTypes</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">EdgeToolbarTypeName</span><span class="p">(</span><span class="n">EdgeToolbarType</span><span class="w"> </span><span class="n">e</span><span class="p">);</span>
 </pre></div>
 </div>
-<p><strong>AppendCallback</strong> can compose two callbacks. Use this when you want to set a callback and keep the (maybe) preexisting one.</p>
+</section>
 <section id="mobilecallbacks">
 <h2>MobileCallbacks<a class="headerlink" href="#mobilecallbacks" title="Permalink to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//</span>
@@ -1544,6 +1593,7 @@ specifies the list of dockable windows, along with their default location, and t
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#fps-idling">Fps Idling</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#runner-callbacks">Runner callbacks</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#edge-toolbars-callbacks">Edge Toolbars Callbacks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mobilecallbacks">MobileCallbacks</a></li>
 </ul>
 </li>

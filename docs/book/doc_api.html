@@ -189,7 +189,6 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
-
 <li class="toctree-l1"><a class="reference internal" href="doc_params.html">Application parameters</a></li>
 
 
@@ -404,10 +403,13 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-images-from-assets">Display images from assets</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#ini-settings-location">Ini settings location</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-functions">Utility functions</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#switch-between-several-layouts">Switch between several layouts</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#store-user-settings-in-the-ini-file">Store user settings in the ini file</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#ini-settings">Ini settings</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ini-settings-location">Ini settings location</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#store-user-settings-in-the-ini-file">Store user settings in the ini file</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-hello-imgui-menus">Customize Hello ImGui Menus</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-screens-with-high-dpi">Handling screens with high DPI</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#details-on-dpi-handling-on-different-os">Details on DPI handling on different OS</a></li>
@@ -542,6 +544,9 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 <span class="c1">// LoadAssetFileData(const char *assetPath)`</span>
 <span class="c1">// Will load an entire asset file into memory. This works on all platforms,</span>
 <span class="c1">// including android.</span>
+<span class="c1">// You *have* to call FreeAssetFileData to free the memory, except if you use</span>
+<span class="c1">// ImGui::GetIO().Fonts-&gt;AddFontFromMemoryTTF, which will take ownership of the</span>
+<span class="c1">// data and free it for you.</span>
 <span class="n">AssetFileData</span><span class="w"> </span><span class="nf">LoadAssetFileData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">assetPath</span><span class="p">);</span>
 
 <span class="c1">// FreeAssetFileData(AssetFileData *)</span>
@@ -636,8 +641,47 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 </section>
 </section>
 <hr class="docutils" />
-<section class="tex2jax_ignore mathjax_ignore" id="ini-settings-location">
-<h1>Ini settings location<a class="headerlink" href="#ini-settings-location" title="Permalink to this heading">#</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="utility-functions">
+<h1>Utility functions<a class="headerlink" href="#utility-functions" title="Permalink to this heading">#</a></h1>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.</span>
+<span class="c1">//  May differ from ImGui::GetIO().FrameRate, since one can choose the duration</span>
+<span class="c1">//  for the calculation of the mean value of the fps</span>
+<span class="c1">//  Returns the current FrameRate. May differ from ImGui::GetIO().FrameRate,</span>
+<span class="c1">//  since one can choose the duration for the calculation of the mean value of the fps</span>
+<span class="c1">//  (Will only lead to accurate values if you call it at each frame)</span>
+<span class="kt">float</span><span class="w"> </span><span class="nf">FrameRate</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">durationForMean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5f</span><span class="p">);</span>
+
+<span class="c1">// `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance</span>
+<span class="c1">//  of ImGuiTestEngine that was initialized by HelloImGui</span>
+<span class="c1">//  (iif ImGui Test Engine is active).</span>
+<span class="n">ImGuiTestEngine</span><span class="o">*</span><span class="w"> </span><span class="nf">GetImGuiTestEngine</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="switch-between-several-layouts">
+<h1>Switch between several layouts<a class="headerlink" href="#switch-between-several-layouts" title="Permalink to this heading">#</a></h1>
+<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h">hello_imgui.h</a>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// In advanced cases when several layouts are available, you can switch between layouts.</span>
+<span class="c1">// See demo inside</span>
+<span class="c1">//     https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp</span>
+
+<span class="c1">// `SwitchLayout(layoutName)`</span>
+<span class="c1">//  Changes the application current layout. Only used in advanced cases</span>
+<span class="c1">//  when several layouts are available, i.e. if you filled</span>
+<span class="c1">//      runnerParams.alternativeDockingLayouts.</span>
+<span class="kt">void</span><span class="w">           </span><span class="nf">SwitchLayout</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">layoutName</span><span class="p">);</span>
+
+<span class="c1">// `CurrentLayoutName()`: returns the name of the current layout</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w">    </span><span class="nf">CurrentLayoutName</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="ini-settings">
+<h1>Ini settings<a class="headerlink" href="#ini-settings" title="Permalink to this heading">#</a></h1>
+<section id="ini-settings-location">
+<h2>Ini settings location<a class="headerlink" href="#ini-settings-location" title="Permalink to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// IniFolderType is an enum which describle where is the base path to store</span>
 <span class="c1">// the ini file for the application settings.</span>
 <span class="c1">//</span>
@@ -699,45 +743,8 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 </div>
 </section>
 <hr class="docutils" />
-<section class="tex2jax_ignore mathjax_ignore" id="utility-functions">
-<h1>Utility functions<a class="headerlink" href="#utility-functions" title="Permalink to this heading">#</a></h1>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.</span>
-<span class="c1">//  May differ from ImGui::GetIO().FrameRate, since one can choose the duration</span>
-<span class="c1">//  for the calculation of the mean value of the fps</span>
-<span class="c1">//  Returns the current FrameRate. May differ from ImGui::GetIO().FrameRate,</span>
-<span class="c1">//  since one can choose the duration for the calculation of the mean value of the fps</span>
-<span class="c1">//  (Will only lead to accurate values if you call it at each frame)</span>
-<span class="kt">float</span><span class="w"> </span><span class="nf">FrameRate</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">durationForMean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5f</span><span class="p">);</span>
-
-<span class="c1">// `ImGuiTestEngine* GetImGuiTestEngine()`: returns a pointer to the global instance</span>
-<span class="c1">//  of ImGuiTestEngine that was initialized by HelloImGui</span>
-<span class="c1">//  (iif ImGui Test Engine is active).</span>
-<span class="n">ImGuiTestEngine</span><span class="o">*</span><span class="w"> </span><span class="nf">GetImGuiTestEngine</span><span class="p">();</span>
-</pre></div>
-</div>
-</section>
-<hr class="docutils" />
-<section class="tex2jax_ignore mathjax_ignore" id="switch-between-several-layouts">
-<h1>Switch between several layouts<a class="headerlink" href="#switch-between-several-layouts" title="Permalink to this heading">#</a></h1>
-<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h">hello_imgui.h</a>.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// In advanced cases when several layouts are available, you can switch between layouts.</span>
-<span class="c1">// See demo inside</span>
-<span class="c1">//     https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp</span>
-
-<span class="c1">// `SwitchLayout(layoutName)`</span>
-<span class="c1">//  Changes the application current layout. Only used in advanced cases</span>
-<span class="c1">//  when several layouts are available, i.e. if you filled</span>
-<span class="c1">//      runnerParams.alternativeDockingLayouts.</span>
-<span class="kt">void</span><span class="w">           </span><span class="nf">SwitchLayout</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">layoutName</span><span class="p">);</span>
-
-<span class="c1">// `CurrentLayoutName()`: returns the name of the current layout</span>
-<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w">    </span><span class="nf">CurrentLayoutName</span><span class="p">();</span>
-</pre></div>
-</div>
-</section>
-<hr class="docutils" />
-<section class="tex2jax_ignore mathjax_ignore" id="store-user-settings-in-the-ini-file">
-<h1>Store user settings in the ini file<a class="headerlink" href="#store-user-settings-in-the-ini-file" title="Permalink to this heading">#</a></h1>
+<section id="store-user-settings-in-the-ini-file">
+<h2>Store user settings in the ini file<a class="headerlink" href="#store-user-settings-in-the-ini-file" title="Permalink to this heading">#</a></h2>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h">hello_imgui.h</a>.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// You may store additional user settings in the application settings.</span>
 <span class="c1">// This is provided as a convenience only, and it is not intended to store large</span>
@@ -752,6 +759,7 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">LoadUserPref</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">userPrefName</span><span class="p">);</span>
 </pre></div>
 </div>
+</section>
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="customize-hello-imgui-menus">
@@ -886,10 +894,13 @@ under windows and linux, 1 under macOS</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-images-from-assets">Display images from assets</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#ini-settings-location">Ini settings location</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-functions">Utility functions</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#switch-between-several-layouts">Switch between several layouts</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#store-user-settings-in-the-ini-file">Store user settings in the ini file</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#ini-settings">Ini settings</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ini-settings-location">Ini settings location</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#store-user-settings-in-the-ini-file">Store user settings in the ini file</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-hello-imgui-menus">Customize Hello ImGui Menus</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-screens-with-high-dpi">Handling screens with high DPI</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#details-on-dpi-handling-on-different-os">Details on DPI handling on different OS</a></li>

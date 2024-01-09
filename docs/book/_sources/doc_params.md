@@ -219,6 +219,20 @@ struct FpsIdling
 
 See [runner_callbacks.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_callbacks.h).
 
+
+**VoidFunctionPointer** can hold any void(void) function.
+```cpp
+using VoidFunction = std::function<void(void)>
+```
+
+**AnyEventCallback** can hold any bool(void *) function.
+  It is designed to handle callbacks for a specific backend.
+```cpp
+using AnyEventCallback = std::function<bool(void * backendEvent)>
+```
+
+**AppendCallback** can compose two callbacks. Use this when you want to set a callback and keep the (maybe) preexisting one.
+
 ```cpp
 //
 // RunnerCallbacks is a struct that contains the callbacks
@@ -250,6 +264,10 @@ struct RunnerCallbacks
     //  Use small items (ImGui::Text for example), since the height of the status is 30.
     //  Also, remember to call ImGui::SameLine() between items.
     VoidFunction ShowStatus = EmptyVoidFunction();
+
+    // EdgesToolbars: A map that contains the definition of toolbars
+    // that can be placed on the edges of the App window
+    std::map<EdgeToolbarType, EdgeToolbar> edgesToolbars;
 
 
     // --------------- Startup sequence callbacks -------------------
@@ -343,19 +361,52 @@ struct RunnerCallbacks
 };
 ```
 
+## Edge Toolbars Callbacks
+More details on `RunnerParams.edgesToolbars` (a dictionary of `EdgeToolbar`, per edge type)
 
-**VoidFunctionPointer** can hold any void(void) function.
 ```cpp
-using VoidFunction = std::function<void(void)>
+struct RunnerCallbacks
+{
+    ...
+    // EdgesToolbars: A map that contains the definition of toolbars
+    // that can be placed on the edges of the App window
+    std::map<EdgeToolbarType, EdgeToolbar> edgesToolbars;
+    ...
+};
 ```
 
-**AnyEventCallback** can hold any bool(void *) function.
-  It is designed to handle callbacks for a specific backend.
+Where:
 ```cpp
-using AnyEventCallback = std::function<bool(void * backendEvent)>
-```
 
-**AppendCallback** can compose two callbacks. Use this when you want to set a callback and keep the (maybe) preexisting one.
+// EdgeToolbarType: location of an Edge Toolbar
+enum class EdgeToolbarType
+{
+    Top,
+    Bottom,
+    Left,
+    Right
+};
+
+// EdgeToolbar :a toolbar that can be placed on the edges of the App window
+// It will be placed in a non-dockable window
+struct EdgeToolbar
+{
+    VoidFunction ShowToolbar = EmptyVoidFunction();
+
+    // height or width the top toolbar, in em units
+    // (i.e. multiples of the default font size, to be Dpi aware)
+    float sizeEm = 2.5f;
+
+    // Padding inside the window, in em units
+    ImVec2 WindowPaddingEm = ImVec2(0.3f, 0.3f);
+
+    // Window background color, only used if WindowBg.w > 0
+    ImVec4 WindowBg = ImVec4(0.f, 0.f, 0.f, 0.f);
+};
+
+std::vector<EdgeToolbarType> AllEdgeToolbarTypes();
+std::string EdgeToolbarTypeName(EdgeToolbarType e);
+```
 
 ## MobileCallbacks
 

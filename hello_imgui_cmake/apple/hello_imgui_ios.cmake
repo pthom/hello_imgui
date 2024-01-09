@@ -12,6 +12,7 @@ endfunction()
 
 # Check CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM
 function(hello_imgui_ios_check_development_team)
+    string(REGEX MATCH "SIMULATOR.*" IOS_IS_SIMULATOR ${PLATFORM})
     if (IOS_IS_SIMULATOR)
         return()
     endif()

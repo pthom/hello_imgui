@@ -2,5 +2,5 @@
 
 ## New Features
 
-* Added EdgeToolbars: see [definition](https://github.com/pthom/hello_imgui/blob/4ac930c0ae7441e394d9e9665a5ddf6bf64d5950/src/hello_imgui/runner_callbacks.h#L68-L97), [callbacks](https://github.com/pthom/hello_imgui/blob/4ac930c0ae7441e394d9e9665a5ddf6bf64d5950/src/hello_imgui/runner_callbacks.h#L133-L135), [example usage](https://github.com/pthom/hello_imgui/blob/4ac930c0ae7441e394d9e9665a5ddf6bf64d5950/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp#L694-L708), and [demo](https://traineq.org/ImGuiBundle/emscripten/bin/demo_docking.html)
+* Added EdgeToolbars: see [definition](https://github.com/pthom/hello_imgui/blob/3a279ce7459b04a4c2e7460b844cbf354833964e/src/hello_imgui/runner_callbacks.h#L72-L102), [callbacks](https://github.com/pthom/hello_imgui/blob/3a279ce7459b04a4c2e7460b844cbf354833964e/src/hello_imgui/runner_callbacks.h#L140-L147), [example usage](https://github.com/pthom/hello_imgui/blob/3a279ce7459b04a4c2e7460b844cbf354833964e/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp#L694-L714), and [demo](https://traineq.org/ImGuiBundle/emscripten/bin/demo_docking.html)
 

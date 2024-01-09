@@ -691,9 +691,11 @@ It is designed to handle callbacks for a specific backend.</p>
 <span class="w">    </span><span class="c1">//  Also, remember to call ImGui::SameLine() between items.</span>
 <span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">ShowStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
 
-<span class="w">    </span><span class="c1">// EdgesToolbars: A map that contains the definition of toolbars</span>
-<span class="w">    </span><span class="c1">// that can be placed on the edges of the App window</span>
+<span class="w">    </span><span class="c1">// `EdgesToolbars`:</span>
+<span class="w">    </span><span class="c1">// A dict that contains toolbars that can be placed on the edges of the App window</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">EdgeToolbarType</span><span class="p">,</span><span class="w"> </span><span class="n">EdgeToolbar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">edgesToolbars</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// `AddEdgeToolbar`: Add a toolbar that can be placed on the edges of the App window</span>
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddEdgeToolbar</span><span class="p">(</span><span class="n">EdgeToolbarType</span><span class="w"> </span><span class="n">edgeToolbarType</span><span class="p">,</span>
 <span class="w">                        </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">callback</span><span class="p">,</span>
 <span class="w">                        </span><span class="k">const</span><span class="w"> </span><span class="n">EdgeToolbarOptions</span><span class="o">&amp;</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EdgeToolbarOptions</span><span class="p">());</span>
@@ -799,6 +801,9 @@ It is designed to handle callbacks for a specific backend.</p>
 <span class="w">    </span><span class="c1">// EdgesToolbars: A map that contains the definition of toolbars</span>
 <span class="w">    </span><span class="c1">// that can be placed on the edges of the App window</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">EdgeToolbarType</span><span class="p">,</span><span class="w"> </span><span class="n">EdgeToolbar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">edgesToolbars</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddEdgeToolbar</span><span class="p">(</span><span class="n">EdgeToolbarType</span><span class="w"> </span><span class="n">edgeToolbarType</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">callback</span><span class="p">,</span>
+<span class="w">                        </span><span class="k">const</span><span class="w"> </span><span class="n">EdgeToolbarOptions</span><span class="o">&amp;</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EdgeToolbarOptions</span><span class="p">());</span>
 <span class="w">    </span><span class="p">...</span>
 <span class="p">};</span>
 </pre></div>

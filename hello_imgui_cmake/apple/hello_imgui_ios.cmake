@@ -1,6 +1,6 @@
-string(REGEX MATCH "SIMULATOR.*" IOS_IS_SIMULATOR ${PLATFORM})
 
 function(hello_imgui_ios_set_dev_team app_name)
+    string(REGEX MATCH "SIMULATOR.*" IOS_IS_SIMULATOR ${PLATFORM})
     if (IOS_IS_SIMULATOR)
         return()
     endif()

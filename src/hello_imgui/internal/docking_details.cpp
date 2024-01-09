@@ -100,8 +100,9 @@ void MenuView_Layouts(RunnerParams& runnerParams)
     if (hasAlternativeDockingLayouts)
         ImGui::SeparatorText("Layouts");
 
-    if (ImGui::MenuItem("Restore default layout##szzz"))
-        runnerParams.dockingParams.layoutReset = true;
+    if (! runnerParams.dockingParams.dockableWindows.empty())
+        if (ImGui::MenuItem("Restore default layout##szzz"))
+            runnerParams.dockingParams.layoutReset = true;
 
     ImGui::PushID("Layouts##asldqsl");
 

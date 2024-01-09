@@ -74,6 +74,9 @@ int main(int , char *[]) {
         }
     };
 
+    params.imGuiWindowParams.showMenuBar = true;
+    params.imGuiWindowParams.showMenu_App = false;
+
     HelloImGui::Run(params);
     return 0;
 }

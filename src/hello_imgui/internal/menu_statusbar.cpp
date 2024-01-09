@@ -54,19 +54,6 @@ void ShowMenu(RunnerParams & runnerParams)
 {
     if (!runnerParams.imGuiWindowParams.showMenuBar)
         return;
-
-    // If we provide a full screen dock or window, we
-    // show the main menu bar in any case, since no window was opened yet
-    bool ignoreCurrentWindowFlags =
-        runnerParams.imGuiWindowParams.defaultImGuiWindowType != HelloImGui::DefaultImGuiWindowType::NoDefaultWindow;
-
-    if (!ignoreCurrentWindowFlags)
-    {
-        bool windowHasMenuFlags = (ImGui::GetCurrentWindow()->Flags & ImGuiWindowFlags_MenuBar) != 0;
-        if (!windowHasMenuFlags)
-            return;
-    }
-
     ImGui::BeginMainMenuBar();
 
     if (runnerParams.imGuiWindowParams.showMenu_App)

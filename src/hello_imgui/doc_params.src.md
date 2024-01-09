@@ -53,6 +53,9 @@ struct RunnerCallbacks
     // EdgesToolbars: A map that contains the definition of toolbars
     // that can be placed on the edges of the App window
     std::map<EdgeToolbarType, EdgeToolbar> edgesToolbars;
+    void AddEdgeToolbar(EdgeToolbarType edgeToolbarType,
+                        VoidFunction callback,
+                        const EdgeToolbarOptions& options = EdgeToolbarOptions());
     ...
 };
 ```

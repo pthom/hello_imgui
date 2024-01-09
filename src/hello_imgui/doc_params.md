@@ -268,6 +268,9 @@ struct RunnerCallbacks
     // EdgesToolbars: A map that contains the definition of toolbars
     // that can be placed on the edges of the App window
     std::map<EdgeToolbarType, EdgeToolbar> edgesToolbars;
+    void AddEdgeToolbar(EdgeToolbarType edgeToolbarType,
+                        VoidFunction callback,
+                        const EdgeToolbarOptions& options = EdgeToolbarOptions());
 
 
     // --------------- Startup sequence callbacks -------------------
@@ -387,12 +390,8 @@ enum class EdgeToolbarType
     Right
 };
 
-// EdgeToolbar :a toolbar that can be placed on the edges of the App window
-// It will be placed in a non-dockable window
-struct EdgeToolbar
+struct EdgeToolbarOptions
 {
-    VoidFunction ShowToolbar = EmptyVoidFunction();
-
     // height or width the top toolbar, in em units
     // (i.e. multiples of the default font size, to be Dpi aware)
     float sizeEm = 2.5f;
@@ -402,6 +401,15 @@ struct EdgeToolbar
 
     // Window background color, only used if WindowBg.w > 0
     ImVec4 WindowBg = ImVec4(0.f, 0.f, 0.f, 0.f);
+};
+
+
+// EdgeToolbar :a toolbar that can be placed on the edges of the App window
+// It will be placed in a non-dockable window
+struct EdgeToolbar
+{
+    VoidFunction ShowToolbar = EmptyVoidFunction();
+    EdgeToolbarOptions options;
 };
 
 std::vector<EdgeToolbarType> AllEdgeToolbarTypes();

@@ -694,18 +694,23 @@ int main(int, char**)
     //
     // Top and bottom toolbars
     //
+    // toolbar options
+    HelloImGui::EdgeToolbarOptions edgeToolbarOptions;
+    edgeToolbarOptions.sizeEm = 2.5f;
+    edgeToolbarOptions.WindowBg = ImVec4(0.8, 0.8, 0.8, 0.35f);
     // top toolbar
-    HelloImGui::EdgeToolbar topToolbar;
-    topToolbar.ShowToolbar = [&appState]() { ShowTopToolbar(appState); };
-    topToolbar.sizeEm = 2.5f;
-    topToolbar.WindowBg = ImVec4(0.8, 0.8, 0.8, 0.35f);
-    runnerParams.callbacks.edgesToolbars[HelloImGui::EdgeToolbarType::Top] = topToolbar;
+    runnerParams.callbacks.AddEdgeToolbar(
+        HelloImGui::EdgeToolbarType::Top,
+        [&appState]() { ShowTopToolbar(appState); },
+        edgeToolbarOptions
+        );
     // right toolbar
-    HelloImGui::EdgeToolbar rightToolbar;
-    rightToolbar.sizeEm = 2.5f;
-    rightToolbar.WindowBg = ImVec4(0.8, 0.8, 0.8, 0.3f);
-    rightToolbar.ShowToolbar = [&appState]() { ShowRightToolbar(appState); };
-    runnerParams.callbacks.edgesToolbars[HelloImGui::EdgeToolbarType::Right] = rightToolbar;
+    edgeToolbarOptions.WindowBg.w = 0.4f;
+    runnerParams.callbacks.AddEdgeToolbar(
+            HelloImGui::EdgeToolbarType::Right,
+            [&appState]() { ShowRightToolbar(appState); },
+            edgeToolbarOptions
+            );
 
     //
     // Load user settings at `PostInit` and save them at `BeforeExit`

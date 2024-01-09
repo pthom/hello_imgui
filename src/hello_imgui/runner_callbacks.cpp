@@ -32,4 +32,15 @@ namespace HelloImGui
             return "";
     }
 
+    void RunnerCallbacks::AddEdgeToolbar(EdgeToolbarType edgeToolbarType,
+                        VoidFunction callback,
+                        const EdgeToolbarOptions& options)
+    {
+        EdgeToolbar edgeToolbar;
+        edgeToolbar.ShowToolbar = callback;
+        edgeToolbar.options = options;
+        edgesToolbars[edgeToolbarType] = edgeToolbar;
+    }
+
+
 }  // namespace HelloImGui

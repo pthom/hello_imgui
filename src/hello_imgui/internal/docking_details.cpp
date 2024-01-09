@@ -306,17 +306,17 @@ ImRect FixedWindowRect(
                         float menuHeight = ImGui::GetFrameHeight() * 1.f;
                         fullScreenPos.y += menuHeight;
                     }
-                    fullScreenSize.y = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                    fullScreenSize.y = HelloImGui::EmSize(edgeToolbar.options.sizeEm);
                 }
                 if ( edgeToolbarType == EdgeToolbarType::Bottom)
                 {
-                    float height = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                    float height = HelloImGui::EmSize(edgeToolbar.options.sizeEm);
                     fullScreenPos.y  = fullScreenPos.y + fullScreenSize.y - height - 1.f; // -1 to avoid a thin line
                     fullScreenSize.y = height;
                 }
                 if ( (edgeToolbarType == EdgeToolbarType::Left) || (edgeToolbarType == EdgeToolbarType::Right))
                 {
-                    float width = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                    float width = HelloImGui::EmSize(edgeToolbar.options.sizeEm);
                     if (imGuiWindowParams.showMenuBar)
                     {
                         float menuHeight = ImGui::GetFrameHeight() * 1.f;
@@ -326,27 +326,27 @@ ImRect FixedWindowRect(
                     if (runnerParams.callbacks.edgesToolbars.find(EdgeToolbarType::Top) != runnerParams.callbacks.edgesToolbars.end())
                     {
                         auto height = HelloImGui::EmSize(
-                            runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Top).sizeEm);
+                            runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Top).options.sizeEm);
                         fullScreenPos.y += height;
                         fullScreenSize.y -= height - 1.f; // -1 to avoid a thin line between the left and bottom toolbar
                     }
                     if (runnerParams.callbacks.edgesToolbars.find(EdgeToolbarType::Bottom) != runnerParams.callbacks.edgesToolbars.end())
                     {
                         auto height = HelloImGui::EmSize(
-                            runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Bottom).sizeEm);
+                            runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Bottom).options.sizeEm);
                         fullScreenSize.y -= height - 1.f; // -1 to avoid a thin line between the left and bottom toolbar
                     }
                 }
                 if ( edgeToolbarType == EdgeToolbarType::Left)
                 {
                     auto width = HelloImGui::EmSize(
-                        runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Right).sizeEm);
+                        runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Right).options.sizeEm);
                     fullScreenSize.x = width;
                 }
                 if ( edgeToolbarType == EdgeToolbarType::Right)
                 {
                     auto width = HelloImGui::EmSize(
-                        runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Right).sizeEm);
+                        runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Right).options.sizeEm);
                     fullScreenPos.x = fullScreenPos.x + fullScreenSize.x - width;
                     fullScreenSize.x = width + 1.f; // + 1 to avoid a thin line
                 }
@@ -375,24 +375,24 @@ ImRect FixedWindowRect(
                 {
                     if (edgeToolbarType == EdgeToolbarType::Top)
                     {
-                        float height = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                        float height = HelloImGui::EmSize(edgeToolbar.options.sizeEm);
                         fullScreenPos.y += height;
                         fullScreenSize.y -= height;
                     }
                     if (edgeToolbarType == EdgeToolbarType::Bottom)
                     {
-                        float height = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                        float height = HelloImGui::EmSize(edgeToolbar.options.sizeEm);
                         fullScreenSize.y -= height;
                     }
                     if (edgeToolbarType == EdgeToolbarType::Left)
                     {
-                        float width = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                        float width = HelloImGui::EmSize(edgeToolbar.options.sizeEm);
                         fullScreenPos.x += width;
                         fullScreenSize.x -= width;
                     }
                     if (edgeToolbarType == EdgeToolbarType::Right)
                     {
-                        float width = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                        float width = HelloImGui::EmSize(edgeToolbar.options.sizeEm);
                         fullScreenSize.x -= width;
                     }
                 }
@@ -452,7 +452,7 @@ void ShowToolbars(const RunnerParams& runnerParams)
             auto& edgeToolbar = runnerParams.callbacks.edgesToolbars.at(edgeToolbarType);
             auto fullScreenRect = FixedWindowRect(runnerParams, edgeToolbarType);
             std::string windowName = std::string("##") + HelloImGui::EdgeToolbarTypeName(edgeToolbarType) + "_2123243";
-            DoShowToolbar(fullScreenRect, edgeToolbar.ShowToolbar, windowName, edgeToolbar.WindowPaddingEm, edgeToolbar.WindowBg);
+            DoShowToolbar(fullScreenRect, edgeToolbar.ShowToolbar, windowName, edgeToolbar.options.WindowPaddingEm, edgeToolbar.options.WindowBg);
         }
     }
 }

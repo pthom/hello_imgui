@@ -1,6 +1,9 @@
 #pragma once
 #include "hello_imgui/imgui_default_settings.h"
+#include "imgui.h"
 #include <functional>
+#include <map>
+#include <string>
 
 namespace HelloImGui
 {
@@ -61,6 +64,40 @@ struct MobileCallbacks
 };
 // @@md
 
+
+// @@md#EdgeToolbar
+
+// EdgeToolbarType: location of an Edge Toolbar
+enum class EdgeToolbarType
+{
+    Top,
+    Bottom,
+    Left,
+    Right
+};
+
+// EdgeToolbar :a toolbar that can be placed on the edges of the App window
+// It will be placed in a non-dockable window
+struct EdgeToolbar
+{
+    VoidFunction ShowToolbar = EmptyVoidFunction();
+
+    // height or width the top toolbar, in em units
+    // (i.e. multiples of the default font size, to be Dpi aware)
+    float sizeEm = 2.5f;
+
+    // Padding inside the window, in em units
+    ImVec2 WindowPaddingEm = ImVec2(0.3f, 0.3f);
+
+    // Window background color, only used if WindowBg.w > 0
+    ImVec4 WindowBg = ImVec4(0.f, 0.f, 0.f, 0.f);
+};
+
+std::vector<EdgeToolbarType> AllEdgeToolbarTypes();
+std::string EdgeToolbarTypeName(EdgeToolbarType e);
+// @@md
+
+
 // @@md#RunnerCallbacks
 //
 // RunnerCallbacks is a struct that contains the callbacks
@@ -92,6 +129,10 @@ struct RunnerCallbacks
     //  Use small items (ImGui::Text for example), since the height of the status is 30.
     //  Also, remember to call ImGui::SameLine() between items.
     VoidFunction ShowStatus = EmptyVoidFunction();
+
+    // EdgesToolbars: A map that contains the definition of toolbars
+    // that can be placed on the edges of the App window
+    std::map<EdgeToolbarType, EdgeToolbar> edgesToolbars;
 
 
     // --------------- Startup sequence callbacks -------------------

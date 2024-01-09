@@ -37,11 +37,30 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 See [runner_callbacks.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_callbacks.h).
 
+@import "runner_callbacks.h" {md_id=VoidFunction_AnyEventCallback}
+
 ```cpp
 @import "runner_callbacks.h" {md_id=RunnerCallbacks}
 ```
 
-@import "runner_callbacks.h" {md_id=VoidFunction_AnyEventCallback}
+## Edge Toolbars Callbacks
+More details on `RunnerParams.edgesToolbars` (a dictionary of `EdgeToolbar`, per edge type)
+
+```cpp
+struct RunnerCallbacks
+{
+    ...
+    // EdgesToolbars: A map that contains the definition of toolbars
+    // that can be placed on the edges of the App window
+    std::map<EdgeToolbarType, EdgeToolbar> edgesToolbars;
+    ...
+};
+```
+
+Where:
+```cpp
+@import "runner_callbacks.h" {md_id=EdgeToolbar}
+```
 
 ## MobileCallbacks
 

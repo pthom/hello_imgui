@@ -13,4 +13,23 @@ namespace HelloImGui
         return composedCallback;
     }
 
+    std::vector<EdgeToolbarType> AllEdgeToolbarTypes()
+    {
+        return { EdgeToolbarType::Top, EdgeToolbarType::Bottom, EdgeToolbarType::Left, EdgeToolbarType::Right };
+    }
+
+    std::string EdgeToolbarTypeName(EdgeToolbarType e)
+    {
+        if (e == EdgeToolbarType::Right)
+            return "Right";
+        else if (e == EdgeToolbarType::Left)
+            return "Left";
+        else if (e == EdgeToolbarType::Top)
+            return "Top";
+        else if (e == EdgeToolbarType::Bottom)
+            return "Bottom";
+        else
+            return "";
+    }
+
 }  // namespace HelloImGui

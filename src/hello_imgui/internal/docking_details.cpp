@@ -8,6 +8,7 @@
 #include "imgui_internal.h"
 #include <map>
 #include <cassert>
+#include <optional>
 
 
 namespace HelloImGui
@@ -238,12 +239,10 @@ void ShowDockableWindows(std::vector<DockableWindow>& dockableWindows)
     }
 }
 
-
-void DoCreateFullScreenImGuiWindow(const RunnerParams& runnerParams, bool useDocking)
+ImRect FullScreenRect_MinusInsets(const RunnerParams& runnerParams)
 {
-    const ImGuiWindowParams& imGuiWindowParams = runnerParams.imGuiWindowParams;
-
     ImGuiViewport* viewport = ImGui::GetMainViewport();
+    const ImGuiWindowParams& imGuiWindowParams = runnerParams.imGuiWindowParams;
 
     ImVec2 fullScreenSize, fullScreenPos;
     {
@@ -267,28 +266,213 @@ void DoCreateFullScreenImGuiWindow(const RunnerParams& runnerParams, bool useDoc
         fullScreenPos += HelloImGui::EmToVec2(imGuiWindowParams.fullScreenWindow_MarginTopLeft);
         fullScreenSize -= HelloImGui::EmToVec2(
             imGuiWindowParams.fullScreenWindow_MarginTopLeft + imGuiWindowParams.fullScreenWindow_MarginBottomRight
-            );
+        );
     }
 
-    ImGui::SetNextWindowPos(fullScreenPos);
-    ImGui::SetNextWindowSize(fullScreenSize);
+    ImRect r(fullScreenPos, fullScreenPos + fullScreenSize);
+    return r;
+}
+
+
+// This function returns many different positions:
+// - position of the main dock space (if edgeToolbarTypeOpt==nullopt)
+// - position of an edge toolbar (if edgeToolbarTypeOpt!=nullopt)
+ImRect FixedWindowRect(
+    const RunnerParams& runnerParams,
+    std::optional<EdgeToolbarType> edgeToolbarTypeOpt)
+{
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    const ImGuiWindowParams& imGuiWindowParams = runnerParams.imGuiWindowParams;
+
+    ImRect fullScreenRectMinusInsets = FullScreenRect_MinusInsets(runnerParams);
+    ImVec2 fullScreenPos = fullScreenRectMinusInsets.Min;
+    ImVec2 fullScreenSize = fullScreenRectMinusInsets.GetSize();
+
+    // EdgeToolbar positions
+    if (edgeToolbarTypeOpt.has_value())
+    {
+        auto edgeToolbarType = *edgeToolbarTypeOpt;
+        auto& edgesToolbarsMap = runnerParams.callbacks.edgesToolbars;
+        if (edgesToolbarsMap.find(edgeToolbarType) != edgesToolbarsMap.end())
+        {
+            auto& edgeToolbar = edgesToolbarsMap.at(edgeToolbarType);
+            if (edgeToolbar.ShowToolbar)
+            {
+                if ( edgeToolbarType == EdgeToolbarType::Top)
+                {
+                    if (imGuiWindowParams.showMenuBar)
+                    {
+                        float menuHeight = ImGui::GetFrameHeight() * 1.f;
+                        fullScreenPos.y += menuHeight;
+                    }
+                    fullScreenSize.y = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                }
+                if ( edgeToolbarType == EdgeToolbarType::Bottom)
+                {
+                    float height = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                    fullScreenPos.y  = fullScreenPos.y + fullScreenSize.y - height - 1.f; // -1 to avoid a thin line
+                    fullScreenSize.y = height;
+                }
+                if ( (edgeToolbarType == EdgeToolbarType::Left) || (edgeToolbarType == EdgeToolbarType::Right))
+                {
+                    float width = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                    if (imGuiWindowParams.showMenuBar)
+                    {
+                        float menuHeight = ImGui::GetFrameHeight() * 1.f;
+                        fullScreenPos.y += menuHeight;
+                        fullScreenSize.y -= menuHeight;
+                    }
+                    if (runnerParams.callbacks.edgesToolbars.find(EdgeToolbarType::Top) != runnerParams.callbacks.edgesToolbars.end())
+                    {
+                        auto height = HelloImGui::EmSize(
+                            runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Top).sizeEm);
+                        fullScreenPos.y += height;
+                        fullScreenSize.y -= height - 1.f; // -1 to avoid a thin line between the left and bottom toolbar
+                    }
+                    if (runnerParams.callbacks.edgesToolbars.find(EdgeToolbarType::Bottom) != runnerParams.callbacks.edgesToolbars.end())
+                    {
+                        auto height = HelloImGui::EmSize(
+                            runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Bottom).sizeEm);
+                        fullScreenSize.y -= height - 1.f; // -1 to avoid a thin line between the left and bottom toolbar
+                    }
+                }
+                if ( edgeToolbarType == EdgeToolbarType::Left)
+                {
+                    auto width = HelloImGui::EmSize(
+                        runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Right).sizeEm);
+                    fullScreenSize.x = width;
+                }
+                if ( edgeToolbarType == EdgeToolbarType::Right)
+                {
+                    auto width = HelloImGui::EmSize(
+                        runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Right).sizeEm);
+                    fullScreenPos.x = fullScreenPos.x + fullScreenSize.x - width;
+                    fullScreenSize.x = width + 1.f; // + 1 to avoid a thin line
+                }
+            }
+        }
+    }
+
+    // Update full screen window: take toolbars into account
+    if (! edgeToolbarTypeOpt.has_value())
+    {
+        if (imGuiWindowParams.showMenuBar)
+        {
+            float menuHeight = ImGui::GetFrameHeight() * 1.f;
+            fullScreenPos.y += menuHeight;
+            fullScreenSize.y -= menuHeight;
+        }
+
+        auto& edgesToolbarsMap = runnerParams.callbacks.edgesToolbars;
+
+        for(auto edgeToolbarType: HelloImGui::AllEdgeToolbarTypes())
+        {
+            if (edgesToolbarsMap.find(edgeToolbarType) != edgesToolbarsMap.end())
+            {
+                auto& edgeToolbar = edgesToolbarsMap.at(edgeToolbarType);
+                if (edgeToolbar.ShowToolbar)
+                {
+                    if (edgeToolbarType == EdgeToolbarType::Top)
+                    {
+                        float height = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                        fullScreenPos.y += height;
+                        fullScreenSize.y -= height;
+                    }
+                    if (edgeToolbarType == EdgeToolbarType::Bottom)
+                    {
+                        float height = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                        fullScreenSize.y -= height;
+                    }
+                    if (edgeToolbarType == EdgeToolbarType::Left)
+                    {
+                        float width = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                        fullScreenPos.x += width;
+                        fullScreenSize.x -= width;
+                    }
+                    if (edgeToolbarType == EdgeToolbarType::Right)
+                    {
+                        float width = HelloImGui::EmSize(edgeToolbar.sizeEm);
+                        fullScreenSize.x -= width;
+                    }
+                }
+            }
+        }
+    }
+
+    ImRect r(fullScreenPos, fullScreenPos + fullScreenSize);
+    return r;
+}
+
+static ImGuiWindowFlags WindowFlagsNothing()
+{
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings;
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    return window_flags;
+}
+
+void DoShowToolbar(
+    ImRect positionRect,
+    VoidFunction toolbarFunction,
+    const std::string& windowId,
+    ImVec2 windowPaddingEm,
+    ImVec4 windowBg
+    )
+{
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+    ImGui::SetNextWindowPos(positionRect.Min);
+    ImGui::SetNextWindowSize(positionRect.GetSize());
+    ImGui::SetNextWindowViewport(viewport->ID);
+
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, HelloImGui::EmToVec2(windowPaddingEm));
+    if (windowBg.w != 0.f)
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, windowBg);
+    static bool p_open = true;
+    ImGui::Begin(windowId.c_str(), &p_open, WindowFlagsNothing());
+    ImGui::PopStyleVar(3);
+    if (windowBg.w != 0.f)
+        ImGui::PopStyleColor();
+    toolbarFunction();
+    ImGui::End();
+}
+
+
+void ShowToolbars(const RunnerParams& runnerParams)
+{
+    for (auto edgeToolbarType: HelloImGui::AllEdgeToolbarTypes())
+    {
+        if (runnerParams.callbacks.edgesToolbars.find(edgeToolbarType) != runnerParams.callbacks.edgesToolbars.end())
+        {
+            auto& edgeToolbar = runnerParams.callbacks.edgesToolbars.at(edgeToolbarType);
+            auto fullScreenRect = FixedWindowRect(runnerParams, edgeToolbarType);
+            std::string windowName = std::string("##") + HelloImGui::EdgeToolbarTypeName(edgeToolbarType) + "_2123243";
+            DoShowToolbar(fullScreenRect, edgeToolbar.ShowToolbar, windowName, edgeToolbar.WindowPaddingEm, edgeToolbar.WindowBg);
+        }
+    }
+}
+
+void DoCreateFullScreenImGuiWindow(const RunnerParams& runnerParams, bool useDocking)
+{
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImRect fullScreenRect = FixedWindowRect(runnerParams, std::nullopt);
+
+    ImGui::SetNextWindowPos(fullScreenRect.Min);
+    ImGui::SetNextWindowSize(fullScreenRect.GetSize());
     ImGui::SetNextWindowViewport(viewport->ID);
     if (useDocking)
         ImGui::SetNextWindowBgAlpha(0.0f);
-
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
-    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-                    ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-    if (imGuiWindowParams.showMenuBar)
-        window_flags |= ImGuiWindowFlags_MenuBar;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     static bool p_open = true;
     std::string windowTitle = useDocking ? "MainDockSpace" : "Main window (title bar invisible)";
-    ImGui::Begin(windowTitle.c_str(), &p_open, window_flags);
+    ImGui::Begin(windowTitle.c_str(), &p_open, WindowFlagsNothing());
     ImGui::PopStyleVar(3);
 }
 

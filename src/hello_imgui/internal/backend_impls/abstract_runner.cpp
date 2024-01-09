@@ -444,10 +444,11 @@ void AbstractRunner::SetLayoutResetIfNeeded()
 
 void AbstractRunner::RenderGui()
 {
-    DockingDetails::ProvideWindowOrDock(params);
-
+    DockingDetails::ShowToolbars(params);
     if (params.imGuiWindowParams.showMenuBar)
         Menu_StatusBar::ShowMenu(params);
+
+    DockingDetails::ProvideWindowOrDock(params);
 
     if (params.appWindowParams.borderless) // Need to add params.appWindowParams.borderlessResizable
     {

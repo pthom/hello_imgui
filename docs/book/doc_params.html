@@ -694,6 +694,9 @@ It is designed to handle callbacks for a specific backend.</p>
 <span class="w">    </span><span class="c1">// EdgesToolbars: A map that contains the definition of toolbars</span>
 <span class="w">    </span><span class="c1">// that can be placed on the edges of the App window</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">EdgeToolbarType</span><span class="p">,</span><span class="w"> </span><span class="n">EdgeToolbar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">edgesToolbars</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddEdgeToolbar</span><span class="p">(</span><span class="n">EdgeToolbarType</span><span class="w"> </span><span class="n">edgeToolbarType</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">callback</span><span class="p">,</span>
+<span class="w">                        </span><span class="k">const</span><span class="w"> </span><span class="n">EdgeToolbarOptions</span><span class="o">&amp;</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EdgeToolbarOptions</span><span class="p">());</span>
 
 
 <span class="w">    </span><span class="c1">// --------------- Startup sequence callbacks -------------------</span>
@@ -810,12 +813,8 @@ It is designed to handle callbacks for a specific backend.</p>
 <span class="w">    </span><span class="n">Right</span>
 <span class="p">};</span>
 
-<span class="c1">// EdgeToolbar :a toolbar that can be placed on the edges of the App window</span>
-<span class="c1">// It will be placed in a non-dockable window</span>
-<span class="k">struct</span><span class="w"> </span><span class="nc">EdgeToolbar</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">EdgeToolbarOptions</span>
 <span class="p">{</span>
-<span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">ShowToolbar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
-
 <span class="w">    </span><span class="c1">// height or width the top toolbar, in em units</span>
 <span class="w">    </span><span class="c1">// (i.e. multiples of the default font size, to be Dpi aware)</span>
 <span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">sizeEm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.5f</span><span class="p">;</span>
@@ -825,6 +824,15 @@ It is designed to handle callbacks for a specific backend.</p>
 
 <span class="w">    </span><span class="c1">// Window background color, only used if WindowBg.w &gt; 0</span>
 <span class="w">    </span><span class="n">ImVec4</span><span class="w"> </span><span class="n">WindowBg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">);</span>
+<span class="p">};</span>
+
+
+<span class="c1">// EdgeToolbar :a toolbar that can be placed on the edges of the App window</span>
+<span class="c1">// It will be placed in a non-dockable window</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">EdgeToolbar</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">ShowToolbar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
+<span class="w">    </span><span class="n">EdgeToolbarOptions</span><span class="w"> </span><span class="n">options</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">EdgeToolbarType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">AllEdgeToolbarTypes</span><span class="p">();</span>

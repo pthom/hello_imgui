@@ -271,7 +271,7 @@ struct RunnerCallbacks
 
     // `AddEdgeToolbar`: Add a toolbar that can be placed on the edges of the App window
     void AddEdgeToolbar(EdgeToolbarType edgeToolbarType,
-                        VoidFunction callback,
+                        VoidFunction guiFunction,
                         const EdgeToolbarOptions& options = EdgeToolbarOptions());
 
 

@@ -33,11 +33,11 @@ namespace HelloImGui
     }
 
     void RunnerCallbacks::AddEdgeToolbar(EdgeToolbarType edgeToolbarType,
-                        VoidFunction callback,
+                        VoidFunction guiFunction,
                         const EdgeToolbarOptions& options)
     {
         EdgeToolbar edgeToolbar;
-        edgeToolbar.ShowToolbar = callback;
+        edgeToolbar.ShowToolbar = guiFunction;
         edgeToolbar.options = options;
         edgesToolbars[edgeToolbarType] = edgeToolbar;
     }

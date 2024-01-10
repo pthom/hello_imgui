@@ -40,6 +40,13 @@ function(_add_imgui_test_engine_lib)
     target_link_libraries(imgui_test_engine PUBLIC imgui)
     # BUT ALSO any app built with ImGui should now also link with imgui_test_engine
     target_link_libraries(imgui PUBLIC imgui_test_engine)
+
+    if (HELLOIMGUI_STB_IMAGE_WRITE_IMPLEMENTATION)
+        target_compile_definitions(imgui_test_engine PRIVATE IMGUI_DISABLE_STB_IMAGE_WRITE_IMPLEMENTATION)
+    endif()
+    target_compile_definitions(imgui_test_engine PRIVATE
+        IMGUI_STB_IMAGE_WRITE_FILENAME="${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui/stb_image_write.h"
+    )
 endfunction()
 
 

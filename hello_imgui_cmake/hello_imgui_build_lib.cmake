@@ -26,7 +26,7 @@ function(him_add_hello_imgui)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_MACOS)
     endif()
     target_include_directories(${HELLOIMGUI_TARGET} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/..)
-    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui)
+    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui stb_hello_imgui)
 endfunction()
 
 

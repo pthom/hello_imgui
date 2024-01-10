@@ -224,6 +224,9 @@ endif()
 #------------------------------------------------------------------------------
 # Advanced build options / HelloImGui
 #------------------------------------------------------------------------------
+option(HELLOIMGUI_STB_IMAGE_IMPLEMENTATION "Implement STB_IMAGE_IMPLEMENTATION inside hello_imgui" ON)
+option(HELLOIMGUI_STB_IMAGE_WRITE_IMPLEMENTATION "Implement STB_IMAGE_WRITE_IMPLEMENTATION inside hello_imgui" ON)
+
 set(HELLOIMGUI_TARGET hello_imgui CACHE STRING "Name of the hello_imgui target")
 
 option(HELLOIMGUI_BUILD_DOCS "Build docs" OFF)
@@ -268,6 +271,17 @@ include(msvc/msvc_target_group)
 if (EMSCRIPTEN)
     include(${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_emscripten_global_options.cmake)
 endif()
+
+# Add stb for HelloImGui
+add_library(stb_hello_imgui STATIC external/stb_hello_imgui/stb_impl_hello_imgui.cpp)
+target_include_directories(stb_hello_imgui PUBLIC external)
+if(HELLOIMGUI_STB_IMAGE_IMPLEMENTATION)
+    target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_IMPLEMENTATION)
+endif()
+if(HELLOIMGUI_STB_IMAGE_WRITE_IMPLEMENTATION)
+    target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_WRITE_IMPLEMENTATION)
+endif()
+
 
 add_subdirectory(src)
 

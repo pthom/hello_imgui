@@ -371,6 +371,8 @@ void AbstractRunner::Setup()
 
     Impl_SetWindowIcon();
 
+    ImGui::GetIO().DisplayFramebufferScale = mBackendWindowHelper->GetWindowScaleFactor(mWindow);
+
     // This should be done before Impl_LinkPlatformAndRenderBackends()
     // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks
     // will chain the user callbacks with ImGui callbacks; and PostInit()

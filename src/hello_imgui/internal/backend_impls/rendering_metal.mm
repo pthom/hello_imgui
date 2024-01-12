@@ -4,9 +4,26 @@
 #include <backends/imgui_impl_metal.h>
 #include "hello_imgui/hello_imgui.h"
 
+#import <Cocoa/Cocoa.h>
 
 namespace HelloImGui
 {
+    bool hasEdrSupport()
+    {
+        NSArray<NSScreen *> * screens = [NSScreen screens];
+        bool buffer_edr = false;
+
+        for (NSScreen * screen in screens) {
+            if ([screen respondsToSelector:@selector
+                        (maximumPotentialExtendedDynamicRangeColorComponentValue)]) {
+                if ([screen maximumPotentialExtendedDynamicRangeColorComponentValue] >= 2.f)
+                    buffer_edr = true;
+            }
+        }
+
+        return buffer_edr;
+    }
+
     MetalGlobals& GetMetalGlobals()
     {
         static MetalGlobals sMetalGlobals;

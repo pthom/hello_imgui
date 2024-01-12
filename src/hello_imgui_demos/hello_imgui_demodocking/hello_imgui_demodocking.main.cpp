@@ -13,6 +13,7 @@ It demonstrates how to:
 */
 
 #include "hello_imgui/hello_imgui.h"
+#include "hello_imgui/renderer_backend_options.h"
 #include "imgui.h"
 #include "misc/cpp/imgui_stdlib.h"
 #include "imgui_internal.h"
@@ -628,6 +629,13 @@ int main(int, char**)
     runnerParams.appWindowParams.borderlessMovable = true;
     runnerParams.appWindowParams.borderlessResizable = true;
     runnerParams.appWindowParams.borderlessClosable = true;
+
+    // test EDR support on macOS/Metal
+    bool requestEDR = HelloImGui::hasEdrSupport();
+    runnerParams.rendererBackendOptions.requestFloatBuffer = requestEDR;
+    HelloImGui::Log(HelloImGui::LogLevel::Info,
+                    "Creating a %s framebuffer.",
+                    requestEDR ? "floating-point precision" : "standard precision");
 
     // Load additional font
     runnerParams.callbacks.LoadAdditionalFonts = [&appState]() { LoadFonts(appState); };

@@ -42,7 +42,7 @@ namespace HelloImGui
             // Setup Platform/Renderer backends
             gMetalGlobals.caMetalLayer = (__bridge CAMetalLayer*)SDL_RenderGetMetalLayer(gSdlMetalGlobals.sdlRenderer);
 
-            if (rendererBackendOptions.metalOptions.fixmeDummyOptionName)
+            if (rendererBackendOptions.requestFloatBuffer)
             {
                 gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatRGBA16Float;
                 gMetalGlobals.caMetalLayer.wantsExtendedDynamicRangeContent = YES;

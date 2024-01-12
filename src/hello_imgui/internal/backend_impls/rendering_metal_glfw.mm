@@ -44,7 +44,7 @@ namespace HelloImGui
             gMetalGlobals.caMetalLayer = [CAMetalLayer layer];
             gMetalGlobals.caMetalLayer.device = gMetalGlobals.mtlDevice;
 
-            if (rendererBackendOptions.metalOptions.fixmeDummyOptionName)
+            if (rendererBackendOptions.requestFloatBuffer)
             {
                 gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatRGBA16Float;
                 gMetalGlobals.caMetalLayer.wantsExtendedDynamicRangeContent = YES;

@@ -401,6 +401,8 @@ document.write(`
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#fps-idling">Fps Idling</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#runner-callbacks">Runner callbacks</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#callbacks-types">Callbacks types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#runnercallbacks">RunnerCallbacks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#edge-toolbars-callbacks">Edge Toolbars Callbacks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mobilecallbacks">MobileCallbacks</a></li>
 </ul>
@@ -650,16 +652,25 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <section class="tex2jax_ignore mathjax_ignore" id="runner-callbacks">
 <h1>Runner callbacks<a class="headerlink" href="#runner-callbacks" title="Permalink to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_callbacks.h">runner_callbacks.h</a>.</p>
-<p><strong>VoidFunctionPointer</strong> can hold any void(void) function.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">VoidFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="o">&gt;</span>
+<section id="callbacks-types">
+<h2>Callbacks types<a class="headerlink" href="#callbacks-types" title="Permalink to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// VoidFunctionPointer can hold any void(void) function.</span>
+<span class="k">using</span><span class="w"> </span><span class="n">VoidFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">VoidFunction</span><span class="w"> </span><span class="nf">EmptyVoidFunction</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span><span class="w"> </span><span class="p">}</span>
+
+
+<span class="c1">// SequenceFunctions: returns a function that will call f1 and f2 in sequence</span>
+<span class="n">VoidFunction</span><span class="w"> </span><span class="nf">SequenceFunctions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">VoidFunction</span><span class="o">&amp;</span><span class="w"> </span><span class="n">f1</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">VoidFunction</span><span class="o">&amp;</span><span class="w"> </span><span class="n">f2</span><span class="p">);</span>
+
+
+<span class="c1">// AnyEventCallback can hold any bool(void *) function.</span>
+<span class="k">using</span><span class="w"> </span><span class="n">AnyEventCallback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">backendEvent</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">AnyEventCallback</span><span class="w"> </span><span class="nf">EmptyEventCallback</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="k">return</span><span class="w"> </span><span class="p">{};</span><span class="w"> </span><span class="p">}</span>
 </pre></div>
 </div>
-<p><strong>AnyEventCallback</strong> can hold any bool(void *) function.
-It is designed to handle callbacks for a specific backend.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">AnyEventCallback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">backendEvent</span><span class="p">)</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-<p><strong>AppendCallback</strong> can compose two callbacks. Use this when you want to set a callback and keep the (maybe) preexisting one.</p>
+</section>
+<section id="runnercallbacks">
+<h2>RunnerCallbacks<a class="headerlink" href="#runnercallbacks" title="Permalink to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//</span>
 <span class="c1">// RunnerCallbacks is a struct that contains the callbacks</span>
 <span class="c1">// that are called by the application</span>
@@ -709,6 +720,11 @@ It is designed to handle callbacks for a specific backend.</p>
 <span class="w">    </span><span class="c1">//  you should use this function to do so.</span>
 <span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">PostInit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
 
+<span class="w">    </span><span class="c1">// `EnqueuePostInit`: Add a function that will be called once after OpenGL</span>
+<span class="w">    </span><span class="c1">// and ImGui are inited, but before the backend callback are initialized.</span>
+<span class="w">    </span><span class="c1">// (this will modify the `PostInit` callback by appending the new callback (using `SequenceFunctions`)</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">EnqueuePostInit</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">VoidFunction</span><span class="o">&amp;</span><span class="w"> </span><span class="n">callback</span><span class="p">);</span>
+
 <span class="w">    </span><span class="c1">// `LoadAdditionalFonts`: default=_LoadDefaultFont_WithFontAwesome*.</span>
 <span class="w">    </span><span class="c1">//  A function that is called once, when fonts are ready to be loaded.</span>
 <span class="w">    </span><span class="c1">//  By default, _LoadDefaultFont_WithFontAwesome_ is called,</span>
@@ -739,6 +755,11 @@ It is designed to handle callbacks for a specific backend.</p>
 <span class="w">    </span><span class="c1">// `BeforeExit`: You can here add a function that will be called once before exiting</span>
 <span class="w">    </span><span class="c1">//  (when OpenGL and ImGui are still inited)</span>
 <span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">BeforeExit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// `EnqueueBeforeExit`: Add a function that will be called once before exiting</span>
+<span class="w">    </span><span class="c1">//  (when OpenGL and ImGui are still inited)</span>
+<span class="w">    </span><span class="c1">// (this will modify the `BeforeExit` callback by appending the new callback (using `SequenceFunctions`)</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">EnqueueBeforeExit</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">VoidFunction</span><span class="o">&amp;</span><span class="w"> </span><span class="n">callback</span><span class="p">);</span>
 
 <span class="w">    </span><span class="c1">// `BeforeExit_PostCleanup`: You can here add a function that will be called once</span>
 <span class="w">    </span><span class="c1">// before exiting (after OpenGL and ImGui have been stopped)</span>
@@ -792,6 +813,7 @@ It is designed to handle callbacks for a specific backend.</p>
 <span class="p">};</span>
 </pre></div>
 </div>
+</section>
 <section id="edge-toolbars-callbacks">
 <h2>Edge Toolbars Callbacks<a class="headerlink" href="#edge-toolbars-callbacks" title="Permalink to this heading">#</a></h2>
 <p>More details on <code class="docutils literal notranslate"><span class="pre">RunnerParams.edgesToolbars</span></code> (a dictionary of <code class="docutils literal notranslate"><span class="pre">EdgeToolbar</span></code>, per edge type)</p>
@@ -1606,6 +1628,8 @@ specifies the list of dockable windows, along with their default location, and t
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#fps-idling">Fps Idling</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#runner-callbacks">Runner callbacks</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#callbacks-types">Callbacks types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#runnercallbacks">RunnerCallbacks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#edge-toolbars-callbacks">Edge Toolbars Callbacks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mobilecallbacks">MobileCallbacks</a></li>
 </ul>

@@ -219,20 +219,25 @@ struct FpsIdling
 
 See [runner_callbacks.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_callbacks.h).
 
-
-**VoidFunctionPointer** can hold any void(void) function.
+## Callbacks types
 ```cpp
-using VoidFunction = std::function<void(void)>
+
+// VoidFunctionPointer can hold any void(void) function.
+using VoidFunction = std::function<void(void)>;
+inline VoidFunction EmptyVoidFunction() { return {}; }
+
+
+// SequenceFunctions: returns a function that will call f1 and f2 in sequence
+VoidFunction SequenceFunctions(const VoidFunction& f1, const VoidFunction& f2);
+
+
+// AnyEventCallback can hold any bool(void *) function.
+using AnyEventCallback = std::function<bool(void * backendEvent)>;
+inline AnyEventCallback EmptyEventCallback() {return {}; }
+
 ```
 
-**AnyEventCallback** can hold any bool(void *) function.
-  It is designed to handle callbacks for a specific backend.
-```cpp
-using AnyEventCallback = std::function<bool(void * backendEvent)>
-```
-
-**AppendCallback** can compose two callbacks. Use this when you want to set a callback and keep the (maybe) preexisting one.
-
+## RunnerCallbacks
 ```cpp
 //
 // RunnerCallbacks is a struct that contains the callbacks
@@ -283,6 +288,11 @@ struct RunnerCallbacks
     //  you should use this function to do so.
     VoidFunction PostInit = EmptyVoidFunction();
 
+    // `EnqueuePostInit`: Add a function that will be called once after OpenGL
+    // and ImGui are inited, but before the backend callback are initialized.
+    // (this will modify the `PostInit` callback by appending the new callback (using `SequenceFunctions`)
+    void EnqueuePostInit(const VoidFunction& callback);
+
     // `LoadAdditionalFonts`: default=_LoadDefaultFont_WithFontAwesome*.
     //  A function that is called once, when fonts are ready to be loaded.
     //  By default, _LoadDefaultFont_WithFontAwesome_ is called,
@@ -313,6 +323,11 @@ struct RunnerCallbacks
     // `BeforeExit`: You can here add a function that will be called once before exiting
     //  (when OpenGL and ImGui are still inited)
     VoidFunction BeforeExit = EmptyVoidFunction();
+
+    // `EnqueueBeforeExit`: Add a function that will be called once before exiting
+    //  (when OpenGL and ImGui are still inited)
+    // (this will modify the `BeforeExit` callback by appending the new callback (using `SequenceFunctions`)
+    void EnqueueBeforeExit(const VoidFunction& callback);
 
     // `BeforeExit_PostCleanup`: You can here add a function that will be called once
     // before exiting (after OpenGL and ImGui have been stopped)
@@ -365,6 +380,7 @@ struct RunnerCallbacks
 #endif
 };
 ```
+
 
 ## Edge Toolbars Callbacks
 More details on `RunnerParams.edgesToolbars` (a dictionary of `EdgeToolbar`, per edge type)

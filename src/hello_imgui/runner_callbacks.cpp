@@ -2,15 +2,20 @@
 
 namespace HelloImGui
 {
-    VoidFunction AppendCallback(const VoidFunction& previousCallback, const VoidFunction& newCallback)
+    VoidFunction SequenceFunctions(const VoidFunction& f1, const VoidFunction& f2)
     {
-        auto composedCallback = [previousCallback, newCallback]() {
-            if (previousCallback)
-                previousCallback();
-            if (newCallback)
-                newCallback();
+        auto composedCallback = [f1, f2]() {
+            if (f1)
+                f1();
+            if (f2)
+                f2();
         };
         return composedCallback;
+    }
+
+    VoidFunction AppendCallback(const VoidFunction& previousCallback, const VoidFunction& newCallback)
+    {
+        return SequenceFunctions(previousCallback, newCallback);
     }
 
     std::vector<EdgeToolbarType> AllEdgeToolbarTypes()
@@ -40,6 +45,16 @@ namespace HelloImGui
         edgeToolbar.ShowToolbar = guiFunction;
         edgeToolbar.options = options;
         edgesToolbars[edgeToolbarType] = edgeToolbar;
+    }
+
+    void RunnerCallbacks::EnqueueBeforeExit(const HelloImGui::VoidFunction &callback)
+    {
+        BeforeExit = SequenceFunctions(BeforeExit, callback);
+    }
+
+    void RunnerCallbacks::EnqueuePostInit(const HelloImGui::VoidFunction &callback)
+    {
+        PostInit = SequenceFunctions(PostInit, callback);
     }
 
 

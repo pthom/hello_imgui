@@ -37,11 +37,16 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 See [runner_callbacks.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_callbacks.h).
 
+## Callbacks types
+```cpp
 @import "runner_callbacks.h" {md_id=VoidFunction_AnyEventCallback}
+```
 
+## RunnerCallbacks
 ```cpp
 @import "runner_callbacks.h" {md_id=RunnerCallbacks}
 ```
+
 
 ## Edge Toolbars Callbacks
 More details on `RunnerParams.edgesToolbars` (a dictionary of `EdgeToolbar`, per edge type)

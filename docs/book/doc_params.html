@@ -720,10 +720,10 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="c1">//  you should use this function to do so.</span>
 <span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">PostInit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
 
-<span class="w">    </span><span class="c1">// `CallPostInit`: Add a function that will be called once after OpenGL</span>
+<span class="w">    </span><span class="c1">// `EnqueuePostInit`: Add a function that will be called once after OpenGL</span>
 <span class="w">    </span><span class="c1">// and ImGui are inited, but before the backend callback are initialized.</span>
 <span class="w">    </span><span class="c1">// (this will modify the `PostInit` callback by appending the new callback (using `SequenceFunctions`)</span>
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">CallPostInit</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">VoidFunction</span><span class="o">&amp;</span><span class="w"> </span><span class="n">callback</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">EnqueuePostInit</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">VoidFunction</span><span class="o">&amp;</span><span class="w"> </span><span class="n">callback</span><span class="p">);</span>
 
 <span class="w">    </span><span class="c1">// `LoadAdditionalFonts`: default=_LoadDefaultFont_WithFontAwesome*.</span>
 <span class="w">    </span><span class="c1">//  A function that is called once, when fonts are ready to be loaded.</span>
@@ -759,7 +759,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="c1">// `EnqueueBeforeExit`: Add a function that will be called once before exiting</span>
 <span class="w">    </span><span class="c1">//  (when OpenGL and ImGui are still inited)</span>
 <span class="w">    </span><span class="c1">// (this will modify the `BeforeExit` callback by appending the new callback (using `SequenceFunctions`)</span>
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">CallBeforeExit</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">VoidFunction</span><span class="o">&amp;</span><span class="w"> </span><span class="n">callback</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">EnqueueBeforeExit</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">VoidFunction</span><span class="o">&amp;</span><span class="w"> </span><span class="n">callback</span><span class="p">);</span>
 
 <span class="w">    </span><span class="c1">// `BeforeExit_PostCleanup`: You can here add a function that will be called once</span>
 <span class="w">    </span><span class="c1">// before exiting (after OpenGL and ImGui have been stopped)</span>

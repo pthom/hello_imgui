@@ -415,6 +415,7 @@ function(him_add_emscripten_options)
     if (EMSCRIPTEN)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLES3)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_CANNOTQUIT)
+        target_link_options(${HELLOIMGUI_TARGET} PUBLIC -sMAX_WEBGL_VERSION=2)
     endif()
 endfunction()
 

@@ -8,8 +8,12 @@ set(subdirs
     hello_idbfs
     hello_imgui_demo_test_engine
     hello_custom_background
-    hello_edr
 )
+if(HELLOIMGUI_HAS_METAL)
+    # Demo of EDR (Extended Dynamic Range) support, only for Metal
+    list(APPEND subdirs hello_edr)
+endif()
+
 foreach(target_name ${subdirs})
     add_subdirectory(${target_name})
     if (MSVC)

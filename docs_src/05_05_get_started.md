@@ -1,25 +1,5 @@
 # Get started
 
-## Motto
-
-The minimum code to start developing a GUI app should be... minimal. Here is a multiplatform Hello World in 7 lines.
-
-*6 lines of C++*
-```cpp
-#include "hello_imgui/hello_imgui.h"
-int main(int , char *[]) {
-    HelloImGui::Run(
-        []{ ImGui::Text("Hello, world!"); }, // Gui code
-        "Hello!", true);                     // Window title + Window size auto
-}
-```
-
-*1 line of CMake*
-```cmake
-hello_imgui_add_app(hello_world hello_world.cpp)
-```
-
-
 ## Starter template
 
 ```{tip}

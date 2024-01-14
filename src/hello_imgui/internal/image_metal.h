@@ -6,6 +6,7 @@
 #include <Metal/Metal.h>
 #include <QuartzCore/CAMetalLayer.h>
 #include <memory>
+#include <cstdint>
 
 namespace HelloImGui
 {
@@ -16,6 +17,9 @@ namespace HelloImGui
 
         ImTextureID TextureID() override;
         void _impl_StoreTexture(int width, int height, unsigned char* image_data_rgba) override;
+
+        // Used for EDR (Extended Dynamic Range) support
+        void StoreTextureFloat16Rgba(int width, int height, uint16_t* image_data_float16_rgba);
 
         id<MTLTexture> Texture;
     };

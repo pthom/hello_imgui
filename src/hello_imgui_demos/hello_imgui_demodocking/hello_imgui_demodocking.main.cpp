@@ -13,6 +13,7 @@ It demonstrates how to:
 */
 
 #include "hello_imgui/hello_imgui.h"
+#include "hello_imgui/renderer_backend_options.h"
 #include "imgui.h"
 #include "misc/cpp/imgui_stdlib.h"
 #include "imgui_internal.h"

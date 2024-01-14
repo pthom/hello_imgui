@@ -8,6 +8,7 @@ set(subdirs
     hello_idbfs
     hello_imgui_demo_test_engine
     hello_custom_background
+    hello_edr
 )
 foreach(target_name ${subdirs})
     add_subdirectory(${target_name})

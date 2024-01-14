@@ -141,15 +141,21 @@ struct RunnerCallbacks
 
     // --------------- Startup sequence callbacks -------------------
 
-    // `PostInit`: You can here add a function that will be called once after OpenGL
-    //  and ImGui are inited, but before the backend callback are initialized.
-    //  If you, for instance, want to add your own glfw callbacks,
-    //  you should use this function to do so.
+    // `PostInit_AddPlatformBackendCallbacks`:
+    //  You can here add a function that will be called once after OpenGL and ImGui are inited,
+    //  but before the platform backend callbacks are initialized.
+    //  If you, want to add your own glfw callbacks, you should use this function to do so
+    //  (and then ImGui will call your callbacks followed by its own callbacks)
+    VoidFunction PostInit_AddPlatformBackendCallbacks = EmptyVoidFunction();
+
+
+    // `PostInit`: You can here add a function that will be called once after everything
+    //  is inited (ImGui, Platform and Renderer Backend)
     VoidFunction PostInit = EmptyVoidFunction();
 
     // `EnqueuePostInit`: Add a function that will be called once after OpenGL
-    // and ImGui are inited, but before the backend callback are initialized.
-    // (this will modify the `PostInit` callback by appending the new callback (using `SequenceFunctions`)
+    //  and ImGui are inited, but before the backend callback are initialized.
+    //  (this will modify the `PostInit` callback by appending the new callback (using `SequenceFunctions`)
     void EnqueuePostInit(const VoidFunction& callback);
 
     // `LoadAdditionalFonts`: default=_LoadDefaultFont_WithFontAwesome*.

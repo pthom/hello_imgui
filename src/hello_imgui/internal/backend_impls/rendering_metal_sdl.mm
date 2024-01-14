@@ -23,7 +23,7 @@ namespace HelloImGui
     }
 
     // Below is implementation of RenderingCallbacks_LinkWindowingToRenderingBackend
-    void PrepareSdlForMetal(SDL_Window* sdlWindow)
+    void PrepareSdlForMetal(SDL_Window* sdlWindow, const RendererBackendOptions& rendererBackendOptions)
     {
         auto& gMetalGlobals = GetMetalGlobals();
         auto& gSdlMetalGlobals = GetSdlMetalGlobals();
@@ -41,7 +41,16 @@ namespace HelloImGui
 
             // Setup Platform/Renderer backends
             gMetalGlobals.caMetalLayer = (__bridge CAMetalLayer*)SDL_RenderGetMetalLayer(gSdlMetalGlobals.sdlRenderer);
-            gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+
+            if (rendererBackendOptions.requestFloatBuffer)
+            {
+                gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatRGBA16Float;
+                gMetalGlobals.caMetalLayer.wantsExtendedDynamicRangeContent = YES;
+                gMetalGlobals.caMetalLayer.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceExtendedSRGB);
+            }
+            else
+                gMetalGlobals.caMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+
         }
         {
             ImGui_ImplMetal_Init(gMetalGlobals.caMetalLayer.device);

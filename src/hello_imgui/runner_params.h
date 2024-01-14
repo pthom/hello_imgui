@@ -4,6 +4,8 @@
 #include "hello_imgui/runner_callbacks.h"
 #include "hello_imgui/docking_params.h"
 #include "hello_imgui/backend_pointers.h"
+#include "hello_imgui/renderer_backend_options.h"
+
 
 #include <vector>
 
@@ -148,10 +150,15 @@ struct RunnerParams
     // A struct that contains optional pointers to the backend implementations.
     // These pointers will be filled when the application starts
     BackendPointers backendPointers;
+
     // `backendType`: _enum BackendType, default=BackendType::FirstAvailable_
     // Select the wanted platform backend type between `Sdl`, `Glfw`.
     // Only useful when multiple backend are compiled and available.
     BackendType backendType = BackendType::FirstAvailable;
+
+    // `rendererBackendOptions`: _see renderer_backend_options.h_
+    // Options for the renderer backend
+    RendererBackendOptions rendererBackendOptions;
 
 
     // --------------- Settings -------------------

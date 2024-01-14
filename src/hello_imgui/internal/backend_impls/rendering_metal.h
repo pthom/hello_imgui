@@ -11,6 +11,7 @@ struct GLFWwindow;
 #endif
 
 #include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
+#include "hello_imgui/renderer_backend_options.h"
 
 #import <Metal/Metal.h>
 #import <QuartzCore/QuartzCore.h>
@@ -39,7 +40,7 @@ namespace HelloImGui
 #ifdef HELLOIMGUI_USE_SDL2
     RenderingCallbacksPtr CreateBackendCallbacks_SdlMetal();
 
-    void PrepareSdlForMetal(SDL_Window* window);
+    void PrepareSdlForMetal(SDL_Window* window, const RendererBackendOptions& rendererBackendOptions);
 
     struct SdlMetalGlobals
     {
@@ -52,7 +53,7 @@ namespace HelloImGui
 #ifdef HELLOIMGUI_USE_GLFW3
     RenderingCallbacksPtr CreateBackendCallbacks_GlfwMetal();
 
-    void PrepareGlfwForMetal(GLFWwindow* window);
+    void PrepareGlfwForMetal(GLFWwindow* window, const RendererBackendOptions& rendererBackendOptions);
 
     struct GlfwMetalGlobals
     {

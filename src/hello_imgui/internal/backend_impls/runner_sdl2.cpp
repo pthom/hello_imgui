@@ -275,7 +275,7 @@ namespace HelloImGui
     }
     void RunnerSdl2::Impl_LinkPlatformAndRenderBackends()
     {
-        PrepareSdlForMetal((SDL_Window*)mWindow);
+        PrepareSdlForMetal((SDL_Window*)mWindow, params.rendererBackendOptions);
     }
 #endif
 #ifdef HELLOIMGUI_HAS_VULKAN

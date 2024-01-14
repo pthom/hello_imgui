@@ -377,10 +377,13 @@ void AbstractRunner::Setup()
     // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks
     // will chain the user callbacks with ImGui callbacks; and PostInit()
     // is a good place for the user to install callbacks
-    if (params.callbacks.PostInit)
-        params.callbacks.PostInit();
+    if (params.callbacks.PostInit_AddPlatformBackendCallbacks)
+        params.callbacks.PostInit_AddPlatformBackendCallbacks();
 
     Impl_LinkPlatformAndRenderBackends();
+
+    if (params.callbacks.PostInit)
+        params.callbacks.PostInit();
 
     params.callbacks.SetupImGuiConfig();
 

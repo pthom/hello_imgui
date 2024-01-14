@@ -1,6 +1,6 @@
 <a href="://pthom.github.io/hello_imgui/"><img src="logo/logo_hello_imgui.png" width="120"></a>
 
-_See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/) for usage and build instructions._
+_See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/) for API, usage and build instructions._
 
 
 **OpenGL**<br/>
@@ -25,3 +25,6 @@ _See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/
 
 <!-- INTRO -->
 
+# More info
+
+_See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/) for API, usage and build instructions._

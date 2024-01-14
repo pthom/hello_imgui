@@ -1,6 +1,6 @@
 <a href="://pthom.github.io/hello_imgui/"><img src="logo/logo_hello_imgui.png" width="120"></a>
 
-_See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/) for usage and build instructions._
+_See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/) for API, usage and build instructions._
 
 
 **OpenGL**<br/>
@@ -157,3 +157,6 @@ How to use the theme tweaking utilities provided by Hello ImGui
 [Online video tutorial](https://www.youtube.com/watch?v=4f_-3DDcAZk)
 
 
+# More info
+
+_See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/) for API, usage and build instructions._

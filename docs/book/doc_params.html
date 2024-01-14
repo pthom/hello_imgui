@@ -1575,14 +1575,14 @@ specifies the list of dockable windows, along with their default location, and t
 <section id="renderer-backend-options">
 <h2>Renderer Backend Options<a class="headerlink" href="#renderer-backend-options" title="Permalink to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `bool hasEdrSupport()`:</span>
-<span class="c1">// Check whether extended dynamic range (EDR), i.e. the ability to reproduce intensities exceeding the</span>
-<span class="c1">// standard dynamic range from 0.0-1.0, is supported.</span>
+<span class="c1">// Check whether extended dynamic range (EDR), i.e. the ability to reproduce</span>
+<span class="c1">// intensities exceeding the standard dynamic range from 0.0-1.0, is supported.</span>
 <span class="c1">//</span>
-<span class="c1">// To leverage EDR support, you will need to set `floatBuffer=true` in `RendererBackendOptions`.</span>
+<span class="c1">// To leverage EDR support, you need to set `floatBuffer=true` in `RendererBackendOptions`.</span>
 <span class="c1">// Only the macOS Metal backend currently supports this.</span>
 <span class="c1">//</span>
-<span class="c1">// This currently returns false on all backends except Metal, where it checks whether this is</span>
-<span class="c1">// supported on the current displays.</span>
+<span class="c1">// This currently returns false on all backends except Metal, where it checks whether</span>
+<span class="c1">// this is supported on the current displays.</span>
 <span class="kt">bool</span><span class="w"> </span><span class="nf">hasEdrSupport</span><span class="p">();</span>
 
 

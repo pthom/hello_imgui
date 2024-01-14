@@ -1160,14 +1160,14 @@ struct BackendPointers
 ```cpp
 
 // `bool hasEdrSupport()`:
-// Check whether extended dynamic range (EDR), i.e. the ability to reproduce intensities exceeding the
-// standard dynamic range from 0.0-1.0, is supported.
+// Check whether extended dynamic range (EDR), i.e. the ability to reproduce
+// intensities exceeding the standard dynamic range from 0.0-1.0, is supported.
 //
-// To leverage EDR support, you will need to set `floatBuffer=true` in `RendererBackendOptions`.
+// To leverage EDR support, you need to set `floatBuffer=true` in `RendererBackendOptions`.
 // Only the macOS Metal backend currently supports this.
 //
-// This currently returns false on all backends except Metal, where it checks whether this is
-// supported on the current displays.
+// This currently returns false on all backends except Metal, where it checks whether
+// this is supported on the current displays.
 bool hasEdrSupport();
 
 

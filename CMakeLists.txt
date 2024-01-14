@@ -252,6 +252,13 @@ mark_as_advanced(HELLO_IMGUI_IMGUI_SHARED)
 # HelloImGui Build Actions
 ###############################################################################
 
+# Avoid building hello_imgui twice
+if(TARGET ${HELLOIMGUI_TARGET})
+    message(STATUS "hello_imgui target (${HELLOIMGUI_TARGET}) target already defined!")
+    return()
+endif()
+
+
 #------------------------------------------------------------------------------
 # MSVC: Select the solution folder where hello_imgui should be placed
 #------------------------------------------------------------------------------

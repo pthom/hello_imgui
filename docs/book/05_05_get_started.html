@@ -440,7 +440,9 @@ It is recommended to use it as a starting point for your own project.</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="c"># Build hello_imgui</span>
 <span class="c"># =================</span>
 <span class="c"># 1/  Option 1: if you added hello_imgui as a subfolder, you can add it to your project with:</span>
-<span class="c">#     add_subdirectory(external/hello_imgui)</span>
+<span class="nb">if</span><span class="p">(</span><span class="s">IS_DIRECTORY</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_CURRENT_SOURCE_DIR</span><span class="o">}</span><span class="s">/external/hello_imgui</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">add_subdirectory</span><span class="p">(</span><span class="s">external/hello_imgui</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
 
 <span class="c"># 2/  Option 2: simply fetch hello_imgui during the build</span>
 <span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">TARGET</span><span class="w"> </span><span class="s">hello_imgui</span><span class="p">)</span>

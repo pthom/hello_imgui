@@ -424,7 +424,11 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docking-params">Docking Params</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#backend-pointers">Backend Pointers</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#backend">Backend</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#backend-pointers">Backend Pointers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#renderer-backend-options">Renderer Backend Options</a></li>
+</ul>
+</li>
 </ul>
 
             </nav>
@@ -544,10 +548,15 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="c1">// A struct that contains optional pointers to the backend implementations.</span>
 <span class="w">    </span><span class="c1">// These pointers will be filled when the application starts</span>
 <span class="w">    </span><span class="n">BackendPointers</span><span class="w"> </span><span class="n">backendPointers</span><span class="p">;</span>
+
 <span class="w">    </span><span class="c1">// `backendType`: _enum BackendType, default=BackendType::FirstAvailable_</span>
 <span class="w">    </span><span class="c1">// Select the wanted platform backend type between `Sdl`, `Glfw`.</span>
 <span class="w">    </span><span class="c1">// Only useful when multiple backend are compiled and available.</span>
 <span class="w">    </span><span class="n">BackendType</span><span class="w"> </span><span class="n">backendType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BackendType</span><span class="o">::</span><span class="n">FirstAvailable</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// `rendererBackendOptions`: _see renderer_backend_options.h_</span>
+<span class="w">    </span><span class="c1">// Options for the renderer backend</span>
+<span class="w">    </span><span class="n">RendererBackendOptions</span><span class="w"> </span><span class="n">rendererBackendOptions</span><span class="p">;</span>
 
 
 <span class="w">    </span><span class="c1">// --------------- Settings -------------------</span>
@@ -643,7 +652,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 
 <span class="w">    </span><span class="c1">// `rememberEnableIdling`: _bool, default=true_.</span>
 <span class="w">    </span><span class="c1">//  If true, the last value of enableIdling is restored from the settings at startup.</span>
-<span class="w">    </span><span class="kt">bool</span><span class="w">  </span><span class="n">rememberEnableIdling</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w">  </span><span class="n">rememberEnableIdling</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -714,15 +723,21 @@ The diagram below summarize all the possible settings and callbacks (which are e
 
 <span class="w">    </span><span class="c1">// --------------- Startup sequence callbacks -------------------</span>
 
-<span class="w">    </span><span class="c1">// `PostInit`: You can here add a function that will be called once after OpenGL</span>
-<span class="w">    </span><span class="c1">//  and ImGui are inited, but before the backend callback are initialized.</span>
-<span class="w">    </span><span class="c1">//  If you, for instance, want to add your own glfw callbacks,</span>
-<span class="w">    </span><span class="c1">//  you should use this function to do so.</span>
+<span class="w">    </span><span class="c1">// `PostInit_AddPlatformBackendCallbacks`:</span>
+<span class="w">    </span><span class="c1">//  You can here add a function that will be called once after OpenGL and ImGui are inited,</span>
+<span class="w">    </span><span class="c1">//  but before the platform backend callbacks are initialized.</span>
+<span class="w">    </span><span class="c1">//  If you, want to add your own glfw callbacks, you should use this function to do so</span>
+<span class="w">    </span><span class="c1">//  (and then ImGui will call your callbacks followed by its own callbacks)</span>
+<span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">PostInit_AddPlatformBackendCallbacks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
+
+
+<span class="w">    </span><span class="c1">// `PostInit`: You can here add a function that will be called once after everything</span>
+<span class="w">    </span><span class="c1">//  is inited (ImGui, Platform and Renderer Backend)</span>
 <span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">PostInit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
 
 <span class="w">    </span><span class="c1">// `EnqueuePostInit`: Add a function that will be called once after OpenGL</span>
-<span class="w">    </span><span class="c1">// and ImGui are inited, but before the backend callback are initialized.</span>
-<span class="w">    </span><span class="c1">// (this will modify the `PostInit` callback by appending the new callback (using `SequenceFunctions`)</span>
+<span class="w">    </span><span class="c1">//  and ImGui are inited, but before the backend callback are initialized.</span>
+<span class="w">    </span><span class="c1">//  (this will modify the `PostInit` callback by appending the new callback (using `SequenceFunctions`)</span>
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">EnqueuePostInit</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">VoidFunction</span><span class="o">&amp;</span><span class="w"> </span><span class="n">callback</span><span class="p">);</span>
 
 <span class="w">    </span><span class="c1">// `LoadAdditionalFonts`: default=_LoadDefaultFont_WithFontAwesome*.</span>
@@ -1523,8 +1538,10 @@ specifies the list of dockable windows, along with their default location, and t
 </div>
 </section>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="backend-pointers">
-<h1>Backend Pointers<a class="headerlink" href="#backend-pointers" title="Permalink to this heading">#</a></h1>
+<section class="tex2jax_ignore mathjax_ignore" id="backend">
+<h1>Backend<a class="headerlink" href="#backend" title="Permalink to this heading">#</a></h1>
+<section id="backend-pointers">
+<h2>Backend Pointers<a class="headerlink" href="#backend-pointers" title="Permalink to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//</span>
 <span class="c1">// BackendPointers is a struct that contains optional pointers to the</span>
 <span class="c1">// backend implementations (for SDL and GLFW).</span>
@@ -1554,6 +1571,42 @@ specifies the list of dockable windows, along with their default location, and t
 <span class="p">};</span>
 </pre></div>
 </div>
+</section>
+<section id="renderer-backend-options">
+<h2>Renderer Backend Options<a class="headerlink" href="#renderer-backend-options" title="Permalink to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `bool hasEdrSupport()`:</span>
+<span class="c1">// Check whether extended dynamic range (EDR), i.e. the ability to reproduce intensities exceeding the</span>
+<span class="c1">// standard dynamic range from 0.0-1.0, is supported.</span>
+<span class="c1">//</span>
+<span class="c1">// To leverage EDR support, you will need to set `floatBuffer=true` in `RendererBackendOptions`.</span>
+<span class="c1">// Only the macOS Metal backend currently supports this.</span>
+<span class="c1">//</span>
+<span class="c1">// This currently returns false on all backends except Metal, where it checks whether this is</span>
+<span class="c1">// supported on the current displays.</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">hasEdrSupport</span><span class="p">();</span>
+
+
+<span class="c1">// RendererBackendOptions is a struct that contains options for the renderer backend</span>
+<span class="c1">// (Metal, Vulkan, DirectX, OpenGL)</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">RendererBackendOptions</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// `requestFloatBuffer`:</span>
+<span class="w">    </span><span class="c1">// Set to true to request a floating-point framebuffer.</span>
+<span class="w">    </span><span class="c1">// Only available on Metal, if your display supports it.</span>
+<span class="w">    </span><span class="c1">// Before setting this to true, first check `hasEdrSupport()`</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">requestFloatBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="p">};</span>
+
+
+<span class="c1">// Note:</span>
+<span class="c1">// If using Metal, Vulkan or DirectX, you can find interesting pointers inside:</span>
+<span class="c1">//     src/hello_imgui/internal/backend_impls/rendering_metal.h</span>
+<span class="c1">//     src/hello_imgui/internal/backend_impls/rendering_vulkan.h</span>
+<span class="c1">//     src/hello_imgui/internal/backend_impls/rendering_dx11.h</span>
+<span class="c1">//     src/hello_imgui/internal/backend_impls/rendering_dx12.h</span>
+</pre></div>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -1651,7 +1704,11 @@ specifies the list of dockable windows, along with their default location, and t
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docking-params">Docking Params</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#backend-pointers">Backend Pointers</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#backend">Backend</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#backend-pointers">Backend Pointers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#renderer-backend-options">Renderer Backend Options</a></li>
+</ul>
+</li>
 </ul>
 
   </nav></div>

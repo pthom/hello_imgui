@@ -51,6 +51,15 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 * Available platform backends: SDL2, Glfw3
 * Available rendering backends: OpenGL3, Metal, Vulkan, DirectX
 
+
+## Support the project
+
+Hello ImGui is a free and open source project. If you like it, please consider supporting its development by [making a donation](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA). Thank you!
+
+<!--
+[![](https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/doc/doc_images/btn_donate.gif)](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA)
+-->
+
 ---
 
 ## Demos & real world apps

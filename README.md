@@ -25,20 +25,21 @@ _See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/
 
 # Hello ImGui
 
-Hello ImGui is a library that enables quickly write multiplatform apps with the simplicity of a "Hello World" app. Although being extremely easy to use, it can be used to create complex and customizable applications. It is based on [Dear ImGui](https://github.com/ocornut/imgui).
+
+Hello ImGui is a powerful library designed to make multiplatform app development as simple as crafting a "Hello World" program. Built on [Dear ImGui](https://github.com/ocornut/imgui), it offers an unparalleled blend of simplicity for beginners and flexibility for advanced users. Whether you're creating prototypes or complex applications, Hello ImGui streamlines the process across various platforms.
 
 ## Features
 
 **Multiplatform utilities**
-* Truly multiplatform: Linux, Windows, macOS, iOS, Android, emscripten (with 4 lines of CMake code)
-* Easily embed assets on all platforms (no code required)
-* Customize app settings (icon and app name for mobile platforms, etc.- no code required)
-* Customize application icon on all platforms (including mobile and macOS - no code required)
+* Seamlessly multiplatform: supports Linux, Windows, macOS, iOS, Android, and Emscripten with minimal setup (1 line of CMake code)
+* Asset embedding across all platforms  (no code required)
+* Effortless app customization, including app icons and names for mobile platforms (no code required)
+* Universal application icon customization, extending to mobile and macOS (no code required)
 
 **Dear ImGui Tweaks**
-* Power Save mode: reduce FPS when idling
-* High DPI support: scale UI according to DPI, whatever the platform
-* Advanced layout handling: dockable windows, multiple layouts
+* Power Save mode: optimize performance by reducing FPS when idle
+* High DPI support: automatically scales UI to match screen DPI on any platform.
+* Enhanced layout handling: dockable windows and multiple layouts for complex UIs
 * Window geometry utilities: autosize application window, restore app window position
 * Theme tweaking: extensive list of additional themes
 * Support for movable and resizable borderless windows
@@ -55,20 +56,27 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 ## About
 
 ### Support the project
-Hello ImGui is a free and open source project, and its development and maintenance require considerable efforts. If you like it, please consider supporting its development by [making a donation](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA). Thank you!
+Hello ImGui is a free and open source project, and its development and maintenance require considerable efforts. 
+
+If you find it valuable for your work – especially in a commercial enterprise or a research setting – please consider supporting its development by [making a donation](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA). Thank you!
 
 <!--
 [![](https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/doc/doc_images/btn_donate.gif)](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA)
 -->
 
 ### Credits
+
 Hello ImGui is based on [Dear ImGui](https://github.com/ocornut/imgui) (MIT License), by Omar Cornut. Portions use [ImGui Test Engine](https://github.com/ocornut/imgui_test_engine), which is governed by a [specific license](https://github.com/ocornut/imgui_test_engine/blob/main/imgui_test_engine/LICENSE.txt)
 
-Portions of this software use the [FreeType Project](www.freetype.org) (copyright © 2024, all rights reserved), [lunasvg](https://github.com/sammycage/lunasvg) (MIT License), [GLFW](https://www.glfw.org/) (zlib/libpng license), [SDL](https://www.libsdl.org/) (zlib license).
+Portions of this software use the [FreeType Project](www.freetype.org), [lunasvg](https://github.com/sammycage/lunasvg) (MIT License), [GLFW](https://www.glfw.org/) (zlib/libpng license), [SDL](https://www.libsdl.org/) (zlib license).
 
 ### License
 
 Hello ImGui is licensed under the MIT License, see [LICENSE](https://github.com/pthom/hello_imgui/blob/master/LICENSE)
+
+### Contribute
+
+Quality contributions are welcome!
 
 ---
 

@@ -52,15 +52,23 @@ Hello ImGui is a library that enables quickly write multiplatform apps with the 
 * Available rendering backends: OpenGL3, Metal, Vulkan, DirectX
 
 
-## Support the project
+## About
 
-Hello ImGui is a free and open source project. If you like it, please consider supporting its development by [making a donation](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA). Thank you!
+### Support the project
+Hello ImGui is a free and open source project, and its development and maintenance require considerable efforts. If you like it, please consider supporting its development by [making a donation](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA). Thank you!
 
 <!--
 [![](https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/doc/doc_images/btn_donate.gif)](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA)
 -->
 
-Portions of this software are copyright © 2024 The FreeType Project (www.freetype.org).  All rights reserved.
+### Credits
+Hello ImGui is based on [Dear ImGui](https://github.com/ocornut/imgui) (MIT License), by Omar Cornut. Portions use [ImGui Test Engine](https://github.com/ocornut/imgui_test_engine), which is governed by a [specific license](https://github.com/ocornut/imgui_test_engine/blob/main/imgui_test_engine/LICENSE.txt)
+
+Portions of this software use the [FreeType Project](www.freetype.org) (copyright © 2024, all rights reserved), [lunasvg](https://github.com/sammycage/lunasvg) (MIT License), [GLFW](https://www.glfw.org/) (zlib/libpng license), [SDL](https://www.libsdl.org/) (zlib license).
+
+### License
+
+Hello ImGui is licensed under the MIT License, see [LICENSE](https://github.com/pthom/hello_imgui/blob/master/LICENSE)
 
 ---
 

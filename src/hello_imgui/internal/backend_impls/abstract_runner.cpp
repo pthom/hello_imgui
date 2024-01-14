@@ -117,11 +117,11 @@ void AbstractRunner::PrepareWindowGeometry()
     mGeometryHelper = std::make_unique<WindowGeometryHelper>(
         params.appWindowParams.windowGeometry,
         params.appWindowParams.restorePreviousGeometry,
-        IniPartsFilename()
+        IniSettingsLocation(params)
         );
     auto windowBounds = mGeometryHelper->AppWindowBoundsInitial(mBackendWindowHelper->GetMonitorsWorkAreas());
     if (params.appWindowParams.restorePreviousGeometry &&
-        HelloImGuiIniSettings::LoadLastRunWindowBounds(IniPartsFilename()).has_value())
+        HelloImGuiIniSettings::LoadLastRunWindowBounds(IniSettingsLocation(params)).has_value())
         params.appWindowParams.windowGeometry.positionMode = WindowPositionMode::FromCoords;
     params.appWindowParams.windowGeometry.position = windowBounds.position;
     params.appWindowParams.windowGeometry.size = windowBounds.size;
@@ -146,7 +146,7 @@ bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi()
     bool shallSizeRelativeTo96Ppi;
     {
         bool doRestorePreviousGeometry = (params.appWindowParams.restorePreviousGeometry &&
-            HelloImGuiIniSettings::LoadLastRunWindowBounds(IniPartsFilename()).has_value()
+            HelloImGuiIniSettings::LoadLastRunWindowBounds(IniSettingsLocation(params)).has_value()
                                           );
 
         bool isWindowPpiRelativeSize = (params.appWindowParams.windowGeometry.windowSizeMeasureMode ==
@@ -256,63 +256,6 @@ void AbstractRunner::HandleDpiOnSecondFrame()
 }
 
 
-std::string AbstractRunner::IniPartsFilename()
-{
-    auto _getIniFileName = [this]() -> std::string
-    {
-        auto _stringToSaneFilename=[](const std::string& s, const std::string& extension) -> std::string
-        {
-            std::string filenameSanitized;
-            for (char c : s)
-                if (isalnum(c))
-                    filenameSanitized += c;
-                else
-                    filenameSanitized += "_";
-            filenameSanitized += extension;
-            return filenameSanitized;
-        };
-
-        if (! params.iniFilename.empty())
-            return params.iniFilename;
-        else
-        {
-            if (params.iniFilename_useAppWindowTitle && !params.appWindowParams.windowTitle.empty())
-            {
-                std::string iniFilenameSanitized = _stringToSaneFilename(params.appWindowParams.windowTitle, ".ini");
-                return iniFilenameSanitized;
-            }
-            else
-                return "imgui.ini";
-        }
-    };
-
-    auto mkdirToFilename = [](const std::string& filename) -> bool
-    {
-        std::filesystem::path p(filename);
-        std::filesystem::path dir = p.parent_path();
-        if (dir.empty())
-            return true;
-        if (std::filesystem::exists(dir))
-        {
-            if (std::filesystem::is_directory(dir) || std::filesystem::is_symlink(dir))
-                return true;
-            else
-                return false;
-        }
-        else
-            return std::filesystem::create_directories(dir);
-    };
-
-
-    std::string iniFilename = _getIniFileName();
-    std::string folder = HelloImGui::IniFolderLocation(params.iniFolderType);
-
-    std::string iniFullFilename = folder.empty() ? iniFilename : folder + "/" + iniFilename;
-    bool settingsDirIsAccessible = mkdirToFilename(iniFullFilename);
-    IM_ASSERT(settingsDirIsAccessible);
-
-    return iniFullFilename;
-}
 
 void AbstractRunner::LayoutSettings_SwitchLayout(const std::string& layoutName)
 {
@@ -362,8 +305,8 @@ void AbstractRunner::LayoutSettings_HandleChanges()
 }
 void AbstractRunner::LayoutSettings_Load()
 {
-    HelloImGuiIniSettings::LoadImGuiSettings(IniPartsFilename(), params.dockingParams.layoutName);
-    HelloImGuiIniSettings::LoadDockableWindowsVisibility(IniPartsFilename(), &params.dockingParams);
+    HelloImGuiIniSettings::LoadImGuiSettings(IniSettingsLocation(params), params.dockingParams.layoutName);
+    HelloImGuiIniSettings::LoadDockableWindowsVisibility(IniSettingsLocation(params), &params.dockingParams);
 
     // SetLayoutResetIfNeeded() may set params.dockingParams.layoutReset = true
     // (which will cause the layout to be recreated from scratch, overriding user changes)
@@ -371,8 +314,8 @@ void AbstractRunner::LayoutSettings_Load()
 }
 void AbstractRunner::LayoutSettings_Save()
 {
-    HelloImGuiIniSettings::SaveImGuiSettings(IniPartsFilename(), params.dockingParams.layoutName);
-    HelloImGuiIniSettings::SaveDockableWindowsVisibility(IniPartsFilename(), params.dockingParams);
+    HelloImGuiIniSettings::SaveImGuiSettings(IniSettingsLocation(params), params.dockingParams.layoutName);
+    HelloImGuiIniSettings::SaveDockableWindowsVisibility(IniSettingsLocation(params), params.dockingParams);
 }
 
 void AbstractRunner::InitImGuiContext()
@@ -428,6 +371,8 @@ void AbstractRunner::Setup()
 
     Impl_SetWindowIcon();
 
+    ImGui::GetIO().DisplayFramebufferScale = mBackendWindowHelper->GetWindowScaleFactor(mWindow);
+
     // This should be done before Impl_LinkPlatformAndRenderBackends()
     // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks
     // will chain the user callbacks with ImGui callbacks; and PostInit()
@@ -438,7 +383,6 @@ void AbstractRunner::Setup()
     Impl_LinkPlatformAndRenderBackends();
 
     params.callbacks.SetupImGuiConfig();
-    params.callbacks.SetupImGuiStyle();
 
 #ifdef HELLOIMGUI_WITH_TEST_ENGINE
     if (params.useImGuiTestEngine)
@@ -466,7 +410,7 @@ void AbstractRunner::Setup()
     }
 
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
-    HelloImGuiIniSettings::LoadHelloImGuiMiscSettings(IniPartsFilename(), &params);
+    HelloImGuiIniSettings::LoadHelloImGuiMiscSettings(IniSettingsLocation(params), &params);
     SetLayoutResetIfNeeded();
 
     ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
@@ -479,6 +423,7 @@ void AbstractRunner::Setup()
         style.Colors[ImGuiCol_TitleBgActive].w = 1.f;
         style.Colors[ImGuiCol_TitleBgCollapsed].w = 1.f;
     }
+    params.callbacks.SetupImGuiStyle();
 }
 
 void AbstractRunner::SetLayoutResetIfNeeded()
@@ -487,7 +432,7 @@ void AbstractRunner::SetLayoutResetIfNeeded()
     {
         if (params.dockingParams.layoutCondition == DockingLayoutCondition::FirstUseEver)
         {
-            if (!HelloImGuiIniSettings::HasUserDockingSettingsInImguiSettings(IniPartsFilename(), params.dockingParams))
+            if (!HelloImGuiIniSettings::HasUserDockingSettingsInImguiSettings(IniSettingsLocation(params), params.dockingParams))
                 params.dockingParams.layoutReset = true;
             else
                 params.dockingParams.layoutReset = false;
@@ -501,10 +446,11 @@ void AbstractRunner::SetLayoutResetIfNeeded()
 
 void AbstractRunner::RenderGui()
 {
-    DockingDetails::ProvideWindowOrDock(params);
-
+    DockingDetails::ShowToolbars(params);
     if (params.imGuiWindowParams.showMenuBar)
         Menu_StatusBar::ShowMenu(params);
+
+    DockingDetails::ProvideWindowOrDock(params);
 
     if (params.appWindowParams.borderless) // Need to add params.appWindowParams.borderlessResizable
     {
@@ -824,10 +770,10 @@ void AbstractRunner::TearDown(bool gotException)
             setFinalAppWindowScreenshotRgbBuffer(b);
         }
         if (params.appWindowParams.restorePreviousGeometry)
-            HelloImGuiIniSettings::SaveLastRunWindowBounds(IniPartsFilename(),
+            HelloImGuiIniSettings::SaveLastRunWindowBounds(IniSettingsLocation(params),
                                                            mBackendWindowHelper->GetWindowBounds(mWindow));
         LayoutSettings_Save();
-        HelloImGuiIniSettings::SaveHelloImGuiMiscSettings(IniPartsFilename(), params);
+        HelloImGuiIniSettings::SaveHelloImGuiMiscSettings(IniSettingsLocation(params), params);
     }
 
     HelloImGui::internal::Free_ImageFromAssetMap();
@@ -854,11 +800,11 @@ void AbstractRunner::TearDown(bool gotException)
 
 void AbstractRunner::SaveUserPref(const std::string& userPrefName, const std::string& userPrefContent)
 {
-    HelloImGuiIniSettings::SaveUserPref(IniPartsFilename(), userPrefName, userPrefContent);
+    HelloImGuiIniSettings::SaveUserPref(IniSettingsLocation(params), userPrefName, userPrefContent);
 }
 std::string AbstractRunner::LoadUserPref(const std::string& userPrefName)
 {
-    return HelloImGuiIniSettings::LoadUserPref(IniPartsFilename(), userPrefName);
+    return HelloImGuiIniSettings::LoadUserPref(IniSettingsLocation(params), userPrefName);
 }
 
 }  // namespace HelloImGui

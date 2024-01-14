@@ -188,17 +188,20 @@ namespace HelloImGui { namespace BackendApi
         glfwWaitEventsTimeout(timeout_seconds);
     }
 
+    ImVec2 GlfwWindowHelper::GetWindowScaleFactor(HelloImGui::BackendApi::WindowPointer window)
+    {
+        float x_scale, y_scale;
+        glfwGetWindowContentScale((GLFWwindow *) window, &x_scale, &y_scale);
+        return ImVec2(x_scale, y_scale);
+    }
+
     float GlfwWindowHelper::GetWindowSizeDpiScaleFactor(WindowPointer window)
     {
 #ifdef __APPLE__
         return 1.f;
 #else
-        float xscale, yscale;
-        glfwGetWindowContentScale((GLFWwindow *) window, &xscale, &yscale);
-        if (xscale > yscale)
-            return xscale;
-        else
-            return yscale;
+        ImVec2 scale = GetWindowScaleFactor(window);
+        return scale.x;
 #endif
     }
 

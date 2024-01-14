@@ -52,11 +52,9 @@ void ShowDefaultAppMenu_Quit(RunnerParams & runnerParams)
 
 void ShowMenu(RunnerParams & runnerParams)
 {
-    bool hasMenu = (ImGui::GetCurrentWindow()->Flags & ImGuiWindowFlags_MenuBar) != 0;
-    if (!hasMenu)
+    if (!runnerParams.imGuiWindowParams.showMenuBar)
         return;
-
-    ImGui::BeginMenuBar();
+    ImGui::BeginMainMenuBar();
 
     if (runnerParams.imGuiWindowParams.showMenu_App)
         ShowDefaultAppMenu_Quit(runnerParams);
@@ -67,7 +65,7 @@ void ShowMenu(RunnerParams & runnerParams)
     if (runnerParams.callbacks.ShowMenus)
         runnerParams.callbacks.ShowMenus();
 
-    ImGui::EndMenuBar();
+    ImGui::EndMainMenuBar();
 }
 
 

@@ -6,12 +6,14 @@
 #     - set the debugger working directory to the output directory (for Win32)
 
 
-function(_do_copy_asset app_name src dst)
+function(_do_install_asset app_name src dst)
     hello_imgui_get_real_output_directory(${app_name} real_output_directory)
 
-    FILE(COPY "${src}" DESTINATION "${real_output_directory}/${dst}")
-    message(VERBOSE "_do_copy_asset=> FILE(COPY ${src} DESTINATION ${real_output_directory}/${dst})")
+#    # Copy at configure time
+#    FILE(COPY "${src}" DESTINATION "${real_output_directory}/${dst}")
+#    message(VERBOSE "_do_copy_asset=> FILE(COPY ${src} DESTINATION ${real_output_directory}/${dst})")
 
+    # Copy at install time
     if (HELLOIMGUI_ADD_APP_WITH_INSTALL)
         if (IS_DIRECTORY ${src})
             install(DIRECTORY "${src}" DESTINATION "${CMAKE_INSTALL_PREFIX}/${dst}")
@@ -29,8 +31,22 @@ function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
     message(VERBOSE "hello_imgui_bundle_assets_from_folder ${app_name} ${assets_folder}")
     FILE(GLOB children ${assets_folder}/*)
     foreach(child ${children})
-        _do_copy_asset(${app_name} ${child} assets/)
+        # Will copy install time
+        _do_install_asset(${app_name} ${child} assets/)
     endforeach()
+
+    # Copy at build time
+    if (true)
+        FILE(GLOB_RECURSE children_files_only LIST_DIRECTORIES false RELATIVE ${assets_folder} ${assets_folder}/*)
+        hello_imgui_get_real_output_directory(${app_name} real_output_directory)
+        set(dst_folder "${real_output_directory}/assets")
+        foreach(child ${children_files_only})
+            add_custom_command(TARGET ${app_name} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${assets_folder}/${child}"
+                    "${dst_folder}/${child}")
+        endforeach ()
+    endif()
 
     if (WIN32)
         # Fix msvc quirk: set the debugger working dir to the exe dir!

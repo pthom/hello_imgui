@@ -26,7 +26,7 @@ function(him_add_hello_imgui)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_MACOS)
     endif()
     target_include_directories(${HELLOIMGUI_TARGET} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/..)
-    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui)
+    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui stb_hello_imgui)
 endfunction()
 
 
@@ -95,54 +95,61 @@ function(_him_add_freetype_to_imgui)
     #
     # 1. Build or find freetype (if downloaded, make sure it is static)
     #
-    set(download_freetype OFF)
-    if (HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
-        find_package(Freetype 2.12 QUIET)
-        if (NOT Freetype_FOUND)
+    if(TARGET freetype)
+        message(STATUS "HelloImGui: using freetype target")
+        set(freetype_linked_library freetype)
+    else()
+        set(download_freetype OFF)
+        if (HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
+            find_package(Freetype 2.12 QUIET)
+            if (NOT Freetype_FOUND)
+                set(download_freetype ON)
+            endif()
+        endif()
+        if(HELLOIMGUI_FREETYPE_STATIC)
             set(download_freetype ON)
         endif()
-    endif()
-    if(HELLOIMGUI_FREETYPE_STATIC)
-        set(download_freetype ON)
-    endif()
 
-    if (download_freetype)
-        message(STATUS "HelloImGui: downloading and building freetype")
+        if (download_freetype)
+            message(STATUS "HelloImGui: downloading and building freetype")
 
-        set(backup_shared_lib ${BUILD_SHARED_LIBS})
-        set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+            set(backup_shared_lib ${BUILD_SHARED_LIBS})
+            set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
-        include(FetchContent)
-        if(IOS)
-            set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
-            set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
+            include(FetchContent)
+            if(IOS)
+                set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
+                set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
+            endif()
+            FetchContent_Declare(
+                freetype
+                GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git
+                GIT_TAG        VER-2-13-2
+                GIT_PROGRESS TRUE
+            )
+            FetchContent_MakeAvailable(freetype)
+            set(freetype_linked_library freetype)
+
+            set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
+        else()
+            find_package(Freetype 2.12 QUIET)
+            if(NOT Freetype_FOUND AND NOT HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
+                message(STATUS "
+                    HelloImGui: freetype not found. You may set
+                        -DHELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED=ON
+                    to download and build freetype automatically
+                ")
+            endif()
+            find_package(Freetype 2.12 REQUIRED)
+            set(freetype_linked_library Freetype::Freetype)
         endif()
-        FetchContent_Declare(
-            freetype
-            GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git
-            GIT_TAG        VER-2-13-2
-            GIT_PROGRESS TRUE
-        )
-        FetchContent_MakeAvailable(freetype)
-        set(freetype_linked_library freetype)
-
-        set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
-    else()
-        find_package(Freetype 2.12 QUIET)
-        if(NOT Freetype_FOUND AND NOT HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
-            message(STATUS "
-                HelloImGui: freetype not found. You may set
-                    -DHELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED=ON
-                to download and build freetype automatically
-            ")
-        endif()
-        find_package(Freetype 2.12 REQUIRED)
-        set(freetype_linked_library Freetype::Freetype)
     endif()
 
     target_link_libraries(imgui PUBLIC ${freetype_linked_library})
 
-    if(download_freetype)
+    if(TARGET freetype)
+        set(HELLOIMGUI_FREETYPE_SELECTED_INFO "Use target freetype" CACHE INTERNAL "" FORCE)
+    elseif(download_freetype)
         set(HELLOIMGUI_FREETYPE_SELECTED_INFO "Downloaded VER-2-13-2" CACHE INTERNAL "" FORCE)
     else()
         set(HELLOIMGUI_FREETYPE_SELECTED_INFO "Use system Library" CACHE INTERNAL "" FORCE)
@@ -152,17 +159,19 @@ function(_him_add_freetype_to_imgui)
     # 2. Build lunasvg (static)
     #
     # Fetch and build lunasvg
-    set(backup_shared_lib ${BUILD_SHARED_LIBS})
-    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-    include(FetchContent)
-    FetchContent_Declare(lunasvg
-        GIT_REPOSITORY https://github.com/sammycage/lunasvg
-        GIT_TAG        v2.3.9
-        GIT_PROGRESS TRUE
-    )
-    FetchContent_MakeAvailable(lunasvg)
+    if(NOT TARGET lunasvg)
+        set(backup_shared_lib ${BUILD_SHARED_LIBS})
+        set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+        include(FetchContent)
+        FetchContent_Declare(lunasvg
+            GIT_REPOSITORY https://github.com/sammycage/lunasvg
+            GIT_TAG        v2.3.9
+            GIT_PROGRESS TRUE
+        )
+        FetchContent_MakeAvailable(lunasvg)
+        set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
+    endif()
     target_link_libraries(imgui PUBLIC lunasvg)
-    set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
 
     #
     # 3. Add freetype and LunaSvg support to imgui
@@ -406,6 +415,7 @@ function(him_add_emscripten_options)
     if (EMSCRIPTEN)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLES3)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_CANNOTQUIT)
+        target_link_options(${HELLOIMGUI_TARGET} PUBLIC -sMAX_WEBGL_VERSION=2)
     endif()
 endfunction()
 
@@ -425,11 +435,16 @@ function(him_has_opengl3 target)
     if(ANDROID OR IOS)
         _him_link_opengl_es_sdl(${HELLOIMGUI_TARGET})
     endif()
+
+    if (IOS OR EMSCRIPTEN)
+        set(HELLOIMGUI_USE_GLAD OFF CACHE INTERNAL "" FORCE)
+    else()
+        set(HELLOIMGUI_USE_GLAD ON CACHE INTERNAL "" FORCE)
+    endif()
+
     if (HELLOIMGUI_USE_GLAD)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
         target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glad)
-    endif()
-    if (HELLOIMGUI_USE_GLAD)
         him_install_glad()
     endif()
 endfunction()
@@ -730,54 +745,68 @@ endfunction()
 ###################################################################################################
 function(him_log_configuration)
     him_get_active_backends(selected_backends)
+
+    # set imgui_source_dir to the relative path of HELLOIMGUI_IMGUI_SOURCE_DIR versus this project
+    file(RELATIVE_PATH imgui_source_dir ${HELLOIMGUI_BASEPATH} ${HELLOIMGUI_IMGUI_SOURCE_DIR})
+
     set(msg "
-    Hello ImGui build options:
     ===========================================================================
-    Backends:                       ${selected_backends}
+        Hello ImGui build options:
+    ===========================================================================
+      Backends: ${selected_backends}
     ---------------------------------------------------------------------------
-    Options:
-    HELLOIMGUI_USE_FREETYPE:        ${HELLOIMGUI_USE_FREETYPE}  (${HELLOIMGUI_FREETYPE_SELECTED_INFO})
-    HELLOIMGUI_WITH_TEST_ENGINE:    ${HELLOIMGUI_WITH_TEST_ENGINE}
-    BUILD_DEMOS - TESTS - DOCS:     ${HELLOIMGUI_BUILD_DEMOS} - ${HELLOIMGUI_BUILD_TESTS} - ${HELLOIMGUI_BUILD_DOCS}
+      Options:
+        HELLOIMGUI_USE_FREETYPE:        ${HELLOIMGUI_USE_FREETYPE}  (${HELLOIMGUI_FREETYPE_SELECTED_INFO})
+        HELLOIMGUI_WITH_TEST_ENGINE:    ${HELLOIMGUI_WITH_TEST_ENGINE}
+        BUILD_DEMOS - TESTS - DOCS:     ${HELLOIMGUI_BUILD_DEMOS} - ${HELLOIMGUI_BUILD_TESTS} - ${HELLOIMGUI_BUILD_DOCS}
     ---------------------------------------------------------------------------
-    Config:
-    HELLOIMGUI_USE_GLAD:            ${HELLOIMGUI_USE_GLAD}
-    Build ImGui - ImGui source dir: ${HELLOIMGUI_BUILD_IMGUI} - ${HELLOIMGUI_IMGUI_SOURCE_DIR}")
+      ImGui:
+        Build ImGui:                    ${HELLOIMGUI_BUILD_IMGUI}
+        ImGui source dir:               ${imgui_source_dir}")
 
     if(EMSCRIPTEN)
         set(msg "${msg}
     ---------------------------------------------------------------------------
-    Emscripten options
-    HELLOIMGUI_EMSCRIPTEN_PTHREAD:  ${HELLOIMGUI_EMSCRIPTEN_PTHREAD}
-    HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH: ${HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH}")
+      Emscripten options
+        HELLOIMGUI_EMSCRIPTEN_PTHREAD:  ${HELLOIMGUI_EMSCRIPTEN_PTHREAD}
+        HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH: ${HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH}")
     endif ()
 
-    if(HELLOIMGUI_USE_SDL)
+    if(HELLOIMGUI_HAS_OPENGL)
         set(msg "${msg}
     ---------------------------------------------------------------------------
-    SDL:                            ${HELLOIMGUI_SDL_SELECTED_INFO}")
+      OpenGL - use glad loader          ${HELLOIMGUI_USE_GLAD}")
     endif()
 
+    set(msg "${msg}
+    ---------------------------------------------------------------------------
+      Platform Backend(s):")
+    if(HELLOIMGUI_USE_SDL)
+        set(msg "${msg}
+        SDL:                            ${HELLOIMGUI_SDL_SELECTED_INFO}")
+    endif()
     if(HELLOIMGUI_USE_GLFW)
         set(msg "${msg}
-    ---------------------------------------------------------------------------
-    Glfw:                           ${HELLOIMGUI_GLFW_SELECTED_INFO}")
+        Glfw:                           ${HELLOIMGUI_GLFW_SELECTED_INFO}")
     endif()
 
     if(WIN32)
         set(msg "${msg}
     ---------------------------------------------------------------------------
-    Windows info
-    HELLOIMGUI_WIN32_NO_CONSOLE:    ${HELLOIMGUI_WIN32_NO_CONSOLE}
-    HELLOIMGUI_WIN32_AUTO_WINMAIN:  ${HELLOIMGUI_WIN32_AUTO_WINMAIN}")
+      Windows:
+        HELLOIMGUI_WIN32_NO_CONSOLE:    ${HELLOIMGUI_WIN32_NO_CONSOLE}
+        HELLOIMGUI_WIN32_AUTO_WINMAIN:  ${HELLOIMGUI_WIN32_AUTO_WINMAIN}")
     endif()
 
     if(MACOSX)
         set(msg "${msg}
     ---------------------------------------------------------------------------
-    macOS info
-    HELLOIMGUI_MACOS_NO_BUNDLE:     ${HELLOIMGUI_MACOS_NO_BUNDLE}")
+      macOS:
+        HELLOIMGUI_MACOS_NO_BUNDLE:     ${HELLOIMGUI_MACOS_NO_BUNDLE}")
     endif()
+
+    set(msg "${msg}
+    ===========================================================================")
 
     message(STATUS "${msg}")
 endfunction()

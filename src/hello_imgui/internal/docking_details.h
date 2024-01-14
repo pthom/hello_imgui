@@ -11,6 +11,7 @@ namespace HelloImGui
 // Internal functions below
 namespace DockingDetails
 {
+void ShowToolbars(const RunnerParams& runnerParams);
 void ConfigureImGuiDocking(const ImGuiWindowParams& imGuiWindowParams);
 void ProvideWindowOrDock(RunnerParams& runnerParams);
 void CloseWindowOrDock(ImGuiWindowParams& imGuiWindowParams);

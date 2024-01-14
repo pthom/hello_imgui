@@ -7,7 +7,7 @@ void MyLoadFonts()
 {
 
     HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons(); // The font that is loaded first is the default font
-    gCustomFont = HelloImGui::LoadFontTTF("fonts/Akronim-Regular.ttf", 40.f); // will be loaded from the assets folder
+    gCustomFont = HelloImGui::LoadFont("fonts/Akronim-Regular.ttf", 40.f); // will be loaded from the assets folder
 }
 
 
@@ -73,6 +73,10 @@ int main(int , char *[]) {
             ImGui::End();
         }
     };
+
+    params.imGuiWindowParams.showMenuBar = true;
+    params.imGuiWindowParams.showMenu_App = false;
+
     HelloImGui::Run(params);
     return 0;
 }

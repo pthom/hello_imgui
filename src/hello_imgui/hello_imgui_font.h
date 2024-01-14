@@ -8,6 +8,10 @@ namespace HelloImGui
 {
     using ImWcharPair = std::array<ImWchar, 2>;
 
+    // @@md#Fonts
+    //
+    // When loading fonts, use HelloImGui::LoadFont(fontFilename, fontSize, fontLoadingParams)
+    //
     // Font loading parameters: several options are available (color, merging, range, ...)
     struct FontLoadingParams
     {
@@ -16,17 +20,20 @@ namespace HelloImGui
 
         // if true, the font will be loaded with the full glyph range
         bool useFullGlyphRange = false;
-        // if set, fontConfig.GlyphRanges, and fontConfig.OversampleH / fontConfig.OversampleV will be set to 1
-        // when useFullGlyphRange is true (this is useful to save memory)
+        // if set, fontConfig.GlyphRanges, and
+        //   fontConfig.OversampleH / fontConfig.OversampleV will be set to 1
+        //   when useFullGlyphRange is true (this is useful to save memory)
         bool reduceMemoryUsageIfFullGlyphRange = true;
 
         // if true, the font will be merged to the last font
         bool mergeToLastFont = false;
 
-        // if true, the font will be loaded using colors (requires freetype, enabled by IMGUI_ENABLE_FREETYPE)
+        // if true, the font will be loaded using colors
+        // (requires freetype, enabled by IMGUI_ENABLE_FREETYPE)
         bool loadColor = false;
 
-        // if true, the font will be loaded using HelloImGui asset system. Otherwise, it will be loaded from the filesystem
+        // if true, the font will be loaded using HelloImGui asset system.
+        // Otherwise, it will be loaded from the filesystem
         bool insideAssets = true;
 
         // the ranges of glyphs to load:
@@ -45,8 +52,17 @@ namespace HelloImGui
         ImFontConfig fontConfigFontAwesome = ImFontConfig();
     };
 
-    // Generic font loading function, with many options: see FontLoadingParams and ImFontConfig
-    ImFont* LoadFont(const std::string & fontFilename, float fontSize, const FontLoadingParams & params = {});
+    // When loading fonts, use HelloImGui::LoadFont(FontLoadingParams)
+    // ===============================================================
+    // instead of ImGui::GetIO().Fonts->AddFontFromFileTTF(), because it will
+    // automatically adjust the font size to account for HighDPI, and will spare
+    // you headaches when trying to get consistent font size across different OSes.
+    // see FontLoadingParams and ImFontConfig
+    ImFont* LoadFont(const std::string & fontFilename, float fontSize,
+                     const FontLoadingParams & params = {});
+
+
+    // @@md
 
 
     //

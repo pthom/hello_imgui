@@ -38,6 +38,7 @@ namespace HelloImGui { namespace BackendApi
 
         void WaitForEventTimeout(double timeout_seconds) override;
 
+        ImVec2 GetWindowScaleFactor(WindowPointer window) override;
         float GetWindowSizeDpiScaleFactor(WindowPointer window) override;
 
         void HideWindow(WindowPointer window) override;

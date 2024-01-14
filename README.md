@@ -60,6 +60,8 @@ Hello ImGui is a free and open source project. If you like it, please consider s
 [![](https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/doc/doc_images/btn_donate.gif)](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA)
 -->
 
+Portions of this software are copyright © 2024 The FreeType Project (www.freetype.org).  All rights reserved.
+
 ---
 
 ## Demos & real world apps

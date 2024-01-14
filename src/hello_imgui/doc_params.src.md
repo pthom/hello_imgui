@@ -141,8 +141,16 @@ See [docking_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hell
 @import "docking_params.h" {md_id=DockingParams}
 ```
 
-# Backend Pointers
+# Backend
+
+## Backend Pointers
 
 ```cpp
 @import "backend_pointers.h" {md_id=BackendPointers}
+```
+
+## Renderer Backend Options
+
+```cpp
+@import "renderer_backend_options.h" {md_id=RendererBackendOptions}
 ```

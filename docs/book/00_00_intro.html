@@ -401,6 +401,7 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demos-real-world-apps">Demos &amp; real world apps</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#motto">Motto</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-layout">Advanced layout</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-3d-background">Custom 3D background</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#imgui-manual">ImGui Manual</a></li>
@@ -479,6 +480,23 @@ document.write(`
 <hr class="docutils" />
 <section id="demos-real-world-apps">
 <h2>Demos &amp; real world apps<a class="headerlink" href="#demos-real-world-apps" title="Permalink to this heading">#</a></h2>
+<section id="motto">
+<h3>Motto<a class="headerlink" href="#motto" title="Permalink to this heading">#</a></h3>
+<p>The minimum code to start developing a GUI app should be… minimal. Here is a multiplatform Hello World in 7 lines.</p>
+<p><em>6 lines of C++</em></p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hello_imgui/hello_imgui.h&quot;</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">Run</span><span class="p">(</span>
+<span class="w">        </span><span class="p">[]{</span><span class="w"> </span><span class="n">ImGui</span><span class="o">::</span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">);</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="c1">// Gui code</span>
+<span class="w">        </span><span class="s">&quot;Hello!&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w">                     </span><span class="c1">// Window title + Window size auto</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><em>1 line of CMake</em></p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">hello_imgui_add_app</span><span class="p">(</span><span class="s">hello_world</span><span class="w"> </span><span class="s">hello_world.cpp</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="advanced-layout">
 <h3>Advanced layout<a class="headerlink" href="#advanced-layout" title="Permalink to this heading">#</a></h3>
 <p>The docking demo show how to handle complex layouts, use themes, store user settings, reduce FPS and CPU usage when idling, load fonts and icons, and much more</p>
@@ -588,6 +606,7 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demos-real-world-apps">Demos &amp; real world apps</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#motto">Motto</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-layout">Advanced layout</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-3d-background">Custom 3D background</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#imgui-manual">ImGui Manual</a></li>

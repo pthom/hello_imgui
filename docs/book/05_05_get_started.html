@@ -393,7 +393,6 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motto">Motto</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starter-template">Starter template</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cmake-utility-hello-imgui-add-app">CMake utility: hello_imgui_add_app</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#assets-and-app-customization">Assets and app customization</a></li>
@@ -411,23 +410,6 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="get-started">
 <h1>Get started<a class="headerlink" href="#get-started" title="Permalink to this heading">#</a></h1>
-<section id="motto">
-<h2>Motto<a class="headerlink" href="#motto" title="Permalink to this heading">#</a></h2>
-<p>The minimum code to start developing a GUI app should be… minimal. Here is a multiplatform Hello World in 7 lines.</p>
-<p><em>6 lines of C++</em></p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hello_imgui/hello_imgui.h&quot;</span>
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">HelloImGui</span><span class="o">::</span><span class="n">Run</span><span class="p">(</span>
-<span class="w">        </span><span class="p">[]{</span><span class="w"> </span><span class="n">ImGui</span><span class="o">::</span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">);</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="c1">// Gui code</span>
-<span class="w">        </span><span class="s">&quot;Hello!&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w">                     </span><span class="c1">// Window title + Window size auto</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p><em>1 line of CMake</em></p>
-<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">hello_imgui_add_app</span><span class="p">(</span><span class="s">hello_world</span><span class="w"> </span><span class="s">hello_world.cpp</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
 <section id="starter-template">
 <h2>Starter template<a class="headerlink" href="#starter-template" title="Permalink to this heading">#</a></h2>
 <div class="admonition tip">
@@ -610,7 +592,6 @@ and the app settings.
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motto">Motto</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starter-template">Starter template</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cmake-utility-hello-imgui-add-app">CMake utility: hello_imgui_add_app</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#assets-and-app-customization">Assets and app customization</a></li>

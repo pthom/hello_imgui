@@ -8,5 +8,5 @@ chapters:
   - file: get_started
   - file: doc_api
   - file: doc_params
-  - file: 60_05_build
+  - file: build
 

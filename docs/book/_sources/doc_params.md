@@ -13,7 +13,7 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 ## Simple runner params
 
 ```cpp
-//
+
 // SimpleRunnerParams is a struct that contains simpler params adapted for simple use cases.
 //For example, this is sufficient to run an application:
 //    ```cpp
@@ -66,7 +66,7 @@ struct SimpleRunnerParams
 ## Full params
 
 ```cpp
-//
+
 // RunnerParams contains the settings and callbacks needed to run an application.
 //
 struct RunnerParams
@@ -187,7 +187,7 @@ struct RunnerParams
 See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h).
 
 ```cpp
-//
+
 // FpsIdling is a struct that contains Fps Idling parameters
 struct FpsIdling
 {
@@ -244,7 +244,7 @@ inline AnyEventCallback EmptyEventCallback() {return {}; }
 
 ## RunnerCallbacks
 ```cpp
-//
+
 // RunnerCallbacks is a struct that contains the callbacks
 // that are called by the application
 //
@@ -451,7 +451,7 @@ std::string EdgeToolbarTypeName(EdgeToolbarType e);
 ## MobileCallbacks
 
 ```cpp
-//
+
 // MobileCallbacks is a struct that contains callbacks that are called by the application
 // when running under "Android, iOS and WinRT".
 // These events are specific to mobile and embedded devices that have different
@@ -755,6 +755,7 @@ struct ImGuiWindowParams
 ## Default window types
 
 ```cpp
+
 // `DefaultImGuiWindowType` is an enum class that defines whether a full screen background
 // window is provided or not
 enum class DefaultImGuiWindowType

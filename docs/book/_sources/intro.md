@@ -1,7 +1,9 @@
 # Hello ImGui
 
 
-Hello ImGui is a library designed to make multiplatform app development as simple as crafting a "Hello World" program. Built on [Dear ImGui](https://github.com/ocornut/imgui), it offers a blend of simplicity for beginners and flexibility for advanced users. Whether you're creating prototypes or complex applications, Hello ImGui streamlines the process, allowing you to focus on the creative aspects of your projects.
+Hello ImGui is a library designed to make multiplatform app development as simple as writing a "Hello World" program, built on top of [Dear ImGui](https://github.com/ocornut/imgui).
+
+Its simplicity makes it ideal for application prototypes, and its flexibility makes it also suited for complex applications; allowing you to focus on the creative aspects of your projects.
 
 ## Features
 

@@ -3,7 +3,7 @@
 
 Hello ImGui is a library designed to make multiplatform app development as simple as writing a "Hello World" program, built on top of [Dear ImGui](https://github.com/ocornut/imgui).
 
-Its simplicity makes it ideal for application prototypes, and its flexibility makes it also suited for complex applications; allowing you to focus on the creative aspects of your projects.
+Its flexibility makes it suited for complex applications, as well as for simple prototypes; allowing you to focus on the creative aspects of your projects.
 
 ## Features
 
@@ -113,7 +113,7 @@ How to use the theme tweaking utilities provided by Hello ImGui
 
 Hello ImGui is based on [Dear ImGui](https://github.com/ocornut/imgui) (MIT License), by Omar Cornut. Portions use [ImGui Test Engine](https://github.com/ocornut/imgui_test_engine), which is governed by a [specific license](https://github.com/ocornut/imgui_test_engine/blob/main/imgui_test_engine/LICENSE.txt)
 
-Portions of this software use the [FreeType Project](www.freetype.org), [lunasvg](https://github.com/sammycage/lunasvg) (MIT License), [GLFW](https://www.glfw.org/) (zlib/libpng license), [SDL](https://www.libsdl.org/) (zlib license).
+Portions of this software use the [FreeType Project](https://www.freetype.org), [lunasvg](https://github.com/sammycage/lunasvg) (MIT License), [GLFW](https://www.glfw.org/) (zlib/libpng license), [SDL](https://www.libsdl.org/) (zlib license).
 
 ### License
 

@@ -115,7 +115,7 @@ def process_md_file(input_file, output_file):
 def process_main_readme(repo_dir: str):
     with open(repo_dir + "README.src.md", "r") as f:
         readme_src_content = f.read()
-    with open(repo_dir + "/docs_src/00_00_intro.md", "r") as f:
+    with open(repo_dir + "/docs_src/intro.md", "r") as f:
         intro_content = f.read()
 
     readme_content = readme_src_content.replace("<!-- INTRO -->", intro_content)

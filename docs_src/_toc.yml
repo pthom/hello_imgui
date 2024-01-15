@@ -2,10 +2,10 @@
 # Learn more at https://jupyterbook.org/customize/toc.html
 
 format: jb-book
-root: 00_00_intro
+root: intro
 
 chapters:
-  - file: 05_05_get_started
+  - file: get_started
   - file: doc_api
   - file: doc_params
   - file: 60_05_build

@@ -53,33 +53,6 @@ Hello ImGui is a library designed to make multiplatform app development as simpl
 * Available rendering backends: OpenGL3, Metal, Vulkan, DirectX
 
 
-## About
-
-### Support the project
-Hello ImGui is a free and open source project, and its development and maintenance require considerable efforts. 
-
-If you find it valuable for your work – especially in a commercial enterprise or a research setting – please consider supporting its development by [making a donation](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA). Thank you!
-
-<!--
-[![](https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/doc/doc_images/btn_donate.gif)](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA)
--->
-
-### Credits
-
-Hello ImGui is based on [Dear ImGui](https://github.com/ocornut/imgui) (MIT License), by Omar Cornut. Portions use [ImGui Test Engine](https://github.com/ocornut/imgui_test_engine), which is governed by a [specific license](https://github.com/ocornut/imgui_test_engine/blob/main/imgui_test_engine/LICENSE.txt)
-
-Portions of this software use the [FreeType Project](www.freetype.org), [lunasvg](https://github.com/sammycage/lunasvg) (MIT License), [GLFW](https://www.glfw.org/) (zlib/libpng license), [SDL](https://www.libsdl.org/) (zlib license).
-
-### License
-
-Hello ImGui is licensed under the MIT License, see [LICENSE](https://github.com/pthom/hello_imgui/blob/master/LICENSE)
-
-### Contribute
-
-Quality contributions are welcome!
-
----
-
 ## Demos & real world apps
 
 ### Motto
@@ -144,10 +117,9 @@ How to use a custom 3D background in your app
 
 [Dear ImGui Bundle](https://pthom.github.io/imgui_bundle/), a full-fledged library, built on top of Hello ImGui, provides lots of additional widgets ([imgui](https://github.com/ocornut/imgui.git), [implot](https://github.com/epezent/implot), [imgui-node-editor](https://github.com/thedmd/imgui-node-editor), [ImFileDialog](https://github.com/pthom/ImFileDialog.git), [ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit), [imgui_md](https://github.com/mekhontsev/imgui_md.git)), as well as complete python bindings.
 
-<img src="https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png" width=200>
+<img src="https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png" width=100>
 
 [online interactive demo](https://traineq.org/ImGuiBundle/emscripten/bin/demo_imgui_bundle.html) - [Source for C++ demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_cpp) - [Source for Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_python)
-
 
 
 ### Theme tweaking
@@ -155,6 +127,34 @@ How to use a custom 3D background in your app
 How to use the theme tweaking utilities provided by Hello ImGui
 
 [Online video tutorial](https://www.youtube.com/watch?v=4f_-3DDcAZk)
+
+---
+
+## About
+
+### Credits
+
+Hello ImGui is based on [Dear ImGui](https://github.com/ocornut/imgui) (MIT License), by Omar Cornut. Portions use [ImGui Test Engine](https://github.com/ocornut/imgui_test_engine), which is governed by a [specific license](https://github.com/ocornut/imgui_test_engine/blob/main/imgui_test_engine/LICENSE.txt)
+
+Portions of this software use the [FreeType Project](www.freetype.org), [lunasvg](https://github.com/sammycage/lunasvg) (MIT License), [GLFW](https://www.glfw.org/) (zlib/libpng license), [SDL](https://www.libsdl.org/) (zlib license).
+
+### License
+
+Hello ImGui is licensed under the MIT License, see [LICENSE](https://github.com/pthom/hello_imgui/blob/master/LICENSE)
+
+### Contribute
+
+Quality contributions are welcome!
+
+### Support the project
+
+Hello ImGui is a free and open source project, and its development and maintenance require considerable efforts.
+
+If you find it valuable for your work – especially in a commercial enterprise or a research setting – please consider supporting its development by [making a donation](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA). Thank you!
+
+<!--
+[![](https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/doc/doc_images/btn_donate.gif)](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA)
+-->
 
 
 # More info

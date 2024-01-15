@@ -29,7 +29,7 @@ inline AnyEventCallback EmptyEventCallback() {return {}; }
 
 
 // @@md#MobileCallbacks
-//
+
 // MobileCallbacks is a struct that contains callbacks that are called by the application
 // when running under "Android, iOS and WinRT".
 // These events are specific to mobile and embedded devices that have different
@@ -98,7 +98,7 @@ std::string EdgeToolbarTypeName(EdgeToolbarType e);
 
 
 // @@md#RunnerCallbacks
-//
+
 // RunnerCallbacks is a struct that contains the callbacks
 // that are called by the application
 //

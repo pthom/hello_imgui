@@ -9,6 +9,7 @@
 namespace HelloImGui
 {
 // @@md#DefaultImGuiWindowType
+
 // `DefaultImGuiWindowType` is an enum class that defines whether a full screen background
 // window is provided or not
 enum class DefaultImGuiWindowType

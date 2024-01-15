@@ -3,7 +3,7 @@
 #include "hello_imgui/hello_imgui_include_opengl.h"
 #include "stb_hello_imgui/stb_image.h"
 #include "hello_imgui/hello_imgui_assets.h"
-#include "hello_imgui/image_gl_deprecated.h"
+#include "hello_imgui/internal/image_gl_deprecated.h"
 
 #include <cassert>
 

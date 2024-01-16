@@ -759,6 +759,10 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="c1">// `RegisterTests`: A function that is called once ImGuiTestEngine is ready</span>
 <span class="w">    </span><span class="c1">// to be filled with tests and automations definitions.</span>
 <span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">RegisterTests</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// `registerTestsCalled`: will be set to true when RegisterTests was called</span>
+<span class="w">    </span><span class="c1">// (you can set this to false if you want to RegisterTests to be called again</span>
+<span class="w">    </span><span class="c1">//  during the app execution)</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w">         </span><span class="n">registerTestsCalled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 
 
 <span class="w">    </span><span class="c1">// --------------- Exit sequence callbacks -------------------</span>

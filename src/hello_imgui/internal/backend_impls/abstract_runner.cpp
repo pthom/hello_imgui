@@ -506,10 +506,13 @@ void AbstractRunner::CreateFramesAndRender()
 #endif
 
     #ifdef HELLOIMGUI_WITH_TEST_ENGINE
-    if (mIdxFrame == 1)
+    if (mIdxFrame >= 1)
     {
-        if (params.useImGuiTestEngine && params.callbacks.RegisterTests)
-                params.callbacks.RegisterTests();
+        if (params.useImGuiTestEngine && params.callbacks.RegisterTests && (!params.callbacks.registerTestsCalled))
+        {
+            params.callbacks.RegisterTests();
+            params.callbacks.registerTestsCalled = true;
+        }
     }
     #endif
 

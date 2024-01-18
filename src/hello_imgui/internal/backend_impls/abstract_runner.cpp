@@ -12,6 +12,13 @@
 #include "imgui_internal.h"
 
 #include "hello_imgui_test_engine_integration/test_engine_integration.h"
+#include "imgui_test_engine/imgui_te_python_gil.h"
+
+#ifdef IMGUI_TEST_ENGINE_WITH_PYTHON_GIL
+#define SCOPED_RELEASE_GIL_ON_MAIN_THREAD ImGuiTestEnginePythonGIL::ReleaseGilOnMainThread_Scoped _gilRelease
+#else
+#define SCOPED_RELEASE_GIL_ON_MAIN_THREAD (void)
+#endif
 
 #include <chrono>
 #include <cassert>
@@ -495,104 +502,151 @@ void AbstractRunner::RenderGui()
 
 void AbstractRunner::CreateFramesAndRender()
 {
-    LayoutSettings_HandleChanges();
+    // Notes:
+    // - this method is rather long, but this is intentional in order to be able to see the logic flow at a glance
+    // - the code is organized in blocks of code that are enclosed by
+    //       if (true) // Block explanation
+    //       {
+    //            ...
+    //       }
+    //   this enables to limit the scope of each block, and enable to collapses them
+    //   when inside an IDE
+    // - Some blocks include a SCOPED_RELEASE_GIL_ON_MAIN_THREAD statement, like this:
+    //       if (true_gil) // block explanation    (`true_gil` is a synonym for "true")
+    //       { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
+    //           SCOPED_RELEASE_GIL_ON_MAIN_THREAD;       // SCOPED_RELEASE_GIL_ON_MAIN_THREAD does nothing if not using python
+    //
+    //          ... // Block logic that is executed *whenever using Python or not*
+    //
+    //       } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
+    //    This means that they will release the Gil for python, and that they should not call
+    //    any user callback (which may call python functions)
+    // -
 
-#if TARGET_OS_IOS
-    auto insets = GetIPhoneSafeAreaInsets();
-    params.appWindowParams.edgeInsets.top = insets.top;
-    params.appWindowParams.edgeInsets.left = insets.left;
-    params.appWindowParams.edgeInsets.bottom = insets.bottom;
-    params.appWindowParams.edgeInsets.right = insets.right;
-#endif
+    // `true_gil` is a synonym for "true" (whenever using Python or not using Python)
+    // (it is here only to make the code more readable)
+    constexpr bool true_gil = true;
 
-    #ifdef HELLOIMGUI_WITH_TEST_ENGINE
-    if (mIdxFrame >= 1)
+    if (true_gil) // basic layout checks
+    { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
+        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
+
+
+        LayoutSettings_HandleChanges();
+
+        #if TARGET_OS_IOS
+        auto insets = GetIPhoneSafeAreaInsets();
+        params.appWindowParams.edgeInsets.top = insets.top;
+        params.appWindowParams.edgeInsets.left = insets.left;
+        params.appWindowParams.edgeInsets.bottom = insets.bottom;
+        params.appWindowParams.edgeInsets.right = insets.right;
+        #endif
+    } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
+
+    if (true) // Register tests
     {
-        if (params.useImGuiTestEngine && params.callbacks.RegisterTests && (!params.callbacks.registerTestsCalled))
+        #ifdef HELLOIMGUI_WITH_TEST_ENGINE
+        // This block calls a user callback, so it cannot be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
+        if (mIdxFrame >= 1)
         {
-            params.callbacks.RegisterTests();
-            params.callbacks.registerTestsCalled = true;
+            if (params.useImGuiTestEngine && params.callbacks.RegisterTests && (!params.callbacks.registerTestsCalled))
+            {
+                params.callbacks.RegisterTests();
+                params.callbacks.registerTestsCalled = true;
+            }
         }
-    }
-    #endif
-
-    // Note about the application window initial placement and sizing 
-    // i/   On the first frame (mIdxFrame==0), we create a window, and use the user provided size (if provided). The window is initially hidden.
-    //      (this was done much sooner by mBackendWindowHelper)
-    // ii/  On the second frame (mIdxFrame == 1), we may multiply this size by the Dpi factor (if > 1), to handle windows and linux High DPI
-    // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
-    // iv/  At the beginning of the third frame (mIdxFrame==2 / mWasWindowAutoResizedOnPreviousFrame), we may apply the auto-size and recenter the window to the center of the monitor
-    // v/   At the 4th frame (mIdxFrame >= 3), we finally show the window
-    // Phew...
-
-    // ii/ On the second frame (mIdxFrame == 1), we may multiply this size by the Dpi factor (if > 1), to handle windows and linux High DPI
-    if (mIdxFrame == 1)
-    {
-        // We might resize the window on the second frame on window and linux
-        // (and rescale ImGui style)
-        HandleDpiOnSecondFrame();
+        #endif
     }
 
-    // iv/ At the beginning of the third frame (mIdxFrame==2 / mWasWindowAutoResizedOnPreviousFrame), we may apply the auto-size and recenter the window to the center of the monitor
-    if (mWasWindowAutoResizedOnPreviousFrame)
-    {
-        // The window was resized on last frame
-        // We should now recenter the window if needed and ensure it fits on the monitor
-        mGeometryHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow);
+    if (true_gil) // handle window size and position on first frames
+    { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
+        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
 
-        // if this is the third frame, and the user wanted a centered window, let's recenter it
-        // we do this on the third frame (mIdxFrame == 2), since the initial autosize happens on the second
-        // (see WantAutoSize())
-        if (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::MonitorCenter && (mIdxFrame == 2))
-            mGeometryHelper->CenterWindowOnMonitor(mBackendWindowHelper.get(), mWindow);
+        // Note about the application window initial placement and sizing
+        // i/   On the first frame (mIdxFrame==0), we create a window, and use the user provided size (if provided). The window is initially hidden.
+        //      (this was done much sooner by mBackendWindowHelper)
+        // ii/  On the second frame (mIdxFrame == 1), we may multiply this size by the Dpi factor (if > 1), to handle windows and linux High DPI
+        // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
+        // iv/  At the beginning of the third frame (mIdxFrame==2 / mWasWindowAutoResizedOnPreviousFrame), we may apply the auto-size and recenter the window to the center of the monitor
+        // v/   At the 4th frame (mIdxFrame >= 3), we finally show the window
+        // Phew...
 
-        mWasWindowAutoResizedOnPreviousFrame = false;
-        params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = false;
-    }
-
-
-    static bool lastHiddenState = false;
-
-    // v/   At the 4th frame (mIdxFrame >= 3), we finally show the window
-    if (mIdxFrame == 3)
-    {
-        if (params.appWindowParams.hidden)
-            mBackendWindowHelper->HideWindow(mWindow);
-        else
-            mBackendWindowHelper->ShowWindow(mWindow);
-        lastHiddenState = params.appWindowParams.hidden;
-    }
-    // On subsequent frames, we take into account user modifications of appWindowParams.hidden
-    if (mIdxFrame > 3)
-    {
-        if (params.appWindowParams.hidden != lastHiddenState)
+        // ii/ On the second frame (mIdxFrame == 1), we may multiply this size by the Dpi factor (if > 1), to handle windows and linux High DPI
+        if (mIdxFrame == 1)
         {
-            lastHiddenState = params.appWindowParams.hidden;
+            // We might resize the window on the second frame on window and linux
+            // (and rescale ImGui style)
+            HandleDpiOnSecondFrame();
+        }
+
+        // iv/ At the beginning of the third frame (mIdxFrame==2 / mWasWindowAutoResizedOnPreviousFrame), we may apply the auto-size and recenter the window to the center of the monitor
+        if (mWasWindowAutoResizedOnPreviousFrame)
+        {
+            // The window was resized on last frame
+            // We should now recenter the window if needed and ensure it fits on the monitor
+            mGeometryHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow);
+
+            // if this is the third frame, and the user wanted a centered window, let's recenter it
+            // we do this on the third frame (mIdxFrame == 2), since the initial autosize happens on the second
+            // (see WantAutoSize())
+            if (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::MonitorCenter &&
+                (mIdxFrame == 2))
+                mGeometryHelper->CenterWindowOnMonitor(mBackendWindowHelper.get(), mWindow);
+
+            mWasWindowAutoResizedOnPreviousFrame = false;
+            params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = false;
+        }
+
+
+        static bool lastHiddenState = false;
+
+        // v/   At the 4th frame (mIdxFrame >= 3), we finally show the window
+        if (mIdxFrame == 3)
+        {
             if (params.appWindowParams.hidden)
                 mBackendWindowHelper->HideWindow(mWindow);
             else
                 mBackendWindowHelper->ShowWindow(mWindow);
+            lastHiddenState = params.appWindowParams.hidden;
         }
-    }
+        // On subsequent frames, we take into account user modifications of appWindowParams.hidden
+        if (mIdxFrame > 3)
+        {
+            if (params.appWindowParams.hidden != lastHiddenState)
+            {
+                lastHiddenState = params.appWindowParams.hidden;
+                if (params.appWindowParams.hidden)
+                    mBackendWindowHelper->HideWindow(mWindow);
+                else
+                    mBackendWindowHelper->ShowWindow(mWindow);
+            }
+        }
+    }  // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
-#ifndef __EMSCRIPTEN__
-    // Idling for non emscripten, where HelloImGui is responsible for the main loop.
-    // This form of idling will call WaitForEventTimeout(), which may call sleep():
-    IdleBySleeping();
-#endif
+    if(true_gil) // Handle idling
+    { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
+        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
 
-    // Poll Events (this fills GImGui.InputEventsQueue)
-    Impl_PollEvents();
+        #ifndef __EMSCRIPTEN__
+        // Idling for non emscripten, where HelloImGui is responsible for the main loop.
+        // This form of idling will call WaitForEventTimeout(), which may call sleep():
+        IdleBySleeping();
+        #endif
 
-#ifdef __EMSCRIPTEN__
-    // Idling for emscripten: early exit if idling
-    // This test should be done after calling Impl_PollEvents() since it checks the event queue for incoming events!
-    if (ShallIdleThisFrame_Emscripten())
-    {
-        mIdxFrame += 1;
-        return;
-    }
-#endif
+        // Poll Events (this fills GImGui.InputEventsQueue)
+        Impl_PollEvents();
+
+        #ifdef __EMSCRIPTEN__
+        // Idling for emscripten: early exit if idling
+        // This test should be done after calling Impl_PollEvents() since it checks the event queue for incoming events!
+        if (ShallIdleThisFrame_Emscripten())
+        {
+            mIdxFrame += 1;
+            return;
+        }
+        #endif
+    } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
+
 
     //
     // Rendering logic
@@ -600,36 +654,48 @@ void AbstractRunner::CreateFramesAndRender()
     if (params.callbacks.PreNewFrame)
         params.callbacks.PreNewFrame();
 
-    mRenderingBackendCallbacks->Impl_NewFrame_3D();
-    Impl_NewFrame_PlatformBackend();
-    {
-        // Workaround against SDL clock that sometimes leads to io.DeltaTime=0.f on emscripten
-        // (which fails to an `IM_ASSERT(io.DeltaTime) > 0` in ImGui::NewFrame())
-        //
-        // This can be removed once the commit 07490618 was merged into imgui docking branch
-        // (see https://github.com/ocornut/imgui/commit/07490618ae47fdb9f625565fbb183593170a6a72)
-        auto & io = ImGui::GetIO();
-        if (io.DeltaTime <= 0.f)
-            io.DeltaTime = 1.f / 60.f;
-    }
+    if (true_gil)  // New Frame / Rendering and Platform Backend (not ImGui)
+    { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
+        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
 
+        mRenderingBackendCallbacks->Impl_NewFrame_3D();
+        Impl_NewFrame_PlatformBackend();
+        {
+            // Workaround against SDL clock that sometimes leads to io.DeltaTime=0.f on emscripten
+            // (which fails to an `IM_ASSERT(io.DeltaTime) > 0` in ImGui::NewFrame())
+            //
+            // This can be removed once the commit 07490618 was merged into imgui docking branch
+            // (see https://github.com/ocornut/imgui/commit/07490618ae47fdb9f625565fbb183593170a6a72)
+            auto &io = ImGui::GetIO();
+            if (io.DeltaTime <= 0.f)
+                io.DeltaTime = 1.f / 60.f;
+        }
+
+    } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
+
+    // ImGui::NewFrame may call ImGuiTestEngine_PostNewFrame, which in turn handles the GIL in its own way,
+    // so that it can *NOT* be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
     ImGui::NewFrame();
+
 
     // Fight against potential font loading issue
     // Fonts are transferred to the GPU one the first call to ImGui::NewFrame()
     // We might detect an OpenGL error if the font texture was too big for the GPU
     bool foundPotentialFontLoadingError = false;
+
+    if (true) // check potential OpenGL error on first frame, that may be due to a font loading error
     {
-#ifdef HELLOIMGUI_HAS_OPENGL
+        #ifdef HELLOIMGUI_HAS_OPENGL
         if (mIdxFrame == 0)
         {
             auto error = glGetError();
             if (error != 0)
                 foundPotentialFontLoadingError = true;
         }
-#endif
+        #endif
     }
-    
+
+    // CustomBackground is a user callback
     if (params.callbacks.CustomBackground)
         params.callbacks.CustomBackground();
     else
@@ -637,26 +703,37 @@ void AbstractRunner::CreateFramesAndRender()
 
     // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
     // ==> Note: RenderGui() may measure the size of the window and resize it if mIdxFrame==1
+    // RenderGui may call many user callbacks, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
     RenderGui();
 
     if (params.callbacks.BeforeImGuiRender)
         params.callbacks.BeforeImGuiRender();
 
-    ImGui::Render();
-    mRenderingBackendCallbacks->Impl_RenderDrawData_To_3D();
+    if (true_gil) // Render and Swap
+    { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
+        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
 
-    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        Impl_UpdateAndRenderAdditionalPlatformWindows();
+        ImGui::Render();
+        mRenderingBackendCallbacks->Impl_RenderDrawData_To_3D();
 
-    Impl_SwapBuffers();
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+            Impl_UpdateAndRenderAdditionalPlatformWindows();
 
+        Impl_SwapBuffers();
+    } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
+
+    // AfterSwap is a user callback, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
     if (params.callbacks.AfterSwap)
         params.callbacks.AfterSwap();
 
-#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+    #ifdef HELLOIMGUI_WITH_TEST_ENGINE
+    // TestEngineCallbacks::PostSwap() handles the GIL in its own way,
+    // it can not be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
     if (params.useImGuiTestEngine)
+    {
         TestEngineCallbacks::PostSwap();
-#endif
+    }
+    #endif
 
     if (foundPotentialFontLoadingError)
         ReloadFontIfFailed();

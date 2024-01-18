@@ -12,12 +12,12 @@
 #include "imgui_internal.h"
 
 #include "hello_imgui_test_engine_integration/test_engine_integration.h"
-#include "imgui_test_engine/imgui_te_python_gil.h"
 
 #ifdef IMGUI_TEST_ENGINE_WITH_PYTHON_GIL
+#include "imgui_test_engine/imgui_te_python_gil.h"
 #define SCOPED_RELEASE_GIL_ON_MAIN_THREAD ImGuiTestEnginePythonGIL::ReleaseGilOnMainThread_Scoped _gilRelease
 #else
-#define SCOPED_RELEASE_GIL_ON_MAIN_THREAD (void)
+#define SCOPED_RELEASE_GIL_ON_MAIN_THREAD
 #endif
 
 #include <chrono>

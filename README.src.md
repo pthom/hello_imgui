@@ -2,7 +2,6 @@
 
 _See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/) for API, usage and build instructions._
 
-
 **OpenGL**<br/>
 [![Win_Mac_Linux](https://github.com/pthom/hello_imgui/workflows/Win_Mac_Linux/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Win_Mac_Linux.yml)
 [![MinGW](https://github.com/pthom/hello_imgui/workflows/MinGW/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/MinGW.yml)

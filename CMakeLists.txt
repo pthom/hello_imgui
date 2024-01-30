@@ -266,7 +266,27 @@ mark_as_advanced(HELLO_IMGUI_IMGUI_SHARED)
 # Note: under windows, you could specify a static triplet (x64-windows-static):
 #     ./vcpkg/vcpkg install freetype:x64-windows-static glfw3:x64-windows-static lunasvg:x64-windows-static
 #
+# -----------------------------------------------------------------------------
+# How to use ImGui from vcpkg (*not* recommended)
+# -----------------------------------------------------------------------------
+# HelloImGui provides its own copy of imgui, as a submodule (on the branch "docking")
+# it is possible, but not recommended, to use imgui from vcpkg via the option
+#     HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE
+# In this case, you will need to install vcpkg, and install imgui with the correct options.
+# (see below an example with vcpkg)
+# (this method is not recommended, since ImGui voluntarily to not provide cmake tooling)
 #
+#    git clone https://github.com/microsoft/vcpkg
+#    ./vcpkg/bootstrap-vcpkg.sh
+#    ./vcpkg/vcpkg install glfw3 freetype lunasvg
+#    # install imgui from vcpkg, with the correct options
+#    ./vcpkg/vcpkg install "imgui[docking-experimental,freetype-lunasvg,glfw-binding,opengl3-binding]"
+#
+#    export CMAKE_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake
+#    mkdir build && cd build
+#    cmake .. -DHELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE=ON
+#
+option(HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE "Use imgui from cmake package (provided by vcpkg for example) * Must be on docking branch*" OFF)
 
 
 ###############################################################################

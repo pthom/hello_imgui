@@ -6,7 +6,11 @@
 #include "dpi_aware.h"
 
 #ifdef IMGUI_ENABLE_FREETYPE
+#ifdef HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE
+#include "imgui_freetype.h"
+#else
 #include "misc/freetype/imgui_freetype.h"
+#endif
 #endif
 
 #ifdef IOS

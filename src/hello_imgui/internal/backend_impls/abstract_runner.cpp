@@ -37,7 +37,11 @@
 
 #ifdef HELLOIMGUI_HAS_OPENGL
 #include "hello_imgui/hello_imgui_include_opengl.h"
+#ifdef HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE
+#include "imgui_impl_opengl3.h"
+#else
 #include "backends/imgui_impl_opengl3.h"
+#endif
 #endif
 
 #ifdef __EMSCRIPTEN__

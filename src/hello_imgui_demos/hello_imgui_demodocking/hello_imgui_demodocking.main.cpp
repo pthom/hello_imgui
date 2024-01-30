@@ -15,7 +15,11 @@ It demonstrates how to:
 #include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/renderer_backend_options.h"
 #include "imgui.h"
+#ifdef HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE
+#include "imgui_stdlib.h"
+#else
 #include "misc/cpp/imgui_stdlib.h"
+#endif
 #include "imgui_internal.h"
 
 #include <sstream>

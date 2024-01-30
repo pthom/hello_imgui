@@ -444,10 +444,13 @@ endfunction()
 # OpenGL Rendering backend: API = him_has_opengl3_backend
 ###################################################################################################
 function(him_has_opengl3 target)
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-    )
+    # vcpkg will have added those files to imgui
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+        )
+    endif()
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_OPENGL)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_OPENGL3)
     set(HELLOIMGUI_HAS_OPENGL ON CACHE BOOL "" FORCE)

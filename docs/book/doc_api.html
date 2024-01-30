@@ -514,6 +514,7 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 
 <span class="w">        </span><span class="c1">// if true, the font will be loaded and then FontAwesome icons will be merged to it</span>
 <span class="w">        </span><span class="c1">// (deprecated, use mergeToLastFont instead, and load in two steps)</span>
+<span class="w">        </span><span class="c1">// This will use an old version of FontAwesome (FontAwesome 4)</span>
 <span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">mergeFontAwesome</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="w">        </span><span class="n">ImFontConfig</span><span class="w"> </span><span class="n">fontConfigFontAwesome</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImFontConfig</span><span class="p">();</span>
 <span class="w">    </span><span class="p">};</span>
@@ -526,6 +527,38 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 <span class="w">    </span><span class="c1">// see FontLoadingParams and ImFontConfig</span>
 <span class="w">    </span><span class="n">ImFont</span><span class="o">*</span><span class="w"> </span><span class="nf">LoadFont</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">fontFilename</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">fontSize</span><span class="p">,</span>
 <span class="w">                     </span><span class="k">const</span><span class="w"> </span><span class="n">FontLoadingParams</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>
+
+
+<span class="w">    </span><span class="c1">// Note: if you want to use a more recent version of Font Awesome,</span>
+<span class="w">    </span><span class="c1">// ===============================================================</span>
+<span class="w">    </span><span class="c1">// see example at src/hello_imgui_demos/hello_imgui_demo_fontawesome6</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">// The principle is summarized below:</span>
+<span class="w">    </span><span class="c1">// - Download Font_Awesome_6_Free-Solid-900.otf from https://fontawesome.com/download</span>
+<span class="w">    </span><span class="c1">// - Download IconsFontAwesome6.h from https://raw.githubusercontent.com/juliettef/IconFontCppHeaders/main/IconsFontAwesome6.h</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">//  Code:</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">//    // Prevent HelloImGui from loading Font Awesome 4 definitions, since we will load FontAwesome 6</span>
+<span class="w">    </span><span class="c1">//    #define HELLOIMGUI_NO_FONT_AWESOME4</span>
+<span class="w">    </span><span class="c1">//    #include &quot;hello_imgui/hello_imgui.h&quot;</span>
+<span class="w">    </span><span class="c1">//    #include &quot;IconsFontAwesome6.h&quot;</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">//    ...</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">//    // Load the default font + merge it with Font Awesome 6</span>
+<span class="w">    </span><span class="c1">//    HelloImGui::RunnerParams runnerParams;</span>
+<span class="w">    </span><span class="c1">//    runnerParams.callbacks.LoadAdditionalFonts = []</span>
+<span class="w">    </span><span class="c1">//    {</span>
+<span class="w">    </span><span class="c1">//        // Load the default font</span>
+<span class="w">    </span><span class="c1">//        HelloImGui::LoadFont(&quot;fonts/DroidSans.ttf&quot;, 15.0f);</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">//        // Merge FontAwesome6 with the default font</span>
+<span class="w">    </span><span class="c1">//        HelloImGui::FontLoadingParams fontParams;</span>
+<span class="w">    </span><span class="c1">//        fontParams.mergeToLastFont = true;</span>
+<span class="w">    </span><span class="c1">//        fontParams.useFullGlyphRange = true;</span>
+<span class="w">    </span><span class="c1">//        HelloImGui::LoadFont(&quot;fonts/Font_Awesome_6_Free-Solid-900.otf&quot;, 15.0f, fontParams);</span>
+<span class="w">    </span><span class="c1">//    };</span>
 </pre></div>
 </div>
 </section>

@@ -742,19 +742,16 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="c1">//  but you can copy and customize it.</span>
 <span class="w">    </span><span class="c1">//  (LoadDefaultFont_WithFontAwesome will load fonts from assets/fonts/</span>
 <span class="w">    </span><span class="c1">//  but reverts to the ImGui embedded font if not found)</span>
-<span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">LoadAdditionalFonts</span><span class="w"> </span><span class="o">=</span>
-<span class="w">        </span><span class="p">(</span><span class="n">VoidFunction</span><span class="p">)(</span><span class="n">ImGuiDefaultSettings</span><span class="o">::</span><span class="n">LoadDefaultFont_WithFontAwesomeIcons</span><span class="p">);</span>
+<span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">LoadAdditionalFonts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">VoidFunction</span><span class="p">)</span><span class="n">ImGuiDefaultSettings</span><span class="o">::</span><span class="n">LoadDefaultFont_WithFontAwesomeIcons</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// `SetupImGuiConfig`: default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.</span>
 <span class="w">    </span><span class="c1">//  If needed, change ImGui config via SetupImGuiConfig</span>
 <span class="w">    </span><span class="c1">//  (enable docking, gamepad, etc)</span>
-<span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">SetupImGuiConfig</span><span class="w"> </span><span class="o">=</span>
-<span class="w">        </span><span class="p">(</span><span class="n">VoidFunction</span><span class="p">)(</span><span class="n">ImGuiDefaultSettings</span><span class="o">::</span><span class="n">SetupDefaultImGuiConfig</span><span class="p">);</span>
+<span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">SetupImGuiConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">VoidFunction</span><span class="p">)</span><span class="n">ImGuiDefaultSettings</span><span class="o">::</span><span class="n">SetupDefaultImGuiConfig</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// `SetupImGuiStyle`: default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.</span>
 <span class="w">    </span><span class="c1">//  If needed, set your own style by providing your own SetupImGuiStyle callback</span>
-<span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">SetupImGuiStyle</span><span class="w"> </span><span class="o">=</span>
-<span class="w">        </span><span class="p">(</span><span class="n">VoidFunction</span><span class="p">)(</span><span class="n">ImGuiDefaultSettings</span><span class="o">::</span><span class="n">SetupDefaultImGuiStyle</span><span class="p">);</span>
+<span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">SetupImGuiStyle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">VoidFunction</span><span class="p">)</span><span class="n">ImGuiDefaultSettings</span><span class="o">::</span><span class="n">SetupDefaultImGuiStyle</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// `RegisterTests`: A function that is called once ImGuiTestEngine is ready</span>
 <span class="w">    </span><span class="c1">// to be filled with tests and automations definitions.</span>
@@ -1174,7 +1171,8 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="n">ImGuiTheme</span><span class="o">::</span><span class="n">ImGuiTweakedTheme</span><span class="w"> </span><span class="n">tweakedTheme</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// backgroundColor:</span>
-<span class="w">    </span><span class="c1">// This is the &quot;clearColor&quot;, visible if defaultImGuiWindowType!=ProvideFullScreenWindow.</span>
+<span class="w">    </span><span class="c1">// This is the &quot;clearColor&quot;, i.e. the app window background color, is visible *only if*</span>
+<span class="w">    </span><span class="c1">//    runnerParams.imGuiWindowParams.defaultImGuiWindowType = NoDefaultWindow</span>
 <span class="w">    </span><span class="c1">// Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full</span>
 <span class="w">    </span><span class="c1">// control over what is drawn behind the Gui.</span>
 <span class="w">    </span><span class="n">ImVec4</span><span class="w"> </span><span class="n">backgroundColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec4</span><span class="p">(</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">);</span>

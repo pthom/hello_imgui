@@ -745,7 +745,8 @@ struct ImGuiWindowParams
     ImGuiTheme::ImGuiTweakedTheme tweakedTheme;
 
     // backgroundColor:
-    // This is the "clearColor", visible if defaultImGuiWindowType!=ProvideFullScreenWindow.
+    // This is the "clearColor", i.e. the app window background color, is visible *only if*
+    //    runnerParams.imGuiWindowParams.defaultImGuiWindowType = NoDefaultWindow
     // Alternatively, you can set your own RunnerCallbacks.CustomBackground to have full
     // control over what is drawn behind the Gui.
     ImVec4 backgroundColor = ImVec4(0.f, 0.f, 0.f, 0.f);

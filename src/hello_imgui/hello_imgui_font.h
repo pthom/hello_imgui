@@ -48,6 +48,7 @@ namespace HelloImGui
 
         // if true, the font will be loaded and then FontAwesome icons will be merged to it
         // (deprecated, use mergeToLastFont instead, and load in two steps)
+        // This will use an old version of FontAwesome (FontAwesome 4)
         bool mergeFontAwesome = false;
         ImFontConfig fontConfigFontAwesome = ImFontConfig();
     };
@@ -62,6 +63,36 @@ namespace HelloImGui
                      const FontLoadingParams & params = {});
 
 
+    // Note: if you want to use a more recent version of Font Awesome,
+    // ===============================================================
+    // see example at src/hello_imgui_demos/hello_imgui_demo_fontawesome6
+    //
+    // The principle is summarized below:
+    // - Download Font_Awesome_6_Free-Solid-900.otf from https://fontawesome.com/download
+    // - Download IconsFontAwesome6.h from https://raw.githubusercontent.com/juliettef/IconFontCppHeaders/main/IconsFontAwesome6.h
+    //
+    //  Code:
+    //
+    //    // Prevent HelloImGui from loading Font Awesome, since we will load FontAwesome
+    //    #define HELLOIMGUI_NO_FONT_AWESOME4
+    //    #include "hello_imgui/hello_imgui.h"
+    //    #include "IconsFontAwesome6.h"
+    //
+    //    ...
+    //
+    //    // Load the default font + merge it with Font Awesome 6
+    //    HelloImGui::RunnerParams runnerParams;
+    //    runnerParams.callbacks.LoadAdditionalFonts = []
+    //    {
+    //        // Load the default font
+    //        HelloImGui::LoadFont("fonts/DroidSans.ttf", 15.0f);
+    //
+    //        // Merge FontAwesome6 with the default font
+    //        HelloImGui::FontLoadingParams fontParams;
+    //        fontParams.mergeToLastFont = true;
+    //        fontParams.useFullGlyphRange = true;
+    //        HelloImGui::LoadFont("fonts/Font_Awesome_6_Free-Solid-900.otf", 15.0f, fontParams);
+    //    };
     // @@md
 
 

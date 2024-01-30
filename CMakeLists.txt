@@ -241,6 +241,34 @@ mark_as_advanced(HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT)
 option(HELLO_IMGUI_IMGUI_SHARED "Use imgui as a shared library" OFF)
 mark_as_advanced(HELLO_IMGUI_IMGUI_SHARED)
 
+
+# -----------------------------------------------------------------------------
+# How to build offline with vcpkg
+# -----------------------------------------------------------------------------
+# By default, hello_imgui will download and build the required libraries automatically,
+# if they cannot be found via cmake's find_package:
+#   glfw3, lunasvg, freetype
+# To build offline, you can for example pre-install the required libraries with vcpkg,
+# but you can also install them via a system package manager, or add them manually as targets.
+#
+# see below an example with vcpkg
+#
+# Install requirements via vcpkg
+# --------------------------------------------
+#
+#    git clone https://github.com/microsoft/vcpkg
+#    ./vcpkg/bootstrap-vcpkg.sh
+#    ./vcpkg/vcpkg install glfw3 freetype lunasvg
+#    export CMAKE_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake
+#    mkdir build && cd build
+#    cmake ..
+#
+# Note: under windows, you could specify a static triplet (x64-windows-static):
+#     ./vcpkg/vcpkg install freetype:x64-windows-static glfw3:x64-windows-static lunasvg:x64-windows-static
+#
+#
+
+
 ###############################################################################
 # End of options
 ###############################################################################

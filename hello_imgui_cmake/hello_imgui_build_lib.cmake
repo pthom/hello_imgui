@@ -40,7 +40,7 @@ endfunction()
 # Build imgui: API = him_build_imgui
 ###################################################################################################
 function(him_build_imgui)
-    message(FATAL_ERROR "HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE is ${HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE}")
+    message(FATAL_ERROR "BLAH HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE is ${HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE}")
     if (HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
         find_package(imgui CONFIG REQUIRED)
     else()

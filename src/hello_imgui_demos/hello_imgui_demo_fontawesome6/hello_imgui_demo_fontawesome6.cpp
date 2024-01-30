@@ -1,4 +1,4 @@
-// Prevent HelloImGui from loading Font Awesome, since we will load FontAwesome
+// Prevent HelloImGui from loading Font Awesome 4 definitions, since we will use FontAwesome 6
 #define HELLOIMGUI_NO_FONT_AWESOME4
 #include "hello_imgui/hello_imgui.h"
 

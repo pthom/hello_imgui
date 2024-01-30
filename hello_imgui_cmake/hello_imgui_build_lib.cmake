@@ -104,9 +104,12 @@ function(_him_add_freetype_to_imgui)
             find_package(Freetype 2.12 QUIET)
             if (NOT Freetype_FOUND)
                 set(download_freetype ON)
+            else()
+                message(STATUS "Found system lib Freetype")
             endif()
         endif()
         if(HELLOIMGUI_FREETYPE_STATIC)
+            message("Forcing download of Freetype because HELLOIMGUI_FREETYPE_STATIC is ON")
             set(download_freetype ON)
         endif()
 
@@ -160,18 +163,24 @@ function(_him_add_freetype_to_imgui)
     #
     # Fetch and build lunasvg
     if(NOT TARGET lunasvg)
-        set(backup_shared_lib ${BUILD_SHARED_LIBS})
-        set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-        include(FetchContent)
-        FetchContent_Declare(lunasvg
-            GIT_REPOSITORY https://github.com/sammycage/lunasvg
-            GIT_TAG        v2.3.9
-            GIT_PROGRESS TRUE
-        )
-        FetchContent_MakeAvailable(lunasvg)
-        set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
+        # Try using lunasvg unofficial package from vcpkg
+        find_package(unofficial-lunasvg CONFIG QUIET)
+        if(unofficial-lunasvg_FOUND)
+            target_link_libraries(imgui PRIVATE unofficial::lunasvg::lunasvg)
+        else()
+            set(backup_shared_lib ${BUILD_SHARED_LIBS})
+            set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+            include(FetchContent)
+            FetchContent_Declare(lunasvg
+                GIT_REPOSITORY https://github.com/sammycage/lunasvg
+                GIT_TAG        v2.3.9
+                GIT_PROGRESS TRUE
+            )
+            FetchContent_MakeAvailable(lunasvg)
+            set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
+            target_link_libraries(imgui PUBLIC lunasvg)
+        endif()
     endif()
-    target_link_libraries(imgui PUBLIC lunasvg)
 
     #
     # 3. Add freetype and LunaSvg support to imgui
@@ -591,6 +600,8 @@ function(_him_fetch_sdl_if_needed)
         find_package(SDL2 QUIET)
         if (NOT SDL2_FOUND)
             set(shall_fetch_sdl ON)
+        else()
+            message(STATUS "Found system lib SDL2")
         endif()
     endif()
 
@@ -687,6 +698,8 @@ function(_him_fetch_glfw_if_needed)
         find_package(glfw3 QUIET)
         if (NOT glfw3_FOUND)
             set(shall_fetch_glfw ON)
+        else()
+            message(STATUS "Found system lib glfw3")
         endif()
     endif()
 

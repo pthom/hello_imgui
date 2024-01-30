@@ -19,8 +19,8 @@ function(hello_imgui_macos_add_icons app_name assets_location)
     set(custom_app_png_icon ${assets_location}/app_settings/icon.png)
     if ((NOT found_custom_icon) AND (EXISTS ${custom_app_png_icon}))
         # find python program
-        find_program(PYTHON_EXECUTABLE NAMES python3 python)
-        if (NOT PYTHON_EXECUTABLE)
+        find_program(Python_EXECUTABLE NAMES python3 python)
+        if (NOT Python_EXECUTABLE)
             message(WARNING "
             ${app_name}: can't create a macOS icons from ${custom_app_png_icon}
                 (did not find python)
@@ -34,14 +34,14 @@ function(hello_imgui_macos_add_icons app_name assets_location)
         message(VERBOSE "hello_imgui_macos_add_icons: converting ${custom_app_png_icon} to icns for app ${app_name}")
         set(custom_app_icon ${CMAKE_CURRENT_BINARY_DIR}/icon.icns)
         execute_process(
-            COMMAND ${PYTHON_EXECUTABLE} ${script_png_to_icns} ${custom_app_png_icon} ${custom_app_icon}
+            COMMAND ${Python_EXECUTABLE} ${script_png_to_icns} ${custom_app_png_icon} ${custom_app_icon}
             RESULT_VARIABLE script_png_to_icns_result
         )
         if (NOT ${script_png_to_icns_result} EQUAL 0)
             message(WARNING "
                 ${app_name}: failed to create macOS icon from ${custom_app_icon}
                     Tried to run:
-                        ${PYTHON_EXECUTABLE} ${script_png_to_icns} ${custom_app_png_icon} ${custom_app_icon}
+                        ${Python_EXECUTABLE} ${script_png_to_icns} ${custom_app_png_icon} ${custom_app_icon}
                     This is not a fatal error, but the app will not have a custom icon.
                 ")
             return()

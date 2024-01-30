@@ -5,9 +5,9 @@ function(_hello_imgui_create_windows_ico assets_location)
     endif()
 
     # find python program
-    find_program(PYTHON_EXECUTABLE NAMES python3 python)
+    find_program(Python_EXECUTABLE NAMES python3 python)
     # if python is not found, we can't create the ico file
-    if (NOT PYTHON_EXECUTABLE)
+    if (NOT Python_EXECUTABLE)
         message(WARNING "
         ${app_name}: can't create a windows ico file from ${custom_app_png_icon}
             (did not find python)
@@ -21,14 +21,14 @@ function(_hello_imgui_create_windows_ico assets_location)
     message(VERBOSE "_hello_imgui_create_ico: converting ${custom_app_png_icon} to windows ico for app ${app_name}")
     set(custom_app_icon ${CMAKE_CURRENT_BINARY_DIR}/icon.ico)
     execute_process(
-        COMMAND ${PYTHON_EXECUTABLE} ${script_png_to_ico} ${custom_app_png_icon} ${custom_app_icon}
+        COMMAND ${Python_EXECUTABLE} ${script_png_to_ico} ${custom_app_png_icon} ${custom_app_icon}
         RESULT_VARIABLE script_png_to_ico_result
     )
     if (NOT ${script_png_to_ico_result} EQUAL 0)
         message(WARNING "
             ${app_name}: failed to create a Windows ico file from ${custom_app_icon}
             Tried to run:
-                ${PYTHON_EXECUTABLE} ${script_png_to_ico} ${custom_app_png_icon} ${custom_app_icon}
+                ${Python_EXECUTABLE} ${script_png_to_ico} ${custom_app_png_icon} ${custom_app_icon}
 
             This is not a fatal error, but the app will not have a custom icon.
             In order to have a custom icon, you need to have python with the Pillow package:

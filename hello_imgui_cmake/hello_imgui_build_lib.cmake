@@ -696,10 +696,13 @@ function(him_use_glfw_backend target)
     endif()
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glfw)
 
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-    )
+    # vcpkg will have added those files to imgui
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+        )
+    endif()
     set(HELLOIMGUI_USE_GLFW ON CACHE INTERNAL "" FORCE)
     set(HELLOIMGUI_USE_GLFW3 ON CACHE INTERNAL "" FORCE)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW)

@@ -58,6 +58,7 @@ function(him_add_hello_imgui)
     endif()
 
     add_library(hello-imgui::hello_imgui ALIAS hello_imgui)
+    him_add_installable_dependency(${HELLOIMGUI_TARGET})
 endfunction()
 
 

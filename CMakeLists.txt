@@ -360,11 +360,35 @@ endif()
 # install
 #------------------------------------------------------------------------------
 if(PROJECT_IS_TOP_LEVEL AND CMAKE_BUILD_TYPE STREQUAL "Release")
-    install(DIRECTORY hello_imgui_cmake DESTINATION share/${PROJECT_NAME})
-    install(DIRECTORY hello_imgui_assets DESTINATION share/${PROJECT_NAME})
-    if (NOT IOS AND NOT ANDROID)
-        install(FILES README.md DESTINATION share/${PROJECT_NAME})
-    endif()
+#    install(DIRECTORY hello_imgui_cmake DESTINATION share/${PROJECT_NAME})
+#    install(DIRECTORY hello_imgui_assets DESTINATION share/${PROJECT_NAME})
+#    if (NOT IOS AND NOT ANDROID)
+#        install(FILES README.md DESTINATION share/${PROJECT_NAME})
+#    endif()
+
+    # inspired from https://iamsorush.com/posts/cpp-cmake-config/
+    install(TARGETS hello_imgui
+        EXPORT hello_imgui_targets
+        FILE_SET HEADERS
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+        INCLUDES DESTINATION include)
+
+    install(EXPORT hello_imgui_targets
+        FILE hello_imgui_targets.cmake
+        NAMESPACE hello_imgui::
+        DESTINATION lib/cmake/hello_imgui)
+
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file(
+        "hello_imguiConfigVersion.cmake"
+        VERSION ${hello_imgui_VERSION}
+        COMPATIBILITY AnyNewerVersion)
+
+    install(FILES "hello_imgui_cmake/hello_imguiConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/hello_imguiConfigVersion.cmake"
+        DESTINATION lib/cmake/hello_imgui)
+
 endif()
 
 #------------------------------------------------------------------------------

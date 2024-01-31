@@ -1,10 +1,12 @@
 hello_imgui provides CMake targets and hello_imgui_add_app:
 
 Usage with `hello_imgui_add_app`
+    set(CMAKE_CXX_STANDARD 17)
     find_package(hello-imgui CONFIG REQUIRED)
     hello_imgui_add_app(test test.cpp)
 
 Usage with `target_link_libraries`
+    set(CMAKE_CXX_STANDARD 17)
     find_package(hello_imgui CONFIG REQUIRED)
     # Note the subtle difference between the package name and the target name: hello-imgui vs hello_imgui!
     target_link_libraries(main PRIVATE hello-imgui::hello_imgui)

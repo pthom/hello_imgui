@@ -40,6 +40,17 @@
       ]
     },
 
+    "metal-binding":
+    {
+      "description": "metal-binding",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "features": ["metal-binding"]
+        }
+      ]
+    },
+
     "glfw-binding":
     {
       "description": "glfw-binding",

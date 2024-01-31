@@ -16,16 +16,23 @@ cmake_policy(SET CMP0079 NEW)
 # Add library and sources: API = him_add_hello_imgui
 ###################################################################################################
 function(him_add_hello_imgui)
+    # We are called from the parent directory (src/)
+    file(GLOB_RECURSE sources
+        ${CMAKE_CURRENT_LIST_DIR}/hello_imgui/*.h
+        ${CMAKE_CURRENT_LIST_DIR}/hello_imgui/*.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/hello_imgui/*.c)
     if (APPLE)
-        file(GLOB_RECURSE sources *.h *.cpp *.c *.mm)
-    else()
-        file(GLOB_RECURSE sources *.h *.cpp *.c)
+        file(GLOB_RECURSE sources_mm ${CMAKE_CURRENT_LIST_DIR}/hello_imgui/*.mm)
+        set(sources ${sources} ${sources_mm})
     endif()
     add_library(${HELLOIMGUI_TARGET} ${sources})
     if(APPLE AND NOT IOS)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_MACOS)
     endif()
-    target_include_directories(${HELLOIMGUI_TARGET} PUBLIC ..)
+    if(APPLE)
+        target_compile_options(${HELLOIMGUI_TARGET} PRIVATE "-x" "objective-c++")
+    endif()
+    target_include_directories(${HELLOIMGUI_TARGET} PUBLIC .)
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC stb_hello_imgui)
     if (HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
         target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui::imgui)

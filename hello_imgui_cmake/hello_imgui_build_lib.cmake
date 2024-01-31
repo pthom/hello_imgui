@@ -14,15 +14,15 @@ cmake_policy(SET CMP0079 NEW)
 
 
 ###################################################################################################
-# Add installable dependency
+# Store installable dependencies
 ###################################################################################################
-function(add_installable_dependency dependency_name)
+function(him_add_installable_dependency dependency_name)
     message(STATUS "Adding installable dependency ${dependency_name} HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
     set(HELLOIMGUI_INSTALLABLE_DEPENDENCIES ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES} ${dependency_name} CACHE INTERNAL "" FORCE)
     message(STATUS "After Adding installable dependency HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
 endfunction()
 
-function(reset_installable_dependencies)
+function(him_reset_installable_dependencies)
     set(HELLOIMGUI_INSTALLABLE_DEPENDENCIES "" CACHE INTERNAL "" FORCE)
 endfunction()
 
@@ -111,7 +111,7 @@ function(_him_do_build_imgui)
         $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends>
         $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp>
     )
-    add_installable_dependency(imgui)
+    him_add_installable_dependency(imgui)
     if (MSVC)
         hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
     endif()
@@ -223,7 +223,7 @@ function(_him_add_freetype_to_imgui)
             set_target_properties(lunasvg PROPERTIES INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/_deps/lunasvg-src/include>)
             get_target_property(lunasvg_include_dirs lunasvg INTERFACE_INCLUDE_DIRECTORIES)
 
-            add_installable_dependency(lunasvg)
+            him_add_installable_dependency(lunasvg)
         endif()
     endif()
 
@@ -368,6 +368,27 @@ function(_him_try_select_glfw_opengl3_if_no_backend_selected)
     endif()
 endfunction()
 
+
+###################################################################################################
+# stb_image: API = him_add_stb_image
+###################################################################################################
+function(him_add_stb_image)
+    # Add stb for HelloImGui
+    set(stb_dir ${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui)
+    add_library(stb_hello_imgui STATIC ${stb_dir}/stb_impl_hello_imgui.cpp)
+    target_include_directories(stb_hello_imgui PUBLIC $<BUILD_INTERFACE:${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui>)
+
+    file(GLOB stb_headers ${stb_dir}/*.h)
+    install(FILES ${stb_headers} DESTINATION include/hello_imgui/stb_hello_imgui)
+
+    if(HELLOIMGUI_STB_IMAGE_IMPLEMENTATION)
+        target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_IMPLEMENTATION)
+    endif()
+    if(HELLOIMGUI_STB_IMAGE_WRITE_IMPLEMENTATION)
+        target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_WRITE_IMPLEMENTATION)
+    endif()
+    him_add_installable_dependency(stb_hello_imgui)
+endfunction()
 
 ###################################################################################################
 # Apple related options: API = him_add_apple_options
@@ -773,7 +794,7 @@ function(_him_fetch_glfw_if_needed)
         set(GLFW_INSTALL OFF)
         FetchContent_MakeAvailable(glfw)
         set(HELLOIMGUI_GLFW_SELECTED_INFO "Downloaded 3.3.8" CACHE INTERNAL "" FORCE)
-        add_installable_dependency(glfw)
+        him_add_installable_dependency(glfw)
     else()
         set(HELLOIMGUI_GLFW_SELECTED_INFO "Use system Library" CACHE INTERNAL "" FORCE)
     endif()
@@ -885,8 +906,9 @@ endfunction()
 # Main: API = him_main_add_hello_imgui_library
 ###################################################################################################
 function(him_main_add_hello_imgui_library)
-    reset_installable_dependencies()
+    him_reset_installable_dependencies()
     him_sanity_checks()
+    him_add_stb_image()
     him_build_imgui()
     him_add_hello_imgui()
     if (HELLOIMGUI_WITH_TEST_ENGINE)

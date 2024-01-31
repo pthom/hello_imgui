@@ -327,17 +327,6 @@ if (EMSCRIPTEN)
     include(${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_emscripten_global_options.cmake)
 endif()
 
-# Add stb for HelloImGui
-add_library(stb_hello_imgui STATIC external/stb_hello_imgui/stb_impl_hello_imgui.cpp)
-target_include_directories(stb_hello_imgui PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/external/stb_hello_imgui>)
-
-if(HELLOIMGUI_STB_IMAGE_IMPLEMENTATION)
-    target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_IMPLEMENTATION)
-endif()
-if(HELLOIMGUI_STB_IMAGE_WRITE_IMPLEMENTATION)
-    target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_WRITE_IMPLEMENTATION)
-endif()
-
 
 add_subdirectory(src)
 
@@ -369,7 +358,8 @@ if(PROJECT_IS_TOP_LEVEL AND CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 if(PROJECT_IS_TOP_LEVEL)
     # inspired from https://iamsorush.com/posts/cpp-cmake-config/
-    set(installable_libs hello_imgui stb_hello_imgui glad ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES})
+    # stb_hello_imgui glad
+    set(installable_libs hello_imgui glad ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES})
     message(STATUS "HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
     install(TARGETS ${installable_libs}
         EXPORT hello-imgui-targets

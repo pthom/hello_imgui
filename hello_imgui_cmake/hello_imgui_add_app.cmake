@@ -143,7 +143,8 @@ function(hello_imgui_prepare_app app_name assets_location)
     set_bundle_variables_defaults(${app_name})
     hello_imgui_bundle_assets(${app_name} ${assets_location})
     hello_imgui_platform_customization(${app_name} ${assets_location})
-    target_link_libraries(${app_name} PRIVATE hello_imgui)
+
+    target_link_libraries(${app_name} PRIVATE hello-imgui::hello_imgui)
 
     if (ANDROID AND HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT)
         set(apkCMake_applicationIdUrlPart ${HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART})

@@ -42,6 +42,8 @@ function(him_add_hello_imgui)
     else()
         target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui)
     endif()
+
+    add_library(hello-imgui::hello_imgui ALIAS hello_imgui)
 endfunction()
 
 

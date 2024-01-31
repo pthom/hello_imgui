@@ -22,6 +22,9 @@ _See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/
 [![Automate](https://github.com/pthom/hello_imgui/workflows/Automate/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Automate.yml)
 [![StarterTemplate](https://github.com/pthom/hello_imgui/workflows/StarterTemplate/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/StarterTemplate.yml)
 
+**Vcpkg**<br/>
+[![VcpkgDeps](https://github.com/pthom/hello_imgui/workflows/VcpkgDeps/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/VcpkgDeps.yml)
+[![VcpkgPackage](https://github.com/pthom/hello_imgui/workflows/VcpkgPackage/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/VcpkgPackage.yml)
 
 <!-- INTRO -->
 

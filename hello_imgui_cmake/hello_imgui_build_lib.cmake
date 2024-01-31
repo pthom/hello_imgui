@@ -12,6 +12,21 @@
 # Needed to add freetype to the imgui target, if it is build externally
 cmake_policy(SET CMP0079 NEW)
 
+
+###################################################################################################
+# Add installable dependency
+###################################################################################################
+function(add_installable_dependency dependency_name)
+    message(STATUS "Adding installable dependency ${dependency_name} HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
+    set(HELLOIMGUI_INSTALLABLE_DEPENDENCIES ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES} ${dependency_name} CACHE INTERNAL "" FORCE)
+    message(STATUS "After Adding installable dependency HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
+endfunction()
+
+function(reset_installable_dependencies)
+    set(HELLOIMGUI_INSTALLABLE_DEPENDENCIES "" CACHE INTERNAL "" FORCE)
+endfunction()
+
+
 ###################################################################################################
 # Add library and sources: API = him_add_hello_imgui
 ###################################################################################################
@@ -97,7 +112,7 @@ function(_him_do_build_imgui)
         $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends>
         $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp>
     )
-
+    add_installable_dependency(imgui)
     if (MSVC)
         hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
     endif()
@@ -208,6 +223,8 @@ function(_him_add_freetype_to_imgui)
             # Patch lunasvg include dir, for installable version (CMake install shenanigans)
             set_target_properties(lunasvg PROPERTIES INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/_deps/lunasvg-src/include>)
             get_target_property(lunasvg_include_dirs lunasvg INTERFACE_INCLUDE_DIRECTORIES)
+
+            add_installable_dependency(lunasvg)
         endif()
     endif()
 
@@ -757,6 +774,7 @@ function(_him_fetch_glfw_if_needed)
         set(GLFW_INSTALL OFF)
         FetchContent_MakeAvailable(glfw)
         set(HELLOIMGUI_GLFW_SELECTED_INFO "Downloaded 3.3.8" CACHE INTERNAL "" FORCE)
+        add_installable_dependency(glfw)
     else()
         set(HELLOIMGUI_GLFW_SELECTED_INFO "Use system Library" CACHE INTERNAL "" FORCE)
     endif()
@@ -867,6 +885,7 @@ endfunction()
 # Main: API = him_main_add_hello_imgui_library
 ###################################################################################################
 function(him_main_add_hello_imgui_library)
+    reset_installable_dependencies()
     him_sanity_checks()
     him_build_imgui()
     him_add_hello_imgui()

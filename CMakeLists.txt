@@ -369,10 +369,8 @@ if(PROJECT_IS_TOP_LEVEL AND CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 if(PROJECT_IS_TOP_LEVEL)
     # inspired from https://iamsorush.com/posts/cpp-cmake-config/
-    set(installable_libs hello_imgui stb_hello_imgui glad)
-    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
-        list(APPEND installable_libs imgui)
-    endif()
+    set(installable_libs hello_imgui stb_hello_imgui glad ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES})
+    message(STATUS "HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
     install(TARGETS ${installable_libs}
         EXPORT hello-imgui-targets
         FILE_SET HEADERS

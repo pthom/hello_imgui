@@ -778,9 +778,10 @@ endfunction()
 ###################################################################################################
 function(him_install)
     if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
-        install(TARGETS ${HELLOIMGUI_TARGET} DESTINATION ./lib/)
-        file(GLOB headers *.h)
-        install(FILES ${headers} DESTINATION ./include/hello_imgui/)
+        install(TARGETS ${HELLOIMGUI_TARGET} DESTINATION lib/)
+        # We are called from the parent directory (src), thus we search in hello_imgui/
+        file(GLOB headers hello_imgui/*.h)
+        install(FILES ${headers} DESTINATION include/hello_imgui/)
     endif()
 endfunction()
 

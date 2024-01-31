@@ -123,6 +123,10 @@ function(him_install_imgui)
         if(HELLOIMGUI_USE_GLFW)
             install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.h DESTINATION include)
         endif()
+
+        if(HELLOIMGUI_USE_FREETYPE)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.h DESTINATION include)
+        endif()
     endif()
 endfunction()
 
@@ -157,6 +161,7 @@ function(_him_do_build_imgui)
         $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}>
         $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends>
         $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp>
+        $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype>
     )
     him_add_installable_dependency(imgui)
     if (MSVC)

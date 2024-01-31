@@ -364,7 +364,7 @@ if (HELLOIMGUI_BUILD_DOCS)
 endif()
 
 if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
-    install(FILES README.md DESTINATION .)
+    install(FILES README.md DESTINATION share/${PROJECT_NAME})
 endif()
 
 #------------------------------------------------------------------------------

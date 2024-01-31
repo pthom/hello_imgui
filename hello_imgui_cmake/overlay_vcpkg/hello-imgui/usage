@@ -1,6 +1,11 @@
-hello_imgui provides CMake targets:
+hello_imgui provides CMake targets and hello_imgui_add_app:
 
-find_package(hello_imgui CONFIG REQUIRED)
-target_link_libraries(main PRIVATE hello-imgui::hello_imgui)
-# Note the subtle difference between the package name and the target name: hello-imgui vs hello_imgui!
+Usage with `hello_imgui_add_app`
+    find_package(hello-imgui CONFIG REQUIRED)
+    hello_imgui_add_app(test test.cpp)
 
+Usage with `target_link_libraries`
+    find_package(hello_imgui CONFIG REQUIRED)
+    # Note the subtle difference between the package name and the target name: hello-imgui vs hello_imgui!
+    target_link_libraries(main PRIVATE hello-imgui::hello_imgui)
+    # this mode will ignore all of hello_imgui cmake tooling, and for example will not deploy the assets

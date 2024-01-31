@@ -340,6 +340,14 @@ endif()
 
 add_subdirectory(src)
 
+if (HELLOIMGUI_BUILD_DOCS)
+    add_custom_target(hello_imgui_build_doc ALL
+        ${PROJECT_SOURCE_DIR}/tools/doc/process_md_docs.py
+        COMMENT "Generating doc"
+    )
+endif()
+
+
 #------------------------------------------------------------------------------
 # automation tests (set cache var HELLOIMGUI_BUILD_AUTOMATION_TEST to enable)
 # by default, they should only be built standalone, (run cmake inside .github/ci_automation_tests)
@@ -351,21 +359,12 @@ endif()
 #------------------------------------------------------------------------------
 # install
 #------------------------------------------------------------------------------
-if(PROJECT_IS_TOP_LEVEL)
+if(PROJECT_IS_TOP_LEVEL AND CMAKE_BUILD_TYPE STREQUAL "Release")
     install(DIRECTORY hello_imgui_cmake DESTINATION share/${PROJECT_NAME})
     install(DIRECTORY hello_imgui_assets DESTINATION share/${PROJECT_NAME})
-endif()
-
-if (HELLOIMGUI_BUILD_DOCS)
-    add_custom_target(hello_imgui_build_doc ALL
-        ${PROJECT_SOURCE_DIR}/tools/doc/process_md_docs.py
-        COMMENT "Generating doc"
-    )
-endif()
-
-if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
-    install(FILES README.md DESTINATION share/${PROJECT_NAME})
-
+    if (NOT IOS AND NOT ANDROID)
+        install(FILES README.md DESTINATION share/${PROJECT_NAME})
+    endif()
 endif()
 
 #------------------------------------------------------------------------------

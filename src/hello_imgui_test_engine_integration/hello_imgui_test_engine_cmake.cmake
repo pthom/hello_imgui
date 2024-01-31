@@ -47,6 +47,14 @@ function(_add_imgui_test_engine_lib)
     target_compile_definitions(imgui_test_engine PRIVATE
         IMGUI_STB_IMAGE_WRITE_FILENAME="${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui/stb_image_write.h"
     )
+
+    # install test_engine headers
+    if(PROJECT_IS_TOP_LEVEL)
+        file(GLOB te_headers ${te_source_folder}/*.h)
+        install(FILES ${te_headers} DESTINATION include)
+        install(DIRECTORY ${te_source_folder}/thirdparty DESTINATION include)
+    endif()
+    him_add_installable_dependency(imgui_test_engine)
 endfunction()
 
 
@@ -70,7 +78,7 @@ function(_add_hello_imgui_test_engine_integration)
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/test_engine_integration.cpp
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/test_engine_integration.h
         )
-    target_include_directories(hello_imgui PUBLIC ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/..)
+    target_include_directories(hello_imgui PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_FUNCTION_LIST_DIR}/..>)
 endfunction()
 
 

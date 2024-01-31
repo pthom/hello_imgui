@@ -804,6 +804,8 @@ function(him_install)
         install(TARGETS ${HELLOIMGUI_TARGET} DESTINATION lib/)
         file(GLOB headers *.h)
         install(FILES ${headers} DESTINATION include/hello_imgui/)
+        file(GLOB internal_headers internal/*.h)
+        install(FILES ${internal_headers} DESTINATION include/hello_imgui/internal)
     endif()
 endfunction()
 

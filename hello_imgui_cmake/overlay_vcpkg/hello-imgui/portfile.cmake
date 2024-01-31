@@ -99,14 +99,28 @@ endif()
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
-        -DHELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE=ON
+        # disable demos, tests, doc
         -DHELLOIMGUI_BUILD_DEMOS=OFF
         -DHELLOIMGUI_BUILD_DOCS=OFF
         -DHELLOIMGUI_BUILD_TESTS=OFF
-        -DHELLO_IMGUI_IMGUI_SHARED=OFF
 
+        # Standard win32 options (these are the defaults for HelloImGui)
+        # we could add a vcpkg feature for this, but it would have to be platform specific
+        -DHELLOIMGUI_WIN32_NO_CONSOLE=ON
+        -DHELLOIMGUI_WIN32_AUTO_WINMAIN=ON
+
+        # Standard macOS options (these are the defaults for HelloImGui)
+        -DHELLOIMGUI_MACOS_NO_BUNDLE=OFF
+
+        # vcpkg does not support ImGui Test Engine, so we cannot enable it
+        -DHELLOIMGUI_WITH_TEST_ENGINE=OFF
+
+        -DHELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE=ON
+        -DHELLO_IMGUI_IMGUI_SHARED=OFF
         -DHELLOIMGUI_BUILD_IMGUI=OFF
 
+        # Backend combinations (hello_imgui wants a combination of rendering and platform backend)
+        # (we can select at most one rendering backend)
         -DHELLOIMGUI_USE_GLFW_OPENGL3=${HELLOIMGUI_USE_GLFW_OPENGL3}
         -DHELLOIMGUI_USE_SDL_OPENGL3=${HELLOIMGUI_USE_SDL_OPENGL3}
         -DHELLOIMGUI_USE_SDL_METAL=${HELLOIMGUI_USE_SDL_METAL}

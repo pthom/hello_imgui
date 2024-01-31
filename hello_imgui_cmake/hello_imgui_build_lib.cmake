@@ -65,6 +65,17 @@ endfunction()
 # Build imgui: API = him_build_imgui + him_install_imgui (to be called at the end)
 ###################################################################################################
 function(him_build_imgui)
+    # check that HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE is on if a package is found
+    find_package(imgui CONFIG QUIET)
+    if(imgui_FOUND AND NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        message(FATAL_ERROR "
+            imgui is found via find_package(imgui), but HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE is OFF.
+            You should either
+                - set -DHELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE=ON (this will use the imgui CMake package)
+                - or uninstall the imgui package (e.g. vcpkg remove imgui)
+        ")
+    endif()
+
     message(STATUS "HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE is ${HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE}")
     if (HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
         set(HELLOIMGUI_BUILD_IMGUI OFF CACHE BOOL "" FORCE)

@@ -26,7 +26,7 @@
 
 #include "hello_imgui/hello_imgui_error.h"
 #include "backend_window_helper/sdl_window_helper.h"
-#include "internal/backend_impls/opengl_setup_helper/opengl_setup_sdl.h"
+#include "hello_imgui/internal/backend_impls/opengl_setup_helper/opengl_setup_sdl.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/win32_dpi_awareness.h"
 
 #include <SDL.h>

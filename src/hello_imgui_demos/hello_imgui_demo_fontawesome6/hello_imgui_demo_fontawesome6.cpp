@@ -8,7 +8,7 @@
 #include "imgui.h"
 
 
-int main()
+int main(int, char**)
 {
     HelloImGui::RunnerParams runnerParams;
 

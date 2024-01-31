@@ -18,18 +18,24 @@ jobs:
         config:
           - os: ubuntu-latest
             vcpkg_triplet: x64-linux-release
-#          - os: macos-latest
-#            vcpkg_triplet: x64-osx-release
-#          - os: windows-latest
-#            vcpkg_triplet: x64-windows-release
+          - os: macos-latest
+            vcpkg_triplet: x64-osx-release
+          - os: windows-latest
+            vcpkg_triplet: x64-windows-release
 
 
     steps:
+      - name: install glfw & sdl requirements
+        if : ${{ matrix.config.os == 'ubuntu-latest' }}
+        shell: bash
+        run: |
+          sudo apt-get update && sudo apt-get install -y libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config libx11-dev libxft-dev libxext-dev
+
       - name: vcpkg build
         uses: johnwason/vcpkg-action@v6
         id: vcpkg
         with:
-          pkgs: 'glad[gl-api-43] stb freetype lunasvg' #imgui[opengl3-binding, docking-experimental, glfw-binding, sdl2-binding, freetype, freetype-lunasvg]'
+          pkgs: 'glad[gl-api-43] stb freetype lunasvg glfw3 sdl2'
           triplet: ${{ matrix.config.vcpkg_triplet }}
           cache-key: ${{ matrix.config.os }}
           revision: master
@@ -41,22 +47,21 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup interactive tmate session
-        uses: mxschmitt/action-tmate@v3
+#      - name: Setup interactive tmate session
+#        uses: mxschmitt/action-tmate@v3
 
       # Available rendering bindings:
       #     opengl3-binding, metal-binding, opengl3-binding, vulkan-binding, dx11-binding, dx12-binding
       # We test only opengl3-binding
-#      - name: install requirements via vcpkg
-#        shell: bash
-#        run: |
-#          echo "hello"
-#          vcpkg install "glad[gl-api-43]" stb freetype lunasvg "imgui[opengl3-binding, docking-experimental, glfw-binding, sdl2-binding, freetype, freetype-lunasvg]"
+      - name: vcpkg install imgui
+        shell: bash
+        run: |
+          vcpkg install "imgui[opengl3-binding, docking-experimental, glfw-binding, sdl2-binding, freetype, freetype-lunasvg]"
 
       - name: Build and install
         shell: bash
         run: |
           mkdir build
           cd build          
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DHELLOIMGUI_USE_SDL_OPENGL3=ON -DHELLOIMGUI_USE_GLFW_OPENGL3=ON -DCMAKE_BUILD_TYPE=Release
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake -DHELLOIMGUI_USE_SDL_OPENGL3=ON -DHELLOIMGUI_USE_GLFW_OPENGL3=ON -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE=ON
           cmake --build . -j 3

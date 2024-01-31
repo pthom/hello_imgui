@@ -92,9 +92,9 @@ function(_him_do_build_imgui)
         add_library(imgui ${imgui_sources})
     endif()
     target_include_directories(imgui PUBLIC
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp
+        $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends>
+        $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp>
     )
 
     if (MSVC)

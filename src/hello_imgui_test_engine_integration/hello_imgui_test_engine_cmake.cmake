@@ -34,7 +34,7 @@ function(_add_imgui_test_engine_lib)
     set(te_source_folder ${HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR}/imgui_test_engine)
     file(GLOB_RECURSE sources ${te_source_folder}/*.h ${te_source_folder}/*.cpp)
     add_library(imgui_test_engine ${sources})
-    target_include_directories(imgui_test_engine PUBLIC $<BUILD_INTERFACE:${te_source_folder}>)
+    target_include_directories(imgui_test_engine PUBLIC $<BUILD_INTERFACE:${te_source_folder}/..>)
 
     # Link imgui_test_engine with imgui
     target_link_libraries(imgui_test_engine PUBLIC imgui)
@@ -51,7 +51,7 @@ function(_add_imgui_test_engine_lib)
     # install test_engine headers
     if(PROJECT_IS_TOP_LEVEL)
         file(GLOB te_headers ${te_source_folder}/*.h)
-        install(FILES ${te_headers} DESTINATION include)
+        install(FILES ${te_headers} DESTINATION include/imgui_test_engine)
         install(DIRECTORY ${te_source_folder}/thirdparty DESTINATION include)
     endif()
     him_add_installable_dependency(imgui_test_engine)

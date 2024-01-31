@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: VCpkgDeps
+    name: VcpkgDeps
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false

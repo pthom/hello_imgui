@@ -632,10 +632,12 @@ endfunction()
 # Metal Rendering backend: API = him_has_metal_backend
 ###################################################################################################
 function(him_has_metal target)
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.mm
-    )
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.mm
+        )
+    endif()
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_METAL)
     set(HELLOIMGUI_HAS_METAL ON CACHE BOOL "" FORCE)
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC
@@ -647,10 +649,12 @@ endfunction()
 # Vulkan Rendering backend: API = him_has_vulkan
 ###################################################################################################
 function(him_has_vulkan target)
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
-    )
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
+        )
+    endif()
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_VULKAN)
     set(HELLOIMGUI_HAS_VULKAN ON CACHE BOOL "" FORCE)
     find_package(Vulkan REQUIRED)
@@ -662,10 +666,12 @@ endfunction()
 # DirectX11 Rendering backend: API = him_has_directx11
 ###################################################################################################
 function(him_has_directx11 target)
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx11.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx11.cpp
-    )
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx11.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx11.cpp
+        )
+    endif()
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_DIRECTX11)
     set(HELLOIMGUI_HAS_DIRECTX11 ON CACHE BOOL "" FORCE)
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC d3d11.lib)
@@ -676,10 +682,12 @@ endfunction()
 # DirectX12 Rendering backend: API = him_has_directx12
 ###################################################################################################
 function(him_has_directx12 target)
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx12.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx12.cpp
-    )
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx12.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx12.cpp
+        )
+    endif()
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_DIRECTX12)
     set(HELLOIMGUI_HAS_DIRECTX12 ON CACHE BOOL "" FORCE)
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC d3d12.lib dxgi.lib)

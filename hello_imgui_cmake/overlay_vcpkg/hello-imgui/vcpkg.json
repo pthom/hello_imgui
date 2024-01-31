@@ -62,6 +62,16 @@
       ]
     },
 
+    "dx11-binding":
+    {
+      "description": "dx11-binding",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "features": ["dx11-binding"]
+        }
+      ]
+    },
 
     "glfw-binding":
     {

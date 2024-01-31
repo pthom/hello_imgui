@@ -15,7 +15,7 @@
     },
     {
       "name": "imgui",
-      "features": ["docking-experimental", "freetype", "freetype-lunasvg", "glfw-binding"]
+      "features": ["docking-experimental", "freetype", "freetype-lunasvg"]
     },
     {
       "name": "glad",
@@ -38,7 +38,29 @@
           "features": ["opengl3-binding"]
         }
       ]
+    },
+
+    "glfw-binding":
+    {
+      "description": "glfw-binding",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "features": ["glfw-binding"]
+        }
+      ]
+    },
+
+    "sdl2-binding":
+    {
+      "description": "sdl2-binding",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "features": ["sdl2-binding"]
+        }
+      ]
     }
-    
+
   }
 }

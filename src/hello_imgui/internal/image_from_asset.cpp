@@ -11,7 +11,7 @@
 #include "imgui.h"
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/hello_imgui_logger.h"
-#include "stb_hello_imgui/stb_image.h"
+#include "stb_image.h"
 
 #include <string>
 #include <unordered_map>

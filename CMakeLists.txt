@@ -329,7 +329,7 @@ endif()
 
 # Add stb for HelloImGui
 add_library(stb_hello_imgui STATIC external/stb_hello_imgui/stb_impl_hello_imgui.cpp)
-target_include_directories(stb_hello_imgui PUBLIC external)
+target_include_directories(stb_hello_imgui PUBLIC external/stb_hello_imgui)
 if(HELLOIMGUI_STB_IMAGE_IMPLEMENTATION)
     target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_IMPLEMENTATION)
 endif()

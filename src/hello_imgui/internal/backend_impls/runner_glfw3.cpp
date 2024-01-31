@@ -23,7 +23,7 @@
 //#endif
 
 #include "hello_imgui/hello_imgui.h"
-#include "stb_hello_imgui/stb_image.h"
+#include "stb_image.h"
 
 #include "backend_window_helper/glfw_window_helper.h"
 #include "runner_glfw3.h"

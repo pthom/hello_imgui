@@ -421,7 +421,9 @@ function(him_add_stb_image)
         file(GLOB stb_headers ${stb_dir}/*.h)
         install(FILES ${stb_headers} DESTINATION include)
     endif()
-    him_add_installable_dependency(stb_hello_imgui)
+    if(NOT Stb_FOUND)
+        him_add_installable_dependency(stb_hello_imgui)
+    endif()
 endfunction()
 
 ###################################################################################################

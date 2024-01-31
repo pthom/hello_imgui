@@ -15,8 +15,7 @@
     },
     {
       "name": "imgui",
-      "features": ["docking-experimental", "freetype", "freetype-lunasvg", "glfw-binding", "opengl3-binding"],
-      "$comment": "Need to add lunasvg"
+      "features": ["docking-experimental", "freetype", "freetype-lunasvg", "glfw-binding"]
     },
     {
       "name": "glad",
@@ -26,11 +25,20 @@
       "name": "stb"
     }
   ],
-  "default-features": [],
+
+  "default-features": ["opengl3-binding"],
+
   "features": {
-    "example-feature": {
-      "description": "",
-      "dependencies": []
+    "opengl3-binding":
+    {
+      "description": "opengl3-binding",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "features": ["opengl3-binding"]
+        }
+      ]
     }
+    
   }
 }

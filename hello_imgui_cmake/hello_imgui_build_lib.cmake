@@ -17,9 +17,8 @@ cmake_policy(SET CMP0079 NEW)
 # Store installable dependencies
 ###################################################################################################
 function(him_add_installable_dependency dependency_name)
-    message(STATUS "Adding installable dependency ${dependency_name} HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
     set(HELLOIMGUI_INSTALLABLE_DEPENDENCIES ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES} ${dependency_name} CACHE INTERNAL "" FORCE)
-    message(STATUS "After Adding installable dependency HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
+    message(STATUS "Added installable dependency ${dependency_name}, HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
 endfunction()
 
 function(him_reset_installable_dependencies)

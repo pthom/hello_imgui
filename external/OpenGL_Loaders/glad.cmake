@@ -10,7 +10,8 @@ function(him_install_glad)
         ${GLAD_DIR}/include/glad/glad.h
         ${GLAD_DIR}/include/KHR/khrplatform.h)
     add_library(glad ${GLAD_FILES})
-    target_include_directories(glad PUBLIC SYSTEM ${GLAD_DIR}/include)
+    target_include_directories(glad PUBLIC $<BUILD_INTERFACE:${GLAD_DIR}/include>)
+
     if(WIN32)
         target_link_libraries(glad PUBLIC opengl32.lib)
     else()

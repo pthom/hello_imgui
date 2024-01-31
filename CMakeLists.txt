@@ -329,7 +329,8 @@ endif()
 
 # Add stb for HelloImGui
 add_library(stb_hello_imgui STATIC external/stb_hello_imgui/stb_impl_hello_imgui.cpp)
-target_include_directories(stb_hello_imgui PUBLIC external/stb_hello_imgui)
+target_include_directories(stb_hello_imgui PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/external/stb_hello_imgui>)
+
 if(HELLOIMGUI_STB_IMAGE_IMPLEMENTATION)
     target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_IMPLEMENTATION)
 endif()
@@ -367,13 +368,27 @@ if(PROJECT_IS_TOP_LEVEL AND CMAKE_BUILD_TYPE STREQUAL "Release")
 #    endif()
 
     # inspired from https://iamsorush.com/posts/cpp-cmake-config/
-    install(TARGETS hello_imgui
+    install(TARGETS hello_imgui stb_hello_imgui glad
         EXPORT hello_imgui_targets
         FILE_SET HEADERS
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         RUNTIME DESTINATION bin
         INCLUDES DESTINATION include)
+
+#    install(TARGETS stb_hello_imgui EXPORT hello_imgui_targets
+#        LIBRARY DESTINATION lib
+#        ARCHIVE DESTINATION lib
+#        RUNTIME DESTINATION bin
+#        INCLUDES DESTINATION include
+#    )
+#
+#    install(TARGETS glad EXPORT hello_imgui_targets
+#        LIBRARY DESTINATION lib
+#        ARCHIVE DESTINATION lib
+#        RUNTIME DESTINATION bin
+#        INCLUDES DESTINATION include
+#    )
 
     install(EXPORT hello_imgui_targets
         FILE hello_imgui_targets.cmake

@@ -346,16 +346,21 @@ if(HELLOIMGUI_BUILD_AUTOMATION_TEST)
     add_subdirectory(.github/ci_automation_tests)
 endif()
 
+
 #------------------------------------------------------------------------------
-# install
+# CMake shenanigans so that find_package(hello-imgui CONFIG REQUIRED) works
 #------------------------------------------------------------------------------
-if(PROJECT_IS_TOP_LEVEL AND CMAKE_BUILD_TYPE STREQUAL "Release")
-    install(DIRECTORY hello_imgui_cmake DESTINATION share/${PROJECT_NAME})
-    install(DIRECTORY hello_imgui_assets DESTINATION share/${PROJECT_NAME})
-    if (NOT IOS AND NOT ANDROID)
-        install(FILES README.md DESTINATION share/${PROJECT_NAME})
-    endif()
-endif()
+# These elements are mainly used to build a vcpkg compatible package.
+# Important note:
+#     - the CMake package is named hello-imgui (with a "-")
+#     - the CMake target is named hello_imgui (with a "_")
+# To link with hello_imgui, you need to use:
+#     find_package(hello-imgui CONFIG REQUIRED)
+#     target_link_libraries(your_target PRIVATE hello-imgui::hello_imgui)  # note the variation "-" vs "_"
+# However, the simplest use is:
+#     find_package(hello-imgui CONFIG REQUIRED)
+#     hello_imgui_add_app(test test.cpp) # this will automatically link with hello_imgui
+#------------------------------------------------------------------------------
 if(PROJECT_IS_TOP_LEVEL)
     # inspired from https://iamsorush.com/posts/cpp-cmake-config/
     message(STATUS "HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
@@ -380,7 +385,6 @@ if(PROJECT_IS_TOP_LEVEL)
 
     install(FILES "hello_imgui_cmake/hello-imguiConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/hello-imguiConfigVersion.cmake"
         DESTINATION lib/cmake/hello_imgui)
-
 endif()
 
 #------------------------------------------------------------------------------

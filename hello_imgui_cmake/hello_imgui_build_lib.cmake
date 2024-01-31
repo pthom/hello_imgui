@@ -892,7 +892,16 @@ function(him_install)
         install(FILES ${headers} DESTINATION include/hello_imgui/)
         file(GLOB internal_headers internal/*.h)
         install(FILES ${internal_headers} DESTINATION include/hello_imgui/internal)
+
+        if(CMAKE_BUILD_TYPE STREQUAL "Release")
+            install(DIRECTORY ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake DESTINATION share/${PROJECT_NAME})
+            install(DIRECTORY ${HELLOIMGUI_BASEPATH}/hello_imgui_assets DESTINATION share/${PROJECT_NAME})
+            if (NOT IOS AND NOT ANDROID)
+                install(FILES ${HELLOIMGUI_BASEPATH}/README.md DESTINATION share/${PROJECT_NAME})
+            endif()
+        endif()
     endif()
+
 endfunction()
 
 

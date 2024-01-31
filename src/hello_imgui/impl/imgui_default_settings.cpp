@@ -1,6 +1,6 @@
-#include "imgui_default_settings.h"
-#include "hello_imgui_assets.h"
-#include "hello_imgui_font.h"
+#include "hello_imgui/imgui_default_settings.h"
+#include "hello_imgui/hello_imgui_assets.h"
+#include "hello_imgui/hello_imgui_font.h"
 
 
 namespace HelloImGui

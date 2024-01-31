@@ -3,13 +3,13 @@
 #include "rendering_metal.h"
 
 #import <Metal/Metal.h>
-#include <backends/imgui_impl_metal.h>
+#include "imgui_impl_metal.h"
 #include <array>
 
 #include "hello_imgui/hello_imgui.h"
 
 #include <SDL.h>
-#include <backends/imgui_impl_sdl2.h>
+#include "imgui_impl_sdl2.h"
 
 #include <tuple>
 

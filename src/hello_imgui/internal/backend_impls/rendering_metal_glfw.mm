@@ -5,7 +5,7 @@
 
 #import <Metal/Metal.h>
 #import <QuartzCore/QuartzCore.h>
-#include <backends/imgui_impl_metal.h>
+#include "imgui_impl_metal.h"
 #include <array>
 
 #include "hello_imgui/hello_imgui.h"
@@ -14,7 +14,7 @@
 #define GLFW_EXPOSE_NATIVE_COCOA
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
-#include <backends/imgui_impl_glfw.h>
+#include "imgui_impl_glfw.h"
 
 
 namespace HelloImGui

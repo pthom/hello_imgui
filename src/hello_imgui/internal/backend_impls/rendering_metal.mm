@@ -1,7 +1,7 @@
 #ifdef HELLOIMGUI_HAS_METAL
 #include "rendering_metal.h"
 
-#include <backends/imgui_impl_metal.h>
+#include "imgui_impl_metal.h"
 #include "hello_imgui/hello_imgui.h"
 
 #import <Cocoa/Cocoa.h>

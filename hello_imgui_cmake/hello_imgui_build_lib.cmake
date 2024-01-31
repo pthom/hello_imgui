@@ -87,7 +87,6 @@ function(_him_do_build_imgui)
         ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/imgui_stdlib.h)
     if (HELLO_IMGUI_IMGUI_SHARED)
         add_library(imgui SHARED ${imgui_sources})
-        install(TARGETS imgui DESTINATION ./lib/)
     else()
         add_library(imgui ${imgui_sources})
     endif()
@@ -218,10 +217,13 @@ endfunction()
 
 function(_him_install_imgui)
     if(PROJECT_IS_TOP_LEVEL)
-        install(FILES ${imgui_sources} DESTINATION imgui)
-        install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends DESTINATION imgui)
-        install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp DESTINATION imgui/misc)
-        install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype DESTINATION imgui/misc)
+        install(TARGETS imgui DESTINATION ./lib/)
+        file(GLOB imgui_headers
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/*.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/*.h
+        )
+        install(FILES ${imgui_headers} DESTINATION include)
     endif()
 endfunction()
 

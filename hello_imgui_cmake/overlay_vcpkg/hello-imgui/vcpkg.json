@@ -51,6 +51,18 @@
       ]
     },
 
+    "vulkan-binding":
+    {
+      "description": "vulkan-binding",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "features": ["vulkan-binding"]
+        }
+      ]
+    },
+
+
     "glfw-binding":
     {
       "description": "glfw-binding",

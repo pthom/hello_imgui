@@ -404,7 +404,7 @@ function(him_add_stb_image)
 
     if(Stb_FOUND)
         message(STATUS "HelloImGui: using stb from find_package(Stb)")
-        target_include_directories(stb_hello_imgui PUBLIC ${Stb_INCLUDE_DIR})
+        target_include_directories(stb_hello_imgui PUBLIC $<BUILD_INTERFACE:${Stb_INCLUDE_DIR}>)
     else()
         target_include_directories(stb_hello_imgui PUBLIC $<BUILD_INTERFACE:${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui>)
     endif()
@@ -420,9 +420,9 @@ function(him_add_stb_image)
         file(GLOB stb_headers ${stb_dir}/*.h)
         install(FILES ${stb_headers} DESTINATION include)
     endif()
-    if(NOT Stb_FOUND)
-        him_add_installable_dependency(stb_hello_imgui)
-    endif()
+
+    # This is always installed, since it might use STB_IMAGE_IMPLEMENTATION or STB_IMAGE_WRITE_IMPLEMENTATION
+    him_add_installable_dependency(stb_hello_imgui)
 endfunction()
 
 ###################################################################################################

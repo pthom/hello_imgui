@@ -18,10 +18,10 @@ jobs:
         config:
           - os: ubuntu-latest
             vcpkg_triplet: x64-linux-release
-#          - os: macos-latest
-#            vcpkg_triplet: x64-osx-release
-#          - os: windows-latest
-#            vcpkg_triplet: x64-windows-release
+          - os: macos-latest
+            vcpkg_triplet: x64-osx-release
+          - os: windows-latest
+            vcpkg_triplet: x64-windows-release
 
 
     steps:
@@ -42,13 +42,12 @@ jobs:
           token: ${{ github.token }}
           github-binarycache: true
 
-
       - uses: actions/checkout@v4
         with:
           submodules: false
 
-      - name: Setup interactive tmate session
-        uses: mxschmitt/action-tmate@v3
+#      - name: Setup interactive tmate session
+#        uses: mxschmitt/action-tmate@v3
 
       # Available rendering bindings:
       #     opengl3-binding, metal-binding, opengl3-binding, vulkan-binding, dx11-binding, dx12-binding
@@ -56,4 +55,4 @@ jobs:
       - name: vcpkg install hello_imgui
         shell: bash
         run: |
-          vcpkg install "hello-imgui[opengl3-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui --debug
+          vcpkg install "hello-imgui[opengl3-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui

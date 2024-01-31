@@ -13,8 +13,9 @@ vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
 set(VCPKG_USE_HEAD_VERSION ON CACHE BOOL "" FORCE)
 vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
-    URL file:///Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/hello_imgui_vcpkg
-    HEAD_REF vcpkg_packaging
+    #URL file:///Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/hello_imgui_vcpkg
+    URL https://github.com/pthom/hello_imgui
+    HEAD_REF master
 #    REF c95e2bfdc26477929354daa2213394a972016a1b
 )
 

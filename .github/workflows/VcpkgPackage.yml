@@ -1,4 +1,4 @@
-name: "VcpkgPackae"
+name: "VcpkgPackage"
 
 # Test that the vcpkg package build successfully
 
@@ -18,10 +18,10 @@ jobs:
         config:
           - os: ubuntu-latest
             vcpkg_triplet: x64-linux-release
-          - os: macos-latest
-            vcpkg_triplet: x64-osx-release
-          - os: windows-latest
-            vcpkg_triplet: x64-windows-release
+#          - os: macos-latest
+#            vcpkg_triplet: x64-osx-release
+#          - os: windows-latest
+#            vcpkg_triplet: x64-windows-release
 
 
     steps:
@@ -31,7 +31,7 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config libx11-dev libxft-dev libxext-dev
 
-      - name: vcpkg build
+      - name: vcpkg install
         uses: johnwason/vcpkg-action@v6
         id: vcpkg
         with:
@@ -45,10 +45,10 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: false
 
-#      - name: Setup interactive tmate session
-#        uses: mxschmitt/action-tmate@v3
+      - name: Setup interactive tmate session
+        uses: mxschmitt/action-tmate@v3
 
       # Available rendering bindings:
       #     opengl3-binding, metal-binding, opengl3-binding, vulkan-binding, dx11-binding, dx12-binding
@@ -57,4 +57,3 @@ jobs:
         shell: bash
         run: |
           vcpkg install "hello-imgui[opengl3-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui --debug
-          

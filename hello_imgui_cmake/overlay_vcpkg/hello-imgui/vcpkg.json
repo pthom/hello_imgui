@@ -16,6 +16,10 @@
     {
       "name": "imgui",
       "features": ["docking-experimental", "freetype", "glfw-binding", "opengl3-binding"]
+    },
+    {
+      "name": "glad",
+      "features": ["gl-api-43"]
     }
   ],
   "default-features": [],

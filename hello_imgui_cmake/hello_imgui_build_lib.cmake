@@ -552,8 +552,7 @@ function(him_has_opengl3 target)
 
     if (HELLOIMGUI_USE_GLAD)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
-        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glad)
-        _him_install_glad()
+        _him_add_glad()
     endif()
 endfunction()
 
@@ -572,10 +571,18 @@ function(_him_link_opengl_es_sdl target)
     )
 endfunction()
 
-function(_him_install_glad)
+function(_him_add_glad)
     if(TARGET glad)
         return()
     endif()
+
+    find_package(glad CONFIG QUIET)
+    if(glad_FOUND)
+        message(STATUS "HelloImGui: using glad from find_package(glad)")
+        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glad::glad)
+        return()
+    endif()
+
     set(glad_dir ${HELLOIMGUI_BASEPATH}/external/OpenGL_Loaders/glad)
     set(glad_files
         ${glad_dir}/src/glad.c
@@ -600,6 +607,7 @@ function(_him_install_glad)
     if (MSVC)
         hello_imgui_msvc_target_set_folder(glad ${HELLOIMGUI_SOLUTIONFOLDER}/external/OpenGL_Loaders)
     endif()
+    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glad)
 
     him_add_installable_dependency(glad)
     if(PROJECT_IS_TOP_LEVEL)

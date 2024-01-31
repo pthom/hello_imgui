@@ -1,8 +1,8 @@
 #if defined(HELLOIMGUI_HAS_VULKAN) && defined(HELLOIMGUI_USE_GLFW3)
 #include "rendering_vulkan.h"
 
-#include <backends/imgui_impl_vulkan.h>
-#include <backends/imgui_impl_glfw.h>
+#include "imgui_impl_vulkan.h"
+#include "imgui_impl_glfw.h"
 
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN

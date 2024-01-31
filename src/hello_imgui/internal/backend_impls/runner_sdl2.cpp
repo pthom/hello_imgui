@@ -2,7 +2,7 @@
 #include "runner_sdl2.h"
 
 #ifdef HELLOIMGUI_HAS_OPENGL
-#include <backends/imgui_impl_opengl3.h>
+#include "imgui_impl_opengl3.h"
 #include "rendering_opengl3.h"
 #endif
 #ifdef HELLOIMGUI_HAS_METAL
@@ -22,7 +22,7 @@
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
 #include "stb_hello_imgui/stb_image.h"
-#include <backends/imgui_impl_sdl2.h>
+#include "imgui_impl_sdl2.h"
 
 #include "hello_imgui/hello_imgui_error.h"
 #include "backend_window_helper/sdl_window_helper.h"

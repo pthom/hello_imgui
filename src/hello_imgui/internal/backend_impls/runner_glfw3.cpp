@@ -2,11 +2,7 @@
 
 #ifdef HELLOIMGUI_HAS_OPENGL
 //#include "hello_imgui/hello_imgui_include_opengl.h"
-#ifdef HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE
 #include "imgui_impl_opengl3.h"
-#else
-#include <backends/imgui_impl_opengl3.h>
-#endif
 #include "opengl_setup_helper/opengl_setup_glfw.h"
 #include "opengl_setup_helper/opengl_screenshot.h"
 #include "rendering_opengl3.h"
@@ -32,11 +28,7 @@
 #include "backend_window_helper/glfw_window_helper.h"
 #include "runner_glfw3.h"
 #include <GLFW/glfw3.h>
-#ifdef HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE
 #include "imgui_impl_glfw.h"
-#else
-#include <backends/imgui_impl_glfw.h>
-#endif
 #include <imgui.h>
 
 

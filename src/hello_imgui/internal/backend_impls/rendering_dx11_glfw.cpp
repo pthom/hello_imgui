@@ -1,8 +1,8 @@
 #if defined(HELLOIMGUI_HAS_DIRECTX11) && defined(HELLOIMGUI_USE_GLFW3)
 #include "rendering_dx11.h"
 
-#include <backends/imgui_impl_dx11.h>
-#include <backends/imgui_impl_glfw.h>
+#include "imgui_impl_dx11.h"
+#include "imgui_impl_glfw.h"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>

@@ -6,9 +6,8 @@ include(FetchContent)
 include(${HELLOIMGUI_BASEPATH}/src/hello_imgui_test_engine_integration/hello_imgui_test_engine_cmake.cmake)
 
 
-# Enable objective-c++ for apple. This is global and cannot (yet) be done in a function.
+# Enable objective-c for apple. This is global and cannot (yet) be done in a function.
 if (APPLE)
-    enable_language(OBJCXX)
     enable_language(OBJC)
 endif()
 

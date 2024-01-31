@@ -26,7 +26,7 @@
     }
   ],
 
-  "default-features": ["opengl3-binding"],
+  "default-features": ["opengl3-binding", "glfw-binding"],
 
   "features": {
     "opengl3-binding":

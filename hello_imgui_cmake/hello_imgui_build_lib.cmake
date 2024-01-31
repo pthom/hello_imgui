@@ -727,10 +727,13 @@ function (him_use_sdl2_backend target)
     #    _him_fail_if_sdl_not_found()
     _him_link_sdl(${HELLOIMGUI_TARGET})
 
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
-    )
+    # vcpkg will have added those files to imgui
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
+        )
+    endif()
     set(HELLOIMGUI_USE_SDL2 ON CACHE INTERNAL "" FORCE)
     set(HELLOIMGUI_USE_SDL ON CACHE INTERNAL "" FORCE)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL)

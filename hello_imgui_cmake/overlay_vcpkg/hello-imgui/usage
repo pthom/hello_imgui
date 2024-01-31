@@ -1,0 +1,4 @@
+hello_imgui provides CMake targets:
+
+find_package(hello_imgui CONFIG REQUIRED)
+target_link_libraries(main PRIVATE hello_imgui::hello_imgui)

@@ -360,13 +360,14 @@ endif()
 #------------------------------------------------------------------------------
 # install
 #------------------------------------------------------------------------------
-if(PROJECT_IS_TOP_LEVEL) # AND CMAKE_BUILD_TYPE STREQUAL "Release")
+if(PROJECT_IS_TOP_LEVEL AND CMAKE_BUILD_TYPE STREQUAL "Release")
     install(DIRECTORY hello_imgui_cmake DESTINATION share/${PROJECT_NAME})
     install(DIRECTORY hello_imgui_assets DESTINATION share/${PROJECT_NAME})
     if (NOT IOS AND NOT ANDROID)
         install(FILES README.md DESTINATION share/${PROJECT_NAME})
     endif()
-
+endif()
+if(PROJECT_IS_TOP_LEVEL)
     # inspired from https://iamsorush.com/posts/cpp-cmake-config/
     set(installable_libs hello_imgui stb_hello_imgui glad)
     if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)

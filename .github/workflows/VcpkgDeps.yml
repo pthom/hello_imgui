@@ -1,0 +1,62 @@
+name: "VcpkgDeps"
+
+# Test that a default build when using vcpkg
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+
+
+jobs:
+  build:
+    name: VCpkgDeps
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - os: ubuntu-latest
+            vcpkg_triplet: x64-linux-release
+#          - os: macos-latest
+#            vcpkg_triplet: x64-osx-release
+#          - os: windows-latest
+#            vcpkg_triplet: x64-windows-release
+
+
+    steps:
+      - name: vcpkg build
+        uses: johnwason/vcpkg-action@v6
+        id: vcpkg
+        with:
+          pkgs: 'glad[gl-api-43] stb freetype lunasvg' #imgui[opengl3-binding, docking-experimental, glfw-binding, sdl2-binding, freetype, freetype-lunasvg]'
+          triplet: ${{ matrix.config.vcpkg_triplet }}
+          cache-key: ${{ matrix.config.os }}
+          revision: master
+          token: ${{ github.token }}
+          github-binarycache: true
+
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup interactive tmate session
+        uses: mxschmitt/action-tmate@v3
+
+      # Available rendering bindings:
+      #     opengl3-binding, metal-binding, opengl3-binding, vulkan-binding, dx11-binding, dx12-binding
+      # We test only opengl3-binding
+#      - name: install requirements via vcpkg
+#        shell: bash
+#        run: |
+#          echo "hello"
+#          vcpkg install "glad[gl-api-43]" stb freetype lunasvg "imgui[opengl3-binding, docking-experimental, glfw-binding, sdl2-binding, freetype, freetype-lunasvg]"
+
+      - name: Build and install
+        shell: bash
+        run: |
+          mkdir build
+          cd build          
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DHELLOIMGUI_USE_SDL_OPENGL3=ON -DHELLOIMGUI_USE_GLFW_OPENGL3=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build . -j 3

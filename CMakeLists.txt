@@ -158,6 +158,7 @@ if (WIN32)
     option(HELLOIMGUI_WIN32_NO_CONSOLE "Under windows, build apps without Dos Console" ON)
     option(HELLOIMGUI_WIN32_AUTO_WINMAIN "Under windows, automatically provide a WinMain (provide `int main(int, char**)`, it will be called by WinMain())" ON)
 endif()
+message(FATAL_ERROR "HELLOIMGUI_WIN32_NO_CONSOLE=${HELLOIMGUI_WIN32_NO_CONSOLE} HELLOIMGUI_WIN32_AUTO_WINMAIN=${HELLOIMGUI_WIN32_AUTO_WINMAIN}")
 
 #------------------------------------------------------------------------------
 # Options / macOS: provide regular terminal executables, not app bundles

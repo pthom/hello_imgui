@@ -352,8 +352,8 @@ endif()
 # install
 #------------------------------------------------------------------------------
 if(PROJECT_IS_TOP_LEVEL)
-    install(DIRECTORY hello_imgui_cmake DESTINATION .)
-    install(DIRECTORY hello_imgui_assets DESTINATION .)
+    install(DIRECTORY hello_imgui_cmake DESTINATION share/${PROJECT_NAME})
+    install(DIRECTORY hello_imgui_assets DESTINATION share/${PROJECT_NAME})
 endif()
 
 if (HELLOIMGUI_BUILD_DOCS)
@@ -365,7 +365,7 @@ endif()
 
 if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
     install(FILES README.md DESTINATION share/${PROJECT_NAME})
-    
+
 endif()
 
 #------------------------------------------------------------------------------

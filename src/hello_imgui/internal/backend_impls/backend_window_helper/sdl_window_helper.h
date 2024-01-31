@@ -1,7 +1,7 @@
 #pragma once
 #ifdef HELLOIMGUI_USE_SDL
 
-#include "internal/backend_impls/backend_window_helper/backend_window_helper.h"
+#include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
 
 #include <cmath>
 #include <string>

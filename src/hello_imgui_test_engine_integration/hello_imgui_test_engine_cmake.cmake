@@ -31,10 +31,10 @@ endfunction()
 
 # Add imgui_test_engine lib with sources in imgui_test_engine/imgui_test_engine
 function(_add_imgui_test_engine_lib)
-    set(source_folder ${HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR}/imgui_test_engine)
-    file(GLOB_RECURSE sources ${source_folder}/*.h ${source_folder}/*.cpp)
+    set(te_source_folder ${HELLOIMGUI_IMGUI_TEST_ENGINE_SOURCE_DIR}/imgui_test_engine)
+    file(GLOB_RECURSE sources ${te_source_folder}/*.h ${te_source_folder}/*.cpp)
     add_library(imgui_test_engine ${sources})
-    target_include_directories(imgui_test_engine PUBLIC ${source_folder}/..)
+    target_include_directories(imgui_test_engine PUBLIC $<BUILD_INTERFACE:${te_source_folder}>)
 
     # Link imgui_test_engine with imgui
     target_link_libraries(imgui_test_engine PUBLIC imgui)
@@ -47,6 +47,14 @@ function(_add_imgui_test_engine_lib)
     target_compile_definitions(imgui_test_engine PRIVATE
         IMGUI_STB_IMAGE_WRITE_FILENAME="${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui/stb_image_write.h"
     )
+
+    # install test_engine headers
+    if(PROJECT_IS_TOP_LEVEL)
+        file(GLOB te_headers ${te_source_folder}/*.h)
+        install(FILES ${te_headers} DESTINATION include)
+        install(DIRECTORY ${te_source_folder}/thirdparty DESTINATION include)
+    endif()
+    him_add_installable_dependency(imgui_test_engine)
 endfunction()
 
 
@@ -70,7 +78,7 @@ function(_add_hello_imgui_test_engine_integration)
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/test_engine_integration.cpp
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/test_engine_integration.h
         )
-    target_include_directories(hello_imgui PUBLIC ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/..)
+    target_include_directories(hello_imgui PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_FUNCTION_LIST_DIR}/..>)
 endfunction()
 
 

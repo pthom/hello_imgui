@@ -579,3 +579,5 @@ build_*/
 .vscode/
 
 venv*/
+
+_test_vcpkg_himgui/

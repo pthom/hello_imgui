@@ -1,7 +1,7 @@
 #ifdef HELLOIMGUI_USE_GLFW
 #include "opengl_setup_glfw.h"
 #include "hello_imgui/hello_imgui_include_opengl.h"
-#include "internal/backend_impls/backend_window_helper/backend_window_helper.h"
+#include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
 
 #include "GLFW/glfw3.h"
 

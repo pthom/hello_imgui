@@ -12,47 +12,124 @@
 # Needed to add freetype to the imgui target, if it is build externally
 cmake_policy(SET CMP0079 NEW)
 
+
+###################################################################################################
+# Store installable dependencies
+###################################################################################################
+function(him_add_installable_dependency dependency_name)
+    set(HELLOIMGUI_INSTALLABLE_DEPENDENCIES ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES} ${dependency_name} CACHE INTERNAL "" FORCE)
+    message(STATUS "Added installable dependency ${dependency_name}, HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
+endfunction()
+
+function(him_reset_installable_dependencies)
+    set(HELLOIMGUI_INSTALLABLE_DEPENDENCIES "" CACHE INTERNAL "" FORCE)
+endfunction()
+
+
 ###################################################################################################
 # Add library and sources: API = him_add_hello_imgui
 ###################################################################################################
 function(him_add_hello_imgui)
+    file(GLOB_RECURSE sources
+        ${CMAKE_CURRENT_LIST_DIR}/*.h
+        ${CMAKE_CURRENT_LIST_DIR}/*.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/*.c)
     if (APPLE)
-        file(GLOB_RECURSE sources *.h *.cpp *.c *.mm)
-    else()
-        file(GLOB_RECURSE sources *.h *.cpp *.c)
+        file(GLOB_RECURSE sources_mm ${CMAKE_CURRENT_LIST_DIR}/*.mm)
+        set(sources ${sources} ${sources_mm})
     endif()
     add_library(${HELLOIMGUI_TARGET} ${sources})
     if(APPLE AND NOT IOS)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_MACOS)
     endif()
-    target_include_directories(${HELLOIMGUI_TARGET} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/..)
+    if(APPLE)
+        target_compile_options(${HELLOIMGUI_TARGET} PRIVATE "-x" "objective-c++")
+    endif()
+
+    target_include_directories(${HELLOIMGUI_TARGET} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>)
+
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC stb_hello_imgui)
     if (HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        find_package(imgui CONFIG REQUIRED)
         target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui::imgui)
-        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
     else()
         target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui)
     endif()
+
+    add_library(hello-imgui::hello_imgui ALIAS hello_imgui)
+    him_add_installable_dependency(${HELLOIMGUI_TARGET})
 endfunction()
 
 
 ###################################################################################################
-# Build imgui: API = him_build_imgui
+# Build imgui: API = him_build_imgui + him_install_imgui (to be called at the end)
 ###################################################################################################
 function(him_build_imgui)
+    # check that HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE is on if a package is found
+    find_package(imgui CONFIG QUIET)
+    if(imgui_FOUND AND NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        message(FATAL_ERROR "
+            imgui is found via find_package(imgui), but HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE is OFF.
+            You should either
+                - set -DHELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE=ON (this will use the imgui CMake package)
+                - or uninstall the imgui package (e.g. vcpkg remove imgui)
+        ")
+    endif()
+
+    message(STATUS "HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE is ${HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE}")
     if (HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        set(HELLOIMGUI_BUILD_IMGUI OFF CACHE BOOL "" FORCE)
         find_package(imgui CONFIG REQUIRED)
     else()
         if (HELLOIMGUI_BUILD_IMGUI)
             _him_checkout_imgui_submodule_if_needed()
             _him_do_build_imgui()
-            _him_install_imgui()
         endif()
         if (HELLOIMGUI_USE_FREETYPE)
             _him_add_freetype_to_imgui()
         endif()
     endif()
 endfunction()
+
+function(him_install_imgui)
+    if(PROJECT_IS_TOP_LEVEL)
+        if(NOT TARGET imgui)
+            return()
+        endif()
+
+        install(TARGETS imgui DESTINATION ./lib/)
+        file(GLOB imgui_headers
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/*.h
+        )
+        install(FILES ${imgui_headers} DESTINATION include)
+
+        if(HELLOIMGUI_HAS_OPENGL3)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.h DESTINATION include)
+        endif()
+        if(HELLOIMGUI_HAS_METAL)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.h DESTINATION include)
+        endif()
+        if(HELLOIMGUI_HAS_VULKAN)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.h DESTINATION include)
+        endif()
+        if(HELLOIMGUI_HAS_DIRECTX11)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx11.h DESTINATION include)
+        endif()
+
+        if(HELLOIMGUI_USE_SDL2)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.h DESTINATION include)
+        endif()
+        if(HELLOIMGUI_USE_GLFW)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.h DESTINATION include)
+        endif()
+
+        if(HELLOIMGUI_USE_FREETYPE)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.h DESTINATION include)
+        endif()
+    endif()
+endfunction()
+
 
 function(_him_checkout_imgui_submodule_if_needed)
     if (HELLOIMGUI_BUILD_IMGUI)
@@ -77,12 +154,16 @@ function(_him_do_build_imgui)
         ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/imgui_stdlib.h)
     if (HELLO_IMGUI_IMGUI_SHARED)
         add_library(imgui SHARED ${imgui_sources})
-        install(TARGETS imgui DESTINATION ./lib/)
     else()
         add_library(imgui ${imgui_sources})
     endif()
-    target_include_directories(imgui PUBLIC ${HELLOIMGUI_IMGUI_SOURCE_DIR})
-
+    target_include_directories(imgui PUBLIC
+        $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends>
+        $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp>
+        $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype>
+    )
+    him_add_installable_dependency(imgui)
     if (MSVC)
         hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
     endif()
@@ -189,6 +270,12 @@ function(_him_add_freetype_to_imgui)
             FetchContent_MakeAvailable(lunasvg)
             set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
             target_link_libraries(imgui PUBLIC lunasvg)
+            get_target_property(lunasvg_include_dirs lunasvg INTERFACE_INCLUDE_DIRECTORIES)
+            # Patch lunasvg include dir, for installable version (CMake install shenanigans)
+            set_target_properties(lunasvg PROPERTIES INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/_deps/lunasvg-src/include>)
+            get_target_property(lunasvg_include_dirs lunasvg INTERFACE_INCLUDE_DIRECTORIES)
+
+            him_add_installable_dependency(lunasvg)
         endif()
     endif()
 
@@ -200,15 +287,6 @@ function(_him_add_freetype_to_imgui)
         ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.h)
     target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE IMGUI_ENABLE_FREETYPE_LUNASVG)
     target_compile_definitions(imgui PUBLIC IMGUI_USE_WCHAR32)
-endfunction()
-
-function(_him_install_imgui)
-    if(PROJECT_IS_TOP_LEVEL)
-        install(FILES ${imgui_sources} DESTINATION imgui)
-        install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends DESTINATION imgui)
-        install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp DESTINATION imgui/misc)
-        install(DIRECTORY ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype DESTINATION imgui/misc)
-    endif()
 endfunction()
 
 
@@ -332,6 +410,39 @@ endfunction()
 
 
 ###################################################################################################
+# stb_image: API = him_add_stb_image
+###################################################################################################
+function(him_add_stb_image)
+    find_package(Stb QUIET)
+
+    # Add stb for HelloImGui
+    set(stb_dir ${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui)
+    add_library(stb_hello_imgui STATIC ${stb_dir}/stb_impl_hello_imgui.cpp)
+
+    if(Stb_FOUND)
+        message(STATUS "HelloImGui: using stb from find_package(Stb)")
+        target_include_directories(stb_hello_imgui PUBLIC $<BUILD_INTERFACE:${Stb_INCLUDE_DIR}>)
+    else()
+        target_include_directories(stb_hello_imgui PUBLIC $<BUILD_INTERFACE:${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui>)
+    endif()
+
+    if(HELLOIMGUI_STB_IMAGE_IMPLEMENTATION)
+        target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_IMPLEMENTATION)
+    endif()
+    if(HELLOIMGUI_STB_IMAGE_WRITE_IMPLEMENTATION)
+        target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_WRITE_IMPLEMENTATION)
+    endif()
+
+    if(PROJECT_IS_TOP_LEVEL AND NOT Stb_FOUND)
+        file(GLOB stb_headers ${stb_dir}/*.h)
+        install(FILES ${stb_headers} DESTINATION include)
+    endif()
+
+    # This is always installed, since it might use STB_IMAGE_IMPLEMENTATION or STB_IMAGE_WRITE_IMPLEMENTATION
+    him_add_installable_dependency(stb_hello_imgui)
+endfunction()
+
+###################################################################################################
 # Apple related options: API = him_add_apple_options
 ###################################################################################################
 function(him_add_apple_options)
@@ -443,13 +554,17 @@ endfunction()
 # OpenGL Rendering backend: API = him_has_opengl3_backend
 ###################################################################################################
 function(him_has_opengl3 target)
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-    )
+    # vcpkg will have added those files to imgui
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+        )
+    endif()
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_OPENGL)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_OPENGL3)
     set(HELLOIMGUI_HAS_OPENGL ON CACHE BOOL "" FORCE)
+    set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
 
     if(ANDROID OR IOS)
         _him_link_opengl_es_sdl(${HELLOIMGUI_TARGET})
@@ -463,8 +578,7 @@ function(him_has_opengl3 target)
 
     if (HELLOIMGUI_USE_GLAD)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
-        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glad)
-        him_install_glad()
+        _him_add_glad()
     endif()
 endfunction()
 
@@ -483,15 +597,64 @@ function(_him_link_opengl_es_sdl target)
     )
 endfunction()
 
+function(_him_add_glad)
+    if(TARGET glad)
+        return()
+    endif()
+
+    find_package(glad CONFIG QUIET)
+    if(glad_FOUND)
+        message(STATUS "HelloImGui: using glad from find_package(glad)")
+        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glad::glad)
+        return()
+    endif()
+
+    set(glad_dir ${HELLOIMGUI_BASEPATH}/external/OpenGL_Loaders/glad)
+    set(glad_files
+        ${glad_dir}/src/glad.c
+        ${glad_dir}/include/glad/glad.h
+        ${glad_dir}/include/KHR/khrplatform.h)
+    add_library(glad ${glad_files})
+    target_include_directories(glad PUBLIC $<BUILD_INTERFACE:${glad_dir}/include>)
+
+    if(WIN32)
+        target_link_libraries(glad PUBLIC opengl32.lib)
+    else()
+        target_link_libraries(glad PUBLIC ${OPENGL_LIBRARIES})
+    endif()
+    get_target_property(library_type glad TYPE)
+    target_compile_definitions(glad PUBLIC HELLOIMGUI_USE_GLAD)
+    if (library_type STREQUAL SHARED_LIBRARY)
+        # If glad is a shared lobrary, define the macro GLAD_API_EXPORT on the command line.
+        target_compile_definitions(glad PRIVATE GLAD_GLAPI_EXPORT)
+        target_compile_definitions(glad PUBLIC GLAD_GLAPI_EXPORT PRIVATE GLAD_GLAPI_EXPORT_BUILD)
+    endif()
+
+    if (MSVC)
+        hello_imgui_msvc_target_set_folder(glad ${HELLOIMGUI_SOLUTIONFOLDER}/external/OpenGL_Loaders)
+    endif()
+    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glad)
+
+    him_add_installable_dependency(glad)
+    if(PROJECT_IS_TOP_LEVEL)
+        install(TARGETS glad DESTINATION ./lib/)
+        install(FILES ${glad_dir}/include/glad/glad.h DESTINATION include/glad)
+        install(FILES ${glad_dir}/include/KHR/khrplatform.h DESTINATION include/KHR)
+    endif()
+endfunction()
+
+
 
 ###################################################################################################
 # Metal Rendering backend: API = him_has_metal_backend
 ###################################################################################################
 function(him_has_metal target)
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.mm
-    )
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.mm
+        )
+    endif()
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_METAL)
     set(HELLOIMGUI_HAS_METAL ON CACHE BOOL "" FORCE)
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC
@@ -503,10 +666,12 @@ endfunction()
 # Vulkan Rendering backend: API = him_has_vulkan
 ###################################################################################################
 function(him_has_vulkan target)
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
-    )
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
+        )
+    endif()
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_VULKAN)
     set(HELLOIMGUI_HAS_VULKAN ON CACHE BOOL "" FORCE)
     find_package(Vulkan REQUIRED)
@@ -518,10 +683,12 @@ endfunction()
 # DirectX11 Rendering backend: API = him_has_directx11
 ###################################################################################################
 function(him_has_directx11 target)
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx11.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx11.cpp
-    )
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx11.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx11.cpp
+        )
+    endif()
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_DIRECTX11)
     set(HELLOIMGUI_HAS_DIRECTX11 ON CACHE BOOL "" FORCE)
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC d3d11.lib)
@@ -532,10 +699,12 @@ endfunction()
 # DirectX12 Rendering backend: API = him_has_directx12
 ###################################################################################################
 function(him_has_directx12 target)
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx12.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx12.cpp
-    )
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx12.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx12.cpp
+        )
+    endif()
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_DIRECTX12)
     set(HELLOIMGUI_HAS_DIRECTX12 ON CACHE BOOL "" FORCE)
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC d3d12.lib dxgi.lib)
@@ -583,10 +752,13 @@ function (him_use_sdl2_backend target)
     #    _him_fail_if_sdl_not_found()
     _him_link_sdl(${HELLOIMGUI_TARGET})
 
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
-    )
+    # vcpkg will have added those files to imgui
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
+        )
+    endif()
     set(HELLOIMGUI_USE_SDL2 ON CACHE INTERNAL "" FORCE)
     set(HELLOIMGUI_USE_SDL ON CACHE INTERNAL "" FORCE)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL)
@@ -616,12 +788,19 @@ function(_him_fetch_sdl_if_needed)
     endif()
 
     if (shall_fetch_sdl)
+        set(SDL2_DISABLE_INSTALL OFF CACHE BOOL "" FORCE)
         _him_fetch_declare_sdl()
         if(ANDROID)
             FetchContent_Populate(sdl)
             _him_prepare_android_sdl_symlink()
         else()
             FetchContent_MakeAvailable(sdl)
+        endif()
+        if(TARGET SDL2)
+            him_add_installable_dependency(SDL2)
+        endif()
+        if(TARGET SDL2-static)
+            him_add_installable_dependency(SDL2-static)
         endif()
     else()
         set(HELLOIMGUI_SDL_SELECTED_INFO "Use system Library" CACHE INTERNAL "" FORCE)
@@ -692,10 +871,13 @@ function(him_use_glfw_backend target)
     endif()
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glfw)
 
-    target_sources(${target} PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.h
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-    )
+    # vcpkg will have added those files to imgui
+    if (NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_sources(${target} PRIVATE
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+        )
+    endif()
     set(HELLOIMGUI_USE_GLFW ON CACHE INTERNAL "" FORCE)
     set(HELLOIMGUI_USE_GLFW3 ON CACHE INTERNAL "" FORCE)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW)
@@ -726,9 +908,10 @@ function(_him_fetch_glfw_if_needed)
         set(GLFW_BUILD_EXAMPLES OFF)
         set(GLFW_BUILD_TESTS OFF)
         set(GLFW_BUILD_DOCS OFF)
-        set(GLFW_INSTALL OFF)
+        set(GLFW_INSTALL ON)
         FetchContent_MakeAvailable(glfw)
         set(HELLOIMGUI_GLFW_SELECTED_INFO "Downloaded 3.3.8" CACHE INTERNAL "" FORCE)
+        him_add_installable_dependency(glfw)
     else()
         set(HELLOIMGUI_GLFW_SELECTED_INFO "Use system Library" CACHE INTERNAL "" FORCE)
     endif()
@@ -756,10 +939,21 @@ endfunction()
 ###################################################################################################
 function(him_install)
     if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
-        install(TARGETS ${HELLOIMGUI_TARGET} DESTINATION ./lib/)
+        install(TARGETS ${HELLOIMGUI_TARGET} DESTINATION lib/)
         file(GLOB headers *.h)
-        install(FILES ${headers} DESTINATION ./include/hello_imgui/)
+        install(FILES ${headers} DESTINATION include/hello_imgui/)
+        file(GLOB internal_headers internal/*.h)
+        install(FILES ${internal_headers} DESTINATION include/hello_imgui/internal)
+
+        if(CMAKE_BUILD_TYPE STREQUAL "Release")
+            install(DIRECTORY ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake DESTINATION share/${PROJECT_NAME})
+            install(DIRECTORY ${HELLOIMGUI_BASEPATH}/hello_imgui_assets DESTINATION share/${PROJECT_NAME})
+            if (NOT IOS AND NOT ANDROID)
+                install(FILES ${HELLOIMGUI_BASEPATH}/README.md DESTINATION share/${PROJECT_NAME})
+            endif()
+        endif()
     endif()
+
 endfunction()
 
 
@@ -838,7 +1032,9 @@ endfunction()
 # Main: API = him_main_add_hello_imgui_library
 ###################################################################################################
 function(him_main_add_hello_imgui_library)
+    him_reset_installable_dependencies()
     him_sanity_checks()
+    him_add_stb_image()
     him_build_imgui()
     him_add_hello_imgui()
     if (HELLOIMGUI_WITH_TEST_ENGINE)
@@ -908,6 +1104,7 @@ function(him_main_add_hello_imgui_library)
     him_add_emscripten_options()
     him_add_misc_options()
     him_install()
+    him_install_imgui()
 
     him_get_active_backends(selected_backends)
     message(STATUS "HelloImGui backends: ${selected_backends}")

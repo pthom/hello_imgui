@@ -1,8 +1,8 @@
 #if defined(HELLOIMGUI_HAS_DIRECTX11) && defined(HELLOIMGUI_USE_SDL2)
 #include "rendering_dx11.h"
 
-#include <backends/imgui_impl_dx11.h>
-#include <backends/imgui_impl_sdl2.h>
+#include "imgui_impl_dx11.h"
+#include "imgui_impl_sdl2.h"
 
 #include <SDL.h>
 #include <SDL_syswm.h>

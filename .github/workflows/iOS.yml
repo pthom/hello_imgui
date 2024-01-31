@@ -26,4 +26,4 @@ jobs:
       - name: Build for simulator
         working-directory: build-ios
         run: |
-          xcodebuild -configuration Release -project HelloImGui.xcodeproj -target ALL_BUILD -arch x86_64 -sdk iphonesimulator
+          xcodebuild -configuration Release -project hello-imgui.xcodeproj -target ALL_BUILD -arch x86_64 -sdk iphonesimulator

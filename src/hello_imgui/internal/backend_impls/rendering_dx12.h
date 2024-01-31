@@ -5,7 +5,7 @@
 // (developed on a MacBook M1 computer, which does not support DirectX12)
 // Testers and feedback is welcome.
 
-#include <backends/imgui_impl_dx12.h>
+#include "imgui_impl_dx12.h"
 #include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
 
 #include <d3d12.h>

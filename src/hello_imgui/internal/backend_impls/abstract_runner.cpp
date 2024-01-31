@@ -14,7 +14,7 @@
 #include "hello_imgui_test_engine_integration/test_engine_integration.h"
 
 #ifdef IMGUI_TEST_ENGINE_WITH_PYTHON_GIL
-#include "imgui_test_engine/imgui_te_python_gil.h"
+#include "imgui_te_python_gil.h"
 #define SCOPED_RELEASE_GIL_ON_MAIN_THREAD ImGuiTestEnginePythonGIL::ReleaseGilOnMainThread_Scoped _gilRelease
 #else
 #define SCOPED_RELEASE_GIL_ON_MAIN_THREAD
@@ -37,11 +37,7 @@
 
 #ifdef HELLOIMGUI_HAS_OPENGL
 #include "hello_imgui/hello_imgui_include_opengl.h"
-#ifdef HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE
 #include "imgui_impl_opengl3.h"
-#else
-#include "backends/imgui_impl_opengl3.h"
-#endif
 #endif
 
 #ifdef __EMSCRIPTEN__

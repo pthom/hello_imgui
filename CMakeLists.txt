@@ -4,7 +4,7 @@ else()
     cmake_minimum_required(VERSION 3.10)
 endif()
 
-project(HelloImGui LANGUAGES C CXX VERSION "1.3.0")
+project(hello-imgui LANGUAGES C CXX VERSION "1.4.0") # 1.4.0 Beta
 set(CMAKE_CXX_STANDARD 17)
 
 if (IOS)
@@ -267,14 +267,14 @@ mark_as_advanced(HELLO_IMGUI_IMGUI_SHARED)
 #     ./vcpkg/vcpkg install freetype:x64-windows-static glfw3:x64-windows-static lunasvg:x64-windows-static
 #
 # -----------------------------------------------------------------------------
-# How to use ImGui from vcpkg (*not* recommended)
+# How to use ImGui package from vcpkg (*not* recommended)
 # -----------------------------------------------------------------------------
 # HelloImGui provides its own copy of imgui, as a submodule (on the branch "docking")
 # it is possible, but not recommended, to use imgui from vcpkg via the option
 #     HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE
 # In this case, you will need to install vcpkg, and install imgui with the correct options.
 # (see below an example with vcpkg)
-# (this method is not recommended, since ImGui voluntarily to not provide cmake tooling)
+# (this method is not really recommended, since ImGui voluntarily chose to not provide cmake tooling)
 #
 #    git clone https://github.com/microsoft/vcpkg
 #    ./vcpkg/bootstrap-vcpkg.sh
@@ -327,18 +327,16 @@ if (EMSCRIPTEN)
     include(${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_emscripten_global_options.cmake)
 endif()
 
-# Add stb for HelloImGui
-add_library(stb_hello_imgui STATIC external/stb_hello_imgui/stb_impl_hello_imgui.cpp)
-target_include_directories(stb_hello_imgui PUBLIC external)
-if(HELLOIMGUI_STB_IMAGE_IMPLEMENTATION)
-    target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_IMPLEMENTATION)
-endif()
-if(HELLOIMGUI_STB_IMAGE_WRITE_IMPLEMENTATION)
-    target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_WRITE_IMPLEMENTATION)
-endif()
-
 
 add_subdirectory(src)
+
+if (HELLOIMGUI_BUILD_DOCS)
+    add_custom_target(hello_imgui_build_doc ALL
+        ${PROJECT_SOURCE_DIR}/tools/doc/process_md_docs.py
+        COMMENT "Generating doc"
+    )
+endif()
+
 
 #------------------------------------------------------------------------------
 # automation tests (set cache var HELLOIMGUI_BUILD_AUTOMATION_TEST to enable)
@@ -348,23 +346,45 @@ if(HELLOIMGUI_BUILD_AUTOMATION_TEST)
     add_subdirectory(.github/ci_automation_tests)
 endif()
 
+
 #------------------------------------------------------------------------------
-# install
+# CMake shenanigans so that find_package(hello-imgui CONFIG REQUIRED) works
+#------------------------------------------------------------------------------
+# These elements are mainly used to build a vcpkg compatible package.
+# Important note:
+#     - the CMake package is named hello-imgui (with a "-")
+#     - the CMake target is named hello_imgui (with a "_")
+# To link with hello_imgui, you need to use:
+#     find_package(hello-imgui CONFIG REQUIRED)
+#     target_link_libraries(your_target PRIVATE hello-imgui::hello_imgui)  # note the variation "-" vs "_"
+# However, the simplest use is:
+#     find_package(hello-imgui CONFIG REQUIRED)
+#     hello_imgui_add_app(test test.cpp) # this will automatically link with hello_imgui
 #------------------------------------------------------------------------------
 if(PROJECT_IS_TOP_LEVEL)
-    install(DIRECTORY hello_imgui_cmake DESTINATION .)
-    install(DIRECTORY hello_imgui_assets DESTINATION .)
-endif()
+    # inspired from https://iamsorush.com/posts/cpp-cmake-config/
+    message(STATUS "HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
+    install(TARGETS ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}
+        EXPORT hello-imgui-targets
+        FILE_SET HEADERS
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+        INCLUDES DESTINATION include)
 
-if (HELLOIMGUI_BUILD_DOCS)
-    add_custom_target(hello_imgui_build_doc ALL
-        ${PROJECT_SOURCE_DIR}/tools/doc/process_md_docs.py
-        COMMENT "Generating doc"
-    )
-endif()
+    install(EXPORT hello-imgui-targets
+        FILE hello-imgui-targets.cmake
+        NAMESPACE hello-imgui::
+        DESTINATION lib/cmake/hello_imgui)
 
-if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
-    install(FILES README.md DESTINATION .)
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file(
+        "hello-imguiConfigVersion.cmake"
+        VERSION ${hello_imgui_VERSION}
+        COMPATIBILITY AnyNewerVersion)
+
+    install(FILES "hello_imgui_cmake/hello-imguiConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/hello-imguiConfigVersion.cmake"
+        DESTINATION lib/cmake/hello_imgui)
 endif()
 
 #------------------------------------------------------------------------------

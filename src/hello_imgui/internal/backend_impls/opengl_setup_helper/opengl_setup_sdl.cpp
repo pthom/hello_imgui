@@ -2,7 +2,7 @@
 
 #include "opengl_setup_sdl.h"
 #include "hello_imgui/hello_imgui_include_opengl.h"
-#include "internal/backend_impls/backend_window_helper/backend_window_helper.h"
+#include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
 
 #include "SDL.h"
 

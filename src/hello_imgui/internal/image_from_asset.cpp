@@ -1,4 +1,4 @@
-#include "image_from_asset.h"
+#include "hello_imgui/image_from_asset.h"
 
 #include "hello_imgui/internal/image_abstract.h"
 #include "image_opengl.h"
@@ -11,7 +11,7 @@
 #include "imgui.h"
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/hello_imgui_logger.h"
-#include "stb_hello_imgui/stb_image.h"
+#include "stb_image.h"
 
 #include <string>
 #include <unordered_map>

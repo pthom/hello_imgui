@@ -3,8 +3,8 @@
 // HELLOIMGUI_STB_IMAGE_IMPLEMENTATION and HELLOIMGUI_STB_IMAGE_WRITE_IMPLEMENTATION are set.
 // (which is the default for HelloImGui)
 
-#include "stb_hello_imgui/stb_image.h"
-#include "stb_hello_imgui/stb_image_write.h"
+#include "stb_image.h"
+#include "stb_image_write.h"
 
 inline int SomeCompilersMayNotLikeEmptyLibs_Stb()
 {

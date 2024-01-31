@@ -3,11 +3,7 @@
 
 #include "hello_imgui/hello_imgui_include_opengl.h"
 #include "hello_imgui/internal/backend_impls/opengl_setup_helper/opengl_screenshot.h"
-#ifdef HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE
 #include "imgui_impl_opengl3.h"
-#else
-#include <backends/imgui_impl_opengl3.h>
-#endif
 
 namespace HelloImGui
 {

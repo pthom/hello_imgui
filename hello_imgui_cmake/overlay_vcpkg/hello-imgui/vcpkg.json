@@ -73,6 +73,17 @@
       ]
     },
 
+    "dx12-binding":
+    {
+      "description": "dx12-binding",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "features": ["dx12-binding"]
+        }
+      ]
+    },
+
     "glfw-binding":
     {
       "description": "glfw-binding",

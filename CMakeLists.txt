@@ -374,25 +374,25 @@ if(PROJECT_IS_TOP_LEVEL)
         list(APPEND installable_libs imgui)
     endif()
     install(TARGETS ${installable_libs}
-        EXPORT hello_imgui_targets
+        EXPORT hello-imgui-targets
         FILE_SET HEADERS
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         RUNTIME DESTINATION bin
         INCLUDES DESTINATION include)
 
-    install(EXPORT hello_imgui_targets
-        FILE hello_imgui_targets.cmake
-        NAMESPACE hello_imgui::
+    install(EXPORT hello-imgui-targets
+        FILE hello-imgui-targets.cmake
+        NAMESPACE hello-imgui::
         DESTINATION lib/cmake/hello_imgui)
 
     include(CMakePackageConfigHelpers)
     write_basic_package_version_file(
-        "hello_imguiConfigVersion.cmake"
+        "hello-imguiConfigVersion.cmake"
         VERSION ${hello_imgui_VERSION}
         COMPATIBILITY AnyNewerVersion)
 
-    install(FILES "hello_imgui_cmake/hello_imguiConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/hello_imguiConfigVersion.cmake"
+    install(FILES "hello_imgui_cmake/hello-imguiConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/hello-imguiConfigVersion.cmake"
         DESTINATION lib/cmake/hello_imgui)
 
 endif()

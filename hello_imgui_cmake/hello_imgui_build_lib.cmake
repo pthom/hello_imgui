@@ -31,13 +31,12 @@ endfunction()
 # Add library and sources: API = him_add_hello_imgui
 ###################################################################################################
 function(him_add_hello_imgui)
-    # We are called from the parent directory (src/)
     file(GLOB_RECURSE sources
-        ${CMAKE_CURRENT_LIST_DIR}/hello_imgui/*.h
-        ${CMAKE_CURRENT_LIST_DIR}/hello_imgui/*.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/hello_imgui/*.c)
+        ${CMAKE_CURRENT_LIST_DIR}/*.h
+        ${CMAKE_CURRENT_LIST_DIR}/*.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/*.c)
     if (APPLE)
-        file(GLOB_RECURSE sources_mm ${CMAKE_CURRENT_LIST_DIR}/hello_imgui/*.mm)
+        file(GLOB_RECURSE sources_mm ${CMAKE_CURRENT_LIST_DIR}/*.mm)
         set(sources ${sources} ${sources_mm})
     endif()
     add_library(${HELLOIMGUI_TARGET} ${sources})
@@ -48,7 +47,7 @@ function(him_add_hello_imgui)
         target_compile_options(${HELLOIMGUI_TARGET} PRIVATE "-x" "objective-c++")
     endif()
 
-    target_include_directories(${HELLOIMGUI_TARGET} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+    target_include_directories(${HELLOIMGUI_TARGET} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>)
 
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC stb_hello_imgui)
     if (HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
@@ -803,8 +802,7 @@ endfunction()
 function(him_install)
     if (PROJECT_IS_TOP_LEVEL AND NOT IOS AND NOT ANDROID)
         install(TARGETS ${HELLOIMGUI_TARGET} DESTINATION lib/)
-        # We are called from the parent directory (src), thus we search in hello_imgui/
-        file(GLOB headers hello_imgui/*.h)
+        file(GLOB headers *.h)
         install(FILES ${headers} DESTINATION include/hello_imgui/)
     endif()
 endfunction()

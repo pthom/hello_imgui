@@ -360,7 +360,6 @@ endif()
 #------------------------------------------------------------------------------
 # install
 #------------------------------------------------------------------------------
-message(FATAL_ERROR "Hey")
 if(PROJECT_IS_TOP_LEVEL) # AND CMAKE_BUILD_TYPE STREQUAL "Release")
     install(DIRECTORY hello_imgui_cmake DESTINATION share/${PROJECT_NAME})
     install(DIRECTORY hello_imgui_assets DESTINATION share/${PROJECT_NAME})

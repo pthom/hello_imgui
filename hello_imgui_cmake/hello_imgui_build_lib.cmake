@@ -62,7 +62,7 @@ endfunction()
 
 
 ###################################################################################################
-# Build imgui: API = him_build_imgui
+# Build imgui: API = him_build_imgui + him_install_imgui (to be called at the end)
 ###################################################################################################
 function(him_build_imgui)
     message(STATUS "HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE is ${HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE}")
@@ -72,13 +72,48 @@ function(him_build_imgui)
         if (HELLOIMGUI_BUILD_IMGUI)
             _him_checkout_imgui_submodule_if_needed()
             _him_do_build_imgui()
-            _him_install_imgui()
         endif()
         if (HELLOIMGUI_USE_FREETYPE)
             _him_add_freetype_to_imgui()
         endif()
     endif()
 endfunction()
+
+function(him_install_imgui)
+    if(PROJECT_IS_TOP_LEVEL)
+        if(NOT TARGET imgui)
+            return()
+        endif()
+
+        install(TARGETS imgui DESTINATION ./lib/)
+        file(GLOB imgui_headers
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.h
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/*.h
+        )
+        install(FILES ${imgui_headers} DESTINATION include)
+
+        if(HELLOIMGUI_HAS_OPENGL3)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.h DESTINATION include)
+        endif()
+        if(HELLOIMGUI_HAS_METAL)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.h DESTINATION include)
+        endif()
+        if(HELLOIMGUI_HAS_VULKAN)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.h DESTINATION include)
+        endif()
+        if(HELLOIMGUI_HAS_DIRECTX11)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_dx11.h DESTINATION include)
+        endif()
+
+        if(HELLOIMGUI_USE_SDL2)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.h DESTINATION include)
+        endif()
+        if(HELLOIMGUI_USE_GLFW)
+            install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.h DESTINATION include)
+        endif()
+    endif()
+endfunction()
+
 
 function(_him_checkout_imgui_submodule_if_needed)
     if (HELLOIMGUI_BUILD_IMGUI)
@@ -235,18 +270,6 @@ function(_him_add_freetype_to_imgui)
         ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.h)
     target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE IMGUI_ENABLE_FREETYPE_LUNASVG)
     target_compile_definitions(imgui PUBLIC IMGUI_USE_WCHAR32)
-endfunction()
-
-function(_him_install_imgui)
-    if(PROJECT_IS_TOP_LEVEL)
-        install(TARGETS imgui DESTINATION ./lib/)
-        file(GLOB imgui_headers
-            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.h
-            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/*.h
-            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/*.h
-        )
-        install(FILES ${imgui_headers} DESTINATION include)
-    endif()
 endfunction()
 
 
@@ -514,6 +537,7 @@ function(him_has_opengl3 target)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_OPENGL)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_OPENGL3)
     set(HELLOIMGUI_HAS_OPENGL ON CACHE BOOL "" FORCE)
+    set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
 
     if(ANDROID OR IOS)
         _him_link_opengl_es_sdl(${HELLOIMGUI_TARGET})
@@ -1018,6 +1042,7 @@ function(him_main_add_hello_imgui_library)
     him_add_emscripten_options()
     him_add_misc_options()
     him_install()
+    him_install_imgui()
 
     him_get_active_backends(selected_backends)
     message(STATUS "HelloImGui backends: ${selected_backends}")

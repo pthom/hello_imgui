@@ -361,11 +361,11 @@ endif()
 # install
 #------------------------------------------------------------------------------
 if(PROJECT_IS_TOP_LEVEL) # AND CMAKE_BUILD_TYPE STREQUAL "Release")
-#    install(DIRECTORY hello_imgui_cmake DESTINATION share/${PROJECT_NAME})
-#    install(DIRECTORY hello_imgui_assets DESTINATION share/${PROJECT_NAME})
-#    if (NOT IOS AND NOT ANDROID)
-#        install(FILES README.md DESTINATION share/${PROJECT_NAME})
-#    endif()
+    install(DIRECTORY hello_imgui_cmake DESTINATION share/${PROJECT_NAME})
+    install(DIRECTORY hello_imgui_assets DESTINATION share/${PROJECT_NAME})
+    if (NOT IOS AND NOT ANDROID)
+        install(FILES README.md DESTINATION share/${PROJECT_NAME})
+    endif()
 
     # inspired from https://iamsorush.com/posts/cpp-cmake-config/
     set(installable_libs hello_imgui stb_hello_imgui glad)
@@ -379,20 +379,6 @@ if(PROJECT_IS_TOP_LEVEL) # AND CMAKE_BUILD_TYPE STREQUAL "Release")
         ARCHIVE DESTINATION lib
         RUNTIME DESTINATION bin
         INCLUDES DESTINATION include)
-
-#    install(TARGETS stb_hello_imgui EXPORT hello_imgui_targets
-#        LIBRARY DESTINATION lib
-#        ARCHIVE DESTINATION lib
-#        RUNTIME DESTINATION bin
-#        INCLUDES DESTINATION include
-#    )
-#
-#    install(TARGETS glad EXPORT hello_imgui_targets
-#        LIBRARY DESTINATION lib
-#        ARCHIVE DESTINATION lib
-#        RUNTIME DESTINATION bin
-#        INCLUDES DESTINATION include
-#    )
 
     install(EXPORT hello_imgui_targets
         FILE hello_imgui_targets.cmake

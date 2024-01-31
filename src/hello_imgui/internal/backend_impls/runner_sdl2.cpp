@@ -21,7 +21,7 @@
 
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
-#include "stb_hello_imgui/stb_image.h"
+#include "stb_image.h"
 #include "imgui_impl_sdl2.h"
 
 #include "hello_imgui/hello_imgui_error.h"

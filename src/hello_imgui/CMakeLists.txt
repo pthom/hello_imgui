@@ -3,7 +3,6 @@
 ###################################################################################################
 # Global variables and + objective-c++ for apple
 include(FetchContent)
-include(${HELLOIMGUI_BASEPATH}/external/OpenGL_Loaders/glad.cmake)
 include(${HELLOIMGUI_BASEPATH}/src/hello_imgui_test_engine_integration/hello_imgui_test_engine_cmake.cmake)
 
 

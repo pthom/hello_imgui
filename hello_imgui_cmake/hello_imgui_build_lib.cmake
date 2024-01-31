@@ -378,14 +378,16 @@ function(him_add_stb_image)
     add_library(stb_hello_imgui STATIC ${stb_dir}/stb_impl_hello_imgui.cpp)
     target_include_directories(stb_hello_imgui PUBLIC $<BUILD_INTERFACE:${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui>)
 
-    file(GLOB stb_headers ${stb_dir}/*.h)
-    install(FILES ${stb_headers} DESTINATION include/hello_imgui/stb_hello_imgui)
-
     if(HELLOIMGUI_STB_IMAGE_IMPLEMENTATION)
         target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_IMPLEMENTATION)
     endif()
     if(HELLOIMGUI_STB_IMAGE_WRITE_IMPLEMENTATION)
         target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_WRITE_IMPLEMENTATION)
+    endif()
+
+    if(PROJECT_IS_TOP_LEVEL)
+        file(GLOB stb_headers ${stb_dir}/*.h)
+        install(FILES ${stb_headers} DESTINATION include/hello_imgui/stb_hello_imgui)
     endif()
     him_add_installable_dependency(stb_hello_imgui)
 endfunction()
@@ -526,7 +528,7 @@ function(him_has_opengl3 target)
     if (HELLOIMGUI_USE_GLAD)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLAD IMGUI_IMPL_OPENGL_LOADER_GLAD)
         target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glad)
-        him_install_glad()
+        _him_install_glad()
     endif()
 endfunction()
 
@@ -544,6 +546,44 @@ function(_him_link_opengl_es_sdl target)
         HELLOIMGUI_USE_GLES3
     )
 endfunction()
+
+function(_him_install_glad)
+    if(TARGET glad)
+        return()
+    endif()
+    set(glad_dir ${HELLOIMGUI_BASEPATH}/external/OpenGL_Loaders/glad)
+    set(glad_files
+        ${glad_dir}/src/glad.c
+        ${glad_dir}/include/glad/glad.h
+        ${glad_dir}/include/KHR/khrplatform.h)
+    add_library(glad ${glad_files})
+    target_include_directories(glad PUBLIC $<BUILD_INTERFACE:${glad_dir}/include>)
+
+    if(WIN32)
+        target_link_libraries(glad PUBLIC opengl32.lib)
+    else()
+        target_link_libraries(glad PUBLIC ${OPENGL_LIBRARIES})
+    endif()
+    get_target_property(library_type glad TYPE)
+    target_compile_definitions(glad PUBLIC HELLOIMGUI_USE_GLAD)
+    if (library_type STREQUAL SHARED_LIBRARY)
+        # If glad is a shared lobrary, define the macro GLAD_API_EXPORT on the command line.
+        target_compile_definitions(glad PRIVATE GLAD_GLAPI_EXPORT)
+        target_compile_definitions(glad PUBLIC GLAD_GLAPI_EXPORT PRIVATE GLAD_GLAPI_EXPORT_BUILD)
+    endif()
+
+    if (MSVC)
+        hello_imgui_msvc_target_set_folder(glad ${HELLOIMGUI_SOLUTIONFOLDER}/external/OpenGL_Loaders)
+    endif()
+
+    him_add_installable_dependency(glad)
+    if(PROJECT_IS_TOP_LEVEL)
+        install(TARGETS glad DESTINATION ./lib/)
+        install(FILES ${glad_dir}/include/glad/glad.h DESTINATION include/glad)
+        install(FILES ${glad_dir}/include/KHR/khrplatform.h DESTINATION include/KHR)
+    endif()
+endfunction()
+
 
 
 ###################################################################################################

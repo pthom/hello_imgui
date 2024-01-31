@@ -359,7 +359,7 @@ endif()
 if(PROJECT_IS_TOP_LEVEL)
     # inspired from https://iamsorush.com/posts/cpp-cmake-config/
     # stb_hello_imgui glad
-    set(installable_libs hello_imgui glad ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES})
+    set(installable_libs hello_imgui ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES})
     message(STATUS "HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
     install(TARGETS ${installable_libs}
         EXPORT hello-imgui-targets

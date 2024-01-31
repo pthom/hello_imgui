@@ -267,14 +267,14 @@ mark_as_advanced(HELLO_IMGUI_IMGUI_SHARED)
 #     ./vcpkg/vcpkg install freetype:x64-windows-static glfw3:x64-windows-static lunasvg:x64-windows-static
 #
 # -----------------------------------------------------------------------------
-# How to use ImGui from vcpkg (*not* recommended)
+# How to use ImGui package from vcpkg (*not* recommended)
 # -----------------------------------------------------------------------------
 # HelloImGui provides its own copy of imgui, as a submodule (on the branch "docking")
 # it is possible, but not recommended, to use imgui from vcpkg via the option
 #     HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE
 # In this case, you will need to install vcpkg, and install imgui with the correct options.
 # (see below an example with vcpkg)
-# (this method is not recommended, since ImGui voluntarily to not provide cmake tooling)
+# (this method is not really recommended, since ImGui voluntarily chose to not provide cmake tooling)
 #
 #    git clone https://github.com/microsoft/vcpkg
 #    ./vcpkg/bootstrap-vcpkg.sh

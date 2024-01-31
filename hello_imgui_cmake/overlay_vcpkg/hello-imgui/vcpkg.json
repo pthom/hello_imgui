@@ -15,11 +15,15 @@
     },
     {
       "name": "imgui",
-      "features": ["docking-experimental", "freetype", "glfw-binding", "opengl3-binding"]
+      "features": ["docking-experimental", "freetype", "glfw-binding", "opengl3-binding"],
+      "$comment": "Need to add lunasvg"
     },
     {
       "name": "glad",
       "features": ["gl-api-43"]
+    },
+    {
+      "name": "stb"
     }
   ],
   "default-features": [],

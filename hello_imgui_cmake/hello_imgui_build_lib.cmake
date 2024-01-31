@@ -397,10 +397,18 @@ endfunction()
 # stb_image: API = him_add_stb_image
 ###################################################################################################
 function(him_add_stb_image)
+    find_package(Stb QUIET)
+
     # Add stb for HelloImGui
     set(stb_dir ${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui)
     add_library(stb_hello_imgui STATIC ${stb_dir}/stb_impl_hello_imgui.cpp)
-    target_include_directories(stb_hello_imgui PUBLIC $<BUILD_INTERFACE:${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui>)
+
+    if(Stb_FOUND)
+        message(STATUS "HelloImGui: using stb from find_package(Stb)")
+        target_include_directories(stb_hello_imgui PUBLIC ${Stb_INCLUDE_DIR})
+    else()
+        target_include_directories(stb_hello_imgui PUBLIC $<BUILD_INTERFACE:${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui>)
+    endif()
 
     if(HELLOIMGUI_STB_IMAGE_IMPLEMENTATION)
         target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_IMPLEMENTATION)
@@ -409,9 +417,9 @@ function(him_add_stb_image)
         target_compile_definitions(stb_hello_imgui PRIVATE STB_IMAGE_WRITE_IMPLEMENTATION)
     endif()
 
-    if(PROJECT_IS_TOP_LEVEL)
+    if(PROJECT_IS_TOP_LEVEL AND NOT Stb_FOUND)
         file(GLOB stb_headers ${stb_dir}/*.h)
-        install(FILES ${stb_headers} DESTINATION include/hello_imgui/stb_hello_imgui)
+        install(FILES ${stb_headers} DESTINATION include)
     endif()
     him_add_installable_dependency(stb_hello_imgui)
 endfunction()

@@ -35,7 +35,7 @@ jobs:
         uses: johnwason/vcpkg-action@v6
         id: vcpkg
         with:
-          pkgs: ''
+          pkgs: 'nlohmann-json' # unrelated package, just to make the action happy
           triplet: ${{ matrix.config.vcpkg_triplet }}
           cache-key: ${{ matrix.config.os }}
           revision: master

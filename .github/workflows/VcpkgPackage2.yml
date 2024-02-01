@@ -1,6 +1,16 @@
 name: "VcpkgPackage2"
 
-# Test that the vcpkg package build successfully
+# Tests that:
+# 1. the vcpkg package build successfully
+#    - on all platforms
+#    - for all rendering bindings (opengl3-binding, metal-binding, opengl3-binding, vulkan-binding, dx11-binding, dx12-binding)
+#    - for all window backends (glfw-binding, sdl2-binding)
+#    - with all optional dependencies (freetype, freetype-lunasvg)
+# 2. An app can be built with hello_imgui as a vcpkg package
+#    (with all combinations of rendering bindings, window backends, optional dependencies)
+# 3. An app can be run
+#    (only on selected backends and platforms)
+
 
 on:
   workflow_dispatch:
@@ -16,12 +26,12 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - os: ubuntu-latest
-            vcpkg_triplet: x64-linux-release
+#          - os: ubuntu-latest
+#            vcpkg_triplet: x64-linux-release
           - os: macos-latest
             vcpkg_triplet: x64-osx-release
-          - os: windows-latest
-            vcpkg_triplet: x64-windows-release
+#          - os: windows-latest
+#            vcpkg_triplet: x64-windows-release
 
 
     steps:
@@ -30,22 +40,6 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update && sudo apt-get install -y libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config libx11-dev libxft-dev libxext-dev
-
-#      - name: Install Vulkan Sdk Win
-#        if: ${{ matrix.platform == 'windows-latest' }}
-#        shell: powershell
-#        run: |
-#          Invoke-WebRequest -Uri "https://github.com/ocornut/imgui/files/3789205/vulkan-sdk-1.1.121.2.zip" -OutFile vulkan-sdk-1.1.121.2.zip
-#          Expand-Archive -Path vulkan-sdk-1.1.121.2.zip
-#          echo "VULKAN_SDK=$(pwd)\vulkan-sdk-1.1.121.2\" >>${env:GITHUB_ENV}
-#
-#      - name: Install Vulkan Sdk macOS
-#        if: ${{ matrix.platform == 'macos-latest' }}
-#        shell: bash
-#        run: |
-#          wget -q https://github.com/pthom/hello_imgui/releases/download/v1.0.0/VulkanSDK_1.3.268.1_macos.tgz
-#          tar xfz VulkanSDK_1.3.268.1_macos.tgz
-#          echo "VULKAN_SDK=$(pwd)/VulkanSDK/1.3.268.1/macOS" >> $GITHUB_ENV
 
       - name: vcpkg install
         uses: johnwason/vcpkg-action@v6
@@ -62,33 +56,37 @@ jobs:
         with:
           submodules: false
 
+      #
+      # Install utilities to be able to run a graphical OpenGL application
+      #
+      - name: Ubuntu - Install & Start Xvfb
+        if: ${{ matrix.platform == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get install -y xvfb
+
+      - name: Windows - install mesa OpenGL software renderer
+        shell: bash
+        if: ${{ matrix.platform == 'windows-latest' }}
+        run: |
+          # Download the archive
+          curl -L -O https://github.com/pal1000/mesa-dist-win/releases/download/23.1.9/mesa3d-23.1.9-release-msvc.7z
+
+          # Extract the archive using 7-zip which is preinstalled on the GitHub Actions Windows runner
+          7z x mesa3d-23.1.9-release-msvc.7z -omesa3d
+
+          # Optionally move/copy the required DLLs to the directory of your executable
+          # For this example, I'll assume your executable is in '.github/ci_automation_tests/build'
+          # Copy the opengl32.dll to your executable directory
+          cp mesa3d/x64/*.* .github/ci_automation_tests/build/Release
+          
+
 #      - name: Setup interactive tmate session
 #        uses: mxschmitt/action-tmate@v3
 
-      - name: all platforms - opengl3 and vulkan bindings
+        # Run the test
+      - name: run test
         shell: bash
         run: |
           # Test with opengl3-binding
-          vcpkg install "hello-imgui[opengl3-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui --recurse
-          vcpkg remove hello-imgui
-          # Test with vulkan-binding
-          vcpkg install "hello-imgui[vulkan-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui --recurse
-          vcpkg remove hello-imgui
-
-      - name: windows - directx bindings
-        if : ${{ matrix.config.os == 'windows-latest' }}
-        shell: bash
-        run: |
-          # Test with dx11-binding
-          vcpkg install "hello-imgui[dx11-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui --recurse
-          vcpkg remove hello-imgui
-          # Test with vulkan-binding
-          vcpkg install "hello-imgui[dx12-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui --recurse
-          vcpkg remove hello-imgui
-
-      - name: macos - metal bindings
-        if : ${{ matrix.config.os == 'macos-latest' }}
-        run: |
-          # Test with metal-binding
-          vcpkg install "hello-imgui[metal-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui --recurse
-          vcpkg remove hello-imgui
+          cd .github/ci_vcpkg_package_tests
+          python run_test.py

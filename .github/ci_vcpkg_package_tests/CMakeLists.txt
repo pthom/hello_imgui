@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.10)
+project(HelloImGuiCiVcpkgPackageTests LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 17)
+find_package(hello-imgui CONFIG REQUIRED)
+hello_imgui_add_app(ci_vcpkg_package_tests_app ci_vcpkg_package_tests_app.cpp)

@@ -1,6 +1,6 @@
 {
   "name": "hello-imgui",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "homepage": "https://pthom.github.io/hello_imgui/",
   "description": "Hello, Dear ImGui: unleash your creativity in app development and prototyping",
   "license": "MIT",
@@ -27,7 +27,7 @@
   "features": {
     "opengl3-binding":
     {
-      "description": "opengl3-binding",
+      "description": "Use OpenGL3/ES2 renderer backend (default)",
       "dependencies": [
         {
           "name": "imgui",
@@ -42,7 +42,7 @@
 
     "metal-binding":
     {
-      "description": "metal-binding",
+      "description": "Use Metal renderer backend (macOS/iOS only)",
       "dependencies": [
         {
           "name": "imgui",
@@ -53,7 +53,7 @@
 
     "vulkan-binding":
     {
-      "description": "vulkan-binding",
+      "description": "Use Vulkan renderer backend (Windows/Linux/macOS, experimental)",
       "dependencies": [
         {
           "name": "imgui",
@@ -64,7 +64,7 @@
 
     "dx11-binding":
     {
-      "description": "dx11-binding",
+      "description": "Use DirectX11 renderer backend (Windows only, experimental)",
       "dependencies": [
         {
           "name": "imgui",
@@ -75,7 +75,7 @@
 
     "dx12-binding":
     {
-      "description": "dx12-binding",
+      "description": "Use DirectX12 renderer backend (Windows only, experimental)",
       "dependencies": [
         {
           "name": "imgui",
@@ -86,7 +86,7 @@
 
     "glfw-binding":
     {
-      "description": "glfw-binding",
+      "description": "Use GLFW platform backend (default)",
       "dependencies": [
         {
           "name": "imgui",
@@ -97,7 +97,7 @@
 
     "sdl2-binding":
     {
-      "description": "sdl2-binding",
+      "description": "Use SDL2 platform backend",
       "dependencies": [
         {
           "name": "imgui",
@@ -108,7 +108,7 @@
 
     "freetype-lunasvg":
     {
-      "description": "freetype-lunasvg",
+      "description": "Improve font rendering and use colored fonts with freetype and lunasvg",
       "dependencies": [
         {
           "name": "imgui",

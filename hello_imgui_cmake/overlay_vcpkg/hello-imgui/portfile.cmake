@@ -16,7 +16,7 @@ vcpkg_from_git(
     #URL file:///Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/hello_imgui_vcpkg
     URL https://github.com/pthom/hello_imgui
     HEAD_REF master
-#    REF c95e2bfdc26477929354daa2213394a972016a1b
+    #    REF c95e2bfdc26477929354daa2213394a972016a1b
 )
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
@@ -31,7 +31,7 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     "freetype-lunasvg" FEATURE_FREETYPE_LUNASVG
 )
 
-message(STATUS "
+message(VERBOSE "
     FEATURE_OPTIONS: ${FEATURE_OPTIONS}
     FEATURE_OPENGL3_BINDING: ${FEATURE_OPENGL3_BINDING}
     FEATURE_METAL_BINDING: ${FEATURE_METAL_BINDING}
@@ -43,24 +43,26 @@ message(STATUS "
     FEATURE_FREETYPE_LUNASVG: ${FEATURE_FREETYPE_LUNASVG}
 ")
 
+# if a renderer backend was selected and is different from the default, we need to disable the default
 if(FEATURE_METAL_BINDING AND FEATURE_OPENGL3_BINDING)
-    message(WARNING "Metal and OpenGL3 bindings are mutually exclusive. Removing support for OpenGL3.")
+    message(STATUS "Metal and OpenGL3 bindings are mutually exclusive. Removing support for OpenGL3.")
     set(FEATURE_OPENGL3_BINDING OFF)
 endif()
 if(FEATURE_VULKAN_BINDING AND FEATURE_OPENGL3_BINDING)
-    message(WARNING "Vulkan and OpenGL3 bindings are mutually exclusive. Removing support for OpenGL3.")
+    message(STATUS "Vulkan and OpenGL3 bindings are mutually exclusive. Removing support for OpenGL3.")
     set(FEATURE_OPENGL3_BINDING OFF)
 endif()
 if(FEATURE_DX11_BINDING AND FEATURE_OPENGL3_BINDING)
-    message(WARNING "Dx11 and OpenGL3 bindings are mutually exclusive. Removing support for OpenGL3.")
+    message(STATUS "Dx11 and OpenGL3 bindings are mutually exclusive. Removing support for OpenGL3.")
     set(FEATURE_OPENGL3_BINDING OFF)
 endif()
 if(FEATURE_DX12_BINDING AND FEATURE_OPENGL3_BINDING)
-    message(WARNING "Dx12 and OpenGL3 bindings are mutually exclusive. Removing support for OpenGL3.")
+    message(STATUS "Dx12 and OpenGL3 bindings are mutually exclusive. Removing support for OpenGL3.")
     set(FEATURE_OPENGL3_BINDING OFF)
 endif()
 
 
+# Set HelloImGui backend combinations (rendering + platform)
 if(FEATURE_OPENGL3_BINDING AND FEATURE_GLFW_BINDING)
     set(HELLOIMGUI_USE_GLFW_OPENGL3 ON)
 endif()
@@ -97,39 +99,54 @@ if(FEATURE_FREETYPE_LUNASVG)
     set(HELLOIMGUI_USE_FREETYPE ON)
 endif()
 
+set(platform_options "")
+if(WIN32)
+    # Standard win32 options (these are the defaults for HelloImGui)
+    # we could add a vcpkg feature for this, but it would have to be platform specific
+    set(platform_options
+        ${platform_options}
+        -DHELLOIMGUI_WIN32_NO_CONSOLE=ON
+        -DHELLOIMGUI_WIN32_AUTO_WINMAIN=ON
+    )
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    # Standard macOS options (these are the defaults for HelloImGui)
+    # we could add a vcpkg feature for this, but it would have to be platform specific
+    set(platform_options
+        ${platform_options}
+        -DHELLOIMGUI_MACOS_NO_BUNDLE=OFF
+    )
+endif()
+
+
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
-        # disable demos, tests, doc
-        -DHELLOIMGUI_BUILD_DEMOS=OFF
-        -DHELLOIMGUI_BUILD_DOCS=OFF
-        -DHELLOIMGUI_BUILD_TESTS=OFF
+    # disable demos, tests, doc
+    -DHELLOIMGUI_BUILD_DEMOS=OFF
+    -DHELLOIMGUI_BUILD_DOCS=OFF
+    -DHELLOIMGUI_BUILD_TESTS=OFF
 
-        # Standard win32 options (these are the defaults for HelloImGui)
-        # we could add a vcpkg feature for this, but it would have to be platform specific
-        -DHELLOIMGUI_WIN32_NO_CONSOLE=ON
-        -DHELLOIMGUI_WIN32_AUTO_WINMAIN=ON
+    # vcpkg does not support ImGui Test Engine, so we cannot enable it
+    -DHELLOIMGUI_WITH_TEST_ENGINE=OFF
 
-        # Standard macOS options (these are the defaults for HelloImGui)
-        -DHELLOIMGUI_MACOS_NO_BUNDLE=OFF
+    -DHELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE=ON
+    -DHELLO_IMGUI_IMGUI_SHARED=OFF
+    -DHELLOIMGUI_BUILD_IMGUI=OFF
 
-        # vcpkg does not support ImGui Test Engine, so we cannot enable it
-        -DHELLOIMGUI_WITH_TEST_ENGINE=OFF
+    ${platform_options}
 
-        -DHELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE=ON
-        -DHELLO_IMGUI_IMGUI_SHARED=OFF
-        -DHELLOIMGUI_BUILD_IMGUI=OFF
-
-        # Backend combinations (hello_imgui wants a combination of rendering and platform backend)
-        # (we can select at most one rendering backend)
-        -DHELLOIMGUI_USE_GLFW_OPENGL3=${HELLOIMGUI_USE_GLFW_OPENGL3}
-        -DHELLOIMGUI_USE_SDL_OPENGL3=${HELLOIMGUI_USE_SDL_OPENGL3}
-        -DHELLOIMGUI_USE_SDL_METAL=${HELLOIMGUI_USE_SDL_METAL}
-        -DHELLOIMGUI_USE_GLFW_METAL=${HELLOIMGUI_USE_GLFW_METAL}
-        -DHELLOIMGUI_USE_GLFW_VULKAN=${HELLOIMGUI_USE_GLFW_VULKAN}
-        -DHELLOIMGUI_USE_SDL_VULKAN=${HELLOIMGUI_USE_SDL_VULKAN}
-        -DHELLOIMGUI_USE_SDL_DIRECTX11=${HELLOIMGUI_USE_SDL_DIRECTX11}
-        -DHELLOIMGUI_USE_GLFW_DIRECTX11=${HELLOIMGUI_USE_GLFW_DIRECTX11}
+    # Backend combinations (hello_imgui wants a combination of rendering and platform backend)
+    # (we can select at most one rendering backend)
+    -DHELLOIMGUI_USE_GLFW_OPENGL3=${HELLOIMGUI_USE_GLFW_OPENGL3}
+    -DHELLOIMGUI_USE_SDL_OPENGL3=${HELLOIMGUI_USE_SDL_OPENGL3}
+    -DHELLOIMGUI_USE_SDL_METAL=${HELLOIMGUI_USE_SDL_METAL}
+    -DHELLOIMGUI_USE_GLFW_METAL=${HELLOIMGUI_USE_GLFW_METAL}
+    -DHELLOIMGUI_USE_GLFW_VULKAN=${HELLOIMGUI_USE_GLFW_VULKAN}
+    -DHELLOIMGUI_USE_SDL_VULKAN=${HELLOIMGUI_USE_SDL_VULKAN}
+    -DHELLOIMGUI_USE_SDL_DIRECTX11=${HELLOIMGUI_USE_SDL_DIRECTX11}
+    -DHELLOIMGUI_USE_GLFW_DIRECTX11=${HELLOIMGUI_USE_GLFW_DIRECTX11}
 )
 
 vcpkg_cmake_install()

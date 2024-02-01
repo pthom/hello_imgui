@@ -13,6 +13,10 @@ SUCCESSES_BUILD = []
 
 
 def copy_mesa_libs_to_current_dir():
+    # Test if we are on a github runner
+    if "GITHUB_WORKFLOW" not in os.environ:
+        return
+
     mesa3d_dll_dir = os.path.join(REPO_DIR, "mesa3d/x64")
     current_dir = os.getcwd()
     release_build_dir = os.path.join(current_dir, "Release")
@@ -133,6 +137,9 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
 
 
 def prepare_display():
+    # Test if we are on a github runner
+    if "GITHUB_WORKFLOW" not in os.environ:
+        return
     if platform.system() == "Linux":
         subprocess.run("Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &", shell=True, check=True)
 

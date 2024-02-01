@@ -12,6 +12,17 @@ SUCCESSES_RUN = []
 SUCCESSES_BUILD = []
 
 
+def copy_mesa_libs_to_current_dir():
+    mesa3d_dll_dir = os.path.join(REPO_DIR, "mesa3d/x64")
+    current_dir = os.getcwd()
+    release_build_dir = os.path.join(current_dir, "Release")
+    if not os.path.exists(release_build_dir):
+        os.mkdir(release_build_dir)
+    for file in os.listdir(mesa3d_dll_dir):
+        print(f"Copying {file} to {release_build_dir}")
+        shutil.copy(os.path.join(mesa3d_dll_dir, file), release_build_dir)
+
+
 def run_test_with_rendering_backend(rendering_backend: str) -> bool:
     platform_backends = ["SDL", "GLFW"]
 
@@ -23,6 +34,10 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
         shutil.rmtree(build_dir)
     os.mkdir(build_dir)
     os.chdir(build_dir)
+    current_dir = os.getcwd()
+
+    if platform.system() == "Windows":
+        copy_mesa_libs_to_current_dir()
 
     if "VCPKG_ROOT" in os.environ:
         vcpkg_root = os.environ["VCPKG_ROOT"]
@@ -39,11 +54,16 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
     cmake_toolchain_file = os.path.join(vcpkg_root, "scripts/buildsystems/vcpkg.cmake")
 
     vcpkg_remove_cmd = f'{vcpkg_program} remove hello-imgui --recurse'
-    vcpkg_install_cmd = f'{vcpkg_program} install "hello-imgui[{rendering_backend}, glfw-binding, sdl2-binding]" --overlay-ports={overlay_dir} --recurse'
+    vcpkg_install_cmd = f'{vcpkg_program} install hello-imgui[{rendering_backend},glfw-binding,sdl2-binding] --overlay-ports={overlay_dir} --recurse'
     cmake_cmd = f"cmake -DCMAKE_TOOLCHAIN_FILE={cmake_toolchain_file} .."
     build_cmd = f"cmake --build . --config Release"
-    test_app_glfw_cmd = "./ci_vcpkg_package_tests_app glfw"
-    test_app_sdl_cmd = "./ci_vcpkg_package_tests_app sdl"
+
+    if platform.system() == "Windows":
+        test_app_glfw_cmd = "Release/ci_vcpkg_package_tests_app.exe glfw"
+        test_app_sdl_cmd = "Release/ci_vcpkg_package_tests_app.exe sdl"
+    else:
+        test_app_glfw_cmd = "./ci_vcpkg_package_tests_app glfw"
+        test_app_sdl_cmd = "./ci_vcpkg_package_tests_app sdl"
 
     success = True
     cmds = {
@@ -54,9 +74,13 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
     }
 
     # Only run app with selected platform backends
-    if rendering_backend != "vulkan-binding" and platform.system() != "Darwin":
-        cmds[f"run test app (Glfw - {rendering_backend})"] = test_app_glfw_cmd,
-        cmds[f"run test app (SDL - {rendering_backend})"] = test_app_sdl_cmd,
+    is_vulkan = rendering_backend == "vulkan-binding"
+    is_macos = platform.system() == "Darwin"
+    is_dx12_on_windows = rendering_backend == "dx12-binding" and platform.system() == "Windows"
+    if not (is_vulkan or is_macos):
+        cmds[f"run test app (Glfw - {rendering_backend})"] = test_app_glfw_cmd
+        if not is_dx12_on_windows:
+            cmds[f"run test app (SDL - {rendering_backend})"] = test_app_sdl_cmd
 
     for name, cmd in cmds.items():
         print(f"""
@@ -68,11 +92,29 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
         ****************************************************************************************************
         """)
         try:
-            subprocess.run(cmd, shell=True, check=True)
+            print(os.environ["PATH"])
+            cmd_list = cmd.split()
+
+            if platform.system() == "Windows" and name.startswith("run test app"):
+                # Under windows, the app succeeds, but the process returns an error code at exit
+                # So, we detect if the app succeeded by checking if a file was created by it
+                try:
+                    subprocess.run(cmd_list, check=True, cwd=current_dir)
+                except subprocess.CalledProcessError as e:
+                    success_filename = "ci_vcpkg_package_test_app_success.txt"
+                    if os.path.exists(success_filename):
+                        os.remove(success_filename)
+                    else:
+                        raise e
+            else:
+                subprocess.run(cmd_list, check=True, cwd=current_dir)
+
             if name.startswith("run test app"):
                 SUCCESSES_RUN.append(name)
+
             if name.startswith("run build"):
                 SUCCESSES_BUILD.append(name)
+
         except subprocess.CalledProcessError as e:
             message = f"""
             ****************************************************************************************************

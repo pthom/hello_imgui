@@ -78,9 +78,9 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
     }
 
     # Only run app with selected platform backends
-    is_vulkan = rendering_backend == "vulkan-binding"
+    is_vulkan = rendering_backend == "experimental-vulkan-binding"
     is_macos = platform.system() == "Darwin"
-    is_dx12_on_windows = rendering_backend == "dx12-binding" and platform.system() == "Windows"
+    is_dx12_on_windows = rendering_backend == "experimental-dx12-binding" and platform.system() == "Windows"
     if not (is_vulkan or is_macos):
         cmds[f"run test app (Glfw - {rendering_backend})"] = test_app_glfw_cmd
         if not is_dx12_on_windows:
@@ -148,7 +148,7 @@ def run_tests():
     prepare_display()
     rendering_backends = ["opengl3-binding"]
     if platform.system() != "Darwin":
-        rendering_backends.append("vulkan-binding")
+        rendering_backends.append("experimental-vulkan-binding")
         """
         Note: CI hangs on this step under macOS (spirv-tools)
         --
@@ -163,8 +163,8 @@ def run_tests():
             -- Building x64-osx-dbg
         """
     if platform.system() == "Windows":
-        rendering_backends.append("dx11-binding")
-        rendering_backends.append("dx12-binding")
+        rendering_backends.append("experimental-dx11-binding")
+        rendering_backends.append("experimental-dx12-binding")
     elif platform.system() == "Darwin":
         rendering_backends.append("metal-binding")
 

@@ -1,121 +1,127 @@
 {
   "name": "hello-imgui",
   "version": "1.4.0",
-  "homepage": "https://pthom.github.io/hello_imgui/",
+  "port-version": 1,
   "description": "Hello, Dear ImGui: unleash your creativity in app development and prototyping",
+  "homepage": "https://pthom.github.io/hello_imgui/",
   "license": "MIT",
   "dependencies": [
+    {
+      "name": "imgui",
+      "features": [
+        "docking-experimental"
+      ]
+    },
+    "stb",
     {
       "name": "vcpkg-cmake",
       "host": true
     },
     {
-      "name" : "vcpkg-cmake-config",
-      "host" : true
-    },
-    {
-      "name": "imgui",
-      "features": ["docking-experimental"]
-    },
-    {
-      "name": "stb"
+      "name": "vcpkg-cmake-config",
+      "host": true
     }
   ],
-
-  "default-features": ["opengl3-binding", "glfw-binding", "freetype-lunasvg"],
-
+  "default-features": [
+    "freetype-lunasvg",
+    "glfw-binding",
+    "opengl3-binding"
+  ],
   "features": {
-    "opengl3-binding":
-    {
-      "description": "Use OpenGL3/ES2 renderer backend (default)",
-      "dependencies": [
-        {
-          "name": "imgui",
-          "features": ["opengl3-binding"]
-        },
-        {
-          "name": "glad",
-          "features": ["gl-api-43"]
-        }
-      ]
-    },
-
-    "metal-binding":
-    {
-      "description": "Use Metal renderer backend (macOS/iOS only)",
-      "dependencies": [
-        {
-          "name": "imgui",
-          "features": ["metal-binding"]
-        }
-      ]
-    },
-
-    "vulkan-binding":
-    {
-      "description": "Use Vulkan renderer backend (Windows/Linux/macOS, experimental)",
-      "dependencies": [
-        {
-          "name": "imgui",
-          "features": ["vulkan-binding"]
-        }
-      ]
-    },
-
-    "dx11-binding":
-    {
+    "experimental-dx11-binding": {
       "description": "Use DirectX11 renderer backend (Windows only, experimental)",
       "dependencies": [
         {
           "name": "imgui",
-          "features": ["dx11-binding"]
+          "features": [
+            "dx11-binding"
+          ]
         }
       ]
     },
-
-    "dx12-binding":
-    {
+    "experimental-dx12-binding": {
       "description": "Use DirectX12 renderer backend (Windows only, experimental)",
       "dependencies": [
         {
           "name": "imgui",
-          "features": ["dx12-binding"]
+          "features": [
+            "dx12-binding"
+          ]
         }
       ]
     },
-
-    "glfw-binding":
-    {
-      "description": "Use GLFW platform backend (default)",
+    "experimental-vulkan-binding": {
+      "description": "Use Vulkan renderer backend (Windows/Linux/macOS, experimental)",
       "dependencies": [
         {
           "name": "imgui",
-          "features": ["glfw-binding"]
+          "features": [
+            "vulkan-binding"
+          ]
         }
       ]
     },
-
-    "sdl2-binding":
-    {
-      "description": "Use SDL2 platform backend",
-      "dependencies": [
-        {
-          "name": "imgui",
-          "features": ["sdl2-binding"]
-        }
-      ]
-    },
-
-    "freetype-lunasvg":
-    {
+    "freetype-lunasvg": {
       "description": "Improve font rendering and use colored fonts with freetype and lunasvg",
       "dependencies": [
         {
           "name": "imgui",
-          "features": ["freetype", "freetype-lunasvg"]
+          "features": [
+            "freetype",
+            "freetype-lunasvg"
+          ]
+        }
+      ]
+    },
+    "glfw-binding": {
+      "description": "Use GLFW platform backend (default)",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "features": [
+            "glfw-binding"
+          ]
+        }
+      ]
+    },
+    "metal-binding": {
+      "description": "Use Metal renderer backend (macOS/iOS only)",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "features": [
+            "metal-binding"
+          ]
+        }
+      ]
+    },
+    "opengl3-binding": {
+      "description": "Use OpenGL3/ES2 renderer backend (default)",
+      "dependencies": [
+        {
+          "name": "glad",
+          "features": [
+            "gl-api-43"
+          ]
+        },
+        {
+          "name": "imgui",
+          "features": [
+            "opengl3-binding"
+          ]
+        }
+      ]
+    },
+    "sdl2-binding": {
+      "description": "Use SDL2 platform backend",
+      "dependencies": [
+        {
+          "name": "imgui",
+          "features": [
+            "sdl2-binding"
+          ]
         }
       ]
     }
-
   }
 }

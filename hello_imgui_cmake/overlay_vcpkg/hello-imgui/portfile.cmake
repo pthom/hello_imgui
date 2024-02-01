@@ -8,8 +8,8 @@ if(production_mode)
     vcpkg_from_github(
         OUT_SOURCE_PATH SOURCE_PATH
         REPO pthom/hello_imgui
-        REF v1.3.0
-        SHA512 b601828303515a7385d9bbe9e959e0c62f1efa32a99d7e28b1213bbf0e90d51a9d6f8dc5fdda2f077a9fe3ffe9f8f7b9917385848f57c9ec641c3af7432bd03d
+        REF 0c9254b1d78c33617ce47090ec62bda8ca564450
+        SHA512 9b02754a5ff1459b3751ddf5bb477f661016be2f6902bbecf29207d2b62e78b43a5ce801e1d322219747b6087a3931d339a3715697dd042765939927ac7a66b6
         HEAD_REF master
     )
 else()
@@ -28,9 +28,9 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES
     "opengl3-binding" FEATURE_OPENGL3_BINDING
     "metal-binding" FEATURE_METAL_BINDING
-    "vulkan-binding" FEATURE_VULKAN_BINDING
-    "dx11-binding" FEATURE_DX11_BINDING
-    "dx12-binding" FEATURE_DX12_BINDING
+    "experimental-vulkan-binding" FEATURE_VULKAN_BINDING
+    "experimental-dx11-binding" FEATURE_DX11_BINDING
+    "experimental-dx12-binding" FEATURE_DX12_BINDING
     "glfw-binding" FEATURE_GLFW_BINDING
     "sdl2-binding" FEATURE_SDL2_BINDING
     "freetype-lunasvg" FEATURE_FREETYPE_LUNASVG

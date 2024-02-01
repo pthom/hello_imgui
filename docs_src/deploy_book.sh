@@ -81,7 +81,7 @@ echo "- deploy_book: built docs ($REPO_DIR/tools/doc/process_md_docs.py)"
 
 
 # Checkout docs branch
-git checkout --track origin/docs
+git checkout -B docs origin/docs
 if [[ $? -ne 0 ]]; then
     echo "- deploy_book: ERROR: ******** Error checking out docs branch ********"
     exit 1

@@ -196,6 +196,12 @@ option(HELLOIMGUI_WITH_TEST_ENGINE "Provide ImGui Test engine" OFF)
 message(STATUS "HELLOIMGUI_WITH_TEST_ENGINE=${HELLOIMGUI_WITH_TEST_ENGINE}")
 
 #------------------------------------------------------------------------------
+# Options / Install
+# By default, hello_imgui install its targets only if it is the top level project
+#------------------------------------------------------------------------------
+option(HELLOIMGUI_INSTALL "Install hello_imgui" ${PROJECT_IS_TOP_LEVEL})
+
+#------------------------------------------------------------------------------
 # Instructions: how to enable Emscripten multithreading support
 #------------------------------------------------------------------------------
 if (EMSCRIPTEN)
@@ -339,11 +345,15 @@ endif()
 
 
 #------------------------------------------------------------------------------
-# automation tests (set cache var HELLOIMGUI_BUILD_AUTOMATION_TEST to enable)
-# by default, they should only be built standalone, (run cmake inside .github/ci_automation_tests)
+# automation tests (set cache var HELLOIMGUI_BUILD_AUTOMATION_TEST
+# or HELLOIMGUI_BUILD_VCPKG_PACKAGE_TEST to enable)
+# by default, they should only be built standalone
+# (run cmake inside .github/ci_automation_tests or .github/ci_vcpkg_package_tests)
 #------------------------------------------------------------------------------
 if(HELLOIMGUI_BUILD_AUTOMATION_TEST)
     add_subdirectory(.github/ci_automation_tests)
+endif()
+if(HELLOIMGUI_BUILD_VCPKG_PACKAGE_TEST)
     add_subdirectory(.github/ci_vcpkg_package_tests)
 endif()
 
@@ -362,7 +372,7 @@ endif()
 #     find_package(hello-imgui CONFIG REQUIRED)
 #     hello_imgui_add_app(test test.cpp) # this will automatically link with hello_imgui
 #------------------------------------------------------------------------------
-if(PROJECT_IS_TOP_LEVEL)
+if(HELLOIMGUI_INSTALL)
     # inspired from https://iamsorush.com/posts/cpp-cmake-config/
     message(STATUS "HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
     install(TARGETS ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}

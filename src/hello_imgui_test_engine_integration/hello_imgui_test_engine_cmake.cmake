@@ -49,7 +49,7 @@ function(_add_imgui_test_engine_lib)
     )
 
     # install test_engine headers
-    if(PROJECT_IS_TOP_LEVEL)
+    if(HELLOIMGUI_INSTALL)
         file(GLOB te_headers ${te_source_folder}/*.h)
         install(FILES ${te_headers} DESTINATION include/imgui_test_engine)
         install(DIRECTORY ${te_source_folder}/thirdparty DESTINATION include)

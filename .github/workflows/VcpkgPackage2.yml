@@ -28,10 +28,10 @@ jobs:
         config:
 #          - os: ubuntu-latest
 #            vcpkg_triplet: x64-linux-release
-          - os: macos-latest
-            vcpkg_triplet: x64-osx-release
-#          - os: windows-latest
-#            vcpkg_triplet: x64-windows-release
+#          - os: macos-latest
+#            vcpkg_triplet: x64-osx-release
+          - os: windows-latest
+            vcpkg_triplet: x64-windows-release
 
 
     steps:
@@ -66,7 +66,7 @@ jobs:
 
       - name: Windows - install mesa OpenGL software renderer
         shell: bash
-        if: ${{ matrix.platform == 'windows-latest' }}
+        if: ${{ matrix.config.os == 'windows-latest' }}
         run: |
           # Download the archive
           curl -L -O https://github.com/pal1000/mesa-dist-win/releases/download/23.1.9/mesa3d-23.1.9-release-msvc.7z
@@ -74,14 +74,14 @@ jobs:
           # Extract the archive using 7-zip which is preinstalled on the GitHub Actions Windows runner
           7z x mesa3d-23.1.9-release-msvc.7z -omesa3d
 
-          # Optionally move/copy the required DLLs to the directory of your executable
-          # For this example, I'll assume your executable is in '.github/ci_automation_tests/build'
-          # Copy the opengl32.dll to your executable directory
-          cp mesa3d/x64/*.* .github/ci_automation_tests/build/Release
-          
+#          # Optionally move/copy the required DLLs to the directory of your executable
+#          # For this example, I'll assume your executable is in '.github/ci_automation_tests/build'
+#          # Copy the opengl32.dll to your executable directory
+#          cp mesa3d/x64/*.* .github/ci_automation_tests/build/Release
 
-#      - name: Setup interactive tmate session
-#        uses: mxschmitt/action-tmate@v3
+
+      - name: Setup interactive tmate session
+        uses: mxschmitt/action-tmate@v3
 
         # Run the test
       - name: run test
@@ -89,4 +89,4 @@ jobs:
         run: |
           # Test with opengl3-binding
           cd .github/ci_vcpkg_package_tests
-          python run_test.py
+          python run_ci_vcpkg_package_tests.py

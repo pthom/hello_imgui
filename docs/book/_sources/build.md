@@ -54,7 +54,7 @@ See documentation below (extract from [CMakeLists.txt](https://github.com/pthom/
 :end-before: </Dependencies>
 ```
 
-## Get Hello ImGui dependencies via vcpkg
+## Get dependencies via vcpkg
 
 You can install almost all required dependencies with [vcpkg](https://github.com/microsoft/vcpkg).
 

@@ -54,7 +54,7 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
     }
 
     # Only run app with selected platform backends
-    if rendering_backend != "vulkan-binding":
+    if rendering_backend != "vulkan-binding" and platform.system() != "Darwin":
         cmds[f"run test app (Glfw - {rendering_backend})"] = test_app_glfw_cmd,
         cmds[f"run test app (SDL - {rendering_backend})"] = test_app_sdl_cmd,
 

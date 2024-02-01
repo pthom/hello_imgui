@@ -562,6 +562,8 @@ git<span class="w"> </span>clone<span class="w"> </span>https://github.com/pthom
 <span class="c1"># Clone vcpkg -&amp; bootstrap</span>
 git<span class="w"> </span>clone<span class="w"> </span>https://github.com/microsoft/vcpkg.git
 ./vcpkg/bootstrap-vcpkg.sh
+<span class="nb">export</span><span class="w"> </span><span class="nv">VCPKG_ROOT</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/vcpkg<span class="w">     </span><span class="c1"># You *need* to set this environment variable</span>
+<span class="w">                                   </span><span class="c1"># to tell cmake where to find vcpkg</span>
 
 <span class="c1"># Install dependencies required by hello_imgui</span>
 <span class="c1"># (they will be read from the vcpkg.json file)</span>
@@ -584,6 +586,8 @@ git<span class="w"> </span>clone<span class="w"> </span>https://github.com/pthom
 <span class="c1"># Clone vcpkg -&amp; bootstrap</span>
 git<span class="w"> </span>clone<span class="w"> </span>https://github.com/microsoft/vcpkg.git
 ./vcpkg/bootstrap-vcpkg.sh
+<span class="nb">export</span><span class="w"> </span><span class="nv">VCPKG_ROOT</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/vcpkg<span class="w">     </span><span class="c1"># You *need* to set this environment variable</span>
+<span class="w">                                   </span><span class="c1"># to tell cmake where to find vcpkg</span>
 
 <span class="c1"># Use the CMake preset &quot;build_vcpkg_default&quot; </span>
 <span class="c1"># This will grab all dependencies from vcpkg, </span>

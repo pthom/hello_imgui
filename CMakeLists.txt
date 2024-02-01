@@ -344,6 +344,7 @@ endif()
 #------------------------------------------------------------------------------
 if(HELLOIMGUI_BUILD_AUTOMATION_TEST)
     add_subdirectory(.github/ci_automation_tests)
+    add_subdirectory(.github/ci_vcpkg_package_tests)
 endif()
 
 

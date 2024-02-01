@@ -1,23 +1,25 @@
-set(CMAKE_VERBOSE_MAKEFILE ON)
-
 vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
 
-#vcpkg_from_github(
-#    OUT_SOURCE_PATH SOURCE_PATH
-#    REPO pthom/hello_imgui
-#    REF v1.3.0
-#    SHA512 b601828303515a7385d9bbe9e959e0c62f1efa32a99d7e28b1213bbf0e90d51a9d6f8dc5fdda2f077a9fe3ffe9f8f7b9917385848f57c9ec641c3af7432bd03d
-#    HEAD_REF master
-#)
+# production_mode is set to OFF during development, to test the latest version of hello_imgui
+set(production_mode ON)
 
-set(VCPKG_USE_HEAD_VERSION ON CACHE BOOL "" FORCE)
-vcpkg_from_git(
-    OUT_SOURCE_PATH SOURCE_PATH
-    #URL file:///Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/hello_imgui_vcpkg
-    URL https://github.com/pthom/hello_imgui
-    HEAD_REF master
-    #    REF c95e2bfdc26477929354daa2213394a972016a1b
-)
+
+if(production_mode)
+    vcpkg_from_github(
+        OUT_SOURCE_PATH SOURCE_PATH
+        REPO pthom/hello_imgui
+        REF v1.3.0
+        SHA512 b601828303515a7385d9bbe9e959e0c62f1efa32a99d7e28b1213bbf0e90d51a9d6f8dc5fdda2f077a9fe3ffe9f8f7b9917385848f57c9ec641c3af7432bd03d
+        HEAD_REF master
+    )
+else()
+    set(VCPKG_USE_HEAD_VERSION ON CACHE BOOL "" FORCE)
+    vcpkg_from_git(
+        OUT_SOURCE_PATH SOURCE_PATH
+        URL https://github.com/pthom/hello_imgui
+        HEAD_REF master
+    )
+endif()
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES

@@ -139,7 +139,22 @@ def prepare_display():
 
 def run_tests():
     prepare_display()
-    rendering_backends = ["opengl3-binding", "vulkan-binding"]
+    rendering_backends = ["opengl3-binding"]
+    if platform.system() != "Darwin":
+        rendering_backends.append("vulkan-binding")
+        """
+        Note: CI hangs on this step under macOS (spirv-tools)
+        --
+            Building spirv-tools:x64-osx@1.3.268.0...
+            -- Downloading https://github.com/KhronosGroup/SPIRV-Tools/archive/vulkan-sdk-1.3.268.0.tar.gz -> KhronosGroup-SPIRV-Tools-vulkan-sdk-1.3.268.0.tar.gz...
+            -- Extracting source /usr/local/share/vcpkg/downloads/KhronosGroup-SPIRV-Tools-vulkan-sdk-1.3.268.0.tar.gz
+            -- Applying patch cmake-config-dir.diff
+            -- Applying patch spirv-tools-shared.diff
+            -- Applying patch fix-tool-deps.diff
+            -- Using source at /usr/local/share/vcpkg/buildtrees/spirv-tools/src/-1.3.268.0-e268efb20d.clean
+            -- Configuring x64-osx
+            -- Building x64-osx-dbg
+        """
     if platform.system() == "Windows":
         rendering_backends.append("dx11-binding")
         rendering_backends.append("dx12-binding")

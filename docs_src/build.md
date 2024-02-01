@@ -54,6 +54,34 @@ See documentation below (extract from [CMakeLists.txt](https://github.com/pthom/
 :end-before: </Dependencies>
 ```
 
+## Get Hello ImGui dependencies via vcpkg
+
+You can install almost all required dependencies with [vcpkg](https://github.com/microsoft/vcpkg).
+
+For example:
+```bash
+# Clone hello_imgui 
+git clone https://github.com/pthom/hello_imgui.git
+cd hello_imgui
+# Clone vcpkg -& bootstrap
+git clone https://github.com/microsoft/vcpkg.git
+./vcpkg/bootstrap-vcpkg.sh
+
+# Install dependencies required by hello_imgui
+./vcpkg/vcpkg install "glad[gl-api-43] stb freetype lunasvg glfw3 sdl2 imgui[opengl3-binding, docking-experimental, glfw-binding, sdl2-binding,freetype, freetype-lunasvg]"
+
+# Build hello_imgui
+mkdir build && cd build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build . -j 4 
+```
+
+Notes:
+- this will not support ImGui Test Engine, as it is not available in vcpkg yet.
+- See CI Tests: [![VcpkgDeps](https://github.com/pthom/hello_imgui/workflows/VcpkgDeps/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/VcpkgDeps.yml)
+
+
+
 ## Hello ImGui CMake options
 
 The [CMakelists.txt](https://github.com/pthom/hello_imgui/blob/master/CMakeLists.txt) file is heavily documented.

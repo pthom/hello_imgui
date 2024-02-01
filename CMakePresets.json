@@ -2,6 +2,20 @@
   "version": 3,
   "configurePresets": [
     {
+      "name": "build_default_glfw",
+      "description": "Build with default settings (opengl3 and glfw). You need to create a build directory and run from it",
+      "cacheVariables": {
+        "HELLOIMGUI_USE_GLFW_OPENGL3": "ON"
+      }
+    },
+    {
+      "name": "build_default_sdl",
+      "description": "Build with default settings (opengl3 and sdl). You need to create a build directory and run from it",
+      "cacheVariables": {
+        "HELLOIMGUI_USE_SDL_OPENGL3": "ON"
+      }
+    },
+    {
       "name": "build_vcpkg_default",
       "description": "Build with vcpkg default settings (opengl3 + sdl and glfw). You need to create a build directory and run from it",
       "cacheVariables": {

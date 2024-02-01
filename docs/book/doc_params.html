@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="./" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Application parameters &#8212; Hello, Dear ImGui - Cross-platform Gui apps with Dear ImGui</title>
   
@@ -19,50 +18,54 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=04c4cc14" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
-  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/clipboard.min.js"></script>
-    <script src="_static/copybutton.js"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js"></script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="_static/design-tabs.js"></script>
+    <script src="_static/design-tabs.js?v=36754332"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
-    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script async="async" src="_static/sphinx-thebe.js?v=afe5de03"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'doc_params';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -80,7 +83,6 @@ const thebe_selector_output = ".output, .cell_output"
   <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>
@@ -120,20 +122,15 @@ const thebe_selector_output = ".output, .cell_output"
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
-
-  <header>
   
-    <div class="bd-header navbar navbar-expand-lg bd-navbar">
-    </div>
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    </header>
   
-  </header>
 
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
       
-      
-        
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -167,7 +164,18 @@ const thebe_selector_output = ".output, .cell_output"
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
@@ -442,16 +450,16 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="application-parameters">
-<h1>Application parameters<a class="headerlink" href="#application-parameters" title="Permalink to this heading">#</a></h1>
+<h1>Application parameters<a class="headerlink" href="#application-parameters" title="Link to this heading">#</a></h1>
 <p><em>RunnerParams</em> contains all the settings and callbacks in order to run an application.
 The diagram below summarize all the possible settings and callbacks (which are explained in detail later in this document).</p>
 <p><a class="reference external" href="https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png"><img alt="diagram" src="https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png" /></a></p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="runnerparams">
-<h1>RunnerParams<a class="headerlink" href="#runnerparams" title="Permalink to this heading">#</a></h1>
+<h1>RunnerParams<a class="headerlink" href="#runnerparams" title="Link to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h">runner_params.h</a>.</p>
 <section id="simple-runner-params">
-<h2>Simple runner params<a class="headerlink" href="#simple-runner-params" title="Permalink to this heading">#</a></h2>
+<h2>Simple runner params<a class="headerlink" href="#simple-runner-params" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SimpleRunnerParams is a struct that contains simpler params adapted for simple use cases.</span>
 <span class="c1">//For example, this is sufficient to run an application:</span>
 <span class="c1">//    ```cpp</span>
@@ -503,7 +511,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 </div>
 </section>
 <section id="full-params">
-<h2>Full params<a class="headerlink" href="#full-params" title="Permalink to this heading">#</a></h2>
+<h2>Full params<a class="headerlink" href="#full-params" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// RunnerParams contains the settings and callbacks needed to run an application.</span>
 <span class="c1">//</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">RunnerParams</span>
@@ -621,7 +629,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 </section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="fps-idling">
-<h1>Fps Idling<a class="headerlink" href="#fps-idling" title="Permalink to this heading">#</a></h1>
+<h1>Fps Idling<a class="headerlink" href="#fps-idling" title="Link to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h">runner_params.h</a>.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// FpsIdling is a struct that contains Fps Idling parameters</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">FpsIdling</span>
@@ -656,10 +664,10 @@ The diagram below summarize all the possible settings and callbacks (which are e
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="runner-callbacks">
-<h1>Runner callbacks<a class="headerlink" href="#runner-callbacks" title="Permalink to this heading">#</a></h1>
+<h1>Runner callbacks<a class="headerlink" href="#runner-callbacks" title="Link to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_callbacks.h">runner_callbacks.h</a>.</p>
 <section id="callbacks-types">
-<h2>Callbacks types<a class="headerlink" href="#callbacks-types" title="Permalink to this heading">#</a></h2>
+<h2>Callbacks types<a class="headerlink" href="#callbacks-types" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// VoidFunctionPointer can hold any void(void) function.</span>
 <span class="k">using</span><span class="w"> </span><span class="n">VoidFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
 <span class="kr">inline</span><span class="w"> </span><span class="n">VoidFunction</span><span class="w"> </span><span class="nf">EmptyVoidFunction</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span><span class="w"> </span><span class="p">}</span>
@@ -676,7 +684,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 </div>
 </section>
 <section id="runnercallbacks">
-<h2>RunnerCallbacks<a class="headerlink" href="#runnercallbacks" title="Permalink to this heading">#</a></h2>
+<h2>RunnerCallbacks<a class="headerlink" href="#runnercallbacks" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// RunnerCallbacks is a struct that contains the callbacks</span>
 <span class="c1">// that are called by the application</span>
 <span class="c1">//</span>
@@ -827,7 +835,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 </div>
 </section>
 <section id="edge-toolbars-callbacks">
-<h2>Edge Toolbars Callbacks<a class="headerlink" href="#edge-toolbars-callbacks" title="Permalink to this heading">#</a></h2>
+<h2>Edge Toolbars Callbacks<a class="headerlink" href="#edge-toolbars-callbacks" title="Link to this heading">#</a></h2>
 <p>More details on <code class="docutils literal notranslate"><span class="pre">RunnerParams.edgesToolbars</span></code> (a dictionary of <code class="docutils literal notranslate"><span class="pre">EdgeToolbar</span></code>, per edge type)</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">RunnerCallbacks</span>
 <span class="p">{</span>
@@ -880,7 +888,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 </div>
 </section>
 <section id="mobilecallbacks">
-<h2>MobileCallbacks<a class="headerlink" href="#mobilecallbacks" title="Permalink to this heading">#</a></h2>
+<h2>MobileCallbacks<a class="headerlink" href="#mobilecallbacks" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// MobileCallbacks is a struct that contains callbacks that are called by the application</span>
 <span class="c1">// when running under &quot;Android, iOS and WinRT&quot;.</span>
 <span class="c1">// These events are specific to mobile and embedded devices that have different</span>
@@ -913,10 +921,10 @@ The diagram below summarize all the possible settings and callbacks (which are e
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="application-window-params">
-<h1>Application window params<a class="headerlink" href="#application-window-params" title="Permalink to this heading">#</a></h1>
+<h1>Application window params<a class="headerlink" href="#application-window-params" title="Link to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/app_window_params.h">app_window_params.h</a>.</p>
 <section id="appwindowparams">
-<h2>AppWindowParams<a class="headerlink" href="#appwindowparams" title="Permalink to this heading">#</a></h2>
+<h2>AppWindowParams<a class="headerlink" href="#appwindowparams" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//</span>
 <span class="c1">// AppWindowParams is a struct that defines the application window display params.</span>
 <span class="c1">//See https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png</span>
@@ -988,7 +996,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 </div>
 </section>
 <section id="windowgeometry">
-<h2>WindowGeometry<a class="headerlink" href="#windowgeometry" title="Permalink to this heading">#</a></h2>
+<h2>WindowGeometry<a class="headerlink" href="#windowgeometry" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//</span>
 <span class="c1">// WindowGeometry is a struct that defines the window geometry.</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">WindowGeometry</span>
@@ -1073,10 +1081,10 @@ The diagram below summarize all the possible settings and callbacks (which are e
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="imgui-window-params">
-<h1>ImGui window params<a class="headerlink" href="#imgui-window-params" title="Permalink to this heading">#</a></h1>
+<h1>ImGui window params<a class="headerlink" href="#imgui-window-params" title="Link to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/imgui_window_params.h">imgui_window_params.h</a>.</p>
 <section id="imguiwindowparams">
-<h2>ImGuiWindowParams<a class="headerlink" href="#imguiwindowparams" title="Permalink to this heading">#</a></h2>
+<h2>ImGuiWindowParams<a class="headerlink" href="#imguiwindowparams" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `ImGuiWindowParams` is a struct that defines the ImGui inner windows params</span>
 <span class="c1">// These settings affect the imgui inner windows inside the application window.</span>
 <span class="c1">// In order to change the application window settings, change the `AppWindowsParams`</span>
@@ -1182,7 +1190,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 </div>
 </section>
 <section id="default-window-types">
-<h2>Default window types<a class="headerlink" href="#default-window-types" title="Permalink to this heading">#</a></h2>
+<h2>Default window types<a class="headerlink" href="#default-window-types" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `DefaultImGuiWindowType` is an enum class that defines whether a full screen background</span>
 <span class="c1">// window is provided or not</span>
 <span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">DefaultImGuiWindowType</span>
@@ -1201,7 +1209,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 </section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="docking">
-<h1>Docking<a class="headerlink" href="#docking" title="Permalink to this heading">#</a></h1>
+<h1>Docking<a class="headerlink" href="#docking" title="Link to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/docking_params.h">docking_params.h</a>.</p>
 <p>HelloImGui makes it easy to use dockable windows
 (based on ImGui <a class="reference external" href="https://github.com/ocornut/imgui/tree/docking">docking branch</a>).</p>
@@ -1249,7 +1257,7 @@ restore the default layout, switch between layouts, etc.</p>
 <p>Inside DockingParams, the member <code class="docutils literal notranslate"><span class="pre">dockingSplits</span></code> specifies the layout, and the member <code class="docutils literal notranslate"><span class="pre">dockableWindows</span></code>
 specifies the list of dockable windows, along with their default location, and their code (given by lambdas).</p>
 <section id="docking-params-example-usage">
-<h2>Docking Params: Example usage<a class="headerlink" href="#docking-params-example-usage" title="Permalink to this heading">#</a></h2>
+<h2>Docking Params: Example usage<a class="headerlink" href="#docking-params-example-usage" title="Link to this heading">#</a></h2>
 <p>Below is an example that shows how to instantiate a layout:</p>
 <ol class="arabic simple">
 <li><p>First, define the docking splits:</p></li>
@@ -1330,7 +1338,7 @@ specifies the list of dockable windows, along with their default location, and t
 </div>
 </section>
 <section id="docking-splits">
-<h2>Docking Splits<a class="headerlink" href="#docking-splits" title="Permalink to this heading">#</a></h2>
+<h2>Docking Splits<a class="headerlink" href="#docking-splits" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// DockingSplit is a struct that defines the way the docking splits should</span>
 <span class="c1">// be applied on the screen in order to create new Dock Spaces.</span>
 <span class="c1">// DockingParams contains a</span>
@@ -1372,7 +1380,7 @@ specifies the list of dockable windows, along with their default location, and t
 </div>
 </section>
 <section id="dockable-window">
-<h2>Dockable window<a class="headerlink" href="#dockable-window" title="Permalink to this heading">#</a></h2>
+<h2>Dockable window<a class="headerlink" href="#dockable-window" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// DockableWindow is a struct that represents a window that can be docked.</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">DockableWindow</span>
 <span class="p">{</span>
@@ -1464,7 +1472,7 @@ specifies the list of dockable windows, along with their default location, and t
 </div>
 </section>
 <section id="docking-params">
-<h2>Docking Params<a class="headerlink" href="#docking-params" title="Permalink to this heading">#</a></h2>
+<h2>Docking Params<a class="headerlink" href="#docking-params" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// DockingParams contains all the settings concerning the docking:</span>
 <span class="c1">//     - list of splits</span>
 <span class="c1">//     - list of dockable windows</span>
@@ -1536,9 +1544,9 @@ specifies the list of dockable windows, along with their default location, and t
 </section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="backend">
-<h1>Backend<a class="headerlink" href="#backend" title="Permalink to this heading">#</a></h1>
+<h1>Backend<a class="headerlink" href="#backend" title="Link to this heading">#</a></h1>
 <section id="backend-pointers">
-<h2>Backend Pointers<a class="headerlink" href="#backend-pointers" title="Permalink to this heading">#</a></h2>
+<h2>Backend Pointers<a class="headerlink" href="#backend-pointers" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//</span>
 <span class="c1">// BackendPointers is a struct that contains optional pointers to the</span>
 <span class="c1">// backend implementations (for SDL and GLFW).</span>
@@ -1570,7 +1578,7 @@ specifies the list of dockable windows, along with their default location, and t
 </div>
 </section>
 <section id="renderer-backend-options">
-<h2>Renderer Backend Options<a class="headerlink" href="#renderer-backend-options" title="Permalink to this heading">#</a></h2>
+<h2>Renderer Backend Options<a class="headerlink" href="#renderer-backend-options" title="Link to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `bool hasEdrSupport()`:</span>
 <span class="c1">// Check whether extended dynamic range (EDR), i.e. the ability to reproduce</span>
 <span class="c1">// intensities exceeding the standard dynamic range from 0.0-1.0, is supported.</span>
@@ -1755,8 +1763,8 @@ By Pascal Thomet
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
 
   <footer class="bd-footer">
   </footer>

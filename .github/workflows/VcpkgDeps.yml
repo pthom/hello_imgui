@@ -35,7 +35,7 @@ jobs:
         uses: johnwason/vcpkg-action@v6
         id: vcpkg
         with:
-          pkgs: 'glad[gl-api-43] stb freetype lunasvg glfw3 sdl2'
+          pkgs: 'nlohmann-json' # unrelated package, just to make the action happy
           triplet: ${{ matrix.config.vcpkg_triplet }}
           cache-key: ${{ matrix.config.os }}
           revision: master
@@ -50,18 +50,12 @@ jobs:
 #      - name: Setup interactive tmate session
 #        uses: mxschmitt/action-tmate@v3
 
-      # Available rendering bindings:
-      #     opengl3-binding, metal-binding, opengl3-binding, vulkan-binding, dx11-binding, dx12-binding
-      # We test only opengl3-binding
-      - name: vcpkg install imgui
-        shell: bash
-        run: |
-          vcpkg install "imgui[opengl3-binding, docking-experimental, glfw-binding, sdl2-binding, freetype, freetype-lunasvg]"
-
       - name: Build and install
         shell: bash
+        # This will read the dependencies from the vcpkg.json file,
+        # and the CMake preset from CMakePresets.json
         run: |
           mkdir build
-          cd build          
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake -DHELLOIMGUI_USE_SDL_OPENGL3=ON -DHELLOIMGUI_USE_GLFW_OPENGL3=ON -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE=ON
+          cd build
+          cmake .. --preset build_vcpkg_default -DCMAKE_BUILD_TYPE=Release
           cmake --build . -j 3

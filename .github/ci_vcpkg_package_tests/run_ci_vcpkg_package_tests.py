@@ -3,14 +3,16 @@ import platform
 import os
 import sys
 import shutil
+import tempfile
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.abspath(os.path.join(THIS_DIR, "..", ".."))
+TEMP_BUILD_DIR = tempfile.TemporaryDirectory()
 
 FAILING_TESTS_MESSAGES = []
-SUCCESSES_RUN = []
-SUCCESSES_BUILD = []
-
+SUCCESSES_RUN_APP = []
+SUCCESSES_BUILD_APP = []
+SUCCESSES_BUILD_VCPKG = []
 
 def copy_mesa_libs_to_current_dir():
     # Test if we are on a github runner
@@ -33,7 +35,7 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
     print("Running test with rendering backend: " + rendering_backend)
     print("-------------------------------------------------")
     build_dir = f"build-{rendering_backend}"
-    os.chdir(THIS_DIR)
+    os.chdir(TEMP_BUILD_DIR.name)
     if os.path.exists(build_dir):
         shutil.rmtree(build_dir)
     os.mkdir(build_dir)
@@ -73,8 +75,8 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
     cmds = {
         "vcpkg remove hello_imgui": vcpkg_remove_cmd,
         f"vcpkg install hello_imgui {rendering_backend}": vcpkg_install_cmd,
-        f"run cmake {rendering_backend}": cmake_cmd,
-        f"run build {rendering_backend}": build_cmd,
+        f"cmake {rendering_backend}": cmake_cmd,
+        f"build {rendering_backend}": build_cmd,
     }
 
     # Only run app with selected platform backends
@@ -82,9 +84,9 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
     is_macos = platform.system() == "Darwin"
     is_dx12_on_windows = rendering_backend == "experimental-dx12-binding" and platform.system() == "Windows"
     if not (is_vulkan or is_macos):
-        cmds[f"run test app (Glfw - {rendering_backend})"] = test_app_glfw_cmd
+        cmds[f"test app (Glfw - {rendering_backend})"] = test_app_glfw_cmd
         if not is_dx12_on_windows:
-            cmds[f"run test app (SDL - {rendering_backend})"] = test_app_sdl_cmd
+            cmds[f"test app (SDL - {rendering_backend})"] = test_app_sdl_cmd
 
     for name, cmd in cmds.items():
         print(f"""
@@ -96,7 +98,6 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
         ****************************************************************************************************
         """)
         try:
-            print(os.environ["PATH"])
             cmd_list = cmd.split()
 
             if platform.system() == "Windows" and name.startswith("run test app"):
@@ -113,11 +114,14 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
             else:
                 subprocess.run(cmd_list, check=True, cwd=current_dir)
 
-            if name.startswith("run test app"):
-                SUCCESSES_RUN.append(name)
+            if name.startswith("test app"):
+                SUCCESSES_RUN_APP.append(name)
 
-            if name.startswith("run build"):
-                SUCCESSES_BUILD.append(name)
+            if name.startswith("build"):
+                SUCCESSES_BUILD_APP.append(name)
+
+            if name.startswith("vcpkg install"):
+                SUCCESSES_BUILD_VCPKG.append(name)
 
         except subprocess.CalledProcessError as e:
             message = f"""
@@ -144,7 +148,18 @@ def prepare_display():
         subprocess.run("Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &", shell=True, check=True)
 
 
+def copy_sources_outside_of_project():
+    """We need to copy the sources outside the project,
+    to avoid using vcpkg.json manifest file"""
+    src_dir = THIS_DIR
+    dst_dir = TEMP_BUILD_DIR.name
+    files_to_copy = ["ci_vcpkg_package_tests_app.cpp", "CMakeLists.txt"]
+    for file in files_to_copy:
+        shutil.copy(os.path.join(src_dir, file), os.path.join(dst_dir, file))
+
+
 def run_tests():
+    copy_sources_outside_of_project()
     prepare_display()
     rendering_backends = ["opengl3-binding"]
     if platform.system() != "Darwin":
@@ -173,15 +188,18 @@ def run_tests():
         success = run_test_with_rendering_backend(backend)
         all_success = all_success and success
 
-    all_successes_run_str = "\n        ".join(SUCCESSES_RUN)
-    all_successes_build_str = "\n        ".join(SUCCESSES_BUILD)
+    all_successes_run_str = "\n        ".join(SUCCESSES_RUN_APP)
+    all_successes_build_app_str = "\n        ".join(SUCCESSES_BUILD_APP)
+    all_successes_build_vcpkg_str = "\n        ".join(SUCCESSES_BUILD_VCPKG)
     print(f"""
     ****************************************************************************************************
     All tests finished
-    Successful Runs: 
+    Successful Vcpkg Builds:
+        {all_successes_build_vcpkg_str}
+    Successful App Builds:
+        {all_successes_build_app_str}
+    Successful App Runs: 
         {all_successes_run_str}
-    Successful Builds:
-        {all_successes_build_str}
     ****************************************************************************************************
     """)
     if all_success:

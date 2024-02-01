@@ -55,6 +55,7 @@ jobs:
         # This will read the dependencies from the vcpkg.json file,
         # and the CMake preset from CMakePresets.json
         run: |
+          export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
           mkdir build
           cd build
           cmake .. --preset build_vcpkg_default -DCMAKE_BUILD_TYPE=Release

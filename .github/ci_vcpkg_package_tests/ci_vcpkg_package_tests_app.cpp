@@ -84,5 +84,6 @@ int main(int argc, char**argv)
 #ifdef _WIN32
     WriteWin32SuccessFile();
 #endif
+    printf("Exiting ci_vcpkg_package_tests_app with success (ignore exit seg fault on GH runners)\n");
     return 0;
 }

@@ -3,11 +3,10 @@ import platform
 import os
 import sys
 import shutil
-import tempfile
+
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.abspath(os.path.join(THIS_DIR, "..", ".."))
-TEMP_BUILD_DIR = tempfile.TemporaryDirectory()
 
 FAILING_TESTS_MESSAGES = []
 SUCCESSES_RUN_APP = []
@@ -35,7 +34,7 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
     print("Running test with rendering backend: " + rendering_backend)
     print("-------------------------------------------------")
     build_dir = f"build-{rendering_backend}"
-    os.chdir(TEMP_BUILD_DIR.name)
+    os.chdir(THIS_DIR)
     if os.path.exists(build_dir):
         shutil.rmtree(build_dir)
     os.mkdir(build_dir)
@@ -100,7 +99,7 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
         try:
             cmd_list = cmd.split()
 
-            if platform.system() == "Windows" and name.startswith("run test app"):
+            if platform.system() == "Windows" and name.startswith("test app"):
                 # Under windows, the app succeeds, but the process returns an error code at exit
                 # So, we detect if the app succeeded by checking if a file was created by it
                 try:
@@ -148,18 +147,31 @@ def prepare_display():
         subprocess.run("Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &", shell=True, check=True)
 
 
-def copy_sources_outside_of_project():
-    """We need to copy the sources outside the project,
-    to avoid using vcpkg.json manifest file"""
-    src_dir = THIS_DIR
-    dst_dir = TEMP_BUILD_DIR.name
-    files_to_copy = ["ci_vcpkg_package_tests_app.cpp", "CMakeLists.txt"]
-    for file in files_to_copy:
-        shutil.copy(os.path.join(src_dir, file), os.path.join(dst_dir, file))
+def rename_vcpkg_json():
+    """We need to rename the vcpkg.json file at the repository root to avoid using it"""
+    vcpkg_json_path = os.path.join(REPO_DIR, "vcpkg.json")
+    vcpkg_json_backup_path = os.path.join(REPO_DIR, "vcpkg.json.bak")
+    if os.path.exists(vcpkg_json_backup_path):
+        os.remove(vcpkg_json_backup_path)
+        print(f"Removed vcpkg.json.bak")
+    if os.path.exists(vcpkg_json_path):
+        os.rename(vcpkg_json_path, vcpkg_json_backup_path)
+        print(f"Renamed vcpkg.json to vcpkg.json.bak")
+
+
+def undo_rename_vcpkg_json():
+    vcpkg_json_path = os.path.join(REPO_DIR, "vcpkg.json")
+    vcpkg_json_backup_path = os.path.join(REPO_DIR, "vcpkg.json.bak")
+    if os.path.exists(vcpkg_json_path):
+        os.remove(vcpkg_json_path)
+        print(f"Removed vcpkg.json")
+    if os.path.exists(vcpkg_json_backup_path):
+        os.rename(vcpkg_json_backup_path, vcpkg_json_path)
+        print(f"Renamed vcpkg.json.bak to vcpkg.json")
 
 
 def run_tests():
-    copy_sources_outside_of_project()
+    rename_vcpkg_json()
     prepare_display()
     rendering_backends = ["opengl3-binding"]
     if platform.system() != "Darwin":
@@ -204,7 +216,6 @@ def run_tests():
     """)
     if all_success:
         print("All tests passed")
-        sys.exit(0)
     else:
         all_failures_str = "\n    ".join(FAILING_TESTS_MESSAGES)
         print(f"""
@@ -214,6 +225,11 @@ def run_tests():
         {all_failures_str}
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         """)
+
+    undo_rename_vcpkg_json()
+    if all_success:
+        sys.exit(0)
+    else:
         sys.exit(1)
 
 

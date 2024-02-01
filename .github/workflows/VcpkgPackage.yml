@@ -26,10 +26,10 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - os: ubuntu-latest
-#            vcpkg_triplet: x64-linux-release
-#          - os: macos-latest
-#            vcpkg_triplet: x64-osx-release
+          - os: ubuntu-latest
+            vcpkg_triplet: x64-linux-release
+          - os: macos-latest
+            vcpkg_triplet: x64-osx-release
           - os: windows-latest
             vcpkg_triplet: x64-windows-release
 

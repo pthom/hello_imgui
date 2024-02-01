@@ -2,6 +2,7 @@
 #include "rendering_dx11.h"
 #include "hello_imgui/hello_imgui.h"
 
+#include <cstdio>
 #include <d3d11.h>
 #include <iostream>
 
@@ -83,6 +84,16 @@ namespace HelloImGui
     //  Impl of RenderingCallbacks_Impl_SwapBuffers
     void SwapDx11Buffers()
     {
+        static ImVec2 viewportInitialSize = ImGui::GetMainViewport()->Size;
+        ImVec2 currentViewportSize = ImGui::GetMainViewport()->Size;
+        if ((currentViewportSize.x != viewportInitialSize.x) || (currentViewportSize.y != viewportInitialSize.y))
+        {
+            // Help appreciated!
+            IM_ASSERT(false && "rendering_dx11.cpp::SwapDx11Buffers() The current implementation of Dx11 backend does "
+                    "not support changing the window size!");
+            // Once solved, AbstractRunner::DpiWindowSizeFactor() can be corrected by removing the ifdef
+        }
+
         auto& gDx11Globals = GetDx11Globals();
         gDx11Globals.pSwapChain->Present(1, 0); // Present with vsync
     }

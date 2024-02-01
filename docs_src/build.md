@@ -72,6 +72,8 @@ cd hello_imgui
 # Clone vcpkg -& bootstrap
 git clone https://github.com/microsoft/vcpkg.git
 ./vcpkg/bootstrap-vcpkg.sh
+export VCPKG_ROOT=$(pwd)/vcpkg     # You *need* to set this environment variable
+                                   # to tell cmake where to find vcpkg
 
 # Install dependencies required by hello_imgui
 # (they will be read from the vcpkg.json file)
@@ -97,6 +99,8 @@ cd hello_imgui
 # Clone vcpkg -& bootstrap
 git clone https://github.com/microsoft/vcpkg.git
 ./vcpkg/bootstrap-vcpkg.sh
+export VCPKG_ROOT=$(pwd)/vcpkg     # You *need* to set this environment variable
+                                   # to tell cmake where to find vcpkg
 
 # Use the CMake preset "build_vcpkg_default" 
 # This will grab all dependencies from vcpkg, 

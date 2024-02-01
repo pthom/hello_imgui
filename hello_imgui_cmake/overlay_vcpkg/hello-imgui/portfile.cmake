@@ -1,7 +1,7 @@
 vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
 
 # production_mode is set to OFF during development, to test the latest version of hello_imgui
-set(production_mode ON)
+set(production_mode OFF)
 
 
 if(production_mode)
@@ -17,8 +17,11 @@ else()
     vcpkg_from_git(
         OUT_SOURCE_PATH SOURCE_PATH
         URL https://github.com/pthom/hello_imgui
+        # URL file:///Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/hello_imgui_vcpkg
         HEAD_REF master
     )
+    # test with
+    #   ./vcpkg/vcpkg install "hello-imgui[opengl3-binding, glfw-binding, sdl2-binding]" --overlay-ports=$(pwd)/hello_imgui_cmake/overlay_vcpkg/hello-imgui --debug --no-binarycaching --recurse
 endif()
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS

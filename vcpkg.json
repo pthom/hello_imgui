@@ -14,8 +14,20 @@
       "name": "imgui",
       "features": [
         "opengl3-binding",
-        "metal-binding",
         "vulkan-binding",
+        "vulkan-binding",
+        {
+          "name": "metal-binding",
+          "platform": "osx"
+        },
+        {
+          "name": "dx11-binding",
+          "platform": "windows"
+        },
+        {
+          "name": "dx12-binding",
+          "platform": "windows"
+        },
         "glfw-binding",
         "sdl2-binding",
         "docking-experimental",

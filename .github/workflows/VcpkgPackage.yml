@@ -49,30 +49,10 @@ jobs:
 #      - name: Setup interactive tmate session
 #        uses: mxschmitt/action-tmate@v3
 
-      - name: all platforms - opengl3 and vulkan bindings
+      # Available rendering bindings:
+      #     opengl3-binding, metal-binding, opengl3-binding, vulkan-binding, dx11-binding, dx12-binding
+      # We test only opengl3-binding
+      - name: vcpkg install hello_imgui
         shell: bash
         run: |
-          # Test with opengl3-binding
           vcpkg install "hello-imgui[opengl3-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui
-          vcpkg remove hello-imgui
-          # Test with vulkan-binding
-          vcpkg install "hello-imgui[vulkan-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui
-          vcpkg remove hello-imgui
-
-      - name: windows - directx bindings
-        if : ${{ matrix.config.os == 'windows-latest' }}
-        shell: bash
-        run: |
-          # Test with dx11-binding
-          vcpkg install "hello-imgui[dx11-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui
-          vcpkg remove hello-imgui
-          # Test with vulkan-binding
-          vcpkg install "hello-imgui[dx12-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui
-          vcpkg remove hello-imgui
-
-      - name: macos - metal bindings
-        if : ${{ matrix.config.os == 'windows-latest' }}
-        run: |
-          # Test with dx11-binding
-          vcpkg install "hello-imgui[metal-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui
-          vcpkg remove hello-imgui

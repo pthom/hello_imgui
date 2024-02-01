@@ -68,7 +68,7 @@ git clone https://github.com/microsoft/vcpkg.git
 ./vcpkg/bootstrap-vcpkg.sh
 
 # Install dependencies required by hello_imgui
-./vcpkg/vcpkg install "glad[gl-api-43] stb freetype lunasvg glfw3 sdl2 imgui[opengl3-binding, docking-experimental, glfw-binding, sdl2-binding,freetype, freetype-lunasvg]"
+./vcpkg/vcpkg install glad[gl-api-43] stb freetype lunasvg glfw3 sdl2 "imgui[opengl3-binding, docking-experimental, glfw-binding, sdl2-binding,freetype, freetype-lunasvg]"
 
 # Build hello_imgui
 mkdir build && cd build

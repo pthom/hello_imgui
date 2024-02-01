@@ -1,7 +1,0 @@
-{
-  "dependencies": [
-    "freetype",
-    "glfw3",
-    "lunasvg"
-  ]
-}

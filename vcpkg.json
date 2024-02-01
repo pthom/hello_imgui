@@ -1,0 +1,27 @@
+{
+  "dependencies": [
+    "freetype",
+    "glfw3",
+    "lunasvg",
+    {
+      "name": "glad",
+      "features": [
+        "gl-api-43"
+      ]
+    },
+    "stb",
+    {
+      "name": "imgui",
+      "features": [
+        "opengl3-binding",
+        "metal-binding",
+        "vulkan-binding",
+        "glfw-binding",
+        "sdl2-binding",
+        "docking-experimental",
+        "freetype",
+        "freetype-lunasvg"
+      ]
+    }
+  ]
+}

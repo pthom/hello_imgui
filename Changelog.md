@@ -1,5 +1,53 @@
 Version numbers are synced between hello_imgui and imgui_bundle.
 
+# v1.4.0
+
+## Vcpkg support for dependencies
+You can install almost all required dependencies with [vcpkg](https://github.com/microsoft/vcpkg). 
+```bash
+# Clone hello_imgui 
+git clone https://github.com/pthom/hello_imgui.git
+cd hello_imgui
+# Clone vcpkg -& bootstrap
+git clone https://github.com/microsoft/vcpkg.git
+./vcpkg/bootstrap-vcpkg.sh
+# Install dependencies required by hello_imgui
+./vcpkg/vcpkg install "glad[gl-api-43] stb freetype lunasvg glfw3 sdl2 imgui[opengl3-binding, docking-experimental, glfw-binding, sdl2-binding,freetype, freetype-lunasvg]"
+# Build hello_imgui
+mkdir build && cd build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build . -j 4 
+```
+
+Notes: 
+- this will not support ImGui Test Engine, as it is not available in vcpkg yet.
+- See CI Tests: [![VcpkgDeps](https://github.com/pthom/hello_imgui/workflows/VcpkgDeps/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/VcpkgDeps.yml)
+
+
+## Vcpkg packaging
+hello_imgui is now ready to be integrated to [vcpkg](https://github.com/microsoft/vcpkg).
+
+You can test this with the following commands:
+```bash
+# Clone hello_imgui  (just to get the overlay in hello_imgui_cmake/overlay_vcpkg/hello-imgui)
+git clone https://github.com/pthom/hello_imgui.git
+cd hello_imgui
+# Clone vcpkg -& bootstrap
+git clone https://github.com/microsoft/vcpkg.git
+./vcpkg/bootstrap-vcpkg.sh
+# Install hello_imgui via vcpkg (using the overlay)
+./vcpkg/vcpkg install "hello-imgui[opengl3-binding, glfw-binding, sdl2-binding]" --overlay-ports=hello_imgui_cmake/overlay_vcpkg/hello-imgui
+```
+
+Notes:
+- See CI Tests: [![VcpkgPackage](https://github.com/pthom/hello_imgui/workflows/VcpkgPackage/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/VcpkgPackage.yml)
+
+
+
+## Other
+* Update update imgui to  v1.90.1-docking
+* Add demo + doc / FontAwesome 6
+
 # v1.3.0
 
 ## New Features

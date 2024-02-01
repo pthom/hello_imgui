@@ -35,7 +35,7 @@ jobs:
         uses: johnwason/vcpkg-action@v6
         id: vcpkg
         with:
-          pkgs: 'glad[gl-api-43] stb freetype lunasvg glfw3 sdl2'
+          pkgs: ''
           triplet: ${{ matrix.config.vcpkg_triplet }}
           cache-key: ${{ matrix.config.os }}
           revision: master

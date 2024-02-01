@@ -35,5 +35,8 @@
         "freetype-lunasvg"
       ]
     }
+  ],
+  "overrides": [
+    { "name": "glfw3", "version": "3.3.8" }
   ]
 }

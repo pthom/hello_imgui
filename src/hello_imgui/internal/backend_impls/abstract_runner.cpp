@@ -203,7 +203,7 @@ float AbstractRunner::DpiWindowSizeFactor()
     return 1.f; // The current implementation of Dx11 backend does  not support changing the window size
 #endif
     float r = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
-    return 1.f;
+    return r;
 }
 
 

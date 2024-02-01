@@ -42,11 +42,10 @@ git clone https://github.com/microsoft/vcpkg.git
 Notes:
 - See CI Tests: [![VcpkgPackage](https://github.com/pthom/hello_imgui/workflows/VcpkgPackage/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/VcpkgPackage.yml)
 
-
-
 ## Other
 * Update update imgui to  v1.90.1-docking
 * Add demo + doc / FontAwesome 6
+
 
 # v1.3.0
 

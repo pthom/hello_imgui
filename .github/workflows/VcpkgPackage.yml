@@ -1,4 +1,4 @@
-name: "VcpkgPackage2"
+name: "VcpkgPackage"
 
 # Tests that:
 # 1. the vcpkg package build successfully
@@ -20,7 +20,7 @@ on:
 
 jobs:
   build:
-    name: VcpkgPackage2
+    name: VcpkgPackage
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false

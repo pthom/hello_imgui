@@ -18,6 +18,19 @@
       }
     },
     {
+      "name": "build_all_backends",
+      "description": "Build with all platform and renderer backends. You need to create a build directory and run from it",
+      "cacheVariables": {
+        "HELLOIMGUI_USE_SDL2": "ON",
+        "HELLOIMGUI_USE_GLFW3": "ON",
+        "HELLOIMGUI_HAS_OPENGL3": "ON",
+        "HELLOIMGUI_HAS_METAL": "ON",
+        "HELLOIMGUI_HAS_VULKAN": "ON",
+        "HELLOIMGUI_HAS_DIRECTX11": "ON",
+        "HELLOIMGUI_HAS_DIRECTX12": "ON"
+      }
+    },
+    {
       "name": "build_vcpkg_default",
       "description": "Build with vcpkg default settings (opengl3 + sdl and glfw). You need to create a build directory and run from it",
       "cacheVariables": {

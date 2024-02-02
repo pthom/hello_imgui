@@ -469,6 +469,14 @@ endfunction()
 function(him_sanity_checks)
     him_back_check_if_no_backend_option_chosen(no_backend_option_chosen)
 
+    if (NOT WIN32)
+        set(HELLOIMGUI_HAS_DIRECTX11 OFF CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_DIRECTX12 OFF CACHE BOOL "" FORCE)
+    endif()
+    if (NOT APPLE)
+        set(HELLOIMGUI_HAS_METAL OFF CACHE BOOL "" FORCE)
+    endif()
+
     if (no_backend_option_chosen)
         # use SDL for emscripten and iOS
         if (EMSCRIPTEN)

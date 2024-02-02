@@ -49,41 +49,96 @@
     }
 
 #elif defined(_WIN32)
-    #include <windows.h>
-    #include <ShlObj.h>
-    #include <tchar.h>
+    #if (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+    #define IS_STANDARD_WINDOWS
+    #else
+    #define IS_UWP
+    #endif
 
-    static std::string GetTempPath()
-    {
-        TCHAR tempPath[MAX_PATH];
-        if (GetTempPath(MAX_PATH, tempPath) > 0)
-            return std::string(tempPath);
-        return "";
-    }
+    #ifdef IS_UWP
+        // UWP build
 
-    static std::string GetAppUserConfigFolder()
-    {
-        TCHAR appDataPath[MAX_PATH];
-        if (SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, appDataPath) == S_OK)
-            return std::string(appDataPath);
-        return "";
-    }
+        #include <winrt/Windows.Storage.h>
+        #include <locale>
+        #include <codecvt>
 
-    static std::string GetDocumentsPath()
-    {
-        TCHAR documentsPath[MAX_PATH];
-        if (SHGetFolderPath(NULL, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, documentsPath) == S_OK)
-            return std::string(documentsPath);
-        return "";
-    }
+        static std::string GetTempPath()
+        {
+            auto tempFolder = winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().Path();
+            std::wstring tempPathW(tempFolder.begin(), tempFolder.end());
+            std::wstring_convert<std::codecvt_utf8<wchar_t> > converter;
+            return converter.to_bytes(tempPathW);
+        }
 
-    static std::string GetHomePath()
-    {
-        TCHAR homePath[MAX_PATH];
-        if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, homePath) == S_OK)
-            return std::string(homePath);
-        return "";
-    }
+        static std::string GetAppUserConfigFolder()
+        {
+            auto folder = winrt::Windows::Storage::ApplicationData::Current().RoamingFolder().Path();
+            std::wstring pathW(folder.begin(), folder.end());
+            std::wstring_convert<std::codecvt_utf8<wchar_t> > converter;
+            return converter.to_bytes(pathW);
+        }
+
+        static std::string GetDocumentsPath()
+        {
+            auto folder = winrt::Windows::Storage::KnownFolders::DocumentsLibrary().Path();
+            std::wstring pathW(folder.begin(), folder.end());
+            std::wstring_convert<std::codecvt_utf8<wchar_t> > converter;
+            return converter.to_bytes(pathW);
+        }
+
+        static std::string GetHomePath()
+        {
+            auto folder = winrt::Windows::Storage::ApplicationData::Current().LocalFolder().Path();
+            std::wstring pathW(folder.begin(), folder.end());
+            std::wstring_convert<std::codecvt_utf8<wchar_t> > converter;
+            return converter.to_bytes(pathW);
+        }
+
+    #else // IS_UWP
+        // Standard windows build
+        #include <Windows.h>
+        #include <ShlObj.h>
+        #include <tchar.h>
+
+        static std::string GetTempPath()
+        {
+            // Non-UWP build
+            TCHAR tempPath[MAX_PATH];
+            if (::GetTempPath(MAX_PATH, tempPath) > 0)
+                return std::string(tempPath);
+            return "";
+        }
+
+        static std::string GetAppUserConfigFolder()
+        {
+            TCHAR appDataPath[MAX_PATH];
+            if (SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, appDataPath) == S_OK)
+                return std::string(appDataPath);
+            return "";
+        }
+
+        static std::string GetDocumentsPath()
+        {
+            TCHAR documentsPath[MAX_PATH];
+            if (SHGetFolderPath(NULL, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, documentsPath) == S_OK)
+                return std::string(documentsPath);
+            return "";
+        }
+
+        static std::string GetHomePath()
+        {
+            // Non-UWP build
+            TCHAR homePath[MAX_PATH];
+            if (SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, homePath) == S_OK)
+                return std::string(homePath);
+            return "";
+        }
+
+
+    #endif // IS_UWP
+
+
+
 
 #elif defined(__APPLE__)
     #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"

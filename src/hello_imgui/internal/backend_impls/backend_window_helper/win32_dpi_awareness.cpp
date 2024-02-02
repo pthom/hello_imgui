@@ -1,4 +1,12 @@
 #ifdef _WIN32
+#include <cstdio>
+
+#if (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+#define IS_STANDARD_WINDOWS
+#else
+#define IS_UWP
+#endif
+
 
 // Adapted from imgui/backends/imgui_impl_win32.cpp
 #include "imgui.h"
@@ -12,6 +20,13 @@ namespace HelloImGui
 {
 namespace Internal
 {
+    #ifdef IS_UWP
+        void ImGui_ImplWin32_EnableDpiAwareness()
+        {
+            fprintf(stderr, "ImGui_ImplWin32_EnableDpiAwareness not implemented for __cplusplus_winrt, aka uwp\n");
+        }
+    #else
+
 
     //--------------------------------------------------------------------------------------------------------
     // DPI-related helpers (optional)
@@ -167,6 +182,10 @@ namespace Internal
         return ImGui_ImplWin32_GetDpiScaleForMonitor(monitor);
     }
 
+    #endif // IS_UWP
+        
 }  // namespace Internal
 }  // namespace HelloImGui
+
+
 #endif  // #ifdef _WIN32

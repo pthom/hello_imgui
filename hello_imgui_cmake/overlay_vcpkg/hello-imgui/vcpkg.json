@@ -1,7 +1,7 @@
 {
   "name": "hello-imgui",
   "version": "1.4.1",
-  "description": "Hello, Dear ImGui: unleash your creativity in app development and prototyping",
+  "description": "Hello ImGui: unleash your creativity in app development and prototyping",
   "homepage": "https://pthom.github.io/hello_imgui/",
   "license": "MIT",
   "dependencies": [
@@ -22,7 +22,6 @@
     }
   ],
   "default-features": [
-    "freetype-lunasvg",
     "glfw-binding",
     "opengl3-binding"
   ],

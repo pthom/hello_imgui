@@ -1,28 +1,14 @@
-vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
-
-# production_mode is set to OFF during development, to test the latest version of hello_imgui
-set(production_mode OFF)
-
-
-if(production_mode)
-    vcpkg_from_github(
-        OUT_SOURCE_PATH SOURCE_PATH
-        REPO pthom/hello_imgui
-        REF 0c9254b1d78c33617ce47090ec62bda8ca564450
-        SHA512 9b02754a5ff1459b3751ddf5bb477f661016be2f6902bbecf29207d2b62e78b43a5ce801e1d322219747b6087a3931d339a3715697dd042765939927ac7a66b6
-        HEAD_REF master
-    )
-else()
-    set(VCPKG_USE_HEAD_VERSION ON CACHE BOOL "" FORCE)
-    vcpkg_from_git(
-        OUT_SOURCE_PATH SOURCE_PATH
-        URL https://github.com/pthom/hello_imgui
-        # URL file:///Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/hello_imgui_vcpkg
-        HEAD_REF master
-    )
-    # test with
-    #   ./vcpkg/vcpkg install "hello-imgui[opengl3-binding, glfw-binding, sdl2-binding]" --overlay-ports=$(pwd)/hello_imgui_cmake/overlay_vcpkg/hello-imgui --debug --no-binarycaching --recurse
+if(VCPKG_TARGET_IS_WINDOWS)
+    vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
 endif()
+
+vcpkg_from_github(
+    OUT_SOURCE_PATH SOURCE_PATH
+    REPO pthom/hello_imgui
+    REF 40adf4bef4e0cbac4dfcbde1a40a79966a2ba5ec
+    SHA512 28f3293483dae0b178f8d0648d6b5c58fec979bc297d3af1c780d2714fb3fbe5ca22a314e19b3bf43d933b57f4ac26b98f9c67a4e9da22599c1d95eebe5d05b5
+    HEAD_REF master
+)
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES
@@ -35,18 +21,6 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     "sdl2-binding" FEATURE_SDL2_BINDING
     "freetype-lunasvg" FEATURE_FREETYPE_LUNASVG
 )
-
-message(VERBOSE "
-    FEATURE_OPTIONS: ${FEATURE_OPTIONS}
-    FEATURE_OPENGL3_BINDING: ${FEATURE_OPENGL3_BINDING}
-    FEATURE_METAL_BINDING: ${FEATURE_METAL_BINDING}
-    FEATURE_VULKAN_BINDING: ${FEATURE_VULKAN_BINDING}
-    FEATURE_DX11_BINDING: ${FEATURE_DX11_BINDING}
-    FEATURE_DX12_BINDING: ${FEATURE_DX12_BINDING}
-    FEATURE_GLFW_BINDING: ${FEATURE_GLFW_BINDING}
-    FEATURE_SDL2_BINDING: ${FEATURE_SDL2_BINDING}
-    FEATURE_FREETYPE_LUNASVG: ${FEATURE_FREETYPE_LUNASVG}
-")
 
 # if a renderer backend was selected and is different from the default, we need to disable the default
 if(FEATURE_METAL_BINDING AND FEATURE_OPENGL3_BINDING)
@@ -108,8 +82,7 @@ set(platform_options "")
 if(WIN32)
     # Standard win32 options (these are the defaults for HelloImGui)
     # we could add a vcpkg feature for this, but it would have to be platform specific
-    set(platform_options
-        ${platform_options}
+    list(APPEND platform_options
         -DHELLOIMGUI_WIN32_NO_CONSOLE=ON
         -DHELLOIMGUI_WIN32_AUTO_WINMAIN=ON
     )
@@ -118,8 +91,7 @@ endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # Standard macOS options (these are the defaults for HelloImGui)
     # we could add a vcpkg feature for this, but it would have to be platform specific
-    set(platform_options
-        ${platform_options}
+    list(APPEND platform_options
         -DHELLOIMGUI_MACOS_NO_BUNDLE=OFF
     )
 endif()
@@ -128,41 +100,40 @@ endif()
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
-    # disable demos, tests, doc
-    -DHELLOIMGUI_BUILD_DEMOS=OFF
-    -DHELLOIMGUI_BUILD_DOCS=OFF
-    -DHELLOIMGUI_BUILD_TESTS=OFF
+        -DHELLOIMGUI_BUILD_DEMOS=OFF
+        -DHELLOIMGUI_BUILD_DOCS=OFF
+        -DHELLOIMGUI_BUILD_TESTS=OFF
 
-    # vcpkg does not support ImGui Test Engine, so we cannot enable it
-    -DHELLOIMGUI_WITH_TEST_ENGINE=OFF
+        # vcpkg does not support ImGui Test Engine, so we cannot enable it
+        -DHELLOIMGUI_WITH_TEST_ENGINE=OFF
 
-    -DHELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE=ON
-    -DHELLO_IMGUI_IMGUI_SHARED=OFF
-    -DHELLOIMGUI_BUILD_IMGUI=OFF
+        -DHELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE=ON
+        -DHELLO_IMGUI_IMGUI_SHARED=OFF
+        -DHELLOIMGUI_BUILD_IMGUI=OFF
 
-    ${platform_options}
+        ${platform_options}
 
-    # Backend combinations (hello_imgui wants a combination of rendering and platform backend)
-    # (we can select at most one rendering backend)
-    -DHELLOIMGUI_USE_GLFW_OPENGL3=${HELLOIMGUI_USE_GLFW_OPENGL3}
-    -DHELLOIMGUI_USE_SDL_OPENGL3=${HELLOIMGUI_USE_SDL_OPENGL3}
-    -DHELLOIMGUI_USE_SDL_METAL=${HELLOIMGUI_USE_SDL_METAL}
-    -DHELLOIMGUI_USE_GLFW_METAL=${HELLOIMGUI_USE_GLFW_METAL}
-    -DHELLOIMGUI_USE_GLFW_VULKAN=${HELLOIMGUI_USE_GLFW_VULKAN}
-    -DHELLOIMGUI_USE_SDL_VULKAN=${HELLOIMGUI_USE_SDL_VULKAN}
-    -DHELLOIMGUI_USE_SDL_DIRECTX11=${HELLOIMGUI_USE_SDL_DIRECTX11}
-    -DHELLOIMGUI_USE_GLFW_DIRECTX11=${HELLOIMGUI_USE_GLFW_DIRECTX11}
+        # Backend combinations (hello_imgui wants a combination of rendering and platform backend)
+        # (we can select at most one rendering backend)
+        -DHELLOIMGUI_USE_GLFW_OPENGL3=${HELLOIMGUI_USE_GLFW_OPENGL3}
+        -DHELLOIMGUI_USE_SDL_OPENGL3=${HELLOIMGUI_USE_SDL_OPENGL3}
+        -DHELLOIMGUI_USE_SDL_METAL=${HELLOIMGUI_USE_SDL_METAL}
+        -DHELLOIMGUI_USE_GLFW_METAL=${HELLOIMGUI_USE_GLFW_METAL}
+        -DHELLOIMGUI_USE_GLFW_VULKAN=${HELLOIMGUI_USE_GLFW_VULKAN}
+        -DHELLOIMGUI_USE_SDL_VULKAN=${HELLOIMGUI_USE_SDL_VULKAN}
+        -DHELLOIMGUI_USE_SDL_DIRECTX11=${HELLOIMGUI_USE_SDL_DIRECTX11}
+        -DHELLOIMGUI_USE_GLFW_DIRECTX11=${HELLOIMGUI_USE_GLFW_DIRECTX11}
 )
 
 vcpkg_cmake_install()
 
 vcpkg_cmake_config_fixup(CONFIG_PATH lib/cmake/hello_imgui PACKAGE_NAME "hello-imgui")  # should be active once himgui produces a config
 
-file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
-
-file(INSTALL "${SOURCE_PATH}/LICENSE" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
-configure_file("${CMAKE_CURRENT_LIST_DIR}/usage" "${CURRENT_PACKAGES_DIR}/share/${PORT}/usage" COPYONLY)
-
 file(REMOVE_RECURSE
+    "${CURRENT_PACKAGES_DIR}/debug/include"
+    "${CURRENT_PACKAGES_DIR}/debug/share"
     "${CURRENT_PACKAGES_DIR}/share/hello-imgui/hello_imgui_cmake/ios-cmake"
-    "${CURRENT_PACKAGES_DIR}/debug/share/hello-imgui/hello_imgui_cmake/ios-cmake")
+)
+
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
+file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")

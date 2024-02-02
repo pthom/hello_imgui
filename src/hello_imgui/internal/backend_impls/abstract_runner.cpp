@@ -457,7 +457,8 @@ void AbstractRunner::InitRenderBackendCallbacks()
             if (params.platformBackendType == PlatformBackendType::Glfw)
             {
                     #ifdef HELLOIMGUI_USE_GLFW3
-                        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwDx12();
+                        // mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwDx12();
+                        IM_ASSERT(false && "The combination GLFW3 + Dx12 is not implemented!");
                     #else
                         IM_ASSERT(false && "Glfw3 backend is not available!");
                     #endif

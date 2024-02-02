@@ -255,8 +255,8 @@ namespace HelloImGui
         else if(params.rendererBackendType == RendererBackendType::DirectX12)
         {
             #ifdef HELLOIMGUI_HAS_DIRECTX12
-                //Impl_LinkPlatformAndRenderBackends_GlfwDirectX12(self);
-                IM_ASSERT(false && "DirectX12 not supported");
+                // Impl_LinkPlatformAndRenderBackends_GlfwDirectX12(self);
+                IM_ASSERT(false && "The combination Glfw + DirectX12 is not supported");
             #else
                 IM_ASSERT(false && "DirectX12 not supported");
             #endif

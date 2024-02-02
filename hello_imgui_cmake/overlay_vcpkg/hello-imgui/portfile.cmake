@@ -5,7 +5,7 @@ vcpkg_from_github(
     REPO pthom/hello_imgui
     REF 40adf4bef4e0cbac4dfcbde1a40a79966a2ba5ec
     SHA512 28f3293483dae0b178f8d0648d6b5c58fec979bc297d3af1c780d2714fb3fbe5ca22a314e19b3bf43d933b57f4ac26b98f9c67a4e9da22599c1d95eebe5d05b5
-    HEAD_REF master
+    HEAD_REF backend_combinations
 )
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS

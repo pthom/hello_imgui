@@ -59,7 +59,7 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
     cmake_toolchain_file = os.path.join(vcpkg_root, "scripts/buildsystems/vcpkg.cmake")
 
     vcpkg_remove_cmd = f'{vcpkg_program} remove hello-imgui --recurse'
-    vcpkg_install_cmd = f'{vcpkg_program} install hello-imgui[{rendering_backend},glfw-binding,sdl2-binding] --overlay-ports={overlay_dir} --recurse'
+    vcpkg_install_cmd = f'{vcpkg_program} install --head hello-imgui[{rendering_backend},glfw-binding,sdl2-binding] --overlay-ports={overlay_dir} --recurse'
     cmake_cmd = f"cmake -DCMAKE_TOOLCHAIN_FILE={cmake_toolchain_file} .."
     build_cmd = f"cmake --build . --config Release"
 

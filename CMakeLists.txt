@@ -53,43 +53,41 @@ option(HELLOIMGUI_ADD_APP_WITH_INSTALL "Add cmake install() instructions with he
 
 ################################################################################
 # <Backends> # do not remove this line (used by the script that generates the documentation)
-# Available backends combinations: HelloImGui needs to use at least one of them.
-# If you specify no option:
-# - HELLOIMGUI_USE_GLFW_OPENGL3 will be used for Windows, Linux, and macOS
-# - HELLOIMGUI_USE_SDL_OPENGL3 will be used for Android, iOS and emscripten
 #
-# Note:
-# - Only one rendering backend can be used at a time (OpenGL3, Metal or Vulkan)!
-# - You may select multiple platform backends
-#   (for example, you may select both SDL and Glfw3)
-# - Combinations using OpenGL3 as a renderer are easier to use,
-#   and are recommended, especially for beginners.
-################################################################################
-# Standard backends:
-# Use Glfw3 + OpenGl3
-option(HELLOIMGUI_USE_GLFW_OPENGL3 "Build HelloImGui for Glfw3+OpenGL3" OFF)
-# Use SDL2 + OpenGL3
-option(HELLOIMGUI_USE_SDL_OPENGL3 "Build HelloImGui for SDL2+OpenGL3" OFF)
-
-# Advanced backends, for experienced users:
-#   Vulkan, Metal, and DirectX11 do work, but you may need to customize the rendering code inside HelloImGui:
+# You need to select at least two backends:
+#
+#     - At least one (or more) rendering backend (OpenGL3, Metal, Vulkan, DirectX11, DirectX12)
+#       Make your choice according to your needs and your target platforms, between:
+#          -DHELLOIMGUI_HAS_OPENGL3=ON    # This is the recommended choice, especially for beginners
+#          -DHELLOIMGUI_HAS_METAL=ON      # Apple only, advanced users only
+#          -DHELLOIMGUI_HAS_VULKAN=ON     # Advanced users only
+#          -DHELLOIMGUI_HAS_DIRECTX11=ON  # Windows only, still experimental
+#          -DHELLOIMGUI_HAS_DIRECTX12=ON  # Windows only, advanced users only, still experimental
+#
+#     - At least one (or more) platform backend (SDL2, Glfw3):
+#      Make your choice according to your needs and your target platforms, between:
+#          -DHELLOIMGUI_USE_SDL2=ON
+#          -DHELLOIMGUI_USE_GLFW3=ON
+#
+# If you make no choice, the default will be selected:
+#     HELLOIMGUI_USE_GLFW3 + HELLOIMGUI_HAS_OPENGL3
+#
+# Note about rendering backends:
+#   OpenGL3 is the recommended choice as a starting point, especially for beginners.
+#   Vulkan, Metal, and DirectX11, DirectX12 do work, but you may need to customize the rendering code inside HelloImGui:
 #   see src/hello_imgui/internal/backend_impls/rendering_xxxx.[h,cpp]
 #   (using those backends probably implies that you want to heavily customize the rendering code)
-# Use Glfw3 + Metal (Apple only)
-option(HELLOIMGUI_USE_GLFW_METAL "Build HelloImGui for Glfw3+Metal" OFF)
-# Use SDL2 + Metal (Apple only)
-option(HELLOIMGUI_USE_SDL_METAL "Build HelloImGui for SDL2+Metal" OFF)
-# Use Glfw3 + Vulkan
-option(HELLOIMGUI_USE_GLFW_VULKAN "Build HelloImGui for Glfw3+Vulkan" OFF)
-# Use SDL2 + Vulkan
-option(HELLOIMGUI_USE_SDL_VULKAN "Build HelloImGui for SDL2+Vulkan" OFF)
-# Use SDL2 + DirectX 11 (Note: there is a known issue with DirectX11, see src/hello_imgui/internal/backend_impls/rendering_dx11.h)
-option(HELLOIMGUI_USE_SDL_DIRECTX11 "Build HelloImGui for SDL2+DirectX11" OFF)
-# Use Glfw3 + DirectX 11 (Note: there is a known issue with DirectX11, see src/hello_imgui/internal/backend_impls/rendering_dx11.h)
-option(HELLOIMGUI_USE_GLFW_DIRECTX11 "Build HelloImGui for Glfw3+DirectX11" OFF)
-# Experimental! DirectX12 was not tested, although it does compile!
-option(HELLOIMGUI_USE_SDL_DIRECTX12 "Build HelloImGui for SDL2+DirectX12" OFF)
-
+#
+################################################################################
+# Platform backends:
+option(HELLOIMGUI_USE_GLFW3 "Use Glfw3 as a platform backend" OFF)
+option(HELLOIMGUI_USE_SDL2 "Use Sdl2 as a platform backend" OFF)
+# Rendering backends
+option(HELLOIMGUI_HAS_OPENGL3 "Use OpenGL3 as a rendering backend" OFF)
+option(HELLOIMGUI_HAS_METAL "Use Metal as a rendering backend" OFF)
+option(HELLOIMGUI_HAS_VULKAN "Use Vulkan as a rendering backend" OFF)
+option(HELLOIMGUI_HAS_DIRECTX11 "Use DirectX11 as a rendering backend" OFF)
+option(HELLOIMGUI_HAS_DIRECTX12 "Use DirectX12 as a rendering backend" OFF)
 # </Backends>  # do not remove this line (used by the script that generates the documentation)
 
 

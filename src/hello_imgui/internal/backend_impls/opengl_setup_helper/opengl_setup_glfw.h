@@ -1,5 +1,5 @@
 #pragma once
-#ifdef HELLOIMGUI_USE_GLFW
+#ifdef HELLOIMGUI_USE_GLFW3
 #include "opengl_setup_api.h"
 
 
@@ -16,4 +16,4 @@ namespace HelloImGui { namespace BackendApi
     };
 }} // namespace HelloImGui { namespace BackendApi
 
-#endif // #ifdef HELLOIMGUI_USE_GLFW
+#endif // #ifdef HELLOIMGUI_USE_GLFW3

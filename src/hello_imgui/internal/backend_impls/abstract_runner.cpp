@@ -44,6 +44,11 @@
 #include <emscripten.h>
 #endif
 
+#include "rendering_opengl3.h"
+#include "rendering_metal.h"
+#include "rendering_vulkan.h"
+#include "rendering_dx11.h"
+#include "rendering_dx12.h"
 
 //
 // NOTE: AbstractRunner should *not* care in any case of:
@@ -358,9 +363,129 @@ void AbstractRunner::SetImGuiPrefs()
     #endif
 }
 
+
+void AbstractRunner::InitRenderBackendCallbacks()
+{
+    // We need to take into account the combination of platform and rendering backends
+    // In this function, we first check for the rendering backend, and then for the platform backend
+    // This function is simple, but long because we have to account for all the combinations + compiler options
+
+    if (params.rendererBackendType == RendererBackendType::OpenGL3)
+    {
+        #ifdef HELLOIMGUI_HAS_OPENGL
+            mRenderingBackendCallbacks = CreateBackendCallbacks_OpenGl3();
+        #else
+            IM_ASSERT(false && "OpenGL3 backend is not available!");
+        #endif
+    }
+    else if (params.rendererBackendType == RendererBackendType::Metal)
+    {
+        #ifdef HELLOIMGUI_HAS_METAL
+            // Choose between CreateBackendCallbacks_GlfwMetal & CreateBackendCallbacks_SdlMetal
+            if (params.platformBackendType == PlatformBackendType::Glfw)
+            {
+                #ifdef HELLOIMGUI_USE_GLFW3
+                    mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwMetal();
+                #else
+                    IM_ASSERT(false && "Glfw3 backend is not available!");
+                #endif
+            }
+            else if (params.platformBackendType == PlatformBackendType::Sdl)
+            {
+                #ifdef HELLOIMGUI_USE_SDL2
+                    mRenderingBackendCallbacks = CreateBackendCallbacks_SdlMetal();
+                #else
+                    IM_ASSERT(false && "Sdl backend is not available!");
+                #endif
+            }
+        #else
+            IM_ASSERT(false && "Metal backend is not available!");
+        #endif
+    }
+    else if (params.rendererBackendType == RendererBackendType::Vulkan)
+    {
+        #ifdef HELLOIMGUI_HAS_VULKAN
+            // Choose between CreateBackendCallbacks_GlfwVulkan & CreateBackendCallbacks_SdlVulkan
+            if (params.platformBackendType == PlatformBackendType::Glfw)
+            {
+                #ifdef HELLOIMGUI_USE_GLFW3
+                        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwVulkan();
+                #else
+                        IM_ASSERT(false && "Glfw3 backend is not available!");
+                #endif
+            }
+            else if (params.platformBackendType == PlatformBackendType::Sdl)
+            {
+                #ifdef HELLOIMGUI_USE_SDL2
+                        mRenderingBackendCallbacks = CreateBackendCallbacks_SdlVulkan();
+                #else
+                        IM_ASSERT(false && "Sdl backend is not available!");
+                #endif
+            }
+        #else
+            IM_ASSERT(false && "Vulkan backend is not available!");
+        #endif
+    }
+    else if (params.rendererBackendType == RendererBackendType::DirectX11)
+    {
+        #ifdef HELLOIMGUI_HAS_DIRECTX11
+            // Choose between CreateBackendCallbacks_GlfwDx11 & CreateBackendCallbacks_SdlDx11
+            if (params.platformBackendType == PlatformBackendType::Glfw)
+            {
+                    #ifdef HELLOIMGUI_USE_GLFW3
+                        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwDx11();
+                    #else
+                        IM_ASSERT(false && "Glfw3 backend is not available!");
+                    #endif
+            }
+            else if (params.platformBackendType == PlatformBackendType::Sdl)
+            {
+                    #ifdef HELLOIMGUI_USE_SDL2
+                        mRenderingBackendCallbacks = CreateBackendCallbacks_SdlDx11();
+                    #else
+                        IM_ASSERT(false && "Sdl backend is not available!");
+                    #endif
+            }
+        #else
+            IM_ASSERT(false && "DirectX11 backend is not available!");
+        #endif
+    }
+    else if (params.rendererBackendType == RendererBackendType::DirectX12)
+    {
+        #ifdef HELLOIMGUI_HAS_DIRECTX12
+            // Choose between CreateBackendCallbacks_GlfwDx12 & CreateBackendCallbacks_SdlDx12
+            if (params.platformBackendType == PlatformBackendType::Glfw)
+            {
+                    #ifdef HELLOIMGUI_USE_GLFW3
+                        // mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwDx12();
+                        IM_ASSERT(false && "The combination GLFW3 + Dx12 is not implemented!");
+                    #else
+                        IM_ASSERT(false && "Glfw3 backend is not available!");
+                    #endif
+            }
+            else if (params.platformBackendType == PlatformBackendType::Sdl)
+            {
+                    #ifdef HELLOIMGUI_USE_SDL2
+                        mRenderingBackendCallbacks = CreateBackendCallbacks_SdlDx12();
+                    #else
+                        IM_ASSERT(false && "Sdl backend is not available!");
+                    #endif
+            }
+        #else
+            IM_ASSERT(false && "DirectX12 backend is not available!");
+        #endif
+    }
+    else
+    {
+        IM_ASSERT(false && "Bad rendering backend type!");
+    }
+}
+
+
 void AbstractRunner::Setup()
 {
-    Impl_InitRenderBackendCallbacks();
+    auto& self = *this;
+    InitRenderBackendCallbacks();
 
     InitImGuiContext();
     SetImGuiPrefs();
@@ -368,17 +493,21 @@ void AbstractRunner::Setup()
     // Init platform backend (SDL, Glfw)
     Impl_InitPlatformBackend();
 
-#ifdef HELLOIMGUI_HAS_OPENGL
-    Impl_Select_Gl_Version();
-#endif
+    #ifdef HELLOIMGUI_HAS_OPENGL
+        if (params.rendererBackendType == RendererBackendType::OpenGL3)
+            Impl_Select_Gl_Version();
+    #endif
 
     PrepareWindowGeometry();
     Impl_CreateWindow();
 
-#ifdef HELLOIMGUI_HAS_OPENGL
-    Impl_CreateGlContext();
-    Impl_InitGlLoader();
-#endif
+    #ifdef HELLOIMGUI_HAS_OPENGL
+        if (params.rendererBackendType == RendererBackendType::OpenGL3)
+        {
+            Impl_CreateGlContext();
+            Impl_InitGlLoader();
+        }
+    #endif
 
     Impl_SetWindowIcon();
 
@@ -398,10 +527,10 @@ void AbstractRunner::Setup()
 
     params.callbacks.SetupImGuiConfig();
 
-#ifdef HELLOIMGUI_WITH_TEST_ENGINE
-    if (params.useImGuiTestEngine)
-        TestEngineCallbacks::Setup();
-#endif
+    #ifdef HELLOIMGUI_WITH_TEST_ENGINE
+        if (params.useImGuiTestEngine)
+            TestEngineCallbacks::Setup();
+    #endif
 
     //
     // load fonts & set ImGui::GetIO().FontGlobalScale
@@ -690,11 +819,14 @@ void AbstractRunner::CreateFramesAndRender()
     if (true) // check potential OpenGL error on first frame, that may be due to a font loading error
     {
         #ifdef HELLOIMGUI_HAS_OPENGL
-        if (mIdxFrame == 0)
+        if (params.rendererBackendType == RendererBackendType::OpenGL3)
         {
-            auto error = glGetError();
-            if (error != 0)
-                foundPotentialFontLoadingError = true;
+            if (mIdxFrame == 0)
+            {
+                auto error = glGetError();
+                if (error != 0)
+                    foundPotentialFontLoadingError = true;
+            }
         }
         #endif
     }
@@ -731,12 +863,12 @@ void AbstractRunner::CreateFramesAndRender()
         params.callbacks.AfterSwap();
 
     #ifdef HELLOIMGUI_WITH_TEST_ENGINE
-    // TestEngineCallbacks::PostSwap() handles the GIL in its own way,
-    // it can not be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
-    if (params.useImGuiTestEngine)
-    {
-        TestEngineCallbacks::PostSwap();
-    }
+        // TestEngineCallbacks::PostSwap() handles the GIL in its own way,
+        // it can not be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
+        if (params.useImGuiTestEngine)
+        {
+            TestEngineCallbacks::PostSwap();
+        }
     #endif
 
     if (foundPotentialFontLoadingError)
@@ -749,10 +881,10 @@ void AbstractRunner::CreateFramesAndRender()
 // This form of idling will call WaitForEventTimeout(), which may call sleep():
 void AbstractRunner::IdleBySleeping()
 {
-#ifdef HELLOIMGUI_WITH_TEST_ENGINE
-    if (params.useImGuiTestEngine && TestEngineCallbacks::IsRunningTest())
-        return;
-#endif
+    #ifdef HELLOIMGUI_WITH_TEST_ENGINE
+        if (params.useImGuiTestEngine && TestEngineCallbacks::IsRunningTest())
+            return;
+    #endif
 
     assert(params.fpsIdling.fpsIdle >= 0.f);
     params.fpsIdling.isIdling = false;
@@ -775,10 +907,10 @@ void AbstractRunner::IdleBySleeping()
 // This test should be done after calling Impl_PollEvents() since it checks the event queue for incoming events!
 bool AbstractRunner::ShallIdleThisFrame_Emscripten()
 {
-#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+    #ifdef HELLOIMGUI_WITH_TEST_ENGINE
         if (params.useImGuiTestEngine && TestEngineCallbacks::IsRunningTest())
             return false;
-#endif
+    #endif
 
     ImGuiContext& g = *GImGui;
     bool hasInputEvent =  ! g.InputEventsQueue.empty();
@@ -817,34 +949,34 @@ bool AbstractRunner::ShallIdleThisFrame_Emscripten()
 
 void AbstractRunner::OnPause()
 {
-#ifdef HELLOIMGUI_MOBILEDEVICE
-    if (params.callbacks.mobileCallbacks.OnPause)
-        params.callbacks.mobileCallbacks.OnPause();
-#endif
+    #ifdef HELLOIMGUI_MOBILEDEVICE
+        if (params.callbacks.mobileCallbacks.OnPause)
+            params.callbacks.mobileCallbacks.OnPause();
+    #endif
 }
 
 void AbstractRunner::OnResume()
 {
-#ifdef HELLOIMGUI_MOBILEDEVICE
-    if (params.callbacks.mobileCallbacks.OnResume)
-        params.callbacks.mobileCallbacks.OnResume();
-#endif
+    #ifdef HELLOIMGUI_MOBILEDEVICE
+        if (params.callbacks.mobileCallbacks.OnResume)
+            params.callbacks.mobileCallbacks.OnResume();
+    #endif
 }
 
 void AbstractRunner::OnDestroy()
 {
-#ifdef HELLOIMGUI_MOBILEDEVICE
-    if (params.callbacks.mobileCallbacks.OnDestroy)
-        params.callbacks.mobileCallbacks.OnDestroy();
-#endif
+    #ifdef HELLOIMGUI_MOBILEDEVICE
+        if (params.callbacks.mobileCallbacks.OnDestroy)
+            params.callbacks.mobileCallbacks.OnDestroy();
+    #endif
 }
 
 void AbstractRunner::OnLowMemory()
 {
-#ifdef HELLOIMGUI_MOBILEDEVICE
-    if (params.callbacks.mobileCallbacks.OnLowMemory)
-        params.callbacks.mobileCallbacks.OnLowMemory();
-#endif
+    #ifdef HELLOIMGUI_MOBILEDEVICE
+        if (params.callbacks.mobileCallbacks.OnLowMemory)
+            params.callbacks.mobileCallbacks.OnLowMemory();
+    #endif
 }
 
 void AbstractRunner::TearDown(bool gotException)
@@ -867,10 +999,10 @@ void AbstractRunner::TearDown(bool gotException)
 
     if (params.callbacks.BeforeExit)
         params.callbacks.BeforeExit();
-#ifdef HELLOIMGUI_WITH_TEST_ENGINE
-    if (params.useImGuiTestEngine)
-        TestEngineCallbacks::TearDown_ImGuiContextAlive();
-#endif
+    #ifdef HELLOIMGUI_WITH_TEST_ENGINE
+        if (params.useImGuiTestEngine)
+            TestEngineCallbacks::TearDown_ImGuiContextAlive();
+    #endif
 
     mRenderingBackendCallbacks->Impl_Shutdown_3D();
     Impl_Cleanup();
@@ -878,10 +1010,10 @@ void AbstractRunner::TearDown(bool gotException)
 
     if (params.callbacks.BeforeExit_PostCleanup)
         params.callbacks.BeforeExit_PostCleanup();
-#ifdef HELLOIMGUI_WITH_TEST_ENGINE
-    if (params.useImGuiTestEngine)
-        TestEngineCallbacks::TearDown_ImGuiContextDestroyed();
-#endif
+    #ifdef HELLOIMGUI_WITH_TEST_ENGINE
+        if (params.useImGuiTestEngine)
+            TestEngineCallbacks::TearDown_ImGuiContextDestroyed();
+    #endif
 }
 
 

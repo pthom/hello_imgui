@@ -1,4 +1,4 @@
-#ifdef HELLOIMGUI_USE_SDL
+#ifdef HELLOIMGUI_USE_SDL2
 
 #include "sdl_window_helper.h"
 #include "window_geometry_helper.h"
@@ -17,10 +17,10 @@ namespace HelloImGui { namespace BackendApi
 {
     WindowPointer SdlWindowHelper::CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions)
     {
-#ifdef _WIN32
-        if (backendOptions.dpiAwareSdl)
-            Internal::ImGui_ImplWin32_EnableDpiAwareness();
-#endif
+        #ifdef _WIN32
+            if (backendOptions.dpiAwareSdl)
+                Internal::ImGui_ImplWin32_EnableDpiAwareness();
+        #endif
 
         auto searchMonitorResult = SearchForMonitor(GetMonitorsWorkAreas(), appWindowParams);
         int realMonitorIdx = searchMonitorResult.monitorIdx;
@@ -84,19 +84,19 @@ namespace HelloImGui { namespace BackendApi
         }
 
         // Note: This is RenderingCallbacks_Impl_Hint_WindowingBackend
-        auto backend3DMode = backendOptions.backend3DMode;
-        if (backend3DMode == Backend3dMode::OpenGl)
+        auto rendererBackendType = backendOptions.rendererBackendType;
+        if (rendererBackendType == RendererBackendType::OpenGL3)
             window_flags |= SDL_WINDOW_OPENGL;
-        else if (backend3DMode == Backend3dMode::Metal)
+        else if (rendererBackendType == RendererBackendType::Metal)
         {
             // Inform SDL that we will be using metal for rendering. Without this hint initialization of metal renderer may fail.
             SDL_SetHint(SDL_HINT_RENDER_DRIVER, "metal");
             window_flags |= SDL_WINDOW_METAL;
         }
-        else if (backend3DMode == Backend3dMode::Vulkan)
+        else if (rendererBackendType == RendererBackendType::Vulkan)
             window_flags |= SDL_WINDOW_VULKAN;
-        else if (backend3DMode == Backend3dMode::No3d)
-            {}
+        else if (rendererBackendType == RendererBackendType::DirectX11) {}
+        else if (rendererBackendType == RendererBackendType::DirectX12) {}
         else
             BACKEND_THROW("Unsupported backend3DMode");
 
@@ -256,4 +256,4 @@ namespace HelloImGui { namespace BackendApi
 
     }} // namespace HelloImGui { namespace BackendApi
 
-#endif // #ifdef HELLOIMGUI_USE_SDL
+#endif // #ifdef HELLOIMGUI_USE_SDL2

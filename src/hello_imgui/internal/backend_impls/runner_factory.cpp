@@ -1,73 +1,63 @@
 #include "hello_imgui/internal/backend_impls/runner_factory.h"
 
-#include "hello_imgui/internal/backend_impls/runner_emscripten.h"
 #include "hello_imgui/internal/backend_impls/runner_glfw3.h"
 #include "hello_imgui/internal/backend_impls/runner_sdl2.h"
-
+#include "hello_imgui/internal/backend_impls/runner_sdl_emscripten.h"
 
 namespace HelloImGui
 {
-#ifdef HELLOIMGUI_USE_GLFW3
-std::unique_ptr<AbstractRunner> FactorRunnerGlfw3(RunnerParams& params)
-{
-    return std::make_unique<RunnerGlfw3>(params);
-}
-#endif
 
-#ifdef HELLOIMGUI_USE_SDL2
-std::unique_ptr<AbstractRunner> FactorRunnerSdl2(RunnerParams& params)
+void ChooseBackendTypesIfSelectedAsFirstAvailable(RunnerParams* runnerParams)
 {
-    return std::make_unique<RunnerSdl2>(params);
-}
-#endif
+    if (runnerParams->platformBackendType == PlatformBackendType::FirstAvailable)
+    {
+        #if defined(HELLOIMGUI_USE_GLFW3)
+            runnerParams->platformBackendType = PlatformBackendType::Glfw;
+        #elif defined(HELLOIMGUI_USE_SDL2)
+            runnerParams->platformBackendType = PlatformBackendType::Sdl;
+        #endif
+    }
 
-#ifdef __EMSCRIPTEN__
-std::unique_ptr<AbstractRunner> FactorRunnerEmscripten(RunnerParams & params)
-{
-    return std::make_unique<RunnerEmscripten>(params);
+    if (runnerParams->rendererBackendType == RendererBackendType::FirstAvailable)
+    {
+        #if defined(HELLOIMGUI_HAS_OPENGL)
+            runnerParams->rendererBackendType = RendererBackendType::OpenGL3;
+        #elif defined(HELLOIMGUI_HAS_METAL)
+            runnerParams->rendererBackendType = RendererBackendType::Metal;
+        #elif defined(HELLOIMGUI_HAS_VULKAN)
+            runnerParams->rendererBackendType = RendererBackendType::Vulkan;
+        #elif defined(HELLOIMGUI_HAS_DIRECTX11)
+            runnerParams->rendererBackendType = RendererBackendType::DirectX11;
+        #elif defined(HELLOIMGUI_HAS_DIRECTX12)
+            runnerParams->rendererBackendType = RendererBackendType::DirectX12;
+        #endif
+    }
 }
-#endif
+
 
 std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 {
-    if (params.backendType == BackendType::FirstAvailable)
+    ChooseBackendTypesIfSelectedAsFirstAvailable(&params);
+    if(params.backendType == BackendType::Glfw)
     {
-#ifdef __EMSCRIPTEN__
-        return FactorRunnerEmscripten(params);
-#endif
-#ifdef HELLOIMGUI_USE_GLFW3
-        return FactorRunnerGlfw3(params);
-#endif
-#ifdef HELLOIMGUI_USE_SDL2
-        return FactorRunnerSdl2(params);
-#endif
-        IM_ASSERT(false); // HelloImGui::FactorRunner no backend selected!"
-        return nullptr;
+        #ifdef HELLOIMGUI_USE_GLFW3
+            return std::make_unique<RunnerGlfw3>(params);
+        #else
+            return nullptr;
+        #endif
+    }
+    else if (params.backendType == BackendType::Sdl)
+    {
+        #if defined(__EMSCRIPTEN__)
+            return std::make_unique<RunnerSdlEmscripten>(params);
+        #elif defined(HELLOIMGUI_USE_SDL2)
+            return std::make_unique<RunnerSdl2>(params);
+        #else
+            return nullptr;
+        #endif
     }
     else
-    {
-        if (params.backendType == BackendType::Sdl)
-        {
-#ifdef HELLOIMGUI_USE_SDL2
-            return FactorRunnerSdl2(params);
-#else
-            IM_ASSERT(false); //Sdl backend is not available!
-#endif
-        }
-        else if(params.backendType == BackendType::Glfw)
-        {
-#ifdef HELLOIMGUI_USE_GLFW3
-            return FactorRunnerGlfw3(params);
-#else
-            IM_ASSERT(false); //Glfw backend is not available!
-#endif
-        }
-        else
-        {
-            IM_ASSERT(false); //Bad backend type!
-        }
         return nullptr;
-    }
 }
 
 }  // namespace HelloImGui

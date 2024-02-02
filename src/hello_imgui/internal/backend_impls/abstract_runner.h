@@ -11,10 +11,11 @@
 
 namespace HelloImGui
 {
+
 // For more info, see "Anatomy of an ImGui app lifecycle (cf ImGui examples)", in rendering_callbacks.h
 class AbstractRunner
 {
-   public:
+public:
     explicit AbstractRunner(RunnerParams &params_);
     virtual ~AbstractRunner() = default;
 
@@ -27,7 +28,6 @@ class AbstractRunner
     void RenderGui();
     void TearDown(bool gotException);
 
-   public:
     // Events for mobile devices
     void OnPause();
     void OnResume();
@@ -77,24 +77,20 @@ protected:
     // Linking the platform backend (SDL, Glfw, ...) to the rendering backend (OpenGL, ...)
     //
     virtual void Impl_LinkPlatformAndRenderBackends() = 0;
+
     // Specific to OpenGL
     #ifdef HELLOIMGUI_HAS_OPENGL
+    public:
         virtual void Impl_Select_Gl_Version() = 0;
         virtual void Impl_InitGlLoader() = 0;
-        virtual std::string Impl_GlslVersion() = 0;
+        virtual std::string Impl_GlslVersion() const = 0;
         virtual void Impl_CreateGlContext() = 0;
     #endif
-
-    //
-    // Methods and callbacks related to the rendering backend (OpenGL, ...)
-    //
-    // Wish should be filled by Impl_InitRenderBackendCallbacks
-    virtual void Impl_InitRenderBackendCallbacks() = 0;
-    RenderingCallbacksPtr mRenderingBackendCallbacks;
 
 private:
     void InitImGuiContext();
     void SetImGuiPrefs();
+    void InitRenderBackendCallbacks();
 
     void PrepareWindowGeometry();
     void HandleDpiOnSecondFrame();
@@ -112,8 +108,9 @@ private:
     void LayoutSettings_Load();
     void LayoutSettings_Save();
 
-protected:
+public:
     BackendApi::WindowPointer mWindow = nullptr;
+protected:
     std::unique_ptr<BackendApi::IBackendWindowHelper> mBackendWindowHelper;
 private:
     std::unique_ptr<WindowGeometryHelper> mGeometryHelper;
@@ -121,6 +118,8 @@ private:
     int mIdxFrame = 0;
     bool mWasWindowAutoResizedOnPreviousFrame = false;
 
+    // Callbacks related to the rendering backend (OpenGL, ...)
+    RenderingCallbacksPtr mRenderingBackendCallbacks;
 };
 
 

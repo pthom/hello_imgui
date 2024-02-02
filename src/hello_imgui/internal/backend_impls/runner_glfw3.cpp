@@ -1,4 +1,4 @@
-#ifdef HELLOIMGUI_USE_GLFW
+#ifdef HELLOIMGUI_USE_GLFW3
 
 #ifdef HELLOIMGUI_HAS_OPENGL
 //#include "hello_imgui/hello_imgui_include_opengl.h"
@@ -35,7 +35,7 @@
 namespace HelloImGui
 {
 #ifdef HELLOIMGUI_HAS_OPENGL
-    BackendApi::OpenGlSetupGlfw gOpenGlHelper;
+    BackendApi::OpenGlSetupGlfw gOpenGlSetupGlfw;
 #endif
 
     static void glfw_error_callback(int error, const char* description)
@@ -52,11 +52,11 @@ namespace HelloImGui
     void RunnerGlfw3::Impl_InitPlatformBackend()
     {
         glfwSetErrorCallback(glfw_error_callback);
-#ifdef __APPLE__
-        // prevent glfw from changing the current dir on macOS.
-        // This glfw behaviour is for Mac only, and interferes with our multiplatform assets handling
-        glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
-#endif
+        #ifdef __APPLE__
+            // prevent glfw from changing the current dir on macOS.
+            // This glfw behaviour is for Mac only, and interferes with our multiplatform assets handling
+            glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
+        #endif
         bool glfwInitSuccess = glfwInit();
         (void) glfwInitSuccess;
         IM_ASSERT(glfwInitSuccess);
@@ -65,9 +65,7 @@ namespace HelloImGui
     void RunnerGlfw3::Impl_CreateWindow()
     {
         BackendApi::BackendOptions backendOptions;
-#ifdef HELLOIMGUI_HAS_METAL
-        backendOptions.backend3DMode = BackendApi::Backend3dMode::Metal;
-#endif
+        backendOptions.rendererBackendType = params.rendererBackendType;
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
         params.backendPointers.glfwWindow = mWindow;
     }
@@ -91,14 +89,14 @@ namespace HelloImGui
 
     void RunnerGlfw3::Impl_UpdateAndRenderAdditionalPlatformWindows()
     {
-#ifdef HELLOIMGUI_HAS_OPENGL
-        GLFWwindow* backup_current_context = glfwGetCurrentContext();
-#endif
+        #ifdef HELLOIMGUI_HAS_OPENGL
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+        #endif
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
-#ifdef HELLOIMGUI_HAS_OPENGL
-        glfwMakeContextCurrent(backup_current_context);
-#endif
+        #ifdef HELLOIMGUI_HAS_OPENGL
+            glfwMakeContextCurrent(backup_current_context);
+        #endif
     }
 
     void RunnerGlfw3::Impl_Cleanup()
@@ -113,21 +111,26 @@ namespace HelloImGui
     void RunnerGlfw3::Impl_SwapBuffers()
     {
         // Note: call of RenderingCallbacks_Impl_SwapBuffers
-#ifdef HELLOIMGUI_HAS_OPENGL
-        glfwSwapBuffers((GLFWwindow *)mWindow);
-#endif
-#ifdef HELLOIMGUI_HAS_METAL
-        SwapMetalBuffers();
-#endif
-#ifdef HELLOIMGUI_HAS_VULKAN
-        SwapVulkanBuffers();
-#endif
-#ifdef HELLOIMGUI_HAS_DIRECTX11
-        SwapDx11Buffers();
-#endif
-//#ifdef HELLOIMGUI_HAS_DIRECTX12
-//        SwapDx12Buffers();
-//#endif
+        #ifdef HELLOIMGUI_HAS_OPENGL
+            if (params.rendererBackendType == RendererBackendType::OpenGL3)
+                glfwSwapBuffers((GLFWwindow *)mWindow);
+        #endif
+        #ifdef HELLOIMGUI_HAS_METAL
+            if (params.rendererBackendType == RendererBackendType::Metal)
+                SwapMetalBuffers();
+        #endif
+        #ifdef HELLOIMGUI_HAS_VULKAN
+            if (params.rendererBackendType == RendererBackendType::Vulkan)
+                SwapVulkanBuffers();
+        #endif
+        #ifdef HELLOIMGUI_HAS_DIRECTX11
+            if (params.rendererBackendType == RendererBackendType::DirectX11)
+                SwapDx11Buffers();
+        #endif
+        #ifdef HELLOIMGUI_HAS_DIRECTX12
+            // if (params.rendererBackendType == RendererBackendType::DirectX12)
+            //     SwapDx12Buffers();
+        #endif
     }
 
     void RunnerGlfw3::Impl_SetWindowIcon()
@@ -164,15 +167,10 @@ namespace HelloImGui
     //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 #if defined(HELLOIMGUI_HAS_OPENGL)
-    void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
+    void Impl_LinkPlatformAndRenderBackends_GlfwOpenGl(const RunnerGlfw3& runner)
     {
-        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow *)mWindow, true);
-        ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
-    }
-
-    void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
-    {
-        mRenderingBackendCallbacks = CreateBackendCallbacks_OpenGl3();
+        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow *)runner.mWindow, true);
+        ImGui_ImplOpenGL3_Init(runner.Impl_GlslVersion().c_str());
     }
 
     void RunnerGlfw3::Impl_CreateGlContext()
@@ -181,61 +179,90 @@ namespace HelloImGui
         glfwSwapInterval(1);  // Enable vsync (openGL only, not vulkan)
     }
 
-    void RunnerGlfw3::Impl_Select_Gl_Version() { gOpenGlHelper.SelectOpenGlVersion(); }
+    void RunnerGlfw3::Impl_Select_Gl_Version() { gOpenGlSetupGlfw.SelectOpenGlVersion(); }
 
-    std::string RunnerGlfw3::Impl_GlslVersion() { return gOpenGlHelper.GlslVersion(); }
+    std::string RunnerGlfw3::Impl_GlslVersion() const { return gOpenGlSetupGlfw.GlslVersion(); }
 
-    void RunnerGlfw3::Impl_InitGlLoader() { gOpenGlHelper.InitGlLoader(); }
+    void RunnerGlfw3::Impl_InitGlLoader() { gOpenGlSetupGlfw.InitGlLoader(); }
+#endif // HELLOIMGUI_HAS_OPENGL
 
-#elif defined(HELLOIMGUI_HAS_METAL)
-
-    void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
+#if defined(HELLOIMGUI_HAS_METAL)
+    void Impl_LinkPlatformAndRenderBackends_GlfwMetal(const RunnerGlfw3& runner)
     {
-        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwMetal();
+        PrepareGlfwForMetal((GLFWwindow *) runner.mWindow, runner.params.rendererBackendOptions);
     }
-    void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
-    {
-        PrepareGlfwForMetal((GLFWwindow *) mWindow, params.rendererBackendOptions);
-    }
-
-#elif defined(HELLOIMGUI_HAS_VULKAN)
-    void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
-    {
-        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
-        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwVulkan();
-    }
-    void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
-    {
-        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
-        PrepareGlfwForVulkan((GLFWwindow *) mWindow);
-    }
-
-#elif defined(HELLOIMGUI_HAS_DIRECTX11)
-    void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
-    {
-        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
-        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwDx11();
-    }
-    void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
-    {
-        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
-        PrepareGlfwForDx11((GLFWwindow *) mWindow);
-    }
-
-//#elif defined(HELLOIMGUI_HAS_DIRECTX12)
-//    void RunnerGlfw3::Impl_InitRenderBackendCallbacks()
-//    {
-//        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
-//        mRenderingBackendCallbacks = CreateBackendCallbacks_GlfwDx12();
-//    }
-//    void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
-//    {
-//        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
-//        PrepareGlfwForDx12((GLFWwindow *) mWindow);
-//    }
-
 #endif
+
+#if defined(HELLOIMGUI_HAS_VULKAN)
+    void Impl_LinkPlatformAndRenderBackends_GlfwVulkan(const RunnerGlfw3& runner)
+    {
+        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
+        PrepareGlfwForVulkan((GLFWwindow *) runner.mWindow);
+    }
+#endif // HELLOIMGUI_HAS_VULKAN
+
+#if defined(HELLOIMGUI_HAS_DIRECTX11)
+    void Impl_LinkPlatformAndRenderBackends_GlfwDirectX11(const RunnerGlfw3& runner)
+    {
+        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
+        PrepareGlfwForDx11((GLFWwindow *) runner.mWindow);
+    }
+#endif
+
+#if defined(HELLOIMGUI_HAS_DIRECTX12)
+//    void Impl_LinkPlatformAndRenderBackends_GlfwDirectX12(const RunnerGlfw3& runner)
+//    {
+//        // Below, call of RenderingCallbacks_LinkWindowingToRenderingBackend
+//        PrepareGlfwForDx12((GLFWwindow *) runner.mWindow);
+//    }
+#endif
+
+    void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
+    {
+        auto& self = *this;
+        if (params.rendererBackendType == RendererBackendType::OpenGL3)
+        {
+            #ifdef HELLOIMGUI_HAS_OPENGL
+                Impl_LinkPlatformAndRenderBackends_GlfwOpenGl(self);
+            #else
+                IM_ASSERT(false && "OpenGL3 not supported");
+            #endif
+        }
+        else if(params.rendererBackendType == RendererBackendType::Metal)
+        {
+            #ifdef HELLOIMGUI_HAS_METAL
+                Impl_LinkPlatformAndRenderBackends_GlfwMetal(self);
+            #else
+                IM_ASSERT(false && "Metal not supported");
+            #endif
+        }
+        else if(params.rendererBackendType == RendererBackendType::Vulkan)
+        {
+            #ifdef HELLOIMGUI_HAS_VULKAN
+                Impl_LinkPlatformAndRenderBackends_GlfwVulkan(self);
+            #else
+                IM_ASSERT(false && "Vulkan not supported");
+            #endif
+        }
+        else if(params.rendererBackendType == RendererBackendType::DirectX11)
+        {
+            #ifdef HELLOIMGUI_HAS_DIRECTX11
+                Impl_LinkPlatformAndRenderBackends_GlfwDirectX11(self);
+            #else
+                IM_ASSERT(false && "DirectX11 not supported");
+            #endif
+        }
+        else if(params.rendererBackendType == RendererBackendType::DirectX12)
+        {
+            #ifdef HELLOIMGUI_HAS_DIRECTX12
+                // Impl_LinkPlatformAndRenderBackends_GlfwDirectX12(self);
+                IM_ASSERT(false && "The combination Glfw + DirectX12 is not supported");
+            #else
+                IM_ASSERT(false && "DirectX12 not supported");
+            #endif
+        }
+    }
 
 
 }  // namespace HelloImGui
-#endif  // #ifdef HELLOIMGUI_USE_GLFW
+#endif  // #ifdef HELLOIMGUI_USE_GLFW3

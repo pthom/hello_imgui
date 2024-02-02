@@ -28,8 +28,9 @@ jobs:
           cmake \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
-                -DHELLOIMGUI_USE_SDL_OPENGL3=ON  \
-                -DHELLOIMGUI_USE_GLFW_OPENGL3=ON \
+                -DHELLOIMGUI_USE_SDL2=ON  \
+                -DHELLOIMGUI_USE_GLFW3=ON \
+                -DHELLOIMGUI_HAS_OPENGL3=ON \
                 -DHELLOIMGUI_USE_GLAD=ON         \
                 -DHELLOIMGUI_BUILD_DOCS=ON       \
                 ..

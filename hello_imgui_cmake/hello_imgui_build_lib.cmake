@@ -27,6 +27,179 @@ endfunction()
 
 
 ###################################################################################################
+# Backend combinations handling: prefix him_back
+###################################################################################################
+
+function(him_back_available_platform_backends out_var)
+    set(${out_var}
+        HELLOIMGUI_USE_SDL2
+        HELLOIMGUI_USE_GLFW3
+        PARENT_SCOPE)
+endfunction()
+
+function(him_back_available_rendering_backends out_var)
+    set(${out_var}
+        HELLOIMGUI_HAS_OPENGL3
+        HELLOIMGUI_HAS_METAL
+        HELLOIMGUI_HAS_VULKAN
+        HELLOIMGUI_HAS_DIRECTX11
+        HELLOIMGUI_HAS_DIRECTX12
+        PARENT_SCOPE)
+endfunction()
+
+function(him_back_parse_legacy_combinations)
+    if(HELLOIMGUI_USE_SDL_OPENGL3)
+        message(WARNING "
+        HELLOIMGUI_USE_SDL_OPENGL3 is deprecated,
+        use HELLOIMGUI_USE_SDL2 + HELLOIMGUI_HAS_OPENGL3 instead")
+        set(HELLOIMGUI_USE_SDL2 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
+    endif()
+    if(HELLOIMGUI_USE_GLFW_OPENGL3)
+        message(WARNING "
+        HELLOIMGUI_USE_GLFW_OPENGL3 is deprecated,
+        use HELLOIMGUI_USE_GLFW3 + HELLOIMGUI_HAS_OPENGL3 instead")
+        set(HELLOIMGUI_USE_GLFW3 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
+    endif()
+
+    if(HELLOIMGUI_USE_SDL_METAL)
+        message(WARNING "
+        HELLOIMGUI_USE_SDL_METAL is deprecated,
+        use HELLOIMGUI_USE_SDL2 + HELLOIMGUI_HAS_METAL instead")
+        set(HELLOIMGUI_USE_SDL2 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_METAL ON CACHE BOOL "" FORCE)
+    endif()
+    if(HELLOIMGUI_USE_GLFW_METAL)
+        message(WARNING "
+        HELLOIMGUI_USE_GLFW_METAL is deprecated,
+        use HELLOIMGUI_USE_GLFW3 + HELLOIMGUI_HAS_METAL instead")
+        set(HELLOIMGUI_USE_GLFW3 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_METAL ON CACHE BOOL "" FORCE)
+    endif()
+
+    if(HELLOIMGUI_USE_GLFW_VULKAN)
+        message(WARNING "
+        HELLOIMGUI_USE_GLFW_VULKAN is deprecated,
+        use HELLOIMGUI_USE_GLFW3 + HELLOIMGUI_HAS_VULKAN instead")
+        set(HELLOIMGUI_USE_GLFW3 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_VULKAN ON CACHE BOOL "" FORCE)
+    endif()
+    if(HELLOIMGUI_USE_SDL_VULKAN)
+        message(WARNING "
+        HELLOIMGUI_USE_SDL_VULKAN is deprecated,
+        use HELLOIMGUI_USE_SDL2 + HELLOIMGUI_HAS_VULKAN instead")
+        set(HELLOIMGUI_USE_SDL2 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_VULKAN ON CACHE BOOL "" FORCE)
+    endif()
+
+    if(HELLOIMGUI_USE_SDL_DIRECTX11)
+        message(WARNING "
+        HELLOIMGUI_USE_SDL_DIRECTX11 is deprecated,
+        use HELLOIMGUI_USE_SDL2 + HELLOIMGUI_HAS_DIRECTX11 instead")
+        set(HELLOIMGUI_USE_SDL2 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_DIRECTX11 ON CACHE BOOL "" FORCE)
+    endif()
+    if(HELLOIMGUI_USE_GLFW_DIRECTX11)
+        message(WARNING "
+        HELLOIMGUI_USE_GLFW_DIRECTX11 is deprecated,
+        use HELLOIMGUI_USE_GLFW3 + HELLOIMGUI_HAS_DIRECTX11 instead")
+        set(HELLOIMGUI_USE_GLFW3 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_DIRECTX11 ON CACHE BOOL "" FORCE)
+    endif()
+
+    if(HELLOIMGUI_USE_SDL_DIRECTX12)
+        message(WARNING "
+        HELLOIMGUI_USE_SDL_DIRECTX12 is deprecated,
+        use HELLOIMGUI_USE_SDL2 + HELLOIMGUI_HAS_DIRECTX12 instead")
+        set(HELLOIMGUI_USE_SDL2 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_DIRECTX12 ON CACHE BOOL "" FORCE)
+    endif()
+
+    # Legacy options: HELLOIMGUI_WITH_SDL and HELLOIMGUI_WITH_GLFW
+    if (HELLOIMGUI_WITH_SDL)
+        message(WARNING "
+        HELLOIMGUI_WITH_SDL is deprecated,
+        use HELLOIMGUI_USE_SDL2 + HELLOIMGUI_HAS_OPENGL3 instead")
+        set(HELLOIMGUI_USE_SDL2 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
+    endif()
+    if (HELLOIMGUI_WITH_GLFW)
+        message(WARNING "
+        HELLOIMGUI_WITH_GLFW is deprecated,
+        use HELLOIMGUI_USE_GLFW3 + HELLOIMGUI_HAS_OPENGL3 instead")
+        set(HELLOIMGUI_USE_GLFW3 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
+    endif()
+
+endfunction()
+
+function(him_back_check_if_no_platform_backend_selected out_var) # will set out_result to ON if no platform backend selected
+    set(result ON)
+    him_back_available_platform_backends(available_backends)
+    foreach(backend ${available_backends})
+        if(${backend})
+            set(result OFF)
+        endif()
+    endforeach()
+    set(${out_var} ${result} PARENT_SCOPE)
+endfunction()
+
+function(him_back_check_if_no_rendering_backend_selected out_var) # will set out_result to ON if no rendering backend selected
+    set(result ON)
+    him_back_available_rendering_backends(available_backends)
+    foreach(backend ${available_backends})
+        if(${backend})
+            set(result OFF)
+        endif()
+    endforeach()
+    set(${out_var} ${result} PARENT_SCOPE)
+endfunction()
+
+function(him_back_check_if_no_backend_option_chosen out_var)
+    him_back_check_if_no_platform_backend_selected(no_platform_selected)
+    him_back_check_if_no_rendering_backend_selected(no_rendering_selected)
+    if(no_platform_selected AND no_rendering_selected)
+        set(${out_var} ON PARENT_SCOPE)
+    else()
+        set(${out_var} OFF PARENT_SCOPE)
+    endif()
+endfunction()
+
+function(him_back_check_at_least_one_rendering_one_platform_backend out_var)
+    him_back_check_if_no_platform_backend_selected(no_platform_selected)
+    him_back_check_if_no_rendering_backend_selected(no_rendering_selected)
+    if(no_platform_selected OR no_rendering_selected)
+        set(${out_var} OFF PARENT_SCOPE)
+    else()
+        set(${out_var} ON PARENT_SCOPE)
+    endif()
+endfunction()
+
+function(him_back_describe_active_rendering_backends out_description)
+    set(result "")
+    him_back_available_rendering_backends(available_backends)
+    foreach(backend ${available_backends})
+        if (${backend})
+            set(result "${result} ${backend}")
+        endif()
+    endforeach()
+    set(${out_description} ${result} PARENT_SCOPE)
+endfunction()
+
+function(him_back_describe_active_platform_backends out_description)
+    set(result "")
+    him_back_available_platform_backends(available_backends)
+    foreach(backend ${available_backends})
+        if (${backend})
+            set(result "${result} ${backend}")
+        endif()
+    endforeach()
+    set(${out_description} ${result} PARENT_SCOPE)
+endfunction()
+
+
+###################################################################################################
 # Add library and sources: API = him_add_hello_imgui
 ###################################################################################################
 function(him_add_hello_imgui)
@@ -120,7 +293,7 @@ function(him_install_imgui)
         if(HELLOIMGUI_USE_SDL2)
             install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.h DESTINATION include)
         endif()
-        if(HELLOIMGUI_USE_GLFW)
+        if(HELLOIMGUI_USE_GLFW3)
             install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.h DESTINATION include)
         endif()
 
@@ -294,86 +467,42 @@ endfunction()
 # Sanity checks: API = him_sanity_checks + him_get_active_backends (displayed after configure)
 ###################################################################################################
 function(him_sanity_checks)
-    # use SDL for emscripten
-    if (EMSCRIPTEN AND NOT HELLOIMGUI_USE_SDL_OPENGL3 AND NOT HELLOIMGUI_USE_GLFW_OPENGL3)
-        set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
-    endif()
-    if (IOS AND NOT HELLOIMGUI_USE_SDL_OPENGL3 AND NOT HELLOIMGUI_USE_GLFW_OPENGL3 AND NOT HELLOIMGUI_USE_SDL_METAL)
-        set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
-    endif()
+    him_back_check_if_no_backend_option_chosen(no_backend_option_chosen)
 
-    # Legacy options: HELLOIMGUI_WITH_SDL and HELLOIMGUI_WITH_GLFW
-    if (HELLOIMGUI_WITH_SDL)
-        message(WARNING "HELLOIMGUI_WITH_SDL is deprecated, use HELLOIMGUI_USE_SDL_OPENGL3 instead")
-        set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
+    if (NOT WIN32)
+        set(HELLOIMGUI_HAS_DIRECTX11 OFF CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_DIRECTX12 OFF CACHE BOOL "" FORCE)
     endif()
-    if (HELLOIMGUI_WITH_GLFW)
-        message(WARNING "HELLOIMGUI_WITH_GLFW is deprecated, use DHELLOIMGUI_USE_GLFW_OPENGL3 instead")
-        set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
+    if (NOT APPLE)
+        set(HELLOIMGUI_HAS_METAL OFF CACHE BOOL "" FORCE)
     endif()
 
-    _him_check_if_no_backend_selected(no_backend_selected)
-
-    if (no_backend_selected)
-        set(backend_message "
-                HelloImGui: no backend selected!
-                    In order to select your own backend, use one of the cmake options below:")
-        him_get_available_backends(available_backends)
-        foreach(backend ${available_backends})
-            set(backend_message "${backend_message}
-                        -D${backend}=ON")
-        endforeach()
-
-        message(STATUS "${backend_message}")
-
-        _him_try_select_glfw_opengl3_if_no_backend_selected()
-    endif()
-
-    _him_check_if_no_backend_selected(no_backend_selected)
-    if (no_backend_selected)
-        message(FATAL_ERROR "HelloImGui: no backend selected, and could not auto-select one!")
-    endif()
-endfunction()
-
-function(him_get_available_backends out_var)
-    set(${out_var}
-        HELLOIMGUI_USE_SDL_OPENGL3
-        HELLOIMGUI_USE_GLFW_OPENGL3
-        HELLOIMGUI_USE_SDL_METAL
-        HELLOIMGUI_USE_GLFW_METAL
-        HELLOIMGUI_USE_GLFW_VULKAN
-        HELLOIMGUI_USE_SDL_VULKAN
-        HELLOIMGUI_USE_SDL_DIRECTX11
-        HELLOIMGUI_USE_GLFW_DIRECTX11
-        HELLOIMGUI_USE_SDL_DIRECTX12
-
-        PARENT_SCOPE
-    )
-endfunction()
-
-function(_him_check_if_no_backend_selected out_var) # will set out_result to ON if no backend selected
-    set(result ON)
-
-    him_get_available_backends(available_backends)
-    foreach(backend ${available_backends})
-        if(${backend})
-            set(result OFF)
+    if (no_backend_option_chosen)
+        # use SDL for emscripten and iOS
+        if (EMSCRIPTEN)
+            set(HELLOIMGUI_USE_SDL2 ON CACHE BOOL "" FORCE)
+            set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
+        elseif (IOS)
+            set(HELLOIMGUI_USE_SDL2 ON CACHE BOOL "" FORCE)
+            set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
+        else()
+            _him_try_select_glfw_opengl3_if_no_backend_selected()
         endif()
-    endforeach()
-    set(${out_var} ${result} PARENT_SCOPE)
-    message(STATUS "_him_check_if_no_backend_selected return ${result}")
+    endif()
+
+    him_back_check_at_least_one_rendering_one_platform_backend(ok_backend)
+    if (NOT ok_backend)
+        him_back_available_platform_backends(platform_backends)
+        him_back_available_rendering_backends(rendering_backends)
+        message(FATAL_ERROR "
+            HelloImGui: no rendering or platform backend selected!
+            Please select at least one of the following:
+                - rendering backend: ${rendering_backends}
+                - platform backend: ${platform_backends}
+        ")
+    endif()
 endfunction()
 
-function(him_get_active_backends out_selected_backends)
-    set(selected_backends "")
-    him_get_available_backends(available_backends)
-    foreach(backend ${available_backends})
-        if (${backend})
-            set(selected_backends "${selected_backends} ${backend}")
-        endif()
-    endforeach()
-    set(${out_selected_backends} ${selected_backends} PARENT_SCOPE)
-endfunction()
 
 function(_him_try_select_glfw_opengl3_if_no_backend_selected)
     #------------------------------------------------------------------------------
@@ -382,15 +511,17 @@ function(_him_try_select_glfw_opengl3_if_no_backend_selected)
     #------------------------------------------------------------------------------
     #
     if (HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED)
-        set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
-        message(STATUS "HelloImGui: using HELLOIMGUI_USE_GLFW_OPENGL3 as default default backend")
+        set(HELLOIMGUI_USE_GLFW3 ON CACHE BOOL "" FORCE)
+        set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
+        message(STATUS "HelloImGui: using HELLOIMGUI_USE_GLFW3 + HELLOIMGUI_HAS_OPENGL3 as default backend combination")
     else()
         # Check if Glfw can be found
         find_package(glfw3 QUIET)
         if (glfw3_FOUND)
-            set(HELLOIMGUI_USE_GLFW_OPENGL3 ON CACHE BOOL "" FORCE)
+            set(HELLOIMGUI_USE_GLFW3 ON CACHE BOOL "" FORCE)
+            set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
             message(STATUS
-                "HelloImGui: using HELLOIMGUI_USE_GLFW_OPENGL3 as default default backend (glfw was found via find_package(glfw3))
+                "HelloImGui: using HELLOIMGUI_USE_GLFW3 + HELLOIMGUI_HAS_OPENGL3 as default backend combination (glfw was found via find_package(glfw3))
                 ")
         else()
             set(glfw_help_msg "
@@ -712,39 +843,6 @@ endfunction()
 
 
 ###################################################################################################
-# Check only one rendering backend is selected: API = him_check_only_one_backend_selected
-###################################################################################################
-function(him_check_only_one_rendering_backend_selected)
-    # Only one of HELLOIMGUI_HAS_OPENGL, HELLOIMGUI_HAS_METAL, HELLOIMGUI_HAS_VULKAN can be ON
-    # count selected rendering backends
-    set(selected_backends 0)
-    if (HELLOIMGUI_HAS_OPENGL)
-        math(EXPR selected_backends "${selected_backends} + 1")
-    endif()
-    if (HELLOIMGUI_HAS_METAL)
-        math(EXPR selected_backends "${selected_backends} + 1")
-    endif()
-    if (HELLOIMGUI_HAS_VULKAN)
-        math(EXPR selected_backends "${selected_backends} + 1")
-    endif()
-    if (HELLOIMGUI_HAS_DIRECTX11)
-        math(EXPR selected_backends "${selected_backends} + 1")
-    endif()
-    if (HELLOIMGUI_HAS_DIRECTX12)
-        math(EXPR selected_backends "${selected_backends} + 1")
-    endif()
-    # selected_backends should be 1
-    if (selected_backends EQUAL 0)
-        message(FATAL_ERROR "HelloImGui: no rendering backend selected")
-    endif()
-    if (NOT selected_backends EQUAL 1)
-        message(FATAL_ERROR "HelloImGui: only one of HELLOIMGUI_HAS_OPENGL, HELLOIMGUI_HAS_METAL, HELLOIMGUI_HAS_VULKAN, HELLOIMGUI_HAS_DIRECTX12 can be ON")
-    endif()
-endfunction()
-
-
-
-###################################################################################################
 # SDL platform backend: API = him_use_sdl2_backend
 ###################################################################################################
 function (him_use_sdl2_backend target)
@@ -760,9 +858,8 @@ function (him_use_sdl2_backend target)
         )
     endif()
     set(HELLOIMGUI_USE_SDL2 ON CACHE INTERNAL "" FORCE)
-    set(HELLOIMGUI_USE_SDL ON CACHE INTERNAL "" FORCE)
-    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL2)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL)  # legacy!
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC _THREAD_SAFE) # flag outputted by sdl2-config --cflags
 endfunction()
 
@@ -770,7 +867,7 @@ function(_him_fetch_sdl_if_needed)
     set(shall_fetch_sdl OFF)
 
     # Always fetch SDL for iOS and Android
-    if (HELLOIMGUI_USE_SDL_OPENGL3 AND (IOS OR ANDROID))
+    if (HELLOIMGUI_USE_SDL2 AND (IOS OR ANDROID))
         set(shall_fetch_sdl ON)
     endif()
 
@@ -864,7 +961,7 @@ endfunction()
 ###################################################################################################
 # Glfw platform backend: API = him_use_glfw_backend
 ###################################################################################################
-function(him_use_glfw_backend target)
+function(him_use_glfw3_backend target)
     _him_fetch_glfw_if_needed()
     if (NOT TARGET glfw) # if glfw is not built as part of the whole build, find it
         find_package(glfw3 CONFIG REQUIRED)
@@ -878,10 +975,10 @@ function(him_use_glfw_backend target)
             ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
         )
     endif()
-    set(HELLOIMGUI_USE_GLFW ON CACHE INTERNAL "" FORCE)
     set(HELLOIMGUI_USE_GLFW3 ON CACHE INTERNAL "" FORCE)
-    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW)
+    set(HELLOIMGUI_USE_GLFW3 ON CACHE INTERNAL "" FORCE)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW3)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW) # legacy!
 endfunction()
 
 function(_him_fetch_glfw_if_needed)
@@ -961,7 +1058,8 @@ endfunction()
 # Log Configuration at the end of the configuration: API = him_log_configuration
 ###################################################################################################
 function(him_log_configuration)
-    him_get_active_backends(selected_backends)
+    him_back_describe_active_platform_backends(active_platform_backends)
+    him_back_describe_active_rendering_backends(active_rendering_backends)
 
     # set imgui_source_dir to the relative path of HELLOIMGUI_IMGUI_SOURCE_DIR versus this project
     file(RELATIVE_PATH imgui_source_dir ${HELLOIMGUI_BASEPATH} ${HELLOIMGUI_IMGUI_SOURCE_DIR})
@@ -970,7 +1068,8 @@ function(him_log_configuration)
     ===========================================================================
         Hello ImGui build options:
     ===========================================================================
-      Backends: ${selected_backends}
+      Platform Backend(s):              ${active_platform_backends}
+      Rendering Backend(s):             ${active_rendering_backends}
     ---------------------------------------------------------------------------
       Options:
         HELLOIMGUI_USE_FREETYPE:        ${HELLOIMGUI_USE_FREETYPE}  (${HELLOIMGUI_FREETYPE_SELECTED_INFO})
@@ -998,11 +1097,11 @@ function(him_log_configuration)
     set(msg "${msg}
     ---------------------------------------------------------------------------
       Platform Backend(s):")
-    if(HELLOIMGUI_USE_SDL)
+    if(HELLOIMGUI_USE_SDL2)
         set(msg "${msg}
         SDL:                            ${HELLOIMGUI_SDL_SELECTED_INFO}")
     endif()
-    if(HELLOIMGUI_USE_GLFW)
+    if(HELLOIMGUI_USE_GLFW3)
         set(msg "${msg}
         Glfw:                           ${HELLOIMGUI_GLFW_SELECTED_INFO}")
     endif()
@@ -1033,6 +1132,7 @@ endfunction()
 ###################################################################################################
 function(him_main_add_hello_imgui_library)
     him_reset_installable_dependencies()
+    him_back_parse_legacy_combinations()
     him_sanity_checks()
     him_add_stb_image()
     him_build_imgui()
@@ -1041,61 +1141,29 @@ function(him_main_add_hello_imgui_library)
         add_imgui_test_engine()
     endif()
 
-    if (HELLOIMGUI_USE_SDL_OPENGL3)
+    if (HELLOIMGUI_USE_SDL2)
+        him_use_sdl2_backend(${HELLOIMGUI_TARGET})
+    endif()
+    if (HELLOIMGUI_USE_GLFW3)
+        him_use_glfw3_backend(${HELLOIMGUI_TARGET})
+    endif()
+
+    if (HELLOIMGUI_HAS_OPENGL3)
         him_has_opengl3(${HELLOIMGUI_TARGET})
-        him_use_sdl2_backend(${HELLOIMGUI_TARGET})
-        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL_OPENGL3)
     endif()
-
-    if (HELLOIMGUI_USE_GLFW_OPENGL3)
-        him_has_opengl3(${HELLOIMGUI_TARGET})
-        him_use_glfw_backend(${HELLOIMGUI_TARGET})
-        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW_OPENGL3)
-    endif()
-
-    if(HELLOIMGUI_USE_SDL_METAL)
+    if (HELLOIMGUI_HAS_METAL)
         him_has_metal(${HELLOIMGUI_TARGET})
-        him_use_sdl2_backend(${HELLOIMGUI_TARGET})
-        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL_METAL)
     endif()
-
-    if(HELLOIMGUI_USE_GLFW_METAL)
-        him_has_metal(${HELLOIMGUI_TARGET})
-        him_use_glfw_backend(${HELLOIMGUI_TARGET})
-        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW_METAL)
-    endif()
-
-    if(HELLOIMGUI_USE_GLFW_VULKAN)
+    if (HELLOIMGUI_HAS_VULKAN)
         him_has_vulkan(${HELLOIMGUI_TARGET})
-        him_use_glfw_backend(${HELLOIMGUI_TARGET})
-        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW_METAL)
     endif()
-
-    if(HELLOIMGUI_USE_SDL_VULKAN)
-        him_has_vulkan(${HELLOIMGUI_TARGET})
-        him_use_sdl2_backend(${HELLOIMGUI_TARGET})
-        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL_VULKAN)
+    if (HELLOIMGUI_HAS_DIRECTX11)
+        him_has_directx11(${HELLOIMGUI_TARGET})
     endif()
-
-    if(HELLOIMGUI_USE_SDL_DIRECTX11)
-        him_has_directx11(${HELLOIMGUI_TARGET})
-        him_use_sdl2_backend(${HELLOIMGUI_TARGET})
-        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL_DIRECTX11)
-    endif ()
-
-    if(HELLOIMGUI_USE_GLFW_DIRECTX11)
-        him_has_directx11(${HELLOIMGUI_TARGET})
-        him_use_glfw_backend(${HELLOIMGUI_TARGET})
-        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_GLFW_DIRECTX11)
-    endif ()
-
-    if(HELLOIMGUI_USE_SDL_DIRECTX12)
+    if (HELLOIMGUI_HAS_DIRECTX12)
         him_has_directx12(${HELLOIMGUI_TARGET})
-        him_use_sdl2_backend(${HELLOIMGUI_TARGET})
-        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_SDL_DIRECTX12)
-    endif ()
+    endif()
 
-    him_check_only_one_rendering_backend_selected()
     him_add_apple_options()
     him_add_linux_options()
     him_add_windows_options()
@@ -1105,7 +1173,4 @@ function(him_main_add_hello_imgui_library)
     him_add_misc_options()
     him_install()
     him_install_imgui()
-
-    him_get_active_backends(selected_backends)
-    message(STATUS "HelloImGui backends: ${selected_backends}")
 endfunction()

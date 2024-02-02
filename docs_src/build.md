@@ -33,7 +33,7 @@ See documentation below (extract from [CMakeLists.txt](https://github.com/pthom/
 
 In order to select your own backend, use one of the afore mentioned backend combinations, for example:
 ```bash
-cmake .. -HELLOIMGUI_USE_SDL_OPENGL3=ON
+cmake .. -DHELLOIMGUI_USE_SDL2=ON -DHELLOIMGUI_HAS_OPENGL3=ON
 ```
 
 

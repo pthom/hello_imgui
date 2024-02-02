@@ -1,5 +1,6 @@
 #pragma once
 #include "hello_imgui/app_window_params.h"
+#include "hello_imgui/runner_params.h"
 
 #include <string>
 #include <iostream>
@@ -23,23 +24,12 @@
 
 namespace HelloImGui { namespace BackendApi
 {
-    enum class Backend3dMode
-    {
-        No3d,
-        OpenGl,
-        Vulkan,
-        Metal,
-        DirectX
-    };
-
-
     struct BackendOptions
     {
+        RendererBackendType rendererBackendType = RendererBackendType::OpenGL3;
         // this will enable dpi awareness under windows, and set the window flag SDL_WINDOW_ALLOW_HIGHDPI
         // (note: glfw is dpi aware by default)
         bool dpiAwareSdl = true; 
-
-        Backend3dMode backend3DMode = Backend3dMode::OpenGl;
     };
 
 

@@ -1,5 +1,5 @@
 #pragma once
-#ifdef HELLOIMGUI_USE_GLFW
+#ifdef HELLOIMGUI_USE_GLFW3
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
 
 #define GLFW_INCLUDE_NONE
@@ -32,19 +32,13 @@ class RunnerGlfw3 : public AbstractRunner
         void Impl_LinkPlatformAndRenderBackends() override;
         // Specific to OpenGL
         #ifdef HELLOIMGUI_HAS_OPENGL
+        public:
             void Impl_Select_Gl_Version() override;
-            std::string Impl_GlslVersion() override;
+            std::string Impl_GlslVersion() const override;
             void Impl_CreateGlContext() override;
             void Impl_InitGlLoader() override;
         #endif
-
-        //
-        // Rendering backend (OpenGL, ...): Impl_InitRenderBackendCallbacks will fill the callbacks
-        //
-        void Impl_InitRenderBackendCallbacks() override;
-
-
 };
 
 }  // namespace HelloImGui
-#endif  // #ifdef HELLOIMGUI_USE_GLFW
+#endif  // #ifdef HELLOIMGUI_USE_GLFW3

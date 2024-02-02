@@ -22,6 +22,13 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 @import "runner_params.h" {md_id=RunnerParams}
 ```
 
+### Backend selection
+
+
+```cpp
+@import "runner_params.h" {md_id=BackendType}
+```
+
 
 # Fps Idling
 

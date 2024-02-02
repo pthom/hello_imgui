@@ -5,16 +5,16 @@
 
 namespace HelloImGui
 {
-    class RunnerEmscripten : public RunnerSdl2
+    class RunnerSdlEmscripten : public RunnerSdl2
     {
        public:
-        RunnerEmscripten(RunnerParams & runnerParams) : RunnerSdl2(runnerParams) {}
-        virtual ~RunnerEmscripten() = default;
+        RunnerSdlEmscripten(RunnerParams & runnerParams) : RunnerSdl2(runnerParams) {}
+        virtual ~RunnerSdlEmscripten() = default;
         void Run() override;
 
        protected:
         void Impl_Select_Gl_Version() override;
-        std::string Impl_GlslVersion() override;
+        std::string Impl_GlslVersion() const override;
         void Impl_InitGlLoader() override;
     };
 

@@ -43,7 +43,7 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
         #ifdef HELLOIMGUI_USE_GLFW3
             return std::make_unique<RunnerGlfw3>(params);
         #else
-            IM_ASSERT(false && "Glfw backend is not available!");
+            return nullptr;
         #endif
     }
     else if (params.backendType == BackendType::Sdl)
@@ -53,7 +53,7 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
         #elif defined(HELLOIMGUI_USE_SDL2)
             return std::make_unique<RunnerSdl2>(params);
         #else
-            IM_ASSERT(false && "Sdl backend is not available!");
+            return nullptr;
         #endif
     }
     else

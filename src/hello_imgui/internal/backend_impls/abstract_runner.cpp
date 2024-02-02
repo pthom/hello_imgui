@@ -23,6 +23,7 @@
 #include <chrono>
 #include <cassert>
 #include <filesystem>
+#include <cstdio>
 
 #if __APPLE__
 #include <TargetConditionals.h>
@@ -364,6 +365,9 @@ void AbstractRunner::SetImGuiPrefs()
 }
 
 
+extern std::string gMissingBackendErrorMessage; // from hello_imgui.cpp
+
+
 void AbstractRunner::InitRenderBackendCallbacks()
 {
     // We need to take into account the combination of platform and rendering backends
@@ -477,6 +481,7 @@ void AbstractRunner::InitRenderBackendCallbacks()
     }
     else
     {
+        fprintf(stderr, "Missing rendering backend! %s\n", gMissingBackendErrorMessage.c_str());
         IM_ASSERT(false && "Bad rendering backend type!");
     }
 }

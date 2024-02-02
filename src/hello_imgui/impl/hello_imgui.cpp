@@ -6,12 +6,31 @@
 #include <deque>
 #include <set>
 #include <chrono>
+#include <cstdio>
 
 
 namespace HelloImGui
 {
 RunnerParams* gLastRunnerParams = nullptr;
 std::unique_ptr<AbstractRunner> gLastRunner;
+
+std::string gMissingBackendErrorMessage = R"(
+
+When running CMake, you should specify
+
+ - At least one (or more) rendering backend (OpenGL3, Metal, Vulkan, DirectX11, DirectX12)
+   Make your choice according to your needs and your target platforms, between:
+      -DHELLOIMGUI_HAS_OPENGL3=ON    # This is the recommended choice, especially for beginners
+      -DHELLOIMGUI_HAS_METAL=ON      # Apple only, advanced users only
+      -DHELLOIMGUI_HAS_VULKAN=ON     # Advanced users only
+      -DHELLOIMGUI_HAS_DIRECTX11=ON  # Windows only, still experimental
+      -DHELLOIMGUI_HAS_DIRECTX12=ON  # Windows only, advanced users only, still experimental
+
+ - At least one (or more) platform backend (SDL2, Glfw3):
+  Make your choice according to your needs and your target platforms, between:
+      -DHELLOIMGUI_USE_SDL2=ON
+      -DHELLOIMGUI_USE_GLFW3=ON
+)";
 
 
 bool _CheckAdditionLayoutNamesUniqueness(RunnerParams &runnerParams)
@@ -34,7 +53,11 @@ void Run(RunnerParams& runnerParams)
 {
     IM_ASSERT(_CheckAdditionLayoutNamesUniqueness(runnerParams));
     gLastRunner = FactorRunner(runnerParams);
-    IM_ASSERT(gLastRunner && "Could not factor runner!");
+    if (gLastRunner == nullptr)
+    {
+        fprintf(stderr, "HelloImGui::Run() failed to factor a runner!\n %s", gMissingBackendErrorMessage.c_str());
+        IM_ASSERT(false && "HelloImGui::Run() failed to factor a runner!");
+    }
     gLastRunnerParams = &runnerParams;
     gLastRunner->Run();
 }

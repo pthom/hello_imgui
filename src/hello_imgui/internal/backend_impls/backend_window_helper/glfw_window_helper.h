@@ -1,5 +1,5 @@
 #pragma once
-#ifdef HELLOIMGUI_USE_GLFW
+#ifdef HELLOIMGUI_USE_GLFW3
 
 #include "backend_window_helper.h"
 
@@ -39,4 +39,4 @@ namespace HelloImGui { namespace BackendApi
     };
 }} // namespace HelloImGui { namespace BackendApi
 
-#endif // #ifdef HELLOIMGUI_USE_GLFW
+#endif // #ifdef HELLOIMGUI_USE_GLFW3

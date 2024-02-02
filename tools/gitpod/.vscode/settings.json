@@ -1,4 +1,4 @@
 {
     "cmake.configureOnOpen": true,
-    "cmake.configureArgs": ["-DHELLOIMGUI_USE_GLFW_OPENGL3=ON"],
+    "cmake.configureArgs": ["-DHELLOIMGUI_USE_GLFW3=ON", "-DHELLOIMGUI_HAS_OPENGL3=ON"]
 }

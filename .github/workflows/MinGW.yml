@@ -34,7 +34,7 @@ jobs:
           mkdir build_x86_64
           cd build_x86_64
           if [ "${{ matrix.window_backend }}" = "Sdl" ]; then
-            cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_x86_64.cmake -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_USE_SDL_OPENGL3=ON 
+            cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_x86_64.cmake -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_USE_SDL2=ON -DHELLOIMGUI_HAS_OPENGL3=ON
           fi
           if [ "${{ matrix.window_backend }}" = "Glfw" ]; then
             cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_x86_64.cmake -DCMAKE_BUILD_TYPE=Release
@@ -46,7 +46,7 @@ jobs:
         mkdir build_i686
         cd build_i686
           if [ "${{ matrix.window_backend }}" = "Sdl" ]; then
-            cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_i686.cmake -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_USE_SDL_OPENGL3=ON 
+            cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_i686.cmake -DCMAKE_BUILD_TYPE=Release -DHELLOIMGUI_USE_SDL2=ON -DHELLOIMGUI_HAS_OPENGL3=ON
           fi
           if [ "${{ matrix.window_backend }}" = "Glfw" ]; then
             cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw_i686.cmake -DCMAKE_BUILD_TYPE=Release

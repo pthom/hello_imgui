@@ -32,7 +32,8 @@ export PATH=$JAVA_HOME/bin:$PATH
 cmd="cmake \
     -DCMAKE_TOOLCHAIN_FILE=$android_toolchain_file \
     -DANDROID_ABI=$android_abi \
-    -DHELLOIMGUI_USE_SDL_OPENGL3=ON \
+    -DHELLOIMGUI_USE_SDL2=ON \
+    -DHELLOIMGUI_HAS_OPENGL3=ON \
     -DHELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT=ON \
     $source_dir
     "

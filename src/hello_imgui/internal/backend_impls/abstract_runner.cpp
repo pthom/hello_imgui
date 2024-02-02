@@ -392,7 +392,7 @@ void AbstractRunner::InitRenderBackendCallbacks()
             }
             else if (params.platformBackendType == PlatformBackendType::Sdl)
             {
-                #ifdef HELLOIMGUI_USE_SDL
+                #ifdef HELLOIMGUI_USE_SDL2
                     mRenderingBackendCallbacks = CreateBackendCallbacks_SdlMetal();
                 #else
                     IM_ASSERT(false && "Sdl backend is not available!");
@@ -416,7 +416,7 @@ void AbstractRunner::InitRenderBackendCallbacks()
             }
             else if (params.platformBackendType == PlatformBackendType::Sdl)
             {
-                #ifdef HELLOIMGUI_USE_SDL
+                #ifdef HELLOIMGUI_USE_SDL2
                         mRenderingBackendCallbacks = CreateBackendCallbacks_SdlVulkan();
                 #else
                         IM_ASSERT(false && "Sdl backend is not available!");
@@ -440,7 +440,7 @@ void AbstractRunner::InitRenderBackendCallbacks()
             }
             else if (params.platformBackendType == PlatformBackendType::Sdl)
             {
-                    #ifdef HELLOIMGUI_USE_SDL
+                    #ifdef HELLOIMGUI_USE_SDL2
                         mRenderingBackendCallbacks = CreateBackendCallbacks_SdlDx11();
                     #else
                         IM_ASSERT(false && "Sdl backend is not available!");
@@ -464,7 +464,7 @@ void AbstractRunner::InitRenderBackendCallbacks()
             }
             else if (params.platformBackendType == PlatformBackendType::Sdl)
             {
-                    #ifdef HELLOIMGUI_USE_SDL
+                    #ifdef HELLOIMGUI_USE_SDL2
                         mRenderingBackendCallbacks = CreateBackendCallbacks_SdlDx12();
                     #else
                         IM_ASSERT(false && "Sdl backend is not available!");

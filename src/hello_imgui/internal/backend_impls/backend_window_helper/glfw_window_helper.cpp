@@ -1,4 +1,4 @@
-#ifdef HELLOIMGUI_USE_GLFW
+#ifdef HELLOIMGUI_USE_GLFW3
 #include "glfw_window_helper.h"
 #include "window_geometry_helper.h"
 #include "GLFW/glfw3.h"
@@ -227,4 +227,4 @@ namespace HelloImGui { namespace BackendApi
 //    }
 
 }} // namespace HelloImGui { namespace BackendApi
-#endif // #ifdef HELLOIMGUI_USE_GLFW
+#endif // #ifdef HELLOIMGUI_USE_GLFW3

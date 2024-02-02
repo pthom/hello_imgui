@@ -10,66 +10,16 @@ vcpkg_from_github(
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES
-    "opengl3-binding" FEATURE_OPENGL3_BINDING
-    "metal-binding" FEATURE_METAL_BINDING
-    "experimental-vulkan-binding" FEATURE_VULKAN_BINDING
-    "experimental-dx11-binding" FEATURE_DX11_BINDING
-    "experimental-dx12-binding" FEATURE_DX12_BINDING
-    "glfw-binding" FEATURE_GLFW_BINDING
-    "sdl2-binding" FEATURE_SDL2_BINDING
+    "opengl3-binding" HELLOIMGUI_HAS_OPENGL3
+    "metal-binding" HELLOIMGUI_HAS_METAL
+    "experimental-vulkan-binding" HELLOIMGUI_HAS_VULKAN
+    "experimental-dx11-binding" HELLOIMGUI_HAS_DIRECTX11
+    "experimental-dx12-binding" HELLOIMGUI_HAS_DIRECTX12
+    "glfw-binding" HELLOIMGUI_USE_GLFW3
+    "sdl2-binding" HELLOIMGUI_USE_SDL2
     "freetype-lunasvg" HELLOIMGUI_USE_FREETYPE # When hello_imgui is built with freetype, it will also build with lunasvg
 )
 
-# if a renderer backend was selected and is different from the default, we need to disable the default
-if(FEATURE_METAL_BINDING AND FEATURE_OPENGL3_BINDING)
-    message(STATUS "Metal and OpenGL3 bindings are mutually exclusive. Removing support for OpenGL3.")
-    set(FEATURE_OPENGL3_BINDING OFF)
-endif()
-if(FEATURE_VULKAN_BINDING AND FEATURE_OPENGL3_BINDING)
-    message(STATUS "Vulkan and OpenGL3 bindings are mutually exclusive. Removing support for OpenGL3.")
-    set(FEATURE_OPENGL3_BINDING OFF)
-endif()
-if(FEATURE_DX11_BINDING AND FEATURE_OPENGL3_BINDING)
-    message(STATUS "Dx11 and OpenGL3 bindings are mutually exclusive. Removing support for OpenGL3.")
-    set(FEATURE_OPENGL3_BINDING OFF)
-endif()
-if(FEATURE_DX12_BINDING AND FEATURE_OPENGL3_BINDING)
-    message(STATUS "Dx12 and OpenGL3 bindings are mutually exclusive. Removing support for OpenGL3.")
-    set(FEATURE_OPENGL3_BINDING OFF)
-endif()
-
-
-# Set HelloImGui backend combinations (rendering + platform)
-if(FEATURE_OPENGL3_BINDING AND FEATURE_GLFW_BINDING)
-    set(HELLOIMGUI_USE_GLFW_OPENGL3 ON)
-endif()
-if(FEATURE_OPENGL3_BINDING AND FEATURE_SDL2_BINDING)
-    set(HELLOIMGUI_USE_SDL_OPENGL3 ON)
-endif()
-if(FEATURE_METAL_BINDING AND FEATURE_SDL2_BINDING)
-    set(HELLOIMGUI_USE_SDL_METAL ON)
-endif()
-if(FEATURE_METAL_BINDING AND FEATURE_GLFW_BINDING)
-    set(HELLOIMGUI_USE_GLFW_METAL ON)
-endif()
-if(FEATURE_VULKAN_BINDING AND FEATURE_GLFW_BINDING)
-    set(HELLOIMGUI_USE_GLFW_VULKAN ON)
-endif()
-if(FEATURE_VULKAN_BINDING AND FEATURE_SDL2_BINDING)
-    set(HELLOIMGUI_USE_SDL_VULKAN ON)
-endif()
-if(FEATURE_DX11_BINDING AND FEATURE_SDL2_BINDING)
-    set(HELLOIMGUI_USE_SDL_DIRECTX11 ON)
-endif()
-if(FEATURE_DX11_BINDING AND FEATURE_GLFW_BINDING)
-    set(HELLOIMGUI_USE_GLFW_DIRECTX11 ON)
-endif()
-if(FEATURE_DX12_BINDING AND FEATURE_SDL2_BINDING)
-    set(HELLOIMGUI_USE_SDL_DIRECTX12 ON)
-endif()
-if(FEATURE_DX12_BINDING AND FEATURE_GLFW_BINDING)
-    set(HELLOIMGUI_USE_GLFW_DIRECTX12 ON)
-endif()
 
 set(platform_options "")
 if(WIN32)
@@ -106,16 +56,16 @@ vcpkg_cmake_configure(
 
         ${platform_options}
 
-        # Backend combinations (hello_imgui wants a combination of rendering and platform backend)
-        # (we can select at most one rendering backend)
-        -DHELLOIMGUI_USE_GLFW_OPENGL3=${HELLOIMGUI_USE_GLFW_OPENGL3}
-        -DHELLOIMGUI_USE_SDL_OPENGL3=${HELLOIMGUI_USE_SDL_OPENGL3}
-        -DHELLOIMGUI_USE_SDL_METAL=${HELLOIMGUI_USE_SDL_METAL}
-        -DHELLOIMGUI_USE_GLFW_METAL=${HELLOIMGUI_USE_GLFW_METAL}
-        -DHELLOIMGUI_USE_GLFW_VULKAN=${HELLOIMGUI_USE_GLFW_VULKAN}
-        -DHELLOIMGUI_USE_SDL_VULKAN=${HELLOIMGUI_USE_SDL_VULKAN}
-        -DHELLOIMGUI_USE_SDL_DIRECTX11=${HELLOIMGUI_USE_SDL_DIRECTX11}
-        -DHELLOIMGUI_USE_GLFW_DIRECTX11=${HELLOIMGUI_USE_GLFW_DIRECTX11}
+        # Rendering backends
+        -DHELLOIMGUI_HAS_OPENGL3=${HELLOIMGUI_HAS_OPENGL3}
+        -DHELLOIMGUI_HAS_METAL=${HELLOIMGUI_HAS_METAL}
+        -DHELLOIMGUI_HAS_VULKAN=${HELLOIMGUI_HAS_VULKAN}
+        -DHELLOIMGUI_HAS_DIRECTX11=${HELLOIMGUI_HAS_DIRECTX11}
+        -DHELLOIMGUI_HAS_DIRECTX12=${HELLOIMGUI_HAS_DIRECTX12}
+
+        # Platform backends
+        -DHELLOIMGUI_USE_GLFW3=${HELLOIMGUI_USE_GLFW3}
+        -DHELLOIMGUI_USE_SDL2=${HELLOIMGUI_USE_SDL2}
 )
 
 vcpkg_cmake_install()

@@ -5,14 +5,16 @@
       "name": "build_default_glfw",
       "description": "Build with default settings (opengl3 and glfw). You need to create a build directory and run from it",
       "cacheVariables": {
-        "HELLOIMGUI_USE_GLFW_OPENGL3": "ON"
+        "HELLOIMGUI_USE_GLFW3": "ON",
+        "HELLOIMGUI_HAS_OPENGL3": "ON"
       }
     },
     {
       "name": "build_default_sdl",
       "description": "Build with default settings (opengl3 and sdl). You need to create a build directory and run from it",
       "cacheVariables": {
-        "HELLOIMGUI_USE_SDL_OPENGL3": "ON"
+        "HELLOIMGUI_USE_SDL2": "ON",
+        "HELLOIMGUI_HAS_OPENGL3": "ON"
       }
     },
     {
@@ -20,8 +22,9 @@
       "description": "Build with vcpkg default settings (opengl3 + sdl and glfw). You need to create a build directory and run from it",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "HELLOIMGUI_USE_GLFW_OPENGL3": "ON",
-        "HELLOIMGUI_USE_SDL_OPENGL3": "ON",
+        "HELLOIMGUI_USE_GLFW3": "ON",
+        "HELLOIMGUI_USE_SDL2": "ON",
+        "HELLOIMGUI_HAS_OPENGL3": "ON",
         "HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE": "ON"
       }
     },
@@ -31,8 +34,9 @@
       "binaryDir": "${sourceDir}/build_use_vcpkg_opengl3",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "HELLOIMGUI_USE_GLFW_OPENGL3": "ON",
-        "HELLOIMGUI_USE_SDL_OPENGL3": "ON",
+        "HELLOIMGUI_USE_GLFW3": "ON",
+        "HELLOIMGUI_USE_SDL2": "ON",
+        "HELLOIMGUI_HAS_OPENGL3": "ON",
         "HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE": "ON"
       }
     },
@@ -42,8 +46,9 @@
       "binaryDir": "${sourceDir}/build_use_vcpkg_metal",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "HELLOIMGUI_USE_GLFW_METAL": "ON",
-        "HELLOIMGUI_USE_SDL_METAL": "ON",
+        "HELLOIMGUI_USE_GLFW3": "ON",
+        "HELLOIMGUI_USE_SDL2": "ON",
+        "HELLOIMGUI_HAS_METAL": "ON",
         "HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE": "ON"
       }
     },
@@ -53,8 +58,9 @@
       "binaryDir": "${sourceDir}/build_use_vcpkg_vulkan",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "HELLOIMGUI_USE_GLFW_VULKAN": "ON",
-        "HELLOIMGUI_USE_SDL_VULKAN": "ON",
+        "HELLOIMGUI_USE_GLFW3": "ON",
+        "HELLOIMGUI_USE_SDL2": "ON",
+        "HELLOIMGUI_HAS_VULKAN": "ON",
         "HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE": "ON"
       }
     }

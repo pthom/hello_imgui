@@ -1,5 +1,5 @@
 #pragma once
-#ifdef HELLOIMGUI_USE_SDL
+#ifdef HELLOIMGUI_USE_SDL2
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
 
 #include <SDL.h>
@@ -46,4 +46,4 @@ namespace HelloImGui
 
 }  // namespace HelloImGui
 
-#endif  // #ifdef HELLOIMGUI_USE_SDL
+#endif  // #ifdef HELLOIMGUI_USE_SDL2

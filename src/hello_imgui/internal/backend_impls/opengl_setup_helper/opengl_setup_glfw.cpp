@@ -1,4 +1,4 @@
-#ifdef HELLOIMGUI_USE_GLFW
+#ifdef HELLOIMGUI_USE_GLFW3
 #include "opengl_setup_glfw.h"
 #include "hello_imgui/hello_imgui_include_opengl.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
@@ -73,4 +73,4 @@ namespace HelloImGui { namespace BackendApi
     }
 }} // namespace HelloImGui { namespace BackendApi
 
-#endif // #ifdef HELLOIMGUI_USE_GLFW
+#endif // #ifdef HELLOIMGUI_USE_GLFW3

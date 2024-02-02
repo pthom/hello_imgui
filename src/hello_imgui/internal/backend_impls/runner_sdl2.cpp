@@ -1,4 +1,4 @@
-#ifdef HELLOIMGUI_USE_SDL
+#ifdef HELLOIMGUI_USE_SDL2
 #include "runner_sdl2.h"
 
 #ifdef HELLOIMGUI_HAS_OPENGL
@@ -334,4 +334,4 @@ namespace HelloImGui
 
 }  // namespace HelloImGui
 
-#endif  // #ifdef HELLOIMGUI_USE_SDL
+#endif  // #ifdef HELLOIMGUI_USE_SDL2

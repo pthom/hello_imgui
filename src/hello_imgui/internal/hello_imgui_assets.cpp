@@ -9,7 +9,7 @@
 #include "hello_imgui/internal/whereami/whereami_cpp.h"
 
 
-#ifdef HELLOIMGUI_USE_SDL
+#ifdef HELLOIMGUI_USE_SDL2
 #include "SDL_system.h"
 #endif
 
@@ -261,7 +261,7 @@ bool AssetExists(const std::string& assetFilename)
 }
 
 
-#ifdef HELLOIMGUI_USE_SDL
+#ifdef HELLOIMGUI_USE_SDL2
 
 AssetFileData LoadAssetFileData(const char *assetPath)
 {
@@ -348,7 +348,7 @@ void FreeAssetFileData(AssetFileData * assetFileData)
     assetFileData = nullptr;
 }
 
-#endif // #ifdef HELLOIMGUI_USE_SDL
+#endif // #ifdef HELLOIMGUI_USE_SDL2
 
 
 }  // namespace HelloImGui

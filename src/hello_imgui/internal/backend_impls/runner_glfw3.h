@@ -1,5 +1,5 @@
 #pragma once
-#ifdef HELLOIMGUI_USE_GLFW
+#ifdef HELLOIMGUI_USE_GLFW3
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
 
 #define GLFW_INCLUDE_NONE
@@ -41,4 +41,4 @@ class RunnerGlfw3 : public AbstractRunner
 };
 
 }  // namespace HelloImGui
-#endif  // #ifdef HELLOIMGUI_USE_GLFW
+#endif  // #ifdef HELLOIMGUI_USE_GLFW3

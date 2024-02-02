@@ -1,5 +1,5 @@
 #pragma once
-#ifdef HELLOIMGUI_USE_SDL
+#ifdef HELLOIMGUI_USE_SDL2
 
 #include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
 
@@ -47,4 +47,4 @@ namespace HelloImGui { namespace BackendApi
     };
 }} // namespace HelloImGui { namespace BackendApi
 
-#endif // #ifdef HELLOIMGUI_USE_SDL
+#endif // #ifdef HELLOIMGUI_USE_SDL2

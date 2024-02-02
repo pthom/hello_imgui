@@ -1,4 +1,4 @@
-#ifdef HELLOIMGUI_USE_GLFW
+#ifdef HELLOIMGUI_USE_GLFW3
 
 #ifdef HELLOIMGUI_HAS_OPENGL
 //#include "hello_imgui/hello_imgui_include_opengl.h"
@@ -265,4 +265,4 @@ namespace HelloImGui
 
 
 }  // namespace HelloImGui
-#endif  // #ifdef HELLOIMGUI_USE_GLFW
+#endif  // #ifdef HELLOIMGUI_USE_GLFW3

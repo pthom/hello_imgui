@@ -1,4 +1,4 @@
-#ifdef HELLOIMGUI_USE_SDL
+#ifdef HELLOIMGUI_USE_SDL2
 
 #include "opengl_setup_sdl.h"
 #include "hello_imgui/hello_imgui_include_opengl.h"
@@ -91,4 +91,4 @@ namespace HelloImGui { namespace BackendApi
     }
 }} // namespace HelloImGui { namespace BackendApi
 
-#endif // #ifdef HELLOIMGUI_USE_SDL
+#endif // #ifdef HELLOIMGUI_USE_SDL2

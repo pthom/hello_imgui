@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(__ANDROID__) && defined(HELLOIMGUI_USE_SDL)
+#if defined(__ANDROID__) && defined(HELLOIMGUI_USE_SDL2)
 // We need to include SDL, so that it can instantiate its main function under Android
 #include "SDL.h"
 #endif
@@ -22,7 +22,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#ifdef HELLOIMGUI_USE_SDL
+#ifdef HELLOIMGUI_USE_SDL2
     #ifdef _WIN32
         #ifndef HELLOIMGUI_WIN32_AUTO_WINMAIN
             // Under Windows, we redefine WinMain ourselves

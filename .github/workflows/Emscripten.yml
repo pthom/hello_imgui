@@ -21,7 +21,7 @@ jobs:
           source ~/emsdk/emsdk_env.sh
           mkdir build-emscripten
           cd build-emscripten
-          emcmake cmake .. -DHELLOIMGUI_USE_SDL_OPENGL3=ON
+          emcmake cmake .. -DHELLOIMGUI_USE_SDL2 -DHELLOIMGUI_HAS_OPENGL3=ON
 
       - name: Build
         working-directory: build-emscripten

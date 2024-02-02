@@ -1,6 +1,4 @@
-if(VCPKG_TARGET_IS_WINDOWS)
-    vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
-endif()
+vcpkg_check_linkage(ONLY_STATIC_LIBRARY) # this mirrors ImGui's portfile behavior
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
@@ -19,7 +17,7 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     "experimental-dx12-binding" FEATURE_DX12_BINDING
     "glfw-binding" FEATURE_GLFW_BINDING
     "sdl2-binding" FEATURE_SDL2_BINDING
-    "freetype-lunasvg" FEATURE_FREETYPE_LUNASVG
+    "freetype-lunasvg" HELLOIMGUI_USE_FREETYPE # When hello_imgui is built with freetype, it will also build with lunasvg
 )
 
 # if a renderer backend was selected and is different from the default, we need to disable the default
@@ -71,11 +69,6 @@ if(FEATURE_DX12_BINDING AND FEATURE_SDL2_BINDING)
 endif()
 if(FEATURE_DX12_BINDING AND FEATURE_GLFW_BINDING)
     set(HELLOIMGUI_USE_GLFW_DIRECTX12 ON)
-endif()
-
-if(FEATURE_FREETYPE_LUNASVG)
-    # When hello_imgui is built with freetype, it will also build with lunasvg
-    set(HELLOIMGUI_USE_FREETYPE ON)
 endif()
 
 set(platform_options "")

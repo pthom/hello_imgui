@@ -417,9 +417,11 @@ void GuiWindowDemoFeatures(AppState& appState)
 // The Gui of the status bar
 void StatusBarGui(AppState& app_state)
 {
+    ImGui::Text("Using backend: %s", HelloImGui::GetBackendDescription().c_str());
+    ImGui::SameLine();
     if (app_state.rocket_state == AppState::RocketState::Preparing)
     {
-        ImGui::Text("Rocket completion: ");
+        ImGui::Text("  -  Rocket completion: ");
         ImGui::SameLine();
         ImGui::ProgressBar(app_state.rocket_progress, HelloImGui::EmToVec2(7.0f, 1.0f));
     }
@@ -781,6 +783,12 @@ int main(int, char**)
     // Part 4: Run the app
     //###############################################################################################
     HelloImGui::DeleteIniSettings(runnerParams);
+
+    // Optional: choose the backend combination
+    // ----------------------------------------
+    //runnerParams.platformBackendType = HelloImGui::PlatformBackendType::Sdl;
+    //runnerParams.rendererBackendType = HelloImGui::RendererBackendType::Vulkan;
+
     HelloImGui::Run(runnerParams); // Note: with ImGuiBundle, it is also possible to use ImmApp::Run(...)
 
     return 0;

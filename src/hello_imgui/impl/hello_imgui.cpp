@@ -34,6 +34,7 @@ void Run(RunnerParams& runnerParams)
 {
     IM_ASSERT(_CheckAdditionLayoutNamesUniqueness(runnerParams));
     gLastRunner = FactorRunner(runnerParams);
+    IM_ASSERT(gLastRunner && "Could not factor runner!");
     gLastRunnerParams = &runnerParams;
     gLastRunner->Run();
 }
@@ -151,6 +152,41 @@ float FrameRate(float durationForMean)
     float fps = 1.f / (totalTime / (float) (nbFrames - 1));
     return fps;
 }
+
+std::string PlatformBackendTypeToString(PlatformBackendType platformBackendType)
+{
+    if (platformBackendType == PlatformBackendType::Glfw)
+        return "Glfw";
+    else if (platformBackendType == PlatformBackendType::Sdl)
+        return "Sdl";
+    else
+        return "Unknown platform backend";
+}
+
+std::string RendererBackendTypeToString(RendererBackendType rendererBackendType)
+{
+    if (rendererBackendType == RendererBackendType::OpenGL3)
+        return "OpenGL3";
+    else if (rendererBackendType == RendererBackendType::Vulkan)
+        return "Vulkan";
+    else if (rendererBackendType == RendererBackendType::Metal)
+        return "Metal";
+    else if (rendererBackendType == RendererBackendType::DirectX11)
+        return "DirectX11";
+    else if (rendererBackendType == RendererBackendType::DirectX12)
+        return "DirectX12";
+    else
+        return "Unknown renderer backend";
+}
+
+std::string GetBackendDescription()
+{
+    const auto& params = GetRunnerParams();
+    std::string platformBackend = PlatformBackendTypeToString(params->platformBackendType);
+    std::string rendererBackend = RendererBackendTypeToString(params->rendererBackendType);
+    return platformBackend + " - " + rendererBackend;
+}
+
 
 #ifdef HELLOIMGUI_WITH_TEST_ENGINE
 extern ImGuiTestEngine *GHImGuiTestEngine;

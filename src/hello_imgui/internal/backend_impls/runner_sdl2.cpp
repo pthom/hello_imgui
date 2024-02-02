@@ -75,13 +75,7 @@ namespace HelloImGui
     void RunnerSdl2::Impl_CreateWindow()
     {
         BackendApi::BackendOptions backendOptions;
-#ifdef HELLOIMGUI_HAS_METAL
-        backendOptions.backend3DMode = BackendApi::Backend3dMode::Metal;
-#endif
-#ifdef HELLOIMGUI_HAS_VULKAN
-        backendOptions.backend3DMode = BackendApi::Backend3dMode::Vulkan;
-#endif
-
+        backendOptions.rendererBackendType = params.rendererBackendType;
         mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
         params.backendPointers.sdlWindow = mWindow;
     }
@@ -109,15 +103,15 @@ namespace HelloImGui
 
     void RunnerSdl2::Impl_UpdateAndRenderAdditionalPlatformWindows()
     {
-#ifdef HELLOIMGUI_HAS_OPENGL
-        SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
-        SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-#endif
+        #ifdef HELLOIMGUI_HAS_OPENGL
+            SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+            SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+        #endif
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
-#ifdef HELLOIMGUI_HAS_OPENGL
-        SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
-#endif
+        #ifdef HELLOIMGUI_HAS_OPENGL
+            SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+        #endif
     }
 
     void RunnerSdl2::Impl_Cleanup()
@@ -133,74 +127,79 @@ namespace HelloImGui
     void RunnerSdl2::Impl_SwapBuffers()
     {
         // Call of RenderingCallbacks_Impl_SwapBuffers
-#ifdef HELLOIMGUI_HAS_OPENGL
-        SDL_GL_SwapWindow((SDL_Window *)mWindow);
-#endif
-#ifdef HELLOIMGUI_HAS_METAL
-        SwapMetalBuffers();
-#endif
-#ifdef HELLOIMGUI_HAS_VULKAN
-        SwapVulkanBuffers();
-#endif
-#ifdef HELLOIMGUI_HAS_DIRECTX11
-        SwapDx11Buffers();
-#endif
-#ifdef HELLOIMGUI_HAS_DIRECTX12
-        SwapDx12Buffers();
-#endif
+        #ifdef HELLOIMGUI_HAS_OPENGL
+            if (params.rendererBackendType == RendererBackendType::OpenGL3)
+                SDL_GL_SwapWindow((SDL_Window *)mWindow);
+        #endif
+        #ifdef HELLOIMGUI_HAS_METAL
+            if (params.rendererBackendType == RendererBackendType::Metal)
+                SwapMetalBuffers();
+        #endif
+        #ifdef HELLOIMGUI_HAS_VULKAN
+            if (params.rendererBackendType == RendererBackendType::Vulkan)
+                SwapVulkanBuffers();
+        #endif
+        #ifdef HELLOIMGUI_HAS_DIRECTX11
+            if (params.rendererBackendType == RendererBackendType::DirectX11)
+                SwapDx11Buffers();
+        #endif
+        #ifdef HELLOIMGUI_HAS_DIRECTX12
+            if (params.rendererBackendType == RendererBackendType::DirectX12)
+                SwapDx12Buffers();
+        #endif
     }
 
 
     bool RunnerSdl2::priv_HandleMobileDeviceEvent(unsigned int sdl_EventType)
     {
-#ifdef HELLOIMGUI_MOBILEDEVICE
-        switch(sdl_EventType)
-        {
-            case SDL_APP_TERMINATING:
-                /* Terminate the app.
-                   Shut everything down before returning from this function.
-                */
-                OnDestroy();
-                return true;
-            case SDL_APP_LOWMEMORY:
-                /* You will get this when your app is paused and iOS wants more memory.
-                   Release as much memory as possible.
-                */
-                OnLowMemory();
-                return true;
-            case SDL_APP_WILLENTERBACKGROUND:
-                /* Prepare your app to go into the background.  Stop loops, etc.
-                   This gets called when the user hits the home button, or gets a call.
-                */
-                OnPause();
-                return true;
-            case SDL_APP_DIDENTERBACKGROUND:
-                /* This will get called if the user accepted whatever sent your app to the background.
-                   If the user got a phone call and canceled it, you'll instead get an    SDL_APP_DIDENTERFOREGROUND event and restart your loops.
-                   When you get this, you have 5 seconds to save all your state or the app will be terminated.
-                   Your app is NOT active at this point.
-                */
-                OnPause();
-                return true;
-            case SDL_APP_WILLENTERFOREGROUND:
-                /* This call happens when your app is coming back to the foreground.
-                    Restore all your state here.
-                */
-                OnResume();
-                return true;
-            case SDL_APP_DIDENTERFOREGROUND:
-                /* Restart your loops here.
-                   Your app is interactive and getting CPU again.
-                */
-                OnResume();
-                return true;
-            default:
-                /* No special processing, add it to the event queue */
-                return false;
-        }
-#else // #ifdef HELLOIMGUI_MOBILEDEVICE
-      return false;
-#endif
+        #ifdef HELLOIMGUI_MOBILEDEVICE
+            switch(sdl_EventType)
+            {
+                case SDL_APP_TERMINATING:
+                    /* Terminate the app.
+                       Shut everything down before returning from this function.
+                    */
+                    OnDestroy();
+                    return true;
+                case SDL_APP_LOWMEMORY:
+                    /* You will get this when your app is paused and iOS wants more memory.
+                       Release as much memory as possible.
+                    */
+                    OnLowMemory();
+                    return true;
+                case SDL_APP_WILLENTERBACKGROUND:
+                    /* Prepare your app to go into the background.  Stop loops, etc.
+                       This gets called when the user hits the home button, or gets a call.
+                    */
+                    OnPause();
+                    return true;
+                case SDL_APP_DIDENTERBACKGROUND:
+                    /* This will get called if the user accepted whatever sent your app to the background.
+                       If the user got a phone call and canceled it, you'll instead get an    SDL_APP_DIDENTERFOREGROUND event and restart your loops.
+                       When you get this, you have 5 seconds to save all your state or the app will be terminated.
+                       Your app is NOT active at this point.
+                    */
+                    OnPause();
+                    return true;
+                case SDL_APP_WILLENTERFOREGROUND:
+                    /* This call happens when your app is coming back to the foreground.
+                        Restore all your state here.
+                    */
+                    OnResume();
+                    return true;
+                case SDL_APP_DIDENTERFOREGROUND:
+                    /* Restart your loops here.
+                       Your app is interactive and getting CPU again.
+                    */
+                    OnResume();
+                    return true;
+                default:
+                    /* No special processing, add it to the event queue */
+                    return false;
+            }
+        #else // #ifdef HELLOIMGUI_MOBILEDEVICE
+            return false;
+        #endif
     }
 
     void RunnerSdl2::Impl_SetWindowIcon()
@@ -243,15 +242,10 @@ namespace HelloImGui
     //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef HELLOIMGUI_HAS_OPENGL
-    void RunnerSdl2::Impl_InitRenderBackendCallbacks()
+    void Impl_LinkPlatformAndRenderBackends_SdlOpenGl(const RunnerSdl2& runner)
     {
-        mRenderingBackendCallbacks = CreateBackendCallbacks_OpenGl3();
-    }
-
-    void RunnerSdl2::Impl_LinkPlatformAndRenderBackends()
-    {
-        ImGui_ImplSDL2_InitForOpenGL((SDL_Window *)mWindow, mGlContext);
-        ImGui_ImplOpenGL3_Init(Impl_GlslVersion().c_str());
+        ImGui_ImplSDL2_InitForOpenGL((SDL_Window *)runner.mWindow, runner.mGlContext);
+        ImGui_ImplOpenGL3_Init(runner.Impl_GlslVersion().c_str());
     }
 
     void RunnerSdl2::Impl_CreateGlContext()
@@ -265,50 +259,79 @@ namespace HelloImGui
     }
     void RunnerSdl2::Impl_InitGlLoader() { gOpenGlSetupSdl.InitGlLoader(); }
     void RunnerSdl2::Impl_Select_Gl_Version() { gOpenGlSetupSdl.SelectOpenGlVersion(); }
-    std::string RunnerSdl2::Impl_GlslVersion() { return gOpenGlSetupSdl.GlslVersion(); }
+    std::string RunnerSdl2::Impl_GlslVersion() const { return gOpenGlSetupSdl.GlslVersion(); }
 #endif // HELLOIMGUI_HAS_OPENGL
 
 #ifdef HELLOIMGUI_HAS_METAL
-    void RunnerSdl2::Impl_InitRenderBackendCallbacks()
+    void Impl_LinkPlatformAndRenderBackends_SdlMetal(const RunnerSdl2& runner)
     {
-        mRenderingBackendCallbacks = CreateBackendCallbacks_SdlMetal();
-    }
-    void RunnerSdl2::Impl_LinkPlatformAndRenderBackends()
-    {
-        PrepareSdlForMetal((SDL_Window*)mWindow, params.rendererBackendOptions);
+        PrepareSdlForMetal((SDL_Window*)runner.mWindow, runner.params.rendererBackendOptions);
     }
 #endif
 #ifdef HELLOIMGUI_HAS_VULKAN
-    void RunnerSdl2::Impl_InitRenderBackendCallbacks()
+    void Impl_LinkPlatformAndRenderBackends_SdlVulkan(const RunnerSdl2& runner)
     {
-        mRenderingBackendCallbacks = CreateBackendCallbacks_SdlVulkan();
-    }
-    void RunnerSdl2::Impl_LinkPlatformAndRenderBackends()
-    {
-        PrepareSdlForVulkan((SDL_Window*)mWindow);
+        PrepareSdlForVulkan((SDL_Window*)runner.mWindow);
     }
 #endif
 #ifdef HELLOIMGUI_HAS_DIRECTX11
-    void RunnerSdl2::Impl_InitRenderBackendCallbacks()
+    void Impl_LinkPlatformAndRenderBackends_SdlDirectX11(const RunnerSdl2& runner)
     {
-        mRenderingBackendCallbacks = CreateBackendCallbacks_SdlDx11();
-    }
-    void RunnerSdl2::Impl_LinkPlatformAndRenderBackends()
-    {
-        PrepareSdlForDx11((SDL_Window*)mWindow);
+        PrepareSdlForDx11((SDL_Window*)runner.mWindow);
     }
 #endif
 #ifdef HELLOIMGUI_HAS_DIRECTX12
-    void RunnerSdl2::Impl_InitRenderBackendCallbacks()
+    void Impl_LinkPlatformAndRenderBackends_SdlDirectX12(const RunnerSdl2& runner)
     {
-        mRenderingBackendCallbacks = CreateBackendCallbacks_SdlDx12();
-    }
-    void RunnerSdl2::Impl_LinkPlatformAndRenderBackends()
-    {
-        PrepareSdlForDx12((SDL_Window*)mWindow);
+        PrepareSdlForDx12((SDL_Window*)runner.mWindow);
     }
 #endif
 
-    }  // namespace HelloImGui
+    void RunnerSdl2::Impl_LinkPlatformAndRenderBackends()
+    {
+        auto& self = *this;
+        if (params.rendererBackendType == HelloImGui::RendererBackendType::OpenGL3)
+        {
+            #ifdef HELLOIMGUI_HAS_OPENGL
+                Impl_LinkPlatformAndRenderBackends_SdlOpenGl(self);
+            #else
+                IM_ASSERT(false && "OpenGL3 backend not available");
+            #endif
+        }
+        else if (params.rendererBackendType == HelloImGui::RendererBackendType::Metal)
+        {
+            #ifdef HELLOIMGUI_HAS_METAL
+                Impl_LinkPlatformAndRenderBackends_SdlMetal(self);
+            #else
+                IM_ASSERT(false && "Metal backend not available");
+            #endif
+        }
+        else if (params.rendererBackendType == HelloImGui::RendererBackendType::Vulkan)
+        {
+            #ifdef HELLOIMGUI_HAS_VULKAN
+                Impl_LinkPlatformAndRenderBackends_SdlVulkan(self);
+            #else
+                IM_ASSERT(false && "Vulkan backend not available");
+            #endif
+        }
+        else if (params.rendererBackendType == HelloImGui::RendererBackendType::DirectX11)
+        {
+            #ifdef HELLOIMGUI_HAS_DIRECTX11
+                Impl_LinkPlatformAndRenderBackends_SdlDirectX11(self);
+            #else
+                IM_ASSERT(false && "DirectX11 backend not available");
+            #endif
+        }
+        else if (params.rendererBackendType == HelloImGui::RendererBackendType::DirectX12)
+        {
+            #ifdef HELLOIMGUI_HAS_DIRECTX12
+                Impl_LinkPlatformAndRenderBackends_SdlDirectX12(self);
+            #else
+                IM_ASSERT(false && "DirectX12 backend not available");
+            #endif
+        }
+    }
+
+}  // namespace HelloImGui
 
 #endif  // #ifdef HELLOIMGUI_USE_SDL

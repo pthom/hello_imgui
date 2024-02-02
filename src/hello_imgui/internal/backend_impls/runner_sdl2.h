@@ -32,22 +32,15 @@ namespace HelloImGui
         void Impl_LinkPlatformAndRenderBackends() override;
         // Specific to OpenGL
         #ifdef HELLOIMGUI_HAS_OPENGL
+        public:
             void Impl_Select_Gl_Version() override;
-            std::string Impl_GlslVersion() override;
+            std::string Impl_GlslVersion() const override;
             void Impl_CreateGlContext() override;
             void Impl_InitGlLoader() override;
         #endif
 
-        //
-        // Rendering backend (OpenGL, ...): Impl_InitRenderBackendCallbacks will fill the callbacks
-        //
-        void Impl_InitRenderBackendCallbacks() override;
-
-
     public:
         bool priv_HandleMobileDeviceEvent(unsigned int sdl_EventType);
-
-       private:
         SDL_GLContext mGlContext = nullptr;
     };
 

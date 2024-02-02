@@ -1,6 +1,7 @@
 #include "hello_imgui/image_from_asset.h"
 
 #include "hello_imgui/internal/image_abstract.h"
+#include "hello_imgui/hello_imgui.h"
 #include "image_opengl.h"
 #include "image_dx11.h"
 #include "image_metal.h"
@@ -8,6 +9,7 @@
 
 #include "hello_imgui/image_from_asset.h"
 #include "hello_imgui/hello_imgui_assets.h"
+#include "hello_imgui/runner_params.h"
 #include "imgui.h"
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/hello_imgui_logger.h"
@@ -41,19 +43,27 @@ namespace HelloImGui
         if (gImageFromAssetMap.find(assetPath) != gImageFromAssetMap.end())
             return gImageFromAssetMap.at(assetPath);
 
+        HelloImGui::RendererBackendType rendererBackendType = HelloImGui::GetRunnerParams()->rendererBackendType;
         ImageAbstractPtr concreteImage;
-#ifdef HELLOIMGUI_HAS_OPENGL
-        concreteImage = std::make_shared<ImageOpenGl>();
-#elif defined(HELLOIMGUI_HAS_DIRECTX11)
-        concreteImage = std::make_shared<ImageDx11>();
-#elif defined(HELLOIMGUI_HAS_METAL)
-        concreteImage = std::make_shared<ImageMetal>();
-#elif defined(HELLOIMGUI_HAS_VULKAN)
-        concreteImage = std::make_shared<ImageVulkan>();
-#else
-        HelloImGui::Log(LogLevel::Warning, "ImageFromAsset: not implemented for this rendering backend!");
-        concreteImage = nullptr;
-#endif
+
+        #ifdef HELLOIMGUI_HAS_OPENGL
+            if (rendererBackendType == RendererBackendType::OpenGL3)
+                concreteImage = std::make_shared<ImageOpenGl>();
+        #endif
+        #if defined(HELLOIMGUI_HAS_METAL)
+            if (rendererBackendType == RendererBackendType::Metal)
+                concreteImage = std::make_shared<ImageMetal>();
+        #endif
+        #if defined(HELLOIMGUI_HAS_VULKAN)
+            if (rendererBackendType == RendererBackendType::Vulkan)
+                concreteImage = std::make_shared<ImageVulkan>();
+        #endif
+        #if defined(HELLOIMGUI_HAS_DIRECTX11)
+            if (rendererBackendType == RendererBackendType::DirectX11)
+                concreteImage = std::make_shared<ImageDx11>();
+        #endif
+        if (concreteImage == nullptr)
+            HelloImGui::Log(LogLevel::Warning, "ImageFromAsset: not implemented for this rendering backend!");
         gImageFromAssetMap[assetPath] = concreteImage;
 
         if (concreteImage != nullptr)

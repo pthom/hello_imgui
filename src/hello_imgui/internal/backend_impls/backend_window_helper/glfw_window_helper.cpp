@@ -6,7 +6,7 @@
 
 namespace HelloImGui { namespace BackendApi
 {
-    WindowPointer GlfwWindowHelper::CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& /*backendOptions*/)
+    WindowPointer GlfwWindowHelper::CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions)
     {
         auto searchMonitorResult = SearchForMonitor(GetMonitorsWorkAreas(), appWindowParams);
         int realMonitorIdx = searchMonitorResult.monitorIdx;
@@ -67,9 +67,10 @@ namespace HelloImGui { namespace BackendApi
         // info.backend3DMode: not handled here
 
         // Note: This is RenderingCallbacks_Impl_Hint_WindowingBackend
-#if defined(HELLOIMGUI_HAS_VULKAN) || defined(HELLOIMGUI_HAS_METAL) || defined(HELLOIMGUI_HAS_DIRECTX11) || defined(HELLOIMGUI_HAS_DIRECTX12)
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-#endif
+        if (backendOptions.rendererBackendType != RendererBackendType::OpenGL3)
+        {
+            glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        }
 
         if (appWindowParams.borderless)
             glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);

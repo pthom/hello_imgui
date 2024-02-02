@@ -5,20 +5,48 @@
 #include "hello_imgui/docking_params.h"
 #include "hello_imgui/backend_pointers.h"
 #include "hello_imgui/renderer_backend_options.h"
-
-
 #include <vector>
+
+// #define HELLOIMGUI_DISABLE_OBSOLETE_BACKEND
 
 namespace HelloImGui
 {
 
+// --------------------------------------------------------------------------------------------------------------------
+
+// @@md#BackendType
+
+// You can select the platform backend type (SDL, GLFW) and the rendering backend type
+// via RunnerParams.backendType and RunnerParams.renderingBackendType.
+
 // Platform backend type (SDL, GLFW)
-enum class BackendType
+// They are listed in the order of preference when FirstAvailable is selected.
+enum class PlatformBackendType
 {
     FirstAvailable,
-    Sdl,
     Glfw,
+    Sdl,
 };
+
+#ifndef HELLOIMGUI_DISABLE_OBSOLETE_BACKEND
+using BackendType = PlatformBackendType; // for backward compatibility
+#endif
+
+// Rendering backend type (OpenGL3, Metal, Vulkan, DirectX11, DirectX12)
+// They are listed in the order of preference when FirstAvailable is selected.
+enum class RendererBackendType
+{
+    FirstAvailable,
+    OpenGL3,
+    Metal,
+    Vulkan,
+    DirectX11,
+    DirectX12,
+};
+
+// @@md
+
+// --------------------------------------------------------------------------------------------------------------------
 
 // @@md#IniFolderType
 
@@ -72,6 +100,7 @@ std::string IniFolderLocation(IniFolderType iniFolderType);
 
 // @@md
 
+// --------------------------------------------------------------------------------------------------------------------
 
 // @@md#FpsIdling
 
@@ -90,7 +119,7 @@ struct FpsIdling
     float fpsIdle = 9.f;
 
     // `enableIdling`: _bool, default=true_.
-    //  Set this to false to disable idling 
+    //  Disable idling by setting this to false.
     //  (this can be changed dynamically during execution)
     bool  enableIdling = true;
 
@@ -105,6 +134,7 @@ struct FpsIdling
 };
 // @@md
 
+// --------------------------------------------------------------------------------------------------------------------
 
 // @@md#RunnerParams
 
@@ -151,10 +181,18 @@ struct RunnerParams
     // These pointers will be filled when the application starts
     BackendPointers backendPointers;
 
-    // `backendType`: _enum BackendType, default=BackendType::FirstAvailable_
+    // `backendType`: _enum BackendType, default=PlatformBackendType::FirstAvailable_
     // Select the wanted platform backend type between `Sdl`, `Glfw`.
+    // if `FirstAvailable`, Glfw will be preferred over Sdl when both are available.
     // Only useful when multiple backend are compiled and available.
-    BackendType backendType = BackendType::FirstAvailable;
+    // (for compatibility with older versions, you can use BackendType instead of PlatformBackendType)
+    PlatformBackendType platformBackendType = PlatformBackendType::FirstAvailable;
+
+    // `renderingBackendType`: _enum RenderingBackendType, default=RenderingBackendType::FirstAvailable_
+    // Select the wanted rendering backend type between `OpenGL3`, `Metal`, `Vulkan`, `DirectX11`, `DirectX12`.
+    // if `FirstAvailable`, it will be selected in the order of preference mentioned above.
+    // Only useful when multiple rendering backend are compiled and available.
+    RendererBackendType rendererBackendType = RendererBackendType::FirstAvailable;
 
     // `rendererBackendOptions`: _see renderer_backend_options.h_
     // Options for the renderer backend
@@ -219,6 +257,11 @@ struct RunnerParams
     // Set the application refresh rate
     // (only used on emscripten: 0 stands for "let the app or the browser decide")
     int emscripten_fps = 0;
+
+    // --------------- Legacy -------------------`
+#ifndef HELLOIMGUI_DISABLE_OBSOLETE_BACKEND
+    PlatformBackendType& backendType = platformBackendType; // a synonym, for backward compatibility
+#endif
 };
 // @@md
 
@@ -236,6 +279,7 @@ void DeleteIniSettings(const RunnerParams& runnerParams);
 
 // @@md
 
+// --------------------------------------------------------------------------------------------------------------------
 
 // @@md#SimpleRunnerParams
 
@@ -281,7 +325,9 @@ struct SimpleRunnerParams
     float fpsIdle = 9.f;
 
     // `enableIdling`: _bool, default=true_.
-    //  Set this to false to disable idling at startup
+    //  Disable idling at startup by setting this to false
+    //  When running, use:
+    //      HelloImGui::GetRunnerParams()->fpsIdling.enableIdling = false;
     bool  enableIdling = true;
 
     RunnerParams ToRunnerParams() const;

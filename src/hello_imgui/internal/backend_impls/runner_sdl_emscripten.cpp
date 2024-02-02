@@ -1,4 +1,4 @@
-#include "runner_emscripten.h"
+#include "runner_sdl_emscripten.h"
 #include <iostream>
 #ifdef __EMSCRIPTEN__
 
@@ -6,7 +6,7 @@
 
 namespace HelloImGui
 {
-    RunnerEmscripten* gRunnerEmscripten = nullptr;
+    RunnerSdlEmscripten* gRunnerEmscripten = nullptr;
 
     void emscripten_imgui_main_loop(void* arg)
     {
@@ -14,10 +14,10 @@ namespace HelloImGui
         gRunnerEmscripten->CreateFramesAndRender();
     }
 
-    void RunnerEmscripten::Run()
+    void RunnerSdlEmscripten::Run()
     {
         #if defined(HELLOIMGUI_WITH_TEST_ENGINE) && !defined(HELLOIMGUI_EMSCRIPTEN_PTHREAD)
-            printf("RunnerEmscripten::Run Disabling useImGuiTestEngine since compiled without pthread\n");
+            printf("RunnerSdlEmscripten::Run Disabling useImGuiTestEngine since compiled without pthread\n");
             params.useImGuiTestEngine = false;
         #endif
 
@@ -35,7 +35,7 @@ namespace HelloImGui
         emscripten_set_main_loop_arg(emscripten_imgui_main_loop, NULL, params.emscripten_fps, true);
     }
 
-    void RunnerEmscripten::Impl_Select_Gl_Version()
+    void RunnerSdlEmscripten::Impl_Select_Gl_Version()
     {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -43,14 +43,14 @@ namespace HelloImGui
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
     }
 
-    std::string RunnerEmscripten::Impl_GlslVersion()
+    std::string RunnerSdlEmscripten::Impl_GlslVersion() const
     {
         const char* glsl_version = "#version 300 es";
         //const char* glsl_version = "#version 100";
         return glsl_version;
     }
 
-    void RunnerEmscripten::Impl_InitGlLoader() {}
+    void RunnerSdlEmscripten::Impl_InitGlLoader() {}
 
 }  // namespace HelloImGui
 

@@ -110,10 +110,17 @@ struct RunnerParams
     // These pointers will be filled when the application starts
     BackendPointers backendPointers;
 
-    // `backendType`: _enum BackendType, default=BackendType::FirstAvailable_
+    // `backendType`: _enum BackendType, default=PlatformBackendType::FirstAvailable_
     // Select the wanted platform backend type between `Sdl`, `Glfw`.
+    // if `FirstAvailable`, Glfw will be preferred over Sdl when both are available.
     // Only useful when multiple backend are compiled and available.
-    BackendType backendType = BackendType::FirstAvailable;
+    PlatformBackendType backendType = PlatformBackendType::FirstAvailable;
+
+    // `rendererBackendType`: _enum RendererBackendType, default=RendererBackendType::FirstAvailable_
+    // Select the wanted rendering backend type between `OpenGL3`, `Metal`, `Vulkan`, `DirectX11`, `DirectX12`.
+    // if `FirstAvailable`, it will be selected in the order of preference mentioned above.
+    // Only useful when multiple rendering backend are compiled and available.
+    RendererBackendType rendererBackendType = RendererBackendType::FirstAvailable;
 
     // `rendererBackendOptions`: _see renderer_backend_options.h_
     // Options for the renderer backend
@@ -181,6 +188,39 @@ struct RunnerParams
 };
 ```
 
+### Backend selection
+
+
+```cpp
+
+// You can select the platform backend type (SDL, GLFW) and the rendering backend type
+// via RunnerParams.backendType and RunnerParams.rendererBackendType.
+
+// Platform backend type (SDL, GLFW)
+// They are listed in the order of preference when FirstAvailable is selected.
+enum class PlatformBackendType
+{
+    FirstAvailable,
+    Glfw,
+    Sdl,
+};
+
+using BackendType = PlatformBackendType; // for backward compatibility
+
+// Rendering backend type (OpenGL3, Metal, Vulkan, DirectX11, DirectX12)
+// They are listed in the order of preference when FirstAvailable is selected.
+enum class RendererBackendType
+{
+    FirstAvailable,
+    OpenGL3,
+    Metal,
+    Vulkan,
+    DirectX11,
+    DirectX12,
+};
+
+```
+
 
 # Fps Idling
 
@@ -203,7 +243,7 @@ struct FpsIdling
     float fpsIdle = 9.f;
 
     // `enableIdling`: _bool, default=true_.
-    //  Set this to false to disable idling 
+    //  Disable idling by setting this to false.
     //  (this can be changed dynamically during execution)
     bool  enableIdling = true;
 

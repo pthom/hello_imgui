@@ -1,5 +1,12 @@
 Version numbers are synced between hello_imgui and imgui_bundle.
 
+# v1.4.2
+
+* Integration with vcpkg ongoing (see [PR](https://github.com/microsoft/vcpkg/pull/36501))
+* Reviewed CMake backend selection process
+You can now build with several rendering backends and several platform backends at the same time.
+* Work on vcpk packaging
+
 # v1.4.0
 
 ## Vcpkg support for dependencies

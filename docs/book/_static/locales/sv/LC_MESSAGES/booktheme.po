@@ -8,68 +8,68 @@ msgstr ""
 "Language: sv\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "Download source file"
-msgstr "Ladda ner källfil"
-
 msgid "suggest edit"
-msgstr "föreslå ändring"
-
-msgid "Toggle navigation"
-msgstr "Växla navigering"
-
-msgid "open issue"
-msgstr "öppna problemrapport"
-
-msgid "Download notebook file"
-msgstr "Ladda ner notebook-fil"
-
-msgid "repository"
-msgstr "repositorium"
-
-msgid "Theme by the"
-msgstr "Tema av"
-
-msgid "Print to PDF"
-msgstr "Skriv ut till PDF"
-
-msgid "Download this page"
-msgstr "Ladda ner den här sidan"
-
-msgid "Copyright"
-msgstr "Upphovsrätt"
+msgstr "föreslå redigering"
 
 msgid "Last updated on"
 msgstr "Senast uppdaterad den"
 
-msgid "Launch"
-msgstr "Öppna"
-
-msgid "Open an issue"
-msgstr "Öppna en problemrapport"
-
-msgid "Fullscreen mode"
-msgstr "Fullskärmsläge"
-
-msgid "Sphinx Book Theme"
-msgstr "Sphinx Boktema"
-
-msgid "Contents"
-msgstr "Innehåll"
-
 msgid "Edit this page"
 msgstr "Redigera den här sidan"
+
+msgid "Launch"
+msgstr "Lansera"
+
+msgid "Print to PDF"
+msgstr "Skriv ut till PDF"
+
+msgid "open issue"
+msgstr "öppet problem"
+
+msgid "Download notebook file"
+msgstr "Ladda ner anteckningsbokfilen"
+
+msgid "Toggle navigation"
+msgstr "Växla navigering"
+
+msgid "Source repository"
+msgstr "Källförvar"
+
+msgid "By the"
+msgstr "Vid"
 
 msgid "next page"
 msgstr "nästa sida"
 
-msgid "Source repository"
-msgstr "Källkodsrepositorium"
+msgid "repository"
+msgstr "förvar"
+
+msgid "Sphinx Book Theme"
+msgstr "Sphinx boktema"
+
+msgid "Download source file"
+msgstr "Ladda ner källfil"
+
+msgid "Contents"
+msgstr "Innehåll"
 
 msgid "By"
-msgstr "Av"
+msgstr "Förbi"
 
-msgid "By the"
-msgstr "Av den"
+msgid "Copyright"
+msgstr "upphovsrätt"
+
+msgid "Fullscreen mode"
+msgstr "Fullskärmsläge"
+
+msgid "Open an issue"
+msgstr "Öppna ett problem"
 
 msgid "previous page"
 msgstr "föregående sida"
+
+msgid "Download this page"
+msgstr "Ladda ner den här sidan"
+
+msgid "Theme by the"
+msgstr "Tema av"

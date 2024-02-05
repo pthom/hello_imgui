@@ -278,6 +278,14 @@ float FrameRate(float durationForMean = 0.5f);
 //  of ImGuiTestEngine that was initialized by HelloImGui
 //  (iif ImGui Test Engine is active).
 ImGuiTestEngine* GetImGuiTestEngine();
+
+// `GetBackendDescription()`: returns a string with the backend info
+// Could be for example:
+//     "Glfw - OpenGL3"
+//     "Glfw - Metal"
+//     "Sdl - Vulkan"
+std::string GetBackendDescription();
+
 ```
 
 ----

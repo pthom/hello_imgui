@@ -240,6 +240,8 @@ struct RunnerParams
     FpsIdling fpsIdling;
 
     // --------------- DPI Handling -----------
+    // Hello ImGui will try its best to automatically handle DPI scaling for you.
+    // If it fails, look at DpiAwareParams (and the corresponding Ini file settings)
     DpiAwareParams dpiAwareParams;
 
     // --------------- Misc -------------------

@@ -17,12 +17,6 @@ class _ <free functions> {
 _ --> SimpleRunnerParams: uses
 _ --> RunnerParams: or uses
 
-enum BackendType <enum>{
-    + FirstAvailable
-    + Sdl
-    + Glfw
-    + Qt
-}
 
 class FpsIdling<struct> {
     float fpsIdle = 9
@@ -35,14 +29,23 @@ class RunnerParams <struct> {
     + RunnerCallbacks callbacks
     + AppWindowParams appWindowParams
     + ImGuiWindowParams imGuiWindowParams
+    ---
     + DockingParams dockingParams
+    + vector<DockingParams> alternativeDockingLayouts
+    ---
     + BackendPointers backendPointers
-    + BackendType backendType = FirstAvailable
+    + RendererBackendOptions rendererBackendOptions
+    + PlatformBackendType platformBackendType
+    + RendererBackendType rendererBackendType
+    ---
     + FpsIdling fpsIdling
-
+    + DpiAwareParams dpiAwareParams
+    ---
+    + iniFolderType
     + iniFilename = ""
     + bool iniFilename_useAppWindowTitle = true
-
+    ---
+    ---
     + bool appShallExit = false
 }
 
@@ -97,6 +100,35 @@ class MobileCallbacks <struct>{
     + VoidFunction OnResume = {}
 }
 RunnerCallbacks *-- MobileCallbacks
+
+enum PlatformBackendType {
+    FirstAvailable,
+    Glfw,
+    Sdl,
+}
+
+RunnerParams +-- PlatformBackendType
+
+enum RendererBackendType {
+    FirstAvailable,
+    OpenGL3,
+    Metal,
+    Vulkan,
+    DirectX11,
+    DirectX12,
+}
+
+RunnerParams +-- RendererBackendType
+
+
+class DpiAwareParams {
+    + float dpiWindowSizeFactor = 0.0f;
+    + float fontRenderingScale = 0.0f;
+    + float DpiFontLoadingFactor()
+}
+
+RunnerParams +-- DpiAwareParams
+
 
 enum FullScreenMode <enum>{
     + NoFullScreen
@@ -228,7 +260,6 @@ class DockingSplit <struct> {
 }
 
 RunnerParams *-- FpsIdling
-RunnerParams *-- BackendType
 RunnerParams *-- RunnerCallbacks
 RunnerParams *-- AppWindowParams
 RunnerParams *-- ImGuiWindowParams

@@ -148,7 +148,7 @@ struct EdgeInsets
 // @@md#AppWindowParams
 //
 // AppWindowParams is a struct that defines the application window display params.
-//See https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png
+//See https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg
 // for details.
 struct AppWindowParams
 {

@@ -182,6 +182,10 @@ struct RunnerParams
     // These pointers will be filled when the application starts
     BackendPointers backendPointers;
 
+    // `rendererBackendOptions`: _see renderer_backend_options.h_
+    // Options for the renderer backend
+    RendererBackendOptions rendererBackendOptions;
+
     // `backendType`: _enum BackendType, default=PlatformBackendType::FirstAvailable_
     // Select the wanted platform backend type between `Sdl`, `Glfw`.
     // if `FirstAvailable`, Glfw will be preferred over Sdl when both are available.
@@ -195,9 +199,6 @@ struct RunnerParams
     // Only useful when multiple rendering backend are compiled and available.
     RendererBackendType rendererBackendType = RendererBackendType::FirstAvailable;
 
-    // `rendererBackendOptions`: _see renderer_backend_options.h_
-    // Options for the renderer backend
-    RendererBackendOptions rendererBackendOptions;
 
 
     // --------------- Settings -------------------

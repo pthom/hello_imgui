@@ -5,6 +5,7 @@
 #include "hello_imgui/docking_params.h"
 #include "hello_imgui/backend_pointers.h"
 #include "hello_imgui/renderer_backend_options.h"
+#include "hello_imgui/dpi_aware.h"
 #include <vector>
 
 // #define HELLOIMGUI_DISABLE_OBSOLETE_BACKEND
@@ -238,6 +239,8 @@ struct RunnerParams
     // (set fpsIdling.enableIdling to false to disable Idling)
     FpsIdling fpsIdling;
 
+    // --------------- DPI Handling -----------
+    DpiAwareParams dpiAwareParams;
 
     // --------------- Misc -------------------
 

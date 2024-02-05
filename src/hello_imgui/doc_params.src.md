@@ -16,6 +16,8 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 @import "runner_params.h" {md_id=SimpleRunnerParams}
 ```
 
+---
+
 ## Full params
 
 ```cpp
@@ -29,16 +31,6 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 @import "runner_params.h" {md_id=BackendType}
 ```
 
-
-# Fps Idling
-
-See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h).
-
-```cpp
-@import "runner_params.h" {md_id=FpsIdling}
-```
-
-----
 
 # Runner callbacks
 
@@ -116,6 +108,22 @@ See [imgui_window_params.h](https://github.com/pthom/hello_imgui/blob/master/src
 
 ```cpp
 @import "imgui_window_params.h" {md_id=DefaultImGuiWindowType}
+```
+
+# Fps Idling
+
+See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h).
+
+```cpp
+@import "runner_params.h" {md_id=FpsIdling}
+```
+
+# Dpi Aware Params
+
+See [dpi_aware.h](ttps://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/dpi_aware.h)
+
+```cpp
+@import "dpi_aware.h" {md_id=DpiAwareParams}
 ```
 
 ----

@@ -37,16 +37,6 @@ public:
     // For jupyter notebook, which displays a screenshot post execution
     ImageBuffer ScreenshotRgb() { return mRenderingBackendCallbacks->Impl_ScreenshotRgb_3D(); }
 
-    //
-    // Dpi related methods
-    //
-    // DpiWindowSizeFactor() is the factor by which window size should be multiplied to get a similar visible size on different OSes.
-    // It returns ApplicationScreenPixelPerInch / 96  under windows and linux. Under macOS, it will return 1.
-    float DpiWindowSizeFactor();
-    // If we want a font to visually render like a font size of 14 we need to multiply its size by this factor
-    float DpiFontLoadingFactor();
-    // returns the default value that should be stored inside `ImGui::GetIO().FontGlobalScale`
-    static float ImGuiDefaultFontGlobalScale();
 
     void LayoutSettings_SwitchLayout(const std::string& layoutName);
 
@@ -92,6 +82,7 @@ private:
     void SetImGuiPrefs();
     void InitRenderBackendCallbacks();
 
+    void SetupDpiAwareParams();
     void PrepareWindowGeometry();
     void HandleDpiOnSecondFrame();
     void ReloadFontIfFailed() const;

@@ -6,6 +6,7 @@
 #include "hello_imgui/internal/hello_imgui_ini_settings.h"
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/internal/platform/ini_folder_locations.h"
+#include "hello_imgui/internal/inicpp.h"
 #include "imgui.h"
 
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
@@ -24,6 +25,7 @@
 #include <cassert>
 #include <filesystem>
 #include <cstdio>
+#include <optional>
 
 #if __APPLE__
 #include <TargetConditionals.h>
@@ -175,57 +177,176 @@ bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi()
     return shallSizeRelativeTo96Ppi;
 }
 
-float AbstractRunner::ImGuiDefaultFontGlobalScale()
-{
-    float fontSizeIncreaseFactor = 1.f;
 
-#ifdef __EMSCRIPTEN__
-    // Query the brower to ask for devicePixelRatio
-    double windowDevicePixelRatio = EM_ASM_DOUBLE( {
-        scale = window.devicePixelRatio;
-        return scale;
+void ReadDpiAwareParams(const std::string& appIniSettingLocation, DpiAwareParams* dpiAwareParams)
+{
+    // cf dpi_aware.h
+    //
+    // Hello ImGui will try its best to automatically handle DPI scaling for you.
+    // It does this by setting two values:
+    //
+    // - `dpiWindowSizeFactor`:
+    //        factor by which window size should be multiplied
+    //
+    // - `fontRenderingScale`:
+    //     factor by which fonts glyphs should be scaled at rendering time
+    //     (typically 1 on windows, and 0.5 on macOS retina screens)
+    //
+    //    By default, Hello ImGui will compute them automatically,
+    //    when dpiWindowSizeFactor and fontRenderingScale are set to 0.
+    //
+    // How to set those values manually:
+    // ---------------------------------
+    // If it fails (i.e. your window and/or fonts are too big or too small),
+    // you may set them manually:
+    //    (1) Either by setting them programmatically in your application
+    //        (set their values in `runnerParams.dpiAwareParams`)
+    //    (2) Either by setting them in the app ini file
+    //    (3) Either by setting them in a `hello_imgui.ini` file in the current folder, or any of its parent folders.
+    //       (this is useful when you want to set them for a specific app or set of apps, without modifying the app code)
+    // Note: if several methods are used, the order of priority is (1) > (2) > (3)
+    //
+    // Example content of a ini file:
+    // ------------------------------
+    //     [DpiAwareParams]
+    //     dpiWindowSizeFactor=2
+    //     fontRenderingScale=0.5
+    //
+
+    auto folderAndAllParents = [](const std::string& folder) -> std::vector<std::string>
+    {
+        std::vector<std::string> result;
+        std::string currentFolder = folder;
+        while (true)
+        {
+            result.push_back(currentFolder);
+            std::filesystem::path p(currentFolder);
+            if (p.has_parent_path() && (p.parent_path() != p))
+                currentFolder = p.parent_path().string();
+            else
+                break;
+        }
+        return result;
+    };
+
+    auto readIniFloatValue = []
+        (const std::string& iniFilePath, const std::string& sectionName, const std::string& valuNeame) -> std::optional<float>
+    {
+        if (! std::filesystem::exists(iniFilePath))
+            return std::nullopt;
+        if (! std::filesystem::is_regular_file(iniFilePath))
+            return std::nullopt;
+
+        try
+        {
+            std::optional<float> result;
+            ini::IniFile ini;
+            ini.load(iniFilePath);
+            if (ini.find(sectionName) != ini.end())
+            {
+                auto& section = ini.at(sectionName);
+                if (section.find(valuNeame) != section.end())
+                    result =  ini[sectionName][valuNeame].as<float>();
+            }
+            return result;
+        }
+        catch(...)
+        {
+            return std::nullopt;
+        }
+    };
+
+    auto allIniFilesToSearch = [&]() -> std::vector<std::string>
+    {
+        std::vector<std::string> allIniFileToSearch;
+        allIniFileToSearch.push_back(appIniSettingLocation);
+
+        std::string currentFolder = std::filesystem::current_path().string();
+        for (const auto& folder: folderAndAllParents(currentFolder))
+            allIniFileToSearch.push_back(folder + "/hello_imgui.ini");
+
+        return allIniFileToSearch;
+    };
+
+    std::vector<std::string> allIniFiles = allIniFilesToSearch();
+
+    if (dpiAwareParams->dpiWindowSizeFactor == 0.f)
+    {
+        for (const auto& iniFile: allIniFiles)
+        {
+            auto dpiWindowSizeFactor = readIniFloatValue(iniFile, "DpiAwareParams", "dpiWindowSizeFactor");
+            if (dpiWindowSizeFactor.has_value())
+            {
+                dpiAwareParams->dpiWindowSizeFactor = dpiWindowSizeFactor.value();
+                break;
+            }
+        }
     }
-    );
-    printf("window.devicePixelRatio=%lf\n", windowDevicePixelRatio);
 
-    fontSizeIncreaseFactor = windowDevicePixelRatio;
-#endif
-#ifdef HELLOIMGUI_MACOS
-    // Crisp fonts on macOS:
-    // cf https://github.com/ocornut/imgui/issues/5301
-    // Issue with macOS is that it pretends screen has 2x fewer pixels than it actually does.
-    // This simplifies application development in most cases, but in our case we happen to render fonts at 1x scale
-    // while screen renders at 2x scale.
-    fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
-#endif
-
-    float defaultFontGlobalScale = 1.0f / fontSizeIncreaseFactor;
-    return defaultFontGlobalScale;
+    if (dpiAwareParams->fontRenderingScale == 0.f)
+    {
+        for (const auto& iniFile: allIniFiles)
+        {
+            auto fontRenderingScale = readIniFloatValue(iniFile, "DpiAwareParams", "fontRenderingScale");
+            if (fontRenderingScale.has_value())
+            {
+                dpiAwareParams->fontRenderingScale = fontRenderingScale.value();
+                break;
+            }
+        }
+    }
 }
 
-float AbstractRunner::DpiWindowSizeFactor()
+
+void AbstractRunner::SetupDpiAwareParams()
 {
-#ifdef HELLOIMGUI_HAS_DIRECTX11
-    return 1.f; // The current implementation of Dx11 backend does  not support changing the window size
-#endif
-    float r = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
-    return r;
+    ReadDpiAwareParams(IniSettingsLocation(params), &params.dpiAwareParams);
+    if (params.dpiAwareParams.dpiWindowSizeFactor == 0.f)
+    {
+        #ifdef HELLOIMGUI_HAS_DIRECTX11
+            // The current implementation of Dx11 backend does  not support changing the window size
+            params.dpiAwareParams.dpiWindowSizeFactor = 1.f;
+        #endif
+        params.dpiAwareParams.dpiWindowSizeFactor = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
+    }
+
+    if (params.dpiAwareParams.fontRenderingScale == 0.f)
+    {
+        float fontSizeIncreaseFactor = 1.f;
+
+        #ifdef __EMSCRIPTEN__
+            // Query the brower to ask for devicePixelRatio
+            double windowDevicePixelRatio = EM_ASM_DOUBLE( {
+                scale = window.devicePixelRatio;
+                return scale;
+            }
+            );
+            printf("window.devicePixelRatio=%lf\n", windowDevicePixelRatio);
+
+            fontSizeIncreaseFactor = windowDevicePixelRatio;
+        #endif
+        #ifdef HELLOIMGUI_MACOS
+            // Crisp fonts on macOS:
+            // cf https://github.com/ocornut/imgui/issues/5301
+            // Issue with macOS is that it pretends screen has 2x fewer pixels than it actually does.
+            // This simplifies application development in most cases, but in our case we happen to render fonts at 1x scale
+            // while screen renders at 2x scale.
+            fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
+        #endif
+
+        params.dpiAwareParams.fontRenderingScale = 1.0f / fontSizeIncreaseFactor;
+    }
+
+    ImGui::GetIO().FontGlobalScale = params.dpiAwareParams.fontRenderingScale;
+    ImGui::GetIO().DisplayFramebufferScale = mBackendWindowHelper->GetWindowScaleFactor(mWindow);
 }
 
-
-// If we want a font to visually render like a font size of 14,
-// we need to multiply its size by this factor
-float AbstractRunner::DpiFontLoadingFactor()
-{
-    float k = DpiWindowSizeFactor() * 1.f / ImGui::GetIO().FontGlobalScale;
-    return k;
-}
 
 void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
 {
     if (ShallSizeWindowRelativeTo96Ppi())
     {
-        float scaleFactor = DpiWindowSizeFactor();
+        float scaleFactor = params.dpiAwareParams.dpiWindowSizeFactor;
         if (scaleFactor != 1.f)
         {
             auto bounds = mBackendWindowHelper->GetWindowBounds(mWindow);
@@ -263,7 +384,7 @@ void AbstractRunner::HandleDpiOnSecondFrame()
     
     // High DPI handling on windows & linux
     {
-        float dpiScale = DpiWindowSizeFactor();
+        float dpiScale =  params.dpiAwareParams.dpiWindowSizeFactor;
         if ( dpiScale > 1.f)
         {
             ImGuiStyle& style = ImGui::GetStyle();
@@ -516,7 +637,7 @@ void AbstractRunner::Setup()
 
     Impl_SetWindowIcon();
 
-    ImGui::GetIO().DisplayFramebufferScale = mBackendWindowHelper->GetWindowScaleFactor(mWindow);
+    SetupDpiAwareParams();
 
     // This should be done before Impl_LinkPlatformAndRenderBackends()
     // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks
@@ -541,8 +662,6 @@ void AbstractRunner::Setup()
     // load fonts & set ImGui::GetIO().FontGlobalScale
     //
     ImGui::GetIO().Fonts->Clear();
-    // (On macOS with HighDPI) FontGlobalScale may be set to 0.5
-    ImGui::GetIO().FontGlobalScale = this->ImGuiDefaultFontGlobalScale();
     // LoadAdditionalFonts will load fonts and resize them by 1./FontGlobalScale
     // (if and only if it uses HelloImGui::LoadFontTTF instead of ImGui's font loading functions)
     params.callbacks.LoadAdditionalFonts();

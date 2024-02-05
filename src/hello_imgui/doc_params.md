@@ -56,12 +56,16 @@ struct SimpleRunnerParams
     float fpsIdle = 9.f;
 
     // `enableIdling`: _bool, default=true_.
-    //  Set this to false to disable idling at startup
+    //  Disable idling at startup by setting this to false
+    //  When running, use:
+    //      HelloImGui::GetRunnerParams()->fpsIdling.enableIdling = false;
     bool  enableIdling = true;
 
     RunnerParams ToRunnerParams() const;
 };
 ```
+
+---
 
 ## Full params
 
@@ -114,9 +118,10 @@ struct RunnerParams
     // Select the wanted platform backend type between `Sdl`, `Glfw`.
     // if `FirstAvailable`, Glfw will be preferred over Sdl when both are available.
     // Only useful when multiple backend are compiled and available.
-    PlatformBackendType backendType = PlatformBackendType::FirstAvailable;
+    // (for compatibility with older versions, you can use BackendType instead of PlatformBackendType)
+    PlatformBackendType platformBackendType = PlatformBackendType::FirstAvailable;
 
-    // `rendererBackendType`: _enum RendererBackendType, default=RendererBackendType::FirstAvailable_
+    // `renderingBackendType`: _enum RenderingBackendType, default=RenderingBackendType::FirstAvailable_
     // Select the wanted rendering backend type between `OpenGL3`, `Metal`, `Vulkan`, `DirectX11`, `DirectX12`.
     // if `FirstAvailable`, it will be selected in the order of preference mentioned above.
     // Only useful when multiple rendering backend are compiled and available.
@@ -166,6 +171,8 @@ struct RunnerParams
     // (set fpsIdling.enableIdling to false to disable Idling)
     FpsIdling fpsIdling;
 
+    // --------------- DPI Handling -----------
+    DpiAwareParams dpiAwareParams;
 
     // --------------- Misc -------------------
 
@@ -185,6 +192,11 @@ struct RunnerParams
     // Set the application refresh rate
     // (only used on emscripten: 0 stands for "let the app or the browser decide")
     int emscripten_fps = 0;
+
+    // --------------- Legacy -------------------`
+#ifndef HELLOIMGUI_DISABLE_OBSOLETE_BACKEND
+    PlatformBackendType& backendType = platformBackendType; // a synonym, for backward compatibility
+#endif
 };
 ```
 
@@ -194,7 +206,7 @@ struct RunnerParams
 ```cpp
 
 // You can select the platform backend type (SDL, GLFW) and the rendering backend type
-// via RunnerParams.backendType and RunnerParams.rendererBackendType.
+// via RunnerParams.backendType and RunnerParams.renderingBackendType.
 
 // Platform backend type (SDL, GLFW)
 // They are listed in the order of preference when FirstAvailable is selected.
@@ -205,7 +217,9 @@ enum class PlatformBackendType
     Sdl,
 };
 
+#ifndef HELLOIMGUI_DISABLE_OBSOLETE_BACKEND
 using BackendType = PlatformBackendType; // for backward compatibility
+#endif
 
 // Rendering backend type (OpenGL3, Metal, Vulkan, DirectX11, DirectX12)
 // They are listed in the order of preference when FirstAvailable is selected.
@@ -221,44 +235,6 @@ enum class RendererBackendType
 
 ```
 
-
-# Fps Idling
-
-See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h).
-
-```cpp
-
-// FpsIdling is a struct that contains Fps Idling parameters
-struct FpsIdling
-{
-    // `fpsIdle`: _float, default=9_.
-    //  ImGui applications can consume a lot of CPU, since they update the screen
-    //  very frequently. In order to reduce the CPU usage, the FPS is reduced when
-    //  no user interaction is detected.
-    //  This is ok most of the time but if you are displaying animated widgets
-    //  (for example a live video), you may want to ask for a faster refresh:
-    //  either increase fpsIdle, or set it to 0 for maximum refresh speed
-    //  (you can change this value during the execution depending on your application
-    //  refresh needs)
-    float fpsIdle = 9.f;
-
-    // `enableIdling`: _bool, default=true_.
-    //  Disable idling by setting this to false.
-    //  (this can be changed dynamically during execution)
-    bool  enableIdling = true;
-
-    // `isIdling`: bool (dynamically updated during execution)
-    //  This bool will be updated during the application execution,
-    //  and will be set to true when it is idling.
-    bool  isIdling = false;
-
-    // `rememberEnableIdling`: _bool, default=true_.
-    //  If true, the last value of enableIdling is restored from the settings at startup.
-    bool  rememberEnableIdling = false;
-};
-```
-
-----
 
 # Runner callbacks
 
@@ -810,6 +786,115 @@ enum class DefaultImGuiWindowType
     // (except for ImGui's default "debug" window)
     NoDefaultWindow
 };
+```
+
+# Fps Idling
+
+See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h).
+
+```cpp
+
+// FpsIdling is a struct that contains Fps Idling parameters
+struct FpsIdling
+{
+    // `fpsIdle`: _float, default=9_.
+    //  ImGui applications can consume a lot of CPU, since they update the screen
+    //  very frequently. In order to reduce the CPU usage, the FPS is reduced when
+    //  no user interaction is detected.
+    //  This is ok most of the time but if you are displaying animated widgets
+    //  (for example a live video), you may want to ask for a faster refresh:
+    //  either increase fpsIdle, or set it to 0 for maximum refresh speed
+    //  (you can change this value during the execution depending on your application
+    //  refresh needs)
+    float fpsIdle = 9.f;
+
+    // `enableIdling`: _bool, default=true_.
+    //  Disable idling by setting this to false.
+    //  (this can be changed dynamically during execution)
+    bool  enableIdling = true;
+
+    // `isIdling`: bool (dynamically updated during execution)
+    //  This bool will be updated during the application execution,
+    //  and will be set to true when it is idling.
+    bool  isIdling = false;
+
+    // `rememberEnableIdling`: _bool, default=true_.
+    //  If true, the last value of enableIdling is restored from the settings at startup.
+    bool  rememberEnableIdling = false;
+};
+```
+
+# Dpi Aware Params
+
+See [dpi_aware.h](ttps://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/dpi_aware.h)
+
+```cpp
+
+//
+// Hello ImGui will try its best to automatically handle DPI scaling for you.
+// It does this by setting two values:
+//
+// - `dpiWindowSizeFactor`:
+//        factor by which window size should be multiplied
+//
+// - `fontRenderingScale`:
+//     factor by which fonts glyphs should be scaled at rendering time
+//     (typically 1 on windows, and 0.5 on macOS retina screens)
+//
+//    By default, Hello ImGui will compute them automatically,
+//    when dpiWindowSizeFactor and fontRenderingScale are set to 0.
+//
+// How to set those values manually:
+// ---------------------------------
+// If it fails (i.e. your window and/or fonts are too big or too small),
+// you may set them manually:
+//    (1) Either by setting them programmatically in your application
+//        (set their values in `runnerParams.dpiAwareParams`)
+//    (2) Either by setting them in the app ini file
+//    (3) Either by setting them in a `hello_imgui.ini` file in the current folder, or any of its parent folders.
+//       (this is useful when you want to set them for a specific app or set of apps, without modifying the app code)
+// Note: if several methods are used, the order of priority is (1) > (2) > (3)
+//
+// Example content of a ini file:
+// ------------------------------
+//     [DpiAwareParams]
+//     dpiWindowSizeFactor=2
+//     fontRenderingScale=0.5
+//
+struct DpiAwareParams
+{
+    // `dpiWindowSizeFactor`
+    //        factor by which window size should be multiplied to get a similar
+    //        visible size on different OSes.
+    //  In a standard environment (i.e. outside of Hello ImGui), an application with a size of 960x480 pixels,
+    //  may have a physical size (in mm or inches) that varies depending on the screen DPI, and the OS.
+    //
+    //  Inside Hello ImGui, the window size is always treated as targeting a 96 PPI screen, so that its size will
+    //  look similar whatever the OS and the screen DPI.
+    //  In our example, our 960x480 pixels window will try to correspond to a 10x5 inches window
+    //
+    //  Hello ImGui does its best to compute it on all OSes.
+    //  However, if it fails you may set its value manually.
+    //  If it is set to 0, Hello ImGui will compute it automatically,
+    //  and the resulting value will be stored in `dpiWindowSizeFactor`.
+    float dpiWindowSizeFactor = 0.0f;
+
+    // `fontRenderingScale`
+    //     factor (that is either 1 or < 1.) by which fonts glyphs should be
+    //     scaled at rendering time.
+    //     On macOS retina screens, it will be 0.5, since macOS APIs hide
+    //     the real resolution of the screen.
+    float fontRenderingScale = 0.0f;
+
+    // `dpiFontLoadingFactor`
+    //      factor by which font size should be multiplied at loading time to get a similar
+    //      visible size on different OSes.
+    //      The size will be equivalent to a size given for a 96 PPI screen
+    float DpiFontLoadingFactor() { return dpiWindowSizeFactor / fontRenderingScale;};
+};
+
+// ----------------------------------------------------------------------------
+
 ```
 
 ----

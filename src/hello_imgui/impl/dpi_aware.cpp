@@ -37,24 +37,17 @@ namespace HelloImGui
 
     float DpiWindowSizeFactor()
     {
-        auto runner = GetAbstractRunner();
-        IM_ASSERT(runner != nullptr);
-        float dpiFactor = runner->DpiWindowSizeFactor();
-        return dpiFactor;
+        return GetRunnerParams()->dpiAwareParams.dpiWindowSizeFactor;
     }
 
     float DpiFontLoadingFactor()
     {
-        auto runner = GetAbstractRunner();
-        IM_ASSERT(runner != nullptr);
-        return runner->DpiFontLoadingFactor();
+        return GetRunnerParams()->dpiAwareParams.DpiFontLoadingFactor();
     }
 
     float ImGuiDefaultFontGlobalScale()
     {
-        auto runner = GetAbstractRunner();
-        IM_ASSERT(runner != nullptr);
-        return runner->ImGuiDefaultFontGlobalScale();
+        return GetRunnerParams()->dpiAwareParams.fontRenderingScale;
     }
 
 }

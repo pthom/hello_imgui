@@ -829,7 +829,7 @@ struct FpsIdling
 
 # Dpi Aware Params
 
-See [dpi_aware.h](ttps://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/dpi_aware.h)
+See [dpi_aware.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/dpi_aware.h)
 
 ```cpp
 

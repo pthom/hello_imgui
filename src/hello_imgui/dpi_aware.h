@@ -25,10 +25,9 @@ namespace HelloImGui
 // you may set them manually:
 //    (1) Either by setting them programmatically in your application
 //        (set their values in `runnerParams.dpiAwareParams`)
-//    (2) Either by setting them in the app ini file
-//    (3) Either by setting them in a `hello_imgui.ini` file in the current folder, or any of its parent folders.
+//    (2) Either by setting them in a `hello_imgui.ini` file in the current folder, or any of its parent folders.
 //       (this is useful when you want to set them for a specific app or set of apps, without modifying the app code)
-// Note: if several methods are used, the order of priority is (1) > (2) > (3)
+// Note: if several methods are used, the order of priority is (1) > (2)
 //
 // Example content of a ini file:
 // ------------------------------

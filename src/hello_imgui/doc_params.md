@@ -114,6 +114,10 @@ struct RunnerParams
     // These pointers will be filled when the application starts
     BackendPointers backendPointers;
 
+    // `rendererBackendOptions`: _see renderer_backend_options.h_
+    // Options for the renderer backend
+    RendererBackendOptions rendererBackendOptions;
+
     // `backendType`: _enum BackendType, default=PlatformBackendType::FirstAvailable_
     // Select the wanted platform backend type between `Sdl`, `Glfw`.
     // if `FirstAvailable`, Glfw will be preferred over Sdl when both are available.
@@ -127,9 +131,6 @@ struct RunnerParams
     // Only useful when multiple rendering backend are compiled and available.
     RendererBackendType rendererBackendType = RendererBackendType::FirstAvailable;
 
-    // `rendererBackendOptions`: _see renderer_backend_options.h_
-    // Options for the renderer backend
-    RendererBackendOptions rendererBackendOptions;
 
 
     // --------------- Settings -------------------
@@ -852,10 +853,9 @@ See [dpi_aware.h](ttps://github.com/pthom/hello_imgui/blob/master/src/hello_imgu
 // you may set them manually:
 //    (1) Either by setting them programmatically in your application
 //        (set their values in `runnerParams.dpiAwareParams`)
-//    (2) Either by setting them in the app ini file
-//    (3) Either by setting them in a `hello_imgui.ini` file in the current folder, or any of its parent folders.
+//    (2) Either by setting them in a `hello_imgui.ini` file in the current folder, or any of its parent folders.
 //       (this is useful when you want to set them for a specific app or set of apps, without modifying the app code)
-// Note: if several methods are used, the order of priority is (1) > (2) > (3)
+// Note: if several methods are used, the order of priority is (1) > (2)
 //
 // Example content of a ini file:
 // ------------------------------

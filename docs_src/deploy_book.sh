@@ -116,7 +116,7 @@ if [[ $? -ne 0 ]]; then
     fi
     exit 1
 fi
-git push
+git push --force
 if [[ $? -ne 0 ]]; then
     echo "- deploy_book: ERROR: ******** Error during push! ********"
     exit 1

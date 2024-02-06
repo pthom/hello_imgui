@@ -450,7 +450,7 @@ document.write(`
 <h1>Application parameters<a class="headerlink" href="#application-parameters" title="Permalink to this heading">#</a></h1>
 <p><em>RunnerParams</em> contains all the settings and callbacks in order to run an application.
 The diagram below summarize all the possible settings and callbacks (which are explained in detail later in this document).</p>
-<p><a class="reference external" href="https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png"><img alt="diagram" src="https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png" /></a></p>
+<p><a class="reference external" href="https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg"><img alt="diagram" src="https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg" /></a></p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="runnerparams">
 <h1>RunnerParams<a class="headerlink" href="#runnerparams" title="Permalink to this heading">#</a></h1>
@@ -555,6 +555,10 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="c1">// These pointers will be filled when the application starts</span>
 <span class="w">    </span><span class="n">BackendPointers</span><span class="w"> </span><span class="n">backendPointers</span><span class="p">;</span>
 
+<span class="w">    </span><span class="c1">// `rendererBackendOptions`: _see renderer_backend_options.h_</span>
+<span class="w">    </span><span class="c1">// Options for the renderer backend</span>
+<span class="w">    </span><span class="n">RendererBackendOptions</span><span class="w"> </span><span class="n">rendererBackendOptions</span><span class="p">;</span>
+
 <span class="w">    </span><span class="c1">// `backendType`: _enum BackendType, default=PlatformBackendType::FirstAvailable_</span>
 <span class="w">    </span><span class="c1">// Select the wanted platform backend type between `Sdl`, `Glfw`.</span>
 <span class="w">    </span><span class="c1">// if `FirstAvailable`, Glfw will be preferred over Sdl when both are available.</span>
@@ -568,9 +572,6 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="c1">// Only useful when multiple rendering backend are compiled and available.</span>
 <span class="w">    </span><span class="n">RendererBackendType</span><span class="w"> </span><span class="n">rendererBackendType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RendererBackendType</span><span class="o">::</span><span class="n">FirstAvailable</span><span class="p">;</span>
 
-<span class="w">    </span><span class="c1">// `rendererBackendOptions`: _see renderer_backend_options.h_</span>
-<span class="w">    </span><span class="c1">// Options for the renderer backend</span>
-<span class="w">    </span><span class="n">RendererBackendOptions</span><span class="w"> </span><span class="n">rendererBackendOptions</span><span class="p">;</span>
 
 
 <span class="w">    </span><span class="c1">// --------------- Settings -------------------</span>
@@ -941,7 +942,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <h2>AppWindowParams<a class="headerlink" href="#appwindowparams" title="Permalink to this heading">#</a></h2>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//</span>
 <span class="c1">// AppWindowParams is a struct that defines the application window display params.</span>
-<span class="c1">//See https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png</span>
+<span class="c1">//See https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg</span>
 <span class="c1">// for details.</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">AppWindowParams</span>
 <span class="p">{</span>

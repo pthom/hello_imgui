@@ -3,7 +3,7 @@
 _RunnerParams_ contains all the settings and callbacks in order to run an application. 
 The diagram below summarize all the possible settings and callbacks (which are explained in detail later in this document).
 
-[![diagram](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png)](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png)
+[![diagram](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg)](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg)
 
 # RunnerParams
 
@@ -114,6 +114,10 @@ struct RunnerParams
     // These pointers will be filled when the application starts
     BackendPointers backendPointers;
 
+    // `rendererBackendOptions`: _see renderer_backend_options.h_
+    // Options for the renderer backend
+    RendererBackendOptions rendererBackendOptions;
+
     // `backendType`: _enum BackendType, default=PlatformBackendType::FirstAvailable_
     // Select the wanted platform backend type between `Sdl`, `Glfw`.
     // if `FirstAvailable`, Glfw will be preferred over Sdl when both are available.
@@ -127,9 +131,6 @@ struct RunnerParams
     // Only useful when multiple rendering backend are compiled and available.
     RendererBackendType rendererBackendType = RendererBackendType::FirstAvailable;
 
-    // `rendererBackendOptions`: _see renderer_backend_options.h_
-    // Options for the renderer backend
-    RendererBackendOptions rendererBackendOptions;
 
 
     // --------------- Settings -------------------
@@ -510,7 +511,7 @@ See [app_window_params.h](https://github.com/pthom/hello_imgui/blob/master/src/h
 ```cpp
 //
 // AppWindowParams is a struct that defines the application window display params.
-//See https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.png
+//See https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg
 // for details.
 struct AppWindowParams
 {

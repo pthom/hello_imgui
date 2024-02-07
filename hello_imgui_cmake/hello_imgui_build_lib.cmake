@@ -337,9 +337,7 @@ function(_him_do_build_imgui)
         $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype>
     )
     him_add_installable_dependency(imgui)
-    if (MSVC)
-        hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
-    endif()
+    hello_imgui_msvc_target_set_folder(imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
 endfunction()
 
 function(_him_add_freetype_to_imgui)
@@ -396,6 +394,7 @@ function(_him_add_freetype_to_imgui)
             )
             FetchContent_MakeAvailable(freetype)
             set(freetype_linked_library freetype)
+            hello_imgui_msvc_target_set_folder(freetype ${HELLOIMGUI_SOLUTIONFOLDER}/external)
 
             set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
         else()
@@ -449,6 +448,7 @@ function(_him_add_freetype_to_imgui)
             get_target_property(lunasvg_include_dirs lunasvg INTERFACE_INCLUDE_DIRECTORIES)
 
             him_add_installable_dependency(lunasvg)
+            hello_imgui_msvc_target_set_folder(lunasvg ${HELLOIMGUI_SOLUTIONFOLDER}/external)
         endif()
     endif()
 
@@ -564,6 +564,7 @@ function(him_add_stb_image)
     # Add stb for HelloImGui
     set(stb_dir ${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui)
     add_library(stb_hello_imgui STATIC ${stb_dir}/stb_impl_hello_imgui.cpp)
+    hello_imgui_msvc_target_set_folder(stb_hello_imgui ${HELLOIMGUI_SOLUTIONFOLDER}/external)
 
     if(Stb_FOUND)
         message(STATUS "HelloImGui: using stb from find_package(Stb)")
@@ -646,10 +647,8 @@ function(him_add_windows_options)
 endfunction()
 
 function(_him_msvc_group_sources)
-    if (MSVC)
-        hello_imgui_msvc_target_group_sources(${HELLOIMGUI_TARGET})
-        hello_imgui_msvc_target_set_folder(${HELLOIMGUI_TARGET} ${HELLOIMGUI_SOLUTIONFOLDER})
-    endif()
+    hello_imgui_msvc_target_group_sources(${HELLOIMGUI_TARGET})
+    hello_imgui_msvc_target_set_folder(${HELLOIMGUI_TARGET} ${HELLOIMGUI_SOLUTIONFOLDER})
 endfunction()
 
 function(_him_win_add_auto_win_main)
@@ -776,9 +775,7 @@ function(_him_add_glad)
         target_compile_definitions(glad PUBLIC GLAD_GLAPI_EXPORT PRIVATE GLAD_GLAPI_EXPORT_BUILD)
     endif()
 
-    if (MSVC)
-        hello_imgui_msvc_target_set_folder(glad ${HELLOIMGUI_SOLUTIONFOLDER}/external/OpenGL_Loaders)
-    endif()
+    hello_imgui_msvc_target_set_folder(glad ${HELLOIMGUI_SOLUTIONFOLDER}/external/OpenGL_Loaders)
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glad)
 
     him_add_installable_dependency(glad)

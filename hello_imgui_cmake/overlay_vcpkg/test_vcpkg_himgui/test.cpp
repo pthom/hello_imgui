@@ -4,7 +4,7 @@
 int main()
 {
     HelloImGui::RunnerParams runnerParams;
-    runnerParams.backendType = HelloImGui::BackendType::Glfw; // Sdl fails with Vulkan
+    runnerParams.platformBackendType = HelloImGui::PlatformBackendType::Glfw; // Sdl fails with Vulkan
     runnerParams.callbacks.ShowGui = []() {
         #ifdef HELLOIMGUI_HAS_OPENGL
         ImGui::Text("HELLOIMGUI_HAS_OPENGL");

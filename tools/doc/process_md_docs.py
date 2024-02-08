@@ -37,7 +37,7 @@ def remove_code_blocks(lines):
 
 
 def make_toc(file):
-    with open(file, "r") as f:
+    with open(file, "r", newline='') as f:
         lines = f.readlines()
     lines = remove_code_blocks(lines)
 
@@ -61,7 +61,7 @@ def is_md_block_end(line):
 
 
 def extract_md_block(file, md_id):
-    with open(file, "r") as f:
+    with open(file, "r", newline='') as f:
         lines = f.readlines()
     result = ""
     md_block_started = False
@@ -92,7 +92,7 @@ def parse_import_line(line):
 
 
 def process_md_file(input_file, output_file):
-    with open(input_file, "r") as f:
+    with open(input_file, "r", newline='') as f:
         lines = f.readlines()
 
     content = ""
@@ -108,19 +108,19 @@ def process_md_file(input_file, output_file):
         else:
             content = content + line
 
-    with open(output_file, "w") as f:
+    with open(output_file, "w", newline='') as f:
         f.write(content)
 
 
 def process_main_readme(repo_dir: str):
-    with open(repo_dir + "README.src.md", "r") as f:
+    with open(repo_dir + "README.src.md", "r", newline='') as f:
         readme_src_content = f.read()
-    with open(repo_dir + "/docs_src/intro.md", "r") as f:
+    with open(repo_dir + "/docs_src/intro.md", "r", newline='') as f:
         intro_content = f.read()
 
     readme_content = readme_src_content.replace("<!-- INTRO -->", intro_content)
 
-    with open(repo_dir + "README.md", "w") as f:
+    with open(repo_dir + "README.md", "w", newline='') as f:
         f.write(readme_content)
 
 

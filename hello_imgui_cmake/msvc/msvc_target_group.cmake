@@ -38,7 +38,10 @@ if (MSVC)
     endfunction()
 
 else()
+    # Dummy functions so we don't have to call them conditionally
     function(hello_imgui_msvc_target_group_sources target_name)
     endfunction(hello_imgui_msvc_target_group_sources)
+    function(hello_imgui_msvc_target_set_folder target_name)
+    endfunction(hello_imgui_msvc_target_set_folder)
 endif()
 

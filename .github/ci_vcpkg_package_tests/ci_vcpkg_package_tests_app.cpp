@@ -63,12 +63,12 @@ int main(int argc, char**argv)
 
     try
     {
-        runnerParams.backendType = HelloImGui::BackendType::Glfw;
+        runnerParams.platformBackendType = HelloImGui::PlatformBackendType::Glfw;
 
         if (argc == 2 && strcmp(argv[1], "sdl") == 0)
-            runnerParams.backendType = HelloImGui::BackendType::Sdl;
+            runnerParams.platformBackendType = HelloImGui::PlatformBackendType::Sdl;
 
-        if (runnerParams.backendType == HelloImGui::BackendType::Glfw)
+        if (runnerParams.platformBackendType == HelloImGui::PlatformBackendType::Glfw)
             printf("Using GLFW backend\n");
         else
             printf("Using SDL backend\n");

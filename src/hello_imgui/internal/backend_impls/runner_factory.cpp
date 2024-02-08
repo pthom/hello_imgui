@@ -38,7 +38,7 @@ void ChooseBackendTypesIfSelectedAsFirstAvailable(RunnerParams* runnerParams)
 std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 {
     ChooseBackendTypesIfSelectedAsFirstAvailable(&params);
-    if(params.backendType == BackendType::Glfw)
+    if (params.platformBackendType == PlatformBackendType::Glfw)
     {
         #ifdef HELLOIMGUI_USE_GLFW3
             return std::make_unique<RunnerGlfw3>(params);
@@ -46,7 +46,7 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
             return nullptr;
         #endif
     }
-    else if (params.backendType == BackendType::Sdl)
+    else if (params.platformBackendType == PlatformBackendType::Sdl)
     {
         #if defined(__EMSCRIPTEN__)
             return std::make_unique<RunnerSdlEmscripten>(params);

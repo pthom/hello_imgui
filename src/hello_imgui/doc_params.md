@@ -118,11 +118,10 @@ struct RunnerParams
     // Options for the renderer backend
     RendererBackendOptions rendererBackendOptions;
 
-    // `backendType`: _enum BackendType, default=PlatformBackendType::FirstAvailable_
+    // `platformBackendType`: _enum PlatformBackendType, default=PlatformBackendType::FirstAvailable_
     // Select the wanted platform backend type between `Sdl`, `Glfw`.
     // if `FirstAvailable`, Glfw will be preferred over Sdl when both are available.
     // Only useful when multiple backend are compiled and available.
-    // (for compatibility with older versions, you can use BackendType instead of PlatformBackendType)
     PlatformBackendType platformBackendType = PlatformBackendType::FirstAvailable;
 
     // `renderingBackendType`: _enum RenderingBackendType, default=RenderingBackendType::FirstAvailable_
@@ -195,11 +194,6 @@ struct RunnerParams
     // Set the application refresh rate
     // (only used on emscripten: 0 stands for "let the app or the browser decide")
     int emscripten_fps = 0;
-
-    // --------------- Legacy -------------------`
-#ifndef HELLOIMGUI_DISABLE_OBSOLETE_BACKEND
-    PlatformBackendType& backendType = platformBackendType; // a synonym, for backward compatibility
-#endif
 };
 ```
 
@@ -209,7 +203,7 @@ struct RunnerParams
 ```cpp
 
 // You can select the platform backend type (SDL, GLFW) and the rendering backend type
-// via RunnerParams.backendType and RunnerParams.renderingBackendType.
+// via RunnerParams.platformBackendType and RunnerParams.renderingBackendType.
 
 // Platform backend type (SDL, GLFW)
 // They are listed in the order of preference when FirstAvailable is selected.
@@ -219,10 +213,6 @@ enum class PlatformBackendType
     Glfw,
     Sdl,
 };
-
-#ifndef HELLOIMGUI_DISABLE_OBSOLETE_BACKEND
-using BackendType = PlatformBackendType; // for backward compatibility
-#endif
 
 // Rendering backend type (OpenGL3, Metal, Vulkan, DirectX11, DirectX12)
 // They are listed in the order of preference when FirstAvailable is selected.

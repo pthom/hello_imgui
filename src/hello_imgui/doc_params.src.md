@@ -28,7 +28,7 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 
 ```cpp
-@import "runner_params.h" {md_id=BackendType}
+@import "runner_params.h" {md_id=PlatformBackendType}
 ```
 
 

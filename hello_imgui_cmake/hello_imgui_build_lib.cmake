@@ -381,6 +381,10 @@ function(_him_add_freetype_to_imgui)
             set(backup_shared_lib ${BUILD_SHARED_LIBS})
             set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
+            if (NOT HELLOIMGUI_INSTALL)
+                set(SKIP_INSTALL_ALL ON CACHE INTERNAL "" FORCE) # disable Freetype install
+            endif()
+
             include(FetchContent)
             if(IOS)
                 set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)

@@ -136,6 +136,14 @@ namespace HelloImGui
         return ImVec2((float)cachedImage->Width, (float)cachedImage->Height);
     }
 
+    ImageAndSize ImageAndSizeFromAsset(const char *assetPath)
+    {
+        auto cachedImage = _GetCachedImage(assetPath);
+        if (cachedImage == nullptr)
+            return {};
+        return {cachedImage->TextureID(), ImVec2((float)cachedImage->Width, (float)cachedImage->Height)};
+    }
+
     namespace internal
     {
         void Free_ImageFromAssetMap()

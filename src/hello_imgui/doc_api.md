@@ -247,6 +247,17 @@ ImTextureID ImTextureIdFromAsset(const char *assetPath);
 // will return the size of an image loaded from the assets.
 ImVec2 ImageSizeFromAsset(const char *assetPath);
 
+
+// `HelloImGui::ImageAndSize HelloImGui::ImageAndSizeFromAsset(assetPath)`:
+// will return the texture ID and the size of an image loaded from the assets.
+struct ImageAndSize
+{
+    ImTextureID textureId = ImTextureID(0);
+    ImVec2 size = ImVec2(0.f, 0.f);
+};
+ImageAndSize ImageAndSizeFromAsset(const char *assetPath);
+
+
 // `ImVec2 HelloImGui::ImageProportionalSize(askedSize, imageSize)`:
 //  will return the displayed size of an image.
 //     - if askedSize.x or askedSize.y is 0, then the corresponding dimension

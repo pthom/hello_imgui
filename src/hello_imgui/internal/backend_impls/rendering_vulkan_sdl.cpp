@@ -55,13 +55,14 @@ namespace HelloImGui
             init_info.Queue = gVkGlobals.Queue;
             init_info.PipelineCache = gVkGlobals.PipelineCache;
             init_info.DescriptorPool = gVkGlobals.DescriptorPool;
+            init_info.RenderPass = wd->RenderPass;
             init_info.Subpass = 0;
             init_info.MinImageCount = gVkGlobals.MinImageCount;
             init_info.ImageCount = wd->ImageCount;
             init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
             init_info.Allocator = gVkGlobals.Allocator;
             init_info.CheckVkResultFn = HelloImGui::VulkanSetup::check_vk_result;
-            ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
+            ImGui_ImplVulkan_Init(&init_info);
         }
     }
 

@@ -318,7 +318,7 @@ void AbstractRunner::SetupDpiAwareParams()
         #ifdef __EMSCRIPTEN__
             // Query the brower to ask for devicePixelRatio
             double windowDevicePixelRatio = EM_ASM_DOUBLE( {
-                scale = window.devicePixelRatio;
+                var scale = window.devicePixelRatio;
                 return scale;
             }
             );

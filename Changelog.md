@@ -1,5 +1,13 @@
 Version numbers are synced between hello_imgui and imgui_bundle.
 
+# v1.5.0
+* Breaking change: add FontAwesome options with support for v4 and v6:
+  - See  e04af395c5a25e20861d06afd9ec0cddcccd7542
+  - the default icon font is now FontAwesome 6, which includes many more icons.
+  - added runnerParams.runnerCallbacks.defaultIconFont
+  - you need to include manually the icons:
+     #include "hello_imgui/icons_font_awesome_6.h" or #include "hello_imgui/icons_font_awesome_4.h" 
+
 # v1.4.2
 
 * Integration with vcpkg ongoing (see [PR](https://github.com/microsoft/vcpkg/pull/36501))

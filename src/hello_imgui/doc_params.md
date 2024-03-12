@@ -253,7 +253,6 @@ inline AnyEventCallback EmptyEventCallback() {return {}; }
 
 ## RunnerCallbacks
 ```cpp
-
 // RunnerCallbacks is a struct that contains the callbacks
 // that are called by the application
 //
@@ -320,6 +319,9 @@ struct RunnerCallbacks
     //  (LoadDefaultFont_WithFontAwesome will load fonts from assets/fonts/
     //  but reverts to the ImGui embedded font if not found)
     VoidFunction LoadAdditionalFonts = (VoidFunction)ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons;
+    // If LoadAdditionalFonts==LoadDefaultFont_WithFontAwesomeIcons, this parameter control
+    // which icon font will be loaded by default.
+    DefaultIconFont defaultIconFont = DefaultIconFont::FontAwesome4;
 
     // `SetupImGuiConfig`: default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.
     //  If needed, change ImGui config via SetupImGuiConfig

@@ -74,7 +74,7 @@ struct AppState
 //////////////////////////////////////////////////////////////////////////
 void LoadFonts(AppState& appState) // This is called by runnerParams.callbacks.LoadAdditionalFonts
 {
-    HelloImGui::GetRunnerParams()->callbacks.defaultIconFont = HelloImGui::DefaultIconFont::FontAwesome4;
+    HelloImGui::GetRunnerParams()->callbacks.defaultIconFont = HelloImGui::DefaultIconFont::FontAwesome6;
     // First, load the default font (the default font should be loaded first)
     HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons();
     // Then load the other fonts

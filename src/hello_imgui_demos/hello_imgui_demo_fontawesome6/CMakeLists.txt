@@ -1,2 +1,0 @@
-include(hello_imgui_add_app)
-hello_imgui_add_app(hello_imgui_demo_fontawesome6 hello_imgui_demo_fontawesome6.cpp)

@@ -9,9 +9,9 @@
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/hello_imgui_error.h"
 #include "hello_imgui/hello_imgui_logger.h"
-#ifndef HELLOIMGUI_NO_FONT_AWESOME4
-#include "hello_imgui/icons_font_awesome.h"
-#endif
+//#ifndef HELLOIMGUI_NO_FONT_AWESOME4
+//#include "hello_imgui/icons_font_awesome_4.h"
+//#endif
 #include "hello_imgui/image_from_asset.h"
 #include "hello_imgui/imgui_theme.h"
 #include "hello_imgui/hello_imgui_font.h"

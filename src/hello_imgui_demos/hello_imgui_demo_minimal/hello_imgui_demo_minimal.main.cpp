@@ -1,4 +1,5 @@
 #include "hello_imgui/hello_imgui.h"
+#include "hello_imgui/icons_font_awesome_6.h"
 
 int main(int, char *[]) {
     int nb_cpp = 10, nb_cmake = 2;

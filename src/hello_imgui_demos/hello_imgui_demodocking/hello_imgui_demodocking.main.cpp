@@ -14,6 +14,7 @@ It demonstrates how to:
 
 #include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/renderer_backend_options.h"
+#include "hello_imgui/icons_font_awesome_6.h"
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "imgui_internal.h"
@@ -73,6 +74,7 @@ struct AppState
 //////////////////////////////////////////////////////////////////////////
 void LoadFonts(AppState& appState) // This is called by runnerParams.callbacks.LoadAdditionalFonts
 {
+    HelloImGui::GetRunnerParams()->callbacks.defaultIconFont = HelloImGui::DefaultIconFont::FontAwesome4;
     // First, load the default font (the default font should be loaded first)
     HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons();
     // Then load the other fonts
@@ -324,8 +326,7 @@ void DemoAssets(AppState& appState)
 void DemoFonts(AppState& appState)
 {
     ImGui::PushFont(appState.TitleFont); ImGui::Text("Fonts"); ImGui::PopFont();
-
-    ImGui::TextWrapped("Mix icons " ICON_FA_SMILE " and text " ICON_FA_ROCKET "");
+    ImGui::TextWrapped("Mix icons " ICON_FA_FACE_SMILE " and text " ICON_FA_ROCKET "");
     if (ImGui::IsItemHovered())
         ImGui::SetTooltip("Example with Font Awesome Icons");
 
@@ -457,10 +458,10 @@ void ShowTopToolbar(AppState& appState)
         HelloImGui::GetRunnerParams()->appShallExit = true;
 
     ImGui::SameLine(ImGui::GetWindowWidth() - HelloImGui::EmSize(7.f));
-    if (ImGui::Button(ICON_FA_HOME))
+    if (ImGui::Button(ICON_FA_HOUSE))
         HelloImGui::Log(HelloImGui::LogLevel::Info, "Clicked on Home in the top toolbar");
     ImGui::SameLine();
-    if (ImGui::Button(ICON_FA_SAVE))
+    if (ImGui::Button(ICON_FA_FLOPPY_DISK))
         HelloImGui::Log(HelloImGui::LogLevel::Info, "Clicked on Save in the top toolbar");
     ImGui::SameLine();
     if (ImGui::Button(ICON_FA_ADDRESS_BOOK))
@@ -474,10 +475,10 @@ void ShowTopToolbar(AppState& appState)
 void ShowRightToolbar(AppState& appState)
 {
     ImGui::PushFont(appState.LargeIconFont);
-    if (ImGui::Button(ICON_FA_ARROW_CIRCLE_LEFT))
+    if (ImGui::Button(ICON_FA_CIRCLE_ARROW_LEFT))
         HelloImGui::Log(HelloImGui::LogLevel::Info, "Clicked on Circle left in the right toolbar");
 
-    if (ImGui::Button(ICON_FA_ARROW_CIRCLE_RIGHT))
+    if (ImGui::Button(ICON_FA_CIRCLE_ARROW_RIGHT))
         HelloImGui::Log(HelloImGui::LogLevel::Info, "Clicked on Circle right in the right toolbar");
     ImGui::PopFont();
 }

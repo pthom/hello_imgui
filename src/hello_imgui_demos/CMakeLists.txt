@@ -8,7 +8,6 @@ set(subdirs
     hello_idbfs
     hello_imgui_demo_test_engine
     hello_custom_background
-    hello_imgui_demo_fontawesome6
 )
 if(HELLOIMGUI_HAS_METAL)
     # Demo of EDR (Extended Dynamic Range) support, only for Metal

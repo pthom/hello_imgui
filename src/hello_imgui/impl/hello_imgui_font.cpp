@@ -1,9 +1,9 @@
 #include "hello_imgui/hello_imgui_font.h"
+#include "hello_imgui/dpi_aware.h"
+#include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/hello_imgui_error.h"
-#include "hello_imgui/hello_imgui.h"
-#include "hello_imgui/icons_font_awesome.h"
-#include "hello_imgui/dpi_aware.h"
+#include "hello_imgui/icons_font_awesome_4.h"
 
 #ifdef IMGUI_ENABLE_FREETYPE
 #include "imgui_freetype.h"

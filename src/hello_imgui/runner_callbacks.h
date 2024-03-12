@@ -9,6 +9,7 @@
 
 namespace HelloImGui
 {
+// --------------------------------------------------------------------------------------------------------------------
 
 // @@md#VoidFunction_AnyEventCallback
 
@@ -27,6 +28,8 @@ inline AnyEventCallback EmptyEventCallback() {return {}; }
 
 // @@md
 
+
+// --------------------------------------------------------------------------------------------------------------------
 
 // @@md#MobileCallbacks
 
@@ -58,6 +61,8 @@ struct MobileCallbacks
 };
 // @@md
 
+
+// --------------------------------------------------------------------------------------------------------------------
 
 // @@md#EdgeToolbar
 
@@ -97,8 +102,27 @@ std::string EdgeToolbarTypeName(EdgeToolbarType e);
 // @@md
 
 
-// @@md#RunnerCallbacks
+// --------------------------------------------------------------------------------------------------------------------
 
+// @@md#DefaultIconFont
+
+// HelloImGui can optionally merge an icon font (FontAwesome 4 or 6) to the default font
+// Breaking change in v1.5.0:
+// - the default icon font is now FontAwesome 6, which includes many more icons.
+// - you need to include manually icons_font_awesome_4.h or icons_font_awesome_6.h:
+//     #include "hello_imgui/icons_font_awesome_6.h"
+enum class DefaultIconFont
+{
+    NoIcons,
+    FontAwesome4,
+    FontAwesome6
+};
+// @@md
+
+
+// --------------------------------------------------------------------------------------------------------------------
+
+// @@md#RunnerCallbacks
 // RunnerCallbacks is a struct that contains the callbacks
 // that are called by the application
 //
@@ -165,6 +189,9 @@ struct RunnerCallbacks
     //  (LoadDefaultFont_WithFontAwesome will load fonts from assets/fonts/
     //  but reverts to the ImGui embedded font if not found)
     VoidFunction LoadAdditionalFonts = (VoidFunction)ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons;
+    // If LoadAdditionalFonts==LoadDefaultFont_WithFontAwesomeIcons, this parameter control
+    // which icon font will be loaded by default.
+    DefaultIconFont defaultIconFont = DefaultIconFont::FontAwesome6;
 
     // `SetupImGuiConfig`: default=_ImGuiDefaultSettings::SetupDefaultImGuiConfig*.
     //  If needed, change ImGui config via SetupImGuiConfig

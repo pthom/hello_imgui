@@ -1,6 +1,7 @@
 #include "hello_imgui/imgui_default_settings.h"
 #include "hello_imgui/hello_imgui_assets.h"
 #include "hello_imgui/hello_imgui_font.h"
+#include "hello_imgui/hello_imgui.h"
 
 
 namespace HelloImGui
@@ -13,18 +14,37 @@ namespace ImGuiDefaultSettings
 
 void LoadDefaultFont_WithFontAwesomeIcons()
 {
+    auto defaultIconFont = HelloImGui::GetRunnerParams()->callbacks.defaultIconFont;
+    float fontSize = 15.f;
+
     std::string fontFilename = "fonts/DroidSans.ttf";
-    if (HelloImGui::AssetExists(fontFilename))
-    {
-        FontLoadingParams fontLoadingParams;
-        fontLoadingParams.mergeFontAwesome = true;
-        ImFont* font = LoadFont(fontFilename, 15.f, fontLoadingParams);
-        (void) font;
-    }
-    else
+
+    if ( ! HelloImGui::AssetExists(fontFilename))
     {
         ImGui::GetIO().Fonts->AddFontDefault();
+        return;
     }
+
+    ImFont* font = LoadFont(fontFilename, fontSize);
+    if (defaultIconFont == HelloImGui::DefaultIconFont::NoIcons)
+        return;
+
+    std::string iconFontFile;
+    if (defaultIconFont == HelloImGui::DefaultIconFont::FontAwesome4)
+        iconFontFile = "fonts/fontawesome-webfont.ttf";
+    else if (defaultIconFont == HelloImGui::DefaultIconFont::FontAwesome6)
+        iconFontFile = "fonts/Font_Awesome_6_Free-Solid-900.otf";
+    else
+        return;
+
+    if ( ! HelloImGui::AssetExists(iconFontFile))
+        return;
+
+    HelloImGui::FontLoadingParams fontParams;
+    fontParams.mergeToLastFont = true;
+    fontParams.useFullGlyphRange = true;
+    font = LoadFont(iconFontFile, fontSize, fontParams);
+    (void) font;
 }
 
 void SetupDefaultImGuiConfig()

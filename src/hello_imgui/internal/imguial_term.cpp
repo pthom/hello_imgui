@@ -1,10 +1,10 @@
 // From https://github.com/leiradel/ImGuiAl
 
 #include "imguial_term.h"
-#include "hello_imgui/icons_font_awesome.h"
-#include <stdio.h>
-#include <ctype.h>
+#include "hello_imgui/icons_font_awesome_4.h"
 #include <algorithm>
+#include <ctype.h>
+#include <stdio.h>
 
 #if defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"

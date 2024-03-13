@@ -52,28 +52,24 @@ function(hello_imgui_add_app)
     ")
 
     #############################################################################
+    # If windows, and if the user wants to, we can make this an app without console
+    # and provide a WinMain entry point
+    if (WIN32)
+        if (HELLOIMGUI_WIN32_NO_CONSOLE)
+            # Make this an app without console
+            list(PREPEND app_sources WIN32)
+        endif()
+        if (HELLOIMGUI_WIN32_AUTO_WINMAIN)
+            # Use HelloImGui_WinMain.cpp
+            list(APPEND app_sources ${HELLOIMGUI_CMAKE_PATH}/HelloImGui_WinMain.cpp)
+        endif()
+    endif()
 
     # Add the target for the application
     if (ANDROID)
         add_library(${app_name} SHARED ${app_sources})
     else()
         add_executable(${app_name} ${app_sources})
-    endif()
-
-    # If windows, and if the user wants to, we can make this an app without console
-    # and provide a WinMain entry point
-    if (WIN32)
-        if (HELLOIMGUI_WIN32_NO_CONSOLE)
-            # Make this an app without console, and use HelloImGui_WinMain.cpp
-            if (MINGW)
-                target_link_options(${app_name} PRIVATE -Wl,--subsystem,windows)
-            else() # If MSVC
-                target_link_options(${app_name} PRIVATE /SUBSYSTEM:WINDOWS)
-            endif()
-        endif()
-        if (HELLOIMGUI_WIN32_AUTO_WINMAIN)
-            target_sources(${app_name} PRIVATE ${HELLOIMGUI_CMAKE_PATH}/HelloImGui_WinMain.cpp)
-        endif()
     endif()
 
     hello_imgui_prepare_app(${app_name} ${assets_location})

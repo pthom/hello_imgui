@@ -42,12 +42,12 @@
         postRun: [],
         print: (function() {
             return function(text) {
-                text = Array.prototype.slice.call(arguments).join(' ');
+                var text = Array.prototype.slice.call(arguments).join(' ');
                 console.log(text);
             };
         })(),
         printErr: function(text) {
-            text = Array.prototype.slice.call(arguments).join(' ');
+            var text = Array.prototype.slice.call(arguments).join(' ');
             console.error(text);
         },
         canvas: (function() {

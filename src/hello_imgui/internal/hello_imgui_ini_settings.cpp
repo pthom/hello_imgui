@@ -273,17 +273,17 @@ namespace HelloImGui
                     windowsWithSettings.push_back(w);
             }
 
-        for (const auto& dockableWindow: dockingParams.dockableWindows)
-        {
-            if (
-            std::find(windowsWithSettings.begin(), windowsWithSettings.end(), dockableWindow.label)
-            == windowsWithSettings.end())
+            for (const auto& dockableWindow: dockingParams.dockableWindows)
             {
-                return false;
+                if (
+                std::find(windowsWithSettings.begin(), windowsWithSettings.end(), dockableWindow.label)
+                == windowsWithSettings.end())
+                {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
-    }
 
 
         void SaveDockableWindowsVisibility(const std::string& iniPartsFilename, const DockingParams& dockingParams)

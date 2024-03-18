@@ -435,6 +435,12 @@ It is recommended to use it as a starting point for your own project.</p>
 <span class="w">    </span><span class="nb">FetchContent_MakeAvailable</span><span class="p">(</span><span class="s">hello_imgui</span><span class="p">)</span>
 <span class="nb">endif</span><span class="p">()</span>
 
+<span class="c"># 3/  Option 3: via vcpkg</span>
+<span class="c"># i/ You can install hello_imgui via vcpkg with:</span>
+<span class="c">#     vcpkg install &quot;hello-imgui[opengl3-binding,glfw-binding]&quot;</span>
+<span class="c"># ii/ Then you can use it inside CMake with:</span>
+<span class="c">#     find_package(hello-imgui CONFIG REQUIRED)</span>
+
 
 <span class="c"># Build your app</span>
 <span class="c"># ==============</span>

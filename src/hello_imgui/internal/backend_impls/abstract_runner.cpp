@@ -61,10 +61,16 @@
 //
 
 
+
 namespace HelloImGui
 {
 // Encapsulated inside hello_imgui_screenshot.cpp
 void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
+
+
+// Only used with OpenGL if the font loading failed at first frame
+// (used by ReloadFontIfFailed_OpenGL(), which should ideally by suppressed)
+VoidFunction gInitialFontLoadingFunction = nullptr;
 
 
 AbstractRunner::AbstractRunner(RunnerParams &params_)
@@ -76,11 +82,11 @@ AbstractRunner::AbstractRunner(RunnerParams &params_)
 // size for a crisper rendering) and try to reload the fonts.
 // This only works if the user provided callback LoadAdditionalFonts() uses DpiFontLoadingFactor()
 // to multiply its font size.
-void AbstractRunner::ReloadFontIfFailed() const
+void AbstractRunner::ReloadFontIfFailed_OpenGL() const
 {
     fprintf(stderr, "Detected a potential font loading error! You might try to reduce the number of loaded fonts and/or their size!\n");
 #ifdef HELLOIMGUI_HAS_OPENGL
-    if (ImGui::GetIO().FontGlobalScale < 1.f)
+    if (ImGui::GetIO().FontGlobalScale < 1.f && gInitialFontLoadingFunction)
     {
         fprintf(stderr,
                 "Trying to solve the font loading error by changing ImGui::GetIO().FontGlobalScale from %f to 1.f! Font rendering might be less crisp...\n",
@@ -88,7 +94,7 @@ void AbstractRunner::ReloadFontIfFailed() const
                 );
         ImGui::GetIO().FontGlobalScale = 1.f;
         ImGui::GetIO().Fonts->Clear();
-        params.callbacks.LoadAdditionalFonts();
+        gInitialFontLoadingFunction();
         ImGui::GetIO().Fonts->Build();
         ImGui_ImplOpenGL3_CreateFontsTexture();
     }
@@ -662,10 +668,13 @@ void AbstractRunner::Setup()
     //
     // load fonts & set ImGui::GetIO().FontGlobalScale
     //
-    ImGui::GetIO().Fonts->Clear();
+
     // LoadAdditionalFonts will load fonts and resize them by 1./FontGlobalScale
     // (if and only if it uses HelloImGui::LoadFontTTF instead of ImGui's font loading functions)
+    ImGui::GetIO().Fonts->Clear();
+    gInitialFontLoadingFunction = params.callbacks.LoadAdditionalFonts;
     params.callbacks.LoadAdditionalFonts();
+    params.callbacks.LoadAdditionalFonts = nullptr;
     bool buildSuccess = ImGui::GetIO().Fonts->Build();
     IM_ASSERT(buildSuccess && "ImGui::GetIO().Fonts->Build() failed!");
     {
@@ -905,6 +914,19 @@ void AbstractRunner::CreateFramesAndRender()
         #endif
     } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
+    if (true_gil) // Load additional fonts during execution
+    {
+        if (params.callbacks.LoadAdditionalFonts != nullptr)
+        {
+            params.callbacks.LoadAdditionalFonts();
+            ImGui::GetIO().Fonts->Build();
+            // cf https://github.com/ocornut/imgui/issues/6547
+            // We need to recreate the rendering backend device objects
+            mRenderingBackendCallbacks->Impl_DestroyFontTexture();
+            mRenderingBackendCallbacks->Impl_CreateFontTexture();
+            params.callbacks.LoadAdditionalFonts = nullptr;
+        }
+    }
 
     //
     // Rendering logic
@@ -950,7 +972,10 @@ void AbstractRunner::CreateFramesAndRender()
             {
                 auto error = glGetError();
                 if (error != 0)
+                {
+                    fprintf(stderr, "OpenGL error detected on first frame: %d. Will try to reload font without scaling\n", error);
                     foundPotentialFontLoadingError = true;
+                }
             }
         }
         #endif
@@ -997,7 +1022,7 @@ void AbstractRunner::CreateFramesAndRender()
     #endif
 
     if (foundPotentialFontLoadingError)
-        ReloadFontIfFailed();
+        ReloadFontIfFailed_OpenGL();
 
     mIdxFrame += 1;
 }

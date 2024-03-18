@@ -34,6 +34,9 @@ namespace HelloImGui
             ImGui_ImplOpenGL3_Shutdown();
         };
 
+        callbacks->Impl_CreateFontTexture = ImGui_ImplOpenGL3_CreateFontsTexture;
+        callbacks->Impl_DestroyFontTexture = ImGui_ImplOpenGL3_DestroyFontsTexture;
+
         return callbacks;
     }
 

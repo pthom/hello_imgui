@@ -1,6 +1,7 @@
 #ifdef HELLOIMGUI_HAS_DIRECTX11
 #include "rendering_dx11.h"
 #include "hello_imgui/hello_imgui.h"
+#include "hello_imgui/hello_imgui_error.h"
 
 #include <cstdio>
 #include <d3d11.h>
@@ -130,6 +131,9 @@ namespace HelloImGui
         callbacks->Impl_ScreenshotRgb_3D     = [] { return ImageBuffer{}; };
 
         //         callbacks->Impl_GetFrameBufferSize;   //= [] { return ScreenSize{0, 0}; };
+
+        callbacks->Impl_CreateFontTexture = [] { HIMG_ERROR("DX11 does not support font texture creation/deletion at runtim"); };
+        callbacks->Impl_DestroyFontTexture = [] { HIMG_ERROR("DX11 does not support font texture creation/deletion at runtim"); };
 
         return callbacks;
     }

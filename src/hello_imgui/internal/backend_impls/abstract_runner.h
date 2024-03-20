@@ -85,7 +85,6 @@ private:
     void SetupDpiAwareParams();
     void PrepareWindowGeometry();
     void HandleDpiOnSecondFrame();
-    void ReloadFontIfFailed_OpenGL() const;
     void MakeWindowSizeRelativeTo96Ppi_IfRequired();
     bool ShallSizeWindowRelativeTo96Ppi();
     bool WantAutoSize();

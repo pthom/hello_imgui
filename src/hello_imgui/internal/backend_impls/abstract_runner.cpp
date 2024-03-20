@@ -68,38 +68,9 @@ namespace HelloImGui
 void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 
 
-// Only used with OpenGL if the font loading failed at first frame
-// (used by ReloadFontIfFailed_OpenGL(), which should ideally by suppressed)
-VoidFunction gInitialFontLoadingFunction = nullptr;
-
-
 AbstractRunner::AbstractRunner(RunnerParams &params_)
     : params(params_) {}
 
-// Advanced: ImGui_ImplOpenGL3_CreateFontsTexture might cause an OpenGl error when the font texture is too big
-// We detect it soon after calling ImGui::NewFrame by setting mPotentialFontLoadingError.
-// In that case, we try to set FontGlobalScale to 1 if it is < 1 (i.e. stop increasing the font
-// size for a crisper rendering) and try to reload the fonts.
-// This only works if the user provided callback LoadAdditionalFonts() uses DpiFontLoadingFactor()
-// to multiply its font size.
-void AbstractRunner::ReloadFontIfFailed_OpenGL() const
-{
-    fprintf(stderr, "Detected a potential font loading error! You might try to reduce the number of loaded fonts and/or their size!\n");
-#ifdef HELLOIMGUI_HAS_OPENGL
-    if (ImGui::GetIO().FontGlobalScale < 1.f && gInitialFontLoadingFunction)
-    {
-        fprintf(stderr,
-                "Trying to solve the font loading error by changing ImGui::GetIO().FontGlobalScale from %f to 1.f! Font rendering might be less crisp...\n",
-                ImGui::GetIO().FontGlobalScale
-                );
-        ImGui::GetIO().FontGlobalScale = 1.f;
-        ImGui::GetIO().Fonts->Clear();
-        gInitialFontLoadingFunction();
-        ImGui::GetIO().Fonts->Build();
-        ImGui_ImplOpenGL3_CreateFontsTexture();
-    }
-#endif
-}
 
 #ifndef USEHACK
 void AbstractRunner::Run()
@@ -672,7 +643,6 @@ void AbstractRunner::Setup()
     // LoadAdditionalFonts will load fonts and resize them by 1./FontGlobalScale
     // (if and only if it uses HelloImGui::LoadFontTTF instead of ImGui's font loading functions)
     ImGui::GetIO().Fonts->Clear();
-    gInitialFontLoadingFunction = params.callbacks.LoadAdditionalFonts;
     params.callbacks.LoadAdditionalFonts();
     params.callbacks.LoadAdditionalFonts = nullptr;
     bool buildSuccess = ImGui::GetIO().Fonts->Build();
@@ -957,12 +927,6 @@ void AbstractRunner::CreateFramesAndRender()
     // so that it can *NOT* be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
     ImGui::NewFrame();
 
-
-    // Fight against potential font loading issue
-    // Fonts are transferred to the GPU one the first call to ImGui::NewFrame()
-    // We might detect an OpenGL error if the font texture was too big for the GPU
-    bool foundPotentialFontLoadingError = false;
-
     if (true) // check potential OpenGL error on first frame, that may be due to a font loading error
     {
         #ifdef HELLOIMGUI_HAS_OPENGL
@@ -973,8 +937,7 @@ void AbstractRunner::CreateFramesAndRender()
                 auto error = glGetError();
                 if (error != 0)
                 {
-                    fprintf(stderr, "OpenGL error detected on first frame: %d. Will try to reload font without scaling\n", error);
-                    foundPotentialFontLoadingError = true;
+                    fprintf(stderr, "OpenGL error detected on first frame: %d. May be the font texture is too big\n", error);
                 }
             }
         }
@@ -1020,9 +983,6 @@ void AbstractRunner::CreateFramesAndRender()
             TestEngineCallbacks::PostSwap();
         }
     #endif
-
-    if (foundPotentialFontLoadingError)
-        ReloadFontIfFailed_OpenGL();
 
     mIdxFrame += 1;
 }

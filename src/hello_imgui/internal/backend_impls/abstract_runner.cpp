@@ -742,6 +742,8 @@ void AbstractRunner::RenderGui()
 }
 
 
+void _UpdateFrameRateStats(); // See hello_imgui.cpp
+
 void AbstractRunner::CreateFramesAndRender()
 {
     // Notes:
@@ -765,11 +767,17 @@ void AbstractRunner::CreateFramesAndRender()
     //    any user callback (which may call python functions)
     // -
 
-    // `true_gil` is a synonym for "true" (whenever using Python or not using Python)
-    // (it is here only to make the code more readable)
-    constexpr bool true_gil = true;
+    // `foldable_region` is a synonym for "true" (whenever using Python or not using Python)
+    // (it is here only to make the code more readable, and to enable to collapse blocks of code)
+    constexpr bool foldable_region = true;
 
-    if (true_gil) // basic layout checks
+    if (foldable_region) // Update frame rate stats
+    {
+        _UpdateFrameRateStats();
+        // printf("Render frame %i, fps=%.1f\n", mIdxFrame, HelloImGui::FrameRate());
+    }
+
+    if (foldable_region) // basic layout checks
     { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
 
@@ -785,7 +793,7 @@ void AbstractRunner::CreateFramesAndRender()
         #endif
     } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
-    if (true) // Register tests
+    if (foldable_region) // Register tests
     {
         #ifdef HELLOIMGUI_WITH_TEST_ENGINE
         // This block calls a user callback, so it cannot be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
@@ -800,7 +808,7 @@ void AbstractRunner::CreateFramesAndRender()
         #endif
     }
 
-    if (true_gil) // handle window size and position on first frames
+    if (foldable_region) // handle window size and position on first frames
     { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
 
@@ -865,7 +873,7 @@ void AbstractRunner::CreateFramesAndRender()
         }
     }  // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
-    if(true_gil) // Handle idling
+    if(foldable_region) // Handle idling
     { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
 
@@ -889,7 +897,7 @@ void AbstractRunner::CreateFramesAndRender()
         #endif
     } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
-    if (true_gil) // Load additional fonts during execution
+    if (foldable_region) // Load additional fonts during execution
     {
         if (params.callbacks.LoadAdditionalFonts != nullptr)
         {
@@ -909,7 +917,7 @@ void AbstractRunner::CreateFramesAndRender()
     if (params.callbacks.PreNewFrame)
         params.callbacks.PreNewFrame();
 
-    if (true_gil)  // New Frame / Rendering and Platform Backend (not ImGui)
+    if (foldable_region)  // New Frame / Rendering and Platform Backend (not ImGui)
     { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
 
@@ -963,7 +971,7 @@ void AbstractRunner::CreateFramesAndRender()
     if (params.callbacks.BeforeImGuiRender)
         params.callbacks.BeforeImGuiRender();
 
-    if (true_gil) // Render and Swap
+    if (foldable_region) // Render and Swap
     { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
 

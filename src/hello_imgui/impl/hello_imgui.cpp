@@ -152,27 +152,42 @@ namespace ChronoShenanigans
 
 }
 
+static std::deque<float> gFrameTimes;
+
+void _UpdateFrameRateStats()
+{
+    float now = ChronoShenanigans::ClockSeconds();
+    gFrameTimes.push_back(now);
+
+    size_t maxFrameCount = 300;
+    while (gFrameTimes.size() > maxFrameCount)
+        gFrameTimes.pop_front();
+};
+
 float FrameRate(float durationForMean)
 {
-    static std::deque<float> times;
-    float now = ChronoShenanigans::ClockSeconds();
-    times.push_back(now);
-    if (times.size() <= 1)
+    if (gFrameTimes.size() <= 1)
         return 0.f;
 
-    while (true)
-    {
-        float firstTime = times.front();
-        float age = now - firstTime;
-        if ((age > durationForMean) && (times.size() >= 3))
-            times.pop_front();
-        else
-            break;
-    }
+    float lastFrameTime = gFrameTimes.back();
+    int lastFrameIdx = (int)gFrameTimes.size() - 1;
 
-    float totalTime = times.back() - times.front();
-    int nbFrames = (int)times.size();
-    float fps = 1.f / (totalTime / (float) (nbFrames - 1));
+    // Go back in frame times to find the first frame that is not too old
+    int i = (int)gFrameTimes.size() - 1;
+    while (i > 0)
+    {
+        if (lastFrameTime - gFrameTimes[i] > durationForMean)
+            break;
+        --i;
+    }
+    if (i == lastFrameIdx)
+        return 0.f;
+    // printf("i=%d, lastFrameIdx=%d\n", i, lastFrameIdx);
+
+    // Compute the mean frame rate
+    float totalTime = lastFrameTime - gFrameTimes[i];
+    int nbFrames = lastFrameIdx - i;
+    float fps =  (float)nbFrames / totalTime;
     return fps;
 }
 

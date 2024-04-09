@@ -29,14 +29,16 @@
         "HELLOIMGUI_HAS_VULKAN": "ON",
         "HELLOIMGUI_HAS_DIRECTX11": "ON",
         "HELLOIMGUI_HAS_DIRECTX12": "ON",
-        "HELLOIMGUI_HAS_NULL": "ON"
+        "HELLOIMGUI_HAS_NULL": "ON",
+        "HELLOIMGUI_WITH_NETIMGUI": "ON"
       }
     },
     {
-      "name": "build_null_backend",
-      "description": "Build with null backend.",
+      "name": "build_netimgui",
+      "description": "Build with netImgui.",
       "cacheVariables": {
-        "HELLOIMGUI_NULL_BACKEND": "ON"
+        "HELLOIMGUI_NULL_BACKEND": "ON",
+        "HELLOIMGUI_WITH_NETIMGUI": "ON"
       }
     },
     {

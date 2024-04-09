@@ -21,11 +21,16 @@
 #define SCOPED_RELEASE_GIL_ON_MAIN_THREAD
 #endif
 
+#ifdef HELLOIMGUI_WITH_NETIMGUI
+#include "NetImgui_Api.h"
+#endif
+
 #include <chrono>
 #include <cassert>
 #include <filesystem>
 #include <cstdio>
 #include <optional>
+#include <thread>
 
 #if __APPLE__
 #include <TargetConditionals.h>
@@ -680,7 +685,96 @@ void AbstractRunner::Setup()
         style.Colors[ImGuiCol_TitleBgCollapsed].w = 1.f;
     }
     params.callbacks.SetupImGuiStyle();
+
+#ifdef HELLOIMGUI_WITH_NETIMGUI
+    if (params.remoteParams.enableRemoting)
+    {
+        if (!NetImGui_Connect())
+        {
+            IM_ASSERT(false && "NetImGui_Connect() failed! Please launch the server/display app before!");
+            exit(1);
+        }
+    }
+#endif
 }
+
+
+void AbstractRunner::NetImGui_LogConnectionStatusOnce()
+{
+    if (! params.remoteParams.enableRemoting)
+        return;
+#ifdef HELLOIMGUI_WITH_NETIMGUI
+    // Log connection status and return
+    if (NetImgui::IsConnectionPending())
+    {
+        static bool wasMessageShown = false;
+        if (!wasMessageShown)
+        {
+            wasMessageShown = true;
+            printf("Waiting for NetImgui connection...\n");
+        }
+    }
+    else if (NetImgui::IsConnected())
+    {
+        static bool wasMessageShown = false;
+        if (!wasMessageShown)
+        {
+            wasMessageShown = true;
+            printf("Connected to NetImgui server\n");
+        }
+    }
+#endif
+}
+
+
+bool AbstractRunner::NetImGui_Connect()
+{
+#ifdef HELLOIMGUI_WITH_NETIMGUI
+    // 0. Startup NetImgui
+    NetImgui::Startup();
+    // 1. Connect to NetImgui server
+    std::string clientName = params.remoteParams.clientName;
+    if (clientName.empty())
+        clientName = params.appWindowParams.windowTitle;
+    if (clientName.empty())
+        clientName = "HelloImGui";
+    bool clientActiveImmediately = NetImgui::ConnectToApp(clientName.c_str(), params.remoteParams.serverHost.c_str(), params.remoteParams.serverPort);
+
+    // 2. Wait a bit for the connection to be established (this is optional, just to display the messages after)
+    if (!clientActiveImmediately)
+    {
+        printf("Sleeping 0.1s to wait for NetImgui connection...\n");
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // 3. Log connection status (this is optional also, since this is called also inside CreateFramesAndRender)
+    NetImGui_LogConnectionStatusOnce();
+    if (!NetImgui::IsConnected() && !NetImgui::IsConnectionPending())
+    {
+        printf("Connection to NetImgui server failed!\n");
+        return false;
+    }
+
+    // 4. Send Font texture to NetImgui server
+    const ImFontAtlas* pFonts = ImGui::GetIO().Fonts;
+    if( pFonts->TexPixelsAlpha8) // && (pFonts->TexPixelsAlpha8 != client.mpFontTextureData || client.mFontTextureID != pFonts->TexID ))
+    {
+        uint8_t* pPixelData(nullptr); int width(0), height(0);
+        ImGui::GetIO().Fonts->GetTexDataAsAlpha8(&pPixelData, &width, &height);
+        NetImgui::SendDataTexture(pFonts->TexID, pPixelData, static_cast<uint16_t>(width), static_cast<uint16_t>(height), NetImgui::eTexFormat::kTexFmtA8);
+    }
+    if( pFonts->TexPixelsRGBA32) // && (pFonts->TexPixelsAlpha8 != client.mpFontTextureData || client.mFontTextureID != pFonts->TexID ))
+    {
+        uint8_t* pPixelData(nullptr); int width(0), height(0);
+        ImGui::GetIO().Fonts->GetTexDataAsRGBA32(&pPixelData, &width, &height);
+        NetImgui::SendDataTexture(pFonts->TexID, pPixelData, static_cast<uint16_t>(width), static_cast<uint16_t>(height), NetImgui::eTexFormat::kTexFmtRGBA8);
+    }
+    return true;
+#else
+    return false;
+#endif
+}
+
 
 void AbstractRunner::SetLayoutResetIfNeeded()
 {
@@ -774,6 +868,11 @@ void AbstractRunner::CreateFramesAndRender()
     // `foldable_region` is a synonym for "true" (whenever using Python or not using Python)
     // (it is here only to make the code more readable, and to enable to collapse blocks of code)
     constexpr bool foldable_region = true;
+
+#ifdef HELLOIMGUI_WITH_NETIMGUI
+    if (params.remoteParams.enableRemoting)
+        NetImGui_LogConnectionStatusOnce();
+#endif
 
     if (foldable_region) // Update frame rate stats
     {
@@ -1141,6 +1240,13 @@ void AbstractRunner::TearDown(bool gotException)
         if (params.useImGuiTestEngine)
             TestEngineCallbacks::TearDown_ImGuiContextDestroyed();
     #endif
+
+#ifdef HELLOIMGUI_WITH_NETIMGUI
+        if (params.remoteParams.enableRemoting)
+        {
+            NetImgui::Shutdown();
+        }
+#endif
 }
 
 

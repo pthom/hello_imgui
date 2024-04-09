@@ -95,6 +95,12 @@ option(HELLOIMGUI_HAS_NULL "Null rendering backend" OFF)  # for testing and remo
 option(HELLOIMGUI_NULL_BACKEND "Use Null rendering/platform backend" OFF)
 # </Backends>  # do not remove this line (used by the script that generates the documentation)
 
+#------------------------------------------------------------------------------
+# Options / Remoting
+#------------------------------------------------------------------------------
+# Using https://github.com/sammyfreg/netImgui, you can use HelloImGui with remote rendering
+# (this is useful for example to render ImGui on a remote device, or to render ImGui in a web browser)
+option(HELLOIMGUI_WITH_NETIMGUI "Use netImgui for remote rendering" OFF)
 
 #------------------------------------------------------------------------------
 # Options / Freetype

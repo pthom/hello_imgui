@@ -133,6 +133,36 @@ struct FpsIdling
 
 // --------------------------------------------------------------------------------------------------------------------
 
+// --------------------------------------------------------------------------------------------------------------------
+
+// @@md#NetImGuiParams
+
+// NetImGuiParams is a struct that contains the settings for displaying the application on a remote device.
+// using https://github.com/sammyfreg/netImgui
+// (This will only work if the application is compiled with the option -DHELLOIMGUI_WITH_NETIMGUI=ON)
+struct NetImGuiParams
+{
+    bool enableRemoting = false;
+
+    // Name of the client (if empty, will use params.appWindowParams.windowTitle)
+    // (The client is the app that contains the application logic)
+    std::string clientName = "";
+
+    // The server host (if empty, will use "localhost")
+    // The server is the app that simply displays the application on a remote device
+    std::string serverHost = "localhost";
+    // The server port (default is 8888)
+    uint32_t serverPort = 8888;
+
+    // The client port (default is 8889)
+    // This is unused since it is the client (i.e. the app logic) that connects to the server,
+    // using NetImgui::ConnectToApp
+    uint32_t clientPort = 8889;
+};
+
+// @@md
+
+// --------------------------------------------------------------------------------------------------------------------
 
 // @@md#RunnerParams
 
@@ -195,6 +225,8 @@ struct RunnerParams
     // Only useful when multiple rendering backend are compiled and available.
     RendererBackendType rendererBackendType = RendererBackendType::FirstAvailable;
 
+    // --------------- RemoteParams -------------------
+    NetImGuiParams remoteParams;
 
 
     // --------------- Settings -------------------

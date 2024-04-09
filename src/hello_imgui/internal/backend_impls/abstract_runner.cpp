@@ -52,6 +52,7 @@
 #include "rendering_vulkan.h"
 #include "rendering_dx11.h"
 #include "rendering_dx12.h"
+#include "rendering_null.h"
 
 //
 // NOTE: AbstractRunner should *not* care in any case of:
@@ -577,6 +578,10 @@ void AbstractRunner::InitRenderBackendCallbacks()
         #else
             IM_ASSERT(false && "DirectX12 backend is not available!");
         #endif
+    }
+    else if (params.rendererBackendType == RendererBackendType::Null)
+    {
+        mRenderingBackendCallbacks = CreateBackendCallbacks_Null();
     }
     else
     {

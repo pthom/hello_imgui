@@ -63,7 +63,11 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
     }
     else if (params.platformBackendType == PlatformBackendType::Null)
     {
-        return std::make_unique<RunnerNull>(params);
+        #ifdef HELLOIMGUI_USE_NULL
+            return std::make_unique<RunnerNull>(params);
+        #else
+            return nullptr;
+        #endif
     }
     else
         return nullptr;

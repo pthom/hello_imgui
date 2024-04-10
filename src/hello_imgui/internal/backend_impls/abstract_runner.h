@@ -98,9 +98,6 @@ private:
     void LayoutSettings_Load();
     void LayoutSettings_Save();
 
-    bool NetImGui_Connect();
-    void NetImGui_LogConnectionStatusOnce();
-
 public:
     BackendApi::WindowPointer mWindow = nullptr;
 protected:

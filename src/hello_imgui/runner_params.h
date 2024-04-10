@@ -144,6 +144,9 @@ struct NetImGuiParams
 {
     bool enableRemoting = false;
 
+    bool exitWhenServerDisconnected = false;
+    double durationMaxDisconnected = 30.0;
+
     // Name of the client (if empty, will use params.appWindowParams.windowTitle)
     // (The client is the app that contains the application logic)
     std::string clientName = "";

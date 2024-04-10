@@ -74,6 +74,162 @@ namespace HelloImGui
 void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 
 
+// =====================================================================================================================
+//                              <NetImGuiWrapper>
+// =====================================================================================================================
+#ifdef HELLOIMGUI_WITH_NETIMGUI
+struct NetImGuiRaii {
+    NetImGuiRaii() { NetImgui::Startup(); }
+    ~NetImGuiRaii() { NetImgui::Shutdown(); }
+};
+
+
+class NetImGuiWrapper
+{
+public:
+    NetImGuiWrapper() = default;
+    ~NetImGuiWrapper() = default;
+
+    void HeartBeat()
+    {
+        if (mNetImguiRaii == nullptr)
+        {
+            InitiateConnection();
+            return;
+        }
+
+        int nbConnectionsPending = mNbConnectionsTentatives - mNbConnectionsSuccess - mNbConnectionsFailures;
+        IM_ASSERT(nbConnectionsPending == 0 || nbConnectionsPending == 1);
+
+        if (nbConnectionsPending == 1)
+        {
+            if (NetImgui::IsConnected())
+            {
+                LogStatus("Connection success...\n");
+                ++ mNbConnectionsSuccess;
+                mLastConnectionSuccess = true;
+            }
+            else if (NetImgui::IsConnectionPending())
+            {
+                LogStatus("Connection pending...\n");
+            }
+            else
+            {
+                LogStatus("Connection failure...\n");
+                ++ mNbConnectionsFailures;
+                mLastConnectionSuccess = false;
+            }
+        }
+        else // nbConnectionsPending == 0
+        {
+            if (mLastConnectionSuccess)
+            {
+                if (!NetImgui::IsConnected())
+                {
+                    if (remoteParams().exitWhenServerDisconnected)
+                    {
+                        LogStatus("Connection lost... Exiting\n");
+                        runnerParams().appShallExit = true;
+                    }
+                    else
+                    {
+                        mTimePointConnectionEnded = HelloImGui::Internal::ClockSeconds();
+                        LogStatus("Connection lost... Reconnecting\n");
+                        InitiateConnection();
+                    }
+                }
+            }
+            else // Last connection was a failure
+            {
+                LogStatus("Last connection was a failure... Reconnecting\n");
+                InitiateConnection();
+            }
+        }
+
+        // Exit if failure since too long
+        {
+            bool isDisconnected = !mLastConnectionSuccess;
+            if (isDisconnected)
+            {
+                double disconnectionTime = HelloImGui::Internal::ClockSeconds() - mTimePointConnectionEnded;
+                std::string msg = "Disconnected since " + std::to_string(disconnectionTime) + "s";
+                LogStatus(msg);
+                bool isTooLong = disconnectionTime > remoteParams().durationMaxDisconnected;
+                if (isTooLong)
+                {
+                    LogStatus("Too long disconnected... Exiting\n");
+                    runnerParams().appShallExit = true;
+                }
+            }
+        }
+    }
+
+private:
+    void InitiateConnection()
+    {
+        printf("NetImGuiWrapper: InitiateConnection\n");
+        mNetImguiRaii.release();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        mNetImguiRaii = std::make_unique<NetImGuiRaii>();
+        NetImgui::ConnectToApp(clientName().c_str(), remoteParams().serverHost.c_str(), remoteParams().serverPort);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        ++ mNbConnectionsTentatives;
+        sendFonts();
+    }
+
+    std::string clientName()
+    {
+        std::string clientName = remoteParams().clientName;
+        if (clientName.empty())
+            clientName = runnerParams().appWindowParams.windowTitle;
+        if (clientName.empty())
+            clientName = "HelloImGui";
+        clientName += "##" + std::to_string(ImGui::GetTime());
+        return clientName;
+    }
+
+    HelloImGui::NetImGuiParams& remoteParams() { return HelloImGui::GetRunnerParams()->remoteParams; }
+    HelloImGui::RunnerParams& runnerParams() { return *HelloImGui::GetRunnerParams(); }
+
+    void sendFonts()
+    {
+        printf("NetImGuiWrapper: sendFonts\n");
+        const ImFontAtlas* pFonts = ImGui::GetIO().Fonts;
+        if( pFonts->TexPixelsAlpha8) // && (pFonts->TexPixelsAlpha8 != client.mpFontTextureData || client.mFontTextureID != pFonts->TexID ))
+        {
+            uint8_t* pPixelData(nullptr); int width(0), height(0);
+            ImGui::GetIO().Fonts->GetTexDataAsAlpha8(&pPixelData, &width, &height);
+            NetImgui::SendDataTexture(pFonts->TexID, pPixelData, static_cast<uint16_t>(width), static_cast<uint16_t>(height), NetImgui::eTexFormat::kTexFmtA8);
+        }
+        if( pFonts->TexPixelsRGBA32) // && (pFonts->TexPixelsAlpha8 != client.mpFontTextureData || client.mFontTextureID != pFonts->TexID ))
+        {
+            uint8_t* pPixelData(nullptr); int width(0), height(0);
+            ImGui::GetIO().Fonts->GetTexDataAsRGBA32(&pPixelData, &width, &height);
+            NetImgui::SendDataTexture(pFonts->TexID, pPixelData, static_cast<uint16_t>(width), static_cast<uint16_t>(height), NetImgui::eTexFormat::kTexFmtRGBA8);
+        }
+    }
+
+    void LogStatus(const std::string& msg)
+    {
+        printf("NetImGuiWrapper: %s\n", msg.c_str());
+    }
+
+private:  // Members
+    std::unique_ptr<NetImGuiRaii> mNetImguiRaii;
+    int mNbConnectionsTentatives = 0;
+    int mNbConnectionsSuccess = 0;
+    int mNbConnectionsFailures = 0;
+    bool mLastConnectionSuccess = false;
+    double mTimePointConnectionEnded = 0.0;
+};
+
+std::unique_ptr<NetImGuiWrapper> gNetImGuiWrapper;
+#endif
+// =====================================================================================================================
+//                              </NetImGuiWrapper>
+// =====================================================================================================================
+
+
 AbstractRunner::AbstractRunner(RunnerParams &params_)
     : params(params_) {}
 
@@ -688,90 +844,7 @@ void AbstractRunner::Setup()
 
 #ifdef HELLOIMGUI_WITH_NETIMGUI
     if (params.remoteParams.enableRemoting)
-    {
-        if (!NetImGui_Connect())
-        {
-            IM_ASSERT(false && "NetImGui_Connect() failed! Please launch the server/display app before!");
-            exit(1);
-        }
-    }
-#endif
-}
-
-
-void AbstractRunner::NetImGui_LogConnectionStatusOnce()
-{
-    if (! params.remoteParams.enableRemoting)
-        return;
-#ifdef HELLOIMGUI_WITH_NETIMGUI
-    // Log connection status and return
-    if (NetImgui::IsConnectionPending())
-    {
-        static bool wasMessageShown = false;
-        if (!wasMessageShown)
-        {
-            wasMessageShown = true;
-            printf("Waiting for NetImgui connection...\n");
-        }
-    }
-    else if (NetImgui::IsConnected())
-    {
-        static bool wasMessageShown = false;
-        if (!wasMessageShown)
-        {
-            wasMessageShown = true;
-            printf("Connected to NetImgui server\n");
-        }
-    }
-#endif
-}
-
-
-bool AbstractRunner::NetImGui_Connect()
-{
-#ifdef HELLOIMGUI_WITH_NETIMGUI
-    // 0. Startup NetImgui
-    NetImgui::Startup();
-    // 1. Connect to NetImgui server
-    std::string clientName = params.remoteParams.clientName;
-    if (clientName.empty())
-        clientName = params.appWindowParams.windowTitle;
-    if (clientName.empty())
-        clientName = "HelloImGui";
-    bool clientActiveImmediately = NetImgui::ConnectToApp(clientName.c_str(), params.remoteParams.serverHost.c_str(), params.remoteParams.serverPort);
-
-    // 2. Wait a bit for the connection to be established (this is optional, just to display the messages after)
-    if (!clientActiveImmediately)
-    {
-        printf("Sleeping 0.1s to wait for NetImgui connection...\n");
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-
-    // 3. Log connection status (this is optional also, since this is called also inside CreateFramesAndRender)
-    NetImGui_LogConnectionStatusOnce();
-    if (!NetImgui::IsConnected() && !NetImgui::IsConnectionPending())
-    {
-        printf("Connection to NetImgui server failed!\n");
-        return false;
-    }
-
-    // 4. Send Font texture to NetImgui server
-    const ImFontAtlas* pFonts = ImGui::GetIO().Fonts;
-    if( pFonts->TexPixelsAlpha8) // && (pFonts->TexPixelsAlpha8 != client.mpFontTextureData || client.mFontTextureID != pFonts->TexID ))
-    {
-        uint8_t* pPixelData(nullptr); int width(0), height(0);
-        ImGui::GetIO().Fonts->GetTexDataAsAlpha8(&pPixelData, &width, &height);
-        NetImgui::SendDataTexture(pFonts->TexID, pPixelData, static_cast<uint16_t>(width), static_cast<uint16_t>(height), NetImgui::eTexFormat::kTexFmtA8);
-    }
-    if( pFonts->TexPixelsRGBA32) // && (pFonts->TexPixelsAlpha8 != client.mpFontTextureData || client.mFontTextureID != pFonts->TexID ))
-    {
-        uint8_t* pPixelData(nullptr); int width(0), height(0);
-        ImGui::GetIO().Fonts->GetTexDataAsRGBA32(&pPixelData, &width, &height);
-        NetImgui::SendDataTexture(pFonts->TexID, pPixelData, static_cast<uint16_t>(width), static_cast<uint16_t>(height), NetImgui::eTexFormat::kTexFmtRGBA8);
-    }
-    return true;
-#else
-    return false;
+        gNetImGuiWrapper = std::make_unique<NetImGuiWrapper>();
 #endif
 }
 
@@ -872,13 +945,7 @@ void AbstractRunner::CreateFramesAndRender()
 #ifdef HELLOIMGUI_WITH_NETIMGUI
     if (params.remoteParams.enableRemoting) // Hande NetImGui connection
     {
-        NetImGui_LogConnectionStatusOnce();
-        if (!NetImgui::IsConnected())
-        {
-            // Maybe we should wait for a few frames before we exit.
-            printf("NetImGui: Not connected anymore, exiting app\n");
-            params.appShallExit = true;
-        }
+        gNetImGuiWrapper->HeartBeat();
     }
 #endif
 
@@ -1252,7 +1319,8 @@ void AbstractRunner::TearDown(bool gotException)
 #ifdef HELLOIMGUI_WITH_NETIMGUI
         if (params.remoteParams.enableRemoting)
         {
-            NetImgui::Shutdown();
+            IM_ASSERT(gNetImGuiWrapper != nullptr);
+            gNetImGuiWrapper.release();
         }
 #endif
 }

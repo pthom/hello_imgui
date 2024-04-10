@@ -64,7 +64,10 @@ struct DpiAwareParams
     //      factor by which font size should be multiplied at loading time to get a similar
     //      visible size on different OSes.
     //      The size will be equivalent to a size given for a 96 PPI screen
-    float DpiFontLoadingFactor() { return dpiWindowSizeFactor / fontRenderingScale;};
+    float DpiFontLoadingFactor() {
+        float r = dpiWindowSizeFactor / fontRenderingScale;
+        return r;
+    };
 };
 
 // ----------------------------------------------------------------------------

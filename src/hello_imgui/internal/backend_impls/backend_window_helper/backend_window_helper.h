@@ -62,7 +62,7 @@ namespace HelloImGui { namespace BackendApi
         virtual void WaitForEventTimeout(double timeout_seconds) = 0;
 
         // Return the ratio FrameBufferSize / WindowSize
-        virtual ImVec2 GetWindowScaleFactor(WindowPointer window) = 0;
+        virtual ImVec2 GetDisplayFramebufferScale(WindowPointer window) = 0;
 
         // Return the ratio by which the window size should be scaled to account for HighDPI
         // (i.e. the same size given at creation create the same physical size in mm on the screen)

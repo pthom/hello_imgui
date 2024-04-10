@@ -478,7 +478,7 @@ void AbstractRunner::SetupDpiAwareParams()
     }
 
     ImGui::GetIO().FontGlobalScale = params.dpiAwareParams.fontRenderingScale;
-    ImGui::GetIO().DisplayFramebufferScale = mBackendWindowHelper->GetWindowScaleFactor(mWindow);
+    ImGui::GetIO().DisplayFramebufferScale = mBackendWindowHelper->GetDisplayFramebufferScale(mWindow);
 }
 
 

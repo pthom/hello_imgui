@@ -200,7 +200,7 @@ namespace HelloImGui { namespace BackendApi
         SDL_WaitEventTimeout(NULL, timeout_ms);
     }
 
-    ImVec2 SdlWindowHelper::GetWindowScaleFactor(WindowPointer window)
+    ImVec2 SdlWindowHelper::GetDisplayFramebufferScale(WindowPointer window)
     {
         int win_w, win_h, fb_w, fb_h;
         SDL_GetWindowSize((SDL_Window *) window, &win_w, &win_h);

@@ -58,7 +58,12 @@ int main(int argc, char **argv)
         //        HelloImGui::GetRunnerParams()->dpiAwareParams.DpiFontLoadingFactor();
         float windowDPI = HelloImGui::GetRunnerParams()->dpiAwareParams.fontRenderingScale
                           * (float)(NetImguiServer::UI::kWindowDPIDefault); // 96
-        NetImguiServer::UI::SetWindowDPI((int)windowDPI);
+        //windowDPI = 48.f;
+        //printf("windowDPI: %f\n", windowDPI);
+        //NetImguiServer::UI::SetWindowDPI((int)windowDPI);
+
+        // See void FontCreationCallback(float PreviousDPIScale, float NewDPIScale)
+        // in SampleFontDPI.cpp ??
 
     };
 

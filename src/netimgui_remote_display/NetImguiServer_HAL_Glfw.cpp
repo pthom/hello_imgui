@@ -4,7 +4,7 @@
 
 #include <Private/NetImgui_Shared.h>
 #include "hello_imgui/hello_imgui.h"
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 
 
 namespace NetImguiServer { namespace App

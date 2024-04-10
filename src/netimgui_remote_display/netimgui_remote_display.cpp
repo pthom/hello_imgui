@@ -36,7 +36,7 @@ int main(int argc, char **argv)
         if (!cmdArgs.empty())
             cmdArgs.pop_back();
         if (! NetImguiServer::App::Startup(cmdArgs.c_str()))
-            return 1;
+            exit(1);
     };
 
     auto handle_dpi_awareness = []()

@@ -870,8 +870,16 @@ void AbstractRunner::CreateFramesAndRender()
     constexpr bool foldable_region = true;
 
 #ifdef HELLOIMGUI_WITH_NETIMGUI
-    if (params.remoteParams.enableRemoting)
+    if (params.remoteParams.enableRemoting) // Hande NetImGui connection
+    {
         NetImGui_LogConnectionStatusOnce();
+        if (!NetImgui::IsConnected())
+        {
+            // Maybe we should wait for a few frames before we exit.
+            printf("NetImGui: Not connected anymore, exiting app\n");
+            params.appShallExit = true;
+        }
+    }
 #endif
 
     if (foldable_region) // Update frame rate stats

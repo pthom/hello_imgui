@@ -77,7 +77,7 @@ int main(int argc, char **argv)
         handle_dpi_awareness();
     };
 
-    runnerParams.callbacks.BeforeImGuiRender = []() {
+    runnerParams.callbacks.ShowGui = []() {
         ImVec4 clear_color = NetImguiServer::UI::DrawImguiContent();
         HelloImGui::GetRunnerParams()->imGuiWindowParams.backgroundColor = clear_color;
     };

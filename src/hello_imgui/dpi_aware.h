@@ -35,6 +35,8 @@ namespace HelloImGui
 //     dpiWindowSizeFactor=2
 //     fontRenderingScale=0.5
 //
+// For more information, see the documentation on DPI handling, here: https://pthom.github.io/hello_imgui/book/doc_api.html#handling-screens-with-high-dpi
+//
 struct DpiAwareParams
 {
     // `dpiWindowSizeFactor`
@@ -143,3 +145,109 @@ float DpiWindowSizeFactor();
 float ImGuiDefaultFontGlobalScale();
 } // namespace HelloImGui
 
+
+// ----------------------------------------------------------------------------
+//           Handling screens with high DPI
+// ----------------------------------------------------------------------------
+/*
+@@md#HandlingScreenHighDPI
+
+_Note: This part is relevant only for more advanced usages. If you use `HelloImGui::LoadFont()`,
+ and always use `HelloImGui::EmToVec2()` to place widgets, you do not need to worry about DPI handling_
+
+## OS specificities
+
+There are several important things to know about high-DPI handling within Hello ImGui and Dear ImGui:
+
+1. (virtual) screen coordinates vs (physical) pixels
+2. DisplayFramebufferScale: Frame buffer size vs window size
+3. FontGlobalScale: display-time font scaling factor
+4. How to load fonts with the correct size
+5. How to get similar window sizes on different OSes/DPI
+
+
+## Screen coordinates
+
+Screen coordinates are the coordinates you use to place and size windows on the screen.
+
+**Screen coordinates do not always correspond to physical pixels**
+
+- On macOS/iOS retina screens, a screen coordinate corresponds typically
+  to 2x2 physical pixels (but this may vary if you change the display scaling)
+- On most Linux distributions, whenever there is a high DPI screen
+  you can set the display scale. For example if you set the scale to 300%,
+  then a screen coordinate will correspond to 3x3 physical pixels
+- On Windows, there are two possible situations:
+    - If the application is DPI aware, a screen coordinate corresponds to 1x1 physical pixel,
+      and you can use the full extent of your screen resolution.
+    - If the application is not DPI aware, a screen coordinate may correspond to 2x2 physical pixels
+      (if the display scaling is set to 200% for example). However, the rendering of your application
+      will be blurry and will not use the full extent of your screen resolution.
+    - Notes:
+        - Applications created with HelloImGui are DPI aware by default (when using glfw and sdl backends).
+        - SDL applications are normally not DPI aware. However, HelloImGui makes them DPI aware.
+
+
+## DisplayFramebufferScale
+`DisplayFramebufferScale` is the ratio between the frame buffer size and the window size.
+
+The frame buffer size is the size of the internal buffer used by the rendering backend.
+It might be bigger than the actual window size.
+`ImVec2 ImGui::GetIO().DisplayFramebufferScale` is a factor by which the frame buffer size is bigger than the window size.
+It is set by the platform backend after it was initialized, and typically reflects the scaling ratio between
+physical pixels and screen coordinates.
+
+Under windows, it will always be (1,1). Under macOS / linux, it will reflect the current display scaling.
+It will typically be (2,2) on a macOS retina screen.
+
+Notes:
+- As a convenience, `ImGui::GetIO().DisplayFramebufferScale` is mirrored in `HelloImGui::DpiAwareParams::roDisplayFramebufferScale`.
+- You cannot change DisplayFramebufferScale manually, it will be reset at each new frame, by asking the platform backend.
+
+
+## FontGlobalScale
+
+`ImGui::GetIO().FontGlobalScale` is a factor by which fonts glyphs should be scaled at rendering time.
+It is typically 1 on windows, and 0.5 on macOS retina screens.
+
+
+## How to load fonts with the correct size
+
+### Using HelloImGui::LoadFont
+
+[`HelloImGui::LoadFont()`](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts) will load fonts
+ with the correct size, taking into account the DPI scaling.
+
+### Using Dear ImGui's AddFontFromFileTTF():
+`ImGui::GetIO().Fonts->AddFontFromFileTTF()` loads a font with a given size, in *physical pixels*.
+
+If for example, DisplayFramebufferScale is (2,2), and you load a font with a size of 16, it will by default be rendered
+ with size of 16 *virtual screen coordinate pixels* (i.e. 32 physical pixels). This will lead to blurry text.
+To solve this, you should load your font with a size of 16 *virtual screen coordinate pixels* (i.e. 32 physical pixels),
+and set `ImGui::GetIO().FontGlobalScale` to 0.5.
+
+Helpers if using `ImGui::GetIO().Fonts->AddFontFromFileTTF()`:
+- `HelloImGui::ImGuiDefaultFontGlobalScale()` returns the default value that should be stored inside `ImGui::GetIO().FontGlobalScale`.
+- `HelloImGui::DpiFontLoadingFactor()` returns a factor by which you shall multiply your font sizes when loading them.
+
+
+## Reproducible physical window sizes (in mm or inches)
+
+### Using HelloImGui
+Simply specify a window size that corresponds to theoretical 96 PPI screen (inside `RunnerParams.appWindowParams.windowGeometry.size`)
+
+### Using your own code to create the backend window
+If you prefer to create the window by yourself, its physical size in millimeters may vary widely,
+depending on the OS and the current screen DPI setting.
+Typically under Windows, your window may appear to be very small if your screen is high DPI.
+
+To get a similar window size on different OSes/DPI, you should multiply the window size by `HelloImGui::DpiWindowSizeFactor()`.
+
+Note: DpiWindowSizeFactor() is equal to `CurrentScreenPixelPerInch / 96` under windows and linux, and always 1 under macOS.
+
+## Fine tune DPI Handling
+
+See [`HelloImGui::DpiAwareParams`](https://pthom.github.io/hello_imgui/book/doc_params.html#dpi-aware-params)
+for more information on how to fine tune DPI handling when using Hello ImGui.
+@@md
+*/

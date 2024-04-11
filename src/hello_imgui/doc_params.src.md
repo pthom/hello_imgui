@@ -1,6 +1,9 @@
 # Application parameters
 
-_RunnerParams_ contains all the settings and callbacks in order to run an application. 
+@import "hello_imgui.h" {md_id=HelloImGui::Run}
+
+# Diagram
+
 The diagram below summarize all the possible settings and callbacks (which are explained in detail later in this document).
 
 [![diagram](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg)](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg)
@@ -120,11 +123,13 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 # Dpi Aware Params
 
-See [dpi_aware.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/dpi_aware.h)
+Optionally, DPI parameters can be fine-tuned. For detailed info, see [handling screens with high dpi](https://pthom.github.io/hello_imgui/book/doc_api.html#handling-screens-with-high-dpi)
 
+Source: [dpi_aware.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/dpi_aware.h)
 ```cpp
 @import "dpi_aware.h" {md_id=DpiAwareParams}
 ```
+
 
 ----
 

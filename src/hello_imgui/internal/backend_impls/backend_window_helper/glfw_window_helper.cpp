@@ -193,6 +193,7 @@ namespace HelloImGui { namespace BackendApi
     {
         float x_scale, y_scale;
         glfwGetWindowContentScale((GLFWwindow *) window, &x_scale, &y_scale);
+        printf("GlfwWindowHelper::GetDisplayFramebufferScale: %f, %f\n", x_scale, y_scale);
         return ImVec2(x_scale, y_scale);
     }
 
@@ -202,7 +203,6 @@ namespace HelloImGui { namespace BackendApi
         return 1.f;
 #else
         ImVec2 scale = GetDisplayFramebufferScale(window);
-        printf("GlfwWindowHelper::GetWindowSizeDpiScaleFactor: %f, %f\n", scale.x, scale.y);
         return scale.x;
 #endif
     }

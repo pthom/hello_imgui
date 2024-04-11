@@ -790,9 +790,9 @@ int main(int, char**)
     //runnerParams.platformBackendType = HelloImGui::PlatformBackendType::Sdl;
     //runnerParams.rendererBackendType = HelloImGui::RendererBackendType::Vulkan;
 
-    //runnerParams.remoteParams.enableRemoting = true;
-    runnerParams.dpiAwareParams.dpiWindowSizeFactor = 1.0f;
-    runnerParams.dpiAwareParams.fontRenderingScale = 1.0f;
+    runnerParams.remoteParams.enableRemoting = true;
+    //runnerParams.dpiAwareParams.dpiWindowSizeFactor = 1.0f;
+    //runnerParams.dpiAwareParams.fontRenderingScale = 1.0f;
 
     HelloImGui::Run(runnerParams); // Note: with ImGuiBundle, it is also possible to use ImmApp::Run(...)
 

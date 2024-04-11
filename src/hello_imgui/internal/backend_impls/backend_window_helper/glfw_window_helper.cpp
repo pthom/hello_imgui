@@ -202,6 +202,7 @@ namespace HelloImGui { namespace BackendApi
         return 1.f;
 #else
         ImVec2 scale = GetDisplayFramebufferScale(window);
+        printf("GlfwWindowHelper::GetWindowSizeDpiScaleFactor: %f, %f\n", scale.x, scale.y);
         return scale.x;
 #endif
     }

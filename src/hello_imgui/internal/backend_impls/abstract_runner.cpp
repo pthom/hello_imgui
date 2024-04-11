@@ -476,9 +476,19 @@ void AbstractRunner::SetupDpiAwareParams()
 
         params.dpiAwareParams.fontRenderingScale = 1.0f / fontSizeIncreaseFactor;
     }
-
     ImGui::GetIO().FontGlobalScale = params.dpiAwareParams.fontRenderingScale;
-    ImGui::GetIO().DisplayFramebufferScale = mBackendWindowHelper->GetDisplayFramebufferScale(mWindow);
+
+    //
+    // DisplayFramebufferScale
+    //
+    ImVec2 displayFramebufferScale = mBackendWindowHelper->GetDisplayFramebufferScale(mWindow);
+    // Note: ImGui_ImplGlfw_NewFrame, ImGui_ImplSDL2_NewFrame, ... will also set ImGui::GetIO().DisplayFramebufferScale
+    // (using their own backend abstraction).
+    // There is a slight chance of discrepancy here, However, GetDisplayFramebufferScale() and DearImGui
+    // do get the same results for SDL and GLFW under Windows Linux macOS, Android, iOS.
+    ImGui::GetIO().DisplayFramebufferScale = params.dpiAwareParams.roDisplayFramebufferScale;
+    // dpiAwareParams.roDisplayFramebufferScale is an output-only value (for information only)
+    params.dpiAwareParams.roDisplayFramebufferScale = displayFramebufferScale;
 }
 
 
@@ -1101,6 +1111,7 @@ void AbstractRunner::CreateFramesAndRender()
 
         mRenderingBackendCallbacks->Impl_NewFrame_3D();
         Impl_NewFrame_PlatformBackend();
+
         {
             // Workaround against SDL clock that sometimes leads to io.DeltaTime=0.f on emscripten
             // (which fails to an `IM_ASSERT(io.DeltaTime) > 0` in ImGui::NewFrame())

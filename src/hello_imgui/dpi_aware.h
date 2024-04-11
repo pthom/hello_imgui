@@ -38,8 +38,9 @@ namespace HelloImGui
 struct DpiAwareParams
 {
     // `dpiWindowSizeFactor`
-    //        factor by which window size should be multiplied to get a similar
-    //        visible size on different OSes.
+    //     factor by which window size should be multiplied to get a similar
+    //     visible size on different OSes. This affects the size of the window,
+    //     but *not* the size of widgets and text.
     //  In a standard environment (i.e. outside of Hello ImGui), an application with a size of 960x480 pixels,
     //  may have a physical size (in mm or inches) that varies depending on the screen DPI, and the OS.
     //
@@ -71,6 +72,20 @@ struct DpiAwareParams
         float r = dpiWindowSizeFactor / fontRenderingScale;
         return r;
     };
+
+    // `roDisplayFramebufferScale`
+    //    When rendering, the internal frame buffer size might be bigger than the
+    //    size (in "virtual screen coordinate" pixels) of the window.
+    //    For example:
+    //      - on macOS retina screens, the frame buffer size will be twice the window size
+    //        (and roDisplayFramebufferScale will be 2, 2)
+    //      - on Windows, the frame buffer size will be the same as the window size.
+    //        (since virtual screen coordinate pixels are the same as physical screen pixels on Windows)
+    //
+    //    This is an output-only value: it will be set by the platform backend
+    //    after it was initialized (any change you make to it at startup will not be used)
+    //    It mirrors the value inside ImGui::GetIO().DisplayFramebufferScale.
+    ImVec2 roDisplayFramebufferScale = ImVec2(0.f, 0.f);
 };
 
 // ----------------------------------------------------------------------------

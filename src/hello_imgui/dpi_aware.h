@@ -54,10 +54,13 @@ struct DpiAwareParams
     float dpiWindowSizeFactor = 0.0f;
 
     // `fontRenderingScale`
-    //     factor (that is either 1 or < 1.) by which fonts glyphs should be
-    //     scaled at rendering time.
-    //     On macOS retina screens, it will be 0.5, since macOS APIs hide
-    //     the real resolution of the screen.
+    //     factor (that is either 1 or < 1.) by which fonts glyphs should be scaled at rendering time.
+    //     On macOS retina screens, it will be 0.5, since macOS APIs hide the real resolution of the screen.
+    //     Changing this value will *not* change the visible font size on the screen, however it will
+    //     affect the size of the loaded glyphs.
+    //     For example, if fontRenderingScale=0.5 (which is the default on a macOS retina screen),
+    //     a font size of 16 will be loaded as if it was 32, and will be rendered at half size.
+    //     This leads to a better rendering quality on some platforms.
     float fontRenderingScale = 0.0f;
 
     // `dpiFontLoadingFactor`

@@ -231,7 +231,7 @@ namespace HelloImGui
 	FontDpiResponsive* LoadFontDpiResponsive(const std::string & fontFilename, float fontSize,
 											const FontLoadingParams & fontLoadingParams)
 	{
-		IM_ASSERT((!gWasLoadFontBareCalled) && "If using LoadFontDpiResponsive(), only use it, and do not use LoadFont()!");
+		IM_ASSERT((!gWasLoadFontBareCalled) && "If using LoadFontDpiResponsive(), set runnerParams.dpiAwareParams.onlyUseFontDpiResponsive=true and do not not use LoadFont()!");
 		gWasLoadFontDpiResponsiveCalled = true;
 
 		// Ensure that we have enough capacity, so that pointers remain valid

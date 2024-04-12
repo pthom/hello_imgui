@@ -53,17 +53,35 @@ namespace HelloImGui
         ImFontConfig fontConfigFontAwesome = ImFontConfig();
     };
 
-    // When loading fonts, use HelloImGui::LoadFont(FontLoadingParams)
-    // ===============================================================
-    // instead of ImGui::GetIO().Fonts->AddFontFromFileTTF(), because it will
-    // automatically adjust the font size to account for HighDPI, and will spare
-    // you headaches when trying to get consistent font size across different OSes.
-    // see FontLoadingParams and ImFontConfig
+	// A font that will be automatically resized to account for changes in DPI
+	// (use LoadAdaptiveFont instead of LoadFont to get this behavior)
+	struct FontDpiResponsive
+	{
+		ImFont* font = nullptr;
+		std::string fontFilename;
+		float fontSize = 0.f;
+		FontLoadingParams fontLoadingParams;
+	};
+
+    // !!! When loading fonts, use
+	// 			HelloImGui::LoadFont(FontLoadingParams)
+	//      or
+	//      	HelloImGui::LoadDpiResponsiveFont(FontLoadingParams)
+	//
+    // Use these functions instead of ImGui::GetIO().Fonts->AddFontFromFileTTF(),
+	// because they will automatically adjust the font size to account for HighDPI,
+	// and will spare you headaches when trying to get consistent font size across different OSes.
+
+	// Loads a font with the specified parameters (this font will not adapt to DPI changes after startup)
     ImFont* LoadFont(const std::string & fontFilename, float fontSize,
                      const FontLoadingParams & params = {});
 
-    // @@md
+	// Loads a font with the specified parameters (this font will adapt to DPI changes after startup)
+	// (only fonts loaded with LoadAdaptiveFont will adapt to DPI changes. Avoid mixing LoadFont/LoadFontDpiResponsive)
+	FontDpiResponsive* LoadFontDpiResponsive(const std::string & fontFilename, float fontSize,
+											 const FontLoadingParams & params = {});
 
+    // @@md
 
     //
     // Deprecated API below, kept for compatibility (uses LoadFont internally)

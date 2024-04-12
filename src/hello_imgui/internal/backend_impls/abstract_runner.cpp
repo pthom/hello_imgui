@@ -74,6 +74,9 @@ namespace HelloImGui
 // Encapsulated inside hello_imgui_screenshot.cpp
 void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 
+// Encapsulated inside hello_imgui_font.cpp
+void _ReloadAllDpiResponsiveFonts();
+
 
 // =====================================================================================================================
 //                              <NetImGuiWrapper>
@@ -165,6 +168,11 @@ public:
         }
     }
 
+	void sendFonts()
+	{
+		_sendFonts_Impl();
+	}
+
 private:
     void InitiateConnection()
     {
@@ -175,7 +183,7 @@ private:
         NetImgui::ConnectToApp(clientName().c_str(), remoteParams().serverHost.c_str(), remoteParams().serverPort);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         ++ mNbConnectionsTentatives;
-        sendFonts();
+		_sendFonts_Impl();
     }
 
     std::string clientName()
@@ -192,9 +200,8 @@ private:
     HelloImGui::NetImGuiParams& remoteParams() { return HelloImGui::GetRunnerParams()->remoteParams; }
     HelloImGui::RunnerParams& runnerParams() { return *HelloImGui::GetRunnerParams(); }
 
-    void sendFonts()
+    void _sendFonts_Impl()
     {
-        printf("NetImGuiWrapper: sendFonts\n");
         const ImFontAtlas* pFonts = ImGui::GetIO().Fonts;
         if( pFonts->TexPixelsAlpha8) // && (pFonts->TexPixelsAlpha8 != client.mpFontTextureData || client.mFontTextureID != pFonts->TexID ))
         {
@@ -439,29 +446,23 @@ void ReadDpiAwareParams(const std::string& appIniSettingLocation, DpiAwareParams
 }
 
 
-void _LogDpiParams(const HelloImGui::DpiAwareParams& dpiAwareParams)
+void _LogDpiParams(const std::string& origin, const HelloImGui::DpiAwareParams& dpiAwareParams)
 {
 	auto &io = ImGui::GetIO();
 	std::stringstream msg;
-	PoorManLog("dpiAwareParams: dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
-	PoorManLog("dpiAwareParams: fontRenderingScale=%f\n", dpiAwareParams.fontRenderingScale);
-	PoorManLog("dpiAwareParams: DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
-	PoorManLog("    ImGui FontGlobalScale: %f\n", io.FontGlobalScale);
-	PoorManLog("	ImGui DisplayFramebufferScale=%f, %f\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+	PoorManLog("DpiAwareParams: %s\n", origin.c_str());
+	PoorManLog("    dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
+	PoorManLog("    fontRenderingScale=%f\n", dpiAwareParams.fontRenderingScale);
+	PoorManLog("    DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
+	PoorManLog("        (ImGui FontGlobalScale: %f)\n", io.FontGlobalScale);
+	PoorManLog("	    (ImGui DisplayFramebufferScale=%f, %f)\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
 }
 
 
-void _CheckDpiAwareParamsChanges(HelloImGui::RunnerParams& params)
+bool _CheckDpiAwareParamsChanges(HelloImGui::RunnerParams& params)
 {
     auto& dpiAwareParams = params.dpiAwareParams;
     auto& io = ImGui::GetIO();
-
-	static bool isFirstTime = true;
-    if (isFirstTime)
-    {
-		_LogDpiParams(dpiAwareParams);
-		isFirstTime = false;
-    }
 
 	// Check changes
 	bool didFontGlobalScaleChange = dpiAwareParams.fontRenderingScale != io.FontGlobalScale;
@@ -488,8 +489,11 @@ void _CheckDpiAwareParamsChanges(HelloImGui::RunnerParams& params)
 	if (didDpiWindowSizeFactorChange || didFontGlobalScaleChange)
 	{
 		printf("New DpiAwareParams:\n");
-		_LogDpiParams(dpiAwareParams);
+		_LogDpiParams("_CheckDpiAwareParamsChanges (changed!)", dpiAwareParams);
+		return true;
 	}
+	else
+		return false;
 }
 
 
@@ -545,7 +549,7 @@ void AbstractRunner::SetupDpiAwareParams()
     }
     ImGui::GetIO().FontGlobalScale = params.dpiAwareParams.fontRenderingScale;
 
-    _CheckDpiAwareParamsChanges(params);
+	_LogDpiParams("SetupDpiAwareParams", params.dpiAwareParams);
 }
 
 
@@ -856,8 +860,8 @@ void AbstractRunner::Setup()
 
     // This should be done before Impl_LinkPlatformAndRenderBackends()
     // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks
-    // will chain the user callbacks with ImGui callbacks; and PostInit()
-    // is a good place for the user to install callbacks
+    // will chain the user callbacks with ImGui callbacks;
+	// and PostInit() is a good place for the user to install callbacks
     if (params.callbacks.PostInit_AddPlatformBackendCallbacks)
         params.callbacks.PostInit_AddPlatformBackendCallbacks();
 
@@ -911,7 +915,10 @@ void AbstractRunner::Setup()
 
 #ifdef HELLOIMGUI_WITH_NETIMGUI
     if (params.remoteParams.enableRemoting)
-        gNetImGuiWrapper = std::make_unique<NetImGuiWrapper>();
+	{
+		gNetImGuiWrapper = std::make_unique<NetImGuiWrapper>();
+		gNetImGuiWrapper->sendFonts();
+	}
 #endif
 }
 
@@ -1153,6 +1160,13 @@ void AbstractRunner::CreateFramesAndRender()
             mRenderingBackendCallbacks->Impl_DestroyFontTexture();
             mRenderingBackendCallbacks->Impl_CreateFontTexture();
             params.callbacks.LoadAdditionalFonts = nullptr;
+			#ifdef HELLOIMGUI_WITH_NETIMGUI
+				if (params.remoteParams.enableRemoting)
+				{
+					gNetImGuiWrapper = std::make_unique<NetImGuiWrapper>();
+					gNetImGuiWrapper->sendFonts();
+				}
+			#endif
         }
     }
 
@@ -1245,7 +1259,20 @@ void AbstractRunner::CreateFramesAndRender()
 
     mIdxFrame += 1;
 
-    _CheckDpiAwareParamsChanges(params);
+	if (_CheckDpiAwareParamsChanges(params))
+	{
+		mRenderingBackendCallbacks->Impl_DestroyFontTexture();
+		_ReloadAllDpiResponsiveFonts();
+		// cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
+		mRenderingBackendCallbacks->Impl_CreateFontTexture();
+		#ifdef HELLOIMGUI_WITH_NETIMGUI
+		if (params.remoteParams.enableRemoting)
+		{
+			gNetImGuiWrapper = std::make_unique<NetImGuiWrapper>();
+			gNetImGuiWrapper->sendFonts();
+		}
+		#endif
+	}
 }
 
 // Idling for non emscripten, where HelloImGui is responsible for the main loop.

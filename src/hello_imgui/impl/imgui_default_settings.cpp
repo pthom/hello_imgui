@@ -25,7 +25,7 @@ void LoadDefaultFont_WithFontAwesomeIcons()
         return;
     }
 
-    ImFont* font = LoadFont(fontFilename, fontSize);
+    auto font = LoadFontDpiResponsive(fontFilename, fontSize);
     if (defaultIconFont == HelloImGui::DefaultIconFont::NoIcons)
         return;
 
@@ -43,7 +43,7 @@ void LoadDefaultFont_WithFontAwesomeIcons()
     HelloImGui::FontLoadingParams fontParams;
     fontParams.mergeToLastFont = true;
     fontParams.useFullGlyphRange = true;
-    font = LoadFont(iconFontFile, fontSize, fontParams);
+    font = LoadFontDpiResponsive(iconFontFile, fontSize, fontParams);
     (void) font;
 }
 

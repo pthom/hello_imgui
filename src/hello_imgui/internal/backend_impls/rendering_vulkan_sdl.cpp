@@ -35,7 +35,7 @@ namespace HelloImGui
 
             // Create Window Surface
             VkSurfaceKHR surface;
-            VkResult err;
+            //VkResult err;
             if (SDL_Vulkan_CreateSurface(window, gVkGlobals.Instance, &surface) == 0)
             {
                 IM_ASSERT(0 && "Failed to create Vulkan surface");

@@ -458,7 +458,6 @@ Under windows, it will always be (1,1). Under macOS / linux, it will reflect the
 It will typically be (2,2) on a macOS retina screen.
 
 Notes:
-- As a convenience, `ImGui::GetIO().DisplayFramebufferScale` is mirrored in `HelloImGui::DpiAwareParams::roDisplayFramebufferScale`.
 - You cannot change DisplayFramebufferScale manually, it will be reset at each new frame, by asking the platform backend.
 
 

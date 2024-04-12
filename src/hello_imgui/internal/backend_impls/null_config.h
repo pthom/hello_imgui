@@ -21,9 +21,6 @@ namespace NullConfig
         return {GetScreenBounds()};
     }
 
-    ImVec2 GetDisplayFramebufferScale() {
-        return {1.f, 1.f};
-    }
     float GetWindowSizeDpiScaleFactor() { return 1.f; }
 
 }

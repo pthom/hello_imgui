@@ -35,7 +35,6 @@ namespace HelloImGui { namespace BackendApi
             std::this_thread::sleep_for(std::chrono::milliseconds((int)(timeout_seconds * 1000)));
         }
 
-        ImVec2 GetDisplayFramebufferScale(WindowPointer window) override { return NullConfig::GetDisplayFramebufferScale(); }
         float GetWindowSizeDpiScaleFactor(WindowPointer window) override { return NullConfig::GetWindowSizeDpiScaleFactor(); }
 
         void HideWindow(WindowPointer window) override {}

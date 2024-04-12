@@ -451,19 +451,18 @@ void _CheckDpiAwareParamsChanges(const std::string& msg)
         printf("dpiAwareParams: fontRenderingScale=%f\n", dpiAwareParams.fontRenderingScale);
         printf("    ImGui FontGlobalScale: %f\n", ImGui::GetIO().FontGlobalScale);
         printf("dpiAwareParams: DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
-        printf("dpiAwareParams: roDisplayFramebufferScale=%f, %f\n", dpiAwareParams.roDisplayFramebufferScale.x, dpiAwareParams.roDisplayFramebufferScale.y);
+        printf("dpiAwareParams: io.DisplayFramebufferScale=%f, %f\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
         auto fbs = ImGui::GetIO().DisplayFramebufferScale;
         printf("    ImGui DisplayFramebufferScale: %f,%f\n", fbs.x, fbs.y);
         printf("-------------------------------------------------------------\n");
     }
 
-    if (dpiAwareParams.fontRenderingScale != io.FontGlobalScale)
+    bool didFontGlobalScaleChange = dpiAwareParams.fontRenderingScale != io.FontGlobalScale;
+
+	if (didFontGlobalScaleChange)
     {
-        printf("Warning: fontRenderingScale != ImGui::GetIO().FontGlobalScale\n");
-    }
-    if (dpiAwareParams.roDisplayFramebufferScale.x != io.DisplayFramebufferScale.x)
-    {
-        printf("Warning: roDisplayFramebufferScale != ImGui::GetIO().DisplayFramebufferScale\n");
+        printf("Warning: didDpiAwareParamsChange=:true\n");
+		dpiAwareParams.fontRenderingScale = io.FontGlobalScale;
     }
 }
 
@@ -516,19 +515,6 @@ void AbstractRunner::SetupDpiAwareParams()
             params.dpiAwareParams.fontRenderingScale = _DefaultOsFontRenderingScale();
     }
     ImGui::GetIO().FontGlobalScale = params.dpiAwareParams.fontRenderingScale;
-
-    //
-    // DisplayFramebufferScale
-    //
-    ImVec2 displayFramebufferScale = mBackendWindowHelper->GetDisplayFramebufferScale(mWindow);
-    // Note: ImGui_ImplGlfw_NewFrame, ImGui_ImplSDL2_NewFrame, ... will also set ImGui::GetIO().DisplayFramebufferScale
-    // (using their own backend abstraction).
-    // There is a slight chance of discrepancy here, However, GetDisplayFramebufferScale() and DearImGui
-    // do get the same results for SDL and GLFW under Windows Linux macOS, Android, iOS.
-    auto& io = ImGui::GetIO();
-    io.DisplayFramebufferScale = displayFramebufferScale;
-    // dpiAwareParams.roDisplayFramebufferScale is an output-only value (for information only)
-    params.dpiAwareParams.roDisplayFramebufferScale = displayFramebufferScale;
 
     _CheckDpiAwareParamsChanges("Setup End");
 }

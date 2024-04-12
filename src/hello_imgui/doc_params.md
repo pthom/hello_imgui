@@ -913,6 +913,11 @@ struct DpiAwareParams
     // (This parameter will be used to set ImGui::GetIO().FontGlobalScale at startup)
     float fontRenderingScale = 0.0f;
 
+	// `onlyUseFontDpiResponsive`
+	// If true, guarantees that only HelloImGui::LoadDpiResponsiveFont will be used to load fonts.
+	// (also for the default font)
+	bool onlyUseFontDpiResponsive = false;
+
     // `dpiFontLoadingFactor`
     //     factor by which font size should be multiplied at loading time to get a similar
     //     visible size on different OSes.

@@ -57,8 +57,16 @@ float EmSize(float nbLines);
 # Load fonts
 See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui_font.h).
 ```cpp
+
+    // When loading fonts, use
+    //          HelloImGui::LoadFont(..)
+    //      or
+    //      	HelloImGui::LoadDpiResponsiveFont()
     //
-    // When loading fonts, use HelloImGui::LoadFont(fontFilename, fontSize, fontLoadingParams)
+    // Use these functions instead of ImGui::GetIO().Fonts->AddFontFromFileTTF(),
+    // because they will automatically adjust the font size to account for HighDPI,
+    // and will help you to get consistent font size across different OSes.
+
     //
     // Font loading parameters: several options are available (color, merging, range, ...)
     struct FontLoadingParams
@@ -101,14 +109,30 @@ See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/he
         ImFontConfig fontConfigFontAwesome = ImFontConfig();
     };
 
-    // When loading fonts, use HelloImGui::LoadFont(FontLoadingParams)
-    // ===============================================================
-    // instead of ImGui::GetIO().Fonts->AddFontFromFileTTF(), because it will
-    // automatically adjust the font size to account for HighDPI, and will spare
-    // you headaches when trying to get consistent font size across different OSes.
-    // see FontLoadingParams and ImFontConfig
-    ImFont* LoadFont(const std::string & fontFilename, float fontSize,
-                     const FontLoadingParams & params = {});
+	// A font that will be automatically resized to account for changes in DPI
+	// (use LoadAdaptiveFont instead of LoadFont to get this behavior)
+	struct FontDpiResponsive
+	{
+		ImFont* font = nullptr;
+		std::string fontFilename;
+		float fontSize = 0.f;
+		FontLoadingParams fontLoadingParams;
+	};
+
+
+    // Loads a font with the specified parameters
+    // (this font will not adapt to DPI changes after startup)
+    ImFont* LoadFont(
+        const std::string & fontFilename, float fontSize,
+        const FontLoadingParams & params = {});
+
+    // Loads a font with the specified parameters
+    // This font will adapt to DPI changes after startup.
+    // Only fonts loaded with LoadAdaptiveFont will adapt to DPI changes:
+    // avoid mixing LoadFont/LoadFontDpiResponsive)
+    FontDpiResponsive* LoadFontDpiResponsive(
+        const std::string & fontFilename, float fontSize,
+        const FontLoadingParams & params = {});
 
 ```
 
@@ -469,12 +493,12 @@ It is typically 1 on windows, and 0.5 on macOS retina screens.
 
 ## How to load fonts with the correct size
 
-### Using HelloImGui::LoadFont
+### Using HelloImGui (recommended)
 
-[`HelloImGui::LoadFont()`](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts) will load fonts
+[`HelloImGui::LoadFont()` and `HelloImGui::LoadFontDpiResponsive`](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts) will load fonts
  with the correct size, taking into account the DPI scaling.
 
-### Using Dear ImGui's AddFontFromFileTTF():
+### Using Dear ImGui
 `ImGui::GetIO().Fonts->AddFontFromFileTTF()` loads a font with a given size, in *physical pixels*.
 
 If for example, DisplayFramebufferScale is (2,2), and you load a font with a size of 16, it will by default be rendered

@@ -205,12 +205,12 @@ It is typically 1 on windows, and 0.5 on macOS retina screens.
 
 ## How to load fonts with the correct size
 
-### Using HelloImGui::LoadFont
+### Using HelloImGui (recommended)
 
-[`HelloImGui::LoadFont()`](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts) will load fonts
+[`HelloImGui::LoadFont()` and `HelloImGui::LoadFontDpiResponsive`](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts) will load fonts
  with the correct size, taking into account the DPI scaling.
 
-### Using Dear ImGui's AddFontFromFileTTF():
+### Using Dear ImGui
 `ImGui::GetIO().Fonts->AddFontFromFileTTF()` loads a font with a given size, in *physical pixels*.
 
 If for example, DisplayFramebufferScale is (2,2), and you load a font with a size of 16, it will by default be rendered

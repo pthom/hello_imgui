@@ -9,8 +9,16 @@ namespace HelloImGui
     using ImWcharPair = std::array<ImWchar, 2>;
 
     // @@md#Fonts
+
+    // When loading fonts, use
+    //          HelloImGui::LoadFont(..)
+    //      or
+    //      	HelloImGui::LoadDpiResponsiveFont()
     //
-    // When loading fonts, use HelloImGui::LoadFont(fontFilename, fontSize, fontLoadingParams)
+    // Use these functions instead of ImGui::GetIO().Fonts->AddFontFromFileTTF(),
+    // because they will automatically adjust the font size to account for HighDPI,
+    // and will help you to get consistent font size across different OSes.
+
     //
     // Font loading parameters: several options are available (color, merging, range, ...)
     struct FontLoadingParams
@@ -63,23 +71,20 @@ namespace HelloImGui
 		FontLoadingParams fontLoadingParams;
 	};
 
-    // !!! When loading fonts, use
-	// 			HelloImGui::LoadFont(FontLoadingParams)
-	//      or
-	//      	HelloImGui::LoadDpiResponsiveFont(FontLoadingParams)
-	//
-    // Use these functions instead of ImGui::GetIO().Fonts->AddFontFromFileTTF(),
-	// because they will automatically adjust the font size to account for HighDPI,
-	// and will spare you headaches when trying to get consistent font size across different OSes.
 
-	// Loads a font with the specified parameters (this font will not adapt to DPI changes after startup)
-    ImFont* LoadFont(const std::string & fontFilename, float fontSize,
-                     const FontLoadingParams & params = {});
+    // Loads a font with the specified parameters
+    // (this font will not adapt to DPI changes after startup)
+    ImFont* LoadFont(
+        const std::string & fontFilename, float fontSize,
+        const FontLoadingParams & params = {});
 
-	// Loads a font with the specified parameters (this font will adapt to DPI changes after startup)
-	// (only fonts loaded with LoadAdaptiveFont will adapt to DPI changes. Avoid mixing LoadFont/LoadFontDpiResponsive)
-	FontDpiResponsive* LoadFontDpiResponsive(const std::string & fontFilename, float fontSize,
-											 const FontLoadingParams & params = {});
+    // Loads a font with the specified parameters
+    // This font will adapt to DPI changes after startup.
+    // Only fonts loaded with LoadAdaptiveFont will adapt to DPI changes:
+    // avoid mixing LoadFont/LoadFontDpiResponsive)
+    FontDpiResponsive* LoadFontDpiResponsive(
+        const std::string & fontFilename, float fontSize,
+        const FontLoadingParams & params = {});
 
     // @@md
 

@@ -2,32 +2,26 @@
 #include <cstdio>
 #include <cstdarg>
 
+#ifdef _MSC_VER
+#include <Windows.h>
+#endif
+
 
 namespace HelloImGui
 {
-	std::string _DoSnPrintf(const char* fmt, ...)
-	{
-		va_list args;
-		va_start(args, fmt);
-		char buffer[2000];
-		vsnprintf(buffer, sizeof(buffer), fmt, args);
-		va_end(args);
-		return std::string(buffer);
-	}
+void PoorManLog(const char* msg, ...)
+{
+    va_list args;
+    va_start(args, msg);
+    char buffer[2000];
+    vsnprintf(buffer, sizeof(buffer), msg, args);
+    va_end(args);
 
+#ifdef _MSC_VER
+    OutputDebugString(buffer);
+#else
+    printf("%s", buffer);
+#endif
+}
 
-	void PoorManLog(const char* msg, ...)
-	{
-		// call _DoSnPrintf
-		va_list args;
-		va_start(args, msg);
-		std::string buffer = _DoSnPrintf(msg, args);
-		va_end(args);
-
-		#ifdef _MSC_VER
-		OutputDebugStringA(buffer.c_str());
-		#else
-		printf("%s", buffer.c_str());
-		#endif
-	}
 }

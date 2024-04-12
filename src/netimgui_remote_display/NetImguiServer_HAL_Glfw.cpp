@@ -6,6 +6,11 @@
 #include "hello_imgui/hello_imgui.h"
 #include <GLFW/glfw3.h>
 
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#endif
+
 
 namespace NetImguiServer { namespace App
 {

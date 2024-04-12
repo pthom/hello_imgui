@@ -232,6 +232,7 @@ private:  // Members
 };
 
 std::unique_ptr<NetImGuiWrapper> gNetImGuiWrapper;
+bool gWaitingForRemoteDpiInfo = false;
 #endif
 // =====================================================================================================================
 //                              </NetImGuiWrapper>
@@ -1023,6 +1024,24 @@ void AbstractRunner::CreateFramesAndRender()
     }
 #endif
 
+	if (_CheckDpiAwareParamsChanges(params)) // Reload fonts if DPI scale changed
+	{
+		if (_ReloadAllDpiResponsiveFonts())
+		{
+			printf("_CheckDpiAwareParamsChanges returned true => reloaded all fonts\n");
+			// cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
+			mRenderingBackendCallbacks->Impl_DestroyFontTexture();
+			mRenderingBackendCallbacks->Impl_CreateFontTexture();
+			#ifdef HELLOIMGUI_WITH_NETIMGUI
+			if (params.remoteParams.enableRemoting)
+			{
+				gNetImGuiWrapper = std::make_unique<NetImGuiWrapper>();
+				gNetImGuiWrapper->sendFonts();
+			}
+			#endif
+		}
+	}
+
     if (foldable_region) // Update frame rate stats
     {
         _UpdateFrameRateStats();
@@ -1226,7 +1245,7 @@ void AbstractRunner::CreateFramesAndRender()
     // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
     // ==> Note: RenderGui() may measure the size of the window and resize it if mIdxFrame==1
     // RenderGui may call many user callbacks, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
-    RenderGui();
+	RenderGui();
 
     if (params.callbacks.BeforeImGuiRender)
         params.callbacks.BeforeImGuiRender();
@@ -1256,24 +1275,6 @@ void AbstractRunner::CreateFramesAndRender()
             TestEngineCallbacks::PostSwap();
         }
     #endif
-
-	if (_CheckDpiAwareParamsChanges(params))
-	{
-        printf("_CheckDpiAwareParamsChanges returned true => reload all fonts\n");
-		if (_ReloadAllDpiResponsiveFonts())
-		{
-			// cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
-			mRenderingBackendCallbacks->Impl_DestroyFontTexture();
-			mRenderingBackendCallbacks->Impl_CreateFontTexture();
-			#ifdef HELLOIMGUI_WITH_NETIMGUI
-			if (params.remoteParams.enableRemoting)
-			{
-				gNetImGuiWrapper = std::make_unique<NetImGuiWrapper>();
-				gNetImGuiWrapper->sendFonts();
-			}
-			#endif
-		}
-	}
 
     mIdxFrame += 1;
 }

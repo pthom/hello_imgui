@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
     runnerParams.callbacks.PostInit = [&pass_cmd_line_args_to_server]() {
         pass_cmd_line_args_to_server();
-		NetImguiServer::UI::SetUseServerDisplayDpiSettings(true);
+		NetImguiServer::UI::SetUseServerDisplayDPISettings(true);
     };
 
     runnerParams.callbacks.PreNewFrame = []() {

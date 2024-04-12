@@ -438,32 +438,56 @@ void ReadDpiAwareParams(const std::string& appIniSettingLocation, DpiAwareParams
 }
 
 
-void _CheckDpiAwareParamsChanges(const std::string& msg)
+void _LogDpiParams(const HelloImGui::DpiAwareParams& dpiAwareParams)
 {
-    static bool isFirstTime = true;
-    auto& dpiAwareParams = HelloImGui::GetRunnerParams()->dpiAwareParams;
+	auto &io = ImGui::GetIO();
+	printf("dpiAwareParams: dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
+	printf("dpiAwareParams: fontRenderingScale=%f\n", dpiAwareParams.fontRenderingScale);
+	printf("dpiAwareParams: DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
+	printf("    ImGui FontGlobalScale: %f\n", io.FontGlobalScale);
+	printf("	ImGui DisplayFramebufferScale=%f, %f\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+}
+
+
+void _CheckDpiAwareParamsChanges(HelloImGui::RunnerParams& params)
+{
+    auto& dpiAwareParams = params.dpiAwareParams;
     auto& io = ImGui::GetIO();
+
+	static bool isFirstTime = true;
     if (isFirstTime)
     {
-        isFirstTime = false;
-        printf("%s\n", msg.c_str());
-        printf("dpiAwareParams: dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
-        printf("dpiAwareParams: fontRenderingScale=%f\n", dpiAwareParams.fontRenderingScale);
-        printf("    ImGui FontGlobalScale: %f\n", ImGui::GetIO().FontGlobalScale);
-        printf("dpiAwareParams: DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
-        printf("dpiAwareParams: io.DisplayFramebufferScale=%f, %f\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
-        auto fbs = ImGui::GetIO().DisplayFramebufferScale;
-        printf("    ImGui DisplayFramebufferScale: %f,%f\n", fbs.x, fbs.y);
-        printf("-------------------------------------------------------------\n");
+		_LogDpiParams(dpiAwareParams);
+		isFirstTime = false;
     }
 
-    bool didFontGlobalScaleChange = dpiAwareParams.fontRenderingScale != io.FontGlobalScale;
-
+	// Check changes
+	bool didFontGlobalScaleChange = dpiAwareParams.fontRenderingScale != io.FontGlobalScale;
 	if (didFontGlobalScaleChange)
-    {
-        printf("Warning: didDpiAwareParamsChange=:true\n");
+	{
+		printf("Warning: didFontGlobalScaleChange=:true\n");
 		dpiAwareParams.fontRenderingScale = io.FontGlobalScale;
-    }
+	}
+
+	bool didDpiWindowSizeFactorChange = false;
+#ifdef HELLOIMGUI_WITH_NETIMGUI
+	if (params.remoteParams.enableRemoting)
+	{
+		float newWindowDPISizeFactor = NetImgui::GetWindowDPISizeFactor();
+		didDpiWindowSizeFactorChange = dpiAwareParams.dpiWindowSizeFactor != newWindowDPISizeFactor;
+		if (didDpiWindowSizeFactorChange)
+		{
+			printf("Warning: didDpiWindowSizeFactorChange=:true (from netImgui)\n");
+			dpiAwareParams.dpiWindowSizeFactor = newWindowDPISizeFactor;
+		}
+	}
+#endif
+
+	if (didDpiWindowSizeFactorChange || didFontGlobalScaleChange)
+	{
+		printf("New DpiAwareParams:\n");
+		_LogDpiParams(dpiAwareParams);
+	}
 }
 
 
@@ -519,7 +543,7 @@ void AbstractRunner::SetupDpiAwareParams()
     }
     ImGui::GetIO().FontGlobalScale = params.dpiAwareParams.fontRenderingScale;
 
-    _CheckDpiAwareParamsChanges("Setup End");
+    _CheckDpiAwareParamsChanges(params);
 }
 
 
@@ -1219,7 +1243,7 @@ void AbstractRunner::CreateFramesAndRender()
 
     mIdxFrame += 1;
 
-    _CheckDpiAwareParamsChanges("EndCreateFrameAndRenderer");
+    _CheckDpiAwareParamsChanges(params);
 }
 
 // Idling for non emscripten, where HelloImGui is responsible for the main loop.

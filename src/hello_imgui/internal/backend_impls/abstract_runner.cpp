@@ -75,7 +75,7 @@ namespace HelloImGui
 void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 
 // Encapsulated inside hello_imgui_font.cpp
-void _ReloadAllDpiResponsiveFonts();
+bool _ReloadAllDpiResponsiveFonts();
 
 
 // =====================================================================================================================
@@ -1260,17 +1260,19 @@ void AbstractRunner::CreateFramesAndRender()
 	if (_CheckDpiAwareParamsChanges(params))
 	{
         printf("_CheckDpiAwareParamsChanges returned true => reload all fonts\n");
-		mRenderingBackendCallbacks->Impl_DestroyFontTexture();
-		_ReloadAllDpiResponsiveFonts();
-		// cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
-		mRenderingBackendCallbacks->Impl_CreateFontTexture();
-		#ifdef HELLOIMGUI_WITH_NETIMGUI
-		if (params.remoteParams.enableRemoting)
+		if (_ReloadAllDpiResponsiveFonts())
 		{
-			gNetImGuiWrapper = std::make_unique<NetImGuiWrapper>();
-			gNetImGuiWrapper->sendFonts();
+			// cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
+			mRenderingBackendCallbacks->Impl_DestroyFontTexture();
+			mRenderingBackendCallbacks->Impl_CreateFontTexture();
+			#ifdef HELLOIMGUI_WITH_NETIMGUI
+			if (params.remoteParams.enableRemoting)
+			{
+				gNetImGuiWrapper = std::make_unique<NetImGuiWrapper>();
+				gNetImGuiWrapper->sendFonts();
+			}
+			#endif
 		}
-		#endif
 	}
 
     mIdxFrame += 1;

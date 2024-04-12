@@ -2,12 +2,12 @@
 
 
 // Demonstrate how to load additional fonts (fonts - part 1/3)
-ImFont * gCustomFont = nullptr;
+HelloImGui::FontDpiResponsive * gCustomFont = nullptr;
 void MyLoadFonts()
 {
 
     HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons(); // The font that is loaded first is the default font
-    gCustomFont = HelloImGui::LoadFont("fonts/Akronim-Regular.ttf", 40.f); // will be loaded from the assets folder
+    gCustomFont = HelloImGui::LoadFontDpiResponsive("fonts/Akronim-Regular.ttf", 40.f); // will be loaded from the assets folder
 }
 
 
@@ -38,7 +38,7 @@ int main(int , char *[]) {
             ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
             // Demo custom font usage (fonts - part 3/3)
-            ImGui::PushFont(gCustomFont);
+            ImGui::PushFont(gCustomFont->font);
             ImGui::Text("Custom font");
             ImGui::PopFont();
 
@@ -77,6 +77,7 @@ int main(int , char *[]) {
     params.imGuiWindowParams.showMenuBar = true;
     params.imGuiWindowParams.showMenu_App = false;
 
+	params.dpiAwareParams.onlyUseFontDpiResponsive = true;
     params.remoteParams.enableRemoting = true;
 
     HelloImGui::Run(params);

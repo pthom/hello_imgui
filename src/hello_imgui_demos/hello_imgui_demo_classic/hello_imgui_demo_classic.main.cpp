@@ -77,6 +77,8 @@ int main(int , char *[]) {
     params.imGuiWindowParams.showMenuBar = true;
     params.imGuiWindowParams.showMenu_App = false;
 
+    params.remoteParams.enableRemoting = true;
+
     HelloImGui::Run(params);
     return 0;
 }

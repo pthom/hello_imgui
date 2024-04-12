@@ -261,6 +261,8 @@ namespace HelloImGui
 			fprintf(stderr, "_ReloadAllDpiResponsiveFonts failed: ony call LoadFontDpiResponsive if you want this to work\n");
 			return false;
 		}
+		if (gAllDpiResponsiveFonts.empty())
+			return false;
 		printf("_ReloadAllDpiResponsiveFonts\n");
 		auto& imguiFonts = ImGui::GetIO().Fonts;
 		imguiFonts->Clear();

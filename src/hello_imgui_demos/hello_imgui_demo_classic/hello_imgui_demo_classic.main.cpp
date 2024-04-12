@@ -5,9 +5,9 @@
 HelloImGui::FontDpiResponsive * gCustomFont = nullptr;
 void MyLoadFonts()
 {
-
-    HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons(); // The font that is loaded first is the default font
-    gCustomFont = HelloImGui::LoadFontDpiResponsive("fonts/Akronim-Regular.ttf", 40.f); // will be loaded from the assets folder
+	HelloImGui::GetRunnerParams()->dpiAwareParams.onlyUseFontDpiResponsive = true;
+	HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons(); // The font that is loaded first is the default font
+	gCustomFont = HelloImGui::LoadFontDpiResponsive("fonts/Akronim-Regular.ttf", 40.f); // will be loaded from the assets folder
 }
 
 
@@ -76,10 +76,6 @@ int main(int , char *[]) {
 
     params.imGuiWindowParams.showMenuBar = true;
     params.imGuiWindowParams.showMenu_App = false;
-
-	params.dpiAwareParams.onlyUseFontDpiResponsive = true;
-    params.remoteParams.enableRemoting = true;
-
     HelloImGui::Run(params);
     return 0;
 }

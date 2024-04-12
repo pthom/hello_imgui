@@ -1257,10 +1257,9 @@ void AbstractRunner::CreateFramesAndRender()
         }
     #endif
 
-    mIdxFrame += 1;
-
 	if (_CheckDpiAwareParamsChanges(params))
 	{
+        printf("_CheckDpiAwareParamsChanges returned true => reload all fonts\n");
 		mRenderingBackendCallbacks->Impl_DestroyFontTexture();
 		_ReloadAllDpiResponsiveFonts();
 		// cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
@@ -1273,6 +1272,8 @@ void AbstractRunner::CreateFramesAndRender()
 		}
 		#endif
 	}
+
+    mIdxFrame += 1;
 }
 
 // Idling for non emscripten, where HelloImGui is responsible for the main loop.

@@ -7,6 +7,7 @@
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/internal/platform/ini_folder_locations.h"
 #include "hello_imgui/internal/inicpp.h"
+#include "hello_imgui/internal/poor_man_log.h"
 #include "imgui.h"
 
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
@@ -441,11 +442,12 @@ void ReadDpiAwareParams(const std::string& appIniSettingLocation, DpiAwareParams
 void _LogDpiParams(const HelloImGui::DpiAwareParams& dpiAwareParams)
 {
 	auto &io = ImGui::GetIO();
-	printf("dpiAwareParams: dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
-	printf("dpiAwareParams: fontRenderingScale=%f\n", dpiAwareParams.fontRenderingScale);
-	printf("dpiAwareParams: DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
-	printf("    ImGui FontGlobalScale: %f\n", io.FontGlobalScale);
-	printf("	ImGui DisplayFramebufferScale=%f, %f\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+	std::stringstream msg;
+	PoorManLog("dpiAwareParams: dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
+	PoorManLog("dpiAwareParams: fontRenderingScale=%f\n", dpiAwareParams.fontRenderingScale);
+	PoorManLog("dpiAwareParams: DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
+	PoorManLog("    ImGui FontGlobalScale: %f\n", io.FontGlobalScale);
+	PoorManLog("	ImGui DisplayFramebufferScale=%f, %f\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
 }
 
 

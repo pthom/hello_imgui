@@ -240,6 +240,17 @@ ImGuiTestEngine* GetImGuiTestEngine() { return nullptr; }
 #endif
 
 
+bool _isDisplayingOnRemoteServer()
+{
+	return true;
+	#ifdef HELLOIMGUI_WITH_NETIMGUI
+	return HelloImGui::GetRunnerParams()->remoteParams.enableRemoting;
+	#else
+	return false;
+	#endif
+}
+
+
 void SaveUserPref(const std::string& userPrefName, const std::string& userPrefContent)
 {
     gLastRunner->SaveUserPref(userPrefName, userPrefContent);

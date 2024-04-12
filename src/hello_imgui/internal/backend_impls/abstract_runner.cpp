@@ -75,7 +75,8 @@ namespace HelloImGui
 void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 
 // Encapsulated inside hello_imgui_font.cpp
-bool _ReloadAllDpiResponsiveFonts();
+bool _reloadAllDpiResponsiveFonts();
+bool _isDisplayingOnRemoteServer();
 
 
 // =====================================================================================================================
@@ -990,6 +991,7 @@ void AbstractRunner::RenderGui()
 
 void _UpdateFrameRateStats(); // See hello_imgui.cpp
 
+
 void AbstractRunner::CreateFramesAndRender()
 {
     // Notes:
@@ -1026,7 +1028,7 @@ void AbstractRunner::CreateFramesAndRender()
 
 	if (_CheckDpiAwareParamsChanges(params)) // Reload fonts if DPI scale changed
 	{
-		if (_ReloadAllDpiResponsiveFonts())
+		if (_reloadAllDpiResponsiveFonts())
 		{
 			printf("_CheckDpiAwareParamsChanges returned true => reloaded all fonts\n");
 			// cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
@@ -1041,12 +1043,6 @@ void AbstractRunner::CreateFramesAndRender()
 			#endif
 		}
 	}
-
-    if (foldable_region) // Update frame rate stats
-    {
-        _UpdateFrameRateStats();
-        // printf("Render frame %i, fps=%.1f\n", mIdxFrame, HelloImGui::FrameRate());
-    }
 
     if (foldable_region) // basic layout checks
     { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
@@ -1151,7 +1147,7 @@ void AbstractRunner::CreateFramesAndRender()
         #ifndef __EMSCRIPTEN__
         // Idling for non emscripten, where HelloImGui is responsible for the main loop.
         // This form of idling will call WaitForEventTimeout(), which may call sleep():
-        IdleBySleeping();
+		IdleBySleeping();
         #endif
 
         // Poll Events (this fills GImGui.InputEventsQueue)
@@ -1168,7 +1164,13 @@ void AbstractRunner::CreateFramesAndRender()
         #endif
     } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
-    if (foldable_region) // Load additional fonts during execution
+	if (foldable_region) // Update frame rate stats
+	{
+		_UpdateFrameRateStats();
+		// printf("Render frame %i, fps=%.1f\n", mIdxFrame, HelloImGui::FrameRate());
+	}
+
+	if (foldable_region) // Load additional fonts during execution
     {
         if (params.callbacks.LoadAdditionalFonts != nullptr)
         {
@@ -1286,9 +1288,18 @@ void AbstractRunner::IdleBySleeping()
     #ifdef HELLOIMGUI_WITH_TEST_ENGINE
         if (params.useImGuiTestEngine && TestEngineCallbacks::IsRunningTest())
             return;
-    #endif
+	#endif
 
-    assert(params.fpsIdling.fpsIdle >= 0.f);
+	if (_isDisplayingOnRemoteServer())
+	{
+		// if displaying remote, the FPS is limited on the server to a value between 30 and 60 fps
+		// We cannot idle too slow, other the GUI becomes really sluggish
+		// Ideally, we should ask the server about it current refresh rate
+		// (At the moment, we can only deliver 30fps)
+		params.fpsIdling.fpsIdle = 30.f;
+	}
+
+	assert(params.fpsIdling.fpsIdle >= 0.f);
     params.fpsIdling.isIdling = false;
     if ((params.fpsIdling.fpsIdle > 0.f) && params.fpsIdling.enableIdling)
     {

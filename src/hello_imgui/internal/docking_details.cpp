@@ -13,6 +13,10 @@
 
 namespace HelloImGui
 {
+// From hello_imgui.cpp
+bool _isDisplayingOnRemoteServer();
+
+
 void _Themes_MenuGui(RunnerParams& runnerParams); // see hello_imgui_themes.cpp
 
 std::map<DockSpaceName, ImGuiID> gImGuiSplitIDs;
@@ -171,14 +175,15 @@ void MenuView_Misc(RunnerParams& runnerParams)
     if (ImGui::MenuItem("View Status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatusBar))
         runnerParams.imGuiWindowParams.showStatusBar = ! runnerParams.imGuiWindowParams.showStatusBar;
 
-    if (ImGui::BeginMenu("FPS"))
-    {
-        if (ImGui::MenuItem("FPS in status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatus_Fps))
-            runnerParams.imGuiWindowParams.showStatus_Fps = ! runnerParams.imGuiWindowParams.showStatus_Fps;
+	if (ImGui::BeginMenu("FPS"))
+	{
+		if (ImGui::MenuItem("FPS in status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatus_Fps))
+			runnerParams.imGuiWindowParams.showStatus_Fps = ! runnerParams.imGuiWindowParams.showStatus_Fps;
 
-        ImGui::MenuItem("Enable Idling", nullptr, &runnerParams.fpsIdling.enableIdling);
-        ImGui::EndMenu();
-    }
+		if (! _isDisplayingOnRemoteServer())
+			ImGui::MenuItem("Enable Idling", nullptr, &runnerParams.fpsIdling.enableIdling);
+		ImGui::EndMenu();
+	}
 
     if (runnerParams.imGuiWindowParams.showMenu_View_Themes)
         Theme_MenuGui(runnerParams.imGuiWindowParams.tweakedTheme);

@@ -11,6 +11,8 @@
 
 namespace HelloImGui
 {
+bool _isDisplayingOnRemoteServer(); // from hello_imgui.cpp
+
 namespace Menu_StatusBar
 {
 
@@ -97,17 +99,23 @@ void ShowStatusBar(RunnerParams & params)
 
     if (params.imGuiWindowParams.showStatus_Fps)
     {
-        float dy = ImGui::GetFontSize() * 0.15f;
+		if (_isDisplayingOnRemoteServer())
+		{
+			ImGui::SameLine(ImGui::GetIO().DisplaySize.x - 5.f * ImGui::GetFontSize());
+			ImGui::Text("FPS: %.1f", HelloImGui::FrameRate());
+		}
+		else
+		{
+			float dy = ImGui::GetFontSize() * 0.15f;
 
-        ImGui::SameLine(ImGui::GetIO().DisplaySize.x - 14.f * ImGui::GetFontSize());
-
-        const char* idlingInfo = params.fpsIdling.isIdling ? " (Idling)" : "";
-
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - dy); // The checkbox seems visually misaligned, let's fix this
-        ImGui::Checkbox("Enable idling", &params.fpsIdling.enableIdling);
-        ImGui::SameLine();
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - dy);
-        ImGui::Text("FPS: %.1f%s", HelloImGui::FrameRate(), idlingInfo);
+			ImGui::SameLine(ImGui::GetIO().DisplaySize.x - 14.f * ImGui::GetFontSize());
+			const char* idlingInfo = params.fpsIdling.isIdling ? " (Idling)" : "";
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - dy); // The checkbox seems visually misaligned, let's fix this
+			ImGui::Checkbox("Enable idling", &params.fpsIdling.enableIdling);
+			ImGui::SameLine();
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - dy);
+			ImGui::Text("FPS: %.1f%s", HelloImGui::FrameRate(), idlingInfo);
+		}
     }
 
     ImGui::End();

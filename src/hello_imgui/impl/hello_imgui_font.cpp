@@ -254,16 +254,16 @@ namespace HelloImGui
 		return dpiResponsiveFont;
 	}
 
-	bool _ReloadAllDpiResponsiveFonts()
+	bool _reloadAllDpiResponsiveFonts()
 	{
 		if (gWasLoadFontBareCalled)
 		{
-			fprintf(stderr, "_ReloadAllDpiResponsiveFonts failed: ony call LoadFontDpiResponsive if you want this to work\n");
+			fprintf(stderr, "_reloadAllDpiResponsiveFonts failed: ony call LoadFontDpiResponsive if you want this to work\n");
 			return false;
 		}
 		if (gAllDpiResponsiveFonts.empty())
 			return false;
-		printf("_ReloadAllDpiResponsiveFonts\n");
+		printf("_reloadAllDpiResponsiveFonts\n");
 		auto& imguiFonts = ImGui::GetIO().Fonts;
 		imguiFonts->Clear();
 		for (auto & dpiResponsiveFont : gAllDpiResponsiveFonts)
@@ -275,7 +275,7 @@ namespace HelloImGui
 			dpiResponsiveFont.font = newFont;
 		}
 		bool buildSuccess = imguiFonts->Build();
-		IM_ASSERT(buildSuccess && "_ReloadAllDpiResponsiveFonts: Failed to build fonts");
+		IM_ASSERT(buildSuccess && "_reloadAllDpiResponsiveFonts: Failed to build fonts");
 		return true;
 	}
 

@@ -45,6 +45,8 @@ int main(int argc, char **argv)
     runnerParams.callbacks.PostInit = [&pass_cmd_line_args_to_server]() {
         pass_cmd_line_args_to_server();
 		NetImguiServer::UI::SetUseServerDisplayDPISettings(true);
+		float windowDPISizeFactor = HelloImGui::GetRunnerParams()->dpiAwareParams.dpiWindowSizeFactor;
+		NetImguiServer::UI::SetWindowDPISizeFactor(windowDPISizeFactor);
     };
 
     runnerParams.callbacks.PreNewFrame = []() {

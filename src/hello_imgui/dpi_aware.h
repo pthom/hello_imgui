@@ -41,8 +41,9 @@ struct DpiAwareParams
 {
     // `dpiWindowSizeFactor`
     //     factor by which window size should be multiplied to get a similar
-    //     visible size on different OSes. This affects the size of the window,
-    //     but *not* the size of widgets and text.
+    //     physical size on different OSes (as if they were all displayed on a 96 PPI screen).
+    //     This affects the size of native app windows,
+    //     but *not* imgui Windows, and *not* the size of widgets and text.
     //  In a standard environment (i.e. outside of Hello ImGui), an application with a size of 960x480 pixels,
     //  may have a physical size (in mm or inches) that varies depending on the screen DPI, and the OS.
     //
@@ -58,35 +59,36 @@ struct DpiAwareParams
 
     // `fontRenderingScale`
     //     factor (that is either 1 or < 1.) by which fonts glyphs should be scaled at rendering time.
-    //     On macOS retina screens, it will be 0.5, since macOS APIs hide the real resolution of the screen.
-    //     Changing this value will *not* change the visible font size on the screen, however it will
-    //     affect the size of the loaded glyphs.
-    //     For example, if fontRenderingScale=0.5 (which is the default on a macOS retina screen),
-    //     a font size of 16 will be loaded as if it was 32, and will be rendered at half size.
-    //     This leads to a better rendering quality on some platforms.
+    //  On macOS retina screens, it will be 0.5, since macOS APIs hide the real resolution of the screen.
+    //  Changing this value will *not* change the visible font size on the screen, however it will
+    //  affect the size of the loaded glyphs.
+    //  For example, if fontRenderingScale=0.5 (which is the default on a macOS retina screen),
+    //  a font size of 16 will be loaded as if it was 32, and will be rendered at half size.
+    //   This leads to a better rendering quality on some platforms.
+    // (This parameter will be used to set ImGui::GetIO().FontGlobalScale at startup)
     float fontRenderingScale = 0.0f;
 
     // `dpiFontLoadingFactor`
-    //      factor by which font size should be multiplied at loading time to get a similar
-    //      visible size on different OSes.
-    //      The size will be equivalent to a size given for a 96 PPI screen
-    float DpiFontLoadingFactor() {
+    //     factor by which font size should be multiplied at loading time to get a similar
+    //     visible size on different OSes.
+    //  The size will be equivalent to a size given for a 96 PPI screen
+    float DpiFontLoadingFactor() const {
         float r = dpiWindowSizeFactor / fontRenderingScale;
         return r;
     };
 
     // `roDisplayFramebufferScale`
-    //    When rendering, the internal frame buffer size might be bigger than the
-    //    size (in "virtual screen coordinate" pixels) of the window.
-    //    For example:
-    //      - on macOS retina screens, the frame buffer size will be twice the window size
-    //        (and roDisplayFramebufferScale will be 2, 2)
-    //      - on Windows, the frame buffer size will be the same as the window size.
-    //        (since virtual screen coordinate pixels are the same as physical screen pixels on Windows)
+    //     When rendering, the internal frame buffer size might be bigger than the
+    //     size (in "virtual screen coordinate" pixels) of the window.
+    //  For example:
+    //    - on macOS retina screens, the frame buffer size will be twice the window size
+    //      (and roDisplayFramebufferScale will be 2, 2)
+    //    - on Windows, the frame buffer size will be the same as the window size.
+    //      (since virtual screen coordinate pixels are the same as physical screen pixels on Windows)
     //
-    //    This is an output-only value: it will be set by the platform backend
-    //    after it was initialized (any change you make to it at startup will not be used)
-    //    It mirrors the value inside ImGui::GetIO().DisplayFramebufferScale.
+    //  This is an output-only value: it will be set by the platform backend
+    //  after it was initialized (any change you make to it at startup will not be used)
+    //  It mirrors the value inside ImGui::GetIO().DisplayFramebufferScale.
     ImVec2 roDisplayFramebufferScale = ImVec2(0.f, 0.f);
 };
 

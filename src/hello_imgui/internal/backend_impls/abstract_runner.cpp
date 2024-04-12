@@ -438,6 +438,64 @@ void ReadDpiAwareParams(const std::string& appIniSettingLocation, DpiAwareParams
 }
 
 
+void _CheckDpiAwareParamsChanges(const std::string& msg)
+{
+    static bool isFirstTime = true;
+    auto& dpiAwareParams = HelloImGui::GetRunnerParams()->dpiAwareParams;
+    auto& io = ImGui::GetIO();
+    if (isFirstTime)
+    {
+        isFirstTime = false;
+        printf("%s\n", msg.c_str());
+        printf("dpiAwareParams: dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
+        printf("dpiAwareParams: fontRenderingScale=%f\n", dpiAwareParams.fontRenderingScale);
+        printf("    ImGui FontGlobalScale: %f\n", ImGui::GetIO().FontGlobalScale);
+        printf("dpiAwareParams: DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
+        printf("dpiAwareParams: roDisplayFramebufferScale=%f, %f\n", dpiAwareParams.roDisplayFramebufferScale.x, dpiAwareParams.roDisplayFramebufferScale.y);
+        auto fbs = ImGui::GetIO().DisplayFramebufferScale;
+        printf("    ImGui DisplayFramebufferScale: %f,%f\n", fbs.x, fbs.y);
+        printf("-------------------------------------------------------------\n");
+    }
+
+    if (dpiAwareParams.fontRenderingScale != io.FontGlobalScale)
+    {
+        printf("Warning: fontRenderingScale != ImGui::GetIO().FontGlobalScale\n");
+    }
+    if (dpiAwareParams.roDisplayFramebufferScale.x != io.DisplayFramebufferScale.x)
+    {
+        printf("Warning: roDisplayFramebufferScale != ImGui::GetIO().DisplayFramebufferScale\n");
+    }
+}
+
+
+float _DefaultOsFontRenderingScale()
+{
+    float fontSizeIncreaseFactor = 1.f;
+
+    #ifdef __EMSCRIPTEN__
+    // Query the brower to ask for devicePixelRatio
+            double windowDevicePixelRatio = EM_ASM_DOUBLE( {
+                var scale = window.devicePixelRatio;
+                return scale;
+            }
+            );
+            printf("window.devicePixelRatio=%lf\n", windowDevicePixelRatio);
+
+            fontSizeIncreaseFactor = windowDevicePixelRatio;
+    #endif
+    #ifdef HELLOIMGUI_MACOS
+        // Crisp fonts on macOS:
+        // cf https://github.com/ocornut/imgui/issues/5301
+        // Issue with macOS is that it pretends screen has 2x fewer pixels than it actually does.
+        // This simplifies application development in most cases, but in our case we happen to render fonts at 1x scale
+        // while screen renders at 2x scale.
+        fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
+    #endif
+
+    return 1.0f / fontSizeIncreaseFactor;
+}
+
+
 void AbstractRunner::SetupDpiAwareParams()
 {
     ReadDpiAwareParams(IniSettingsLocation(params), &params.dpiAwareParams);
@@ -452,29 +510,10 @@ void AbstractRunner::SetupDpiAwareParams()
 
     if (params.dpiAwareParams.fontRenderingScale == 0.f)
     {
-        float fontSizeIncreaseFactor = 1.f;
-
-        #ifdef __EMSCRIPTEN__
-            // Query the brower to ask for devicePixelRatio
-            double windowDevicePixelRatio = EM_ASM_DOUBLE( {
-                var scale = window.devicePixelRatio;
-                return scale;
-            }
-            );
-            printf("window.devicePixelRatio=%lf\n", windowDevicePixelRatio);
-
-            fontSizeIncreaseFactor = windowDevicePixelRatio;
-        #endif
-        #ifdef HELLOIMGUI_MACOS
-            // Crisp fonts on macOS:
-            // cf https://github.com/ocornut/imgui/issues/5301
-            // Issue with macOS is that it pretends screen has 2x fewer pixels than it actually does.
-            // This simplifies application development in most cases, but in our case we happen to render fonts at 1x scale
-            // while screen renders at 2x scale.
-            fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
-        #endif
-
-        params.dpiAwareParams.fontRenderingScale = 1.0f / fontSizeIncreaseFactor;
+        if (params.remoteParams.enableRemoting)
+            params.dpiAwareParams.fontRenderingScale = 1.f;
+        else
+            params.dpiAwareParams.fontRenderingScale = _DefaultOsFontRenderingScale();
     }
     ImGui::GetIO().FontGlobalScale = params.dpiAwareParams.fontRenderingScale;
 
@@ -486,9 +525,12 @@ void AbstractRunner::SetupDpiAwareParams()
     // (using their own backend abstraction).
     // There is a slight chance of discrepancy here, However, GetDisplayFramebufferScale() and DearImGui
     // do get the same results for SDL and GLFW under Windows Linux macOS, Android, iOS.
-    ImGui::GetIO().DisplayFramebufferScale = params.dpiAwareParams.roDisplayFramebufferScale;
+    auto& io = ImGui::GetIO();
+    io.DisplayFramebufferScale = displayFramebufferScale;
     // dpiAwareParams.roDisplayFramebufferScale is an output-only value (for information only)
     params.dpiAwareParams.roDisplayFramebufferScale = displayFramebufferScale;
+
+    _CheckDpiAwareParamsChanges("Setup End");
 }
 
 
@@ -1187,6 +1229,8 @@ void AbstractRunner::CreateFramesAndRender()
     #endif
 
     mIdxFrame += 1;
+
+    _CheckDpiAwareParamsChanges("EndCreateFrameAndRenderer");
 }
 
 // Idling for non emscripten, where HelloImGui is responsible for the main loop.

@@ -44,8 +44,7 @@ int main(int argc, char **argv)
 
     runnerParams.callbacks.PostInit = [&pass_cmd_line_args_to_server]() {
         pass_cmd_line_args_to_server();
-        auto fontRenderingScale = HelloImGui::GetRunnerParams()->dpiAwareParams.fontRenderingScale;
-        NetImguiServer::UI::SetFontDPIScale(fontRenderingScale);
+		NetImguiServer::UI::SetUseServerDisplayFramebufferScale(true);
     };
 
     runnerParams.callbacks.PreNewFrame = []() {

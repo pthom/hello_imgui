@@ -1,5 +1,5 @@
 #include "NetImguiServer_App.h"
-
+#include "NetImguiServer_UI.h"
 
 
 // @SAMPLE_EDIT
@@ -27,7 +27,7 @@
 
 int main(int argc, char **argv)
 {
-    auto init_net_imgui_server = [&]()
+    auto pass_cmd_line_args_to_server = [&]()
     {
         // Start the NetImgui server
         std::string cmdArgs;
@@ -39,47 +39,18 @@ int main(int argc, char **argv)
             exit(1);
     };
 
-    auto handle_dpi_awareness = []()
-    {
-        // @SAMPLE_EDIT (DPI Awareness)
-
-        //        float scaleX, scaleY;
-        //        ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
-        //        glfwGetWindowContentScale(bd->Window, &scaleX, &scaleY);
-        //
-        //        float maxScale = scaleX > scaleY ? scaleX : scaleY;
-        //        float windowDPI = (float)(NetImguiServer::UI::kWindowDPIDefault) * maxScale; // = kWindowDPIDefault=96
-        //        NetImguiServer::UI::SetWindowDPI((int)windowDPI);
-        //        ImGui::GetIO().FontGlobalScale = NetImguiServer::UI::GetFontDPIScale();
-
-
-        //        HelloImGui::GetRunnerParams()->dpiAwareParams.fontRenderingScale;
-        //        HelloImGui::GetRunnerParams()->dpiAwareParams.dpiWindowSizeFactor;
-        //        HelloImGui::GetRunnerParams()->dpiAwareParams.DpiFontLoadingFactor();
-        float windowDPI = HelloImGui::GetRunnerParams()->dpiAwareParams.fontRenderingScale
-                          * (float)(NetImguiServer::UI::kWindowDPIDefault); // 96
-        //windowDPI = 48.f;
-        //printf("windowDPI: %f\n", windowDPI);
-        //NetImguiServer::UI::SetWindowDPI((int)windowDPI);
-
-        // See void FontCreationCallback(float PreviousDPIScale, float NewDPIScale)
-        // in SampleFontDPI.cpp ??
-
-    };
-
-
     // Runner Params
     HelloImGui::RunnerParams runnerParams;
 
-    runnerParams.callbacks.PostInit = [&init_net_imgui_server]() {
-        init_net_imgui_server();
-        //ImGui::GetIO().ConfigFlags = ImGui::GetIO().ConfigFlags | ImGuiConfigFlags_DockingEnable;
+    runnerParams.callbacks.PostInit = [&pass_cmd_line_args_to_server]() {
+        pass_cmd_line_args_to_server();
+        auto fontRenderingScale = HelloImGui::GetRunnerParams()->dpiAwareParams.fontRenderingScale;
+        NetImguiServer::UI::SetFontDPIScale(fontRenderingScale);
     };
 
-    runnerParams.callbacks.PreNewFrame = [&handle_dpi_awareness]() {
+    runnerParams.callbacks.PreNewFrame = []() {
         // Request each client to update their drawing content
         NetImguiServer::App::UpdateRemoteContent();
-        handle_dpi_awareness();
     };
 
     runnerParams.callbacks.ShowGui = []() {

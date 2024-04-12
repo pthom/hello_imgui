@@ -501,8 +501,11 @@ void AbstractRunner::SetupDpiAwareParams()
     if (params.dpiAwareParams.dpiWindowSizeFactor == 0.f)
     {
         #ifdef HELLOIMGUI_HAS_DIRECTX11
+        if (params.rendererBackendType == HelloImGui::RendererBackendType::DirectX11)
+        {
             // The current implementation of Dx11 backend does  not support changing the window size
             params.dpiAwareParams.dpiWindowSizeFactor = 1.f;
+        }
         #endif
         params.dpiAwareParams.dpiWindowSizeFactor = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
     }

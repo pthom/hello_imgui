@@ -82,12 +82,17 @@ option(HELLOIMGUI_ADD_APP_WITH_INSTALL "Add cmake install() instructions with he
 # Platform backends:
 option(HELLOIMGUI_USE_GLFW3 "Use Glfw3 as a platform backend" OFF)
 option(HELLOIMGUI_USE_SDL2 "Use Sdl2 as a platform backend" OFF)
+option(HELLOIMGUI_USE_NULL "Null platform backend" OFF)  # for testing and remote rendering
 # Rendering backends
 option(HELLOIMGUI_HAS_OPENGL3 "Use OpenGL3 as a rendering backend" OFF)
 option(HELLOIMGUI_HAS_METAL "Use Metal as a rendering backend" OFF)
 option(HELLOIMGUI_HAS_VULKAN "Use Vulkan as a rendering backend" OFF)
 option(HELLOIMGUI_HAS_DIRECTX11 "Use DirectX11 as a rendering backend" OFF)
 option(HELLOIMGUI_HAS_DIRECTX12 "Use DirectX12 as a rendering backend" OFF)
+option(HELLOIMGUI_HAS_NULL "Null rendering backend" OFF)  # for testing and remote rendering
+
+# Null backend: useful for testing, or for remote rendering (will set both rendering and platform backends to null)
+option(HELLOIMGUI_NULL_BACKEND "Use Null rendering/platform backend" OFF)
 # </Backends>  # do not remove this line (used by the script that generates the documentation)
 
 

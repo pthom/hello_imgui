@@ -23,11 +23,20 @@
       "cacheVariables": {
         "HELLOIMGUI_USE_SDL2": "ON",
         "HELLOIMGUI_USE_GLFW3": "ON",
+        "HELLOIMGUI_USE_NULL": "ON",
         "HELLOIMGUI_HAS_OPENGL3": "ON",
         "HELLOIMGUI_HAS_METAL": "ON",
         "HELLOIMGUI_HAS_VULKAN": "ON",
         "HELLOIMGUI_HAS_DIRECTX11": "ON",
-        "HELLOIMGUI_HAS_DIRECTX12": "ON"
+        "HELLOIMGUI_HAS_DIRECTX12": "ON",
+        "HELLOIMGUI_HAS_NULL": "ON"
+      }
+    },
+    {
+      "name": "build_null_backend",
+      "description": "Build with null backend.",
+      "cacheVariables": {
+        "HELLOIMGUI_NULL_BACKEND": "ON"
       }
     },
     {

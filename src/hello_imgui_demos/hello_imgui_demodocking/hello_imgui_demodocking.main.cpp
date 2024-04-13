@@ -662,7 +662,7 @@ int main(int, char**)
     runnerParams.imGuiWindowParams.menuAppTitle = "Docking Demo";
     runnerParams.appWindowParams.windowGeometry.size = {1200, 1000};
     runnerParams.appWindowParams.restorePreviousGeometry = true;
-    
+
     // Our application uses a borderless window, but is movable/resizable
     runnerParams.appWindowParams.borderless = true;
     runnerParams.appWindowParams.borderlessMovable = true;

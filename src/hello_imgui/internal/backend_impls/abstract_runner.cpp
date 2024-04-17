@@ -485,7 +485,9 @@ bool _CheckDpiAwareParamsChanges(HelloImGui::RunnerParams& params)
 			didFontLoadingRatioChangeOnRemoteServer = true;
 
 			float oldDpiWindowSizeFactor = dpiAwareParams.dpiWindowSizeFactor;
-			dpiAwareParams.dpiWindowSizeFactor = dpiAwareParams.dpiWindowSizeFactor * newFontLoadingRatio / currentFontLoadingRatio;
+			float ratioScaling = newFontLoadingRatio / currentFontLoadingRatio;
+			dpiAwareParams.dpiWindowSizeFactor = dpiAwareParams.dpiWindowSizeFactor * ratioScaling;
+			ImGui::GetStyle().ScaleAllSizes(ratioScaling);
 			float new_diff = fabs(dpiAwareParams.DpiFontLoadingFactor() - newFontLoadingRatio);
 			IM_ASSERT(new_diff < 0.001f);
 			printf("Warning: didFontLoadingRatioChange=true \n"

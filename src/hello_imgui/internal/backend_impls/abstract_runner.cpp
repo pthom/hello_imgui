@@ -474,7 +474,29 @@ bool _CheckDpiAwareParamsChanges(HelloImGui::RunnerParams& params)
 		dpiAwareParams.fontRenderingScale = io.FontGlobalScale;
 	}
 
-	if (didFontGlobalScaleChange)
+	bool didFontLoadingRatioChangeOnRemoteServer = false;
+#ifdef HELLOIMGUI_WITH_NETIMGUI
+	if (params.remoteParams.enableRemoting)
+	{
+		float newFontLoadingRatio = NetImgui::GetFontLoadingRatio();
+		float currentFontLoadingRatio = dpiAwareParams.DpiFontLoadingFactor();
+		if (fabs(currentFontLoadingRatio - newFontLoadingRatio) > 0.001f)
+		{
+			didFontLoadingRatioChangeOnRemoteServer = true;
+
+			float oldDpiWindowSizeFactor = dpiAwareParams.dpiWindowSizeFactor;
+			dpiAwareParams.dpiWindowSizeFactor = dpiAwareParams.dpiWindowSizeFactor * newFontLoadingRatio / currentFontLoadingRatio;
+			float new_diff = fabs(dpiAwareParams.DpiFontLoadingFactor() - newFontLoadingRatio);
+			IM_ASSERT(new_diff < 0.001f);
+			printf("Warning: didFontLoadingRatioChange=true \n"
+				   "    currentFontLoadingRatio=%f newFontLoadingRatio=%f\n"
+				   "    oldDpiWindowSizeFactor=%f newDpiWindowSizeFactor=%f\n",
+				   currentFontLoadingRatio, newFontLoadingRatio, oldDpiWindowSizeFactor, dpiAwareParams.dpiWindowSizeFactor);
+		}
+	}
+#endif
+
+	if (didFontGlobalScaleChange || didFontLoadingRatioChangeOnRemoteServer)
 	{
 		printf("New DpiAwareParams:\n");
 		_LogDpiParams("_CheckDpiAwareParamsChanges (changed!)", dpiAwareParams);

@@ -49,11 +49,7 @@ int main(int argc, char **argv)
 
     runnerParams.callbacks.PreNewFrame = []() {
         // Request each client to update their drawing content
-        NetImguiServer::UI::SetFullDPISettings(
-            ImGui::GetIO().DisplayFramebufferScale,
-            1.f / HelloImGui::DpiFontLoadingFactor()
-        );
-
+        NetImguiServer::UI::SetUseServerDPISettings(HelloImGui::DpiFontLoadingFactor());
         NetImguiServer::App::UpdateRemoteContent();
     };
 

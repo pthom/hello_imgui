@@ -606,6 +606,7 @@ void AbstractRunner::HandleDpiOnSecondFrame()
 #endif
     
     // High DPI handling on windows & linux
+    if (!_isDisplayingOnRemoteServer())
     {
         float dpiScale =  params.dpiAwareParams.dpiWindowSizeFactor;
         if ( dpiScale > 1.f)

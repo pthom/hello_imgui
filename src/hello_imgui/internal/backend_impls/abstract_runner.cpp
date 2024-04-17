@@ -478,7 +478,7 @@ bool _CheckDpiAwareParamsChanges(HelloImGui::RunnerParams& params)
 #ifdef HELLOIMGUI_WITH_NETIMGUI
 	if (params.remoteParams.enableRemoting)
 	{
-		float newFontLoadingRatio = NetImgui::GetFontLoadingRatio();
+		float newFontLoadingRatio = NetImgui::GetFontSizeLoadingRatio();
 		float currentFontLoadingRatio = dpiAwareParams.DpiFontLoadingFactor();
 		if (fabs(currentFontLoadingRatio - newFontLoadingRatio) > 0.001f)
 		{

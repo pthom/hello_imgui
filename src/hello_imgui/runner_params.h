@@ -161,6 +161,9 @@ struct NetImGuiParams
     // This is unused since it is the client (i.e. the app logic) that connects to the server,
     // using NetImgui::ConnectToApp
     uint32_t clientPort = 8889;
+
+    // If true, transmit the window size to the server
+    bool transmitWindowSize = false;
 };
 
 // @@md
@@ -350,6 +353,8 @@ struct SimpleRunnerParams
 
     // `windowSize`: _ScreenSize, default={800, 600}_.
     //  Size of the window
+    // The size will be handled as if it was specified for a 96PPI screen
+    // (i.e. a given size will correspond to the same physical size on different screens, whatever their DPI)
     ScreenSize windowSize = DefaultWindowSize;
 
     // `fpsIdle`: _float, default=9_.

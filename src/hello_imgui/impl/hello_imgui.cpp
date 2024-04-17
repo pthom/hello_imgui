@@ -239,10 +239,14 @@ ImGuiTestEngine* GetImGuiTestEngine() { return GHImGuiTestEngine; }
 ImGuiTestEngine* GetImGuiTestEngine() { return nullptr; }
 #endif
 
+void ChangeWindowSize(const ScreenSize &windowSize)
+{
+    gLastRunner->ChangeWindowSize(windowSize);
+}
+
 
 bool _isDisplayingOnRemoteServer()
 {
-	return true;
 	#ifdef HELLOIMGUI_WITH_NETIMGUI
 	return HelloImGui::GetRunnerParams()->remoteParams.enableRemoting;
 	#else

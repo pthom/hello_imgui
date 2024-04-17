@@ -37,6 +37,7 @@ public:
     // For jupyter notebook, which displays a screenshot post execution
     ImageBuffer ScreenshotRgb() { return mRenderingBackendCallbacks->Impl_ScreenshotRgb_3D(); }
 
+    void ChangeWindowSize(ScreenSize windowSize);
 
     void LayoutSettings_SwitchLayout(const std::string& layoutName);
 

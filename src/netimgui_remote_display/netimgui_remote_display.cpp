@@ -42,6 +42,10 @@ int main(int argc, char **argv)
     // Runner Params
     HelloImGui::RunnerParams runnerParams;
 
+    NetImguiServer::UI::SetCallbackWindowSize96PPI([](uint16_t width, uint16_t height) {
+        HelloImGui::ChangeWindowSize({(int)width, (int)height});
+    });
+
     runnerParams.callbacks.PostInit = [&pass_cmd_line_args_to_server]() {
         pass_cmd_line_args_to_server();
         NetImguiServer::UI::SetUseServerDPISettings(HelloImGui::DpiFontLoadingFactor());

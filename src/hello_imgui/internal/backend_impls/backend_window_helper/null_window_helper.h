@@ -20,6 +20,7 @@ namespace HelloImGui { namespace BackendApi
         // It is only a class in order to enforce a consistent API between backends.
     public:
         WindowPointer CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions) override {
+            mWindowBounds.size = appWindowParams.windowGeometry.size;
             return nullptr;
         }
 
@@ -28,8 +29,12 @@ namespace HelloImGui { namespace BackendApi
         bool IsWindowIconified(WindowPointer window) override { return false; }
         void RaiseWindow(WindowPointer window) override {}
 
-        ScreenBounds GetWindowBounds(WindowPointer window) override { return {}; }
-        void SetWindowBounds(WindowPointer window, ScreenBounds windowBounds) override {}
+        ScreenBounds GetWindowBounds(WindowPointer window) override {
+            return mWindowBounds;
+        }
+        void SetWindowBounds(WindowPointer window, ScreenBounds windowBounds) override {
+            mWindowBounds = windowBounds;
+        }
 
         void WaitForEventTimeout(double timeout_seconds) override {
             std::this_thread::sleep_for(std::chrono::milliseconds((int)(timeout_seconds * 1000)));
@@ -40,6 +45,9 @@ namespace HelloImGui { namespace BackendApi
         void HideWindow(WindowPointer window) override {}
         void ShowWindow(WindowPointer window) override {}
         bool IsWindowHidden(WindowPointer window) override { return false; }
+
+    private:
+        ScreenBounds mWindowBounds = {};
 
     };
 }} // namespace HelloImGui { namespace BackendApi

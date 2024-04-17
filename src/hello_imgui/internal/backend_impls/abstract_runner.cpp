@@ -169,10 +169,15 @@ public:
         }
     }
 
-	void sendFonts()
-	{
-		_sendFonts_Impl();
-	}
+    void sendFonts()
+    {
+        _sendFonts_Impl();
+    }
+
+    bool isConnected()
+    {
+        return NetImgui::IsConnected();
+    }
 
 private:
     void InitiateConnection()
@@ -184,7 +189,7 @@ private:
         NetImgui::ConnectToApp(clientName().c_str(), remoteParams().serverHost.c_str(), remoteParams().serverPort);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         ++ mNbConnectionsTentatives;
-		_sendFonts_Impl();
+        _sendFonts_Impl();
     }
 
     std::string clientName()
@@ -235,6 +240,17 @@ private:  // Members
 std::unique_ptr<NetImGuiWrapper> gNetImGuiWrapper;
 bool gWaitingForRemoteDpiInfo = false;
 #endif
+
+bool _isConnectedToRemoteServer()
+{
+#ifdef HELLOIMGUI_WITH_NETIMGUI
+    if (!_isDisplayingOnRemoteServer())
+        return false;
+    return gNetImGuiWrapper->isConnected();
+#else
+    return false;
+#endif
+}
 // =====================================================================================================================
 //                              </NetImGuiWrapper>
 // =====================================================================================================================
@@ -304,6 +320,12 @@ bool AbstractRunner::WantAutoSize()
 #endif
 }
 
+void AbstractRunner::ChangeWindowSize(HelloImGui::ScreenSize windowSize)
+{
+    auto bounds = mBackendWindowHelper->GetWindowBounds(mWindow);
+    bounds.size = windowSize;
+    mBackendWindowHelper->SetWindowBounds(mWindow, bounds);
+}
 
 bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi() 
 {
@@ -1149,6 +1171,24 @@ void AbstractRunner::CreateFramesAndRender()
                     mBackendWindowHelper->ShowWindow(mWindow);
             }
         }
+
+        // Transmit window size to remote server
+        #ifdef HELLOIMGUI_WITH_NETIMGUI
+        if (_isConnectedToRemoteServer() && (mIdxFrame > 3) && params.remoteParams.transmitWindowSize)
+        {
+            static bool wasSizeTransmitted = false;
+            if (!wasSizeTransmitted)
+            {
+                wasSizeTransmitted = true;
+                auto windowSize = params.appWindowParams.windowGeometry.size;
+                // When running on a remote server, we do not know the window DPI factor,
+                // so we treat the window size as if it was 96PPI
+                uint16_t width_96PPI = (uint16_t)windowSize[0];
+                uint16_t height_96PPI = (uint16_t)windowSize[1];
+                NetImgui::SetWindowSize_96PPI(width_96PPI, height_96PPI);
+            }
+        }
+        #endif
     }  // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
     if(foldable_region) // Handle idling

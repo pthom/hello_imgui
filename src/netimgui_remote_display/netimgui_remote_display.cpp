@@ -44,13 +44,16 @@ int main(int argc, char **argv)
 
     runnerParams.callbacks.PostInit = [&pass_cmd_line_args_to_server]() {
         pass_cmd_line_args_to_server();
-		NetImguiServer::UI::SetUseServerDisplayDPISettings(true);
-		float windowDPISizeFactor = HelloImGui::GetRunnerParams()->dpiAwareParams.dpiWindowSizeFactor;
-		NetImguiServer::UI::SetWindowDPISizeFactor(windowDPISizeFactor);
+        // KK3 set font scale here
     };
 
     runnerParams.callbacks.PreNewFrame = []() {
         // Request each client to update their drawing content
+        NetImguiServer::UI::SetFullDPISettings(
+            ImGui::GetIO().DisplayFramebufferScale,
+            1.f / HelloImGui::DpiFontLoadingFactor()
+        );
+
         NetImguiServer::App::UpdateRemoteContent();
     };
 

@@ -474,21 +474,7 @@ bool _CheckDpiAwareParamsChanges(HelloImGui::RunnerParams& params)
 		dpiAwareParams.fontRenderingScale = io.FontGlobalScale;
 	}
 
-	bool didDpiWindowSizeFactorChange = false;
-#ifdef HELLOIMGUI_WITH_NETIMGUI
-	if (params.remoteParams.enableRemoting)
-	{
-		float newWindowDPISizeFactor = NetImgui::GetWindowDPISizeFactor();
-		didDpiWindowSizeFactorChange = dpiAwareParams.dpiWindowSizeFactor != newWindowDPISizeFactor;
-		if (didDpiWindowSizeFactorChange)
-		{
-			printf("Warning: didDpiWindowSizeFactorChange=:true (from netImgui)\n");
-			dpiAwareParams.dpiWindowSizeFactor = newWindowDPISizeFactor;
-		}
-	}
-#endif
-
-	if (didDpiWindowSizeFactorChange || didFontGlobalScaleChange)
+	if (didFontGlobalScaleChange)
 	{
 		printf("New DpiAwareParams:\n");
 		_LogDpiParams("_CheckDpiAwareParamsChanges (changed!)", dpiAwareParams);

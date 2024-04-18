@@ -74,6 +74,8 @@ int main(int argc, char **argv)
 //    runnerParams.dpiAwareParams.dpiWindowSizeFactor = 1.0f;
 //    runnerParams.dpiAwareParams.fontRenderingScale = 1.0f;
 
+    runnerParams.fpsIdling.fpsIdle = 30.f;
+
     // Start the HelloImGui runner
     HelloImGui::Run(runnerParams);
 }

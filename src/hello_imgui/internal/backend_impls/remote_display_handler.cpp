@@ -568,6 +568,11 @@ namespace HelloImGui
 
         void HeartBeat_PreImGuiNewFrame()
         {
+            ScreenSize appSize = HelloImGui::GetRunnerParams()->appWindowParams.windowGeometry.size;
+            ImVec2 appSizeImVec2 = ImVec2((float)appSize[0], (float)appSize[1]);
+            auto& io = ImGui::GetIO();
+            io.DisplaySize = appSizeImVec2;
+
             // websocket event handling
             auto events = gImguiWS.takeEvents();
             for (auto & event : events) {

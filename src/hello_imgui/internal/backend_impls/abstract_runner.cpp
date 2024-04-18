@@ -1107,6 +1107,9 @@ void AbstractRunner::CreateFramesAndRender()
         }
     #endif
 
+    if (!mRemoteDisplayHandler.CanQuitApp())
+        params.appShallExit = false;
+
     mIdxFrame += 1;
 }
 

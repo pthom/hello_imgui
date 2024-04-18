@@ -35,6 +35,9 @@ namespace HelloImGui
         // (return false if no remote display is configured/compiled)
         bool CheckDpiAwareParamsChanges();
 
+        // Can the user quit the application?
+        bool CanQuitApp();
+
     private:
         // Returns true if the application is connected to a remote server
         // (return false if no remote display is configured/compiled)

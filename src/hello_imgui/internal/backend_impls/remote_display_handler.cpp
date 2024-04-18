@@ -678,4 +678,17 @@ void RemoteDisplayHandler::SendFonts()
     }
 }
 
+bool RemoteDisplayHandler::CanQuitApp()
+{
+    if (!ShouldRemoteDisplay())
+        return true;
+    #ifdef HELLOIMGUI_WITH_NETIMGUI
+    return true; // ?
+    #endif
+    #ifdef HELLOIMGUI_WITH_IMGUIWS
+    return false;
+    #endif
+    return true;
 }
+
+}  // namespace HelloImGui

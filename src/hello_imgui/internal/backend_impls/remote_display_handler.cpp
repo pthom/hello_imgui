@@ -223,6 +223,93 @@ namespace HelloImGui
         //                              <ImguiWsUtils>
         // =====================================================================================================================
 
+        std::string gIndexHtmlSource = R"(
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <title>_WS_TITLE_</title>
+
+        <script src="incppect.js"></script>
+        <script src="imgui-ws.js"></script>
+    </head>
+
+    <body style="font-family: Georgia, serif;">
+        <script>
+            function create_canvas_for_imgui(canvas_id, canvas_width, canvas_height)
+            {
+                var main_container = document.createElement('div');
+                main_container.id = 'main_container_' + canvas_id;
+                document.body.appendChild(main_container);
+
+                var canvas_main = document.createElement('canvas');
+                canvas_main.id = canvas_id;
+                canvas_main.width = canvas_width;
+                canvas_main.height = canvas_height;
+                canvas_main.style.backgroundColor = 'black';
+                canvas_main.tabIndex = '0';
+                canvas_main.textContent = 'Your browser does not support the HTML5 canvas tag.';
+                main_container.appendChild(canvas_main);
+            }
+
+
+            function init(canvas_id, canvas_width, canvas_height, update_freq_ms)
+            {
+                var gLastShownId = -1;
+
+                incppect.render = function() {
+                    imgui_ws.gl.clearColor(0.45, 0.55, 0.60, 1.00);
+                    imgui_ws.gl.clear(imgui_ws.gl.COLOR_BUFFER_BIT);
+
+                    imgui_ws.incppect_textures(this);
+                    imgui_ws.incppect_draw_lists(this);
+                    imgui_ws.render();
+
+                    var my_id = this.get_int32('my_id[%d]', -1) || 0;
+                    if (my_id != gLastShownId) {
+                        console.log('imgui_ws: my_id = ' + my_id);
+                        gLastShownId = my_id;
+                    }
+                }
+
+                incppect.onerror = function(evt) {
+                    console.error(evt);
+                }
+
+                // update_freq_ms: between 16 and 200ms
+                // incppect.k_requests_update_freq_ms = document.getElementById('update_freq_ms').value;
+                incppect.k_requests_update_freq_ms = update_freq_ms;
+
+
+                create_canvas_for_imgui(canvas_id, canvas_width, canvas_height);
+                incppect.init();
+                imgui_ws.set_incppect_handlers(incppect);
+                imgui_ws.init(canvas_id);
+            }
+
+            // onload: create canvas and init imgui-ws + incppect
+            canvas_id = "my_canvas";
+            canvas_width = _WS_CANVAS_WIDTH_;
+            canvas_height = _WS_CANVAS_HEIGHT_;
+            update_freq_ms = 16;
+            window.addEventListener('load', () => init(canvas_id, canvas_width, canvas_height, update_freq_ms));
+
+        </script>
+
+    </body>
+</html>
+        )";
+
+        static std::string ReplaceInString(std::string str, const std::string& from, const std::string& to)
+        {
+            size_t start_pos = 0;
+            while((start_pos = str.find(from, start_pos)) != std::string::npos)
+            {
+                str.replace(start_pos, from.length(), to);
+                start_pos += to.length();
+            }
+            return str;
+        }
+
         static ImGuiKey toImGuiKey(int32_t keyCode) {
             switch (keyCode) {
                 case 8: return ImGuiKey_Backspace;
@@ -529,9 +616,17 @@ namespace HelloImGui
 
         void Create()
         {
+            auto& remoteParams = HelloImGui::GetRunnerParams()->remoteParams;
             int32_t port = (int32_t)HelloImGui::GetRunnerParams()->remoteParams.wsPort;
-            std::string httpRoot = "/Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/hello_imgui_vcpkg/src/hello_imgui_remote/imguiws_demo";
-            gImguiWS.init(port, httpRoot, { "", "index.html" });
+            gImguiWS.init(port, remoteParams.wsHttpRootFolder, {"", "index.html"});
+            if (remoteParams.wsProvideIndexHtml)
+            {
+                std::string indexHtml = gIndexHtmlSource;
+                indexHtml = ReplaceInString(indexHtml, "_WS_TITLE_", HelloImGui::GetRunnerParams()->appWindowParams.windowTitle);
+                indexHtml = ReplaceInString(indexHtml, "_WS_CANVAS_WIDTH_", std::to_string(HelloImGui::GetRunnerParams()->appWindowParams.windowGeometry.size[0]));
+                indexHtml = ReplaceInString(indexHtml, "_WS_CANVAS_HEIGHT_", std::to_string(HelloImGui::GetRunnerParams()->appWindowParams.windowGeometry.size[1]));
+                gImguiWS.addResource("/index.html", indexHtml);
+            }
         }
 
         static uint32_t ToUint32(void * ptr)

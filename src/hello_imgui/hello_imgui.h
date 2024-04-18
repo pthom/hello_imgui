@@ -112,6 +112,10 @@ ImGuiTestEngine* GetImGuiTestEngine();
 //     "Sdl - Vulkan"
 std::string GetBackendDescription();
 
+// `ChangeWindowSize(const ScreenSize &windowSize)`: sets the window size
+// (useful if you want to change the window size during execution)
+void ChangeWindowSize(const ScreenSize &windowSize);
+
 // @@md
 
 

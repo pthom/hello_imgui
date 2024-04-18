@@ -6,7 +6,7 @@ root: intro
 
 chapters:
   - file: get_started
-  - file: doc_api
   - file: doc_params
+  - file: doc_api
   - file: build
 

@@ -39,10 +39,20 @@ void ChooseBackendTypesIfSelectedAsFirstAvailable(RunnerParams* runnerParams)
     }
 }
 
+void ChooseNullBackendsIfUsingRemote(RunnerParams* runnerParams)
+{
+    if (runnerParams->remoteParams.enableRemoting)
+    {
+        runnerParams->platformBackendType = PlatformBackendType::Null;
+        runnerParams->rendererBackendType = RendererBackendType::Null;
+    }
+}
+
 
 std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 {
     ChooseBackendTypesIfSelectedAsFirstAvailable(&params);
+    ChooseNullBackendsIfUsingRemote(&params);
     if (params.platformBackendType == PlatformBackendType::Glfw)
     {
         #ifdef HELLOIMGUI_USE_GLFW3

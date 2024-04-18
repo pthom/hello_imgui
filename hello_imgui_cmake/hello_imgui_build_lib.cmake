@@ -1032,6 +1032,42 @@ endfunction()
 
 
 ###################################################################################################
+# Remoting with https://github.com/sammyfreg/netImgui: API = him_with_netimgui
+###################################################################################################
+function(him_with_netimgui)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_WITH_NETIMGUI)
+
+#    message(STATUS "HelloImGui: downloading and building netImgui")
+#    include(FetchContent)
+#    # Set(FETCHCONTENT_QUIET FALSE)
+#    FetchContent_Declare(net_imgui
+#        GIT_REPOSITORY    https://github.com/pthom/netImgui.git
+#        GIT_TAG           cmake_multiplatform
+#        GIT_PROGRESS TRUE
+#    )
+#    FetchContent_MakeAvailable(net_imgui)
+
+
+    # Add netImgui to the project
+    set(NETIMGUI_DIR ${HELLOIMGUI_BASEPATH}/external/netImgui CACHE STRING "" FORCE)
+    set(NETIMGUI_BUILD_IMGUI OFF CACHE BOOL "" FORCE)
+    set(NETIMGUI_BUILD_CLIENT ON CACHE BOOL "" FORCE)
+    set(NETIMGUI_BUILD_SERVER_LIB ON CACHE BOOL "" FORCE)
+
+    #set(NETIMGUI_BUILD_SERVER_APP_SOKOL ON CACHE BOOL "" FORCE)
+    set(NETIMGUI_BUILD_SERVER_APP_SOKOL OFF CACHE BOOL "" FORCE)
+    set(NETIMGUI_SERVER_APP_BACKEND_GLFW_GL3 ON CACHE BOOL "" FORCE)
+
+    set(NETIMGUI_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+    add_subdirectory(${NETIMGUI_DIR}  netimgui)
+
+    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC net_imgui_client)
+    him_add_installable_dependency(net_imgui_client)
+endfunction()
+
+
+
+###################################################################################################
 # Miscellaneous: API = him_add_misc_options
 ###################################################################################################
 function(him_add_misc_options)
@@ -1079,12 +1115,14 @@ function(him_log_configuration)
     # set imgui_source_dir to the relative path of HELLOIMGUI_IMGUI_SOURCE_DIR versus this project
     file(RELATIVE_PATH imgui_source_dir ${HELLOIMGUI_BASEPATH} ${HELLOIMGUI_IMGUI_SOURCE_DIR})
 
+    # Use netImGui:                     ${HELLOIMGUI_WITH_NETIMGUI}
+
     set(msg "
     ===========================================================================
         Hello ImGui build options:
     ===========================================================================
-      Platform Backend(s):              ${active_platform_backends}
-      Rendering Backend(s):             ${active_rendering_backends}
+      Platform Backend(s):             ${active_platform_backends}
+      Rendering Backend(s):            ${active_rendering_backends}
     ---------------------------------------------------------------------------
       Options:
         HELLOIMGUI_USE_FREETYPE:        ${HELLOIMGUI_USE_FREETYPE}  (${HELLOIMGUI_FREETYPE_SELECTED_INFO})
@@ -1183,6 +1221,10 @@ function(him_main_add_hello_imgui_library)
     endif()
     if (HELLOIMGUI_HAS_NULL)
         target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_NULL)
+    endif()
+
+    if (HELLOIMGUI_WITH_NETIMGUI)
+        him_with_netimgui()
     endif()
 
     him_add_apple_options()

@@ -14,7 +14,8 @@ namespace ImGuiDefaultSettings
 
 void LoadDefaultFont_WithFontAwesomeIcons()
 {
-    auto defaultIconFont = HelloImGui::GetRunnerParams()->callbacks.defaultIconFont;
+	auto runnerParams = HelloImGui::GetRunnerParams();
+    auto defaultIconFont = runnerParams->callbacks.defaultIconFont;
     float fontSize = 15.f;
 
     std::string fontFilename = "fonts/DroidSans.ttf";
@@ -25,8 +26,14 @@ void LoadDefaultFont_WithFontAwesomeIcons()
         return;
     }
 
-    ImFont* font = LoadFont(fontFilename, fontSize);
-    if (defaultIconFont == HelloImGui::DefaultIconFont::NoIcons)
+	bool useDpiResponsiveFonts = runnerParams->dpiAwareParams.onlyUseFontDpiResponsive;
+
+	if (useDpiResponsiveFonts)
+    	LoadFontDpiResponsive(fontFilename, fontSize);
+	else
+		LoadFont(fontFilename, fontSize);
+
+	if (defaultIconFont == HelloImGui::DefaultIconFont::NoIcons)
         return;
 
     std::string iconFontFile;
@@ -43,8 +50,11 @@ void LoadDefaultFont_WithFontAwesomeIcons()
     HelloImGui::FontLoadingParams fontParams;
     fontParams.mergeToLastFont = true;
     fontParams.useFullGlyphRange = true;
-    font = LoadFont(iconFontFile, fontSize, fontParams);
-    (void) font;
+
+	if (useDpiResponsiveFonts)
+    	LoadFontDpiResponsive(iconFontFile, fontSize, fontParams);
+	else
+		LoadFont(iconFontFile, fontSize, fontParams);
 }
 
 void SetupDefaultImGuiConfig()

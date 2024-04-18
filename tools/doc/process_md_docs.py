@@ -134,5 +134,5 @@ if __name__ == "__main__":
     process_md_file(hello_imgui_dir + "doc_params.src.md", hello_imgui_dir + "doc_params.md")
     process_md_file(hello_imgui_dir + "doc_api.src.md", hello_imgui_dir + "doc_api.md")
 
-    generate_book_script = repo_dir + "docs_src/generate_book.sh"
+    generate_book_script = repo_dir + "docs_src/_generate_book_impl.sh"
     os.system(generate_book_script)

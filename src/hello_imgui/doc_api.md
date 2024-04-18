@@ -57,8 +57,16 @@ float EmSize(float nbLines);
 # Load fonts
 See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui_font.h).
 ```cpp
+
+    // When loading fonts, use
+    //          HelloImGui::LoadFont(..)
+    //      or
+    //      	HelloImGui::LoadDpiResponsiveFont()
     //
-    // When loading fonts, use HelloImGui::LoadFont(fontFilename, fontSize, fontLoadingParams)
+    // Use these functions instead of ImGui::GetIO().Fonts->AddFontFromFileTTF(),
+    // because they will automatically adjust the font size to account for HighDPI,
+    // and will help you to get consistent font size across different OSes.
+
     //
     // Font loading parameters: several options are available (color, merging, range, ...)
     struct FontLoadingParams
@@ -101,14 +109,32 @@ See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/he
         ImFontConfig fontConfigFontAwesome = ImFontConfig();
     };
 
-    // When loading fonts, use HelloImGui::LoadFont(FontLoadingParams)
-    // ===============================================================
-    // instead of ImGui::GetIO().Fonts->AddFontFromFileTTF(), because it will
-    // automatically adjust the font size to account for HighDPI, and will spare
-    // you headaches when trying to get consistent font size across different OSes.
-    // see FontLoadingParams and ImFontConfig
-    ImFont* LoadFont(const std::string & fontFilename, float fontSize,
-                     const FontLoadingParams & params = {});
+    // A font that will be automatically resized to account for changes in DPI
+    // Use LoadAdaptiveFont instead of LoadFont to get this behavior.
+    // Fonts loaded with LoadAdaptiveFont will be reloaded during execution
+    // if ImGui::GetIO().FontGlobalScale is changed.
+    struct FontDpiResponsive
+    {
+        ImFont* font = nullptr;
+        std::string fontFilename;
+        float fontSize = 0.f;
+        FontLoadingParams fontLoadingParams;
+    };
+
+
+    // Loads a font with the specified parameters
+    // (this font will not adapt to DPI changes after startup)
+    ImFont* LoadFont(
+        const std::string & fontFilename, float fontSize,
+        const FontLoadingParams & params = {});
+
+    // Loads a font with the specified parameters
+    // This font will adapt to DPI changes after startup.
+    // Only fonts loaded with LoadAdaptiveFont will adapt to DPI changes:
+    // avoid mixing LoadFont/LoadFontDpiResponsive)
+    FontDpiResponsive* LoadFontDpiResponsive(
+        const std::string & fontFilename, float fontSize,
+        const FontLoadingParams & params = {});
 
 ```
 
@@ -266,6 +292,10 @@ ImGuiTestEngine* GetImGuiTestEngine();
 //     "Sdl - Vulkan"
 std::string GetBackendDescription();
 
+// `ChangeWindowSize(const ScreenSize &windowSize)`: sets the window size
+// (useful if you want to change the window size during execution)
+void ChangeWindowSize(const ScreenSize &windowSize);
+
 ```
 
 ----
@@ -408,42 +438,100 @@ void ShowAppMenu(RunnerParams & runnerParams);
 
 # Handling screens with high DPI
 
-_Note: This part is relevant only for more advanced usages. If you use `HelloImGui::LoadFont()`, and always use `HelloImGui::EmToVec2()` to place widgets, you do not need to worry about DPI handling_ 
 
-## Details on DPI handling on different OS
+_Note: This part is relevant only for more advanced usages. If you use `HelloImGui::LoadFont()`,
+ and always use `HelloImGui::EmToVec2()` to place widgets, you do not need to worry about DPI handling_
 
-Let's consider screen whose physical pixel resolution is 3600x2000, but which will displayed with a scaling factor of 200%, so that widgets do not look too small on it.
+## OS specificities
 
-The way it is handled depends on the OS:
-- On MacOS, the screen will be seen as having a resolution of 1800x1000, and the OS handles the resizing by itself.
-- On Linux, and on Windows if the application is DPI aware, the screen will be seen as having a resolution of 3600x2000.
-- On Windows if the application is not DPI aware, the screen will be seen as having a resolution of 1800x1000
+There are several important things to know about high-DPI handling within Hello ImGui and Dear ImGui:
 
-By default, if using the glfw backend, applications will be Dpi aware under windows.
-Sdl applications are normally not Dpi aware. However HelloImGui makes them Dpi aware when using the sdl backend.
-
-
-## Dpi aware Font scaling
-
-`HelloImGui::LoadFont()` will load fonts with the correct size, taking into account the DPI scaling.
-
-If you prefer to use `ImGui::GetIO().Fonts->AddFontFromFileTTF()`, there are two things to know:
-
-1. You should adjust `ImGui::GetIO().FontGlobalScale`:
-
-Under windows and linux, it should be is 1: no rescaling should be done by ImGui.
-Under macOS and emscripten, it may need to bet set to 0.5 (for example it will be 0.5 if the dpi scaling is 200%
-on a macOS retina screen)
-
-`HelloImGui::ImGuiDefaultFontGlobalScale()` returns the default value that should be stored inside `ImGui::GetIO().FontGlobalScale`.
+1. (virtual) screen coordinates vs (physical) pixels
+2. DisplayFramebufferScale: Frame buffer size vs window size
+3. FontGlobalScale: display-time font scaling factor
+4. How to load fonts with the correct size
+5. How to get similar window sizes on different OSes/DPI
 
 
-2. You should adjust the font size when loading a font:
+## Screen coordinates
 
-`HelloImGui::DpiFontLoadingFactor()` returns a factor by which you shall multiply your font sizes when loading them.
+Screen coordinates are the coordinates you use to place and size windows on the screen.
 
-`HelloImGui::DpiFontLoadingFactor()` corresponds to:
-`DpiWindowSizeFactor() * 1.f / ImGui::GetIO().FontGlobalScale`
+**Screen coordinates do not always correspond to physical pixels**
 
-where DpiWindowSizeFactor() is equal to `CurrentScreenPixelPerInch / 96`
-under windows and linux, 1 under macOS
+- On macOS/iOS retina screens, a screen coordinate corresponds typically
+  to 2x2 physical pixels (but this may vary if you change the display scaling)
+- On most Linux distributions, whenever there is a high DPI screen
+  you can set the display scale. For example if you set the scale to 300%,
+  then a screen coordinate will correspond to 3x3 physical pixels
+- On Windows, there are two possible situations:
+    - If the application is DPI aware, a screen coordinate corresponds to 1x1 physical pixel,
+      and you can use the full extent of your screen resolution.
+    - If the application is not DPI aware, a screen coordinate may correspond to 2x2 physical pixels
+      (if the display scaling is set to 200% for example). However, the rendering of your application
+      will be blurry and will not use the full extent of your screen resolution.
+    - Notes:
+        - Applications created with HelloImGui are DPI aware by default (when using glfw and sdl backends).
+        - SDL applications are normally not DPI aware. However, HelloImGui makes them DPI aware.
+
+
+## DisplayFramebufferScale
+`DisplayFramebufferScale` is the ratio between the frame buffer size and the window size.
+
+The frame buffer size is the size of the internal buffer used by the rendering backend.
+It might be bigger than the actual window size.
+`ImVec2 ImGui::GetIO().DisplayFramebufferScale` is a factor by which the frame buffer size is bigger than the window size.
+It is set by the platform backend after it was initialized, and typically reflects the scaling ratio between
+physical pixels and screen coordinates.
+
+Under windows, it will always be (1,1). Under macOS / linux, it will reflect the current display scaling.
+It will typically be (2,2) on a macOS retina screen.
+
+Notes:
+- You cannot change DisplayFramebufferScale manually, it will be reset at each new frame, by asking the platform backend.
+
+
+## FontGlobalScale
+
+`ImGui::GetIO().FontGlobalScale` is a factor by which fonts glyphs should be scaled at rendering time.
+It is typically 1 on windows, and 0.5 on macOS retina screens.
+
+
+## How to load fonts with the correct size
+
+### Using HelloImGui (recommended)
+
+[`HelloImGui::LoadFont()` and `HelloImGui::LoadFontDpiResponsive`](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts) will load fonts
+ with the correct size, taking into account the DPI scaling.
+
+### Using Dear ImGui
+`ImGui::GetIO().Fonts->AddFontFromFileTTF()` loads a font with a given size, in *physical pixels*.
+
+If for example, DisplayFramebufferScale is (2,2), and you load a font with a size of 16, it will by default be rendered
+ with size of 16 *virtual screen coordinate pixels* (i.e. 32 physical pixels). This will lead to blurry text.
+To solve this, you should load your font with a size of 16 *virtual screen coordinate pixels* (i.e. 32 physical pixels),
+and set `ImGui::GetIO().FontGlobalScale` to 0.5.
+
+Helpers if using `ImGui::GetIO().Fonts->AddFontFromFileTTF()`:
+- `HelloImGui::ImGuiDefaultFontGlobalScale()` returns the default value that should be stored inside `ImGui::GetIO().FontGlobalScale`.
+- `HelloImGui::DpiFontLoadingFactor()` returns a factor by which you shall multiply your font sizes when loading them.
+
+
+## Reproducible physical window sizes (in mm or inches)
+
+### Using HelloImGui
+Simply specify a window size that corresponds to theoretical 96 PPI screen (inside `RunnerParams.appWindowParams.windowGeometry.size`)
+
+### Using your own code to create the backend window
+If you prefer to create the window by yourself, its physical size in millimeters may vary widely,
+depending on the OS and the current screen DPI setting.
+Typically under Windows, your window may appear to be very small if your screen is high DPI.
+
+To get a similar window size on different OSes/DPI, you should multiply the window size by `HelloImGui::DpiWindowSizeFactor()`.
+
+Note: DpiWindowSizeFactor() is equal to `CurrentScreenPixelPerInch / 96` under windows and linux, and always 1 under macOS.
+
+## Fine tune DPI Handling
+
+See [`HelloImGui::DpiAwareParams`](https://pthom.github.io/hello_imgui/book/doc_params.html#dpi-aware-params)
+for more information on how to fine tune DPI handling when using Hello ImGui.

@@ -7,6 +7,7 @@
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/internal/platform/ini_folder_locations.h"
 #include "hello_imgui/internal/inicpp.h"
+#include "hello_imgui/internal/poor_man_log.h"
 #include "imgui.h"
 
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
@@ -62,15 +63,28 @@
 //
 
 
+//#define ENABLE_DPI_LOG  // Enable or disable logging for DPI info
+#define ENABLE_DPI_LOG
+
+#ifdef ENABLE_DPI_LOG
+#define DpiLog PoorManLog
+#else
+#define DpiLog(...)
+#endif
+
 
 namespace HelloImGui
 {
 // Encapsulated inside hello_imgui_screenshot.cpp
 void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 
+// Encapsulated inside hello_imgui_font.cpp
+bool _reloadAllDpiResponsiveFonts();
+bool ShouldDisplayOnRemoteServer();
+
 
 AbstractRunner::AbstractRunner(RunnerParams &params_)
-    : params(params_) {}
+: params(params_) {}
 
 
 #ifndef USEHACK
@@ -133,6 +147,12 @@ bool AbstractRunner::WantAutoSize()
 #endif
 }
 
+void AbstractRunner::ChangeWindowSize(HelloImGui::ScreenSize windowSize)
+{
+    auto bounds = mBackendWindowHelper->GetWindowBounds(mWindow);
+    bounds.size = windowSize;
+    mBackendWindowHelper->SetWindowBounds(mWindow, bounds);
+}
 
 bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi() 
 {
@@ -277,47 +297,98 @@ void ReadDpiAwareParams(const std::string& appIniSettingLocation, DpiAwareParams
 }
 
 
+void _LogDpiParams(const std::string& origin, const HelloImGui::DpiAwareParams& dpiAwareParams)
+{
+	auto &io = ImGui::GetIO();
+	std::stringstream msg;
+	DpiLog("DpiAwareParams: %s\n", origin.c_str());
+	DpiLog("    dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
+	DpiLog("    fontRenderingScale=%f\n", dpiAwareParams.fontRenderingScale);
+	DpiLog("    DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
+	DpiLog("        (ImGui FontGlobalScale: %f)\n", io.FontGlobalScale);
+	DpiLog("	    (ImGui DisplayFramebufferScale=%f, %f)\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+}
+
+
+bool AbstractRunner::CheckDpiAwareParamsChanges()
+{
+    auto& dpiAwareParams = params.dpiAwareParams;
+    auto& io = ImGui::GetIO();
+
+	// Check changes
+	bool didFontGlobalScaleChange = dpiAwareParams.fontRenderingScale != io.FontGlobalScale;
+	if (didFontGlobalScaleChange)
+	{
+		DpiLog("Warning: didFontGlobalScaleChange=:true\n");
+		dpiAwareParams.fontRenderingScale = io.FontGlobalScale;
+	}
+
+    bool didDpiAwareParamsChangeOnRemoteServer = mRemoteDisplayHandler.CheckDpiAwareParamsChanges();
+
+	if (didFontGlobalScaleChange || didDpiAwareParamsChangeOnRemoteServer)
+	{
+		DpiLog("New DpiAwareParams:\n");
+		_LogDpiParams("_CheckDpiAwareParamsChanges (changed!)", dpiAwareParams);
+		return true;
+	}
+	else
+		return false;
+}
+
+
+float _DefaultOsFontRenderingScale()
+{
+    float fontSizeIncreaseFactor = 1.f;
+
+    #ifdef __EMSCRIPTEN__
+        // Query the brower to ask for devicePixelRatio
+        double windowDevicePixelRatio = EM_ASM_DOUBLE( {
+            var scale = window.devicePixelRatio;
+            return scale;
+        }
+        );
+        printf("window.devicePixelRatio=%lf\n", windowDevicePixelRatio);
+
+        fontSizeIncreaseFactor = windowDevicePixelRatio;
+    #endif
+    #ifdef HELLOIMGUI_MACOS
+        // Crisp fonts on macOS:
+        // cf https://github.com/ocornut/imgui/issues/5301
+        // Issue with macOS is that it pretends screen has 2x fewer pixels than it actually does.
+        // This simplifies application development in most cases, but in our case we happen to render fonts at 1x scale
+        // while screen renders at 2x scale.
+        fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
+    #endif
+
+    return 1.0f / fontSizeIncreaseFactor;
+}
+
+
 void AbstractRunner::SetupDpiAwareParams()
 {
     ReadDpiAwareParams(IniSettingsLocation(params), &params.dpiAwareParams);
     if (params.dpiAwareParams.dpiWindowSizeFactor == 0.f)
     {
         #ifdef HELLOIMGUI_HAS_DIRECTX11
+        if (params.rendererBackendType == HelloImGui::RendererBackendType::DirectX11)
+        {
             // The current implementation of Dx11 backend does  not support changing the window size
             params.dpiAwareParams.dpiWindowSizeFactor = 1.f;
+        }
         #endif
         params.dpiAwareParams.dpiWindowSizeFactor = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
     }
 
     if (params.dpiAwareParams.fontRenderingScale == 0.f)
     {
-        float fontSizeIncreaseFactor = 1.f;
-
-        #ifdef __EMSCRIPTEN__
-            // Query the brower to ask for devicePixelRatio
-            double windowDevicePixelRatio = EM_ASM_DOUBLE( {
-                var scale = window.devicePixelRatio;
-                return scale;
-            }
-            );
-            printf("window.devicePixelRatio=%lf\n", windowDevicePixelRatio);
-
-            fontSizeIncreaseFactor = windowDevicePixelRatio;
-        #endif
-        #ifdef HELLOIMGUI_MACOS
-            // Crisp fonts on macOS:
-            // cf https://github.com/ocornut/imgui/issues/5301
-            // Issue with macOS is that it pretends screen has 2x fewer pixels than it actually does.
-            // This simplifies application development in most cases, but in our case we happen to render fonts at 1x scale
-            // while screen renders at 2x scale.
-            fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
-        #endif
-
-        params.dpiAwareParams.fontRenderingScale = 1.0f / fontSizeIncreaseFactor;
+        if (params.remoteParams.enableRemoting)
+            params.dpiAwareParams.fontRenderingScale = 1.f;
+        else
+            params.dpiAwareParams.fontRenderingScale = _DefaultOsFontRenderingScale();
     }
-
     ImGui::GetIO().FontGlobalScale = params.dpiAwareParams.fontRenderingScale;
-    ImGui::GetIO().DisplayFramebufferScale = mBackendWindowHelper->GetWindowScaleFactor(mWindow);
+
+	_LogDpiParams("SetupDpiAwareParams", params.dpiAwareParams);
 }
 
 
@@ -362,6 +433,7 @@ void AbstractRunner::HandleDpiOnSecondFrame()
 #endif
     
     // High DPI handling on windows & linux
+    if (!ShouldDisplayOnRemoteServer())
     {
         float dpiScale =  params.dpiAwareParams.dpiWindowSizeFactor;
         if ( dpiScale > 1.f)
@@ -628,8 +700,8 @@ void AbstractRunner::Setup()
 
     // This should be done before Impl_LinkPlatformAndRenderBackends()
     // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks
-    // will chain the user callbacks with ImGui callbacks; and PostInit()
-    // is a good place for the user to install callbacks
+    // will chain the user callbacks with ImGui callbacks;
+	// and PostInit() is a good place for the user to install callbacks
     if (params.callbacks.PostInit_AddPlatformBackendCallbacks)
         params.callbacks.PostInit_AddPlatformBackendCallbacks();
 
@@ -680,7 +752,12 @@ void AbstractRunner::Setup()
         style.Colors[ImGuiCol_TitleBgCollapsed].w = 1.f;
     }
     params.callbacks.SetupImGuiStyle();
+
+    // Create a remote display handler if needed
+    mRemoteDisplayHandler.Create();
+    mRemoteDisplayHandler.SendFonts();
 }
+
 
 void AbstractRunner::SetLayoutResetIfNeeded()
 {
@@ -748,6 +825,7 @@ void AbstractRunner::RenderGui()
 
 void _UpdateFrameRateStats(); // See hello_imgui.cpp
 
+
 void AbstractRunner::CreateFramesAndRender()
 {
     // Notes:
@@ -775,11 +853,21 @@ void AbstractRunner::CreateFramesAndRender()
     // (it is here only to make the code more readable, and to enable to collapse blocks of code)
     constexpr bool foldable_region = true;
 
-    if (foldable_region) // Update frame rate stats
-    {
-        _UpdateFrameRateStats();
-        // printf("Render frame %i, fps=%.1f\n", mIdxFrame, HelloImGui::FrameRate());
-    }
+    // Will display on remote server if needed
+    mRemoteDisplayHandler.Heartbeat();
+
+	if (CheckDpiAwareParamsChanges()) // Reload fonts if DPI scale changed
+	{
+		if (_reloadAllDpiResponsiveFonts())
+		{
+			DpiLog("_CheckDpiAwareParamsChanges returned true => reloaded all fonts\n");
+			// cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
+			mRenderingBackendCallbacks->Impl_DestroyFontTexture();
+			mRenderingBackendCallbacks->Impl_CreateFontTexture();
+
+            mRemoteDisplayHandler.SendFonts();
+		}
+	}
 
     if (foldable_region) // basic layout checks
     { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
@@ -875,6 +963,13 @@ void AbstractRunner::CreateFramesAndRender()
                     mBackendWindowHelper->ShowWindow(mWindow);
             }
         }
+
+        // Transmit window size to remote server (if needed)
+        if ((mIdxFrame > 3) && params.remoteParams.transmitWindowSize)
+        {
+            auto windowSize = params.appWindowParams.windowGeometry.size;
+            mRemoteDisplayHandler.TransmitWindowSizeToDisplay(windowSize);
+        }
     }  // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
     if(foldable_region) // Handle idling
@@ -884,7 +979,7 @@ void AbstractRunner::CreateFramesAndRender()
         #ifndef __EMSCRIPTEN__
         // Idling for non emscripten, where HelloImGui is responsible for the main loop.
         // This form of idling will call WaitForEventTimeout(), which may call sleep():
-        IdleBySleeping();
+		IdleBySleeping();
         #endif
 
         // Poll Events (this fills GImGui.InputEventsQueue)
@@ -901,7 +996,13 @@ void AbstractRunner::CreateFramesAndRender()
         #endif
     } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
-    if (foldable_region) // Load additional fonts during execution
+	if (foldable_region) // Update frame rate stats
+	{
+		_UpdateFrameRateStats();
+		// printf("Render frame %i, fps=%.1f\n", mIdxFrame, HelloImGui::FrameRate());
+	}
+
+	if (foldable_region) // Load additional fonts during execution
     {
         if (params.callbacks.LoadAdditionalFonts != nullptr)
         {
@@ -912,6 +1013,8 @@ void AbstractRunner::CreateFramesAndRender()
             mRenderingBackendCallbacks->Impl_DestroyFontTexture();
             mRenderingBackendCallbacks->Impl_CreateFontTexture();
             params.callbacks.LoadAdditionalFonts = nullptr;
+
+            mRemoteDisplayHandler.SendFonts();
         }
     }
 
@@ -927,6 +1030,7 @@ void AbstractRunner::CreateFramesAndRender()
 
         mRenderingBackendCallbacks->Impl_NewFrame_3D();
         Impl_NewFrame_PlatformBackend();
+
         {
             // Workaround against SDL clock that sometimes leads to io.DeltaTime=0.f on emscripten
             // (which fails to an `IM_ASSERT(io.DeltaTime) > 0` in ImGui::NewFrame())
@@ -970,7 +1074,7 @@ void AbstractRunner::CreateFramesAndRender()
     // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
     // ==> Note: RenderGui() may measure the size of the window and resize it if mIdxFrame==1
     // RenderGui may call many user callbacks, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
-    RenderGui();
+	RenderGui();
 
     if (params.callbacks.BeforeImGuiRender)
         params.callbacks.BeforeImGuiRender();
@@ -1011,9 +1115,18 @@ void AbstractRunner::IdleBySleeping()
     #ifdef HELLOIMGUI_WITH_TEST_ENGINE
         if (params.useImGuiTestEngine && TestEngineCallbacks::IsRunningTest())
             return;
-    #endif
+	#endif
 
-    assert(params.fpsIdling.fpsIdle >= 0.f);
+	if (ShouldDisplayOnRemoteServer())
+	{
+		// if displaying remote, the FPS is limited on the server to a value between 30 and 60 fps
+		// We cannot idle too slow, other the GUI becomes really sluggish
+		// Ideally, we should ask the server about it current refresh rate
+		// (At the moment, we can only deliver 30fps)
+		params.fpsIdling.fpsIdle = 30.f;
+	}
+
+	assert(params.fpsIdling.fpsIdle >= 0.f);
     params.fpsIdling.isIdling = false;
     if ((params.fpsIdling.fpsIdle > 0.f) && params.fpsIdling.enableIdling)
     {
@@ -1141,6 +1254,8 @@ void AbstractRunner::TearDown(bool gotException)
         if (params.useImGuiTestEngine)
             TestEngineCallbacks::TearDown_ImGuiContextDestroyed();
     #endif
+
+    mRemoteDisplayHandler.Shutdown();
 }
 
 
@@ -1152,5 +1267,12 @@ std::string AbstractRunner::LoadUserPref(const std::string& userPrefName)
 {
     return HelloImGuiIniSettings::LoadUserPref(IniSettingsLocation(params), userPrefName);
 }
+
+bool AbstractRunner::ShouldDisplayOnRemoteServer()
+{
+    return mRemoteDisplayHandler.ShouldDisplayOnRemoteServer();
+}
+
+
 
 }  // namespace HelloImGui

@@ -33,13 +33,6 @@
       }
     },
     {
-      "name": "build_null_backend",
-      "description": "Build with null backend.",
-      "cacheVariables": {
-        "HELLOIMGUI_NULL_BACKEND": "ON"
-      }
-    },
-    {
       "name": "build_vcpkg_default",
       "description": "Build with vcpkg default settings (opengl3 + sdl and glfw). You need to create a build directory and run from it",
       "cacheVariables": {

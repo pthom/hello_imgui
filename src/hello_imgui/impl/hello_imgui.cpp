@@ -197,6 +197,8 @@ std::string PlatformBackendTypeToString(PlatformBackendType platformBackendType)
         return "Glfw";
     else if (platformBackendType == PlatformBackendType::Sdl)
         return "Sdl";
+    else if (platformBackendType == PlatformBackendType::Null)
+        return "Null";
     else
         return "Unknown platform backend";
 }
@@ -213,6 +215,8 @@ std::string RendererBackendTypeToString(RendererBackendType rendererBackendType)
         return "DirectX11";
     else if (rendererBackendType == RendererBackendType::DirectX12)
         return "DirectX12";
+    else if (rendererBackendType == RendererBackendType::Null)
+        return "Null";
     else
         return "Unknown renderer backend";
 }
@@ -220,6 +224,8 @@ std::string RendererBackendTypeToString(RendererBackendType rendererBackendType)
 std::string GetBackendDescription()
 {
     const auto& params = GetRunnerParams();
+    if (params->remoteParams.enableRemoting)
+        return "Remote";
     std::string platformBackend = PlatformBackendTypeToString(params->platformBackendType);
     std::string rendererBackend = RendererBackendTypeToString(params->rendererBackendType);
     return platformBackend + " - " + rendererBackend;
@@ -232,6 +238,16 @@ ImGuiTestEngine* GetImGuiTestEngine() { return GHImGuiTestEngine; }
 #else
 ImGuiTestEngine* GetImGuiTestEngine() { return nullptr; }
 #endif
+
+void ChangeWindowSize(const ScreenSize &windowSize)
+{
+    gLastRunner->ChangeWindowSize(windowSize);
+}
+
+bool ShouldDisplayOnRemoteServer()
+{
+    return gLastRunner->ShouldDisplayOnRemoteServer();
+}
 
 
 void SaveUserPref(const std::string& userPrefName, const std::string& userPrefContent)

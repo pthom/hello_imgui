@@ -1,6 +1,27 @@
 # Application parameters
 
-_RunnerParams_ contains all the settings and callbacks in order to run an application. 
+
+__HelloImGui::Run()__ will run an application with a single call.
+
+Three signatures are provided:
+
+* `HelloImGui::Run(RunnerParams &)`: full signature, the most customizable version.
+  Runs an application whose params and Gui are provided by runnerParams.
+
+* `HelloImGui::Run(const SimpleRunnerParams&)`:
+  Runs an application, using simpler params.
+
+* `HelloImGui::Run(guiFunction, windowTitle, windowSize, windowSizeAuto=false, restoreLastWindowGeometry=false, fpsIdle=10)`
+  Runs an application, by providing the Gui function, the window title, etc.
+
+Although the API is extremely simple, it is highly customizable, and you can set many options by filling
+the elements in the `RunnerParams` struct, or in the simpler  `SimpleRunnerParams`.
+
+__HelloImGui::GetRunnerParams()__  will return the runnerParams of the current application.
+
+
+# Diagram
+
 The diagram below summarize all the possible settings and callbacks (which are explained in detail later in this document).
 
 [![diagram](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg)](https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg)
@@ -130,6 +151,8 @@ struct RunnerParams
     // Only useful when multiple rendering backend are compiled and available.
     RendererBackendType rendererBackendType = RendererBackendType::FirstAvailable;
 
+    // --------------- RemoteParams -------------------
+    RemoteParams remoteParams;
 
 
     // --------------- Settings -------------------
@@ -212,6 +235,7 @@ enum class PlatformBackendType
     FirstAvailable,
     Glfw,
     Sdl,
+    Null
 };
 
 // Rendering backend type (OpenGL3, Metal, Vulkan, DirectX11, DirectX12)
@@ -224,6 +248,7 @@ enum class RendererBackendType
     Vulkan,
     DirectX11,
     DirectX12,
+    Null
 };
 
 ```
@@ -820,8 +845,9 @@ struct FpsIdling
 
 # Dpi Aware Params
 
-See [dpi_aware.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/dpi_aware.h)
+Optionally, DPI parameters can be fine-tuned. For detailed info, see [handling screens with high dpi](https://pthom.github.io/hello_imgui/book/doc_api.html#handling-screens-with-high-dpi)
 
+Source: [dpi_aware.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/dpi_aware.h)
 ```cpp
 
 //
@@ -854,11 +880,15 @@ See [dpi_aware.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_img
 //     dpiWindowSizeFactor=2
 //     fontRenderingScale=0.5
 //
+// For more information, see the documentation on DPI handling, here: https://pthom.github.io/hello_imgui/book/doc_api.html#handling-screens-with-high-dpi
+//
 struct DpiAwareParams
 {
     // `dpiWindowSizeFactor`
-    //        factor by which window size should be multiplied to get a similar
-    //        visible size on different OSes.
+    //     factor by which window size should be multiplied to get a similar
+    //     physical size on different OSes (as if they were all displayed on a 96 PPI screen).
+    //     This affects the size of native app windows,
+    //     but *not* imgui Windows, and *not* the size of widgets and text.
     //  In a standard environment (i.e. outside of Hello ImGui), an application with a size of 960x480 pixels,
     //  may have a physical size (in mm or inches) that varies depending on the screen DPI, and the OS.
     //
@@ -873,22 +903,35 @@ struct DpiAwareParams
     float dpiWindowSizeFactor = 0.0f;
 
     // `fontRenderingScale`
-    //     factor (that is either 1 or < 1.) by which fonts glyphs should be
-    //     scaled at rendering time.
-    //     On macOS retina screens, it will be 0.5, since macOS APIs hide
-    //     the real resolution of the screen.
+    //     factor (that is either 1 or < 1.) by which fonts glyphs should be scaled at rendering time.
+    //  On macOS retina screens, it will be 0.5, since macOS APIs hide the real resolution of the screen.
+    //  Changing this value will *not* change the visible font size on the screen, however it will
+    //  affect the size of the loaded glyphs.
+    //  For example, if fontRenderingScale=0.5 (which is the default on a macOS retina screen),
+    //  a font size of 16 will be loaded as if it was 32, and will be rendered at half size.
+    //   This leads to a better rendering quality on some platforms.
+    // (This parameter will be used to set ImGui::GetIO().FontGlobalScale at startup)
     float fontRenderingScale = 0.0f;
 
+	// `onlyUseFontDpiResponsive`
+	// If true, guarantees that only HelloImGui::LoadDpiResponsiveFont will be used to load fonts.
+	// (also for the default font)
+	bool onlyUseFontDpiResponsive = false;
+
     // `dpiFontLoadingFactor`
-    //      factor by which font size should be multiplied at loading time to get a similar
-    //      visible size on different OSes.
-    //      The size will be equivalent to a size given for a 96 PPI screen
-    float DpiFontLoadingFactor() { return dpiWindowSizeFactor / fontRenderingScale;};
+    //     factor by which font size should be multiplied at loading time to get a similar
+    //     visible size on different OSes.
+    //  The size will be equivalent to a size given for a 96 PPI screen
+    float DpiFontLoadingFactor() const {
+        float r = dpiWindowSizeFactor / fontRenderingScale;
+        return r;
+    };
 };
 
 // ----------------------------------------------------------------------------
 
 ```
+
 
 ----
 

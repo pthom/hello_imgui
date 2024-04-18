@@ -529,8 +529,8 @@ namespace HelloImGui
 
         void Create()
         {
-            int32_t port = 5003;
-            std::string httpRoot = "/Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/hello_imgui_vcpkg/external/imgui-ws/examples/demo-null";
+            int32_t port = (int32_t)HelloImGui::GetRunnerParams()->remoteParams.wsPort;
+            std::string httpRoot = "/Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/hello_imgui_vcpkg/src/hello_imgui_remote/imguiws_demo";
             gImguiWS.init(port, httpRoot, { "", "index.html" });
         }
 

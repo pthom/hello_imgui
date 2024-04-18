@@ -7,6 +7,3 @@
 [submodule "_example_integration"]
 	path = _example_integration
 	url = https://github.com/pthom/hello_imgui_template.git
-[submodule "external/imgui-ws"]
-	path = external/imgui-ws
-	url = https://github.com/pthom/imgui-ws.git

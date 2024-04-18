@@ -793,9 +793,6 @@ int main(int, char**)
     //runnerParams.platformBackendType = HelloImGui::PlatformBackendType::Sdl;
     //runnerParams.rendererBackendType = HelloImGui::RendererBackendType::Vulkan;
 
-    runnerParams.remoteParams.enableRemoting = true;
-    runnerParams.remoteParams.transmitWindowSize = true;
-
     HelloImGui::Run(runnerParams); // Note: with ImGuiBundle, it is also possible to use ImmApp::Run(...)
 
     return 0;

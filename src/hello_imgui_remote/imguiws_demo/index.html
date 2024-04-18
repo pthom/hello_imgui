@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <title>imgui-ws : demo-null</title>
+
+        <script src="incppect.js"></script>
+        <script src="imgui-ws.js"></script>
+    </head>
+
+    <body style="font-family: Georgia, serif;">
+        <script>
+            function create_canvas_main(canvas_id)
+            {
+                var main_container = document.createElement('div');
+                main_container.id = 'main_container_' + canvas_id;
+                document.body.appendChild(main_container);
+
+                var canvas_main = document.createElement('canvas');
+                canvas_main.id = canvas_id;
+                canvas_main.width = 800;
+                canvas_main.height = 600;
+                canvas_main.style.backgroundColor = 'black';
+                canvas_main.tabIndex = '0';
+                canvas_main.textContent = 'Your browser does not support the HTML5 canvas tag.';
+                main_container.appendChild(canvas_main);
+            }
+
+            var gLastShownId = -1;
+
+            function init()
+            {
+                incppect.render = function() {
+                    imgui_ws.gl.clearColor(0.45, 0.55, 0.60, 1.00);
+                    imgui_ws.gl.clear(imgui_ws.gl.COLOR_BUFFER_BIT);
+
+                    imgui_ws.incppect_textures(this);
+                    imgui_ws.incppect_draw_lists(this);
+                    imgui_ws.render();
+
+                    var my_id = this.get_int32('my_id[%d]', -1) || 0;
+                    if (my_id != gLastShownId) {
+                        console.log('imgui_ws: my_id = ' + my_id);
+                        gLastShownId = my_id;
+                    }
+                }
+
+                incppect.onerror = function(evt) {
+                    console.error(evt);
+                }
+
+                // update_freq_ms: between 16 and 200ms
+                // incppect.k_requests_update_freq_ms = document.getElementById('update_freq_ms').value;
+
+                canvas_id = "my_canvas";
+
+                create_canvas_main(canvas_id);
+                incppect.init();
+                imgui_ws.set_incppect_handlers(incppect);
+                imgui_ws.init(canvas_id);
+            }
+
+            window.addEventListener('load', init);
+
+        </script>
+
+        <!--
+        <div id=main-container align=left width=900px style='padding-left: 16px; padding-top: 1px;'>
+            <canvas id="canvas_main" width="800px" height="600px" style="background-color: black;" tabindex="0">Your browser does not support the HTML5 canvas tag.</canvas>
+        </div>
+        -->
+
+    </body>
+</html>

@@ -360,6 +360,11 @@ float _DefaultOsFontRenderingScale()
         fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
     #endif
 
+    #ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY
+    if (HelloImGui::GetRunnerParams()->remoteParams.enableRemoting)
+        fontSizeIncreaseFactor = 1.f;
+    #endif
+
     return 1.0f / fontSizeIncreaseFactor;
 }
 
@@ -381,10 +386,7 @@ void AbstractRunner::SetupDpiAwareParams()
 
     if (params.dpiAwareParams.fontRenderingScale == 0.f)
     {
-        if (params.remoteParams.enableRemoting)
-            params.dpiAwareParams.fontRenderingScale = 1.f;
-        else
-            params.dpiAwareParams.fontRenderingScale = _DefaultOsFontRenderingScale();
+        params.dpiAwareParams.fontRenderingScale = _DefaultOsFontRenderingScale();
     }
     ImGui::GetIO().FontGlobalScale = params.dpiAwareParams.fontRenderingScale;
 
@@ -965,11 +967,13 @@ void AbstractRunner::CreateFramesAndRender()
         }
 
         // Transmit window size to remote server (if needed)
+        #ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY
         if ((mIdxFrame > 3) && params.remoteParams.transmitWindowSize)
         {
             auto windowSize = params.appWindowParams.windowGeometry.size;
             mRemoteDisplayHandler.TransmitWindowSizeToDisplay(windowSize);
         }
+        #endif
     }  // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
     if(foldable_region) // Handle idling

@@ -10,8 +10,7 @@ namespace HelloImGui
 // RemoteParams is a struct that contains the settings for displaying the application on a remote device.
 // using https://github.com/sammyfreg/netImgui
 // or using https://github.com/ggerganov/imgui-ws
-// Those feature are experimental and not supported with the standard version of HelloImGui.
-// (they require specific versions of netImgui and imgui-ws, and will not compile with their standard versions)
+// Those features are experimental and not supported with the standard version of HelloImGui,
 struct RemoteParams
 {
     bool enableRemoting = false;

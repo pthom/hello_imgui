@@ -1036,6 +1036,7 @@ endfunction()
 ###################################################################################################
 function(him_with_netimgui)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_WITH_NETIMGUI)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_WITH_REMOTE_DISPLAY)
 
 #    message(STATUS "HelloImGui: downloading and building netImgui")
 #    include(FetchContent)
@@ -1070,6 +1071,7 @@ endfunction()
 ###################################################################################################
 function(him_with_imguiws)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_WITH_IMGUIWS)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_WITH_REMOTE_DISPLAY)
 
     # Add imgui-ws to the project
     set(IMGUIWS_DIR ${HELLOIMGUI_BASEPATH}/external/imgui-ws CACHE STRING "" FORCE)

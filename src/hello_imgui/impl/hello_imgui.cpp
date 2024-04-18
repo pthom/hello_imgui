@@ -224,8 +224,10 @@ std::string RendererBackendTypeToString(RendererBackendType rendererBackendType)
 std::string GetBackendDescription()
 {
     const auto& params = GetRunnerParams();
+    #ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY
     if (params->remoteParams.enableRemoting)
         return "Remote";
+    #endif
     std::string platformBackend = PlatformBackendTypeToString(params->platformBackendType);
     std::string rendererBackend = RendererBackendTypeToString(params->rendererBackendType);
     return platformBackend + " - " + rendererBackend;
@@ -244,9 +246,9 @@ void ChangeWindowSize(const ScreenSize &windowSize)
     gLastRunner->ChangeWindowSize(windowSize);
 }
 
-bool ShouldDisplayOnRemoteServer()
+bool ShouldRemoteDisplay()
 {
-    return gLastRunner->ShouldDisplayOnRemoteServer();
+    return gLastRunner->ShouldRemoteDisplay();
 }
 
 

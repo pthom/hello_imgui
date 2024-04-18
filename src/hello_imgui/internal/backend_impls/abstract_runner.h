@@ -41,7 +41,7 @@ public:
     void ChangeWindowSize(ScreenSize windowSize);
 
     void LayoutSettings_SwitchLayout(const std::string& layoutName);
-    bool ShouldDisplayOnRemoteServer();
+    bool ShouldRemoteDisplay();
 
 
     void        SaveUserPref(const std::string& userPrefName, const std::string& userPrefContent);

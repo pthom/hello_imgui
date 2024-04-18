@@ -1036,6 +1036,7 @@ endfunction()
 ###################################################################################################
 function(him_with_netimgui)
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_WITH_NETIMGUI)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_WITH_REMOTE_DISPLAY)
 
 #    message(STATUS "HelloImGui: downloading and building netImgui")
 #    include(FetchContent)
@@ -1046,7 +1047,6 @@ function(him_with_netimgui)
 #        GIT_PROGRESS TRUE
 #    )
 #    FetchContent_MakeAvailable(net_imgui)
-
 
     # Add netImgui to the project
     set(NETIMGUI_DIR ${HELLOIMGUI_BASEPATH}/external/netImgui CACHE STRING "" FORCE)
@@ -1066,6 +1066,21 @@ function(him_with_netimgui)
 endfunction()
 
 
+###################################################################################################
+# Remoting with https://github.com/ggerganov/imgui-ws: API = him_with_imguiws
+###################################################################################################
+function(him_with_imguiws)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_WITH_IMGUIWS)
+    target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_WITH_REMOTE_DISPLAY)
+
+    # Add imgui-ws to the project
+    set(IMGUIWS_DIR ${HELLOIMGUI_BASEPATH}/external/imgui-ws CACHE STRING "" FORCE)
+    add_subdirectory(${IMGUIWS_DIR} imgui-ws)
+    target_include_directories(imgui-ws PRIVATE $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/..>)
+    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui-ws)
+    target_compile_definitions(imgui PUBLIC "ImDrawIdx=unsigned int")
+    set(HELLOIMGUI_INSTALL OFF CACHE BOOL "" FORCE)  # imgui-ws is not installable
+endfunction()
 
 ###################################################################################################
 # Miscellaneous: API = him_add_misc_options
@@ -1225,6 +1240,9 @@ function(him_main_add_hello_imgui_library)
 
     if (HELLOIMGUI_WITH_NETIMGUI)
         him_with_netimgui()
+    endif()
+    if (HELLOIMGUI_WITH_IMGUIWS)
+        him_with_imguiws()
     endif()
 
     him_add_apple_options()

@@ -41,11 +41,13 @@ void ChooseBackendTypesIfSelectedAsFirstAvailable(RunnerParams* runnerParams)
 
 void ChooseNullBackendsIfUsingRemote(RunnerParams* runnerParams)
 {
+    #ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY
     if (runnerParams->remoteParams.enableRemoting)
     {
         runnerParams->platformBackendType = PlatformBackendType::Null;
         runnerParams->rendererBackendType = RendererBackendType::Null;
     }
+    #endif
 }
 
 

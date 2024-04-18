@@ -80,7 +80,7 @@ void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 
 // Encapsulated inside hello_imgui_font.cpp
 bool _reloadAllDpiResponsiveFonts();
-bool ShouldDisplayOnRemoteServer();
+bool ShouldRemoteDisplay();
 
 
 AbstractRunner::AbstractRunner(RunnerParams &params_)
@@ -360,6 +360,11 @@ float _DefaultOsFontRenderingScale()
         fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
     #endif
 
+    #ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY
+    if (HelloImGui::GetRunnerParams()->remoteParams.enableRemoting)
+        fontSizeIncreaseFactor = 1.f;
+    #endif
+
     return 1.0f / fontSizeIncreaseFactor;
 }
 
@@ -381,10 +386,7 @@ void AbstractRunner::SetupDpiAwareParams()
 
     if (params.dpiAwareParams.fontRenderingScale == 0.f)
     {
-        if (params.remoteParams.enableRemoting)
-            params.dpiAwareParams.fontRenderingScale = 1.f;
-        else
-            params.dpiAwareParams.fontRenderingScale = _DefaultOsFontRenderingScale();
+        params.dpiAwareParams.fontRenderingScale = _DefaultOsFontRenderingScale();
     }
     ImGui::GetIO().FontGlobalScale = params.dpiAwareParams.fontRenderingScale;
 
@@ -433,7 +435,7 @@ void AbstractRunner::HandleDpiOnSecondFrame()
 #endif
     
     // High DPI handling on windows & linux
-    if (!ShouldDisplayOnRemoteServer())
+    if (!ShouldRemoteDisplay())
     {
         float dpiScale =  params.dpiAwareParams.dpiWindowSizeFactor;
         if ( dpiScale > 1.f)
@@ -854,7 +856,7 @@ void AbstractRunner::CreateFramesAndRender()
     constexpr bool foldable_region = true;
 
     // Will display on remote server if needed
-    mRemoteDisplayHandler.Heartbeat();
+    mRemoteDisplayHandler.Heartbeat_PreImGuiNewFrame();
 
 	if (CheckDpiAwareParamsChanges()) // Reload fonts if DPI scale changed
 	{
@@ -965,11 +967,13 @@ void AbstractRunner::CreateFramesAndRender()
         }
 
         // Transmit window size to remote server (if needed)
+        #ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY
         if ((mIdxFrame > 3) && params.remoteParams.transmitWindowSize)
         {
             auto windowSize = params.appWindowParams.windowGeometry.size;
             mRemoteDisplayHandler.TransmitWindowSizeToDisplay(windowSize);
         }
+        #endif
     }  // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
     if(foldable_region) // Handle idling
@@ -1090,6 +1094,8 @@ void AbstractRunner::CreateFramesAndRender()
             Impl_UpdateAndRenderAdditionalPlatformWindows();
 
         Impl_SwapBuffers();
+
+        mRemoteDisplayHandler.Heartbeat_PostImGuiRender();
     } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
     // AfterSwap is a user callback, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
@@ -1105,6 +1111,9 @@ void AbstractRunner::CreateFramesAndRender()
         }
     #endif
 
+    if (!mRemoteDisplayHandler.CanQuitApp())
+        params.appShallExit = false;
+
     mIdxFrame += 1;
 }
 
@@ -1117,7 +1126,7 @@ void AbstractRunner::IdleBySleeping()
             return;
 	#endif
 
-	if (ShouldDisplayOnRemoteServer())
+	if (ShouldRemoteDisplay())
 	{
 		// if displaying remote, the FPS is limited on the server to a value between 30 and 60 fps
 		// We cannot idle too slow, other the GUI becomes really sluggish
@@ -1268,9 +1277,9 @@ std::string AbstractRunner::LoadUserPref(const std::string& userPrefName)
     return HelloImGuiIniSettings::LoadUserPref(IniSettingsLocation(params), userPrefName);
 }
 
-bool AbstractRunner::ShouldDisplayOnRemoteServer()
+bool AbstractRunner::ShouldRemoteDisplay()
 {
-    return mRemoteDisplayHandler.ShouldDisplayOnRemoteServer();
+    return mRemoteDisplayHandler.ShouldRemoteDisplay();
 }
 
 

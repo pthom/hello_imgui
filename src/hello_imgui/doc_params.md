@@ -70,6 +70,8 @@ struct SimpleRunnerParams
 
     // `windowSize`: _ScreenSize, default={800, 600}_.
     //  Size of the window
+    // The size will be handled as if it was specified for a 96PPI screen
+    // (i.e. a given size will correspond to the same physical size on different screens, whatever their DPI)
     ScreenSize windowSize = DefaultWindowSize;
 
     // `fpsIdle`: _float, default=9_.
@@ -151,9 +153,6 @@ struct RunnerParams
     // Only useful when multiple rendering backend are compiled and available.
     RendererBackendType rendererBackendType = RendererBackendType::FirstAvailable;
 
-    // --------------- RemoteParams -------------------
-    RemoteParams remoteParams;
-
 
     // --------------- Settings -------------------
 
@@ -217,6 +216,9 @@ struct RunnerParams
     // Set the application refresh rate
     // (only used on emscripten: 0 stands for "let the app or the browser decide")
     int emscripten_fps = 0;
+
+    // Parameters for Remote display (experimental, unsupported)
+    RemoteParams remoteParams;
 };
 ```
 
@@ -605,6 +607,8 @@ struct WindowGeometry
 
     // Size of the application window
     // used if fullScreenMode==NoFullScreen and sizeAuto==false. Default=(800, 600)
+    // The size will be handled as if it was specified for a 96PPI screen
+    // (i.e. a given size will correspond to the same physical size on different screens, whatever their DPI)
     ScreenSize size = DefaultWindowSize;
 
     // If sizeAuto=true, adapt the app window size to the presented widgets.

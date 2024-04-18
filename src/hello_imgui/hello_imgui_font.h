@@ -61,17 +61,17 @@ namespace HelloImGui
         ImFontConfig fontConfigFontAwesome = ImFontConfig();
     };
 
-	// A font that will be automatically resized to account for changes in DPI
-	// Use LoadAdaptiveFont instead of LoadFont to get this behavior.
+    // A font that will be automatically resized to account for changes in DPI
+    // Use LoadAdaptiveFont instead of LoadFont to get this behavior.
     // Fonts loaded with LoadAdaptiveFont will be reloaded during execution
     // if ImGui::GetIO().FontGlobalScale is changed.
-	struct FontDpiResponsive
-	{
-		ImFont* font = nullptr;
-		std::string fontFilename;
-		float fontSize = 0.f;
-		FontLoadingParams fontLoadingParams;
-	};
+    struct FontDpiResponsive
+    {
+        ImFont* font = nullptr;
+        std::string fontFilename;
+        float fontSize = 0.f;
+        FontLoadingParams fontLoadingParams;
+    };
 
 
     // Loads a font with the specified parameters

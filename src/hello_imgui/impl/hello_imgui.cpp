@@ -244,9 +244,9 @@ void ChangeWindowSize(const ScreenSize &windowSize)
     gLastRunner->ChangeWindowSize(windowSize);
 }
 
-bool ShouldDisplayOnRemoteServer()
+bool ShouldRemoteDisplay()
 {
-    return gLastRunner->ShouldDisplayOnRemoteServer();
+    return gLastRunner->ShouldRemoteDisplay();
 }
 
 

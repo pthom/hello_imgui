@@ -80,7 +80,7 @@ void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 
 // Encapsulated inside hello_imgui_font.cpp
 bool _reloadAllDpiResponsiveFonts();
-bool ShouldDisplayOnRemoteServer();
+bool ShouldRemoteDisplay();
 
 
 AbstractRunner::AbstractRunner(RunnerParams &params_)
@@ -433,7 +433,7 @@ void AbstractRunner::HandleDpiOnSecondFrame()
 #endif
     
     // High DPI handling on windows & linux
-    if (!ShouldDisplayOnRemoteServer())
+    if (!ShouldRemoteDisplay())
     {
         float dpiScale =  params.dpiAwareParams.dpiWindowSizeFactor;
         if ( dpiScale > 1.f)
@@ -854,7 +854,7 @@ void AbstractRunner::CreateFramesAndRender()
     constexpr bool foldable_region = true;
 
     // Will display on remote server if needed
-    mRemoteDisplayHandler.Heartbeat();
+    mRemoteDisplayHandler.Heartbeat_PreImGuiNewFrame();
 
 	if (CheckDpiAwareParamsChanges()) // Reload fonts if DPI scale changed
 	{
@@ -1090,6 +1090,8 @@ void AbstractRunner::CreateFramesAndRender()
             Impl_UpdateAndRenderAdditionalPlatformWindows();
 
         Impl_SwapBuffers();
+
+        mRemoteDisplayHandler.Heartbeat_PostImGuiRender();
     } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
     // AfterSwap is a user callback, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
@@ -1117,7 +1119,7 @@ void AbstractRunner::IdleBySleeping()
             return;
 	#endif
 
-	if (ShouldDisplayOnRemoteServer())
+	if (ShouldRemoteDisplay())
 	{
 		// if displaying remote, the FPS is limited on the server to a value between 30 and 60 fps
 		// We cannot idle too slow, other the GUI becomes really sluggish
@@ -1268,9 +1270,9 @@ std::string AbstractRunner::LoadUserPref(const std::string& userPrefName)
     return HelloImGuiIniSettings::LoadUserPref(IniSettingsLocation(params), userPrefName);
 }
 
-bool AbstractRunner::ShouldDisplayOnRemoteServer()
+bool AbstractRunner::ShouldRemoteDisplay()
 {
-    return mRemoteDisplayHandler.ShouldDisplayOnRemoteServer();
+    return mRemoteDisplayHandler.ShouldRemoteDisplay();
 }
 
 

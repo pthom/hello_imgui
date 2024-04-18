@@ -11,7 +11,7 @@
 
 namespace HelloImGui
 {
-bool ShouldDisplayOnRemoteServer(); // from hello_imgui.cpp
+bool ShouldRemoteDisplay(); // from hello_imgui.cpp
 
 namespace Menu_StatusBar
 {
@@ -99,7 +99,7 @@ void ShowStatusBar(RunnerParams & params)
 
     if (params.imGuiWindowParams.showStatus_Fps)
     {
-		if (ShouldDisplayOnRemoteServer())
+		if (ShouldRemoteDisplay())
 		{
 			ImGui::SameLine(ImGui::GetIO().DisplaySize.x - 5.f * ImGui::GetFontSize());
 			ImGui::Text("FPS: %.1f", HelloImGui::FrameRate());

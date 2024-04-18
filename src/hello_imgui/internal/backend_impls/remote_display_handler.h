@@ -16,7 +16,8 @@ namespace HelloImGui
 
         // Will update the remote display handler
         // (do nothing if no remote display is configured/compiled)
-        void Heartbeat();
+        void Heartbeat_PreImGuiNewFrame();
+        void Heartbeat_PostImGuiRender();
 
         // Will send the window size to the remote display
         // (do nothing if no remote display is configured/compiled)
@@ -28,14 +29,15 @@ namespace HelloImGui
 
         // Returns true if the application should display on a remote server
         // (return false if no remote display is configured/compiled)
-        bool ShouldDisplayOnRemoteServer();
-
-        // Returns true if the application is connected to a remote server
-        // (return false if no remote display is configured/compiled)
-        bool IsConnectedToServer();
+        bool ShouldRemoteDisplay();
 
         // May update GetRunnerParams()->dpiAwareParams by interrogating the remote display
         // (return false if no remote display is configured/compiled)
         bool CheckDpiAwareParamsChanges();
+
+    private:
+        // Returns true if the application is connected to a remote server
+        // (return false if no remote display is configured/compiled)
+        bool IsConnectedToRemoteDisplay();
     };
 }

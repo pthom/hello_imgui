@@ -298,16 +298,16 @@ option(HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE "Use imgui from cmake package (provide
 
 #------------------------------------------------------------------------------
 # Options / Remoting
+# (Unsupported, and highly experimental. Requires specific forks of the remote rendering libraries)
 #------------------------------------------------------------------------------
-# Using https://github.com/sammyfreg/netImgui, you can use HelloImGui with remote rendering
-# (Unsupported, and highly experimental. Requires a specific fork of netImgui)
+# Using https://github.com/sammyfreg/netImgui
 option(HELLOIMGUI_WITH_NETIMGUI "Use netImgui for remote rendering" OFF)
+# Using https://github.com/ggerganov/imgui-ws
+option(HELLOIMGUI_WITH_IMGUIWS "Use imgui-ws for remote rendering" OFF)
 
 ###############################################################################
 # End of options
 ###############################################################################
-
-
 
 
 ###############################################################################

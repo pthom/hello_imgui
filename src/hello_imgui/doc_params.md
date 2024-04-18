@@ -217,8 +217,9 @@ struct RunnerParams
     // (only used on emscripten: 0 stands for "let the app or the browser decide")
     int emscripten_fps = 0;
 
-    // Parameters for Remote display (experimental, unsupported)
-    RemoteParams remoteParams;
+    #ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY
+    RemoteParams remoteParams; // Parameters for Remote display (experimental, unsupported)
+    #endif
 };
 ```
 

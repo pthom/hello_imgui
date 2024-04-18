@@ -4,6 +4,7 @@
 #include "hello_imgui/runner_callbacks.h"
 #include "hello_imgui/docking_params.h"
 #include "hello_imgui/backend_pointers.h"
+#include "hello_imgui/remote_params.h"
 #include "hello_imgui/renderer_backend_options.h"
 #include "hello_imgui/dpi_aware.h"
 #include <vector>
@@ -131,42 +132,6 @@ struct FpsIdling
 };
 // @@md
 
-// --------------------------------------------------------------------------------------------------------------------
-
-// --------------------------------------------------------------------------------------------------------------------
-
-// @@md#NetImGuiParams
-
-// NetImGuiParams is a struct that contains the settings for displaying the application on a remote device.
-// using https://github.com/sammyfreg/netImgui
-// (This will only work if the application is compiled with the option -DHELLOIMGUI_WITH_NETIMGUI=ON)
-struct NetImGuiParams
-{
-    bool enableRemoting = false;
-
-    bool exitWhenServerDisconnected = false;
-    double durationMaxDisconnected = 30.0;
-
-    // Name of the client (if empty, will use params.appWindowParams.windowTitle)
-    // (The client is the app that contains the application logic)
-    std::string clientName = "";
-
-    // The server host (if empty, will use "localhost")
-    // The server is the app that simply displays the application on a remote device
-    std::string serverHost = "localhost";
-    // The server port (default is 8888)
-    uint32_t serverPort = 8888;
-
-    // The client port (default is 8889)
-    // This is unused since it is the client (i.e. the app logic) that connects to the server,
-    // using NetImgui::ConnectToApp
-    uint32_t clientPort = 8889;
-
-    // If true, transmit the window size to the server
-    bool transmitWindowSize = false;
-};
-
-// @@md
 
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -231,9 +196,6 @@ struct RunnerParams
     // Only useful when multiple rendering backend are compiled and available.
     RendererBackendType rendererBackendType = RendererBackendType::FirstAvailable;
 
-    // --------------- RemoteParams -------------------
-    NetImGuiParams remoteParams;
-
 
     // --------------- Settings -------------------
 
@@ -297,6 +259,9 @@ struct RunnerParams
     // Set the application refresh rate
     // (only used on emscripten: 0 stands for "let the app or the browser decide")
     int emscripten_fps = 0;
+
+    // Parameters for Remote display (experimental, unsupported)
+    RemoteParams remoteParams;
 };
 // @@md
 

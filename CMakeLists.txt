@@ -96,13 +96,6 @@ option(HELLOIMGUI_NULL_BACKEND "Use Null rendering/platform backend" OFF)
 # </Backends>  # do not remove this line (used by the script that generates the documentation)
 
 #------------------------------------------------------------------------------
-# Options / Remoting
-#------------------------------------------------------------------------------
-# Using https://github.com/sammyfreg/netImgui, you can use HelloImGui with remote rendering
-# (this is useful for example to render ImGui on a remote device, or to render ImGui in a web browser)
-option(HELLOIMGUI_WITH_NETIMGUI "Use netImgui for remote rendering" OFF)
-
-#------------------------------------------------------------------------------
 # Options / Freetype
 #------------------------------------------------------------------------------
 set(freetype_default ON)
@@ -303,6 +296,12 @@ mark_as_advanced(HELLO_IMGUI_IMGUI_SHARED)
 #
 option(HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE "Use imgui from cmake package (provided by vcpkg for example) * Must be on docking branch*" OFF)
 
+#------------------------------------------------------------------------------
+# Options / Remoting
+#------------------------------------------------------------------------------
+# Using https://github.com/sammyfreg/netImgui, you can use HelloImGui with remote rendering
+# (Unsupported, and highly experimental. Requires a specific fork of netImgui)
+option(HELLOIMGUI_WITH_NETIMGUI "Use netImgui for remote rendering" OFF)
 
 ###############################################################################
 # End of options

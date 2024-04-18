@@ -1115,13 +1115,14 @@ function(him_log_configuration)
     # set imgui_source_dir to the relative path of HELLOIMGUI_IMGUI_SOURCE_DIR versus this project
     file(RELATIVE_PATH imgui_source_dir ${HELLOIMGUI_BASEPATH} ${HELLOIMGUI_IMGUI_SOURCE_DIR})
 
+    # Use netImGui:                     ${HELLOIMGUI_WITH_NETIMGUI}
+
     set(msg "
     ===========================================================================
         Hello ImGui build options:
     ===========================================================================
       Platform Backend(s):             ${active_platform_backends}
       Rendering Backend(s):            ${active_rendering_backends}
-      Use netImGui:                     ${HELLOIMGUI_WITH_NETIMGUI}
     ---------------------------------------------------------------------------
       Options:
         HELLOIMGUI_USE_FREETYPE:        ${HELLOIMGUI_USE_FREETYPE}  (${HELLOIMGUI_FREETYPE_SELECTED_INFO})

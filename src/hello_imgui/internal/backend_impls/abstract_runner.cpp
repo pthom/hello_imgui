@@ -209,16 +209,14 @@ private:
 
     std::string clientName()
     {
-        std::string clientName = remoteParams().clientName;
-        if (clientName.empty())
-            clientName = runnerParams().appWindowParams.windowTitle;
+        std::string clientName = runnerParams().appWindowParams.windowTitle;
         if (clientName.empty())
             clientName = "HelloImGui";
         clientName += "##" + std::to_string(ImGui::GetTime());
         return clientName;
     }
 
-    HelloImGui::NetImGuiParams& remoteParams() { return HelloImGui::GetRunnerParams()->remoteParams; }
+    HelloImGui::RemoteParams& remoteParams() { return HelloImGui::GetRunnerParams()->remoteParams; }
     HelloImGui::RunnerParams& runnerParams() { return *HelloImGui::GetRunnerParams(); }
 
     void _sendFonts_Impl()

@@ -152,7 +152,7 @@ struct RunnerParams
     RendererBackendType rendererBackendType = RendererBackendType::FirstAvailable;
 
     // --------------- RemoteParams -------------------
-    NetImGuiParams remoteParams;
+    RemoteParams remoteParams;
 
 
     // --------------- Settings -------------------

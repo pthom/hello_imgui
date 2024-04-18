@@ -244,14 +244,9 @@ void ChangeWindowSize(const ScreenSize &windowSize)
     gLastRunner->ChangeWindowSize(windowSize);
 }
 
-
-bool _isDisplayingOnRemoteServer()
+bool ShouldDisplayOnRemoteServer()
 {
-	#ifdef HELLOIMGUI_WITH_NETIMGUI
-	return HelloImGui::GetRunnerParams()->remoteParams.enableRemoting;
-	#else
-	return false;
-	#endif
+    return gLastRunner->ShouldDisplayOnRemoteServer();
 }
 
 

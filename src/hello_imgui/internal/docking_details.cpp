@@ -14,7 +14,7 @@
 namespace HelloImGui
 {
 // From hello_imgui.cpp
-bool _isDisplayingOnRemoteServer();
+bool ShouldDisplayOnRemoteServer();
 
 
 void _Themes_MenuGui(RunnerParams& runnerParams); // see hello_imgui_themes.cpp
@@ -180,7 +180,7 @@ void MenuView_Misc(RunnerParams& runnerParams)
 		if (ImGui::MenuItem("FPS in status bar##xxxx", nullptr, runnerParams.imGuiWindowParams.showStatus_Fps))
 			runnerParams.imGuiWindowParams.showStatus_Fps = ! runnerParams.imGuiWindowParams.showStatus_Fps;
 
-		if (! _isDisplayingOnRemoteServer())
+		if (! ShouldDisplayOnRemoteServer())
 			ImGui::MenuItem("Enable Idling", nullptr, &runnerParams.fpsIdling.enableIdling);
 		ImGui::EndMenu();
 	}

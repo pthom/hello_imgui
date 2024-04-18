@@ -22,10 +22,6 @@
 #define SCOPED_RELEASE_GIL_ON_MAIN_THREAD
 #endif
 
-#ifdef HELLOIMGUI_WITH_NETIMGUI
-#include "NetImgui_Api.h"
-#endif
-
 #include <chrono>
 #include <cassert>
 #include <filesystem>
@@ -69,18 +65,12 @@
 
 
 //#define ENABLE_DPI_LOG  // Enable or disable logging for DPI info
-#define ENABLE_NETIMGUI_LOG  // Enable or disable logging for NetImgui remoting
+#define ENABLE_DPI_LOG
 
 #ifdef ENABLE_DPI_LOG
 #define DpiLog PoorManLog
 #else
 #define DpiLog(...)
-#endif
-
-#ifdef ENABLE_NETIMGUI_LOG
-#define NetimguiLog PoorManLog
-#else
-#define NetimguiLog(...)
 #endif
 
 
@@ -91,186 +81,11 @@ void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 
 // Encapsulated inside hello_imgui_font.cpp
 bool _reloadAllDpiResponsiveFonts();
-bool _isDisplayingOnRemoteServer();
-
-
-// =====================================================================================================================
-//                              <NetImGuiWrapper>
-// =====================================================================================================================
-#ifdef HELLOIMGUI_WITH_NETIMGUI
-struct NetImGuiRaii {
-    NetImGuiRaii() { NetImgui::Startup(); }
-    ~NetImGuiRaii() { NetImgui::Shutdown(); }
-};
-
-
-class NetImGuiWrapper
-{
-public:
-    NetImGuiWrapper() = default;
-    ~NetImGuiWrapper() = default;
-
-    void HeartBeat()
-    {
-        if (mNetImguiRaii == nullptr)
-        {
-            InitiateConnection();
-            return;
-        }
-
-        int nbConnectionsPending = mNbConnectionsTentatives - mNbConnectionsSuccess - mNbConnectionsFailures;
-        IM_ASSERT(nbConnectionsPending == 0 || nbConnectionsPending == 1);
-
-        if (nbConnectionsPending == 1)
-        {
-            if (NetImgui::IsConnected())
-            {
-                LogStatus("Connection success...\n");
-                ++ mNbConnectionsSuccess;
-                mLastConnectionSuccess = true;
-            }
-            else if (NetImgui::IsConnectionPending())
-            {
-                LogStatus("Connection pending...\n");
-            }
-            else
-            {
-                LogStatus("Connection failure...\n");
-                ++ mNbConnectionsFailures;
-                mLastConnectionSuccess = false;
-            }
-        }
-        else // nbConnectionsPending == 0
-        {
-            if (mLastConnectionSuccess)
-            {
-                if (!NetImgui::IsConnected())
-                {
-                    if (remoteParams().exitWhenServerDisconnected)
-                    {
-                        LogStatus("Connection lost... Exiting\n");
-                        runnerParams().appShallExit = true;
-                    }
-                    else
-                    {
-                        mTimePointConnectionEnded = HelloImGui::Internal::ClockSeconds();
-                        LogStatus("Connection lost... Reconnecting\n");
-                        InitiateConnection();
-                    }
-                }
-            }
-            else // Last connection was a failure
-            {
-                LogStatus("Last connection was a failure... Reconnecting\n");
-                InitiateConnection();
-            }
-        }
-
-        // Exit if failure since too long
-        {
-            bool isDisconnected = !mLastConnectionSuccess;
-            if (isDisconnected)
-            {
-                double disconnectionTime = HelloImGui::Internal::ClockSeconds() - mTimePointConnectionEnded;
-                std::string msg = "Disconnected since " + std::to_string(disconnectionTime) + "s";
-                LogStatus(msg);
-                bool isTooLong = disconnectionTime > remoteParams().durationMaxDisconnected;
-                if (isTooLong)
-                {
-                    LogStatus("Too long disconnected... Exiting\n");
-                    runnerParams().appShallExit = true;
-                }
-            }
-        }
-    }
-
-    void sendFonts()
-    {
-        _sendFonts_Impl();
-    }
-
-    bool isConnected()
-    {
-        return NetImgui::IsConnected();
-    }
-
-private:
-    void InitiateConnection()
-    {
-        NetimguiLog("NetImGuiWrapper: InitiateConnection\n");
-        mNetImguiRaii.release();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        mNetImguiRaii = std::make_unique<NetImGuiRaii>();
-        NetImgui::ConnectToApp(clientName().c_str(), remoteParams().serverHost.c_str(), remoteParams().serverPort);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        ++ mNbConnectionsTentatives;
-        _sendFonts_Impl();
-    }
-
-    std::string clientName()
-    {
-        std::string clientName = runnerParams().appWindowParams.windowTitle;
-        if (clientName.empty())
-            clientName = "HelloImGui";
-        clientName += "##" + std::to_string(ImGui::GetTime());
-        return clientName;
-    }
-
-    HelloImGui::RemoteParams& remoteParams() { return HelloImGui::GetRunnerParams()->remoteParams; }
-    HelloImGui::RunnerParams& runnerParams() { return *HelloImGui::GetRunnerParams(); }
-
-    void _sendFonts_Impl()
-    {
-        const ImFontAtlas* pFonts = ImGui::GetIO().Fonts;
-        if( pFonts->TexPixelsAlpha8) // && (pFonts->TexPixelsAlpha8 != client.mpFontTextureData || client.mFontTextureID != pFonts->TexID ))
-        {
-            uint8_t* pPixelData(nullptr); int width(0), height(0);
-            ImGui::GetIO().Fonts->GetTexDataAsAlpha8(&pPixelData, &width, &height);
-            NetImgui::SendDataTexture(pFonts->TexID, pPixelData, static_cast<uint16_t>(width), static_cast<uint16_t>(height), NetImgui::eTexFormat::kTexFmtA8);
-        }
-        if( pFonts->TexPixelsRGBA32) // && (pFonts->TexPixelsAlpha8 != client.mpFontTextureData || client.mFontTextureID != pFonts->TexID ))
-        {
-            uint8_t* pPixelData(nullptr); int width(0), height(0);
-            ImGui::GetIO().Fonts->GetTexDataAsRGBA32(&pPixelData, &width, &height);
-            NetImgui::SendDataTexture(pFonts->TexID, pPixelData, static_cast<uint16_t>(width), static_cast<uint16_t>(height), NetImgui::eTexFormat::kTexFmtRGBA8);
-        }
-    }
-
-    void LogStatus(const std::string& msg)
-    {
-		NetimguiLog("NetImGuiWrapper: %s\n", msg.c_str());
-    }
-
-private:  // Members
-    std::unique_ptr<NetImGuiRaii> mNetImguiRaii;
-    int mNbConnectionsTentatives = 0;
-    int mNbConnectionsSuccess = 0;
-    int mNbConnectionsFailures = 0;
-    bool mLastConnectionSuccess = false;
-    double mTimePointConnectionEnded = 0.0;
-};
-
-std::unique_ptr<NetImGuiWrapper> gNetImGuiWrapper;
-bool gWaitingForRemoteDpiInfo = false;
-#endif
-
-bool _isConnectedToRemoteServer()
-{
-#ifdef HELLOIMGUI_WITH_NETIMGUI
-    if (!_isDisplayingOnRemoteServer())
-        return false;
-    return gNetImGuiWrapper->isConnected();
-#else
-    return false;
-#endif
-}
-// =====================================================================================================================
-//                              </NetImGuiWrapper>
-// =====================================================================================================================
+bool ShouldDisplayOnRemoteServer();
 
 
 AbstractRunner::AbstractRunner(RunnerParams &params_)
-    : params(params_) {}
+: params(params_) {}
 
 
 #ifndef USEHACK
@@ -496,7 +311,7 @@ void _LogDpiParams(const std::string& origin, const HelloImGui::DpiAwareParams& 
 }
 
 
-bool _CheckDpiAwareParamsChanges(HelloImGui::RunnerParams& params)
+bool AbstractRunner::CheckDpiAwareParamsChanges()
 {
     auto& dpiAwareParams = params.dpiAwareParams;
     auto& io = ImGui::GetIO();
@@ -509,29 +324,7 @@ bool _CheckDpiAwareParamsChanges(HelloImGui::RunnerParams& params)
 		dpiAwareParams.fontRenderingScale = io.FontGlobalScale;
 	}
 
-	bool didFontLoadingRatioChangeOnRemoteServer = false;
-#ifdef HELLOIMGUI_WITH_NETIMGUI
-	if (params.remoteParams.enableRemoting)
-	{
-		float newFontLoadingRatio = NetImgui::GetFontSizeLoadingRatio();
-		float currentFontLoadingRatio = dpiAwareParams.DpiFontLoadingFactor();
-		if (fabs(currentFontLoadingRatio - newFontLoadingRatio) > 0.001f)
-		{
-			didFontLoadingRatioChangeOnRemoteServer = true;
-
-			float oldDpiWindowSizeFactor = dpiAwareParams.dpiWindowSizeFactor;
-			float ratioScaling = newFontLoadingRatio / currentFontLoadingRatio;
-			dpiAwareParams.dpiWindowSizeFactor = dpiAwareParams.dpiWindowSizeFactor * ratioScaling;
-			ImGui::GetStyle().ScaleAllSizes(ratioScaling);
-			float new_diff = fabs(dpiAwareParams.DpiFontLoadingFactor() - newFontLoadingRatio);
-			IM_ASSERT(new_diff < 0.001f);
-			DpiLog("Warning: didFontLoadingRatioChange=true \n"
-				   "    currentFontLoadingRatio=%f newFontLoadingRatio=%f\n"
-				   "    oldDpiWindowSizeFactor=%f newDpiWindowSizeFactor=%f\n",
-				   currentFontLoadingRatio, newFontLoadingRatio, oldDpiWindowSizeFactor, dpiAwareParams.dpiWindowSizeFactor);
-		}
-	}
-#endif
+    bool didFontLoadingRatioChangeOnRemoteServer = mRemoteDisplayHandler.CheckDpiAwareParamsChanges();
 
 	if (didFontGlobalScaleChange || didFontLoadingRatioChangeOnRemoteServer)
 	{
@@ -641,7 +434,7 @@ void AbstractRunner::HandleDpiOnSecondFrame()
 #endif
     
     // High DPI handling on windows & linux
-    if (!_isDisplayingOnRemoteServer())
+    if (!ShouldDisplayOnRemoteServer())
     {
         float dpiScale =  params.dpiAwareParams.dpiWindowSizeFactor;
         if ( dpiScale > 1.f)
@@ -961,13 +754,9 @@ void AbstractRunner::Setup()
     }
     params.callbacks.SetupImGuiStyle();
 
-#ifdef HELLOIMGUI_WITH_NETIMGUI
-    if (params.remoteParams.enableRemoting)
-	{
-		gNetImGuiWrapper = std::make_unique<NetImGuiWrapper>();
-		gNetImGuiWrapper->sendFonts();
-	}
-#endif
+    // Create a remote display handler if needed
+    mRemoteDisplayHandler.Create();
+    mRemoteDisplayHandler.SendFonts();
 }
 
 
@@ -1065,14 +854,10 @@ void AbstractRunner::CreateFramesAndRender()
     // (it is here only to make the code more readable, and to enable to collapse blocks of code)
     constexpr bool foldable_region = true;
 
-#ifdef HELLOIMGUI_WITH_NETIMGUI
-    if (params.remoteParams.enableRemoting) // Hande NetImGui connection
-    {
-        gNetImGuiWrapper->HeartBeat();
-    }
-#endif
+    // Will display on remote server if needed
+    mRemoteDisplayHandler.Heartbeat();
 
-	if (_CheckDpiAwareParamsChanges(params)) // Reload fonts if DPI scale changed
+	if (CheckDpiAwareParamsChanges()) // Reload fonts if DPI scale changed
 	{
 		if (_reloadAllDpiResponsiveFonts())
 		{
@@ -1080,13 +865,8 @@ void AbstractRunner::CreateFramesAndRender()
 			// cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
 			mRenderingBackendCallbacks->Impl_DestroyFontTexture();
 			mRenderingBackendCallbacks->Impl_CreateFontTexture();
-			#ifdef HELLOIMGUI_WITH_NETIMGUI
-			if (params.remoteParams.enableRemoting)
-			{
-				gNetImGuiWrapper = std::make_unique<NetImGuiWrapper>();
-				gNetImGuiWrapper->sendFonts();
-			}
-			#endif
+
+            mRemoteDisplayHandler.SendFonts();
 		}
 	}
 
@@ -1185,23 +965,12 @@ void AbstractRunner::CreateFramesAndRender()
             }
         }
 
-        // Transmit window size to remote server
-        #ifdef HELLOIMGUI_WITH_NETIMGUI
-        if (_isConnectedToRemoteServer() && (mIdxFrame > 3) && params.remoteParams.transmitWindowSize)
+        // Transmit window size to remote server (if needed)
+        if ((mIdxFrame > 3) && params.remoteParams.transmitWindowSize)
         {
-            static bool wasSizeTransmitted = false;
-            if (!wasSizeTransmitted)
-            {
-                wasSizeTransmitted = true;
-                auto windowSize = params.appWindowParams.windowGeometry.size;
-                // When running on a remote server, we do not know the window DPI factor,
-                // so we treat the window size as if it was 96PPI
-                uint16_t width_96PPI = (uint16_t)windowSize[0];
-                uint16_t height_96PPI = (uint16_t)windowSize[1];
-                NetImgui::SetWindowSize_96PPI(width_96PPI, height_96PPI);
-            }
+            auto windowSize = params.appWindowParams.windowGeometry.size;
+            mRemoteDisplayHandler.TransmitWindowSizeToDisplay(windowSize);
         }
-        #endif
     }  // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
     if(foldable_region) // Handle idling
@@ -1245,13 +1014,8 @@ void AbstractRunner::CreateFramesAndRender()
             mRenderingBackendCallbacks->Impl_DestroyFontTexture();
             mRenderingBackendCallbacks->Impl_CreateFontTexture();
             params.callbacks.LoadAdditionalFonts = nullptr;
-			#ifdef HELLOIMGUI_WITH_NETIMGUI
-				if (params.remoteParams.enableRemoting)
-				{
-					gNetImGuiWrapper = std::make_unique<NetImGuiWrapper>();
-					gNetImGuiWrapper->sendFonts();
-				}
-			#endif
+
+            mRemoteDisplayHandler.SendFonts();
         }
     }
 
@@ -1354,7 +1118,7 @@ void AbstractRunner::IdleBySleeping()
             return;
 	#endif
 
-	if (_isDisplayingOnRemoteServer())
+	if (ShouldDisplayOnRemoteServer())
 	{
 		// if displaying remote, the FPS is limited on the server to a value between 30 and 60 fps
 		// We cannot idle too slow, other the GUI becomes really sluggish
@@ -1492,13 +1256,7 @@ void AbstractRunner::TearDown(bool gotException)
             TestEngineCallbacks::TearDown_ImGuiContextDestroyed();
     #endif
 
-#ifdef HELLOIMGUI_WITH_NETIMGUI
-        if (params.remoteParams.enableRemoting)
-        {
-            IM_ASSERT(gNetImGuiWrapper != nullptr);
-            gNetImGuiWrapper.release();
-        }
-#endif
+    mRemoteDisplayHandler.Shutdown();
 }
 
 
@@ -1510,5 +1268,12 @@ std::string AbstractRunner::LoadUserPref(const std::string& userPrefName)
 {
     return HelloImGuiIniSettings::LoadUserPref(IniSettingsLocation(params), userPrefName);
 }
+
+bool AbstractRunner::ShouldDisplayOnRemoteServer()
+{
+    return mRemoteDisplayHandler.ShouldDisplayOnRemoteServer();
+}
+
+
 
 }  // namespace HelloImGui

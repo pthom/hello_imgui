@@ -4,6 +4,7 @@
 #include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/window_geometry_helper.h"
 #include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
+#include "hello_imgui/internal/backend_impls/remote_display_handler.h"
 #include "hello_imgui/runner_params.h"
 
 #include <memory>
@@ -40,6 +41,8 @@ public:
     void ChangeWindowSize(ScreenSize windowSize);
 
     void LayoutSettings_SwitchLayout(const std::string& layoutName);
+    bool ShouldDisplayOnRemoteServer();
+
 
     void        SaveUserPref(const std::string& userPrefName, const std::string& userPrefContent);
     std::string LoadUserPref(const std::string& userPrefName);
@@ -84,6 +87,7 @@ private:
     void InitRenderBackendCallbacks();
 
     void SetupDpiAwareParams();
+    bool CheckDpiAwareParamsChanges();
     void PrepareWindowGeometry();
     void HandleDpiOnSecondFrame();
     void MakeWindowSizeRelativeTo96Ppi_IfRequired();
@@ -111,6 +115,8 @@ private:
 
     // Callbacks related to the rendering backend (OpenGL, ...)
     RenderingCallbacksPtr mRenderingBackendCallbacks;
+
+    RemoteDisplayHandler mRemoteDisplayHandler;
 };
 
 

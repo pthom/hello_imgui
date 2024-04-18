@@ -534,12 +534,36 @@ namespace HelloImGui
             gImguiWS.init(port, httpRoot, { "", "index.html" });
         }
 
+        static uint32_t ToUint32(void * ptr)
+        {
+            return (uint32_t) (uintptr_t) ptr;
+        }
+        static uint32_t ToUint32(unsigned int x)
+        {
+            return (uint32_t) x;
+        }
+
         void SendFonts()
         {
             unsigned char * pixels;
             int width, height;
+            // Try with Alpha8
             ImGui::GetIO().Fonts->GetTexDataAsAlpha8(&pixels, &width, &height);
-            gImguiWS.setTexture(0, ImGuiWS::Texture::Type::Alpha8, width, height, (const char *) pixels);
+            if (pixels != nullptr)
+            {
+                auto texID = ToUint32(ImGui::GetIO().Fonts->TexID);
+                gImguiWS.setTexture(texID, ImGuiWS::Texture::Type::Alpha8, width, height, (const char *) pixels);
+                return;
+            }
+            // Try with RGBA32
+            ImGui::GetIO().Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+            if (pixels != nullptr)
+            {
+                auto texID = ToUint32(ImGui::GetIO().Fonts->TexID);
+                gImguiWS.setTexture(texID, ImGuiWS::Texture::Type::RGBA32, width, height, (const char *) pixels);
+                return;
+            }
+            fprintf(stderr, "SendFonts: Could not get font texture data\n");
         }
 
         void HeartBeat_PreImGuiNewFrame()

@@ -64,7 +64,7 @@
 
 
 //#define ENABLE_DPI_LOG  // Enable or disable logging for DPI info
-#define ENABLE_DPI_LOG
+//#define ENABLE_DPI_LOG
 
 #ifdef ENABLE_DPI_LOG
 #define DpiLog PoorManLog

@@ -68,6 +68,21 @@
 //
 
 
+//#define ENABLE_DPI_LOG  // Enable or disable logging for DPI info
+#define ENABLE_NETIMGUI_LOG  // Enable or disable logging for NetImgui remoting
+
+#ifdef ENABLE_DPI_LOG
+#define DpiLog PoorManLog
+#else
+#define DpiLog(...)
+#endif
+
+#ifdef ENABLE_NETIMGUI_LOG
+#define NetimguiLog PoorManLog
+#else
+#define NetimguiLog(...)
+#endif
+
 
 namespace HelloImGui
 {
@@ -182,7 +197,7 @@ public:
 private:
     void InitiateConnection()
     {
-        printf("NetImGuiWrapper: InitiateConnection\n");
+        NetimguiLog("NetImGuiWrapper: InitiateConnection\n");
         mNetImguiRaii.release();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         mNetImguiRaii = std::make_unique<NetImGuiRaii>();
@@ -225,7 +240,7 @@ private:
 
     void LogStatus(const std::string& msg)
     {
-        printf("NetImGuiWrapper: %s\n", msg.c_str());
+		NetimguiLog("NetImGuiWrapper: %s\n", msg.c_str());
     }
 
 private:  // Members
@@ -474,12 +489,12 @@ void _LogDpiParams(const std::string& origin, const HelloImGui::DpiAwareParams& 
 {
 	auto &io = ImGui::GetIO();
 	std::stringstream msg;
-	PoorManLog("DpiAwareParams: %s\n", origin.c_str());
-	PoorManLog("    dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
-	PoorManLog("    fontRenderingScale=%f\n", dpiAwareParams.fontRenderingScale);
-	PoorManLog("    DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
-	PoorManLog("        (ImGui FontGlobalScale: %f)\n", io.FontGlobalScale);
-	PoorManLog("	    (ImGui DisplayFramebufferScale=%f, %f)\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+	DpiLog("DpiAwareParams: %s\n", origin.c_str());
+	DpiLog("    dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
+	DpiLog("    fontRenderingScale=%f\n", dpiAwareParams.fontRenderingScale);
+	DpiLog("    DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
+	DpiLog("        (ImGui FontGlobalScale: %f)\n", io.FontGlobalScale);
+	DpiLog("	    (ImGui DisplayFramebufferScale=%f, %f)\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
 }
 
 
@@ -492,7 +507,7 @@ bool _CheckDpiAwareParamsChanges(HelloImGui::RunnerParams& params)
 	bool didFontGlobalScaleChange = dpiAwareParams.fontRenderingScale != io.FontGlobalScale;
 	if (didFontGlobalScaleChange)
 	{
-		printf("Warning: didFontGlobalScaleChange=:true\n");
+		DpiLog("Warning: didFontGlobalScaleChange=:true\n");
 		dpiAwareParams.fontRenderingScale = io.FontGlobalScale;
 	}
 
@@ -512,7 +527,7 @@ bool _CheckDpiAwareParamsChanges(HelloImGui::RunnerParams& params)
 			ImGui::GetStyle().ScaleAllSizes(ratioScaling);
 			float new_diff = fabs(dpiAwareParams.DpiFontLoadingFactor() - newFontLoadingRatio);
 			IM_ASSERT(new_diff < 0.001f);
-			printf("Warning: didFontLoadingRatioChange=true \n"
+			DpiLog("Warning: didFontLoadingRatioChange=true \n"
 				   "    currentFontLoadingRatio=%f newFontLoadingRatio=%f\n"
 				   "    oldDpiWindowSizeFactor=%f newDpiWindowSizeFactor=%f\n",
 				   currentFontLoadingRatio, newFontLoadingRatio, oldDpiWindowSizeFactor, dpiAwareParams.dpiWindowSizeFactor);
@@ -522,7 +537,7 @@ bool _CheckDpiAwareParamsChanges(HelloImGui::RunnerParams& params)
 
 	if (didFontGlobalScaleChange || didFontLoadingRatioChangeOnRemoteServer)
 	{
-		printf("New DpiAwareParams:\n");
+		DpiLog("New DpiAwareParams:\n");
 		_LogDpiParams("_CheckDpiAwareParamsChanges (changed!)", dpiAwareParams);
 		return true;
 	}
@@ -1063,7 +1078,7 @@ void AbstractRunner::CreateFramesAndRender()
 	{
 		if (_reloadAllDpiResponsiveFonts())
 		{
-			printf("_CheckDpiAwareParamsChanges returned true => reloaded all fonts\n");
+			DpiLog("_CheckDpiAwareParamsChanges returned true => reloaded all fonts\n");
 			// cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
 			mRenderingBackendCallbacks->Impl_DestroyFontTexture();
 			mRenderingBackendCallbacks->Impl_CreateFontTexture();

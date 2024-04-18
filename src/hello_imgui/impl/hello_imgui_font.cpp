@@ -224,7 +224,7 @@ namespace HelloImGui
 		IM_ASSERT(! runnerParams->dpiAwareParams.onlyUseFontDpiResponsive && "If runnerParams->dpiAwareParams.onlyUseFontDpiResponsive is true, you must use LoadFontDpiResponsive() instead of LoadFont()");
 
 		gWasLoadFontBareCalled = true;
-		printf("LoadFont(%s, %f)\n", fontFilename.c_str(), fontSize_);
+		//printf("LoadFont(%s, %f)\n", fontFilename.c_str(), fontSize_);
 		return _LoadFontImpl(fontFilename, fontSize_, params_);
 	}
 
@@ -246,7 +246,7 @@ namespace HelloImGui
 		// Get the pointer to the newly inserted element (which we will return)
 		FontDpiResponsive* dpiResponsiveFont = &gAllDpiResponsiveFonts.back();
 
-		printf("LoadFontDpiResponsive(%s, %f)\n", fontFilename.c_str(), fontSize);
+		//printf("LoadFontDpiResponsive(%s, %f)\n", fontFilename.c_str(), fontSize);
 		dpiResponsiveFont->font = _LoadFontImpl(fontFilename, fontSize, fontLoadingParams);
 		dpiResponsiveFont->fontSize = fontSize;
 		dpiResponsiveFont->fontFilename = fontFilename;

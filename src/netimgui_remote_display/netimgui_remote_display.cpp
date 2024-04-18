@@ -42,6 +42,9 @@ int main(int argc, char **argv)
     // Runner Params
     HelloImGui::RunnerParams runnerParams;
 
+    NetImguiServer::UI::SetAllowOnlyOneClient();
+	NetImguiServer::UI::SetHideMainMenu();
+
     NetImguiServer::UI::SetCallbackWindowSize96PPI([](uint16_t width, uint16_t height) {
         HelloImGui::ChangeWindowSize({(int)width, (int)height});
     });

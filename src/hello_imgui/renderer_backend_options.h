@@ -1,7 +1,46 @@
 #pragma once
+#include <string>
+#include <optional>
 
 namespace HelloImGui
 {
+// --------------------------------------------------------------------------------------------------------------------
+
+// @@md#OpenGlOptions
+
+// OpenGlCallbacks contains advanced callbacks used at the startup of OpenGL.
+// These parameters are reserved for advanced users.
+// By default, Hello ImGui will select reasonable default values, and these parameters are not used.
+// Use at your own risk, as they make break the multi-platform compatibility of your application!
+// All these parameters are platform dependent.
+// For real multiplatform examples, see
+//     hello_imgui/src/hello_imgui/internal/backend_impls/opengl_setup_helper/opengl_setup_glfw.cpp
+// and
+//     hello_imgui/src/hello_imgui/internal/backend_impls/opengl_setup_helper/opengl_setup_sdl.cpp
+struct OpenGlOptions
+{
+    // Could be for example:
+    //    #version 150 on macOS
+    //    #version 130 on Windows
+    //    #version 300es on GLES
+    std::string  GlslVersion = "#version 130";
+
+    // OpenGL 3.3 (these options won't work for GlEs)
+    int          MajorVersion = 3;
+    int          MinorVersion = 3;
+
+    // OpenGL Core Profile (i.e. only includes the newer, maintained features of OpenGL)
+    bool         UseCoreProfile = true;
+    // OpenGL Forward Compatibility (required on macOS)
+    bool         UseForwardCompat = true;
+
+    //    bool         UseGlEs = false;
+    //    int          GlEsMajorVersion = 3;
+};
+
+// @@md
+
+
 
 // @@md#RendererBackendOptions
 
@@ -26,6 +65,10 @@ struct RendererBackendOptions
     // Only available on Metal, if your display supports it.
     // Before setting this to true, first check `hasEdrSupport()`
     bool requestFloatBuffer = false;
+
+    // `openGlOptions`:
+    // Advanced options for OpenGL. Use at your own risk.
+    std::optional<OpenGlOptions> openGlOptions = std::nullopt;
 };
 
 

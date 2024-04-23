@@ -1349,6 +1349,10 @@ struct RendererBackendOptions
     // Only available on Metal, if your display supports it.
     // Before setting this to true, first check `hasEdrSupport()`
     bool requestFloatBuffer = false;
+
+    // `openGlOptions`:
+    // Advanced options for OpenGL. Use at your own risk.
+    std::optional<OpenGlOptions> openGlOptions = std::nullopt;
 };
 
 

@@ -10,55 +10,72 @@
 namespace HelloImGui { namespace BackendApi
 {
 
-    void OpenGlSetupGlfw::SelectOpenGlVersion()
+    static void ApplyOpenGlOptions(OpenGlOptions& openGlOptions)
     {
-        int major = 3;
-        int minor = 3;
-        bool useCoreProfile = true;
-        bool useForwardCompat = true;
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, openGlOptions.MajorVersion);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, openGlOptions.MinorVersion);
+        if (openGlOptions.UseCoreProfile)
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        if (openGlOptions.UseForwardCompat)
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    }
+
+    static OpenGlOptions MakeOpenGlOptions()
+    {
+        auto* runnerParams = HelloImGui::GetRunnerParams();
+        if (runnerParams->rendererBackendOptions.openGlOptions.has_value())
+            return runnerParams->rendererBackendOptions.openGlOptions.value();
+
+        OpenGlOptions openGlOptions;
+
+        //
+        // Compute MajorVersion, MinorVersion, UseCoreProfile, UseForwardCompat
+        //
+        openGlOptions.MajorVersion = 3;
+        openGlOptions.MinorVersion = 3;
+        openGlOptions.UseCoreProfile = true;
+        openGlOptions.UseForwardCompat = true;
 
         #if defined(IMGUI_IMPL_OPENGL_ES3)
         {
             BACKEND_THROW("OpenGlSetupGlfw::SelectOpenGlVersion needs implementation for GLES !");
-            //            SDL_GL_SetAttribute(SDL_GL_CONTEXT_EGL, 3);
-            //            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-            //                                SDL_GL_CONTEXT_PROFILE_ES);
-            //            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-            //            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
         }
         #elif defined(__APPLE__)
         {
             // 3.2+ only
-            major = 3;
-            minor = 2;
-            useCoreProfile = true;
-            useForwardCompat = true;
+            openGlOptions.MajorVersion = 3;
+            openGlOptions.MinorVersion = 2;
+            openGlOptions.UseCoreProfile = true;
+            openGlOptions.UseForwardCompat = true;
         }
         #else
         {
-            major = 3;
-            minor = 3;
-            useCoreProfile = true;  // 3.2+ only
-            useForwardCompat = true;  // 3.0+ only
+            openGlOptions.MajorVersion = 3;
+            openGlOptions.MinorVersion = 3;
+            openGlOptions.UseCoreProfile = true;  // 3.2+ only
+            openGlOptions.UseForwardCompat = true;  // 3.0+ only
         }
         #endif
 
-        auto* runnerParams = HelloImGui::GetRunnerParams();
-        if (runnerParams->rendererBackendOptions.openGlOptions.has_value())
-        {
-            auto& openGlOptions = runnerParams->rendererBackendOptions.openGlOptions.value();
-            major = openGlOptions.MajorVersion;
-            minor = openGlOptions.MinorVersion;
-            useCoreProfile = openGlOptions.UseCoreProfile;
-            useForwardCompat = openGlOptions.UseForwardCompat;
-        }
+        //
+        // Compute GlslVersion
+        //
+        #if defined(IMGUI_IMPL_OPENGL_ES3)
+            openGlOptions.GlslVersion = "#version 300es";
+        #elif defined(__APPLE__)
+            openGlOptions.GlslVersion = "#version 150";
+        #else
+            // GLSL 130
+            openGlOptions.GlslVersion = "#version 130";
+        #endif
 
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
-        if (useCoreProfile)
-            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        if (useForwardCompat)
-            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        return openGlOptions;
+    }
+
+    void OpenGlSetupGlfw::SelectOpenGlVersion()
+    {
+        OpenGlOptions openGlOptions = MakeOpenGlOptions();
+        ApplyOpenGlOptions(openGlOptions);
     }
 
     void OpenGlSetupGlfw::InitGlLoader()
@@ -75,33 +92,17 @@ namespace HelloImGui { namespace BackendApi
                 bool err = false;  // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is likely to requires
                                    // some form of initialization.
             #endif
-        if (err)
-        {
-            BACKEND_THROW("RunnerGlfwOpenGl3::Impl_InitGlLoader(): Failed to initialize OpenGL loader!");
-        }
+            if (err)
+            {
+                BACKEND_THROW("RunnerGlfwOpenGl3::Impl_InitGlLoader(): Failed to initialize OpenGL loader!");
+            }
         #endif  // #ifndef __EMSCRIPTEN__
     }
 
     std::string OpenGlSetupGlfw::GlslVersion()
     {
-        std::string glsl_version;
-        #if defined(IMGUI_IMPL_OPENGL_ES3)
-            glsl_version = "#version 300es";
-        #elif defined(__APPLE__)
-            glsl_version = "#version 150";
-        #else
-            // GLSL 130
-            glsl_version = "#version 130";
-        #endif
-
-        auto runnerParams = HelloImGui::GetRunnerParams();
-        if (runnerParams->rendererBackendOptions.openGlOptions.has_value())
-        {
-            auto& openGlOptions = runnerParams->rendererBackendOptions.openGlOptions.value();
-            glsl_version = openGlOptions.GlslVersion;
-        }
-
-        return glsl_version.c_str();
+        OpenGlOptions openGlOptions = MakeOpenGlOptions();
+        return openGlOptions.GlslVersion;
     }
 }} // namespace HelloImGui { namespace BackendApi
 

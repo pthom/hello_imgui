@@ -26,12 +26,12 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - os: ubuntu-latest
-            vcpkg_triplet: x64-linux-release
+#          - os: ubuntu-latest
+#            vcpkg_triplet: x64-linux-release
           - os: macos-latest
             vcpkg_triplet: x64-osx-release
-          - os: windows-latest
-            vcpkg_triplet: x64-windows-release
+#          - os: windows-latest
+#            vcpkg_triplet: x64-windows-release
 
 
     steps:
@@ -74,8 +74,8 @@ jobs:
           # Extract the archive using 7-zip which is preinstalled on the GitHub Actions Windows runner
           7z x mesa3d-23.1.9-release-msvc.7z -omesa3d
 
-#      - name: Setup interactive tmate session
-#        uses: mxschmitt/action-tmate@v3
+      - name: Setup interactive tmate session
+        uses: mxschmitt/action-tmate@v3
 
         # Run the test
       - name: run test

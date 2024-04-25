@@ -13,6 +13,7 @@ SUCCESSES_RUN_APP = []
 SUCCESSES_BUILD_APP = []
 SUCCESSES_BUILD_VCPKG = []
 
+
 def copy_mesa_libs_to_current_dir():
     # Test if we are on a github runner
     if "GITHUB_WORKFLOW" not in os.environ:

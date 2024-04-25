@@ -80,10 +80,6 @@ jobs:
       - name: run test
         shell: bash
         run: |
-          echo "Replacing annoying windows backslashes with forward slashes in VCPKG_ROOT"
-          echo "before VCPKG_ROOT=$VCPKG_ROOT"
-          VCPKG_ROOT=$(python -c "print('${{ github.workspace }}/vcpkg'.replace('\\\\', '/'))")
-          echo "after VCPKG_ROOT=$VCPKG_ROOT"
-          export VCPKG_ROOT
+          export VCPKG_ROOT=$(pwd)/vcpkg
           cd .github/ci_vcpkg_package_tests
           python run_ci_vcpkg_package_tests.py

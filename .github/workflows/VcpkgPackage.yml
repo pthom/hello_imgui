@@ -26,15 +26,19 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - os: ubuntu-latest
-#            vcpkg_triplet: x64-linux-release
+          - os: ubuntu-latest
+            vcpkg_triplet: x64-linux-release
           - os: macos-latest
             vcpkg_triplet: x64-osx-release
-#          - os: windows-latest
-#            vcpkg_triplet: x64-windows-release
+          - os: windows-latest
+            vcpkg_triplet: x64-windows-release
 
 
     steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
       - name: install glfw & sdl requirements
         if : ${{ matrix.config.os == 'ubuntu-latest' }}
         shell: bash
@@ -45,16 +49,11 @@ jobs:
         uses: johnwason/vcpkg-action@v6
         id: vcpkg
         with:
-          pkgs: 'nlohmann-json' # unrelated package, just to make the action happy
           triplet: ${{ matrix.config.vcpkg_triplet }}
           cache-key: ${{ matrix.config.os }}
           revision: master
           token: ${{ github.token }}
           github-binarycache: true
-
-      - uses: actions/checkout@v4
-        with:
-          submodules: false
 
       #
       # Install utilities to be able to run a graphical OpenGL application
@@ -74,13 +73,13 @@ jobs:
           # Extract the archive using 7-zip which is preinstalled on the GitHub Actions Windows runner
           7z x mesa3d-23.1.9-release-msvc.7z -omesa3d
 
-      - name: Setup interactive tmate session
-        uses: mxschmitt/action-tmate@v3
+#      - name: Setup interactive tmate session
+#        uses: mxschmitt/action-tmate@v3
 
         # Run the test
       - name: run test
         shell: bash
         run: |
-          export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
+          export VCPKG_ROOT=${{ github.workspace }}/vcpkg
           cd .github/ci_vcpkg_package_tests
           python run_ci_vcpkg_package_tests.py

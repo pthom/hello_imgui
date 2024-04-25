@@ -25,6 +25,10 @@ jobs:
 
 
     steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
       - name: install glfw & sdl requirements
         if : ${{ matrix.config.os == 'ubuntu-latest' }}
         shell: bash
@@ -35,17 +39,11 @@ jobs:
         uses: johnwason/vcpkg-action@v6
         id: vcpkg
         with:
-          pkgs: 'nlohmann-json' # unrelated package, just to make the action happy
           triplet: ${{ matrix.config.vcpkg_triplet }}
           cache-key: ${{ matrix.config.os }}
           revision: master
           token: ${{ github.token }}
           github-binarycache: true
-
-
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
 
 #      - name: Setup interactive tmate session
 #        uses: mxschmitt/action-tmate@v3
@@ -55,7 +53,7 @@ jobs:
         # This will read the dependencies from the vcpkg.json file,
         # and the CMake preset from CMakePresets.json
         run: |
-          export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
+          export VCPKG_ROOT=${{ github.workspace }}/vcpkg
           mkdir build
           cd build
           cmake .. --preset build_vcpkg_default -DCMAKE_BUILD_TYPE=Release

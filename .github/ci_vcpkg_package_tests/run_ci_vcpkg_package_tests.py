@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import platform
 import os
@@ -44,6 +45,29 @@ def run_test_with_rendering_backend(rendering_backend: str) -> bool:
 
     if platform.system() == "Windows":
         copy_mesa_libs_to_current_dir()
+
+    def find_vcpkg_program() -> str:
+        possible_vcpkg_roots = [f"{REPO_DIR}/vcpkg"]
+        if "VCPKG_ROOT" in os.environ:
+            logging.info(f"Found VCPKG_ROOT in environment variables: {os.environ['VCPKG_ROOT']}")
+            possible_vcpkg_roots.append(os.environ["VCPKG_ROOT"])
+        if "VCPKG_INSTALLATION_ROOT" in os.environ:
+            logging.info(f"Found VCPKG_INSTALLATION_ROOT in environment variables: {os.environ['VCPKG_INSTALLATION_ROOT']}")
+            possible_vcpkg_roots.append(os.environ["VCPKG_INSTALLATION_ROOT"])
+
+        r = ""
+        for possible_vcpkg_root in possible_vcpkg_roots:
+            possible_vcpkg_program = os.path.join(possible_vcpkg_root, "vcpkg")
+            if os.path.exists(possible_vcpkg_program) or os.path.exists(possible_vcpkg_program + ".exe"):
+                r = possible_vcpkg_program
+                logging.info(f"Found vcpkg program at {r}")
+                break
+        if len(r) == 0:
+            logging.error(f"Could not find vcpkg program, tried {possible_vcpkg_roots}")
+            sys.exit(1)
+        return r
+
+    vcpkg_program = find_vcpkg_program()
 
     if "VCPKG_ROOT" in os.environ:
         vcpkg_root = os.environ["VCPKG_ROOT"]

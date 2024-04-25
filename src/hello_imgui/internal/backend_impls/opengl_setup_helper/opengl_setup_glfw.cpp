@@ -61,12 +61,12 @@ namespace HelloImGui { namespace BackendApi
         // Compute GlslVersion
         //
         #if defined(IMGUI_IMPL_OPENGL_ES3)
-            openGlOptions.GlslVersion = "#version 300es";
+            openGlOptions.GlslVersion = "300es";
         #elif defined(__APPLE__)
-            openGlOptions.GlslVersion = "#version 150";
+            openGlOptions.GlslVersion = "150";
         #else
             // GLSL 130
-            openGlOptions.GlslVersion = "#version 130";
+            openGlOptions.GlslVersion = "130";
         #endif
 
         return openGlOptions;
@@ -102,7 +102,7 @@ namespace HelloImGui { namespace BackendApi
     std::string OpenGlSetupGlfw::GlslVersion()
     {
         OpenGlOptions openGlOptions = MakeOpenGlOptions();
-        return openGlOptions.GlslVersion;
+        return std::string("#version ") + openGlOptions.GlslVersion;
     }
 }} // namespace HelloImGui { namespace BackendApi
 

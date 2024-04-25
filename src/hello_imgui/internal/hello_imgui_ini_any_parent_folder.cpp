@@ -53,7 +53,7 @@ namespace HelloImGui
 
             try
             {
-                std::optional<T> result;
+                std::optional<T> result = std::nullopt;
                 ini::IniFile ini;
                 ini.load(iniFilePath);
                 if (ini.find(sectionName) != ini.end())

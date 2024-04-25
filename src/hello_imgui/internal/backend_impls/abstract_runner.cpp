@@ -4,6 +4,7 @@
 #include "hello_imgui/internal/clock_seconds.h"
 #include "hello_imgui/internal/docking_details.h"
 #include "hello_imgui/internal/hello_imgui_ini_settings.h"
+#include "hello_imgui/internal/hello_imgui_ini_any_parent_folder.h"
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/internal/platform/ini_folder_locations.h"
 #include "hello_imgui/internal/inicpp.h"
@@ -176,7 +177,7 @@ bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi()
 }
 
 
-void ReadDpiAwareParams(const std::string& appIniSettingLocation, DpiAwareParams* dpiAwareParams)
+void ReadDpiAwareParams(DpiAwareParams* dpiAwareParams)
 {
     // cf dpi_aware.h
     //
@@ -210,89 +211,19 @@ void ReadDpiAwareParams(const std::string& appIniSettingLocation, DpiAwareParams
     //     fontRenderingScale=0.5
     //
 
-    auto folderAndAllParents = [](const std::string& folder) -> std::vector<std::string>
-    {
-        std::vector<std::string> result;
-        std::string currentFolder = folder;
-        while (true)
-        {
-            result.push_back(currentFolder);
-            std::filesystem::path p(currentFolder);
-            if (p.has_parent_path() && (p.parent_path() != p))
-                currentFolder = p.parent_path().string();
-            else
-                break;
-        }
-        return result;
-    };
-
-    auto readIniFloatValue = []
-        (const std::string& iniFilePath, const std::string& sectionName, const std::string& valuNeame) -> std::optional<float>
-    {
-        if (! std::filesystem::exists(iniFilePath))
-            return std::nullopt;
-        if (! std::filesystem::is_regular_file(iniFilePath))
-            return std::nullopt;
-
-        try
-        {
-            std::optional<float> result;
-            ini::IniFile ini;
-            ini.load(iniFilePath);
-            if (ini.find(sectionName) != ini.end())
-            {
-                auto& section = ini.at(sectionName);
-                if (section.find(valuNeame) != section.end())
-                    result =  ini[sectionName][valuNeame].as<float>();
-            }
-            return result;
-        }
-        catch(...)
-        {
-            return std::nullopt;
-        }
-    };
-
-    auto allIniFilesToSearch = [&]() -> std::vector<std::string>
-    {
-        std::vector<std::string> allIniFileToSearch;
-
-        //allIniFileToSearch.push_back(appIniSettingLocation);
-        (void)appIniSettingLocation;
-
-        std::string currentFolder = std::filesystem::current_path().string();
-        for (const auto& folder: folderAndAllParents(currentFolder))
-            allIniFileToSearch.push_back(folder + "/hello_imgui.ini");
-
-        return allIniFileToSearch;
-    };
-
-    std::vector<std::string> allIniFiles = allIniFilesToSearch();
-
     if (dpiAwareParams->dpiWindowSizeFactor == 0.f)
     {
-        for (const auto& iniFile: allIniFiles)
-        {
-            auto dpiWindowSizeFactor = readIniFloatValue(iniFile, "DpiAwareParams", "dpiWindowSizeFactor");
-            if (dpiWindowSizeFactor.has_value())
-            {
-                dpiAwareParams->dpiWindowSizeFactor = dpiWindowSizeFactor.value();
-                break;
-            }
-        }
+        auto dpiWindowSizeFactor = HelloImGuiIniAnyParentFolder::readFloatValue("DpiAwareParams", "dpiWindowSizeFactor");
+        if (dpiWindowSizeFactor.has_value())
+            dpiAwareParams->dpiWindowSizeFactor = dpiWindowSizeFactor.value();
     }
 
     if (dpiAwareParams->fontRenderingScale == 0.f)
     {
-        for (const auto& iniFile: allIniFiles)
-        {
-            auto fontRenderingScale = readIniFloatValue(iniFile, "DpiAwareParams", "fontRenderingScale");
-            if (fontRenderingScale.has_value())
-            {
-                dpiAwareParams->fontRenderingScale = fontRenderingScale.value();
-                break;
-            }
-        }
+        auto fontRenderingScale = HelloImGuiIniAnyParentFolder::readFloatValue("DpiAwareParams", "fontRenderingScale");
+        if (fontRenderingScale.has_value())
+            dpiAwareParams->fontRenderingScale = fontRenderingScale.value();
+
     }
 }
 
@@ -371,7 +302,7 @@ float _DefaultOsFontRenderingScale()
 
 void AbstractRunner::SetupDpiAwareParams()
 {
-    ReadDpiAwareParams(IniSettingsLocation(params), &params.dpiAwareParams);
+    ReadDpiAwareParams(&params.dpiAwareParams);
     if (params.dpiAwareParams.dpiWindowSizeFactor == 0.f)
     {
         #ifdef HELLOIMGUI_HAS_DIRECTX11

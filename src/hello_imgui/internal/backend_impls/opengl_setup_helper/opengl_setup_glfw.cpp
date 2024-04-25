@@ -9,6 +9,7 @@
 
 namespace HelloImGui { namespace BackendApi
 {
+    static bool gUseConservativeSettings = false;
 
     static void ApplyOpenGlOptions(OpenGlOptions& openGlOptions)
     {
@@ -22,6 +23,10 @@ namespace HelloImGui { namespace BackendApi
 
     static OpenGlOptions MakeOpenGlOptions()
     {
+        // Notes:
+        // - SelectOpenGlVersion will first try non-conservative settings, and if it fails, try conservative settings
+        // - if runnerParams->rendererBackendOptions.openGlOptions.has_value(), we always use it
+
         auto* runnerParams = HelloImGui::GetRunnerParams();
         if (runnerParams->rendererBackendOptions.openGlOptions.has_value())
             return runnerParams->rendererBackendOptions.openGlOptions.value();
@@ -69,13 +74,61 @@ namespace HelloImGui { namespace BackendApi
             openGlOptions.GlslVersion = "#version 130";
         #endif
 
+        //
+        // Conservative settings based on user feedback
+        //
+        if (gUseConservativeSettings)
+        {
+            #ifdef _WIN32
+            // cf https://github.com/pthom/imgui_bundle/issues/206#issuecomment-2074578423
+            openGlOptions.MajorVersion = 3;
+            openGlOptions.MinorVersion = 1;
+            openGlOptions.UseCoreProfile = false;
+            openGlOptions.UseForwardCompat = true;
+            openGlOptions.GlslVersion = "#version 130";
+            #endif
+        }
+
         return openGlOptions;
+    }
+
+    static bool CanCreateWindowWithCurrentOpenGlSettings()
+    {
+        bool success = false;
+        GLFWwindow *dummyWindow = glfwCreateWindow(20, 20, "test", NULL, NULL);
+        if (dummyWindow)
+        {
+            glfwDestroyWindow(dummyWindow);
+            success = true;
+        }
+        return success;
     }
 
     void OpenGlSetupGlfw::SelectOpenGlVersion()
     {
         OpenGlOptions openGlOptions = MakeOpenGlOptions();
         ApplyOpenGlOptions(openGlOptions);
+
+        // Test if we should use more conservative settings.
+        // For the moment, we only test conservative settings under Windows,
+        // since this is the only platform for which we have user feedback about that.
+        {
+            #ifdef _WIN32
+            bool success = CanCreateWindowWithCurrentOpenGlSettings();
+
+            if (!success)
+            {
+                printf("Can't create window with standard OpenGL settings. Trying more conservative settings.\n");
+                gUseConservativeSettings = true;
+
+                OpenGlOptions openGlOptions = MakeOpenGlOptions();
+                ApplyOpenGlOptions(openGlOptions);
+
+                success = CanCreateWindowWithCurrentOpenGlSettings();
+                IM_ASSERT(success && "OpenGlSetupGlfw::SelectOpenGlVersion(): Can't create window with conservative OpenGL settings.");
+            }
+            #endif
+        }
     }
 
     void OpenGlSetupGlfw::InitGlLoader()

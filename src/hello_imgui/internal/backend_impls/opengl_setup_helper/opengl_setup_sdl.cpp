@@ -10,8 +10,6 @@
 
 namespace HelloImGui { namespace BackendApi
 {
-    static bool gUseConservativeSettings = false;
-
     static void ApplyOpenGlOptions(OpenGlOptions& openGlOptions)
     {
         #ifndef __EMSCRIPTEN__
@@ -28,10 +26,6 @@ namespace HelloImGui { namespace BackendApi
 
     static OpenGlOptions MakeOpenGlOptions()
     {
-        // Notes:
-        // - SelectOpenGlVersion will first try non-conservative settings, and if it fails, try conservative settings
-        // - if runnerParams->rendererBackendOptions.openGlOptions.has_value(), we always use it
-
         auto* runnerParams = HelloImGui::GetRunnerParams();
         if (runnerParams->rendererBackendOptions.openGlOptions.has_value())
             return runnerParams->rendererBackendOptions.openGlOptions.value();
@@ -86,39 +80,7 @@ namespace HelloImGui { namespace BackendApi
             openGlOptions.GlslVersion = "#version 130";
         #endif
 
-        //
-        // Conservative settings based on user feedback
-        //
-        if (gUseConservativeSettings)
-        {
-            #ifdef _WIN32
-            // cf https://github.com/pthom/imgui_bundle/issues/206#issuecomment-2074578423
-            openGlOptions.MajorVersion = 3;
-            openGlOptions.MinorVersion = 1;
-            openGlOptions.UseCoreProfile = false;
-            openGlOptions.UseForwardCompat = true;
-            openGlOptions.GlslVersion = "#version 130";
-            #endif
-        }
-
         return openGlOptions;
-    }
-
-    static bool CanCreateWindowWithCurrentOpenGlSettings()
-    {
-        bool success = false;
-        SDL_Window *dummyWindow = SDL_CreateWindow("test", 0, 0, 20, 20, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
-        if (dummyWindow)
-        {
-            SDL_GLContext dummyContext = SDL_GL_CreateContext(dummyWindow);
-            if (dummyContext)
-            {
-                SDL_GL_DeleteContext(dummyContext);
-                success = true;
-            }
-            SDL_DestroyWindow(dummyWindow);
-        }
-        return success;
     }
 
     static void AdditionalOpenGlPreSetup()
@@ -154,32 +116,11 @@ namespace HelloImGui { namespace BackendApi
     void OpenGlSetupSdl::SelectOpenGlVersion()
     {
         AdditionalOpenGlPreSetup();
+
         OpenGlOptions openGlOptions = MakeOpenGlOptions();
         ApplyOpenGlOptions(openGlOptions);
+
         AdditionalOpenGlPostSetup();
-
-        // Test if we should use more conservative settings.
-        // For the moment, we only test conservative settings under Windows,
-        // since this is the only platform for which we have user feedback about that.
-        {
-            #ifdef _WIN32
-            bool success = CanCreateWindowWithCurrentOpenGlSettings();
-
-            if (!success)
-            {
-                printf("Can't create window with standard OpenGL settings. Trying more conservative settings.\n");
-                gUseConservativeSettings = true;
-
-                AdditionalOpenGlPreSetup();
-                OpenGlOptions openGlOptions = MakeOpenGlOptions();
-                ApplyOpenGlOptions(openGlOptions);
-                AdditionalOpenGlPostSetup();
-
-                success = CanCreateWindowWithCurrentOpenGlSettings();
-                IM_ASSERT(success && "OpenGlSetupSdl::SelectOpenGlVersion(): Can't create window with conservative OpenGL settings.");
-            }
-            #endif
-        }
     }
 
     void OpenGlSetupSdl::InitGlLoader()

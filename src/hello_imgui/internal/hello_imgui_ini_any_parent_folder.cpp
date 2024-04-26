@@ -14,8 +14,7 @@ namespace HelloImGui
         //
         // Utilities that read any settings in a hello_imgui.ini file located in the current folder or any of its parents
         //
-
-        auto _folderAndAllParents = [](const std::string& folder) -> std::vector<std::string>
+        std::vector<std::string> _folderAndAllParents(const std::string& folder)
         {
             std::vector<std::string> result;
             std::string currentFolder = folder;
@@ -31,20 +30,19 @@ namespace HelloImGui
             return result;
         };
 
-        auto _allHelloImGuiIniFilesToSearch = []() -> std::vector<std::string>
+        std::vector<std::string> _allHelloImGuiIniFilesToSearch()
         {
             std::vector<std::string> allIniFileToSearch;
 
             std::string currentFolder = std::filesystem::current_path().string();
-            for (const auto& folder: _folderAndAllParents(currentFolder))
+            for (const auto& folder : _folderAndAllParents(currentFolder))
                 allIniFileToSearch.push_back(folder + "/hello_imgui.ini");
 
             return allIniFileToSearch;
         };
 
         template<typename T>
-        auto _readIniValue = []
-            (const std::string& iniFilePath, const std::string& sectionName, const std::string& valueName) -> std::optional<T>
+        std::optional<T> _readIniValue(const std::string& iniFilePath, const std::string& sectionName, const std::string& valueName)
         {
             if (! std::filesystem::exists(iniFilePath))
                 return std::nullopt;
@@ -53,6 +51,7 @@ namespace HelloImGui
 
             try
             {
+
                 std::optional<T> result = std::nullopt;
                 ini::IniFile ini;
                 ini.load(iniFilePath);
@@ -70,9 +69,8 @@ namespace HelloImGui
             }
         };
 
-        template<typename T>
-        auto _readIniValueInParentFolders = []
-            (const std::string& sectionName, const std::string& valueName) -> std::optional<T>
+        template <typename T>
+        std::optional<T> _readIniValueInParentFolders(const std::string& sectionName, const std::string& valueName)
         {
             for (const auto& iniFile: _allHelloImGuiIniFilesToSearch())
             {

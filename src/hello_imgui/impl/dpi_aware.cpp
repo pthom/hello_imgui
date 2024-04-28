@@ -34,6 +34,20 @@ namespace HelloImGui
         return ImVec2(k * v.x, k * v.y);
     }
 
+    ImVec2 PixelsToEm(ImVec2 pixels)
+    {
+        IM_ASSERT(GImGui != NULL);
+        float k = ImGui::GetFontSize();
+        return ImVec2(pixels.x / k, pixels.y / k);
+    }
+
+    float  PixelSizeToEm(float pixelSize)
+    {
+        IM_ASSERT(GImGui != NULL);
+        float k = ImGui::GetFontSize();
+        return pixelSize / k;
+    }
+
 
     float DpiWindowSizeFactor()
     {

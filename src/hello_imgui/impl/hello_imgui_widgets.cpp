@@ -3,6 +3,8 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 
+#include <unordered_map>
+
 
 namespace HelloImGui
 {

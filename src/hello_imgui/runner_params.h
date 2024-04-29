@@ -116,6 +116,10 @@ struct FpsIdling
     //  refresh needs)
     float fpsIdle = 9.f;
 
+    // `timeActiveAfterLastEvent`: _float, default=3.f_.
+    //  Time in seconds after the last event before the application is considered idling.
+    float timeActiveAfterLastEvent = 3.f;
+
     // `enableIdling`: _bool, default=true_.
     //  Disable idling by setting this to false.
     //  (this can be changed dynamically during execution)

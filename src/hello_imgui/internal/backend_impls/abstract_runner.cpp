@@ -978,10 +978,19 @@ void AbstractRunner::CreateFramesAndRender()
     { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
 
+        // Keep track of the time of the last event,
+        // by counting the number of events in the input queue
+        static double timeLastEvent = ImGui::GetTime();
+        int nbEventsBefore = ImGui::GetCurrentContext()->InputEventsQueue.size();
+        // If the last event is recent, do not idle
+        double now = ImGui::GetTime();
+        bool preventIdling = (now - timeLastEvent < (double)params.fpsIdling.timeActiveAfterLastEvent);
+
         #ifndef __EMSCRIPTEN__
         // Idling for non emscripten, where HelloImGui is responsible for the main loop.
         // This form of idling will call WaitForEventTimeout(), which may call sleep():
-		IdleBySleeping();
+        if (!preventIdling)
+            IdleBySleeping();
         #endif
 
         // Poll Events (this fills GImGui.InputEventsQueue)
@@ -990,12 +999,17 @@ void AbstractRunner::CreateFramesAndRender()
         #ifdef __EMSCRIPTEN__
         // Idling for emscripten: early exit if idling
         // This test should be done after calling Impl_PollEvents() since it checks the event queue for incoming events!
-        if (ShallIdleThisFrame_Emscripten())
+        if ( ! preventIdling && ShallIdleThisFrame_Emscripten())
         {
             mIdxFrame += 1;
             return;
         }
         #endif
+
+        int nbEventsAfter = ImGui::GetCurrentContext()->InputEventsQueue.size();
+        if (nbEventsAfter > nbEventsBefore)
+            timeLastEvent = ImGui::GetTime();
+
     } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
 	if (foldable_region) // Update frame rate stats
@@ -1076,7 +1090,7 @@ void AbstractRunner::CreateFramesAndRender()
     // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
     // ==> Note: RenderGui() may measure the size of the window and resize it if mIdxFrame==1
     // RenderGui may call many user callbacks, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
-	RenderGui();
+    RenderGui();
 
     if (params.callbacks.BeforeImGuiRender)
         params.callbacks.BeforeImGuiRender();

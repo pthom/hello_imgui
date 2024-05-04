@@ -265,7 +265,7 @@ bool AssetExists(const std::string& assetFilename)
 
 #ifdef HELLOIMGUI_USE_SDL2
 
-AssetFileData LoadAssetFileData(const char *assetPath)
+AssetFileData DefaultLoadAssetFileData(const char *assetPath)
 {
     #ifdef __ANDROID__
     {
@@ -330,7 +330,7 @@ AssetFileData LoadAssetFileData_Impl(const char *assetPath)
     }
 }
 
-AssetFileData LoadAssetFileData(const char *assetPath)
+AssetFileData DefaultLoadAssetFileData(const char *assetPath)
 {
     std::string fullPath = assetFileFullPath(assetPath);
     AssetFileData r = LoadAssetFileData_Impl(fullPath.c_str());
@@ -348,6 +348,19 @@ void FreeAssetFileData(AssetFileData * assetFileData)
 {
     free(assetFileData->data);
     assetFileData = nullptr;
+}
+
+static LoadAssetFileDataFunc loadAssetFileDataFunc = DefaultLoadAssetFileData;
+
+AssetFileData LoadAssetFileData(const char *assetPath)
+{
+    AssetFileData data = loadAssetFileDataFunc(assetPath);
+    return data;
+}
+
+void setLoadAssetFileDataFunction(LoadAssetFileDataFunc newLoadAssetFileDataFunc)
+{
+    loadAssetFileDataFunc = newLoadAssetFileDataFunc;
 }
 
 #endif // #ifdef HELLOIMGUI_USE_SDL2

@@ -478,7 +478,7 @@ endfunction()
 ###################################################################################################
 function(him_sanity_checks)
     him_back_check_if_no_backend_option_chosen(no_backend_option_chosen)
-    _him_check_fetch_forbidden() # mset HELLOIMGUI_FETCH_FORBIDDEN
+    _him_check_fetch_forbidden() # may set HELLOIMGUI_FETCH_FORBIDDEN
 
     if (NOT WIN32)
         set(HELLOIMGUI_HAS_DIRECTX11 OFF CACHE BOOL "" FORCE)
@@ -489,11 +489,8 @@ function(him_sanity_checks)
     endif()
 
     if (no_backend_option_chosen AND NOT HELLOIMGUI_USING_VCPKG_TOOLCHAIN)
-        # use SDL for emscripten and iOS
-        if (EMSCRIPTEN)
-            set(HELLOIMGUI_USE_SDL2 ON CACHE BOOL "" FORCE)
-            set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
-        elseif (IOS)
+        # use SDL for emscripten and iOS, GLFW for the rest
+        if (EMSCRIPTEN OR IOS)
             set(HELLOIMGUI_USE_SDL2 ON CACHE BOOL "" FORCE)
             set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
         else()

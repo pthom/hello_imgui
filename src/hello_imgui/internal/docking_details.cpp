@@ -345,7 +345,7 @@ ImRect FixedWindowRect(
                 if ( edgeToolbarType == EdgeToolbarType::Left)
                 {
                     auto width = HelloImGui::EmSize(
-                        runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Right).options.sizeEm);
+                        runnerParams.callbacks.edgesToolbars.at(EdgeToolbarType::Left).options.sizeEm);
                     fullScreenSize.x = width;
                 }
                 if ( edgeToolbarType == EdgeToolbarType::Right)

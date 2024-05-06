@@ -48,10 +48,6 @@ function(_add_imgui_test_engine_lib)
         IMGUI_STB_IMAGE_WRITE_FILENAME="${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui/stb_image_write.h"
     )
 
-    # We use a specific branch of the test engine (imgui_bundle)
-    # IMGUI_BUNDLE_PYTHON_UNSUPPORTED_API is a marker for C++ only API, and should always be defined in C++.
-    target_compile_definitions(imgui_test_engine PUBLIC IMGUI_BUNDLE_PYTHON_UNSUPPORTED_API)
-
     # install test_engine headers
     if(HELLOIMGUI_INSTALL)
         file(GLOB te_headers ${te_source_folder}/*.h)

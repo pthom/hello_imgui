@@ -34,7 +34,6 @@ function(him_back_available_platform_backends out_var)
     set(${out_var}
         HELLOIMGUI_USE_SDL2
         HELLOIMGUI_USE_GLFW3
-        HELLOIMGUI_USE_NULL
         PARENT_SCOPE)
 endfunction()
 
@@ -45,15 +44,10 @@ function(him_back_available_rendering_backends out_var)
         HELLOIMGUI_HAS_VULKAN
         HELLOIMGUI_HAS_DIRECTX11
         HELLOIMGUI_HAS_DIRECTX12
-        HELLOIMGUI_HAS_NULL
         PARENT_SCOPE)
 endfunction()
 
 function(him_back_parse_legacy_combinations)
-    if(HELLOIMGUI_NULL_BACKEND)
-        set(HELLOIMGUI_USE_NULL ON CACHE BOOL "" FORCE)
-        set(HELLOIMGUI_HAS_NULL ON CACHE BOOL "" FORCE)
-    endif()
     if(HELLOIMGUI_USE_SDL_OPENGL3)
         message(WARNING "
         HELLOIMGUI_USE_SDL_OPENGL3 is deprecated,
@@ -163,6 +157,10 @@ function(him_back_check_if_no_rendering_backend_selected out_var) # will set out
 endfunction()
 
 function(him_back_check_if_no_backend_option_chosen out_var)
+    if (HELLOIMGUI_HEADLESS)
+        set(${out_var} OFF PARENT_SCOPE)
+        return()
+    endif()
     him_back_check_if_no_platform_backend_selected(no_platform_selected)
     him_back_check_if_no_rendering_backend_selected(no_rendering_selected)
     if(no_platform_selected AND no_rendering_selected)
@@ -173,6 +171,10 @@ function(him_back_check_if_no_backend_option_chosen out_var)
 endfunction()
 
 function(him_back_check_at_least_one_rendering_one_platform_backend out_var)
+    if (HELLOIMGUI_HEADLESS)
+        set(${out_var} ON PARENT_SCOPE)
+        return()
+    endif()
     him_back_check_if_no_platform_backend_selected(no_platform_selected)
     him_back_check_if_no_rendering_backend_selected(no_rendering_selected)
     if(no_platform_selected OR no_rendering_selected)
@@ -190,6 +192,11 @@ function(him_back_describe_active_rendering_backends out_description)
             set(result "${result} ${backend}")
         endif()
     endforeach()
+
+    if (HELLOIMGUI_HEADLESS)
+        set(result "${result} null-headless")
+    endif()
+
     set(${out_description} ${result} PARENT_SCOPE)
 endfunction()
 
@@ -201,6 +208,11 @@ function(him_back_describe_active_platform_backends out_description)
             set(result "${result} ${backend}")
         endif()
     endforeach()
+
+    if (HELLOIMGUI_HEADLESS)
+        set(result "${result} null-headless")
+    endif()
+
     set(${out_description} ${result} PARENT_SCOPE)
 endfunction()
 
@@ -1212,9 +1224,6 @@ function(him_main_add_hello_imgui_library)
     if (HELLOIMGUI_USE_GLFW3)
         him_use_glfw3_backend(${HELLOIMGUI_TARGET})
     endif()
-    if (HELLOIMGUI_USE_NULL)
-        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_NULL)
-    endif()
 
     if (HELLOIMGUI_HAS_OPENGL3)
         him_has_opengl3(${HELLOIMGUI_TARGET})
@@ -1230,9 +1239,6 @@ function(him_main_add_hello_imgui_library)
     endif()
     if (HELLOIMGUI_HAS_DIRECTX12)
         him_has_directx12(${HELLOIMGUI_TARGET})
-    endif()
-    if (HELLOIMGUI_HAS_NULL)
-        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_NULL)
     endif()
 
     if (HELLOIMGUI_WITH_NETIMGUI)

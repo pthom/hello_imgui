@@ -1,5 +1,4 @@
 #pragma once
-#ifdef HELLOIMGUI_USE_NULL
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/null_window_helper.h"
 #include "hello_imgui/internal/backend_impls/null_config.h"
@@ -43,5 +42,3 @@ namespace HelloImGui
     };
 
 }  // namespace HelloImGui
-
-#endif  // #ifdef HELLOIMGUI_USE_NULL

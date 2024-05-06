@@ -3,7 +3,7 @@
   "configurePresets": [
     {
       "name": "build_default_glfw",
-      "description": "Build with default settings (opengl3 and glfw). You need to create a build directory and run from it",
+      "description": "Build with default settings (opengl3 and glfw)",
       "cacheVariables": {
         "HELLOIMGUI_USE_GLFW3": "ON",
         "HELLOIMGUI_HAS_OPENGL3": "ON"
@@ -11,7 +11,7 @@
     },
     {
       "name": "build_default_sdl",
-      "description": "Build with default settings (opengl3 and sdl). You need to create a build directory and run from it",
+      "description": "Build with default settings (opengl3 and sdl)",
       "cacheVariables": {
         "HELLOIMGUI_USE_SDL2": "ON",
         "HELLOIMGUI_HAS_OPENGL3": "ON"
@@ -19,22 +19,20 @@
     },
     {
       "name": "build_all_backends",
-      "description": "Build with all platform and renderer backends. You need to create a build directory and run from it",
+      "description": "Build with all platform and renderer backends",
       "cacheVariables": {
         "HELLOIMGUI_USE_SDL2": "ON",
         "HELLOIMGUI_USE_GLFW3": "ON",
-        "HELLOIMGUI_USE_NULL": "ON",
         "HELLOIMGUI_HAS_OPENGL3": "ON",
         "HELLOIMGUI_HAS_METAL": "ON",
         "HELLOIMGUI_HAS_VULKAN": "ON",
         "HELLOIMGUI_HAS_DIRECTX11": "ON",
-        "HELLOIMGUI_HAS_DIRECTX12": "ON",
-        "HELLOIMGUI_HAS_NULL": "ON"
+        "HELLOIMGUI_HAS_DIRECTX12": "ON"
       }
     },
     {
       "name": "build_vcpkg_default",
-      "description": "Build with vcpkg default settings (opengl3 + sdl and glfw). You need to create a build directory and run from it",
+      "description": "Build with vcpkg default settings (opengl3 + sdl and glfw)",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
         "HELLOIMGUI_USE_GLFW3": "ON",
@@ -45,8 +43,7 @@
     },
     {
       "name": "build_use_vcpkg_opengl3",
-      "description": "Build with vcpkg default settings (opengl3 + sdl and glfw). Will build inside build_use_vcpkg_opengl3/",
-      "binaryDir": "${sourceDir}/build_use_vcpkg_opengl3",
+      "description": "Build with vcpkg default settings (opengl3 + sdl and glfw)",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
         "HELLOIMGUI_USE_GLFW3": "ON",
@@ -57,8 +54,7 @@
     },
     {
       "name": "build_use_vcpkg_metal",
-      "description": "Build with vcpkg (for metal + sdl and glfw). Will build inside build_use_vcpkg_metal/",
-      "binaryDir": "${sourceDir}/build_use_vcpkg_metal",
+      "description": "Build with vcpkg (for metal + sdl and glfw)",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
         "HELLOIMGUI_USE_GLFW3": "ON",
@@ -69,14 +65,20 @@
     },
     {
       "name": "build_use_vcpkg_vulkan",
-      "description": "Build with vcpkg (for vulkan + sdl and glfw). Will build inside build_use_vcpkg_vulkan/",
-      "binaryDir": "${sourceDir}/build_use_vcpkg_vulkan",
+      "description": "Build with vcpkg (for vulkan + sdl and glfw)",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
         "HELLOIMGUI_USE_GLFW3": "ON",
         "HELLOIMGUI_USE_SDL2": "ON",
         "HELLOIMGUI_HAS_VULKAN": "ON",
         "HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE": "ON"
+      }
+    },
+    {
+      "name": "build_headless",
+      "description": "Build with headless backend. No GUI will be shown",
+      "cacheVariables": {
+        "HELLOIMGUI_HEADLESS": "ON"
       }
     }
   ]

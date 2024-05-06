@@ -649,11 +649,7 @@ void AbstractRunner::InitRenderBackendCallbacks()
     }
     else if (params.rendererBackendType == RendererBackendType::Null)
     {
-        #ifdef HELLOIMGUI_USE_NULL
-            mRenderingBackendCallbacks = CreateBackendCallbacks_Null();
-        #else
-            IM_ASSERT(false && "Null backend is not available!");
-        #endif
+        mRenderingBackendCallbacks = CreateBackendCallbacks_Null();
     }
     else
     {

@@ -16,7 +16,7 @@ void ChooseBackendTypesIfSelectedAsFirstAvailable(RunnerParams* runnerParams)
             runnerParams->platformBackendType = PlatformBackendType::Glfw;
         #elif defined(HELLOIMGUI_USE_SDL2)
             runnerParams->platformBackendType = PlatformBackendType::Sdl;
-        #elif defined(HELLOIMGUI_USE_NULL)
+        #else
             runnerParams->platformBackendType = PlatformBackendType::Null;
         #endif
     }
@@ -33,7 +33,7 @@ void ChooseBackendTypesIfSelectedAsFirstAvailable(RunnerParams* runnerParams)
             runnerParams->rendererBackendType = RendererBackendType::DirectX11;
         #elif defined(HELLOIMGUI_HAS_DIRECTX12)
             runnerParams->rendererBackendType = RendererBackendType::DirectX12;
-        #elif defined(HELLOIMGUI_HAS_NULL)
+        #else
             runnerParams->rendererBackendType = RendererBackendType::Null;
         #endif
     }
@@ -75,11 +75,7 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
     }
     else if (params.platformBackendType == PlatformBackendType::Null)
     {
-        #ifdef HELLOIMGUI_USE_NULL
-            return std::make_unique<RunnerNull>(params);
-        #else
-            return nullptr;
-        #endif
+        return std::make_unique<RunnerNull>(params);
     }
     else
         return nullptr;

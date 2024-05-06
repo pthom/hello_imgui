@@ -1,4 +1,3 @@
-#ifdef HELLOIMGUI_HAS_NULL
 #include "rendering_null.h"
 
 
@@ -25,5 +24,3 @@ namespace HelloImGui
     }
 
 }
-
-#endif

@@ -1,5 +1,4 @@
 #pragma once
-#ifdef HELLOIMGUI_USE_NULL
 
 #include "backend_window_helper.h"
 #include "hello_imgui/internal/backend_impls/null_config.h"
@@ -51,5 +50,3 @@ namespace HelloImGui { namespace BackendApi
 
     };
 }} // namespace HelloImGui { namespace BackendApi
-
-#endif // #ifdef HELLOIMGUI_USE_NULL

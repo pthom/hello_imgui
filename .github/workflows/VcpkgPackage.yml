@@ -26,12 +26,17 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - os: ubuntu-latest
-#            vcpkg_triplet: x64-linux-release
-#          - os: macos-latest
-#            vcpkg_triplet: x64-osx-release
-          - os: windows-latest
-            vcpkg_triplet: x64-windows-release
+          - os: ubuntu-latest
+            vcpkg_triplet: x64-linux-release
+          - os: macos-latest
+            vcpkg_triplet: x64-osx-release
+            # Window disabled:
+            # See failing action:https://github.com/pthom/hello_imgui/actions/runs/8967371818/job/24624780079
+            #    " unresolved external symbol _Thrd_sleep_for"
+            # The symbol that is missing was added to the microsoft STL in october 2023, and later removed...
+            # See https://github.com/actions/runner-images/issues/9398
+            #          - os: windows-latest
+            #            vcpkg_triplet: x64-windows-release
 
 
     steps:

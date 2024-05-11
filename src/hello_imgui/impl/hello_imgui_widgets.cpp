@@ -39,6 +39,7 @@ namespace HelloImGui
 
 
     ImVec2 WidgetWithResizeHandle(
+        const char* id,
         VoidFunction widgetGuiFunction,
         float handleSizeEm,
         std::optional<VoidFunction> onItemResized,
@@ -47,14 +48,15 @@ namespace HelloImGui
     {
         widgetGuiFunction();
 
+        ImGuiID widget_id = ImGui::GetID(id);
+        ImVec2 widget_size = ImGui::GetItemRectSize();
+
         if (ImGui::IsMouseHoveringRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax()))
         {
             if (onItemHovered.has_value() && onItemHovered)
                 onItemHovered.value()();
         }
 
-        ImVec2 widget_size = ImGui::GetItemRectSize();
-        ImGuiID widget_id = ImGui::GetItemID();
 
         float em = ImGui::GetFontSize(), size = em * handleSizeEm;
         ImVec2 widget_bottom_right = ImGui::GetItemRectMax();
@@ -72,6 +74,9 @@ namespace HelloImGui
         resizingState->MouseInResizingZone = ImGui::IsMouseHoveringRect(zone.Min, zone.Max);
         resizingState->MouseDown = ImGui::IsMouseDown(0);
 
+        bool wasMouseJustClicked = !previousResizingState.MouseDown && resizingState->MouseDown;
+        bool mouseInZoneBeforeAfter = previousResizingState.MouseInResizingZone && resizingState->MouseInResizingZone;
+
         ImVec2 mouseDelta = resizingState->MousePosition - previousResizingState.MousePosition;
 
         // Color
@@ -85,8 +90,6 @@ namespace HelloImGui
 
         if (!resizingState->Resizing)
         {
-            bool wasMouseJustClicked = !previousResizingState.MouseDown && resizingState->MouseDown;
-            bool mouseInZoneBeforeAfter = previousResizingState.MouseInResizingZone && resizingState->MouseInResizingZone;
             if (wasMouseJustClicked && mouseInZoneBeforeAfter)
             {
                 if (onItemResized.has_value() && onItemResized)

@@ -4,6 +4,7 @@
 #include <optional>
 #include <functional>
 #include <map>
+#include <string>
 #include <variant>
 
 namespace HelloImGui

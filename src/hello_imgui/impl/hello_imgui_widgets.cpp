@@ -203,9 +203,9 @@ namespace HelloImGui
         if (dict.find("Multiline") != dict.end())
             result.Multiline = std::get<bool>(dict.at("Multiline"));
         if (dict.find("SizeEm_x") != dict.end())
-            result.SizeEm.x = std::get<float>(dict.at("Size_x"));
+            result.SizeEm.x = std::get<float>(dict.at("SizeEm_x"));
         if (dict.find("SizeEm_y") != dict.end())
-            result.SizeEm.y = std::get<float>(dict.at("Size_y"));
+            result.SizeEm.y = std::get<float>(dict.at("SizeEm_y"));
         return result;
     }
 

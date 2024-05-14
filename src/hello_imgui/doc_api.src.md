@@ -98,6 +98,22 @@ See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_i
 
 ---
 
+# Additional Widgets
+
+## InputTextResizable
+
+```cpp
+@import "hello_imgui_widgets.h" {md_id=InputTextResizable}
+```
+
+## WidgetWithResizeHandle
+
+```cpp
+@import "hello_imgui_widgets.h" {md_id=WidgetWithResizeHandle}
+``` 
+
+---
+
 # Handling screens with high DPI
 
 @import "dpi_aware.h" {md_id=HandlingScreenHighDPI}

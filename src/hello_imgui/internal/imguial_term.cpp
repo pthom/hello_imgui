@@ -478,6 +478,8 @@ int ImGuiAl::Log::draw(ImVec2 const& size)
         if (ImGui::Button("Clear##LogsClear"))
             clear();
 
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(ImGui::GetFontSize() * 15.f);
         _filter.Draw(_filterLabel);
     }
 

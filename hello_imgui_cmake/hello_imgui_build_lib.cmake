@@ -1128,6 +1128,32 @@ function(him_install)
 
 endfunction()
 
+###################################################################################################
+# Add nlohmann_json: API = him_add_nlohmann_json
+###################################################################################################
+function(him_add_nlohmann_json)
+    find_package(nlohmann_json CONFIG QUIET)
+    if(nlohmann_json_FOUND)
+        message(STATUS "HelloImGui: using nlohmann_json from find_package(nlohmann_json)")
+        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC nlohmann_json::nlohmann_json)
+        set(HELLOIMGUI_NLOHMANN_JSON_SELECTED_INFO "Found via find_package(nlohmann_json)" CACHE INTERNAL "" FORCE)
+    else()
+        message(STATUS "HelloImGui: using nlohmann_json from external/nlohmann_json")
+        set(nlohmann_json_dir ${HELLOIMGUI_BASEPATH}/external/nlohmann_json)
+        add_library(nlohmann_json INTERFACE)
+        target_include_directories(nlohmann_json INTERFACE $<BUILD_INTERFACE:${nlohmann_json_dir}>)
+        # target_compile_definitions(nlohmann_json INTERFACE NLOHMANN_JSON_NOEXCEPTION)
+        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC nlohmann_json)
+        set(HELLOIMGUI_NLOHMANN_JSON_SELECTED_INFO "Using external/nlohmann_json" CACHE INTERNAL "" FORCE)
+
+        him_add_installable_dependency(nlohmann_json)
+        if(HELLOIMGUI_INSTALL)
+            install(FILES ${nlohmann_json_dir}/nlohmann/json.hpp DESTINATION include/nlohmann/json.hpp)
+            install(FILES ${nlohmann_json_dir}/nlohmann/json_fwd.hpp DESTINATION include/nlohmann/json_fwd.hpp)
+        endif()
+    endif()
+endfunction()
+
 
 ###################################################################################################
 # Log Configuration at the end of the configuration: API = him_log_configuration
@@ -1155,7 +1181,9 @@ function(him_log_configuration)
     ---------------------------------------------------------------------------
       ImGui:
         Build ImGui:                    ${HELLOIMGUI_BUILD_IMGUI}
-        ImGui source dir:               ${imgui_source_dir}")
+        ImGui source dir:               ${imgui_source_dir}
+    ---------------------------------------------------------------------------
+      nlohmann_json:                    ${HELLOIMGUI_NLOHMANN_JSON_SELECTED_INFO}")
 
     if(EMSCRIPTEN)
         set(msg "${msg}
@@ -1214,6 +1242,7 @@ function(him_main_add_hello_imgui_library)
     him_add_stb_image()
     him_build_imgui()
     him_add_hello_imgui()
+    him_add_nlohmann_json()
     if (HELLOIMGUI_WITH_TEST_ENGINE)
         add_imgui_test_engine()
     endif()

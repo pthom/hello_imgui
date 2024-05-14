@@ -64,7 +64,7 @@ namespace HelloImGui
     //       # Somewhere in the application state
     //       text_input = hello_imgui.InputTextData("My text", multiline=True, size_em=ImVec2(10, 3))
     //       # In the GUI function
-    //       changed = hello_imgui.InputTextResizable("Label", text_input)
+    //       changed = hello_imgui.input_text_resizable("Label", text_input)
     //       ```
     struct InputTextData
     {

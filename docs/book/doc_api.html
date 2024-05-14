@@ -66,8 +66,8 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'doc_api';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Application parameters" href="doc_params.html" />
-    <link rel="prev" title="Get started" href="get_started.html" />
+    <link rel="next" title="Build instructions" href="build.html" />
+    <link rel="prev" title="Application parameters" href="doc_params.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -179,17 +179,19 @@ const thebe_selector_output = ".output, .cell_output"
         </ul>
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="get_started.html">Get started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_params.html">Application parameters</a></li>
+
+
+
+
+
+
+
+
+
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">API</a></li>
 
 
-
-
-
-
-
-
-
-<li class="toctree-l1"><a class="reference internal" href="doc_params.html">Application parameters</a></li>
 
 
 
@@ -412,9 +414,27 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-hello-imgui-menus">Customize Hello ImGui Menus</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-widgets">Additional Widgets</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inputtextresizable">InputTextResizable</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#widgetwithresizehandle">WidgetWithResizeHandle</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-screens-with-high-dpi">Handling screens with high DPI</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#details-on-dpi-handling-on-different-os">Details on DPI handling on different OS</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dpi-aware-font-scaling">Dpi aware Font scaling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#os-specificities">OS specificities</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#screen-coordinates">Screen coordinates</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#displayframebufferscale">DisplayFramebufferScale</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fontglobalscale">FontGlobalScale</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-load-fonts-with-the-correct-size">How to load fonts with the correct size</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-helloimgui-recommended">Using HelloImGui (recommended)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-dear-imgui">Using Dear ImGui</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-physical-window-sizes-in-mm-or-inches">Reproducible physical window sizes (in mm or inches)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-helloimgui">Using HelloImGui</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-your-own-code-to-create-the-backend-window">Using your own code to create the backend window</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fine-tune-dpi-handling">Fine tune DPI Handling</a></li>
 </ul>
 </li>
 </ul>
@@ -476,8 +496,15 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 <section class="tex2jax_ignore mathjax_ignore" id="load-fonts">
 <h1>Load fonts<a class="headerlink" href="#load-fonts" title="Permalink to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui_font.h">hello_imgui_font.h</a>.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">//</span>
-<span class="w">    </span><span class="c1">// When loading fonts, use HelloImGui::LoadFont(fontFilename, fontSize, fontLoadingParams)</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">// When loading fonts, use</span>
+<span class="w">    </span><span class="c1">//          HelloImGui::LoadFont(..)</span>
+<span class="w">    </span><span class="c1">//      or</span>
+<span class="w">    </span><span class="c1">//      	HelloImGui::LoadDpiResponsiveFont()</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">// Use these functions instead of ImGui::GetIO().Fonts-&gt;AddFontFromFileTTF(),</span>
+<span class="w">    </span><span class="c1">// because they will automatically adjust the font size to account for HighDPI,</span>
+<span class="w">    </span><span class="c1">// and will help you to get consistent font size across different OSes.</span>
+
 <span class="w">    </span><span class="c1">//</span>
 <span class="w">    </span><span class="c1">// Font loading parameters: several options are available (color, merging, range, ...)</span>
 <span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">FontLoadingParams</span>
@@ -520,14 +547,32 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 <span class="w">        </span><span class="n">ImFontConfig</span><span class="w"> </span><span class="n">fontConfigFontAwesome</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImFontConfig</span><span class="p">();</span>
 <span class="w">    </span><span class="p">};</span>
 
-<span class="w">    </span><span class="c1">// When loading fonts, use HelloImGui::LoadFont(FontLoadingParams)</span>
-<span class="w">    </span><span class="c1">// ===============================================================</span>
-<span class="w">    </span><span class="c1">// instead of ImGui::GetIO().Fonts-&gt;AddFontFromFileTTF(), because it will</span>
-<span class="w">    </span><span class="c1">// automatically adjust the font size to account for HighDPI, and will spare</span>
-<span class="w">    </span><span class="c1">// you headaches when trying to get consistent font size across different OSes.</span>
-<span class="w">    </span><span class="c1">// see FontLoadingParams and ImFontConfig</span>
-<span class="w">    </span><span class="n">ImFont</span><span class="o">*</span><span class="w"> </span><span class="nf">LoadFont</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">fontFilename</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">fontSize</span><span class="p">,</span>
-<span class="w">                     </span><span class="k">const</span><span class="w"> </span><span class="n">FontLoadingParams</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>
+<span class="w">    </span><span class="c1">// A font that will be automatically resized to account for changes in DPI</span>
+<span class="w">    </span><span class="c1">// Use LoadAdaptiveFont instead of LoadFont to get this behavior.</span>
+<span class="w">    </span><span class="c1">// Fonts loaded with LoadAdaptiveFont will be reloaded during execution</span>
+<span class="w">    </span><span class="c1">// if ImGui::GetIO().FontGlobalScale is changed.</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">FontDpiResponsive</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ImFont</span><span class="o">*</span><span class="w"> </span><span class="n">font</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">fontFilename</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">fontSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.f</span><span class="p">;</span>
+<span class="w">        </span><span class="n">FontLoadingParams</span><span class="w"> </span><span class="n">fontLoadingParams</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+
+<span class="w">    </span><span class="c1">// Loads a font with the specified parameters</span>
+<span class="w">    </span><span class="c1">// (this font will not adapt to DPI changes after startup)</span>
+<span class="w">    </span><span class="n">ImFont</span><span class="o">*</span><span class="w"> </span><span class="nf">LoadFont</span><span class="p">(</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">fontFilename</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">fontSize</span><span class="p">,</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">FontLoadingParams</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>
+
+<span class="w">    </span><span class="c1">// Loads a font with the specified parameters</span>
+<span class="w">    </span><span class="c1">// This font will adapt to DPI changes after startup.</span>
+<span class="w">    </span><span class="c1">// Only fonts loaded with LoadAdaptiveFont will adapt to DPI changes:</span>
+<span class="w">    </span><span class="c1">// avoid mixing LoadFont/LoadFontDpiResponsive)</span>
+<span class="w">    </span><span class="n">FontDpiResponsive</span><span class="o">*</span><span class="w"> </span><span class="nf">LoadFontDpiResponsive</span><span class="p">(</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">fontFilename</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">fontSize</span><span class="p">,</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">FontLoadingParams</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>
 </pre></div>
 </div>
 </section>
@@ -675,6 +720,10 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 <span class="c1">//     &quot;Glfw - Metal&quot;</span>
 <span class="c1">//     &quot;Sdl - Vulkan&quot;</span>
 <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetBackendDescription</span><span class="p">();</span>
+
+<span class="c1">// `ChangeWindowSize(const ScreenSize &amp;windowSize)`: sets the window size</span>
+<span class="c1">// (useful if you want to change the window size during execution)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ChangeWindowSize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ScreenSize</span><span class="w"> </span><span class="o">&amp;</span><span class="n">windowSize</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -803,40 +852,182 @@ it can optionally call <code class="docutils literal notranslate"><span class="p
 </div>
 </section>
 <hr class="docutils" />
+<section class="tex2jax_ignore mathjax_ignore" id="additional-widgets">
+<h1>Additional Widgets<a class="headerlink" href="#additional-widgets" title="Permalink to this heading">#</a></h1>
+<section id="inputtextresizable">
+<h2>InputTextResizable<a class="headerlink" href="#inputtextresizable" title="Permalink to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">// `InputTextResizable`: displays a resizable text input widget</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">// The `InputTextResizable` widget allows you to create a text input field that can be resized by the user.</span>
+<span class="w">    </span><span class="c1">// It supports both single-line and multi-line text input.</span>
+<span class="w">    </span><span class="c1">// Note: the size of the widget is expressed in em units.</span>
+<span class="w">    </span><span class="c1">// **Usage example:**</span>
+<span class="w">    </span><span class="c1">//    C++:</span>
+<span class="w">    </span><span class="c1">//       ```cpp</span>
+<span class="w">    </span><span class="c1">//       // Somewhere in the application state</span>
+<span class="w">    </span><span class="c1">//       (static) InputTextData textInput(&quot;My text&quot;, true, ImVec2(10, 3));</span>
+<span class="w">    </span><span class="c1">//       // In the GUI function</span>
+<span class="w">    </span><span class="c1">//       bool changed = InputTextResizable(&quot;Label&quot;, &amp;textInput);</span>
+<span class="w">    </span><span class="c1">//       ```</span>
+<span class="w">    </span><span class="c1">//    Python:</span>
+<span class="w">    </span><span class="c1">//       ```python</span>
+<span class="w">    </span><span class="c1">//       # Somewhere in the application state</span>
+<span class="w">    </span><span class="c1">//       text_input = hello_imgui.InputTextData(&quot;My text&quot;, multiline=True, size_em=ImVec2(10, 3))</span>
+<span class="w">    </span><span class="c1">//       # In the GUI function</span>
+<span class="w">    </span><span class="c1">//       changed = hello_imgui.InputTextResizable(&quot;Label&quot;, text_input)</span>
+<span class="w">    </span><span class="c1">//       ```</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">InputTextData</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">Text</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">Multiline</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">        </span><span class="n">ImVec2</span><span class="w"> </span><span class="n">SizeEm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+
+<span class="w">        </span><span class="n">InputTextData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">multiline</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="n">ImVec2</span><span class="w"> </span><span class="n">size_em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="n">text</span><span class="p">),</span><span class="w"> </span><span class="n">Multiline</span><span class="p">(</span><span class="n">multiline</span><span class="p">),</span><span class="w"> </span><span class="n">SizeEm</span><span class="p">(</span><span class="n">size_em</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="nf">InputTextResizable</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="n">InputTextData</span><span class="o">*</span><span class="w"> </span><span class="n">textInput</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Serialization for InputTextData</span>
+<span class="w">    </span><span class="c1">// -------------------------------</span>
+<span class="w">    </span><span class="c1">// to/from dict</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">DictTypeInputTextData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">DictTypeInputTextData</span><span class="w"> </span><span class="nf">InputTextDataToDict</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputTextData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">data</span><span class="p">);</span>
+<span class="w">    </span><span class="n">InputTextData</span><span class="w"> </span><span class="nf">InputTextDataFromDict</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DictTypeInputTextData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">dict</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// to/from string</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">InputTextDataToString</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputTextData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">data</span><span class="p">);</span>
+<span class="w">    </span><span class="n">InputTextData</span><span class="w"> </span><span class="nf">InputTextDataFromString</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">str</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="widgetwithresizehandle">
+<h2>WidgetWithResizeHandle<a class="headerlink" href="#widgetwithresizehandle" title="Permalink to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">// WidgetWithResizeHandle: adds a resize handle to a widget</span>
+<span class="w">    </span><span class="c1">// Example usage with ImPlot:</span>
+<span class="w">    </span><span class="c1">//        void gui()</span>
+<span class="w">    </span><span class="c1">//        {</span>
+<span class="w">    </span><span class="c1">//            static ImVec2 widget_size(200, 200);</span>
+<span class="w">    </span><span class="c1">//            auto myWidgetFunction = []()</span>
+<span class="w">    </span><span class="c1">//            {</span>
+<span class="w">    </span><span class="c1">//                if (ImPlot::BeginPlot(&quot;My Plot&quot;, widget_size)) {</span>
+<span class="w">    </span><span class="c1">//                    ImPlot::PlotLine(&quot;My Line&quot;, x.data(), y.data(), 1000);</span>
+<span class="w">    </span><span class="c1">//                    ImPlot::EndPlot();</span>
+<span class="w">    </span><span class="c1">//                }</span>
+<span class="w">    </span><span class="c1">//            };</span>
+<span class="w">    </span><span class="c1">//            widget_size = widget_with_resize_handle(&quot;plot&quot;, myWidgetFunction);</span>
+<span class="w">    </span><span class="c1">//        }</span>
+<span class="w">    </span><span class="n">ImVec2</span><span class="w"> </span><span class="nf">WidgetWithResizeHandle</span><span class="p">(</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
+<span class="w">        </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">widgetGuiFunction</span><span class="p">,</span>
+<span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">handleSizeEm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">,</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">VoidFunction</span><span class="o">&gt;</span><span class="w"> </span><span class="n">onItemResized</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">,</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">VoidFunction</span><span class="o">&gt;</span><span class="w"> </span><span class="n">onItemHovered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span>
+<span class="w">        </span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="handling-screens-with-high-dpi">
 <h1>Handling screens with high DPI<a class="headerlink" href="#handling-screens-with-high-dpi" title="Permalink to this heading">#</a></h1>
-<p><em>Note: This part is relevant only for more advanced usages. If you use <code class="docutils literal notranslate"><span class="pre">HelloImGui::LoadFont()</span></code>, and always use <code class="docutils literal notranslate"><span class="pre">HelloImGui::EmToVec2()</span></code> to place widgets, you do not need to worry about DPI handling</em></p>
-<section id="details-on-dpi-handling-on-different-os">
-<h2>Details on DPI handling on different OS<a class="headerlink" href="#details-on-dpi-handling-on-different-os" title="Permalink to this heading">#</a></h2>
-<p>Let’s consider screen whose physical pixel resolution is 3600x2000, but which will displayed with a scaling factor of 200%, so that widgets do not look too small on it.</p>
-<p>The way it is handled depends on the OS:</p>
-<ul class="simple">
-<li><p>On MacOS, the screen will be seen as having a resolution of 1800x1000, and the OS handles the resizing by itself.</p></li>
-<li><p>On Linux, and on Windows if the application is DPI aware, the screen will be seen as having a resolution of 3600x2000.</p></li>
-<li><p>On Windows if the application is not DPI aware, the screen will be seen as having a resolution of 1800x1000</p></li>
-</ul>
-<p>By default, if using the glfw backend, applications will be Dpi aware under windows.
-Sdl applications are normally not Dpi aware. However HelloImGui makes them Dpi aware when using the sdl backend.</p>
-</section>
-<section id="dpi-aware-font-scaling">
-<h2>Dpi aware Font scaling<a class="headerlink" href="#dpi-aware-font-scaling" title="Permalink to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">HelloImGui::LoadFont()</span></code> will load fonts with the correct size, taking into account the DPI scaling.</p>
-<p>If you prefer to use <code class="docutils literal notranslate"><span class="pre">ImGui::GetIO().Fonts-&gt;AddFontFromFileTTF()</span></code>, there are two things to know:</p>
+<p><em>Note: This part is relevant only for more advanced usages. If you use <code class="docutils literal notranslate"><span class="pre">HelloImGui::LoadFont()</span></code>,
+and always use <code class="docutils literal notranslate"><span class="pre">HelloImGui::EmToVec2()</span></code> to place widgets, you do not need to worry about DPI handling</em></p>
+<section id="os-specificities">
+<h2>OS specificities<a class="headerlink" href="#os-specificities" title="Permalink to this heading">#</a></h2>
+<p>There are several important things to know about high-DPI handling within Hello ImGui and Dear ImGui:</p>
 <ol class="arabic simple">
-<li><p>You should adjust <code class="docutils literal notranslate"><span class="pre">ImGui::GetIO().FontGlobalScale</span></code>:</p></li>
+<li><p>(virtual) screen coordinates vs (physical) pixels</p></li>
+<li><p>DisplayFramebufferScale: Frame buffer size vs window size</p></li>
+<li><p>FontGlobalScale: display-time font scaling factor</p></li>
+<li><p>How to load fonts with the correct size</p></li>
+<li><p>How to get similar window sizes on different OSes/DPI</p></li>
 </ol>
-<p>Under windows and linux, it should be is 1: no rescaling should be done by ImGui.
-Under macOS and emscripten, it may need to bet set to 0.5 (for example it will be 0.5 if the dpi scaling is 200%
-on a macOS retina screen)</p>
-<p><code class="docutils literal notranslate"><span class="pre">HelloImGui::ImGuiDefaultFontGlobalScale()</span></code> returns the default value that should be stored inside <code class="docutils literal notranslate"><span class="pre">ImGui::GetIO().FontGlobalScale</span></code>.</p>
-<ol class="arabic simple" start="2">
-<li><p>You should adjust the font size when loading a font:</p></li>
-</ol>
-<p><code class="docutils literal notranslate"><span class="pre">HelloImGui::DpiFontLoadingFactor()</span></code> returns a factor by which you shall multiply your font sizes when loading them.</p>
-<p><code class="docutils literal notranslate"><span class="pre">HelloImGui::DpiFontLoadingFactor()</span></code> corresponds to:
-<code class="docutils literal notranslate"><span class="pre">DpiWindowSizeFactor()</span> <span class="pre">*</span> <span class="pre">1.f</span> <span class="pre">/</span> <span class="pre">ImGui::GetIO().FontGlobalScale</span></code></p>
-<p>where DpiWindowSizeFactor() is equal to <code class="docutils literal notranslate"><span class="pre">CurrentScreenPixelPerInch</span> <span class="pre">/</span> <span class="pre">96</span></code>
-under windows and linux, 1 under macOS</p>
+</section>
+<section id="screen-coordinates">
+<h2>Screen coordinates<a class="headerlink" href="#screen-coordinates" title="Permalink to this heading">#</a></h2>
+<p>Screen coordinates are the coordinates you use to place and size windows on the screen.</p>
+<p><strong>Screen coordinates do not always correspond to physical pixels</strong></p>
+<ul class="simple">
+<li><p>On macOS/iOS retina screens, a screen coordinate corresponds typically
+to 2x2 physical pixels (but this may vary if you change the display scaling)</p></li>
+<li><p>On most Linux distributions, whenever there is a high DPI screen
+you can set the display scale. For example if you set the scale to 300%,
+then a screen coordinate will correspond to 3x3 physical pixels</p></li>
+<li><p>On Windows, there are two possible situations:</p>
+<ul>
+<li><p>If the application is DPI aware, a screen coordinate corresponds to 1x1 physical pixel,
+and you can use the full extent of your screen resolution.</p></li>
+<li><p>If the application is not DPI aware, a screen coordinate may correspond to 2x2 physical pixels
+(if the display scaling is set to 200% for example). However, the rendering of your application
+will be blurry and will not use the full extent of your screen resolution.</p></li>
+<li><p>Notes:</p>
+<ul>
+<li><p>Applications created with HelloImGui are DPI aware by default (when using glfw and sdl backends).</p></li>
+<li><p>SDL applications are normally not DPI aware. However, HelloImGui makes them DPI aware.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="displayframebufferscale">
+<h2>DisplayFramebufferScale<a class="headerlink" href="#displayframebufferscale" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">DisplayFramebufferScale</span></code> is the ratio between the frame buffer size and the window size.</p>
+<p>The frame buffer size is the size of the internal buffer used by the rendering backend.
+It might be bigger than the actual window size.
+<code class="docutils literal notranslate"><span class="pre">ImVec2</span> <span class="pre">ImGui::GetIO().DisplayFramebufferScale</span></code> is a factor by which the frame buffer size is bigger than the window size.
+It is set by the platform backend after it was initialized, and typically reflects the scaling ratio between
+physical pixels and screen coordinates.</p>
+<p>Under windows, it will always be (1,1). Under macOS / linux, it will reflect the current display scaling.
+It will typically be (2,2) on a macOS retina screen.</p>
+<p>Notes:</p>
+<ul class="simple">
+<li><p>You cannot change DisplayFramebufferScale manually, it will be reset at each new frame, by asking the platform backend.</p></li>
+</ul>
+</section>
+<section id="fontglobalscale">
+<h2>FontGlobalScale<a class="headerlink" href="#fontglobalscale" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ImGui::GetIO().FontGlobalScale</span></code> is a factor by which fonts glyphs should be scaled at rendering time.
+It is typically 1 on windows, and 0.5 on macOS retina screens.</p>
+</section>
+<section id="how-to-load-fonts-with-the-correct-size">
+<h2>How to load fonts with the correct size<a class="headerlink" href="#how-to-load-fonts-with-the-correct-size" title="Permalink to this heading">#</a></h2>
+<section id="using-helloimgui-recommended">
+<h3>Using HelloImGui (recommended)<a class="headerlink" href="#using-helloimgui-recommended" title="Permalink to this heading">#</a></h3>
+<p><a class="reference external" href="https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts"><code class="docutils literal notranslate"><span class="pre">HelloImGui::LoadFont()</span></code> and <code class="docutils literal notranslate"><span class="pre">HelloImGui::LoadFontDpiResponsive</span></code></a> will load fonts
+with the correct size, taking into account the DPI scaling.</p>
+</section>
+<section id="using-dear-imgui">
+<h3>Using Dear ImGui<a class="headerlink" href="#using-dear-imgui" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ImGui::GetIO().Fonts-&gt;AddFontFromFileTTF()</span></code> loads a font with a given size, in <em>physical pixels</em>.</p>
+<p>If for example, DisplayFramebufferScale is (2,2), and you load a font with a size of 16, it will by default be rendered
+with size of 16 <em>virtual screen coordinate pixels</em> (i.e. 32 physical pixels). This will lead to blurry text.
+To solve this, you should load your font with a size of 16 <em>virtual screen coordinate pixels</em> (i.e. 32 physical pixels),
+and set <code class="docutils literal notranslate"><span class="pre">ImGui::GetIO().FontGlobalScale</span></code> to 0.5.</p>
+<p>Helpers if using <code class="docutils literal notranslate"><span class="pre">ImGui::GetIO().Fonts-&gt;AddFontFromFileTTF()</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">HelloImGui::ImGuiDefaultFontGlobalScale()</span></code> returns the default value that should be stored inside <code class="docutils literal notranslate"><span class="pre">ImGui::GetIO().FontGlobalScale</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HelloImGui::DpiFontLoadingFactor()</span></code> returns a factor by which you shall multiply your font sizes when loading them.</p></li>
+</ul>
+</section>
+</section>
+<section id="reproducible-physical-window-sizes-in-mm-or-inches">
+<h2>Reproducible physical window sizes (in mm or inches)<a class="headerlink" href="#reproducible-physical-window-sizes-in-mm-or-inches" title="Permalink to this heading">#</a></h2>
+<section id="using-helloimgui">
+<h3>Using HelloImGui<a class="headerlink" href="#using-helloimgui" title="Permalink to this heading">#</a></h3>
+<p>Simply specify a window size that corresponds to theoretical 96 PPI screen (inside <code class="docutils literal notranslate"><span class="pre">RunnerParams.appWindowParams.windowGeometry.size</span></code>)</p>
+</section>
+<section id="using-your-own-code-to-create-the-backend-window">
+<h3>Using your own code to create the backend window<a class="headerlink" href="#using-your-own-code-to-create-the-backend-window" title="Permalink to this heading">#</a></h3>
+<p>If you prefer to create the window by yourself, its physical size in millimeters may vary widely,
+depending on the OS and the current screen DPI setting.
+Typically under Windows, your window may appear to be very small if your screen is high DPI.</p>
+<p>To get a similar window size on different OSes/DPI, you should multiply the window size by <code class="docutils literal notranslate"><span class="pre">HelloImGui::DpiWindowSizeFactor()</span></code>.</p>
+<p>Note: DpiWindowSizeFactor() is equal to <code class="docutils literal notranslate"><span class="pre">CurrentScreenPixelPerInch</span> <span class="pre">/</span> <span class="pre">96</span></code> under windows and linux, and always 1 under macOS.</p>
+</section>
+</section>
+<section id="fine-tune-dpi-handling">
+<h2>Fine tune DPI Handling<a class="headerlink" href="#fine-tune-dpi-handling" title="Permalink to this heading">#</a></h2>
+<p>See <a class="reference external" href="https://pthom.github.io/hello_imgui/book/doc_params.html#dpi-aware-params"><code class="docutils literal notranslate"><span class="pre">HelloImGui::DpiAwareParams</span></code></a>
+for more information on how to fine tune DPI handling when using Hello ImGui.</p>
 </section>
 </section>
 
@@ -871,20 +1062,20 @@ under windows and linux, 1 under macOS</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="get_started.html"
+       href="doc_params.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Get started</p>
+        <p class="prev-next-title">Application parameters</p>
       </div>
     </a>
     <a class="right-next"
-       href="doc_params.html"
+       href="build.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Application parameters</p>
+        <p class="prev-next-title">Build instructions</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -922,9 +1113,27 @@ under windows and linux, 1 under macOS</p>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-hello-imgui-menus">Customize Hello ImGui Menus</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-widgets">Additional Widgets</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inputtextresizable">InputTextResizable</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#widgetwithresizehandle">WidgetWithResizeHandle</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-screens-with-high-dpi">Handling screens with high DPI</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#details-on-dpi-handling-on-different-os">Details on DPI handling on different OS</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dpi-aware-font-scaling">Dpi aware Font scaling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#os-specificities">OS specificities</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#screen-coordinates">Screen coordinates</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#displayframebufferscale">DisplayFramebufferScale</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fontglobalscale">FontGlobalScale</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-load-fonts-with-the-correct-size">How to load fonts with the correct size</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-helloimgui-recommended">Using HelloImGui (recommended)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-dear-imgui">Using Dear ImGui</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-physical-window-sizes-in-mm-or-inches">Reproducible physical window sizes (in mm or inches)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-helloimgui">Using HelloImGui</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-your-own-code-to-create-the-backend-window">Using your own code to create the backend window</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fine-tune-dpi-handling">Fine tune DPI Handling</a></li>
 </ul>
 </li>
 </ul>

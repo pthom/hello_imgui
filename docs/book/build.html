@@ -66,7 +66,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'build';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Application parameters" href="doc_params.html" />
+    <link rel="prev" title="API" href="doc_api.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -178,17 +178,19 @@ const thebe_selector_output = ".output, .cell_output"
         </ul>
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="get_started.html">Get started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_params.html">Application parameters</a></li>
+
+
+
+
+
+
+
+
+
 <li class="toctree-l1"><a class="reference internal" href="doc_api.html">API</a></li>
 
 
-
-
-
-
-
-
-
-<li class="toctree-l1"><a class="reference internal" href="doc_params.html">Application parameters</a></li>
 
 
 
@@ -480,6 +482,12 @@ make<span class="w"> </span>-j
 <span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_HAS_VULKAN</span><span class="w"> </span><span class="s2">&quot;Use Vulkan as a rendering backend&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
 <span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_HAS_DIRECTX11</span><span class="w"> </span><span class="s2">&quot;Use DirectX11 as a rendering backend&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
 <span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_HAS_DIRECTX12</span><span class="w"> </span><span class="s2">&quot;Use DirectX12 as a rendering backend&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+
+<span class="c"># Headless mode: by default, HelloImGui&#39;s cmake tooling will always check that there is at least one</span>
+<span class="c"># rendering backend and one platform backend that is not a &quot;Null&quot; backend.</span>
+<span class="c"># If you set HELLOIMGUI_HEADLESS, you can disable this check, and compile HelloImGui,</span>
+<span class="c"># using only the Null rendering/platform backends.</span>
+<span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_HEADLESS</span><span class="w"> </span><span class="s2">&quot;Allow headless mode (will use Null rendering/platform backend)&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In order to select your own backend, use one of the afore mentioned backend combinations, for example:</p>
@@ -673,12 +681,12 @@ python3<span class="w"> </span>-m<span class="w"> </span>http.server
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="doc_params.html"
+       href="doc_api.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Application parameters</p>
+        <p class="prev-next-title">API</p>
       </div>
     </a>
 </div>

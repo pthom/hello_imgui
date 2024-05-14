@@ -66,8 +66,8 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'doc_params';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Build instructions" href="build.html" />
-    <link rel="prev" title="API" href="doc_api.html" />
+    <link rel="next" title="API" href="doc_api.html" />
+    <link rel="prev" title="Get started" href="get_started.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -179,17 +179,19 @@ const thebe_selector_output = ".output, .cell_output"
         </ul>
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="get_started.html">Get started</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Application parameters</a></li>
+
+
+
+
+
+
+
+
+
 <li class="toctree-l1"><a class="reference internal" href="doc_api.html">API</a></li>
 
 
-
-
-
-
-
-
-
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Application parameters</a></li>
 
 
 
@@ -395,6 +397,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Application parameters</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#diagram">Diagram</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#runnerparams">RunnerParams</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-runner-params">Simple runner params</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-params">Full params</a><ul class="nav section-nav flex-column">
@@ -448,8 +451,23 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="application-parameters">
 <h1>Application parameters<a class="headerlink" href="#application-parameters" title="Permalink to this heading">#</a></h1>
-<p><em>RunnerParams</em> contains all the settings and callbacks in order to run an application.
-The diagram below summarize all the possible settings and callbacks (which are explained in detail later in this document).</p>
+<p><strong>HelloImGui::Run()</strong> will run an application with a single call.</p>
+<p>Three signatures are provided:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">HelloImGui::Run(RunnerParams</span> <span class="pre">&amp;)</span></code>: full signature, the most customizable version.
+Runs an application whose params and Gui are provided by runnerParams.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HelloImGui::Run(const</span> <span class="pre">SimpleRunnerParams&amp;)</span></code>:
+Runs an application, using simpler params.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HelloImGui::Run(guiFunction,</span> <span class="pre">windowTitle,</span> <span class="pre">windowSize,</span> <span class="pre">windowSizeAuto=false,</span> <span class="pre">restoreLastWindowGeometry=false,</span> <span class="pre">fpsIdle=10)</span></code>
+Runs an application, by providing the Gui function, the window title, etc.</p></li>
+</ul>
+<p>Although the API is extremely simple, it is highly customizable, and you can set many options by filling
+the elements in the <code class="docutils literal notranslate"><span class="pre">RunnerParams</span></code> struct, or in the simpler  <code class="docutils literal notranslate"><span class="pre">SimpleRunnerParams</span></code>.</p>
+<p><strong>HelloImGui::GetRunnerParams()</strong>  will return the runnerParams of the current application.</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="diagram">
+<h1>Diagram<a class="headerlink" href="#diagram" title="Permalink to this heading">#</a></h1>
+<p>The diagram below summarize all the possible settings and callbacks (which are explained in detail later in this document).</p>
 <p><a class="reference external" href="https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg"><img alt="diagram" src="https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg" /></a></p>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="runnerparams">
@@ -492,6 +510,8 @@ The diagram below summarize all the possible settings and callbacks (which are e
 
 <span class="w">    </span><span class="c1">// `windowSize`: _ScreenSize, default={800, 600}_.</span>
 <span class="w">    </span><span class="c1">//  Size of the window</span>
+<span class="w">    </span><span class="c1">// The size will be handled as if it was specified for a 96PPI screen</span>
+<span class="w">    </span><span class="c1">// (i.e. a given size will correspond to the same physical size on different screens, whatever their DPI)</span>
 <span class="w">    </span><span class="n">ScreenSize</span><span class="w"> </span><span class="n">windowSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DefaultWindowSize</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// `fpsIdle`: _float, default=9_.</span>
@@ -572,7 +592,6 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="n">RendererBackendType</span><span class="w"> </span><span class="n">rendererBackendType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RendererBackendType</span><span class="o">::</span><span class="n">FirstAvailable</span><span class="p">;</span>
 
 
-
 <span class="w">    </span><span class="c1">// --------------- Settings -------------------</span>
 
 <span class="w">    </span><span class="c1">// `iniFolderType`: _IniFolderType, default = IniFolderType::CurrentFolder_</span>
@@ -635,6 +654,10 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="c1">// Set the application refresh rate</span>
 <span class="w">    </span><span class="c1">// (only used on emscripten: 0 stands for &quot;let the app or the browser decide&quot;)</span>
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">emscripten_fps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cp">#ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY</span>
+<span class="w">    </span><span class="n">RemoteParams</span><span class="w"> </span><span class="n">remoteParams</span><span class="p">;</span><span class="w"> </span><span class="c1">// Parameters for Remote display (experimental, unsupported)</span>
+<span class="w">    </span><span class="cp">#endif</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -650,6 +673,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="n">FirstAvailable</span><span class="p">,</span>
 <span class="w">    </span><span class="n">Glfw</span><span class="p">,</span>
 <span class="w">    </span><span class="n">Sdl</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Null</span>
 <span class="p">};</span>
 
 <span class="c1">// Rendering backend type (OpenGL3, Metal, Vulkan, DirectX11, DirectX12)</span>
@@ -662,6 +686,7 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="n">Vulkan</span><span class="p">,</span>
 <span class="w">    </span><span class="n">DirectX11</span><span class="p">,</span>
 <span class="w">    </span><span class="n">DirectX12</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Null</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -1012,6 +1037,8 @@ The diagram below summarize all the possible settings and callbacks (which are e
 
 <span class="w">    </span><span class="c1">// Size of the application window</span>
 <span class="w">    </span><span class="c1">// used if fullScreenMode==NoFullScreen and sizeAuto==false. Default=(800, 600)</span>
+<span class="w">    </span><span class="c1">// The size will be handled as if it was specified for a 96PPI screen</span>
+<span class="w">    </span><span class="c1">// (i.e. a given size will correspond to the same physical size on different screens, whatever their DPI)</span>
 <span class="w">    </span><span class="n">ScreenSize</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DefaultWindowSize</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// If sizeAuto=true, adapt the app window size to the presented widgets.</span>
@@ -1231,6 +1258,10 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="c1">//  refresh needs)</span>
 <span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">fpsIdle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">9.f</span><span class="p">;</span>
 
+<span class="w">    </span><span class="c1">// `timeActiveAfterLastEvent`: _float, default=3.f_.</span>
+<span class="w">    </span><span class="c1">//  Time in seconds after the last event before the application is considered idling.</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">timeActiveAfterLastEvent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.f</span><span class="p">;</span>
+
 <span class="w">    </span><span class="c1">// `enableIdling`: _bool, default=true_.</span>
 <span class="w">    </span><span class="c1">//  Disable idling by setting this to false.</span>
 <span class="w">    </span><span class="c1">//  (this can be changed dynamically during execution)</span>
@@ -1250,7 +1281,8 @@ The diagram below summarize all the possible settings and callbacks (which are e
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="dpi-aware-params">
 <h1>Dpi Aware Params<a class="headerlink" href="#dpi-aware-params" title="Permalink to this heading">#</a></h1>
-<p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/dpi_aware.h">dpi_aware.h</a></p>
+<p>Optionally, DPI parameters can be fine-tuned. For detailed info, see <a class="reference external" href="https://pthom.github.io/hello_imgui/book/doc_api.html#handling-screens-with-high-dpi">handling screens with high dpi</a></p>
+<p>Source: <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/dpi_aware.h">dpi_aware.h</a></p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//</span>
 <span class="c1">// Hello ImGui will try its best to automatically handle DPI scaling for you.</span>
 <span class="c1">// It does this by setting two values:</span>
@@ -1281,11 +1313,15 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="c1">//     dpiWindowSizeFactor=2</span>
 <span class="c1">//     fontRenderingScale=0.5</span>
 <span class="c1">//</span>
+<span class="c1">// For more information, see the documentation on DPI handling, here: https://pthom.github.io/hello_imgui/book/doc_api.html#handling-screens-with-high-dpi</span>
+<span class="c1">//</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">DpiAwareParams</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="c1">// `dpiWindowSizeFactor`</span>
-<span class="w">    </span><span class="c1">//        factor by which window size should be multiplied to get a similar</span>
-<span class="w">    </span><span class="c1">//        visible size on different OSes.</span>
+<span class="w">    </span><span class="c1">//     factor by which window size should be multiplied to get a similar</span>
+<span class="w">    </span><span class="c1">//     physical size on different OSes (as if they were all displayed on a 96 PPI screen).</span>
+<span class="w">    </span><span class="c1">//     This affects the size of native app windows,</span>
+<span class="w">    </span><span class="c1">//     but *not* imgui Windows, and *not* the size of widgets and text.</span>
 <span class="w">    </span><span class="c1">//  In a standard environment (i.e. outside of Hello ImGui), an application with a size of 960x480 pixels,</span>
 <span class="w">    </span><span class="c1">//  may have a physical size (in mm or inches) that varies depending on the screen DPI, and the OS.</span>
 <span class="w">    </span><span class="c1">//</span>
@@ -1300,17 +1336,29 @@ The diagram below summarize all the possible settings and callbacks (which are e
 <span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">dpiWindowSizeFactor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// `fontRenderingScale`</span>
-<span class="w">    </span><span class="c1">//     factor (that is either 1 or &lt; 1.) by which fonts glyphs should be</span>
-<span class="w">    </span><span class="c1">//     scaled at rendering time.</span>
-<span class="w">    </span><span class="c1">//     On macOS retina screens, it will be 0.5, since macOS APIs hide</span>
-<span class="w">    </span><span class="c1">//     the real resolution of the screen.</span>
+<span class="w">    </span><span class="c1">//     factor (that is either 1 or &lt; 1.) by which fonts glyphs should be scaled at rendering time.</span>
+<span class="w">    </span><span class="c1">//  On macOS retina screens, it will be 0.5, since macOS APIs hide the real resolution of the screen.</span>
+<span class="w">    </span><span class="c1">//  Changing this value will *not* change the visible font size on the screen, however it will</span>
+<span class="w">    </span><span class="c1">//  affect the size of the loaded glyphs.</span>
+<span class="w">    </span><span class="c1">//  For example, if fontRenderingScale=0.5 (which is the default on a macOS retina screen),</span>
+<span class="w">    </span><span class="c1">//  a font size of 16 will be loaded as if it was 32, and will be rendered at half size.</span>
+<span class="w">    </span><span class="c1">//   This leads to a better rendering quality on some platforms.</span>
+<span class="w">    </span><span class="c1">// (This parameter will be used to set ImGui::GetIO().FontGlobalScale at startup)</span>
 <span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">fontRenderingScale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">;</span>
 
+<span class="w">	</span><span class="c1">// `onlyUseFontDpiResponsive`</span>
+<span class="w">	</span><span class="c1">// If true, guarantees that only HelloImGui::LoadDpiResponsiveFont will be used to load fonts.</span>
+<span class="w">	</span><span class="c1">// (also for the default font)</span>
+<span class="w">	</span><span class="kt">bool</span><span class="w"> </span><span class="n">onlyUseFontDpiResponsive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
 <span class="w">    </span><span class="c1">// `dpiFontLoadingFactor`</span>
-<span class="w">    </span><span class="c1">//      factor by which font size should be multiplied at loading time to get a similar</span>
-<span class="w">    </span><span class="c1">//      visible size on different OSes.</span>
-<span class="w">    </span><span class="c1">//      The size will be equivalent to a size given for a 96 PPI screen</span>
-<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="nf">DpiFontLoadingFactor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">dpiWindowSizeFactor</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">fontRenderingScale</span><span class="p">;};</span>
+<span class="w">    </span><span class="c1">//     factor by which font size should be multiplied at loading time to get a similar</span>
+<span class="w">    </span><span class="c1">//     visible size on different OSes.</span>
+<span class="w">    </span><span class="c1">//  The size will be equivalent to a size given for a 96 PPI screen</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="nf">DpiFontLoadingFactor</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dpiWindowSizeFactor</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">fontRenderingScale</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">r</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
 <span class="p">};</span>
 
 <span class="c1">// ----------------------------------------------------------------------------</span>
@@ -1710,6 +1758,10 @@ specifies the list of dockable windows, along with their default location, and t
 <span class="w">    </span><span class="c1">// Only available on Metal, if your display supports it.</span>
 <span class="w">    </span><span class="c1">// Before setting this to true, first check `hasEdrSupport()`</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">requestFloatBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// `openGlOptions`:</span>
+<span class="w">    </span><span class="c1">// Advanced options for OpenGL. Use at your own risk.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">OpenGlOptions</span><span class="o">&gt;</span><span class="w"> </span><span class="n">openGlOptions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">;</span>
 <span class="p">};</span>
 
 
@@ -1755,20 +1807,20 @@ specifies the list of dockable windows, along with their default location, and t
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="doc_api.html"
+       href="get_started.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">API</p>
+        <p class="prev-next-title">Get started</p>
       </div>
     </a>
     <a class="right-next"
-       href="build.html"
+       href="doc_api.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Build instructions</p>
+        <p class="prev-next-title">API</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1789,6 +1841,7 @@ specifies the list of dockable windows, along with their default location, and t
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Application parameters</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#diagram">Diagram</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#runnerparams">RunnerParams</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-runner-params">Simple runner params</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-params">Full params</a><ul class="nav section-nav flex-column">

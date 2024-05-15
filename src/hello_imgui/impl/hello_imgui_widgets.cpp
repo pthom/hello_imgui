@@ -174,6 +174,8 @@ namespace HelloImGui
             textInput->SizeEm = newSize;
         else
             textInput->SizeEm.x = newSize.x;
+        if (textInput->SizeEm.x < 1.f)
+            textInput->SizeEm.x = 1.f;
 
         if (!labelIsHidden)
         {

@@ -18,7 +18,7 @@ class AbstractRunner
 {
 public:
     explicit AbstractRunner(RunnerParams &params_);
-    virtual ~AbstractRunner() = default;
+    virtual ~AbstractRunner();
 
     RunnerParams & params;
 

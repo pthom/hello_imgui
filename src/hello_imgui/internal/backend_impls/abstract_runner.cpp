@@ -84,8 +84,29 @@ bool _reloadAllDpiResponsiveFonts();
 bool ShouldRemoteDisplay();
 
 
+struct AbstractRunnerStatics
+{
+    std::string lastLoadedLayout;
+    bool isFirstLayoutSwitch = true;
+    bool lastHiddenState = false;
+    double timeLastEvent = -1.;
+    double lastRefreshTime = 0.;
+};
+
+static AbstractRunnerStatics gStatics;
+
+static void ResetAbstractRunnerStatics() { gStatics = AbstractRunnerStatics(); }
+
+
+
 AbstractRunner::AbstractRunner(RunnerParams &params_)
 : params(params_) {}
+
+
+AbstractRunner::~AbstractRunner()
+{
+    ResetAbstractRunnerStatics();
+}
 
 
 #ifndef USEHACK
@@ -449,10 +470,9 @@ void AbstractRunner::LayoutSettings_SwitchLayout(const std::string& layoutName)
 
     // if we previously loaded another layout, save its settings before changing
     {
-        static bool isFirstLayoutSwitch = true;
-        if (! isFirstLayoutSwitch)
+        if (! gStatics.isFirstLayoutSwitch)
             LayoutSettings_Save();
-        isFirstLayoutSwitch = false;
+        gStatics.isFirstLayoutSwitch = false;
     }
 
     if (layoutName.empty())
@@ -481,11 +501,10 @@ void AbstractRunner::LayoutSettings_SwitchLayout(const std::string& layoutName)
 // Those Layout_XXX functions are called before ImGui::NewFrame()
 void AbstractRunner::LayoutSettings_HandleChanges()
 {
-    static std::string lastLoadedLayout;
-    if (params.dockingParams.layoutName != lastLoadedLayout)
+    if (params.dockingParams.layoutName != gStatics.lastLoadedLayout)
     {
         LayoutSettings_Load();
-        lastLoadedLayout = params.dockingParams.layoutName;
+        gStatics.lastLoadedLayout = params.dockingParams.layoutName;
     }
 }
 void AbstractRunner::LayoutSettings_Load()
@@ -936,8 +955,6 @@ void AbstractRunner::CreateFramesAndRender()
         }
 
 
-        static bool lastHiddenState = false;
-
         // v/   At the 4th frame (mIdxFrame >= 3), we finally show the window
         if (mIdxFrame == 3)
         {
@@ -945,14 +962,14 @@ void AbstractRunner::CreateFramesAndRender()
                 mBackendWindowHelper->HideWindow(mWindow);
             else
                 mBackendWindowHelper->ShowWindow(mWindow);
-            lastHiddenState = params.appWindowParams.hidden;
+            gStatics.lastHiddenState = params.appWindowParams.hidden;
         }
         // On subsequent frames, we take into account user modifications of appWindowParams.hidden
         if (mIdxFrame > 3)
         {
-            if (params.appWindowParams.hidden != lastHiddenState)
+            if (params.appWindowParams.hidden != gStatics.lastHiddenState)
             {
-                lastHiddenState = params.appWindowParams.hidden;
+                gStatics.lastHiddenState = params.appWindowParams.hidden;
                 if (params.appWindowParams.hidden)
                     mBackendWindowHelper->HideWindow(mWindow);
                 else
@@ -976,11 +993,10 @@ void AbstractRunner::CreateFramesAndRender()
 
         // Keep track of the time of the last event,
         // by counting the number of events in the input queue
-        static double timeLastEvent = ImGui::GetTime();
         int nbEventsBefore = ImGui::GetCurrentContext()->InputEventsQueue.size();
         // If the last event is recent, do not idle
         double now = ImGui::GetTime();
-        bool preventIdling = (now - timeLastEvent < (double)params.fpsIdling.timeActiveAfterLastEvent);
+        bool preventIdling = (now - gStatics.timeLastEvent < (double)params.fpsIdling.timeActiveAfterLastEvent);
 
         #ifndef __EMSCRIPTEN__
         // Idling for non emscripten, where HelloImGui is responsible for the main loop.
@@ -1004,7 +1020,7 @@ void AbstractRunner::CreateFramesAndRender()
 
         int nbEventsAfter = ImGui::GetCurrentContext()->InputEventsQueue.size();
         if (nbEventsAfter > nbEventsBefore)
-            timeLastEvent = ImGui::GetTime();
+            gStatics.timeLastEvent = ImGui::GetTime();
 
     } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
@@ -1178,7 +1194,6 @@ bool AbstractRunner::ShallIdleThisFrame_Emscripten()
         return false;
     }
 
-    static double lastRefreshTime = 0.;
     double now = Internal::ClockSeconds();
 
     bool shallIdleThisFrame;
@@ -1191,7 +1206,7 @@ bool AbstractRunner::ShallIdleThisFrame_Emscripten()
         else
         {
             params.fpsIdling.isIdling = true;
-            if ((now - lastRefreshTime) < 1. / params.fpsIdling.fpsIdle)
+            if ((now - gStatics.lastRefreshTime) < 1. / params.fpsIdling.fpsIdle)
                 shallIdleThisFrame = true;
             else
                 shallIdleThisFrame = false;
@@ -1199,7 +1214,7 @@ bool AbstractRunner::ShallIdleThisFrame_Emscripten()
     }
 
     if (! shallIdleThisFrame)
-        lastRefreshTime = now;
+        gStatics.lastRefreshTime = now;
 
     return shallIdleThisFrame;
 }

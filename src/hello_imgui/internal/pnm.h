@@ -27,9 +27,9 @@
 #error "pnm++ is a library for C++."
 #endif
 
-//#if __cplusplus < 201103L
-//#error "pnm++ requires C++11 or later."
-//#endif
+#if __cplusplus < 201103L
+#error "pnm++ requires C++11 or later."
+#endif
 
 #include <cctype>
 #include <type_traits>
@@ -421,22 +421,22 @@ namespace pnm
             bool operator<(const line_proxy& rhs) const noexcept
             {
                 return this->nx_ == rhs.nx_ && this->container_ == rhs.container_ &&
-                       this->iy_ <  rhs.ny_;
+                       this->iy_ <  rhs.iy_;
             }
             bool operator>(const line_proxy& rhs) const noexcept
             {
                 return this->nx_ == rhs.nx_ && this->container_ == rhs.container_ &&
-                       this->iy_ >  rhs.ny_;
+                       this->iy_ >  rhs.iy_;
             }
             bool operator<=(const line_proxy& rhs) const noexcept
             {
                 return this->nx_ == rhs.nx_ && this->container_ == rhs.container_ &&
-                       this->iy_ <= rhs.ny_;
+                       this->iy_ <= rhs.iy_;
             }
             bool operator>=(const line_proxy& rhs) const noexcept
             {
                 return this->nx_ == rhs.nx_ && this->container_ == rhs.container_ &&
-                       this->iy_ >= rhs.ny_;
+                       this->iy_ >= rhs.iy_;
             }
 
         private:
@@ -510,22 +510,22 @@ namespace pnm
             bool operator<(const const_line_proxy& rhs) const noexcept
             {
                 return this->nx_ == rhs.nx_ && this->container_ == rhs.container_ &&
-                       this->iy_ <  rhs.ny_;
+                       this->iy_ <  rhs.iy_;
             }
             bool operator>(const const_line_proxy& rhs) const noexcept
             {
                 return this->nx_ == rhs.nx_ && this->container_ == rhs.container_ &&
-                       this->iy_ >  rhs.ny_;
+                       this->iy_ >  rhs.iy_;
             }
             bool operator<=(const const_line_proxy& rhs) const noexcept
             {
                 return this->nx_ == rhs.nx_ && this->container_ == rhs.container_ &&
-                       this->iy_ <= rhs.ny_;
+                       this->iy_ <= rhs.iy_;
             }
             bool operator>=(const const_line_proxy& rhs) const noexcept
             {
                 return this->nx_ == rhs.nx_ && this->container_ == rhs.container_ &&
-                       this->iy_ >= rhs.ny_;
+                       this->iy_ >= rhs.iy_;
             }
 
         private:
@@ -1043,7 +1043,7 @@ namespace pnm
         {
             if     (max == 255){return std::unique_ptr<identity>(new identity());}
             else if(max >  255){return std::unique_ptr<reduce>  (new reduce(max));}
-            else               {return std::unique_ptr<enlarge> (new enlarge(static_cast<std::uint8_t>(max)));}
+            else               {return std::unique_ptr<enlarge> (new enlarge(max));}
         }
 
         namespace literals
@@ -1067,7 +1067,6 @@ namespace pnm
     template<typename Alloc = std::allocator<bit_pixel>>
     image<bit_pixel, Alloc> read_pbm_ascii(const std::string& fname)
     {
-        // using namespace detail::literals;
         using namespace detail::literals;
 
         std::ifstream ifs(fname);

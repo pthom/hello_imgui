@@ -1,6 +1,14 @@
 Version numbers are synced between hello_imgui and imgui_bundle.
 
-# v1.5.0
+# v1.5.0-rc1
+
+* Add DpiAwareParams: see [doc](https://pthom.github.io/hello_imgui/book/doc_params.html#dpi-aware-params)
+* Add HelloImGui::ImageAndSizeFromAsset see [doc](https://pthom.github.io/hello_imgui/book/doc_api.html#display-images-from-assets)
+* callbacks.LoadAdditionalFonts can be modified and reused during execution
+* add null backend (see https://pthom.github.io/hello_imgui/book/doc_params.html#backend-selection)
+* Add [optional OpenGlOptions](https://github.com/pthom/hello_imgui/blob/98f241df2b43bb2b3191ab150c2b1a21b30c7031/src/hello_imgui/renderer_backend_options.h#L9-L56) 
+* Add widgets InputTextResizable + WidgetWithResizeHandle: see [doc](https://pthom.github.io/hello_imgui/book/doc_api.html#additional-widgets)
+* Add HelloImGui::LoadDpiResponsiveFont: see [doc](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts)
 
 #### Add FontAwesome options with support for FontAwesome 4 and FontAwesome 6:
 

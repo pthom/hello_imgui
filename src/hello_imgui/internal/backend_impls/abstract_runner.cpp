@@ -834,6 +834,9 @@ void AbstractRunner::RenderGui()
 
     Theme_WindowGui(params.imGuiWindowParams.tweakedTheme);
 
+    if (params.callbacks.PostRenderDockableWindows)
+        params.callbacks.PostRenderDockableWindows();
+
     DockingDetails::CloseWindowOrDock(params.imGuiWindowParams);
 }
 

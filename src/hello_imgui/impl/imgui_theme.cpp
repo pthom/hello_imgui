@@ -6,6 +6,7 @@
 //
 #include "hello_imgui/imgui_theme.h"
 #include <string>
+#include <stack>
 
 namespace ImGuiTheme
 {
@@ -969,6 +970,26 @@ namespace ImGuiTheme
     {
         ImGui::GetStyle() = TweakedThemeThemeToStyle(tweaked_theme);
     }
+
+    std::stack<ImGuiStyle> gPreviousStyles_PushTweakedTheme;
+
+    void PushTweakedTheme(const ImGuiTweakedTheme& tweaked_theme)
+    {
+        gPreviousStyles_PushTweakedTheme.push(ImGui::GetStyle());
+        ApplyTweakedTheme(tweaked_theme);
+
+        bool tooManyThemes = gPreviousStyles_PushTweakedTheme.size() > 10;
+        if (tooManyThemes)
+            IM_ASSERT(false && "Too many PushTweakedTheme() calls without matching PopTweakedTheme()");
+    }
+
+    void PopTweakedTheme()
+    {
+        IM_ASSERT(!gPreviousStyles_PushTweakedTheme.empty());
+        ImGui::GetStyle() = gPreviousStyles_PushTweakedTheme.top();
+        gPreviousStyles_PushTweakedTheme.pop();
+    }
+
 
     bool _ShowThemeSelector(ImGuiTheme_* theme)
     {

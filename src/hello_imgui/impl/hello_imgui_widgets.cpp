@@ -164,18 +164,28 @@ namespace HelloImGui
             else
             {
                 ImGui::SetNextItemWidth(HelloImGui::EmSize(textInput->SizeEm.x));
-                changed = ImGui::InputText(inputLabel.c_str(), &textInput->Text);
+                if (textInput->Hint.empty())
+                    changed = ImGui::InputText(inputLabel.c_str(), &textInput->Text);
+                else
+                    changed = ImGui::InputTextWithHint(inputLabel.c_str(), textInput->Hint.c_str(), &textInput->Text);
             }
         };
 
-        ImVec2 newSizePixels = HelloImGui::WidgetWithResizeHandle(label, gui_cb, 0.8f);
-        ImVec2 newSize = HelloImGui::PixelsToEm(newSizePixels);
-        if (textInput->Multiline)
-            textInput->SizeEm = newSize;
+        if (textInput->Resizable)
+        {
+            ImVec2 newSizePixels = HelloImGui::WidgetWithResizeHandle(label, gui_cb, 0.8f);
+            ImVec2 newSize = HelloImGui::PixelsToEm(newSizePixels);
+            if (textInput->Multiline)
+                textInput->SizeEm = newSize;
+            else
+                textInput->SizeEm.x = newSize.x;
+            if (textInput->SizeEm.x < 1.f)
+                textInput->SizeEm.x = 1.f;
+        }
         else
-            textInput->SizeEm.x = newSize.x;
-        if (textInput->SizeEm.x < 1.f)
-            textInput->SizeEm.x = 1.f;
+        {
+            gui_cb();
+        }
 
         if (!labelIsHidden)
         {

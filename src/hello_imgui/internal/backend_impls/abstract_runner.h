@@ -114,6 +114,14 @@ private:
     int mIdxFrame = 0;
     bool mWasWindowAutoResizedOnPreviousFrame = false;
 
+    // Differentiate between cases where the window was resized by code
+    // and cases where the window was resized by the user
+    // (in which we have a gotcha, because PollEvents() will *block*
+    // until the user releases the mouse button)
+    bool mWasWindowResizedByCodeDuringThisFrame = false;
+    std::function<void()> setWasWindowResizedByCodeDuringThisFrame =
+        [&]() { mWasWindowResizedByCodeDuringThisFrame = true; };
+
     // Callbacks related to the rendering backend (OpenGL, ...)
     RenderingCallbacksPtr mRenderingBackendCallbacks;
 

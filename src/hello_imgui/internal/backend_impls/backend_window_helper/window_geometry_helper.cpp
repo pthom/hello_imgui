@@ -148,7 +148,9 @@ namespace HelloImGui
     ///////////////////////////////
 
 
-    void WindowGeometryHelper::TrySetWindowSize(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window, ImVec2 userWidgetsSize)
+    void WindowGeometryHelper::TrySetWindowSize(
+        BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window, ImVec2 userWidgetsSize,
+        std::function<void()> fnBeforeChangingWindowBounds)
     {
         int widgetsMargin = 6;
 
@@ -162,6 +164,7 @@ namespace HelloImGui
         auto windowBounds = backendWindowHelper->GetWindowBounds(window);
         windowBounds.size = computedSize;
 
+        fnBeforeChangingWindowBounds();
         backendWindowHelper->SetWindowBounds(window, windowBounds);
     }
 
@@ -206,7 +209,9 @@ namespace HelloImGui
         return bestMonitorIdx;
     }
 
-    void WindowGeometryHelper::EnsureWindowFitsMonitor(BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window)
+    void WindowGeometryHelper::EnsureWindowFitsMonitor(
+        BackendApi::IBackendWindowHelper *backendWindowHelper, BackendApi::WindowPointer window,
+        std::function<void()> fnBeforeChangingWindowBounds)
     {
         auto currentMonitorWorkArea = GetCurrentMonitorWorkArea(backendWindowHelper, window);
 
@@ -219,17 +224,20 @@ namespace HelloImGui
         auto currentWindowBoundsNew = currentMonitorWorkArea.EnsureWindowFitsThisMonitor(currentWindowBounds);
         if ( !(currentWindowBoundsNew == currentWindowBounds))
         {
+            fnBeforeChangingWindowBounds();
             backendWindowHelper->SetWindowBounds(window, currentWindowBoundsNew);
         }
     }
 
-    void WindowGeometryHelper::CenterWindowOnMonitor(BackendApi::IBackendWindowHelper* backendWindowHelper, BackendApi::WindowPointer window)
+    void WindowGeometryHelper::CenterWindowOnMonitor(
+        BackendApi::IBackendWindowHelper* backendWindowHelper, BackendApi::WindowPointer window,
+        std::function<void()> fnBeforeChangingWindowBounds)
     {
         ScreenBounds windowBounds = backendWindowHelper->GetWindowBounds(window);
         ScreenBounds currentMonitorWorkArea = GetCurrentMonitorWorkArea(backendWindowHelper, window);
         ScreenPosition newWindowPosition = currentMonitorWorkArea.WinPositionCentered(windowBounds.size);
         windowBounds.position = newWindowPosition;
+        fnBeforeChangingWindowBounds();
         backendWindowHelper->SetWindowBounds(window, windowBounds);
     }
-
 }

@@ -7,8 +7,8 @@ namespace HelloImGui
     // This function is called by the backend to handle borderless movable windows
     // it returns true if the window should be closed
     bool HandleBorderlessMovable(
-        BackendApi::WindowPointer window,
-        BackendApi::IBackendWindowHelper * backendWindowHelper,
+        std::function<ScreenBounds()> fnGetWindowBounds,
+        std::function<void(ScreenBounds)> fnSetWindowBounds,
         const HelloImGui::RunnerParams& runnerParams
     );
 }

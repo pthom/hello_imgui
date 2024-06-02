@@ -7,8 +7,8 @@
 namespace HelloImGui
 {
     bool HandleBorderlessMovable(
-        BackendApi::WindowPointer window,
-        BackendApi::IBackendWindowHelper * backendWindowHelper,
+        std::function<ScreenBounds()> fnGetWindowBounds,
+        std::function<void(ScreenBounds)> fnSetWindowBounds,
         const HelloImGui::RunnerParams& runnerParams
         )
     {
@@ -78,10 +78,10 @@ namespace HelloImGui
                     mouseDragLastPos = mousePos - dragDelta;
                 }
 
-                auto windowBounds = backendWindowHelper->GetWindowBounds(window);
+                auto windowBounds = fnGetWindowBounds();
                 windowBounds.position[0] += (int)(dragDelta.x);
                 windowBounds.position[1] += (int)(dragDelta.y);
-                backendWindowHelper->SetWindowBounds(window, windowBounds);
+                fnSetWindowBounds(windowBounds);
             }
 
             // Set mouse cursor: probably not visible for moving (the cursor will be the classic arrow)
@@ -181,7 +181,7 @@ namespace HelloImGui
             {
                 ImVec2 dragDelta = ImGui::GetMouseDragDelta(0);
                 ImGui::ResetMouseDragDelta(0);
-                auto windowBounds = backendWindowHelper->GetWindowBounds(window);
+                auto windowBounds = fnGetWindowBounds();
                 windowBounds.size[0] += (int)dragDelta.x;
                 windowBounds.size[1] += (int)dragDelta.y;
                 if (windowBounds.size[0] < minAcceptableWindowSize)
@@ -194,7 +194,7 @@ namespace HelloImGui
                     windowBounds.size[1] = minAcceptableWindowSize;
                     isDragging = false;
                 }
-                backendWindowHelper->SetWindowBounds(window, windowBounds);
+                fnSetWindowBounds(windowBounds);
                 ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
             }
 
@@ -202,7 +202,7 @@ namespace HelloImGui
             // and they are then impossible to resize! So we force a minimum size here:
             {
                 bool tooSmall = false;
-                auto windowBounds = backendWindowHelper->GetWindowBounds(window);
+                auto windowBounds = fnGetWindowBounds();
                 if (windowBounds.size[0] < minAcceptableWindowSize)
                 {
                     windowBounds.size[0] = minAcceptableWindowSize;
@@ -214,7 +214,7 @@ namespace HelloImGui
                     tooSmall = true;
                 }
                 if (tooSmall)
-                    backendWindowHelper->SetWindowBounds(window, windowBounds);
+                    fnSetWindowBounds(windowBounds);
             }
 
             // Set mouse cursor: (not visible under glfw < 3.4, which does not implement this cursor)

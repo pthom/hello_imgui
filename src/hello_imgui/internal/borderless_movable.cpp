@@ -184,7 +184,6 @@ namespace HelloImGui
                 auto windowBounds = backendWindowHelper->GetWindowBounds(window);
                 windowBounds.size[0] += (int)dragDelta.x;
                 windowBounds.size[1] += (int)dragDelta.y;
-                printf("windowBounds.size = %d x %d\n", windowBounds.size[0], windowBounds.size[1]);
                 if (windowBounds.size[0] < minAcceptableWindowSize)
                 {
                     windowBounds.size[0] = minAcceptableWindowSize;

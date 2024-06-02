@@ -6,8 +6,25 @@
 
 namespace HelloImGui { namespace BackendApi
 {
-    WindowPointer GlfwWindowHelper::CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions)
+    std::function<void()> gRenderCallbackDuringResize_Glfw;
+
+    static void FramebufferSizeCallback(GLFWwindow*, int width, int height)
     {
+        // Not used, since WindowSizeCallback is called right after.
+    }
+    static void WindowSizeCallback(GLFWwindow* window, int width, int height)
+    {
+        if (gRenderCallbackDuringResize_Glfw)
+            gRenderCallbackDuringResize_Glfw();
+    }
+
+
+
+    WindowPointer GlfwWindowHelper::CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions,
+                                                 std::function<void()> renderCallbackDuringResize)
+    {
+        gRenderCallbackDuringResize_Glfw = renderCallbackDuringResize;
+
         auto searchMonitorResult = SearchForMonitor(GetMonitorsWorkAreas(), appWindowParams);
         int realMonitorIdx = searchMonitorResult.monitorIdx;
         if (searchMonitorResult.newPosition.has_value())
@@ -125,6 +142,8 @@ namespace HelloImGui { namespace BackendApi
         glfwGetWindowSize(window, &windowSize[0], &windowSize[1]);
         glfwGetWindowPos(window, &windowPosition[0], &windowPosition[1]);
 
+        glfwSetWindowSizeCallback(window, WindowSizeCallback);
+        glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
         // printf("Final window size: %ix%i\n", windowSize[0], windowSize[1]);
         // printf("Final window position: %ix%i\n", windowPosition[0], windowPosition[1]);
 

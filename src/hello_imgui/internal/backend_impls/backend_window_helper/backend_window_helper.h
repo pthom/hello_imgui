@@ -43,7 +43,15 @@ namespace HelloImGui { namespace BackendApi
         // It is only a class in order to enforce a consistent API between backends.
     public:
         virtual ~IBackendWindowHelper() = default;
-        virtual WindowPointer CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions) = 0;
+
+        // renderCallbackDuringResize is a callback that will be called during window resizing.
+        // to trigger a render
+        // This is due to severe gotcha inside GLFW and SDL: PollEvent is supposed to
+        // return immediately, but it doesn't when resizing the window!
+        // Instead, you have to subscribe to a kind of special "mid-resize" event,
+        // and then call the render function yourself.
+        virtual WindowPointer CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions,
+                                           std::function<void()> renderCallbackDuringResize) = 0;
 
         // The area of a monitor not occupied by global task bars or menu bars is the work area.
         // This is specified in screen coordinates.

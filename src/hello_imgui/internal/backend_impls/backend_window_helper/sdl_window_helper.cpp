@@ -15,8 +15,28 @@
 
 namespace HelloImGui { namespace BackendApi
 {
-    WindowPointer SdlWindowHelper::CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions)
+    std::function<void()> gRenderCallbackDuringResize_Sdl;
+
+    static int resizingEventWatcher(void* data, SDL_Event* event)
     {
+        if (event->type == SDL_WINDOWEVENT &&
+            event->window.event == SDL_WINDOWEVENT_RESIZED) {
+            SDL_Window* win = SDL_GetWindowFromID(event->window.windowID);
+            if (win == (SDL_Window*)data) {
+                printf("resizingEventWatcher: resizing.....\n");
+                if (gRenderCallbackDuringResize_Sdl)
+                    gRenderCallbackDuringResize_Sdl();
+            }
+        }
+        return 0;
+    }
+
+
+    WindowPointer SdlWindowHelper::CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions,
+                                                std::function<void()> renderCallbackDuringResize)
+    {
+        gRenderCallbackDuringResize_Sdl = renderCallbackDuringResize;
+
         #ifdef _WIN32
             if (backendOptions.dpiAwareSdl)
                 Internal::ImGui_ImplWin32_EnableDpiAwareness();
@@ -138,6 +158,9 @@ namespace HelloImGui { namespace BackendApi
 
         // printf("Final window size: %ix%i\n", windowSize[0], windowSize[1]);
         // printf("Final window position: %ix%i\n", windowPosition[0], windowPosition[1]);
+
+        SDL_AddEventWatch(resizingEventWatcher, window);
+
 
         return (void *)(window);
     }

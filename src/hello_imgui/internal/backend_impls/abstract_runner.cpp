@@ -173,6 +173,7 @@ void AbstractRunner::ChangeWindowSize(HelloImGui::ScreenSize windowSize)
 {
     auto bounds = mBackendWindowHelper->GetWindowBounds(mWindow);
     bounds.size = windowSize;
+    this->setWasWindowResizedByCodeDuringThisFrame();
     mBackendWindowHelper->SetWindowBounds(mWindow, bounds);
 }
 
@@ -437,6 +438,7 @@ void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
                 ForDim2(dim) 
                     bounds.position[dim] = (int)((float)bounds.position[dim] * scaleFactor);
             }
+            setWasWindowResizedByCodeDuringThisFrame();
             mBackendWindowHelper->SetWindowBounds(mWindow, bounds);
         }
     }
@@ -699,7 +701,13 @@ void AbstractRunner::Setup()
     #endif
 
     PrepareWindowGeometry();
-    Impl_CreateWindow();
+
+    auto fnRenderCallbackDuringResize = [this]()
+    {
+        if (! mWasWindowResizedByCodeDuringThisFrame)
+            CreateFramesAndRender(true);
+    };
+    Impl_CreateWindow(fnRenderCallbackDuringResize);
 
     #ifdef HELLOIMGUI_HAS_OPENGL
         if (params.rendererBackendType == RendererBackendType::OpenGL3)
@@ -803,7 +811,17 @@ void AbstractRunner::RenderGui()
     if (params.appWindowParams.borderless) // Need to add params.appWindowParams.borderlessResizable
     {
 #if !defined(HELLOIMGUI_MOBILEDEVICE) && !defined(__EMSCRIPTEN__)
-        bool shouldClose = HandleBorderlessMovable(mWindow, mBackendWindowHelper.get(), params);
+        mWasWindowResizedByCodeDuringThisFrame = false;
+        auto fnGetWindowBounds = [this]() -> ScreenBounds
+        {
+            return mBackendWindowHelper->GetWindowBounds(mWindow);
+        };
+        auto fnSetWindowBounds = [this](const ScreenBounds& bounds)
+        {
+            setWasWindowResizedByCodeDuringThisFrame();
+            mBackendWindowHelper->SetWindowBounds(mWindow, bounds);
+        };
+        bool shouldClose = HandleBorderlessMovable(fnGetWindowBounds, fnSetWindowBounds, params);
         if (shouldClose)
             params.appShallExit = true;
 #endif
@@ -822,8 +840,9 @@ void AbstractRunner::RenderGui()
         {
             ImGui::EndGroup();
             ImVec2 userWidgetsSize = ImGui::GetItemRectSize();
-            mGeometryHelper->TrySetWindowSize(mBackendWindowHelper.get(), mWindow, userWidgetsSize);
-            mWasWindowAutoResizedOnPreviousFrame = true;
+            mGeometryHelper->TrySetWindowSize(
+                mBackendWindowHelper.get(), mWindow, userWidgetsSize,
+                this->setWasWindowResizedByCodeDuringThisFrame);
         }
     }
 
@@ -844,66 +863,51 @@ void AbstractRunner::RenderGui()
 void _UpdateFrameRateStats(); // See hello_imgui.cpp
 
 
-void AbstractRunner::CreateFramesAndRender()
+void AbstractRunner::CreateFramesAndRender(bool skipPollEvents)
 {
-    // Notes:
-    // - this method is rather long, but this is intentional in order to be able to see the logic flow at a glance
-    // - the code is organized in blocks of code that are enclosed by
-    //       if (true) // Block explanation
-    //       {
-    //            ...
-    //       }
-    //   this enables to limit the scope of each block, and enable to collapses them
-    //   when inside an IDE
-    // - Some blocks include a SCOPED_RELEASE_GIL_ON_MAIN_THREAD statement, like this:
-    //       if (true_gil) // block explanation    (`true_gil` is a synonym for "true")
-    //       { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
-    //           SCOPED_RELEASE_GIL_ON_MAIN_THREAD;       // SCOPED_RELEASE_GIL_ON_MAIN_THREAD does nothing if not using python
+
+    // ======================================================================================
+    //                         Introduction - Lambdas definitions
     //
-    //          ... // Block logic that is executed *whenever using Python or not*
+    //    We only define lambdas here. They are called later in this method
     //
-    //       } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
-    //    This means that they will release the Gil for python, and that they should not call
-    //    any user callback (which may call python functions)
-    // -
+    // ======================================================================================
 
-    // `foldable_region` is a synonym for "true" (whenever using Python or not using Python)
-    // (it is here only to make the code more readable, and to enable to collapse blocks of code)
-    constexpr bool foldable_region = true;
+    //
+    // Some lambdas may call user callbacks, and are named with a suffix "UserCallback".
+    // When running in python, they *need* to have the GIL!
+    //
 
-    // Will display on remote server if needed
-    mRemoteDisplayHandler.Heartbeat_PreImGuiNewFrame();
+    // Reload fonts if DPI scale changed
+    auto fnReloadFontsIfDpiScaleChanged = [this]()
+    {
+        if (CheckDpiAwareParamsChanges())
+        {
+            if (_reloadAllDpiResponsiveFonts())
+            {
+                DpiLog("_CheckDpiAwareParamsChanges returned true => reloaded all fonts\n");
+                // cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
+                mRenderingBackendCallbacks->Impl_DestroyFontTexture();
+                mRenderingBackendCallbacks->Impl_CreateFontTexture();
+                mRemoteDisplayHandler.SendFonts();
+            }
+        }
+    };
 
-	if (CheckDpiAwareParamsChanges()) // Reload fonts if DPI scale changed
-	{
-		if (_reloadAllDpiResponsiveFonts())
-		{
-			DpiLog("_CheckDpiAwareParamsChanges returned true => reloaded all fonts\n");
-			// cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
-			mRenderingBackendCallbacks->Impl_DestroyFontTexture();
-			mRenderingBackendCallbacks->Impl_CreateFontTexture();
-
-            mRemoteDisplayHandler.SendFonts();
-		}
-	}
-
-    if (foldable_region) // basic layout checks
-    { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
-        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
-
-
+    auto fnHandleLayout = [this]()
+    {
         LayoutSettings_HandleChanges();
 
-        #if TARGET_OS_IOS
+#if TARGET_OS_IOS
         auto insets = GetIPhoneSafeAreaInsets();
         params.appWindowParams.edgeInsets.top = insets.top;
         params.appWindowParams.edgeInsets.left = insets.left;
         params.appWindowParams.edgeInsets.bottom = insets.bottom;
         params.appWindowParams.edgeInsets.right = insets.right;
-        #endif
-    } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
+#endif
+    };
 
-    if (foldable_region) // Register tests
+    auto fnRegisterTests_UserCallback = [this]()
     {
         #ifdef HELLOIMGUI_WITH_TEST_ENGINE
         // This block calls a user callback, so it cannot be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
@@ -916,12 +920,12 @@ void AbstractRunner::CreateFramesAndRender()
             }
         }
         #endif
-    }
+    };
 
-    if (foldable_region) // handle window size and position on first frames
-    { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
-        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
 
+    // handle window size and position on first frames
+    auto fnHandleWindowSizeAndPositionOnFirstFrames = [this]()
+    {
         // Note about the application window initial placement and sizing
         // i/   On the first frame (mIdxFrame==0), we create a window, and use the user provided size (if provided). The window is initially hidden.
         //      (this was done much sooner by mBackendWindowHelper)
@@ -944,14 +948,14 @@ void AbstractRunner::CreateFramesAndRender()
         {
             // The window was resized on last frame
             // We should now recenter the window if needed and ensure it fits on the monitor
-            mGeometryHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow);
+            mGeometryHelper->EnsureWindowFitsMonitor(mBackendWindowHelper.get(), mWindow, this->setWasWindowResizedByCodeDuringThisFrame);
 
             // if this is the third frame, and the user wanted a centered window, let's recenter it
             // we do this on the third frame (mIdxFrame == 2), since the initial autosize happens on the second
             // (see WantAutoSize())
             if (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::MonitorCenter &&
                 (mIdxFrame == 2))
-                mGeometryHelper->CenterWindowOnMonitor(mBackendWindowHelper.get(), mWindow);
+                mGeometryHelper->CenterWindowOnMonitor(mBackendWindowHelper.get(), mWindow, this->setWasWindowResizedByCodeDuringThisFrame);
 
             mWasWindowAutoResizedOnPreviousFrame = false;
             params.appWindowParams.windowGeometry.resizeAppWindowAtNextFrame = false;
@@ -988,12 +992,18 @@ void AbstractRunner::CreateFramesAndRender()
             mRemoteDisplayHandler.TransmitWindowSizeToDisplay(windowSize);
         }
         #endif
-    }  // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
+    };
 
-    if(foldable_region) // Handle idling
-    { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
-        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
 
+    // Handle idling & poll events
+    // Warning:
+    // Due to severe gotcha inside GLFW and SDL: PollEvent is supposed to
+    // return immediately, but it doesn't when resizing the window!
+    // Instead, you have to subscribe to a kind of special "mid-resize" event,
+    // and then call the render function yourself.
+    // As a consequence,
+    auto fnHandleIdlingAndPollEvents_MayReRenderDuringResize_GotchaReentrant = [this]()
+    {
         // Keep track of the time of the last event,
         // by counting the number of events in the input queue
         int nbEventsBefore = ImGui::GetCurrentContext()->InputEventsQueue.size();
@@ -1009,6 +1019,11 @@ void AbstractRunner::CreateFramesAndRender()
         #endif
 
         // Poll Events (this fills GImGui.InputEventsQueue)
+        // May re-trigger a full call to CreateFramesAndRender(skipPollEvents=true)
+        // if we are in the middle of a window resize!!!
+        // (There is a gotcha in GLFW and SDL, where PollEvent is blocking during a window resize,
+        //  which is circumvented by calling CreateFramesAndRender(skipPollEvents=true)) in a specific callback
+        //  defined during the window creation)
         Impl_PollEvents();
 
         #ifdef __EMSCRIPTEN__
@@ -1025,16 +1040,13 @@ void AbstractRunner::CreateFramesAndRender()
         if (nbEventsAfter > nbEventsBefore)
             gStatics.timeLastEvent = ImGui::GetTime();
 
-    } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
+    };
 
-	if (foldable_region) // Update frame rate stats
-	{
-		_UpdateFrameRateStats();
-		// printf("Render frame %i, fps=%.1f\n", mIdxFrame, HelloImGui::FrameRate());
-	}
 
-	if (foldable_region) // Load additional fonts during execution
+    // Load additional fonts during execution
+    auto fnLoadAdditionalFontDuringExecution_UserCallback = [this]()
     {
+        // This block calls a user callback, so it cannot be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
         if (params.callbacks.LoadAdditionalFonts != nullptr)
         {
             params.callbacks.LoadAdditionalFonts();
@@ -1047,18 +1059,15 @@ void AbstractRunner::CreateFramesAndRender()
 
             mRemoteDisplayHandler.SendFonts();
         }
-    }
+    };
 
     //
     // Rendering logic
     //
-    if (params.callbacks.PreNewFrame)
-        params.callbacks.PreNewFrame();
 
-    if (foldable_region)  // New Frame / Rendering and Platform Backend (not ImGui)
-    { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
-        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
-
+    // New Frame / Rendering and Platform Backend (not ImGui)
+    auto fnNewFrameRenderingAndPlatformBackend = [this]()
+    {
         mRenderingBackendCallbacks->Impl_NewFrame_3D();
         Impl_NewFrame_PlatformBackend();
 
@@ -1073,13 +1082,11 @@ void AbstractRunner::CreateFramesAndRender()
                 io.DeltaTime = 1.f / 60.f;
         }
 
-    } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
+    };
 
-    // ImGui::NewFrame may call ImGuiTestEngine_PostNewFrame, which in turn handles the GIL in its own way,
-    // so that it can *NOT* be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
-    ImGui::NewFrame();
 
-    if (true) // check potential OpenGL error on first frame, that may be due to a font loading error
+    // check potential OpenGL error on first frame, that may be due to a font loading error
+    auto fnCheckOpenGlErrorOnFirstFrame_WarnPotentialFontError = [this]()
     {
         #ifdef HELLOIMGUI_HAS_OPENGL
         if (params.rendererBackendType == RendererBackendType::OpenGL3)
@@ -1094,26 +1101,23 @@ void AbstractRunner::CreateFramesAndRender()
             }
         }
         #endif
-    }
+    };
 
-    // CustomBackground is a user callback
-    if (params.callbacks.CustomBackground)
-        params.callbacks.CustomBackground();
-    else
-        mRenderingBackendCallbacks->Impl_Frame_3D_ClearColor(params.imGuiWindowParams.backgroundColor);
 
-    // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size, if the user required auto size
-    // ==> Note: RenderGui() may measure the size of the window and resize it if mIdxFrame==1
-    // RenderGui may call many user callbacks, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
-    RenderGui();
+    auto fnDrawCustomBackgroundOrClearColor_UserCallback = [this]()
+    {
+        // This block calls a user callback, so it cannot be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
+        // CustomBackground is a user callback
+        if (params.callbacks.CustomBackground)
+            params.callbacks.CustomBackground();
+        else
+            mRenderingBackendCallbacks->Impl_Frame_3D_ClearColor(params.imGuiWindowParams.backgroundColor);
+    };
 
-    if (params.callbacks.BeforeImGuiRender)
-        params.callbacks.BeforeImGuiRender();
 
-    if (foldable_region) // Render and Swap
-    { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
-        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
-
+    // Render and Swap
+    auto fnRenderAndSwap = [this]()
+    {
         ImGui::Render();
         mRenderingBackendCallbacks->Impl_RenderDrawData_To_3D();
 
@@ -1123,20 +1127,149 @@ void AbstractRunner::CreateFramesAndRender()
         Impl_SwapBuffers();
 
         mRemoteDisplayHandler.Heartbeat_PostImGuiRender();
-    } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
+    };
 
-    // AfterSwap is a user callback, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
-    if (params.callbacks.AfterSwap)
-        params.callbacks.AfterSwap();
+    // fnRenderGui_UserCallback calls RenderGui(), which may call many user callbacks
+    auto fnRenderGui_UserCallback = [this]()
+    {
+         RenderGui();
+    };
 
-    #ifdef HELLOIMGUI_WITH_TEST_ENGINE
+    auto fnCallTestEngineCallbackPostSwap = [this]()
+    {
+#ifdef HELLOIMGUI_WITH_TEST_ENGINE
         // TestEngineCallbacks::PostSwap() handles the GIL in its own way,
         // it can not be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
         if (params.useImGuiTestEngine)
         {
             TestEngineCallbacks::PostSwap();
         }
-    #endif
+#endif
+    };
+
+    // ======================================================================================
+    //                         Real work - Lambdas calls
+    //
+    //    Below, we call the lambdas defined above
+    //
+    // ======================================================================================
+    //
+    // They are two important gotchas to know here
+    // 1. ImGui test engine & coroutine threading
+    // 2. Possible reentrance into this function when resizing the window
+    //    (see fnHandleIdlingAndPollEvents_MayReRenderDuringResize_GotchaReentrant)
+    //
+    //
+    // 1. Gotcha due to the integration of ImGui Test Engine in Python:
+    // ----------------------------------------------------------------
+    //   Within ImGui test engine there are two threads!
+    //   One thread is the main thread, and the second is the "coroutine" thread.
+    //   They run like a coroutine and actually will never run in parallel!
+    //   However, when running Python some python code may be called
+    //      - in the main thread (standard user callbacks)
+    //      - in the coroutine thread (ImGui test engine callbacks)!
+    //
+    // We have to be very, very careful about passing correctly the GIL between threads,
+    // since Python needs the GIL to be acquired on the correct thread
+    //
+    // Some blocks below include a SCOPED_RELEASE_GIL_ON_MAIN_THREAD
+    // This means that they will release the GIL on the main thread,
+    // allowing for a potential execution of Python on the coroutine thread.
+    //
+    // Inside these blocks, it is strictly forbidden to call any user callback
+    // (since they might run Python code on the main thread)
+    //
+    //    // For more details, see
+    //    //     external/imgui_test_engine/imgui_test_engine/imgui_test_engine/imgui_te_python_gil.jpg
+    //
+    // Also, two ImGui methods handle the test engine and its coroutine + thread switches:
+    //  => They should not be in a block SCOPED_RELEASE_GIL_ON_MAIN_THREAD
+    //      ImGui::NewFrame();
+    //      TestEngineCallbacks::PostSwap
+    // And fnHandleIdlingAndPollEvents_MayReRenderDuringResize_GotchaReentrant
+    // shall also not be in a block SCOPED_RELEASE_GIL_ON_MAIN_THREAD
+    // (see second gotcha below)
+    //
+    //
+    // 2. Gotcha / possible re-entrance into this function when resizing the window
+    // -----------------------------------------------------------------------------
+    // There is a severe gotcha inside GLFW and SDL: PollEvent is supposed to
+    // return immediately, but it doesn't when resizing the window!
+    // If you do nothing, the window content is "stretching" during the resize
+    // but not update is done.
+    // Instead, you have to subscribe to a kind of special "mid-resize" event,
+    // and then call the render function yourself.
+    //
+    // See IBackendWindowHelper::CreateWindow(AppWindowParams &info, const BackendOptions& backendOptions,
+    //                                           std::function<void()> renderCallbackDuringResize) = 0;
+    // Where renderCallbackDuringResize is set to CreateFramesAndRender(skipPollEvents=true)
+
+    // Will display on remote server if needed
+    mRemoteDisplayHandler.Heartbeat_PreImGuiNewFrame();
+
+    {
+        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
+        fnReloadFontsIfDpiScaleChanged();
+        fnHandleLayout();
+    }
+
+    fnRegisterTests_UserCallback();
+
+    {
+        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
+        fnHandleWindowSizeAndPositionOnFirstFrames();
+    }
+
+    // Handle idling & poll events
+    // Warning:
+    // Due to severe gotcha inside GLFW and SDL: PollEvent is supposed to
+    // return immediately, but it doesn't when resizing the window!
+    // Instead, you have to subscribe to a kind of special "mid-resize" event,
+    // and then call the render function yourself.
+    if (!skipPollEvents)
+        fnHandleIdlingAndPollEvents_MayReRenderDuringResize_GotchaReentrant();
+
+    _UpdateFrameRateStats(); // not in a SCOPED_RELEASE_GIL_ON_MAIN_THREAD, because it is very fast
+
+    fnLoadAdditionalFontDuringExecution_UserCallback();
+
+    if (params.callbacks.PreNewFrame)
+        params.callbacks.PreNewFrame();
+
+    {
+        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
+        fnNewFrameRenderingAndPlatformBackend();
+    }
+
+    // ImGui::NewFrame may call ImGuiTestEngine_PostNewFrame, which in turn handles the GIL in its own way,
+    // so that it can *NOT* be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
+    ImGui::NewFrame();
+
+    fnCheckOpenGlErrorOnFirstFrame_WarnPotentialFontError(); // not in a SCOPED_RELEASE_GIL_ON_MAIN_THREAD, because it is very fast and rare
+
+    fnDrawCustomBackgroundOrClearColor_UserCallback();
+
+    // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size,
+    // if the user required auto size
+    // ==> Note: RenderGui() may measure the size of the window and resize it if mIdxFrame==1
+    // RenderGui may call many user callbacks, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
+    fnRenderGui_UserCallback();
+
+    if (params.callbacks.BeforeImGuiRender)
+        params.callbacks.BeforeImGuiRender();
+
+    {
+        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
+        fnRenderAndSwap();
+    }
+
+    // AfterSwap is a user callback, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
+    if (params.callbacks.AfterSwap)
+        params.callbacks.AfterSwap();
+
+    // TestEngineCallbacks::PostSwap() handles the GIL in its own way,
+    // it can not be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
+    fnCallTestEngineCallbackPostSwap();
 
     if (!mRemoteDisplayHandler.CanQuitApp())
         params.appShallExit = false;

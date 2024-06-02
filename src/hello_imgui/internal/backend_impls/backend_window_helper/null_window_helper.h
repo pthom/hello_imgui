@@ -18,7 +18,8 @@ namespace HelloImGui { namespace BackendApi
         // Note: this is a fake class, it has no member
         // It is only a class in order to enforce a consistent API between backends.
     public:
-        WindowPointer CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions) override {
+        WindowPointer CreateWindow(AppWindowParams &appWindowParams, const BackendOptions& backendOptions,
+                                   std::function<void()> gRenderCallbackDuringResize) override {
             mWindowBounds.size = appWindowParams.windowGeometry.size;
             return nullptr;
         }

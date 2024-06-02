@@ -25,7 +25,7 @@ public:
     virtual void Run(); // Only overriden in emscripten
 
     void Setup();
-    void CreateFramesAndRender();
+    void CreateFramesAndRender(bool skipPollEvents = false);
     void RenderGui();
     void TearDown(bool gotException);
 
@@ -59,7 +59,7 @@ protected:
     // Methods related to the platform backend (SDL, Glfw, ...)
     //
     virtual void Impl_InitPlatformBackend() = 0;
-    virtual void Impl_CreateWindow() = 0;
+    virtual void Impl_CreateWindow(std::function<void()> renderCallbackDuringResize) = 0;
     virtual void Impl_PollEvents() = 0;
     virtual void Impl_NewFrame_PlatformBackend() = 0;
     virtual void Impl_UpdateAndRenderAdditionalPlatformWindows() = 0;
@@ -113,6 +113,14 @@ private:
     bool mPotentialFontLoadingError = false;
     int mIdxFrame = 0;
     bool mWasWindowAutoResizedOnPreviousFrame = false;
+
+    // Differentiate between cases where the window was resized by code
+    // and cases where the window was resized by the user
+    // (in which we have a gotcha, because PollEvents() will *block*
+    // until the user releases the mouse button)
+    bool mWasWindowResizedByCodeDuringThisFrame = false;
+    std::function<void()> setWasWindowResizedByCodeDuringThisFrame =
+        [&]() { mWasWindowResizedByCodeDuringThisFrame = true; };
 
     // Callbacks related to the rendering backend (OpenGL, ...)
     RenderingCallbacksPtr mRenderingBackendCallbacks;

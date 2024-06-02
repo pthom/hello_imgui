@@ -32,6 +32,7 @@
 #include <SDL.h>
 #include <SDL_main.h>
 #include <sstream>
+#include <functional>
 
 namespace HelloImGui
 {
@@ -72,11 +73,11 @@ namespace HelloImGui
         SDL_SetEventFilter(HandleAppEvents, this);
     }
 
-    void RunnerSdl2::Impl_CreateWindow()
+    void RunnerSdl2::Impl_CreateWindow(std::function<void()> renderCallbackDuringResize)
     {
         BackendApi::BackendOptions backendOptions;
         backendOptions.rendererBackendType = params.rendererBackendType;
-        mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
+        mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions, renderCallbackDuringResize);
         params.backendPointers.sdlWindow = mWindow;
     }
 

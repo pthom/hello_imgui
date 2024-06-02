@@ -22,7 +22,7 @@ namespace HelloImGui
             auto size = NullConfig::GetScreenBounds().size;
             ImGui::GetIO().DisplaySize = ImVec2((float)size[0], (float)size[1]);
         }
-        void Impl_CreateWindow() override {}
+        void Impl_CreateWindow(std::function<void()> renderCallbackDuringResize) override {}
         void Impl_PollEvents() override {}
         void Impl_NewFrame_PlatformBackend() override {}
         void Impl_UpdateAndRenderAdditionalPlatformWindows() override {}

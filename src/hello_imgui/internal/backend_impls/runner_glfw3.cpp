@@ -62,11 +62,11 @@ namespace HelloImGui
         IM_ASSERT(glfwInitSuccess);
     }
 
-    void RunnerGlfw3::Impl_CreateWindow()
+    void RunnerGlfw3::Impl_CreateWindow(std::function<void()> renderCallbackDuringResize)
     {
         BackendApi::BackendOptions backendOptions;
         backendOptions.rendererBackendType = params.rendererBackendType;
-        mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions);
+        mWindow = mBackendWindowHelper->CreateWindow(params.appWindowParams, backendOptions, renderCallbackDuringResize);
         params.backendPointers.glfwWindow = mWindow;
     }
 

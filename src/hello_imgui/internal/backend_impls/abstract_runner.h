@@ -25,7 +25,7 @@ public:
     virtual void Run(); // Only overriden in emscripten
 
     void Setup();
-    void CreateFramesAndRender();
+    void CreateFramesAndRender(bool skipPollEvents = false);
     void RenderGui();
     void TearDown(bool gotException);
 
@@ -59,7 +59,7 @@ protected:
     // Methods related to the platform backend (SDL, Glfw, ...)
     //
     virtual void Impl_InitPlatformBackend() = 0;
-    virtual void Impl_CreateWindow() = 0;
+    virtual void Impl_CreateWindow(std::function<void()> renderCallbackDuringResize) = 0;
     virtual void Impl_PollEvents() = 0;
     virtual void Impl_NewFrame_PlatformBackend() = 0;
     virtual void Impl_UpdateAndRenderAdditionalPlatformWindows() = 0;

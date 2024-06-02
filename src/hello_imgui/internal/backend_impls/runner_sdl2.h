@@ -18,7 +18,7 @@ namespace HelloImGui
         // Methods related to the platform backend (SDL, Glfw, ...)
         //
         void Impl_InitPlatformBackend() override;
-        void Impl_CreateWindow() override;
+        void Impl_CreateWindow(std::function<void()> renderCallbackDuringResize) override;
         void Impl_PollEvents() override;
         void Impl_NewFrame_PlatformBackend() override;
         void Impl_UpdateAndRenderAdditionalPlatformWindows() override;

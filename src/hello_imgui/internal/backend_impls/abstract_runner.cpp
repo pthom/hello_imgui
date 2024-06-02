@@ -699,7 +699,9 @@ void AbstractRunner::Setup()
     #endif
 
     PrepareWindowGeometry();
-    Impl_CreateWindow();
+
+    auto renderCallbackDuringResize = [this]() { CreateFramesAndRender(true); };
+    Impl_CreateWindow(renderCallbackDuringResize);
 
     #ifdef HELLOIMGUI_HAS_OPENGL
         if (params.rendererBackendType == RendererBackendType::OpenGL3)
@@ -844,7 +846,7 @@ void AbstractRunner::RenderGui()
 void _UpdateFrameRateStats(); // See hello_imgui.cpp
 
 
-void AbstractRunner::CreateFramesAndRender()
+void AbstractRunner::CreateFramesAndRender(bool skipPollEvents)
 {
     // Notes:
     // - this method is rather long, but this is intentional in order to be able to see the logic flow at a glance
@@ -865,7 +867,7 @@ void AbstractRunner::CreateFramesAndRender()
     //       } // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
     //    This means that they will release the Gil for python, and that they should not call
     //    any user callback (which may call python functions)
-    // -
+    //
 
     // `foldable_region` is a synonym for "true" (whenever using Python or not using Python)
     // (it is here only to make the code more readable, and to enable to collapse blocks of code)
@@ -990,7 +992,7 @@ void AbstractRunner::CreateFramesAndRender()
         #endif
     }  // SCOPED_RELEASE_GIL_ON_MAIN_THREAD end
 
-    if(foldable_region) // Handle idling
+    if(foldable_region && ! skipPollEvents) // Handle idling & poll events
     { // SCOPED_RELEASE_GIL_ON_MAIN_THREAD start
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
 

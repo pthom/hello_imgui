@@ -14,6 +14,9 @@ namespace HelloImGui { namespace BackendApi
     }
     static void WindowSizeCallback(GLFWwindow* window, int width, int height)
     {
+        return; // Re-entrance into CreateFramesAndRender may break!
+        
+        //printf("WindowSizeCallback: %ix%i\n", width, height);
         if (gRenderCallbackDuringResize_Glfw)
             gRenderCallbackDuringResize_Glfw();
     }

@@ -19,11 +19,12 @@ namespace HelloImGui { namespace BackendApi
 
     static int resizingEventWatcher(void* data, SDL_Event* event)
     {
+        return 0; // Re-entrance into CreateFramesAndRender may break!
+
         if (event->type == SDL_WINDOWEVENT &&
             event->window.event == SDL_WINDOWEVENT_RESIZED) {
             SDL_Window* win = SDL_GetWindowFromID(event->window.windowID);
             if (win == (SDL_Window*)data) {
-                printf("resizingEventWatcher: resizing.....\n");
                 if (gRenderCallbackDuringResize_Sdl)
                     gRenderCallbackDuringResize_Sdl();
             }

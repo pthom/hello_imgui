@@ -705,7 +705,14 @@ void AbstractRunner::Setup()
     auto fnRenderCallbackDuringResize = [this]()
     {
         if (! mWasWindowResizedByCodeDuringThisFrame)
+        {
+            //printf("Window resized by user\n");
             CreateFramesAndRender(true);
+        }
+        else
+        {
+            //printf("Window resized by code\n");
+        }
     };
     Impl_CreateWindow(fnRenderCallbackDuringResize);
 
@@ -863,8 +870,19 @@ void AbstractRunner::RenderGui()
 void _UpdateFrameRateStats(); // See hello_imgui.cpp
 
 
-void AbstractRunner::CreateFramesAndRender(bool skipPollEvents)
+void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 {
+    // Note: the reentrant call is non-existent for most cases:
+    // The preference
+    //    repaintDuringResize_GotchaReentrantRepaint
+    // is false by default. As the name suggests, it is reserved for advanced users
+    // who are ready to deal with the possible consequences.
+    //
+    // This reentrant call is used to be able to repaint during window resize.
+    // It works on some combinations of OS / platform / rendering backends, but not all.
+    // See https://github.com/pthom/hello_imgui/issues/112
+    if (insideReentrantCall && ! params.appWindowParams.repaintDuringResize_GotchaReentrantRepaint)
+        return;
 
     // ======================================================================================
     //                         Introduction - Lambdas definitions
@@ -924,7 +942,7 @@ void AbstractRunner::CreateFramesAndRender(bool skipPollEvents)
 
 
     // handle window size and position on first frames
-    auto fnHandleWindowSizeAndPositionOnFirstFrames = [this]()
+    auto fnHandleWindowSizeAndPositionOnFirstFrames_AndAfterResize = [this]()
     {
         // Note about the application window initial placement and sizing
         // i/   On the first frame (mIdxFrame==0), we create a window, and use the user provided size (if provided). The window is initially hidden.
@@ -1193,6 +1211,7 @@ void AbstractRunner::CreateFramesAndRender(bool skipPollEvents)
     //
     // 2. Gotcha / possible re-entrance into this function when resizing the window
     // -----------------------------------------------------------------------------
+    // See https://github.com/pthom/hello_imgui/issues/112
     // There is a severe gotcha inside GLFW and SDL: PollEvent is supposed to
     // return immediately, but it doesn't when resizing the window!
     // If you do nothing, the window content is "stretching" during the resize
@@ -1213,11 +1232,12 @@ void AbstractRunner::CreateFramesAndRender(bool skipPollEvents)
         fnHandleLayout();
     }
 
+
     fnRegisterTests_UserCallback();
 
     {
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
-        fnHandleWindowSizeAndPositionOnFirstFrames();
+        fnHandleWindowSizeAndPositionOnFirstFrames_AndAfterResize();
     }
 
     // Handle idling & poll events
@@ -1226,14 +1246,20 @@ void AbstractRunner::CreateFramesAndRender(bool skipPollEvents)
     // return immediately, but it doesn't when resizing the window!
     // Instead, you have to subscribe to a kind of special "mid-resize" event,
     // and then call the render function yourself.
-    if (!skipPollEvents)
-        fnHandleIdlingAndPollEvents_MayReRenderDuringResize_GotchaReentrant();
+    if (!insideReentrantCall)  // Do not poll events again in a reentrant call!
+    {
+        // We cannot release the GIL here, since we may have a reentrant call!
+        if (!insideReentrantCall)
+            fnHandleIdlingAndPollEvents_MayReRenderDuringResize_GotchaReentrant();
+    }
 
-    _UpdateFrameRateStats(); // not in a SCOPED_RELEASE_GIL_ON_MAIN_THREAD, because it is very fast
+    {
+        _UpdateFrameRateStats(); // not in a SCOPED_RELEASE_GIL_ON_MAIN_THREAD, because it is very fast
+        fnLoadAdditionalFontDuringExecution_UserCallback(); // User callback
+    }
 
-    fnLoadAdditionalFontDuringExecution_UserCallback();
 
-    if (params.callbacks.PreNewFrame)
+    if ((params.callbacks.PreNewFrame) && !insideReentrantCall)
         params.callbacks.PreNewFrame();
 
     {
@@ -1245,9 +1271,11 @@ void AbstractRunner::CreateFramesAndRender(bool skipPollEvents)
     // so that it can *NOT* be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
     ImGui::NewFrame();
 
-    fnCheckOpenGlErrorOnFirstFrame_WarnPotentialFontError(); // not in a SCOPED_RELEASE_GIL_ON_MAIN_THREAD, because it is very fast and rare
+    {
+        fnCheckOpenGlErrorOnFirstFrame_WarnPotentialFontError(); // not in a SCOPED_RELEASE_GIL_ON_MAIN_THREAD, because it is very fast and rare
 
-    fnDrawCustomBackgroundOrClearColor_UserCallback();
+        fnDrawCustomBackgroundOrClearColor_UserCallback(); // User callback
+    }
 
     // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size,
     // if the user required auto size

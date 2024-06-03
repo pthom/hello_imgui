@@ -25,7 +25,7 @@ public:
     virtual void Run(); // Only overriden in emscripten
 
     void Setup();
-    void CreateFramesAndRender(bool skipPollEvents = false);
+    void CreateFramesAndRender(bool insideReentrantCall = false);
     void RenderGui();
     void TearDown(bool gotException);
 

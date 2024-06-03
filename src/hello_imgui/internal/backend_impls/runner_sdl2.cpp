@@ -84,7 +84,7 @@ namespace HelloImGui
     void RunnerSdl2::Impl_PollEvents()
     {
         SDL_Event event;
-        while (SDL_PollEvent(&event))
+        while    (SDL_PollEvent(&event))
         {
             if (params.callbacks.AnyBackendEventCallback)
             {

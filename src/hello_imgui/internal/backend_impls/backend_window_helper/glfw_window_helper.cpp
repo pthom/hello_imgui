@@ -14,9 +14,11 @@ namespace HelloImGui { namespace BackendApi
     }
     static void WindowSizeCallback(GLFWwindow* window, int width, int height)
     {
-        return; // Re-entrance into CreateFramesAndRender may break!
-        
-        //printf("WindowSizeCallback: %ix%i\n", width, height);
+        // See https://github.com/pthom/hello_imgui/issues/112
+        // This may trigger a reentrant call to
+        //    AbstractRunner::CreateFramesAndRender()
+        // By default, this is disabled.
+        // See pref AppWindowParams.repaintDuringResize_GotchaReentrantRepaint
         if (gRenderCallbackDuringResize_Glfw)
             gRenderCallbackDuringResize_Glfw();
     }

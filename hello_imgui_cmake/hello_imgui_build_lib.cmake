@@ -410,7 +410,7 @@ function(_him_add_freetype_to_imgui)
             endif()
             FetchContent_Declare(
                 freetype
-                GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git
+                GIT_REPOSITORY https://github.com/freetype/freetype.git
                 GIT_TAG        VER-2-13-2
                 GIT_PROGRESS TRUE
             )

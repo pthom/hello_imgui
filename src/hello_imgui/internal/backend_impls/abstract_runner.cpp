@@ -1433,8 +1433,9 @@ void AbstractRunner::TearDown(bool gotException)
 
     HelloImGui::internal::Free_ImageFromAssetMap();
 
-    if (params.callbacks.BeforeExit)
-        params.callbacks.BeforeExit();
+    if (!gotException && params.callbacks.BeforeExit)
+            params.callbacks.BeforeExit();
+
     #ifdef HELLOIMGUI_WITH_TEST_ENGINE
         if (params.useImGuiTestEngine)
             TestEngineCallbacks::TearDown_ImGuiContextAlive();
@@ -1444,7 +1445,7 @@ void AbstractRunner::TearDown(bool gotException)
     Impl_Cleanup();
 
 
-    if (params.callbacks.BeforeExit_PostCleanup)
+    if (!gotException && params.callbacks.BeforeExit_PostCleanup)
         params.callbacks.BeforeExit_PostCleanup();
     #ifdef HELLOIMGUI_WITH_TEST_ENGINE
         if (params.useImGuiTestEngine)

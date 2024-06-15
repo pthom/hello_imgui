@@ -108,6 +108,16 @@ namespace ImGuiTheme
             return r;
         }
 
+        static ImVec4 _ColorSetValue(ImVec4 col, float value)
+        {
+            float h, s, v;
+            ImGui::ColorConvertRGBtoHSV(col.x, col.y, col.z, h, s, v);
+            v = value;
+            ImVec4 r = col;
+            ImGui::ColorConvertHSVtoRGB(h, s, v, r.x, r.y, r.z);
+            return r;
+        }
+
         void _ApplyValueMultiplier(ImGuiStyle& style, float value_multiplier, ImGuiStyle& reference_style, ColorCategory category)
         {
             for (int i = 0; i < ImGuiCol_COUNT; ++i)
@@ -683,7 +693,7 @@ namespace ImGuiTheme
             style.Colors[ImGuiCol_WindowBg] = ImVec4(0.2352941185235977f, 0.2470588237047195f, 0.2549019753932953f, 0.9399999976158142f);
             style.Colors[ImGuiCol_ChildBg] = ImVec4(0.2352941185235977f, 0.2470588237047195f, 0.2549019753932953f, 0.0f);
             style.Colors[ImGuiCol_PopupBg] = ImVec4(0.2352941185235977f, 0.2470588237047195f, 0.2549019753932953f, 0.9399999976158142f);
-            style.Colors[ImGuiCol_Border] = ImVec4(0.3333333432674408f, 0.3333333432674408f, 0.3333333432674408f, 0.5f);
+            style.Colors[ImGuiCol_Border] = ImVec4(0.5333333432674408f, 0.5333333432674408f, 0.5333333432674408f, 0.5f);
             style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.1568627506494522f, 0.1568627506494522f, 0.1568627506494522f, 0.0f);
             style.Colors[ImGuiCol_FrameBg] = ImVec4(0.168627455830574f, 0.168627455830574f, 0.168627455830574f, 0.5400000214576721f);
             style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.4509803950786591f, 0.6745098233222961f, 0.9960784316062927f, 0.6700000166893005f);
@@ -731,6 +741,7 @@ namespace ImGuiTheme
             style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.0f, 1.0f, 1.0f, 0.699999988079071f);
             style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.800000011920929f, 0.800000011920929f, 0.800000011920929f, 0.2000000029802322f);
             style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.800000011920929f, 0.800000011920929f, 0.800000011920929f, 0.3499999940395355f);
+            style.Colors[ImGuiCol_ScrollbarGrabActive].z *= 1.5f;
 
             ThemeTweakImpl::ApplyRounding(style, rounding, 4.f);
             if (hue >= 0)
@@ -860,6 +871,7 @@ namespace ImGuiTheme
             ThemeTweakImpl::ApplyValueMultiplierFront(style, 0.94f, style);
             ThemeTweakImpl::ApplyValueMultiplierBg(style, 7.f, style);
             ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, 0.91f, style);
+            style.Colors[ImGuiCol_FrameBg] = ThemeTweakImpl::_ColorSetValue(style.Colors[ImGuiCol_FrameBg], 0.99f);
             return style;
         }
 

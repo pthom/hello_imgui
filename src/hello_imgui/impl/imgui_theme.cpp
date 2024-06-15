@@ -873,6 +873,8 @@ namespace ImGuiTheme
             ThemeTweakImpl::ApplyValueMultiplierBg(style, 7.f, style);
             ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, 0.91f, style);
             style.Colors[ImGuiCol_FrameBg] = ThemeTweakImpl::_ColorSetValue(style.Colors[ImGuiCol_FrameBg], 0.99f);
+            style.FrameBorderSize = 1.f;
+            style.FrameRounding = 3.f;
             return style;
         }
 

@@ -73,16 +73,13 @@ void SetupDefaultImGuiConfig()
 
 void SetupDefaultImGuiStyle()
 {
-    auto& io = ImGui::GetIO();
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    // ImGui::StyleColorsClassic();
+    // Note: a theme was already applied via ImGuiWindowParams.tweakedTheme
 
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows
     // can look identical to regular ones.
-    ImGuiStyle& style = ImGui::GetStyle();
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
+        ImGuiStyle& style = ImGui::GetStyle();
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }

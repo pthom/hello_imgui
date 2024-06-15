@@ -205,7 +205,7 @@ namespace ImGuiTheme
             colors[ImGuiCol_WindowBg]               = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
             colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
             colors[ImGuiCol_PopupBg]                = ImVec4(0.19f, 0.19f, 0.19f, 0.92f);
-            colors[ImGuiCol_Border]                 = ImVec4(0.19f, 0.19f, 0.19f, 0.29f);
+            colors[ImGuiCol_Border]                 = ImVec4(0.39f, 0.39f, 0.39f, 0.59f);
             colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.24f);
             colors[ImGuiCol_FrameBg]                = ImVec4(0.25f, 0.25f, 0.25f, 0.54f);
             colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
@@ -774,6 +774,7 @@ namespace ImGuiTheme
                 ThemeTweakImpl::_ColorValueMultiply(style.Colors[ImGuiCol_Header], 1.4f);
             style.Colors[ImGuiCol_Text] = ImVec4(0.88f, 0.88f, 0.88f, 1.f);
             style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.6f, 0.6f, 0.6f, 1.f);
+            style.Colors[ImGuiCol_FrameBg] = ImVec4(37.f /  255.f, 31.f /  255.f, 31.f /  255.f, 222.f /  255.f);
             return style;
         }
 
@@ -881,6 +882,7 @@ namespace ImGuiTheme
             ThemeTweakImpl::ApplyValueMultiplierFront(style, 1.356f, style);
             ThemeTweakImpl::ApplyValueMultiplierBg(style, 0.f, style);
             ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, 1.12f, style);
+            style.Colors[ImGuiCol_FrameBg] = ImVec4(27.f / 255.f, 27.f / 255.f, 27.f / 255.f, 231.f / 255.f);
             return style;
         }
     } // namespace ThemesImpl

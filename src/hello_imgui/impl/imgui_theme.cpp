@@ -751,6 +751,9 @@ namespace ImGuiTheme
             ThemeTweakImpl::ApplySaturationMultiplier(style, saturation_multiplier, style);
             ThemeTweakImpl::ApplyAlphaMultiplier(style, alpha_bg_transparency, style);
 
+            style.FrameBorderSize = 1.f;
+            style.FrameRounding = 3.f;
+
             return style;
         }
 

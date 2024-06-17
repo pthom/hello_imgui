@@ -343,7 +343,7 @@ namespace ImGuiTheme
             style.Colors[ImGuiCol_Button] = ImVec4(0.3529411822557449f, 0.4125490242242813f, 0.4417647081613541f, 0.501960813999176f);
             style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.1529411822557449f, 0.1725490242242813f, 0.2117647081613541f, 1.0f);
             style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.3098039329051971f, 0.6235294342041016f, 0.9333333373069763f, 1.0f);
-            style.Colors[ImGuiCol_Header] = ImVec4(0.1529411822557449f, 0.1725490242242813f, 0.2117647081613541f, 1.0f);
+            style.Colors[ImGuiCol_Header] = ImVec4(0.1529411822557449f * 1.5, 0.1725490242242813f  * 1.5, 0.2117647081613541f  * 1.5, 1.0f);
             style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.3098039329051971f, 0.6235294342041016f, 0.9333333373069763f, 0.250980406999588f);
             style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.3098039329051971f, 0.6235294342041016f, 0.9333333373069763f, 1.0f);
             style.Colors[ImGuiCol_Separator] = ImVec4(0.4274509847164154f, 0.4274509847164154f, 0.4980392158031464f, 0.5f);
@@ -754,7 +754,7 @@ namespace ImGuiTheme
             style.FrameBorderSize = 1.f;
             style.FrameRounding = 3.f;
 
-            return style;
+                return style;
         }
 
         ImGuiStyle DarculaDarker()
@@ -888,6 +888,7 @@ namespace ImGuiTheme
             ThemeTweakImpl::ApplyValueMultiplierBg(style, 0.f, style);
             ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, 1.12f, style);
             style.Colors[ImGuiCol_FrameBg] = ImVec4(27.f / 255.f, 27.f / 255.f, 27.f / 255.f, 231.f / 255.f);
+            style.Colors[ImGuiCol_Header] = ImVec4(0.25f, 0.25f, 0.25f, 1.f);
             return style;
         }
     } // namespace ThemesImpl

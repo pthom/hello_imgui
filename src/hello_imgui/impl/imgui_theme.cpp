@@ -1024,9 +1024,11 @@ namespace ImGuiTheme
         ImVec2 listboxSize =  ImVec2(0.f, ImGuiTheme_Count * (ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.y) );
         if (ImGui::BeginListBox("Available_themes", listboxSize))
         {
-            for (int i = 0; i < ImGuiTheme_Count; ++i)
+            int nbThemes = ImGuiTheme_Count;
+            // We start at 3 because we want to place the older themes at the end
+            for (int i = 3; i < nbThemes + 3; ++i)
             {
-                ImGuiTheme_ theme_i = (ImGuiTheme_)(i);
+                ImGuiTheme_ theme_i = (ImGuiTheme_)(i % nbThemes);
                 const bool is_selected = (*theme == theme_i);
                 if (ImGui::Selectable(ImGuiTheme_Name(theme_i), is_selected))
                 {

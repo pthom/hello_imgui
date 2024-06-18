@@ -8,7 +8,7 @@ namespace HelloImGui
     {
         if (gShowTweakWindow)
         {
-            ImGui::SetNextWindowSize(ImVec2(600.f, 600.f), ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowSize(ImVec2(600.f, 750.f), ImGuiCond_FirstUseEver);
             if (ImGui::Begin("Theme Tweaks", &gShowTweakWindow))
             {
                 if (ImGuiTheme::ShowThemeTweakGui(&tweakedTheme))

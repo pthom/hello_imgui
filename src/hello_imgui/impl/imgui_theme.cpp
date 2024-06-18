@@ -1039,6 +1039,7 @@ namespace ImGuiTheme
 
     bool _ShowTweakGui(ImGuiThemeTweaks* tweaks)
     {
+        ImGui::SeparatorText("Main tweaks");
         bool changed = false;
         {
             bool active = tweaks->AlphaMultiplier >= 0;
@@ -1056,7 +1057,6 @@ namespace ImGuiTheme
                 tweaks->AlphaMultiplier = -1.f;
         }
 
-        ImGui::Separator();
         {
             bool active = tweaks->Rounding >= 0;
             if (ImGui::Checkbox("Rounding / all widgets", &active))
@@ -1189,6 +1189,12 @@ Note:
     bool ShowThemeTweakGui(ImGuiTweakedTheme *tweaked_theme)
     {
         bool changed = false;
+
+        static bool showDemoWindow = false;
+        ImGui::Checkbox("Test on ImGui Demo Window", &showDemoWindow);
+        if (showDemoWindow)
+            ImGui::ShowDemoWindow(&showDemoWindow);
+
         if (ImGui::BeginTabBar("Blah"))
         {
             if (ImGui::BeginTabItem("Theme Tweaks"))

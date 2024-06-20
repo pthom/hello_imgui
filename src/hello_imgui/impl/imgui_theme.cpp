@@ -420,8 +420,8 @@ namespace ImGuiTheme
             style.Colors[ImGuiCol_PopupBg] = ImVec4(0.3098039329051971f, 0.3098039329051971f, 0.3098039329051971f, 1.0f);
             style.Colors[ImGuiCol_Border] = ImVec4(0.3627451121807098f, 0.3627451121807098f, 0.3627451121807098f, 0.6f);
             style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-            style.Colors[ImGuiCol_FrameBg] = ImVec4(0.1568627506494522f, 0.1568627506494522f, 0.1568627506494522f, 1.0f);
-            style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.2000000029802322f, 0.2000000029802322f, 0.2000000029802322f, 1.0f);
+            style.Colors[ImGuiCol_FrameBg] = ImVec4(0.1568627506494522f * 1.5, 0.1568627506494522f * 1.5, 0.1568627506494522f * 1.5, 1.0f);
+            style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.1568627506494522f * 1.6, 0.1568627506494522f * 1.6, 0.1568627506494522f * 1.6, 1.0f);
             style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.2784313857555389f, 0.2784313857555389f, 0.2784313857555389f, 1.0f);
             style.Colors[ImGuiCol_TitleBg] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1450980454683304f, 1.0f);
             style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1450980454683304f, 1.0f);

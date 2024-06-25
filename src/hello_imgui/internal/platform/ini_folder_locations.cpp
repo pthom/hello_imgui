@@ -240,6 +240,8 @@ namespace HelloImGui
         {
             case IniFolderType::CurrentFolder:
                 return "";
+            case IniFolderType::AbsolutePath:
+                return "";
             case IniFolderType::AppUserConfigFolder:
                 return GetAppUserConfigFolder();
             case IniFolderType::DocumentsFolder:

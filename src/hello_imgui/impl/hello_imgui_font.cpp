@@ -122,18 +122,6 @@ namespace HelloImGui
             return 1.f;
     }
 
-    // A factor applied to font loading size, to account for HighDPI
-    // so that rendering is comparable on all platforms, given a desired font size
-    static float FontLoadingFactor()
-    {
-        // Possible implementation outside of HelloImGui:
-        // float k = WindowContentScale() * 1.f / ImGui::GetIO().FontGlobalScale;
-        // return k;
-
-        return HelloImGui::DpiFontLoadingFactor();
-    }
-
-
     ImFont* _LoadFontImpl(const std::string & fontFilename, float fontSize_, const FontLoadingParams& params_)
     {
         gDidCallHelloImGuiLoadFontTTF = true;
@@ -142,7 +130,7 @@ namespace HelloImGui
 
         float fontSize = fontSize_;
         if (params.adjustSizeToDpi)
-            fontSize *= FontLoadingFactor();
+            fontSize *= HelloImGui::DpiFontLoadingFactor();
 
         if (params.useFullGlyphRange)
         {
@@ -220,8 +208,11 @@ namespace HelloImGui
 	{
 		IM_ASSERT((!gWasLoadFontDpiResponsiveCalled) && "If using LoadFontDpiResponsive(), only use it, and do not use LoadFont()!");
 
-		auto runnerParams = HelloImGui::GetRunnerParams();
-		IM_ASSERT(! runnerParams->dpiAwareParams.onlyUseFontDpiResponsive && "If runnerParams->dpiAwareParams.onlyUseFontDpiResponsive is true, you must use LoadFontDpiResponsive() instead of LoadFont()");
+        if (IsUsingHelloImGui())
+        {
+            auto runnerParams = HelloImGui::GetRunnerParams();
+            IM_ASSERT(! runnerParams->dpiAwareParams.onlyUseFontDpiResponsive && "If runnerParams->dpiAwareParams.onlyUseFontDpiResponsive is true, you must use LoadFontDpiResponsive() instead of LoadFont()");
+        }
 
 		gWasLoadFontBareCalled = true;
 		//printf("LoadFont(%s, %f)\n", fontFilename.c_str(), fontSize_);

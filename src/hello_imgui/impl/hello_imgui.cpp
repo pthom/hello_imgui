@@ -60,6 +60,7 @@ void Run(RunnerParams& runnerParams)
     }
     gLastRunnerParams = &runnerParams;
     gLastRunner->Run();
+    gLastRunnerParams = nullptr;
 }
 
 void Run(const SimpleRunnerParams& simpleRunnerParams)
@@ -93,6 +94,12 @@ RunnerParams* GetRunnerParams()
         throw std::runtime_error("HelloImGui::GetRunnerParams() would return null. Did you call HelloImGui::Run()?");
     return gLastRunnerParams;
 }
+
+bool IsUsingHelloImGui()
+{
+    return gLastRunnerParams != nullptr;
+}
+
 
 void SwitchLayout(const std::string& layoutName)
 {

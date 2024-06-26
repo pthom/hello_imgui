@@ -49,20 +49,45 @@ namespace HelloImGui
         return pixelSize / k;
     }
 
+    // Returns the current DpiAwareParams, which are use for font loading and window size scaling
+    // - if using Hello ImGui, this will point to `HelloImGui::GetRunnerParams().dpiAwareParams`
+    // - if not running an Hello ImGui application, this will return a static instance
+    //   (used in rare cases, when people want to use Hello ImGui font loading functions without running
+    //   an Hello ImGui application, for example using imgui_md, for markdown rendering in imgui_bundle)
+    DpiAwareParams* GetDpiAwareParams()
+    {
+        if (!IsUsingHelloImGui())
+        {
+            static DpiAwareParams gDpiAwareParams;
+            static bool wasInited = false;
+            if (!wasInited)
+            {
+                gDpiAwareParams.fontRenderingScale = 1.f;
+                gDpiAwareParams.dpiWindowSizeFactor = 1.f;
+                wasInited = true;
+            }
+            return &gDpiAwareParams;
+        }
+        else
+        {
+            return &GetRunnerParams()->dpiAwareParams;
+        }
+    }
+
 
     float DpiWindowSizeFactor()
     {
-        return GetRunnerParams()->dpiAwareParams.dpiWindowSizeFactor;
+        return GetDpiAwareParams()->dpiWindowSizeFactor;
     }
 
     float DpiFontLoadingFactor()
     {
-        return GetRunnerParams()->dpiAwareParams.DpiFontLoadingFactor();
+        return GetDpiAwareParams()->DpiFontLoadingFactor();
     }
 
     float ImGuiDefaultFontGlobalScale()
     {
-        return GetRunnerParams()->dpiAwareParams.fontRenderingScale;
+        return GetDpiAwareParams()->fontRenderingScale;
     }
 
 }

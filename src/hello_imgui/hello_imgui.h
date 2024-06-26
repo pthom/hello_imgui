@@ -85,6 +85,8 @@ void Run(
 // of the current application
 RunnerParams* GetRunnerParams();
 
+// `IsUsingHelloImGui()`: returns true if the application is using HelloImGui
+bool IsUsingHelloImGui();
 
 
 // ============================== Utility functions ===============================

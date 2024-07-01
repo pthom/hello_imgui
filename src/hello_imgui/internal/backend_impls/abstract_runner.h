@@ -94,9 +94,6 @@ private:
     void MakeWindowSizeRelativeTo96Ppi_IfRequired();
     bool ShallSizeWindowRelativeTo96Ppi();
     bool WantAutoSize();
-    // Logic for idling
-    void IdleBySleeping();
-    bool ShallIdleThisFrame_Emscripten();
 
     void SetLayoutResetIfNeeded();
 

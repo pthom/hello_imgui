@@ -3,6 +3,5 @@
 
 namespace HelloImGui
 {
-    void Theme_WindowGui(ImGuiTheme::ImGuiTweakedTheme& tweakedTheme);
-    void Theme_MenuGui(ImGuiTheme::ImGuiTweakedTheme& tweakedTheme);
+    void ShowThemeTweakGuiWindow(bool* p_open = nullptr);
 }

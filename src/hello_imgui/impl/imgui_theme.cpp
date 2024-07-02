@@ -1021,8 +1021,9 @@ namespace ImGuiTheme
     bool _ShowThemeSelector(ImGuiTheme_* theme)
     {
         bool changed = false;
-        ImVec2 listboxSize =  ImVec2(0.f, ImGuiTheme_Count * (ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.y) );
-        if (ImGui::BeginListBox("Available_themes", listboxSize))
+        ImVec2 listboxSize =  ImVec2(15.f * ImGui::GetFontSize(), ImGuiTheme_Count * (ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.y) );
+        ImGui::Text("Available Themes");
+        if (ImGui::BeginListBox("##Available_themes", listboxSize))
         {
             int nbThemes = ImGuiTheme_Count;
             // We start at 3 because we want to place the older themes at the end
@@ -1181,13 +1182,6 @@ namespace ImGuiTheme
             }
 
         }
-
-        ImGui::TextWrapped(R"(
-Note:
-   This theme tweaks window is a part of HelloImGuI, but can be reused: see
-    https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/imgui_theme.h
-            )");
-
         return changed;
     }
 

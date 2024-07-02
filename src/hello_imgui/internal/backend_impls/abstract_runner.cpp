@@ -83,6 +83,9 @@ void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 bool _reloadAllDpiResponsiveFonts();
 bool ShouldRemoteDisplay();
 
+// Encapsulated inside docking_details.cpp
+void ShowThemeTweakGuiWindow_Static();
+
 
 struct AbstractRunnerStatics
 {
@@ -858,7 +861,7 @@ void AbstractRunner::RenderGui()
     if (params.imGuiWindowParams.showStatusBar)
         Menu_StatusBar::ShowStatusBar(params);
 
-    Theme_WindowGui(params.imGuiWindowParams.tweakedTheme);
+    ShowThemeTweakGuiWindow_Static();
 
     if (params.callbacks.PostRenderDockableWindows)
         params.callbacks.PostRenderDockableWindows();

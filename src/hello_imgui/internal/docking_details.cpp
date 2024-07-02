@@ -17,9 +17,39 @@ namespace HelloImGui
 bool ShouldRemoteDisplay();
 
 
-void _Themes_MenuGui(RunnerParams& runnerParams); // see hello_imgui_themes.cpp
-
 std::map<DockSpaceName, ImGuiID> gImGuiSplitIDs;
+
+
+static bool gShowTweakWindow = false;
+
+void ShowThemeTweakGuiWindow_Static()
+{
+    ShowThemeTweakGuiWindow(&gShowTweakWindow);
+}
+
+void MenuTheme()
+{
+    auto& tweakedTheme = HelloImGui::GetRunnerParams()->imGuiWindowParams.tweakedTheme;
+
+    if (ImGui::BeginMenu("Theme"))
+    {
+        if (ImGui::MenuItem("Theme tweak window", nullptr, gShowTweakWindow))
+            gShowTweakWindow = !gShowTweakWindow;
+        ImGui::Separator();
+        for (int i = 0; i < ImGuiTheme::ImGuiTheme_Count; ++i)
+        {
+            ImGuiTheme::ImGuiTheme_ theme = (ImGuiTheme::ImGuiTheme_)(i);
+            bool selected = (theme == tweakedTheme.Theme);
+            if (ImGui::MenuItem(ImGuiTheme::ImGuiTheme_Name(theme), nullptr, selected))
+            {
+                tweakedTheme.Theme = theme;
+                ImGuiTheme::ApplyTheme(theme);
+            }
+        }
+        ImGui::EndMenu();
+    }
+}
+
 
 namespace DockingDetails
 {
@@ -186,7 +216,7 @@ void MenuView_Misc(RunnerParams& runnerParams)
 	}
 
     if (runnerParams.imGuiWindowParams.showMenu_View_Themes)
-        Theme_MenuGui(runnerParams.imGuiWindowParams.tweakedTheme);
+        MenuTheme();
 }
 
 void ShowViewMenu(RunnerParams & runnerParams)

@@ -172,7 +172,7 @@ void AbstractRunner::AdjustWindowBoundsAfterCreation_IfDpiChangedBetweenRuns()
 
     std::optional<float> lastRunDpiWindowSizeFactorOpt = HelloImGuiIniSettings::LoadLastRunDpiWindowSizeFactor(IniSettingsLocation(params));
     if (!lastRunDpiWindowSizeFactorOpt.has_value())
-        return;
+        lastRunDpiWindowSizeFactorOpt = 1.f;
 
     float lastRunDpiWindowSizeFactor = lastRunDpiWindowSizeFactorOpt.value();
     float currentDpiWindowSizeFactor = params.dpiAwareParams.dpiWindowSizeFactor;

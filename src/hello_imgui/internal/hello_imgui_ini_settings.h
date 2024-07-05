@@ -61,6 +61,7 @@ namespace HelloImGui
         //
         void SaveLastRunWindowBounds(const std::string& iniPartsFilename, const ScreenBounds& windowBounds);
         std::optional<ScreenBounds> LoadLastRunWindowBounds(const std::string& iniPartsFilename);
+        std::optional<float> LoadLastRunDpiWindowSizeFactor(const std::string& iniPartsFilename);
         void SaveHelloImGuiMiscSettings(const std::string& iniPartsFilename, const RunnerParams& runnerParams);
         void LoadHelloImGuiMiscSettings(const std::string& iniPartsFilename, RunnerParams* inOutRunnerParams);
 

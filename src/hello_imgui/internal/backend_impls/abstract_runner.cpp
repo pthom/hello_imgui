@@ -159,6 +159,39 @@ void AbstractRunner::PrepareWindowGeometry()
     params.appWindowParams.windowGeometry.size = windowBounds.size;
 }
 
+
+// If needed, change the size to match the current DPI versus the DPI when the size was saved
+// (we want the window to "look" as big as it was when saved, even if the DPI has changed,
+//  or if we are on a different monitor / computer / OS)
+void AbstractRunner::AdjustWindowBoundsAfterCreation_IfDpiChangedBetweenRuns()
+{
+    bool reloadLastSize = params.appWindowParams.restorePreviousGeometry &&
+                          HelloImGuiIniSettings::LoadLastRunWindowBounds(IniSettingsLocation(params)).has_value();
+    if (!reloadLastSize)
+        return;
+
+    std::optional<float> lastRunDpiWindowSizeFactorOpt = HelloImGuiIniSettings::LoadLastRunDpiWindowSizeFactor(IniSettingsLocation(params));
+    if (!lastRunDpiWindowSizeFactorOpt.has_value())
+        return;
+
+    float lastRunDpiWindowSizeFactor = lastRunDpiWindowSizeFactorOpt.value();
+    float currentDpiWindowSizeFactor = params.dpiAwareParams.dpiWindowSizeFactor;
+    float ratio = currentDpiWindowSizeFactor / lastRunDpiWindowSizeFactor;
+    bool isSane = ratio > 0.25f && ratio < 4.f;
+    if (isSane && ratio != 1.f)
+    {
+        auto bounds = mBackendWindowHelper->GetWindowBounds(mWindow);
+        bounds.size = {(int)((float)bounds.size[0] * ratio),
+                       (int)((float)bounds.size[1] * ratio)};
+        bounds.position = {
+            (int)((float)bounds.position[0] * ratio),
+            (int)((float)bounds.position[1] * ratio)
+        };
+        mBackendWindowHelper->SetWindowBounds(mWindow, bounds);
+    }
+}
+
+
 bool AbstractRunner::WantAutoSize()
 {
 #ifdef __EMSCRIPTEN__
@@ -717,6 +750,7 @@ void AbstractRunner::Setup()
             //printf("Window resized by code\n");
         }
     };
+
     Impl_CreateWindow(fnRenderCallbackDuringResize);
 
     #ifdef HELLOIMGUI_HAS_OPENGL
@@ -729,7 +763,11 @@ void AbstractRunner::Setup()
 
     Impl_SetWindowIcon();
 
+    // The order is important: first read the DPI aware params
     SetupDpiAwareParams();
+    // Then adjust window size if needed
+    AdjustWindowBoundsAfterCreation_IfDpiChangedBetweenRuns();
+
 
     // This should be done before Impl_LinkPlatformAndRenderBackends()
     // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks

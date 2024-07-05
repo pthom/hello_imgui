@@ -90,6 +90,7 @@ private:
     void SetupDpiAwareParams();
     bool CheckDpiAwareParamsChanges();
     void PrepareWindowGeometry();
+    void AdjustWindowBoundsAfterCreation_IfDpiChangedBetweenRuns();
     void HandleDpiOnSecondFrame();
     void MakeWindowSizeRelativeTo96Ppi_IfRequired();
     bool ShallSizeWindowRelativeTo96Ppi();

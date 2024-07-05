@@ -173,11 +173,13 @@ namespace HelloImGui
 
         void SaveLastRunWindowBounds(const std::string& iniPartsFilename, const ScreenBounds& windowBounds)
         {
+            auto& dpiAwareParams = HelloImGui::GetRunnerParams()->dpiAwareParams;
             IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
 
             ini::IniFile iniFile;
             iniFile["AppWindow"]["WindowPosition"] = IntPairToString(windowBounds.position);
             iniFile["AppWindow"]["WindowSize"] = IntPairToString(windowBounds.size);
+            iniFile["AppWindow"]["DpiWindowSizeFactor"] = dpiAwareParams.dpiWindowSizeFactor;
             std::string iniContent = iniFile.encode();
 
             iniParts.SetIniPart("AppWindow", iniContent);
@@ -190,7 +192,6 @@ namespace HelloImGui
 
             if (!iniParts.HasIniPart("AppWindow"))
                 return std::nullopt;
-
 
             auto iniPartContent = iniParts.GetIniPart("AppWindow");
             ini::IniFile iniFile;
@@ -206,16 +207,26 @@ namespace HelloImGui
             ScreenBounds screenBounds;
             bool failed = false;
 
+            if (iniFile.find("AppWindow") == iniFile.end())
+                return std::nullopt;
+            auto & appWindowSection = iniFile["AppWindow"];
+
+            // Read Window Position
             {
-                auto strValue = iniFile["AppWindow"]["WindowPosition"].as<std::string>();
+                if (appWindowSection.find("WindowPosition") == appWindowSection.end())
+                    return std::nullopt;
+                auto strValue = appWindowSection["WindowPosition"].as<std::string>();
                 auto intPair = StringToIntPair(strValue);
                 if (intPair[0] >= 0)
                     screenBounds.position = intPair;
                 else
                     failed = true;
             }
+            // Read Window Size
             {
-                auto strValue = iniFile["AppWindow"]["WindowSize"].as<std::string>();
+                if (appWindowSection.find("WindowSize") == appWindowSection.end())
+                    return std::nullopt;
+                auto strValue = appWindowSection["WindowSize"].as<std::string>();
                 auto intPair = StringToIntPair(strValue);
                 if (intPair[0] >= 0)
                     screenBounds.size = intPair;
@@ -229,6 +240,44 @@ namespace HelloImGui
                 return screenBounds;
 
         }
+
+        std::optional<float> LoadLastRunDpiWindowSizeFactor(const std::string& iniPartsFilename)
+        {
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+
+            if (!iniParts.HasIniPart("AppWindow"))
+                return std::nullopt;
+
+            auto iniPartContent = iniParts.GetIniPart("AppWindow");
+            ini::IniFile iniFile;
+            try
+            {
+                iniFile.decode(iniPartContent);
+            }
+            catch (const std::exception &)
+            {
+                return std::nullopt;
+            }
+
+            ScreenBounds screenBounds;
+            bool failed = false;
+
+            if (iniFile.find("AppWindow") == iniFile.end())
+                return std::nullopt;
+            auto &appWindowSection = iniFile["AppWindow"];
+
+            if (appWindowSection.find("DpiWindowSizeFactor") != appWindowSection.end())
+            {
+                float dpiWindowSizeFactor_WhenSaved =
+                    iniFile["AppWindow"]["DpiWindowSizeFactor"].as<float>();
+                bool isDpiSane = (dpiWindowSizeFactor_WhenSaved >= 0.1f) &&
+                                 (dpiWindowSizeFactor_WhenSaved <= 10.f);
+                if (isDpiSane)
+                    return dpiWindowSizeFactor_WhenSaved;
+            }
+            return std::nullopt;
+        }
+
 
         void LoadImGuiSettings(const std::string& iniPartsFilename, const std::string& layoutName)
         {

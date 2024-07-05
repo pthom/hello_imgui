@@ -346,10 +346,14 @@ endif()
 add_subdirectory(src)
 
 if (HELLOIMGUI_BUILD_DOCS)
-    add_custom_target(hello_imgui_build_doc ALL
-        ${PROJECT_SOURCE_DIR}/tools/doc/process_md_docs.py
-        COMMENT "Generating doc"
-    )
+    if (NOT WIN32)
+        add_custom_target(hello_imgui_build_doc ALL
+            ${PROJECT_SOURCE_DIR}/tools/doc/process_md_docs.py
+            COMMENT "Generating doc"
+        )
+    else()
+        message(WARNING "HELLOIMGUI_BUILD_DOCS is not supported on Windows")
+    endif()
 endif()
 
 

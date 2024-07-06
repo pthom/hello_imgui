@@ -10,6 +10,81 @@
 
 namespace HelloImGui { namespace BackendApi
 {
+#ifdef HELLOIMGUI_HAS_OPENGL3
+
+    static int QueryMaxAntiAliasingSamples()
+    {
+        // First create a dummy window to make OpenGL context current
+        SDL_Window* dummyWindow = SDL_CreateWindow(
+            "Dummy",
+            SDL_WINDOWPOS_CENTERED,
+            SDL_WINDOWPOS_CENTERED,
+            64, 32,
+            SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN
+        );
+
+        if (!dummyWindow)
+        {
+            IM_ASSERT(false && "Failed to create temporary window.");
+            return 0;
+        }
+
+        SDL_GLContext dummyContext = SDL_GL_CreateContext(dummyWindow);
+        if (!dummyContext)
+        {
+            SDL_DestroyWindow(dummyWindow);
+            IM_ASSERT(false && "Failed to create temporary GL context.");
+            return 0;
+        }
+
+        // Init OpenGL loader
+        OpenGlSetupSdl openGlSetupSdl;
+        openGlSetupSdl.InitGlLoader();
+
+        GLint maxSamples;
+        glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
+
+        SDL_GL_DeleteContext(dummyContext);
+        SDL_DestroyWindow(dummyWindow);
+
+        return maxSamples;
+    }
+
+    static void ApplyAntiAliasingSamples(const OpenGlOptionsFilled_& openGlOptions)
+    {
+        int userQuerySamples = openGlOptions.AntiAliasingSamples;
+        int maxGpuSamples = QueryMaxAntiAliasingSamples();
+        int effectiveSamples = 8;
+
+        if (effectiveSamples > maxGpuSamples)
+            effectiveSamples = maxGpuSamples;
+
+        if (userQuerySamples == 0)
+            effectiveSamples = 0;
+        else if (userQuerySamples > 0)
+        {
+            if (userQuerySamples > maxGpuSamples)
+                fprintf(stderr, "Warning: user requested %d samples, but GPU supports only %d samples. Using %d samples instead.\n", userQuerySamples, maxGpuSamples, maxGpuSamples);
+            if (userQuerySamples <= maxGpuSamples)
+                effectiveSamples = userQuerySamples;
+        }
+
+        if (effectiveSamples > 0)
+        {
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, effectiveSamples);
+            #ifndef __EMSCRIPTEN__
+            glEnable(GL_MULTISAMPLE);
+            #endif
+        }
+        else
+        {
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
+        }
+    }
+#endif  // #ifdef HELLOIMGUI_HAS_OPENGL3
+
     static void ApplyOpenGlOptions(const OpenGlOptionsFilled_& openGlOptions)
     {
         #ifndef __EMSCRIPTEN__
@@ -22,14 +97,18 @@ namespace HelloImGui { namespace BackendApi
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         if (openGlOptions.UseForwardCompat)
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+
+        #ifdef HELLOIMGUI_HAS_OPENGL3
+            if (HelloImGui::GetRunnerParams()->rendererBackendType == RendererBackendType::OpenGL3)
+                ApplyAntiAliasingSamples(openGlOptions);
+        #endif
     }
 
     OpenGlOptionsFilled_ OpenGlSetupSdl::Impl_MakeDefaultOpenGlOptionsForPlatform()
     {
         OpenGlOptionsFilled_ openGlOptions;
 
-        // This SDL backend does not handle antialiasing at the moment!
-        // openGlOptions.AntiAliasingSamples = 8;
+        openGlOptions.AntiAliasingSamples = 8;
 
         //
         // Compute MajorVersion, MinorVersion, UseCoreProfile, UseForwardCompat

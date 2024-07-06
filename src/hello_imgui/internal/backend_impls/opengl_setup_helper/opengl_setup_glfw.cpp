@@ -78,9 +78,10 @@ namespace HelloImGui { namespace BackendApi
         if (openGlOptions.UseForwardCompat)
             glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-#ifdef HELLOIMGUI_HAS_OPENGL3
-        ApplyAntiAliasingSamples(openGlOptions);
-#endif
+        #ifdef HELLOIMGUI_HAS_OPENGL3
+            if (HelloImGui::GetRunnerParams()->rendererBackendType == RendererBackendType::OpenGL3)
+                ApplyAntiAliasingSamples(openGlOptions);
+        #endif
     }
 
     OpenGlOptionsFilled_ OpenGlSetupGlfw::Impl_MakeDefaultOpenGlOptionsForPlatform()

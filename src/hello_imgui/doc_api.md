@@ -92,11 +92,12 @@ See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/he
         // Otherwise, it will be loaded from the filesystem
         bool insideAssets = true;
 
-        // the ranges of glyphs to load:
+        // the ranges of glyphs to load, as a list of pairs of ImWchar
         //    - if empty, the default glyph range will be used
         //    - you can specify several ranges
         //    - intervals bounds are inclusive
-        // (will be translated and stored as a static ImWChar* inside fontConfig)
+        // Note: in order to use common ranges defined by ImGui (GetGlyphRangesJapanese, GetGlyphRangesChinese, ...)
+        //       use TranslateCommonGlyphRanges (or translate_common_glyph_ranges in Python)
         std::vector<ImWcharPair> glyphRanges = {};
 
         // ImGui native font config to use

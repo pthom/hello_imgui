@@ -328,4 +328,17 @@ namespace HelloImGui
         return HelloImGui::gDidCallHelloImGuiLoadFontTTF;
     }
 
+    // Utility to translate DearImGui common Unicode ranges to ImWcharPair
+    //   (GetGlyphRangesJapanese, GetGlyphRangesChinese, GetGlyphRangesCyrillic, ...)
+    std::vector<ImWcharPair> TranslateCommonGlyphRanges(const std::vector<ImWchar> & glyphRanges)
+    {
+        std::vector<ImWcharPair> glyphRangesPairs;
+        for (size_t i = 0; i < glyphRanges.size(); i += 2)
+        {
+            ImWcharPair glyphRangePair = { glyphRanges[i], glyphRanges[i + 1] };
+            glyphRangesPairs.push_back(glyphRangePair);
+        }
+        return glyphRangesPairs;
+    }
+
 }

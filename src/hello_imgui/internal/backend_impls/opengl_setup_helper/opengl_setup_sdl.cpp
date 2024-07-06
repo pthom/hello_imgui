@@ -63,8 +63,8 @@ namespace HelloImGui { namespace BackendApi
             effectiveSamples = 0;
         else if (userQuerySamples > 0)
         {
-            if (userQuerySamples > maxGpuSamples)
-                fprintf(stderr, "Warning: user requested %d samples, but GPU supports only %d samples. Using %d samples instead.\n", userQuerySamples, maxGpuSamples, maxGpuSamples);
+            // if (userQuerySamples > maxGpuSamples)
+            //    fprintf(stderr, "Warning: user requested %d samples, but GPU supports only %d samples. Using %d samples instead.\n", userQuerySamples, maxGpuSamples, maxGpuSamples);
             if (userQuerySamples <= maxGpuSamples)
                 effectiveSamples = userQuerySamples;
         }

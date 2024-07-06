@@ -51,8 +51,8 @@ namespace HelloImGui { namespace BackendApi
             effectiveSamples = 0;
         else if (userQuerySamples > 0)
         {
-            if (userQuerySamples > maxGpuSamples)
-                fprintf(stderr, "Warning: user requested %d samples, but GPU supports only %d samples. Using %d samples instead.\n", userQuerySamples, maxGpuSamples, maxGpuSamples);
+            // if (userQuerySamples > maxGpuSamples)
+            //    fprintf(stderr, "Warning: user requested %d samples, but GPU supports only %d samples. Using %d samples instead.\n", userQuerySamples, maxGpuSamples, maxGpuSamples);
             if (userQuerySamples <= maxGpuSamples)
                 effectiveSamples = userQuerySamples;
         }
@@ -60,7 +60,7 @@ namespace HelloImGui { namespace BackendApi
         if (effectiveSamples > 0)
         {
             #if ! defined(__EMSCRIPTEN__) && ! defined(HELLOIMGUI_USE_GLES3)  && ! defined(HELLOIMGUI_USE_GLES2)
-            glEnable(GL_MULTISAMPLE); // multisampling is automatically enabled if the framebuffer supports it for for OpenGL ES
+            glEnable(GL_MULTISAMPLE); // multisampling is automatically enabled if the framebuffer supports it for OpenGL ES
             #endif
             glfwWindowHint(GLFW_SAMPLES, effectiveSamples);
         }

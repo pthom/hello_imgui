@@ -128,6 +128,15 @@ namespace HelloImGui
 
         FontLoadingParams params = params_;
 
+        // Font oversampling (set by dpiAwareParams)
+        {
+            const auto& dpiAwareParams = HelloImGui::GetRunnerParams()->dpiAwareParams;
+            if (dpiAwareParams.fontOversampleH > 0)
+                params.fontConfig.OversampleH = dpiAwareParams.fontOversampleH;
+            if (dpiAwareParams.fontOversampleV > 0)
+                params.fontConfig.OversampleV = dpiAwareParams.fontOversampleV;
+        }
+
         float fontSize = fontSize_;
         if (params.adjustSizeToDpi)
             fontSize *= HelloImGui::DpiFontLoadingFactor();
@@ -271,7 +280,7 @@ namespace HelloImGui
 	}
 
 
-	ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange, ImFontConfig config)
+    ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange, ImFontConfig config)
     {
         FontLoadingParams fontLoadingParams;
         if (useFullGlyphRange)

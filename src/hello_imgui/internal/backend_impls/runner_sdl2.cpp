@@ -259,8 +259,16 @@ namespace HelloImGui
         params.backendPointers.sdlGlContext = mGlContext;
     }
     void RunnerSdl2::Impl_InitGlLoader() { gOpenGlSetupSdl.InitGlLoader(); }
-    void RunnerSdl2::Impl_Select_Gl_Version() { gOpenGlSetupSdl.SelectOpenGlVersion(); }
-    std::string RunnerSdl2::Impl_GlslVersion() const { return gOpenGlSetupSdl.GlslVersion(); }
+    void RunnerSdl2::Impl_Select_Gl_Version()
+    {
+        auto openGlOptions = gOpenGlSetupSdl.OpenGlOptionsWithUserSettings();
+        gOpenGlSetupSdl.SelectOpenGlVersion(openGlOptions);
+    }
+
+    std::string RunnerSdl2::Impl_GlslVersion() const
+    {
+        return std::string("#version ") + gOpenGlSetupSdl.OpenGlOptionsWithUserSettings().GlslVersion;
+    }
 #endif // HELLOIMGUI_HAS_OPENGL
 
 #ifdef HELLOIMGUI_HAS_METAL

@@ -179,9 +179,16 @@ namespace HelloImGui
         glfwSwapInterval(1);  // Enable vsync (openGL only, not vulkan)
     }
 
-    void RunnerGlfw3::Impl_Select_Gl_Version() { gOpenGlSetupGlfw.SelectOpenGlVersion(); }
+    void RunnerGlfw3::Impl_Select_Gl_Version()
+    {
+        auto openGlOptions = gOpenGlSetupGlfw.OpenGlOptionsWithUserSettings();
+        gOpenGlSetupGlfw.SelectOpenGlVersion(openGlOptions);
+    }
 
-    std::string RunnerGlfw3::Impl_GlslVersion() const { return gOpenGlSetupGlfw.GlslVersion(); }
+    std::string RunnerGlfw3::Impl_GlslVersion() const
+    {
+        return std::string("#version ") + gOpenGlSetupGlfw.OpenGlOptionsWithUserSettings().GlslVersion;
+    }
 
     void RunnerGlfw3::Impl_InitGlLoader() { gOpenGlSetupGlfw.InitGlLoader(); }
 #endif // HELLOIMGUI_HAS_OPENGL

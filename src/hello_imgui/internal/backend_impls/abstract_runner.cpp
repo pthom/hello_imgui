@@ -234,63 +234,6 @@ bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi()
     return shallSizeRelativeTo96Ppi;
 }
 
-void AbstractRunner::ReadOpenGlOptions()
-{
-    // cf renderer_backend_options.h:
-    //
-    // OpenGlOptions contains advanced options used at the startup of OpenGL.
-    // These parameters are reserved for advanced users.
-    // By default, Hello ImGui will select reasonable default values, and these parameters are not used.
-    // Use at your own risk, as they make break the multi-platform compatibility of your application!
-    // All these parameters are platform dependent.
-    // For real multiplatform examples, see
-    //     hello_imgui/src/hello_imgui/internal/backend_impls/opengl_setup_helper/opengl_setup_glfw.cpp
-    // and
-    //     hello_imgui/src/hello_imgui/internal/backend_impls/opengl_setup_helper/opengl_setup_sdl.cpp
-    //
-    // How to set those values manually:
-    // ---------------------------------
-    // you may set them manually:
-    //    (1) Either by setting them programmatically in your application
-    //        (set their values in `runnerParams.rendererBackendOptions.openGlOptions`)
-    //    (2) Either by setting them in a `hello_imgui.ini` file. See hello_imgui/hello_imgui_example.ini for more info
-    //    Note: if several methods are used, the order of priority is (1) > (2)
-
-    // If options specified by the program, do not read them.
-    if (params.rendererBackendOptions.openGlOptions.has_value())
-        return;
-
-    std::string openGlSection = "OpenGlOptions";
-
-    auto majorVersion = HelloImGuiIniAnyParentFolder::readIntValue(openGlSection, "MajorVersion");
-    auto minorVersion = HelloImGuiIniAnyParentFolder::readIntValue(openGlSection, "MinorVersion");
-    auto useCoreProfile = HelloImGuiIniAnyParentFolder::readBoolValue(openGlSection, "UseCoreProfile");
-    auto useForwardCompat = HelloImGuiIniAnyParentFolder::readBoolValue(openGlSection, "UseForwardCompat");
-    auto glslVersion = HelloImGuiIniAnyParentFolder::readStringValue(openGlSection, "GlslVersion");
-    auto antiAliasingSamples = HelloImGuiIniAnyParentFolder::readIntValue(openGlSection, "AntiAliasingSamples");
-
-    bool isAnySettingsSpecified = majorVersion.has_value() || minorVersion.has_value() || useCoreProfile.has_value() || useForwardCompat.has_value() || glslVersion.has_value() || antiAliasingSamples.has_value();
-
-    if (isAnySettingsSpecified)
-    {
-        params.rendererBackendOptions.openGlOptions = OpenGlOptions();
-        auto& openGlOptions = params.rendererBackendOptions.openGlOptions.value();
-        if (majorVersion.has_value())
-            openGlOptions.MajorVersion = majorVersion.value();
-        if (minorVersion.has_value())
-            openGlOptions.MinorVersion = minorVersion.value();
-        if (useCoreProfile.has_value())
-            openGlOptions.UseCoreProfile = useCoreProfile.value();
-        if (useForwardCompat.has_value())
-            openGlOptions.UseForwardCompat = useForwardCompat.value();
-        if (glslVersion.has_value())
-            openGlOptions.GlslVersion = glslVersion.value();
-        if (antiAliasingSamples.has_value())
-            openGlOptions.AntiAliasingSamples = antiAliasingSamples.value();
-    }
-
-}
-
 void ReadDpiAwareParams(DpiAwareParams* dpiAwareParams)
 {
     // cf dpi_aware.h
@@ -728,10 +671,6 @@ void AbstractRunner::Setup()
 
     InitImGuiContext();
     SetImGuiPrefs();
-
-    #ifdef HELLOIMGUI_HAS_OPENGL
-    ReadOpenGlOptions();
-    #endif
 
     // Init platform backend (SDL, Glfw)
     Impl_InitPlatformBackend();

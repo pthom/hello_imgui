@@ -10,7 +10,7 @@
 
 namespace HelloImGui { namespace BackendApi
 {
-    static void ApplyOpenGlOptions(OpenGlOptions& openGlOptions)
+    static void ApplyOpenGlOptions(const OpenGlOptionsFilled_& openGlOptions)
     {
         #ifndef __EMSCRIPTEN__
             // Gl version not set in Emscripten, for legacy reasons that are not clear
@@ -24,13 +24,12 @@ namespace HelloImGui { namespace BackendApi
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
     }
 
-    static OpenGlOptions MakeOpenGlOptions()
+    OpenGlOptionsFilled_ OpenGlSetupSdl::Impl_MakeDefaultOpenGlOptionsForPlatform()
     {
-        auto* runnerParams = HelloImGui::GetRunnerParams();
-        if (runnerParams->rendererBackendOptions.openGlOptions.has_value())
-            return runnerParams->rendererBackendOptions.openGlOptions.value();
+        OpenGlOptionsFilled_ openGlOptions;
 
-        OpenGlOptions openGlOptions;
+        // This SDL backend does not handle antialiasing at the moment!
+        // openGlOptions.AntiAliasingSamples = 8;
 
         //
         // Compute MajorVersion, MinorVersion, UseCoreProfile, UseForwardCompat
@@ -113,13 +112,10 @@ namespace HelloImGui { namespace BackendApi
     }
 
 
-    void OpenGlSetupSdl::SelectOpenGlVersion()
+    void OpenGlSetupSdl::SelectOpenGlVersion(const OpenGlOptionsFilled_& options)
     {
         AdditionalOpenGlPreSetup();
-
-        OpenGlOptions openGlOptions = MakeOpenGlOptions();
-        ApplyOpenGlOptions(openGlOptions);
-
+        ApplyOpenGlOptions(options);
         AdditionalOpenGlPostSetup();
     }
 
@@ -141,12 +137,6 @@ namespace HelloImGui { namespace BackendApi
             if (err)
                 BACKEND_THROW("Failed to initialize OpenGL loader!");
         #endif
-    }
-
-    std::string OpenGlSetupSdl::GlslVersion()
-    {
-        OpenGlOptions openGlOptions = MakeOpenGlOptions();
-        return std::string("#version ") + openGlOptions.GlslVersion;
     }
 }} // namespace HelloImGui { namespace BackendApi
 

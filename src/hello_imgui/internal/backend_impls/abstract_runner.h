@@ -86,7 +86,6 @@ private:
     void SetImGuiPrefs();
     void InitRenderBackendCallbacks();
 
-    void ReadOpenGlOptions();
     void SetupDpiAwareParams();
     bool CheckDpiAwareParamsChanges();
     void PrepareWindowGeometry();

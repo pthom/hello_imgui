@@ -34,16 +34,16 @@ struct OpenGlOptions
     //    "150" on macOS
     //    "130" on Windows
     //    "300es" on GLES
-    std::string  GlslVersion = "130";
+    std::optional<std::string>  GlslVersion =  std::nullopt;
 
     // OpenGL 3.3 (these options won't work for GlEs)
-    int          MajorVersion = 3;
-    int          MinorVersion = 3;
+    std::optional<int>          MajorVersion = std::nullopt;
+    std::optional<int>          MinorVersion = std::nullopt;
 
     // OpenGL Core Profile (i.e. only includes the newer, maintained features of OpenGL)
-    bool         UseCoreProfile = true;
+    std::optional<bool>         UseCoreProfile = std::nullopt;
     // OpenGL Forward Compatibility (required on macOS)
-    bool         UseForwardCompat = true;
+    std::optional<bool>         UseForwardCompat = std::nullopt;
 
     // `AntiAliasingSamples`
     // If > 0, this value will be used to set the number of samples used for anti-aliasing.
@@ -52,17 +52,15 @@ struct OpenGlOptions
     // - we query the maximum number of samples supported by the hardware, via glGetIntegerv(GL_MAX_SAMPLES)
     // - if you set this value to a non-zero value, it will be used instead of the default value of 8
     //   (except if it is greater than the maximum supported value, in which case a warning will be issued)
-    // - if you set this value to 0, anti-aliasing will be disabled
+    // - if you set this value to 0, antialiasing will be disabled
     //
     // AntiAliasingSamples has a strong impact on the quality of the text rendering
-    //     - 0: no anti-aliasing
+    //     - 0: no antialiasing
     //     - 8: optimal
     //     - 16: optimal if using imgui-node-editor and you want to render very small text when unzooming
-    int AntiAliasingSamples =  -1;  // -1 <=> not set (will use the default value of 8)
+    std::optional<int> AntiAliasingSamples =  std::nullopt;
 };
-
 // @@md
-
 
 
 // @@md#RendererBackendOptions
@@ -91,7 +89,7 @@ struct RendererBackendOptions
 
     // `openGlOptions`:
     // Advanced options for OpenGL. Use at your own risk.
-    std::optional<OpenGlOptions> openGlOptions = std::nullopt;
+    OpenGlOptions openGlOptions;
 };
 
 
@@ -103,5 +101,18 @@ struct RendererBackendOptions
 //     src/hello_imgui/internal/backend_impls/rendering_dx12.h
 
 // @@md
+
+
+// (Private structure, not part of the public API)
+// OpenGlOptions after selecting the default platform-dependent values + after applying the user settings
+struct OpenGlOptionsFilled_
+{
+    std::string  GlslVersion =  "150";
+    int          MajorVersion = 3;
+    int          MinorVersion = 3;
+    bool         UseCoreProfile = true;
+    bool         UseForwardCompat = true;
+    int          AntiAliasingSamples = 8;
+};
 
 }  // namespace HelloImGui

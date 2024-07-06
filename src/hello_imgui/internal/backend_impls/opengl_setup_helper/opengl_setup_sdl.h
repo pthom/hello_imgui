@@ -11,9 +11,9 @@ namespace HelloImGui { namespace BackendApi
     public:
         virtual ~OpenGlSetupSdl() {}
 
-        void SelectOpenGlVersion() override;
+        void SelectOpenGlVersion(const OpenGlOptionsFilled_& options) override;
         void InitGlLoader() override;
-        std::string GlslVersion()  override;
+        OpenGlOptionsFilled_ Impl_MakeDefaultOpenGlOptionsForPlatform() override;
     };
 }} // namespace HelloImGui { namespace BackendApi
 

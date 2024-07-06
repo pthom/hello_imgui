@@ -19,7 +19,7 @@ namespace HelloImGui { namespace BackendApi
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
             glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-            return glfwCreateWindow(64, 32, "Dummy", NULL, NULL);
+            return glfwCreateWindow(64, 32, "Dummy", nullptr, nullptr);
         }();
 
         if (!dummyWindow)
@@ -38,7 +38,7 @@ namespace HelloImGui { namespace BackendApi
         return maxSamples;
     }
 
-    static void ApplyAntiAliasingSamples(OpenGlOptions& openGlOptions)
+    static void ApplyAntiAliasingSamples(const OpenGlOptionsFilled_& openGlOptions)
     {
         int userQuerySamples = openGlOptions.AntiAliasingSamples;
         int maxGpuSamples = QueryMaxAntiAliasingSamples();
@@ -69,7 +69,7 @@ namespace HelloImGui { namespace BackendApi
     }
 #endif  // #ifdef HELLOIMGUI_HAS_OPENGL3
 
-    static void ApplyOpenGlOptions(OpenGlOptions& openGlOptions)
+    static void ApplyOpenGlOptions(const OpenGlOptionsFilled_& openGlOptions)
     {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, openGlOptions.MajorVersion);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, openGlOptions.MinorVersion);
@@ -80,18 +80,14 @@ namespace HelloImGui { namespace BackendApi
 
 #ifdef HELLOIMGUI_HAS_OPENGL3
         ApplyAntiAliasingSamples(openGlOptions);
-#endif  // #ifdef HELLOIMGUI_HAS_OPENGL3
+#endif
     }
 
-    static OpenGlOptions MakeOpenGlOptions()
+    OpenGlOptionsFilled_ OpenGlSetupGlfw::Impl_MakeDefaultOpenGlOptionsForPlatform()
     {
-        auto* runnerParams = HelloImGui::GetRunnerParams();
-        if (runnerParams->rendererBackendOptions.openGlOptions.has_value())
-            return runnerParams->rendererBackendOptions.openGlOptions.value();
+        OpenGlOptionsFilled_ openGlOptions;
 
-        OpenGlOptions openGlOptions;
-
-        openGlOptions.AntiAliasingSamples = -1;   // -1 <=> not set, will use the default value of 8
+        openGlOptions.AntiAliasingSamples = 8;
 
         //
         // Compute MajorVersion, MinorVersion, UseCoreProfile, UseForwardCompat
@@ -137,10 +133,9 @@ namespace HelloImGui { namespace BackendApi
         return openGlOptions;
     }
 
-    void OpenGlSetupGlfw::SelectOpenGlVersion()
+    void OpenGlSetupGlfw::SelectOpenGlVersion(const OpenGlOptionsFilled_& options)
     {
-        OpenGlOptions openGlOptions = MakeOpenGlOptions();
-        ApplyOpenGlOptions(openGlOptions);
+        ApplyOpenGlOptions(options);
     }
 
     void OpenGlSetupGlfw::InitGlLoader()
@@ -162,12 +157,6 @@ namespace HelloImGui { namespace BackendApi
                 BACKEND_THROW("RunnerGlfwOpenGl3::Impl_InitGlLoader(): Failed to initialize OpenGL loader!");
             }
         #endif  // #ifndef __EMSCRIPTEN__
-    }
-
-    std::string OpenGlSetupGlfw::GlslVersion()
-    {
-        OpenGlOptions openGlOptions = MakeOpenGlOptions();
-        return std::string("#version ") + openGlOptions.GlslVersion;
     }
 }} // namespace HelloImGui { namespace BackendApi
 

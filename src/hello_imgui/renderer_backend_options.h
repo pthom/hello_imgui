@@ -25,16 +25,9 @@ namespace HelloImGui
 //        (set their values in `runnerParams.rendererBackendOptions.openGlOptions`)
 //    (2) Either by setting them in a `hello_imgui.ini` file in the current folder, or any of its parent folders.
 //       (this is useful when you want to set them for a specific app or set of apps, without modifying the app code)
+//       See hello_imgui/hello_imgui_example.ini for an example of such a file.
 // Note: if several methods are used, the order of priority is (1) > (2)
 //
-// Example content of a ini file:
-// ------------------------------
-//    [OpenGlOptions]
-//    GlslVersion = 130
-//    MajorVersion = 3
-//    MinorVersion = 2
-//    UseCoreProfile = true
-//    UseForwardCompat = false
 struct OpenGlOptions
 {
     // Could be for example:
@@ -51,6 +44,21 @@ struct OpenGlOptions
     bool         UseCoreProfile = true;
     // OpenGL Forward Compatibility (required on macOS)
     bool         UseForwardCompat = true;
+
+    // `AntiAliasingSamples`
+    // If > 0, this value will be used to set the number of samples used for anti-aliasing.
+    // This is used only when running with Glfw  + OpenGL (which is the default)
+    // Notes:
+    // - we query the maximum number of samples supported by the hardware, via glGetIntegerv(GL_MAX_SAMPLES)
+    // - if you set this value to a non-zero value, it will be used instead of the default value of 8
+    //   (except if it is greater than the maximum supported value, in which case a warning will be issued)
+    // - if you set this value to 0, anti-aliasing will be disabled
+    //
+    // AntiAliasingSamples has a strong impact on the quality of the text rendering
+    //     - 0: no anti-aliasing
+    //     - 8: optimal
+    //     - 16: optimal if using imgui-node-editor and you want to render very small text when unzooming
+    int AntiAliasingSamples =  -1;  // -1 <=> not set (will use the default value of 8)
 };
 
 // @@md

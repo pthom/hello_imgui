@@ -9,6 +9,65 @@
 
 namespace HelloImGui { namespace BackendApi
 {
+#ifdef HELLOIMGUI_HAS_OPENGL3
+    static int QueryMaxAntiAliasingSamples()
+    {
+        // First create a dummy window to make OpenGL context current
+        GLFWwindow* dummyWindow = []
+        {
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+            glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+            return glfwCreateWindow(64, 32, "Dummy", NULL, NULL);
+        }();
+
+        if (!dummyWindow)
+            IM_ASSERT(false && "Failed to create temporary window.");
+        glfwMakeContextCurrent(dummyWindow);
+
+        // Init OpenGL loader
+        OpenGlSetupGlfw openGlSetupGlfw;
+        openGlSetupGlfw.InitGlLoader();
+
+        GLint maxSamples;
+        glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
+
+        glfwDestroyWindow(dummyWindow);
+
+        return maxSamples;
+    }
+
+    static void ApplyAntiAliasingSamples(OpenGlOptions& openGlOptions)
+    {
+        int userQuerySamples = openGlOptions.AntiAliasingSamples;
+        int maxGpuSamples = QueryMaxAntiAliasingSamples();
+        int effectiveSamples = 8;
+
+        if (effectiveSamples > maxGpuSamples)
+            effectiveSamples = maxGpuSamples;
+
+        if (userQuerySamples == 0)
+            effectiveSamples = 0;
+        else if (userQuerySamples > 0)
+        {
+            if (userQuerySamples > maxGpuSamples)
+                fprintf(stderr, "Warning: user requested %d samples, but GPU supports only %d samples. Using %d samples instead.\n", userQuerySamples, maxGpuSamples, maxGpuSamples);
+            if (userQuerySamples <= maxGpuSamples)
+                effectiveSamples = userQuerySamples;
+        }
+
+        if (effectiveSamples > 0)
+        {
+            glEnable(GL_MULTISAMPLE);
+            glfwWindowHint(GLFW_SAMPLES, effectiveSamples);
+        }
+        else
+        {
+            glfwWindowHint(GLFW_SAMPLES, 0);
+        }
+    }
+#endif  // #ifdef HELLOIMGUI_HAS_OPENGL3
 
     static void ApplyOpenGlOptions(OpenGlOptions& openGlOptions)
     {
@@ -18,6 +77,10 @@ namespace HelloImGui { namespace BackendApi
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         if (openGlOptions.UseForwardCompat)
             glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+#ifdef HELLOIMGUI_HAS_OPENGL3
+        ApplyAntiAliasingSamples(openGlOptions);
+#endif  // #ifdef HELLOIMGUI_HAS_OPENGL3
     }
 
     static OpenGlOptions MakeOpenGlOptions()
@@ -27,6 +90,8 @@ namespace HelloImGui { namespace BackendApi
             return runnerParams->rendererBackendOptions.openGlOptions.value();
 
         OpenGlOptions openGlOptions;
+
+        openGlOptions.AntiAliasingSamples = -1;   // -1 <=> not set, will use the default value of 8
 
         //
         // Compute MajorVersion, MinorVersion, UseCoreProfile, UseForwardCompat

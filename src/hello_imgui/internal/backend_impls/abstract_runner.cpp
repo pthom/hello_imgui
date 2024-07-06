@@ -253,18 +253,8 @@ void AbstractRunner::ReadOpenGlOptions()
     // you may set them manually:
     //    (1) Either by setting them programmatically in your application
     //        (set their values in `runnerParams.rendererBackendOptions.openGlOptions`)
-    //    (2) Either by setting them in a `hello_imgui.ini` file in the current folder, or any of its parent folders.
-    //       (this is useful when you want to set them for a specific app or set of apps, without modifying the app code)
-    // Note: if several methods are used, the order of priority is (1) > (2)
-    //
-    // Example content of a hello_imgui.ini file:
-    // ------------------------------
-    //    [OpenGlOptions]
-    //    GlslVersion = 130
-    //    MajorVersion = 3
-    //    MinorVersion = 2
-    //    UseCoreProfile = true
-    //    UseForwardCompat = false
+    //    (2) Either by setting them in a `hello_imgui.ini` file. See hello_imgui/hello_imgui_example.ini for more info
+    //    Note: if several methods are used, the order of priority is (1) > (2)
 
     // If options specified by the program, do not read them.
     if (params.rendererBackendOptions.openGlOptions.has_value())
@@ -277,8 +267,9 @@ void AbstractRunner::ReadOpenGlOptions()
     auto useCoreProfile = HelloImGuiIniAnyParentFolder::readBoolValue(openGlSection, "UseCoreProfile");
     auto useForwardCompat = HelloImGuiIniAnyParentFolder::readBoolValue(openGlSection, "UseForwardCompat");
     auto glslVersion = HelloImGuiIniAnyParentFolder::readStringValue(openGlSection, "GlslVersion");
+    auto antiAliasingSamples = HelloImGuiIniAnyParentFolder::readIntValue(openGlSection, "AntiAliasingSamples");
 
-    bool isAnySettingsSpecified = majorVersion.has_value() || minorVersion.has_value() || useCoreProfile.has_value() || useForwardCompat.has_value() || glslVersion.has_value();
+    bool isAnySettingsSpecified = majorVersion.has_value() || minorVersion.has_value() || useCoreProfile.has_value() || useForwardCompat.has_value() || glslVersion.has_value() || antiAliasingSamples.has_value();
 
     if (isAnySettingsSpecified)
     {
@@ -294,6 +285,8 @@ void AbstractRunner::ReadOpenGlOptions()
             openGlOptions.UseForwardCompat = useForwardCompat.value();
         if (glslVersion.has_value())
             openGlOptions.GlslVersion = glslVersion.value();
+        if (antiAliasingSamples.has_value())
+            openGlOptions.AntiAliasingSamples = antiAliasingSamples.value();
     }
 
 }

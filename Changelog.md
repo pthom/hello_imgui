@@ -1,7 +1,13 @@
 Version numbers are synced between hello_imgui and imgui_bundle.
 
-# v1.5.0-rc1
-
+# v1.5.0
+* Improved rendering on Windows (via antialiasing)
+* Add IniFolderType.AbsolutePath
+* Polish themes
+* Add callback PostRenderDockableWindows
+* Added optional [hello_imgui.ini](https://github.com/pthom/hello_imgui/blob/master/hello_imgui_example.ini) file, 
+  as a way to do advanced configuration for Dpi and OpenGL rendering options
+* Add PushTweakedTheme / PopTweakedTheme (different ImGui windows can use a different theme. See demo docking)
 * Add DpiAwareParams: see [doc](https://pthom.github.io/hello_imgui/book/doc_params.html#dpi-aware-params)
 * Add HelloImGui::ImageAndSizeFromAsset see [doc](https://pthom.github.io/hello_imgui/book/doc_api.html#display-images-from-assets)
 * callbacks.LoadAdditionalFonts can be modified and reused during execution

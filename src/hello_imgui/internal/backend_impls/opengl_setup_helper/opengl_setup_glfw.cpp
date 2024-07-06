@@ -59,7 +59,9 @@ namespace HelloImGui { namespace BackendApi
 
         if (effectiveSamples > 0)
         {
-            glEnable(GL_MULTISAMPLE);
+            #if ! defined(__EMSCRIPTEN__) && ! defined(HELLOIMGUI_USE_GLES3)  && ! defined(HELLOIMGUI_USE_GLES2)
+            glEnable(GL_MULTISAMPLE); // multisampling is automatically enabled if the framebuffer supports it for for OpenGL ES
+            #endif
             glfwWindowHint(GLFW_SAMPLES, effectiveSamples);
         }
         else

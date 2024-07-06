@@ -73,8 +73,8 @@ namespace HelloImGui { namespace BackendApi
         {
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, effectiveSamples);
-            #ifndef __EMSCRIPTEN__
-            glEnable(GL_MULTISAMPLE);
+            #if ! defined(__EMSCRIPTEN__) && ! defined(HELLOIMGUI_USE_GLES3)  && ! defined(HELLOIMGUI_USE_GLES2)
+            glEnable(GL_MULTISAMPLE); // multisampling is automatically enabled if the framebuffer supports it for OpenGL ES
             #endif
         }
         else

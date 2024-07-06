@@ -289,6 +289,7 @@ struct RunnerCallbacks
     // --------------- GUI Callbacks -------------------
 
     // `ShowGui`: Fill it with a function that will add your widgets.
+    // (ShowGui will be called at each frame, before rendering the Dockable windows, if any)
     VoidFunction ShowGui = EmptyVoidFunction();
 
     // `ShowMenus`: Fill it with a function that will add ImGui menus by calling:
@@ -407,6 +408,10 @@ struct RunnerCallbacks
     //  like a mesh editor, or game, and just want the Gui to be drawn
     //  on top of that content.
     VoidFunction CustomBackground = EmptyVoidFunction();
+
+    // `PostRenderDockableWindows`: Fill it with a function that will be called
+    // after the dockable windows are rendered.
+    VoidFunction PostRenderDockableWindows = EmptyVoidFunction();
 
     // `AnyBackendEventCallback`:
     //  Callbacks for events from a specific backend. _Only implemented for SDL.
@@ -594,6 +599,13 @@ struct AppWindowParams
     // `handleEdgeInsets`: _bool, default = true_. iOS only.
     // If true, HelloImGui will handle the edgeInsets on iOS.
     bool       handleEdgeInsets = true;
+
+    // ----------------- repaint the window during resize -----------------
+    // Very advanced and reserved for advanced C++ users.
+    // If you set this to true, the window will be repainted during resize.
+    // Do read https://github.com/pthom/hello_imgui/issues/112 for info about the possible gotchas
+    // (This API is not stable, as the name suggests, and this is not supported)
+    bool repaintDuringResize_GotchaReentrantRepaint = false;
 };
 ```
 
@@ -861,8 +873,9 @@ Source: [dpi_aware.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 //
 // Hello ImGui will try its best to automatically handle DPI scaling for you.
-// It does this by setting two values:
 //
+// Parameters to change the scaling behavior:
+// ------------------------------------------
 // - `dpiWindowSizeFactor`:
 //        factor by which window size should be multiplied
 //
@@ -873,21 +886,21 @@ Source: [dpi_aware.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 //    By default, Hello ImGui will compute them automatically,
 //    when dpiWindowSizeFactor and fontRenderingScale are set to 0.
 //
+// Parameters to improve font rendering quality:
+// ---------------------------------------------
+// - `fontOversampleH` and `fontOversampleV` : Font oversampling parameters
+//     Rasterize at higher quality for sub-pixel positioning. Probably unused if freeType is used.
+//     If not zero, these values will be used to set the oversampling factor when loading fonts.
+//
+//
 // How to set those values manually:
 // ---------------------------------
 // If it fails (i.e. your window and/or fonts are too big or too small),
 // you may set them manually:
 //    (1) Either by setting them programmatically in your application
 //        (set their values in `runnerParams.dpiAwareParams`)
-//    (2) Either by setting them in a `hello_imgui.ini` file in the current folder, or any of its parent folders.
-//       (this is useful when you want to set them for a specific app or set of apps, without modifying the app code)
+//    (2) Either by setting them in a `hello_imgui.ini` file. See hello_imgui/hello_imgui_example.ini for more info
 // Note: if several methods are used, the order of priority is (1) > (2)
-//
-// Example content of a ini file:
-// ------------------------------
-//     [DpiAwareParams]
-//     dpiWindowSizeFactor=2
-//     fontRenderingScale=0.5
 //
 // For more information, see the documentation on DPI handling, here: https://pthom.github.io/hello_imgui/book/doc_api.html#handling-screens-with-high-dpi
 //
@@ -922,10 +935,22 @@ struct DpiAwareParams
     // (This parameter will be used to set ImGui::GetIO().FontGlobalScale at startup)
     float fontRenderingScale = 0.0f;
 
-	// `onlyUseFontDpiResponsive`
-	// If true, guarantees that only HelloImGui::LoadDpiResponsiveFont will be used to load fonts.
-	// (also for the default font)
-	bool onlyUseFontDpiResponsive = false;
+    // `onlyUseFontDpiResponsive`
+    // If true, guarantees that only HelloImGui::LoadDpiResponsiveFont will be used to load fonts.
+    // (also for the default font)
+    bool onlyUseFontDpiResponsive = false;
+
+    // `fontOversampleH` and `fontOversampleV` : Font oversampling parameters
+    // Rasterize at higher quality for sub-pixel positioning. Probably unused if freeType is used.
+    // If not zero, these values will be used to set the oversampling factor when loading fonts.
+    // (i.e. they will be set in ImFontConfig::OversampleH and ImFontConfig::OversampleV)
+    // OversampleH: The difference between 2 and 3 for OversampleH is minimal.
+    //              You can reduce this to 1 for large glyphs save memory.
+    // OversampleV: This is not really useful as we don't use sub-pixel positions on the Y axis.
+    // Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.
+    int             fontOversampleH = 0;  // Default is 2 in ImFontConfig
+    int             fontOversampleV = 0;  // Default is 1 in ImFontConfig
+
 
     // `dpiFontLoadingFactor`
     //     factor by which font size should be multiplied at loading time to get a similar
@@ -1356,7 +1381,7 @@ struct RendererBackendOptions
 
     // `openGlOptions`:
     // Advanced options for OpenGL. Use at your own risk.
-    std::optional<OpenGlOptions> openGlOptions = std::nullopt;
+    OpenGlOptions openGlOptions;
 };
 
 

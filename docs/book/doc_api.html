@@ -530,11 +530,12 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 <span class="w">        </span><span class="c1">// Otherwise, it will be loaded from the filesystem</span>
 <span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">insideAssets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
 
-<span class="w">        </span><span class="c1">// the ranges of glyphs to load:</span>
+<span class="w">        </span><span class="c1">// the ranges of glyphs to load, as a list of pairs of ImWchar</span>
 <span class="w">        </span><span class="c1">//    - if empty, the default glyph range will be used</span>
 <span class="w">        </span><span class="c1">//    - you can specify several ranges</span>
 <span class="w">        </span><span class="c1">//    - intervals bounds are inclusive</span>
-<span class="w">        </span><span class="c1">// (will be translated and stored as a static ImWChar* inside fontConfig)</span>
+<span class="w">        </span><span class="c1">// Note: in order to use common ranges defined by ImGui (GetGlyphRangesJapanese, GetGlyphRangesChinese, ...)</span>
+<span class="w">        </span><span class="c1">//       use TranslateCommonGlyphRanges (or translate_common_glyph_ranges in Python)</span>
 <span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ImWcharPair</span><span class="o">&gt;</span><span class="w"> </span><span class="n">glyphRanges</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
 
 <span class="w">        </span><span class="c1">// ImGui native font config to use</span>
@@ -751,7 +752,7 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 <h1>Ini settings<a class="headerlink" href="#ini-settings" title="Permalink to this heading">#</a></h1>
 <section id="ini-settings-location">
 <h2>Ini settings location<a class="headerlink" href="#ini-settings-location" title="Permalink to this heading">#</a></h2>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// IniFolderType is an enum which describle where is the base path to store</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// IniFolderType is an enum which describes where is the base path to store</span>
 <span class="c1">// the ini file for the application settings.</span>
 <span class="c1">//</span>
 <span class="c1">// You can use IniFolderLocation(iniFolderType) to get the corresponding path.</span>
@@ -772,6 +773,10 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 <span class="w">    </span><span class="c1">// CurrentFolder: the folder where the application is executed</span>
 <span class="w">    </span><span class="c1">// (convenient for development, but not recommended for production)</span>
 <span class="w">    </span><span class="n">CurrentFolder</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">// AbsolutePath: an absolute path</span>
+<span class="w">    </span><span class="c1">// (convenient, but not recommended if targeting multiple platforms)</span>
+<span class="w">    </span><span class="n">AbsolutePath</span><span class="p">,</span>
 
 <span class="w">    </span><span class="c1">// AppUserConfigFolder:</span>
 <span class="w">    </span><span class="c1">//      AppData under Windows (Example: C:\Users\[Username]\AppData\Roaming under windows)</span>
@@ -878,8 +883,20 @@ it can optionally call <code class="docutils literal notranslate"><span class="p
 <span class="w">    </span><span class="c1">//       ```</span>
 <span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">InputTextData</span>
 <span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// The text edited in the input field</span>
 <span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">Text</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c1">// An optional hint displayed when the input field is empty</span>
+<span class="w">        </span><span class="c1">// (only works for single-line text input)</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">Hint</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c1">// If true, the input field is multi-line</span>
 <span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">Multiline</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c1">// If true, the input field is resizable</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">Resizable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c1">// The size of the input field in em units</span>
 <span class="w">        </span><span class="n">ImVec2</span><span class="w"> </span><span class="n">SizeEm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 
 <span class="w">        </span><span class="n">InputTextData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">multiline</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="n">ImVec2</span><span class="w"> </span><span class="n">size_em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImVec2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="n">text</span><span class="p">),</span><span class="w"> </span><span class="n">Multiline</span><span class="p">(</span><span class="n">multiline</span><span class="p">),</span><span class="w"> </span><span class="n">SizeEm</span><span class="p">(</span><span class="n">size_em</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>

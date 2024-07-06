@@ -92,11 +92,12 @@ See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/he
         // Otherwise, it will be loaded from the filesystem
         bool insideAssets = true;
 
-        // the ranges of glyphs to load:
+        // the ranges of glyphs to load, as a list of pairs of ImWchar
         //    - if empty, the default glyph range will be used
         //    - you can specify several ranges
         //    - intervals bounds are inclusive
-        // (will be translated and stored as a static ImWChar* inside fontConfig)
+        // Note: in order to use common ranges defined by ImGui (GetGlyphRangesJapanese, GetGlyphRangesChinese, ...)
+        //       use TranslateCommonGlyphRanges (or translate_common_glyph_ranges in Python)
         std::vector<ImWcharPair> glyphRanges = {};
 
         // ImGui native font config to use
@@ -326,7 +327,7 @@ std::string    CurrentLayoutName();
 
 ```cpp
 
-// IniFolderType is an enum which describle where is the base path to store
+// IniFolderType is an enum which describes where is the base path to store
 // the ini file for the application settings.
 //
 // You can use IniFolderLocation(iniFolderType) to get the corresponding path.
@@ -347,6 +348,10 @@ enum class IniFolderType
     // CurrentFolder: the folder where the application is executed
     // (convenient for development, but not recommended for production)
     CurrentFolder,
+
+    // AbsolutePath: an absolute path
+    // (convenient, but not recommended if targeting multiple platforms)
+    AbsolutePath,
 
     // AppUserConfigFolder:
     //      AppData under Windows (Example: C:\Users\[Username]\AppData\Roaming under windows)
@@ -464,8 +469,20 @@ void ShowAppMenu(RunnerParams & runnerParams);
     //       ```
     struct InputTextData
     {
+        // The text edited in the input field
         std::string Text;
+
+        // An optional hint displayed when the input field is empty
+        // (only works for single-line text input)
+        std::string Hint;
+
+        // If true, the input field is multi-line
         bool Multiline = false;
+
+        // If true, the input field is resizable
+        bool Resizable = true;
+
+        // The size of the input field in em units
         ImVec2 SizeEm = ImVec2(0, 0);
 
         InputTextData(const std::string& text = "", bool multiline = false, ImVec2 size_em = ImVec2(0, 0)) : Text(text), Multiline(multiline), SizeEm(size_em) {}

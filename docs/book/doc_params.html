@@ -723,6 +723,7 @@ the elements in the <code class="docutils literal notranslate"><span class="pre"
 <span class="w">    </span><span class="c1">// --------------- GUI Callbacks -------------------</span>
 
 <span class="w">    </span><span class="c1">// `ShowGui`: Fill it with a function that will add your widgets.</span>
+<span class="w">    </span><span class="c1">// (ShowGui will be called at each frame, before rendering the Dockable windows, if any)</span>
 <span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">ShowGui</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
 
 <span class="w">    </span><span class="c1">// `ShowMenus`: Fill it with a function that will add ImGui menus by calling:</span>
@@ -841,6 +842,10 @@ the elements in the <code class="docutils literal notranslate"><span class="pre"
 <span class="w">    </span><span class="c1">//  like a mesh editor, or game, and just want the Gui to be drawn</span>
 <span class="w">    </span><span class="c1">//  on top of that content.</span>
 <span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">CustomBackground</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// `PostRenderDockableWindows`: Fill it with a function that will be called</span>
+<span class="w">    </span><span class="c1">// after the dockable windows are rendered.</span>
+<span class="w">    </span><span class="n">VoidFunction</span><span class="w"> </span><span class="n">PostRenderDockableWindows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EmptyVoidFunction</span><span class="p">();</span>
 
 <span class="w">    </span><span class="c1">// `AnyBackendEventCallback`:</span>
 <span class="w">    </span><span class="c1">//  Callbacks for events from a specific backend. _Only implemented for SDL.</span>
@@ -1023,6 +1028,13 @@ the elements in the <code class="docutils literal notranslate"><span class="pre"
 <span class="w">    </span><span class="c1">// `handleEdgeInsets`: _bool, default = true_. iOS only.</span>
 <span class="w">    </span><span class="c1">// If true, HelloImGui will handle the edgeInsets on iOS.</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w">       </span><span class="n">handleEdgeInsets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// ----------------- repaint the window during resize -----------------</span>
+<span class="w">    </span><span class="c1">// Very advanced and reserved for advanced C++ users.</span>
+<span class="w">    </span><span class="c1">// If you set this to true, the window will be repainted during resize.</span>
+<span class="w">    </span><span class="c1">// Do read https://github.com/pthom/hello_imgui/issues/112 for info about the possible gotchas</span>
+<span class="w">    </span><span class="c1">// (This API is not stable, as the name suggests, and this is not supported)</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">repaintDuringResize_GotchaReentrantRepaint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -1285,8 +1297,9 @@ the elements in the <code class="docutils literal notranslate"><span class="pre"
 <p>Source: <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/dpi_aware.h">dpi_aware.h</a></p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//</span>
 <span class="c1">// Hello ImGui will try its best to automatically handle DPI scaling for you.</span>
-<span class="c1">// It does this by setting two values:</span>
 <span class="c1">//</span>
+<span class="c1">// Parameters to change the scaling behavior:</span>
+<span class="c1">// ------------------------------------------</span>
 <span class="c1">// - `dpiWindowSizeFactor`:</span>
 <span class="c1">//        factor by which window size should be multiplied</span>
 <span class="c1">//</span>
@@ -1297,21 +1310,21 @@ the elements in the <code class="docutils literal notranslate"><span class="pre"
 <span class="c1">//    By default, Hello ImGui will compute them automatically,</span>
 <span class="c1">//    when dpiWindowSizeFactor and fontRenderingScale are set to 0.</span>
 <span class="c1">//</span>
+<span class="c1">// Parameters to improve font rendering quality:</span>
+<span class="c1">// ---------------------------------------------</span>
+<span class="c1">// - `fontOversampleH` and `fontOversampleV` : Font oversampling parameters</span>
+<span class="c1">//     Rasterize at higher quality for sub-pixel positioning. Probably unused if freeType is used.</span>
+<span class="c1">//     If not zero, these values will be used to set the oversampling factor when loading fonts.</span>
+<span class="c1">//</span>
+<span class="c1">//</span>
 <span class="c1">// How to set those values manually:</span>
 <span class="c1">// ---------------------------------</span>
 <span class="c1">// If it fails (i.e. your window and/or fonts are too big or too small),</span>
 <span class="c1">// you may set them manually:</span>
 <span class="c1">//    (1) Either by setting them programmatically in your application</span>
 <span class="c1">//        (set their values in `runnerParams.dpiAwareParams`)</span>
-<span class="c1">//    (2) Either by setting them in a `hello_imgui.ini` file in the current folder, or any of its parent folders.</span>
-<span class="c1">//       (this is useful when you want to set them for a specific app or set of apps, without modifying the app code)</span>
+<span class="c1">//    (2) Either by setting them in a `hello_imgui.ini` file. See hello_imgui/hello_imgui_example.ini for more info</span>
 <span class="c1">// Note: if several methods are used, the order of priority is (1) &gt; (2)</span>
-<span class="c1">//</span>
-<span class="c1">// Example content of a ini file:</span>
-<span class="c1">// ------------------------------</span>
-<span class="c1">//     [DpiAwareParams]</span>
-<span class="c1">//     dpiWindowSizeFactor=2</span>
-<span class="c1">//     fontRenderingScale=0.5</span>
 <span class="c1">//</span>
 <span class="c1">// For more information, see the documentation on DPI handling, here: https://pthom.github.io/hello_imgui/book/doc_api.html#handling-screens-with-high-dpi</span>
 <span class="c1">//</span>
@@ -1346,10 +1359,22 @@ the elements in the <code class="docutils literal notranslate"><span class="pre"
 <span class="w">    </span><span class="c1">// (This parameter will be used to set ImGui::GetIO().FontGlobalScale at startup)</span>
 <span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">fontRenderingScale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">;</span>
 
-<span class="w">	</span><span class="c1">// `onlyUseFontDpiResponsive`</span>
-<span class="w">	</span><span class="c1">// If true, guarantees that only HelloImGui::LoadDpiResponsiveFont will be used to load fonts.</span>
-<span class="w">	</span><span class="c1">// (also for the default font)</span>
-<span class="w">	</span><span class="kt">bool</span><span class="w"> </span><span class="n">onlyUseFontDpiResponsive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// `onlyUseFontDpiResponsive`</span>
+<span class="w">    </span><span class="c1">// If true, guarantees that only HelloImGui::LoadDpiResponsiveFont will be used to load fonts.</span>
+<span class="w">    </span><span class="c1">// (also for the default font)</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">onlyUseFontDpiResponsive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// `fontOversampleH` and `fontOversampleV` : Font oversampling parameters</span>
+<span class="w">    </span><span class="c1">// Rasterize at higher quality for sub-pixel positioning. Probably unused if freeType is used.</span>
+<span class="w">    </span><span class="c1">// If not zero, these values will be used to set the oversampling factor when loading fonts.</span>
+<span class="w">    </span><span class="c1">// (i.e. they will be set in ImFontConfig::OversampleH and ImFontConfig::OversampleV)</span>
+<span class="w">    </span><span class="c1">// OversampleH: The difference between 2 and 3 for OversampleH is minimal.</span>
+<span class="w">    </span><span class="c1">//              You can reduce this to 1 for large glyphs save memory.</span>
+<span class="w">    </span><span class="c1">// OversampleV: This is not really useful as we don&#39;t use sub-pixel positions on the Y axis.</span>
+<span class="w">    </span><span class="c1">// Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.</span>
+<span class="w">    </span><span class="kt">int</span><span class="w">             </span><span class="n">fontOversampleH</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">  </span><span class="c1">// Default is 2 in ImFontConfig</span>
+<span class="w">    </span><span class="kt">int</span><span class="w">             </span><span class="n">fontOversampleV</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">  </span><span class="c1">// Default is 1 in ImFontConfig</span>
+
 
 <span class="w">    </span><span class="c1">// `dpiFontLoadingFactor`</span>
 <span class="w">    </span><span class="c1">//     factor by which font size should be multiplied at loading time to get a similar</span>
@@ -1761,7 +1786,7 @@ specifies the list of dockable windows, along with their default location, and t
 
 <span class="w">    </span><span class="c1">// `openGlOptions`:</span>
 <span class="w">    </span><span class="c1">// Advanced options for OpenGL. Use at your own risk.</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">OpenGlOptions</span><span class="o">&gt;</span><span class="w"> </span><span class="n">openGlOptions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">;</span>
+<span class="w">    </span><span class="n">OpenGlOptions</span><span class="w"> </span><span class="n">openGlOptions</span><span class="p">;</span>
 <span class="p">};</span>
 
 

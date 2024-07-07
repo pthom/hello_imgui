@@ -130,11 +130,11 @@ namespace HelloImGui
 
         // Font oversampling (set by dpiAwareParams)
         {
-            const auto& dpiAwareParams = HelloImGui::GetRunnerParams()->dpiAwareParams;
-            if (dpiAwareParams.fontOversampleH > 0)
-                params.fontConfig.OversampleH = dpiAwareParams.fontOversampleH;
-            if (dpiAwareParams.fontOversampleV > 0)
-                params.fontConfig.OversampleV = dpiAwareParams.fontOversampleV;
+            const auto& dpiAwareParams = HelloImGui::GetDpiAwareParams();
+            if (dpiAwareParams->fontOversampleH > 0)
+                params.fontConfig.OversampleH = dpiAwareParams->fontOversampleH;
+            if (dpiAwareParams->fontOversampleV > 0)
+                params.fontConfig.OversampleV = dpiAwareParams->fontOversampleV;
         }
 
         float fontSize = fontSize_;

@@ -51,6 +51,13 @@ ImVec2 EmToVec2(ImVec2 v);
 float EmSize();
 // __HelloImGui::EmSize(nbLines)__ returns a size corresponding to nbLines text lines
 float EmSize(float nbLines);
+
+// __HelloImGui::PixelToEm()__ converts a Vec2 in pixels coord to a Vec2 in em units
+ImVec2 PixelsToEm(ImVec2 pixels);
+
+// __HelloImGui::PixelSizeToEm()__ converts a size in pixels coord to a size in em units
+float  PixelSizeToEm(float pixelSize);
+
 ```
 
 ----

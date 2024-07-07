@@ -1,5 +1,4 @@
 name: "TestEngine"
-
 # Test that a build with ImGui Test Engine works
 
 on:

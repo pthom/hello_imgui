@@ -32,44 +32,41 @@ namespace HelloImGui
             auto _stringToSaneFilename=[](const std::string& s, const std::string& extension) -> std::string
             {
                 std::string filenameSanitized;
+
                 for (char c : s)
+                {
                     if (isalnum(c))
                         filenameSanitized += c;
                     else
                         filenameSanitized += "_";
+                }
+
                 filenameSanitized += extension;
                 return filenameSanitized;
             };
 
             if (! runnerParams.iniFilename.empty())
                 return runnerParams.iniFilename;
-            else
-            {
-                if (runnerParams.iniFilename_useAppWindowTitle && !runnerParams.appWindowParams.windowTitle.empty())
-                {
-                    std::string iniFilenameSanitized = _stringToSaneFilename(runnerParams.appWindowParams.windowTitle, ".ini");
-                    return iniFilenameSanitized;
-                }
-                else
-                    return "imgui.ini";
-            }
+
+            if (runnerParams.iniFilename_useAppWindowTitle && !runnerParams.appWindowParams.windowTitle.empty())
+                return _stringToSaneFilename(runnerParams.appWindowParams.windowTitle, ".ini");
+
+            return "imgui.ini";
+
         };
 
         auto mkdirToFilename = [](const std::string& filename) -> bool
         {
             std::filesystem::path p(filename);
             std::filesystem::path dir = p.parent_path();
+
             if (dir.empty())
                 return true;
+
             if (std::filesystem::exists(dir))
-            {
-                if (std::filesystem::is_directory(dir) || std::filesystem::is_symlink(dir))
-                    return true;
-                else
-                    return false;
-            }
-            else
-                return std::filesystem::create_directories(dir);
+                return std::filesystem::is_directory(dir) || std::filesystem::is_symlink(dir);
+
+            return std::filesystem::create_directories(dir);
         };
 
 
@@ -87,10 +84,13 @@ namespace HelloImGui
     void DeleteIniSettings(const RunnerParams& runnerParams)
     {
         std::string iniFullFilename = IniSettingsLocation(runnerParams);
+
         if (iniFullFilename.empty())
             return;
+
         if (!std::filesystem::exists(iniFullFilename))
             return;
+
         bool success = std::filesystem::remove(iniFullFilename);
         IM_ASSERT(success && "Failed to delete ini file %s");
     }
@@ -99,8 +99,10 @@ namespace HelloImGui
     bool HasIniSettings(const RunnerParams& runnerParams)
     {
         std::string iniFullFilename = IniSettingsLocation(runnerParams);
+
         if (iniFullFilename.empty())
             return false;
+
         return std::filesystem::exists(iniFullFilename);
     }
 

@@ -1002,64 +1002,98 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     };
 
 
-    // Handle idling & poll events
+    //
+    //  Ilding and Poll logic
+    //
+
+    // Returns true if we can idle on this frame, i.e.:
+    //  - idling is enabled
+    // - no recent event was received, and the app is not in the first frames
+    // - no test running
+    // - not in remote display mode
+    auto fnCanIdle = [this]() -> bool
+    {
+        double now = Internal::ClockSeconds();
+        assert(params.fpsIdling.fpsIdle >= 0.f && "fpsIdle must be >= 0");
+
+        // If the last event is recent, do not idle
+        bool hasRecentEvent = (now - gStatics.timeLastEvent) < (double)params.fpsIdling.timeActiveAfterLastEvent;
+        // If idling is disabled by params, do not idle
+        bool isIdlingDisabledByParams = (! params.fpsIdling.enableIdling || (params.fpsIdling.fpsIdle <= 0.f) );
+
+        // If the test engine is running, do not idle
+        bool isTestEngineRunning = false;
+        #ifdef HELLOIMGUI_WITH_TEST_ENGINE
+        {
+            if (params.useImGuiTestEngine && TestEngineCallbacks::IsRunningTest())
+                isTestEngineRunning = true;
+        }
+        #endif
+
+        // If the app started recently, do not idle
+        bool startedRecently = mIdxFrame < 12;
+
+        bool preventIdling = isIdlingDisabledByParams || hasRecentEvent || isTestEngineRunning || ShouldRemoteDisplay() || startedRecently;
+        return ! preventIdling;
+    };
+
+
+    // Handle idling by sleeping (all platforms except emscripten)
+    auto fnIdleBySleeping = [this]()
+    {
+        // Idling for non emscripten, where HelloImGui is responsible for the main loop.
+        // This form of idling will call WaitForEventTimeout(), which may call sleep():
+        double waitTimeout = 1. / (double) params.fpsIdling.fpsIdle;
+        mBackendWindowHelper->WaitForEventTimeout(waitTimeout);
+    };
+
+
+    auto fnWasLastFrameRenderedInTimeForDesiredFps = [this]() -> bool
+    {
+        double now = Internal::ClockSeconds();
+        bool wasLastFrameRenderedInTimeForDesiredFps = ((now - gStatics.lastRefreshTime) < 1. / params.fpsIdling.fpsIdle);
+        return wasLastFrameRenderedInTimeForDesiredFps;
+    };
+
+    // Handles idling, and returns true if we should skip rendering this frame
+    // (Idling is handled by sleeping on all platforms except emscripten, where we skip rendering)
+    auto fnHandleIdling = [this, fnCanIdle, fnIdleBySleeping, fnWasLastFrameRenderedInTimeForDesiredFps]() -> bool
+    {
+        bool shallIdle = fnCanIdle();
+        params.fpsIdling.isIdling = shallIdle;
+        if (shallIdle)
+        {
+            bool idleByEarlyReturn_Emscripten = false;
+            #ifdef __EMSCRIPTEN__
+                idleByEarlyReturn_Emscripten = true;
+            #endif
+
+            if (idleByEarlyReturn_Emscripten)
+            {
+                // Under emscripten, the idling implementation is different:
+                // we cannot sleep (which would lead to a busy wait), so we skip rendering
+                // if the last frame was rendered in time for the desired FPS
+                if (fnWasLastFrameRenderedInTimeForDesiredFps())
+                    return true;
+            }
+            else
+            {
+                // Handle idling by sleeping (all platforms except emscripten)
+                fnIdleBySleeping();
+            }
+        }
+        return false;
+    };
+
+    // Handle poll events
     // Warning:
     // Due to severe gotcha inside GLFW and SDL: PollEvent is supposed to
     // return immediately, but it doesn't when resizing the window!
     // Instead, you have to subscribe to a kind of special "mid-resize" event,
     // and then call the render function yourself.
     // As a consequence, this function is not called inside reentrant calls
-    //
-    // Under emscripten, the idling implementation is different:
-    // we cannot sleep (which would lead to a busy wait), so we skip rendering the frame if needed
-    // => we return true if we should not render this frame
-    auto fnHandleIdlingAndPollEvents_MayReRenderDuringResize_GotchaReentrant = [this]()-> bool
+    auto fnHandlePollEvents_MayReRenderDuringResize_GotchaReentrant = [this]()
     {
-        // This will be our return value: can only be true under emscripten, when idling is needed
-        bool shallSkipRenderingThisFrame = false;
-
-        double now = Internal::ClockSeconds();
-
-        auto fnShallIdle = [&]() -> bool
-        {
-            assert(params.fpsIdling.fpsIdle >= 0.f && "fpsIdle must be >= 0");
-
-            // If the last event is recent, do not idle
-            bool hasRecentEvent = (now - gStatics.timeLastEvent) < (double)params.fpsIdling.timeActiveAfterLastEvent;
-            // If idling is disabled by params, do not idle
-            bool isIdlingDisabledByParams = (! params.fpsIdling.enableIdling || (params.fpsIdling.fpsIdle <= 0.f) );
-
-            // If the test engine is running, do not idle
-            bool isTestEngineRunning = false;
-            #ifdef HELLOIMGUI_WITH_TEST_ENGINE
-            if (params.useImGuiTestEngine && TestEngineCallbacks::IsRunningTest())
-                isTestEngineRunning = true;
-            #endif
-
-            // If the app started recently, do not idle
-            bool startedRecently = mIdxFrame < 12;
-
-            bool preventIdling = isIdlingDisabledByParams || hasRecentEvent || isTestEngineRunning || ShouldRemoteDisplay() || startedRecently;
-            return ! preventIdling;
-        };
-
-        bool shallIdle = fnShallIdle();
-        params.fpsIdling.isIdling = shallIdle;
-
-        // Keep track of the time of the last event,
-        // by counting the number of events in the input queue
-        int nbEventsBefore = ImGui::GetCurrentContext()->InputEventsQueue.size();
-
-        #ifndef __EMSCRIPTEN__
-        // Idling for non emscripten, where HelloImGui is responsible for the main loop.
-        // This form of idling will call WaitForEventTimeout(), which may call sleep():
-        if (shallIdle)
-        {
-            double waitTimeout = 1. / (double) params.fpsIdling.fpsIdle;
-            mBackendWindowHelper->WaitForEventTimeout(waitTimeout);
-        }
-        #endif
-
         // Poll Events (this fills GImGui.InputEventsQueue)
         // May re-trigger a full call to CreateFramesAndRender(skipPollEvents=true)
         // if we are in the middle of a window resize!!!
@@ -1067,20 +1101,6 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         //  which is circumvented by calling CreateFramesAndRender(skipPollEvents=true)) in a specific callback
         //  defined during the window creation)
         Impl_PollEvents();
-
-        int nbEventsAfter = ImGui::GetCurrentContext()->InputEventsQueue.size();
-        if (nbEventsAfter > nbEventsBefore)
-            gStatics.timeLastEvent = now;
-
-#ifdef __EMSCRIPTEN__
-        // Idling for emscripten: we cannot sleep, so we skip rendering the frame if needed
-        bool wasLastFrameRenderedInTimeForDesiredFps = ((now - gStatics.lastRefreshTime) < 1. / params.fpsIdling.fpsIdle);
-        shallSkipRenderingThisFrame = shallIdle && wasLastFrameRenderedInTimeForDesiredFps;
-#endif
-
-        if (! shallSkipRenderingThisFrame)
-            gStatics.lastRefreshTime = now;
-        return shallSkipRenderingThisFrame;
     };
 
 
@@ -1122,7 +1142,6 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
             if (io.DeltaTime <= 0.f)
                 io.DeltaTime = 1.f / 60.f;
         }
-
     };
 
 
@@ -1178,14 +1197,14 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
     auto fnCallTestEngineCallbackPostSwap = [this]()
     {
-#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+        #ifdef HELLOIMGUI_WITH_TEST_ENGINE
         // TestEngineCallbacks::PostSwap() handles the GIL in its own way,
         // it can not be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
         if (params.useImGuiTestEngine)
         {
             TestEngineCallbacks::PostSwap();
         }
-#endif
+        #endif
     };
 
     // ======================================================================================
@@ -1264,7 +1283,6 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         fnHandleLayout();
     }
 
-
     fnRegisterTests_UserCallback();
 
     {
@@ -1272,28 +1290,38 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         fnHandleWindowSizeAndPositionOnFirstFrames_AndAfterResize();
     }
 
-    // Handle idling & poll events
-    // Warning:
-    // Due to severe gotcha inside GLFW and SDL: PollEvent is supposed to
-    // return immediately, but it doesn't when resizing the window!
-    // Instead, you have to subscribe to a kind of special "mid-resize" event,
-    // and then call the render function yourself.
+    // nbEventsBeforePollAndIdle enables us to detect if an event was received
+    int nbEventsBeforePollAndIdle = ImGui::GetCurrentContext()->InputEventsQueue.size();
+
+    // Handle idling: this will either sleep (almost all platforms) or skip rendering (emscripten)
+    {
+        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
+        bool shallSkipRenderingThisFrame = fnHandleIdling();
+        if (shallSkipRenderingThisFrame)
+            return;
+    }
+
+    // Handle poll events
+    // Warning: Due to severe gotcha inside GLFW and SDL: PollEvent is supposed to return immediately,
+    // but it doesn't when resizing the window!
+    // Instead, you have to subscribe to a kind of special "mid-resize" event, and then call the render function yourself.
     if (!insideReentrantCall)  // Do not poll events again in a reentrant call!
     {
         // We cannot release the GIL here, since we may have a reentrant call!
-        bool shallSkipThisFrame = fnHandleIdlingAndPollEvents_MayReRenderDuringResize_GotchaReentrant();
-        if (shallSkipThisFrame)
-        {
-            mIdxFrame += 1;
-            return;
-        }
+        fnHandlePollEvents_MayReRenderDuringResize_GotchaReentrant();
+    }
+
+    // Detect if an event was received, and store the time of the last event
+    {
+        if (ImGui::GetCurrentContext()->InputEventsQueue.size() > nbEventsBeforePollAndIdle)
+            gStatics.timeLastEvent = Internal::ClockSeconds();
     }
 
     {
-        _UpdateFrameRateStats(); // not in a SCOPED_RELEASE_GIL_ON_MAIN_THREAD, because it is very fast
+        // _UpdateFrameRateStats: not in a SCOPED_RELEASE_GIL_ON_MAIN_THREAD, because it is very fast
+        _UpdateFrameRateStats();
         fnLoadAdditionalFontDuringExecution_UserCallback(); // User callback
     }
-
 
     if ((params.callbacks.PreNewFrame) && !insideReentrantCall)
         params.callbacks.PreNewFrame();
@@ -1337,6 +1365,8 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
     if (!mRemoteDisplayHandler.CanQuitApp())
         params.appShallExit = false;
+
+    gStatics.lastRefreshTime = Internal::ClockSeconds();
 
     mIdxFrame += 1;
 }

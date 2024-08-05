@@ -81,10 +81,29 @@ jobs:
 #      - name: Setup interactive tmate session
 #        uses: mxschmitt/action-tmate@v3
 
-        # Run the test
+      # Run the test with 3 retries max
+      # (because sometimes the vcpkg package build fails due to network issues,
+      #  or maybe GH rate limiting)
       - name: run test
         shell: bash
+        env:
+          VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          export VCPKG_ROOT=$(pwd)/vcpkg
           cd .github/ci_vcpkg_package_tests
-          python run_ci_vcpkg_package_tests.py
+          max_retries=3
+          count=0
+          success=false
+
+          until [ $success = true ] || [ $count -eq $max_retries ]; do
+            python run_ci_vcpkg_package_tests.py && success=true || count=$((count + 1))
+            if [ $success = false ]; then
+              echo "Retrying... ($count/$max_retries)"
+              sleep 10
+            fi
+          done
+
+          if [ $success = false ]; then
+            echo "Failed after $max_retries attempts"
+            exit 1
+          fi

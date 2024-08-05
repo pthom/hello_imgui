@@ -18,7 +18,14 @@ void PoorManLog(const char* msg, ...)
     va_end(args);
 
 #ifdef _MSC_VER
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
+    wchar_t wbuffer[2000];
+    mbstowcs(wbuffer, buffer, strlen(buffer) + 1);
+    OutputDebugString(wbuffer);
     OutputDebugString(buffer);
+#else
+     OutputDebugString(buffer);
+#endif
 #else
     printf("%s", buffer);
 #endif

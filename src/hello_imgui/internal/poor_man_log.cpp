@@ -18,7 +18,7 @@ void PoorManLog(const char* msg, ...)
     va_end(args);
 
 #ifdef _MSC_VER
-    OutputDebugString(buffer);
+    OutputDebugStringA(buffer);
 #else
     printf("%s", buffer);
 #endif

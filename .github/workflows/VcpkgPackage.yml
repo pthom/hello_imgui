@@ -28,8 +28,14 @@ jobs:
         config:
           - os: ubuntu-latest
             vcpkg_triplet: x64-linux-release
-          - os: macos-latest
-            vcpkg_triplet: x64-osx-release
+            #
+            # macOS disabled: we have intermittent failures when downloading the vcpkg binary cache
+            # See failing action
+            #       https://github.com/pthom/hello_imgui/actions/runs/10248206833/job/28348983900
+            #          https://api.github.com/repos/pthom/hello_imgui/git/refs/heads/master: curl failed to download with exit code 22 / curl: (22) The requested URL returned error: 403
+            #          - os: macos-latest
+            #            vcpkg_triplet: x64-osx-release
+            #
             # Window disabled:
             # See failing action:https://github.com/pthom/hello_imgui/actions/runs/8967371818/job/24624780079
             #    " unresolved external symbol _Thrd_sleep_for"
@@ -37,7 +43,6 @@ jobs:
             # See https://github.com/actions/runner-images/issues/9398
             #          - os: windows-latest
             #            vcpkg_triplet: x64-windows-release
-
 
     steps:
       - uses: actions/checkout@v4
@@ -81,29 +86,10 @@ jobs:
 #      - name: Setup interactive tmate session
 #        uses: mxschmitt/action-tmate@v3
 
-      # Run the test with 3 retries max
-      # (because sometimes the vcpkg package build fails due to network issues,
-      #  or maybe GH rate limiting)
+        # Run the test
       - name: run test
         shell: bash
-        env:
-          VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          export VCPKG_ROOT=$(pwd)/vcpkg
           cd .github/ci_vcpkg_package_tests
-          max_retries=3
-          count=0
-          success=false
-
-          until [ $success = true ] || [ $count -eq $max_retries ]; do
-            python run_ci_vcpkg_package_tests.py && success=true || count=$((count + 1))
-            if [ $success = false ]; then
-              echo "Retrying... ($count/$max_retries)"
-              sleep 10
-            fi
-          done
-
-          if [ $success = false ]; then
-            echo "Failed after $max_retries attempts"
-            exit 1
-          fi
+          python run_ci_vcpkg_package_tests.py

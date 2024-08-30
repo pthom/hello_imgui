@@ -148,7 +148,7 @@ else()
     set(autodownload_default ON)
 endif()
 option(HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED "Download and build GLFW if needed" ${autodownload_default})
-option(HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED "Download and build GLFW if needed" ${autodownload_default})
+option(HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED "Download and build SDL2 if needed" ${autodownload_default})
 option(HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED "Download and build Freetype if needed" ${autodownload_default})
 option(HELLOIMGUI_FREETYPE_STATIC "Force static linking of freetype (only used for python bindings)" OFF)
 

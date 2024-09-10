@@ -67,7 +67,9 @@ bool ImageGl::DrawButton(
     const ImVec4& tint_col)
 {
     ImVec2 displayedSize = ImageProportionalSize(size, this->imageSize);
-    return ImGui::ImageButton(this->imTextureId, displayedSize, uv0, uv1, frame_padding, bg_col, tint_col);
+    char str_id[64];
+    snprintf(str_id, 64, "ImageButton_%p", this->imTextureId);
+    return ImGui::ImageButton(str_id, this->imTextureId, displayedSize, uv0, uv1, bg_col, tint_col);
 }
 
 ImageGlPtr ImageGl::FactorImage(const char *assetPath)

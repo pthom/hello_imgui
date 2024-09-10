@@ -116,7 +116,7 @@ namespace HelloImGui
         auto textureId = cachedImage->TextureID();
         auto imageSize = ImVec2((float)cachedImage->Width, (float)cachedImage->Height);
         ImVec2 displayedSize = ImageProportionalSize(size, imageSize);
-        bool clicked = ImGui::ImageButton(textureId, displayedSize, uv0, uv1, frame_padding, bg_col, tint_col);
+        bool clicked = ImGui::ImageButton(assetPath, textureId, displayedSize, uv0, uv1, bg_col, tint_col);
         return clicked;
     }
 

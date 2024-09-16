@@ -258,7 +258,7 @@ namespace HelloImGui
 	{
 		if (gWasLoadFontBareCalled)
 		{
-			fprintf(stderr, "_reloadAllDpiResponsiveFonts failed: ony call LoadFontDpiResponsive if you want this to work\n");
+			// fprintf(stderr, "_reloadAllDpiResponsiveFonts failed: ony call LoadFontDpiResponsive if you want this to work\n");
 			return false;
 		}
 		if (gAllDpiResponsiveFonts.empty())

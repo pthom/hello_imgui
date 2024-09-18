@@ -86,6 +86,14 @@ bool ShouldRemoteDisplay();
 // Encapsulated inside docking_details.cpp
 void ShowThemeTweakGuiWindow_Static();
 
+// Encapsulated inside docking_details.cpp
+namespace AddDockableWindowHelper
+{
+    void Callback_1_GuiRender();
+    void Callback_2_PreNewFrame();
+}
+
+
 
 struct AbstractRunnerStatics
 {
@@ -1323,6 +1331,10 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         fnLoadAdditionalFontDuringExecution_UserCallback(); // User callback
     }
 
+    // Handle AddDockableWindow(): this call should be done before ImGui::NewFrame
+    if (!insideReentrantCall)
+        AddDockableWindowHelper::Callback_2_PreNewFrame();
+
     if ((params.callbacks.PreNewFrame) && !insideReentrantCall)
         params.callbacks.PreNewFrame();
 
@@ -1340,6 +1352,9 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
         fnDrawCustomBackgroundOrClearColor_UserCallback(); // User callback
     }
+
+    // Handle AddDockableWindow(): this call should be done when ImGui is accepting widgets
+    AddDockableWindowHelper::Callback_1_GuiRender();
 
     // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size,
     // if the user required auto size

@@ -210,7 +210,7 @@ struct DockableWindow
 {
     // --------------- Main params -------------------
 
-    // `label`: _string_. Title of the window.
+    // `label`: _string_. Title of the window. It should be unique! Use "##" to add a unique suffix if needed.
     std::string label;
 
     // `dockSpaceName`: _DockSpaceName (aka string)_.

@@ -7,6 +7,7 @@
 #include "hello_imgui/internal/functional_utils.h"
 #include "imgui_internal.h"
 #include <map>
+#include <vector>
 #include <cassert>
 #include <optional>
 
@@ -605,6 +606,104 @@ std::optional<ImGuiID> DockingParams::dockSpaceIdFromName(const std::string& doc
         return std::nullopt;
     else
         return gImGuiSplitIDs.at(dockSpaceName);
+}
+
+
+// `AddDockableWindow()` implementation and helper
+namespace AddDockableWindowHelper
+{
+    // Adding dockable windows is a three-step process:
+    // - First, the user calls `AddDockableWindow()`: the dockable window is added to gDockableWindowsToAdd
+    //   with the state `DockableWindowAdditionState::Waiting`
+    // - Then, in the first callback, the dockable window is added to ImGui as a dummy window:
+    //   we call `ImGui::Begin()` and `ImGui::End()` to create the window, but we don't draw anything in it,
+    //   then we call `ImGui::DockBuilderDockWindow()` to dock the window to the correct dockspace
+    // - Finally, in the second callback, the dockable window is added to HelloImGui::RunnerParams.dockingParams.dockableWindows
+
+    enum class DockableWindowAdditionState
+    {
+        Waiting,
+        AddedAsDummyToImGui,
+        AddedToHelloImGui
+    };
+
+    struct DockableWindowWaitingForAddition
+    {
+        DockableWindow dockableWindow;
+        DockableWindowAdditionState state = DockableWindowAdditionState::Waiting;
+    };
+
+    std::vector<DockableWindowWaitingForAddition> gDockableWindowsToAdd;
+
+    void AddDockableWindow(const DockableWindow& dockableWindow)
+    {
+        gDockableWindowsToAdd.push_back({dockableWindow, DockableWindowAdditionState::Waiting});
+    }
+
+    void Callback_1_GuiRender()
+    {
+        for (auto & dockableWindow: gDockableWindowsToAdd)
+        {
+            if (dockableWindow.state == DockableWindowAdditionState::Waiting)
+            {
+                ImGui::Begin(dockableWindow.dockableWindow.label.c_str());
+                ImGui::Dummy(ImVec2(10, 10));
+                ImGui::End();
+
+                auto dockId = HelloImGui::GetRunnerParams()->dockingParams.dockSpaceIdFromName(dockableWindow.dockableWindow.dockSpaceName);
+                if (dockId.has_value())
+                    ImGui::DockBuilderDockWindow(dockableWindow.dockableWindow.label.c_str(), dockId.value());
+
+                dockableWindow.state = DockableWindowAdditionState::AddedAsDummyToImGui;
+            }
+        }
+    }
+
+    void Callback_2_PreNewFrame()
+    {
+        for (auto & dockableWindow: gDockableWindowsToAdd)
+        {
+            if (dockableWindow.state == DockableWindowAdditionState::AddedAsDummyToImGui)
+            {
+                HelloImGui::GetRunnerParams()->dockingParams.dockableWindows.push_back(dockableWindow.dockableWindow);
+                dockableWindow.state = DockableWindowAdditionState::AddedToHelloImGui;
+            }
+        }
+
+        // Remove the dockable windows that have been added to HelloImGui
+        gDockableWindowsToAdd.erase(  // typical C++ shenanigans
+            std::remove_if(
+                gDockableWindowsToAdd.begin(),
+                gDockableWindowsToAdd.end(),
+                [](const DockableWindowWaitingForAddition& dockableWindow) {
+                    return dockableWindow.state == DockableWindowAdditionState::AddedToHelloImGui;
+                }
+            ),
+            gDockableWindowsToAdd.end()
+        );
+    }
+
+} // namespace AddDockableWindowHelper
+
+
+void AddDockableWindow(const DockableWindow& dockableWindow)
+{
+    AddDockableWindowHelper::AddDockableWindow(dockableWindow);
+}
+
+void RemoveDockableWindow(const std::string& dockableWindowName)
+{
+    auto& dockableWindows = HelloImGui::GetRunnerParams()->dockingParams.dockableWindows;
+    dockableWindows.erase(
+        std::remove_if(
+            dockableWindows.begin(),
+            dockableWindows.end(),
+            [&dockableWindowName](const DockableWindow& dockableWindow) {
+                return dockableWindow.label == dockableWindowName;
+            }
+        ),
+        dockableWindows.end()
+    );
 }
 
 

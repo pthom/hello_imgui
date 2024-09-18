@@ -138,6 +138,15 @@ void           SwitchLayout(const std::string& layoutName);
 
 // `CurrentLayoutName()`: returns the name of the current layout
 std::string    CurrentLayoutName();
+
+// `AddDockableWindow()`: will add a dockable window to the current layout.
+// Will dock the window to the dockspace it belongs to.
+void AddDockableWindow(const DockableWindow& dockableWindow);
+
+// `RemoveDockableWindow()`: will remove a dockable window from the current layout.
+// (dockableWindowName is the label of the window, as provided in the DockableWindow struct)
+void RemoveDockableWindow(const std::string& dockableWindowName);
+
 // @@md
 
 

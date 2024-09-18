@@ -76,10 +76,11 @@ namespace HelloImGui
                 &concreteImage->Width, &concreteImage->Height, NULL, 4);
             if (image_data_rgba == NULL)
             {
-                IM_ASSERT(false && "ImageDx11: Failed to load image!");
-                throw std::runtime_error("ImageAbstract: Failed to load image!");
+                IM_ASSERT(false && "_GetCachedImage: Failed to load image!");
+                throw std::runtime_error("_GetCachedImage: Failed to load image!");
             }
-
+            FreeAssetFileData(&assetData);
+            stbi_image_free(image_data_rgba);
             concreteImage->_impl_StoreTexture(concreteImage->Width, concreteImage->Height, image_data_rgba);
         }
 

@@ -63,30 +63,34 @@ namespace HelloImGui
                 concreteImage = std::make_shared<ImageDx11>();
         #endif
         if (concreteImage == nullptr)
+        {
             HelloImGui::Log(LogLevel::Warning, "ImageFromAsset: not implemented for this rendering backend!");
-        gImageFromAssetMap[assetPath] = concreteImage;
+            gImageFromAssetMap[assetPath] = nullptr; // Cache the failure
+            return nullptr;
+        }
 
-        if (concreteImage != nullptr)
+        unsigned char* image_data_rgba;
         {
             // Load the image using stbi_load_from_memory
             auto assetData = LoadAssetFileData(assetPath);
             IM_ASSERT(assetData.data != nullptr);
-            unsigned char*image_data_rgba = stbi_load_from_memory(
+            image_data_rgba = stbi_load_from_memory(
                 (unsigned char *)assetData.data, (int)assetData.dataSize,
                 &concreteImage->Width, &concreteImage->Height, NULL, 4);
-            if (image_data_rgba == NULL)
-            {
-                IM_ASSERT(false && "_GetCachedImage: Failed to load image!");
-                throw std::runtime_error("_GetCachedImage: Failed to load image!");
-            }
             FreeAssetFileData(&assetData);
-            stbi_image_free(image_data_rgba);
-            concreteImage->_impl_StoreTexture(concreteImage->Width, concreteImage->Height, image_data_rgba);
         }
 
-        return gImageFromAssetMap.at(assetPath);
-    }
+        if (image_data_rgba == NULL)
+        {
+            IM_ASSERT(false && "_GetCachedImage: Failed to load image!");
+            throw std::runtime_error("_GetCachedImage: Failed to load image!");
+        }
+        concreteImage->_impl_StoreTexture(concreteImage->Width, concreteImage->Height, image_data_rgba);
+        stbi_image_free(image_data_rgba);
 
+        gImageFromAssetMap[assetPath] = concreteImage;
+        return concreteImage;
+    }
 
 
     void ImageFromAsset(

@@ -364,11 +364,7 @@ struct DockingParams
     bool focusDockableWindow(const std::string& windowName);
 
     // `optional<ImGuiID> dockSpaceIdFromName(const std::string& dockSpaceName)`:
-    // may return the ImGuiID corresponding to the dockspace with this name.
-    // **Warning**: this will work reliably only if
-    //     layoutCondition = DockingLayoutCondition::ApplicationStart.
-    // In other cases, the ID may be cached by ImGui himself at the first run,
-    // and HelloImGui will *not* know it on subsequent runs!
+    // returns the ImGuiID corresponding to the dockspace with this name
     std::optional<ImGuiID> dockSpaceIdFromName(const std::string& dockSpaceName);
 };
 // @@md

@@ -6,6 +6,7 @@
 #include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/internal/functional_utils.h"
 #include "imgui_internal.h"
+#include "nlohmann/json.hpp"
 #include <map>
 #include <vector>
 #include <cassert>
@@ -17,8 +18,60 @@ namespace HelloImGui
 // From hello_imgui.cpp
 bool ShouldRemoteDisplay();
 
+namespace SplitIdsHelper
+{
+    std::map<DockSpaceName, ImGuiID> gImGuiSplitIDs;
 
-std::map<DockSpaceName, ImGuiID> gImGuiSplitIDs;
+    bool ContainsSplit(const DockSpaceName& dockSpaceName)
+    {
+        return gImGuiSplitIDs.find(dockSpaceName) != gImGuiSplitIDs.end();
+    }
+
+    ImGuiID GetSplitId(const DockSpaceName& dockSpaceName)
+    {
+        IM_ASSERT(ContainsSplit(dockSpaceName) && "GetSplitId: dockSpaceName not found in gImGuiSplitIDs");
+        return gImGuiSplitIDs.at(dockSpaceName);
+    }
+
+    void SetSplitId(const DockSpaceName& dockSpaceName, ImGuiID imguiId)
+    {
+        gImGuiSplitIDs[dockSpaceName] = imguiId;
+    }
+
+    std::string SaveSplitIds()
+    {
+        // Serialize gImGuiSplitIDs using json
+        nlohmann::json j;
+        j["gImGuiSplitIDs"] = gImGuiSplitIDs;
+        return j.dump();
+    }
+
+    void LoadSplitIds(const std::string& jsonStr)
+    {
+        // Deserialize gImGuiSplitIDs using json
+        try
+        {
+            nlohmann::json j = nlohmann::json::parse(jsonStr);
+            gImGuiSplitIDs = j.at("gImGuiSplitIDs").get<std::map<DockSpaceName, ImGuiID>>();
+        }
+        catch (const nlohmann::json::parse_error& e)
+        {
+            std::cerr << "LoadSplitIds: Failed to parse JSON: " << e.what() << std::endl;
+        }
+        catch (const nlohmann::json::type_error& e)
+        {
+            std::cerr << "LoadSplitIds: Type error during deserialization: " << e.what() << std::endl;
+        }
+        catch (const nlohmann::json::out_of_range& e)
+        {
+            std::cerr << "LoadSplitIds: Missing or incorrect key in JSON: " << e.what() << std::endl;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "LoadSplitIds: Unexpected error: " << e.what() << std::endl;
+        }
+    }
+}
 
 
 static bool gShowTweakWindow = false;
@@ -65,9 +118,9 @@ bool _makeImGuiWindowTabVisible(const std::string& windowName)
 
 void DoSplit(const DockingSplit & dockingSplit)
 {
-    IM_ASSERT(gImGuiSplitIDs.find(dockingSplit.initialDock) != gImGuiSplitIDs.end());
+    IM_ASSERT(SplitIdsHelper::ContainsSplit(dockingSplit.initialDock) && "DoSplit: initialDock not found in gImGuiSplitIDs");
 
-    ImGuiID initialDock_imguiId = gImGuiSplitIDs.at(dockingSplit.initialDock);
+    ImGuiID initialDock_imguiId = SplitIdsHelper::GetSplitId(dockingSplit.initialDock);
     ImGuiID newDock_imguiId
         = ImGui::DockBuilderSplitNode(
             initialDock_imguiId,
@@ -76,8 +129,8 @@ void DoSplit(const DockingSplit & dockingSplit)
             nullptr,
             &initialDock_imguiId);
 
-    gImGuiSplitIDs[dockingSplit.initialDock] = initialDock_imguiId;
-    gImGuiSplitIDs[dockingSplit.newDock] = newDock_imguiId;
+    SplitIdsHelper::SetSplitId(dockingSplit.initialDock, initialDock_imguiId);
+    SplitIdsHelper::SetSplitId(dockingSplit.newDock, newDock_imguiId);
 
     // apply flags
     ImGuiDockNode* newDockNode = ImGui::DockBuilderGetNode(newDock_imguiId);
@@ -94,10 +147,12 @@ void ApplyWindowDockingLocations(
     const std::vector<DockableWindow> & dockableWindows)
 {
     for (const auto & dockableWindow: dockableWindows)
+    {
         ImGui::DockBuilderDockWindow(
             dockableWindow.label.c_str(),
-            gImGuiSplitIDs[dockableWindow.dockSpaceName]
+            SplitIdsHelper::GetSplitId(dockableWindow.dockSpaceName)
         );
+    }
 }
 
 std::vector<std::string> _GetStaticallyOrderedLayoutsList(const RunnerParams& runnerParams)
@@ -524,7 +579,7 @@ void ImplProvideFullScreenDockSpace(const RunnerParams& runnerParams)
     DoCreateFullScreenImGuiWindow(runnerParams, true);
     ImGuiID mainDockspaceId = ImGui::GetID("MainDockSpace");
     ImGui::DockSpace(mainDockspaceId, ImVec2(0.0f, 0.0f), runnerParams.dockingParams.mainDockSpaceNodeFlags);
-    gImGuiSplitIDs["MainDockSpace"] = mainDockspaceId;
+    SplitIdsHelper::SetSplitId("MainDockSpace", mainDockspaceId);
 }
 
 void ConfigureImGuiDocking(const ImGuiWindowParams& imGuiWindowParams)
@@ -602,10 +657,10 @@ bool DockingParams::focusDockableWindow(const std::string& windowName)
 
 std::optional<ImGuiID> DockingParams::dockSpaceIdFromName(const std::string& dockSpaceName)
 {
-    if (gImGuiSplitIDs.find(dockSpaceName) == gImGuiSplitIDs.end())
-        return std::nullopt;
+    if (SplitIdsHelper::ContainsSplit(dockSpaceName))
+        return SplitIdsHelper::GetSplitId(dockSpaceName);
     else
-        return gImGuiSplitIDs.at(dockSpaceName);
+        return std::nullopt;
 }
 
 

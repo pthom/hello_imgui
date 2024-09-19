@@ -6,6 +6,14 @@
 
 namespace HelloImGui
 {
+    // Encapsulated in docking_details.cpp
+    namespace SplitIdsHelper
+    {
+        std::string SaveSplitIds();
+        void LoadSplitIds(const std::string&);
+    }
+
+
     std::string IntPairToString(std::array<int, 2> v);
     std::array<int, 2> StringToIntPair(const std::string& s);
 
@@ -379,6 +387,21 @@ namespace HelloImGui
             }
         }
 
+        void LoadSplitIds(const std::string& iniPartsFilename)
+        {
+            const std::string iniPartName = "SplitIds";
+            std::string serialized = LoadUserPref(iniPartsFilename, iniPartName);
+            if (!serialized.empty())
+                SplitIdsHelper::LoadSplitIds(serialized);
+        }
+
+        void SaveSplitIds(const std::string& iniPartsFilename)
+        {
+            const std::string iniPartName = "SplitIds";
+            std::string serialized = SplitIdsHelper::SaveSplitIds();
+            SaveUserPref(iniPartsFilename, iniPartName, serialized);
+        }
+
         void LoadHelloImGuiMiscSettings(const std::string& iniPartsFilename, RunnerParams* inOutRunnerParams)
         {
             std::string iniPartName = "HelloImGui_Misc";
@@ -432,6 +455,8 @@ namespace HelloImGui
                 ImGuiTheme::ApplyTheme(theme);
             }
             HelloImGui::SwitchLayout(layoutName);
+
+            LoadSplitIds(iniPartsFilename);
         }
 
         void SaveHelloImGuiMiscSettings(const std::string& iniPartsFilename, const RunnerParams& runnerParams)
@@ -455,6 +480,8 @@ namespace HelloImGui
             IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
             iniParts.SetIniPart(iniPartName, iniFile.encode());
             iniParts.WriteToFile(iniPartsFilename);
+
+            SaveSplitIds(iniPartsFilename);
         }
 
 

@@ -197,7 +197,11 @@ void DemoShowAdditionalWindow(AppState& appState)
         additionalWindow.rememberIsVisible = false;       // its visibility is not saved in the settings file,
         additionalWindow.dockSpaceName = "MiscSpace";     // when shown, it will appear in MiscSpace.
         additionalWindow.GuiFunction = [] { ImGui::Text("This is the additional window"); };
-        HelloImGui::AddDockableWindow(additionalWindow);
+        HelloImGui::AddDockableWindow(
+            additionalWindow,
+            false  // forceDockspace=false: means that the window will be docked to the last space it was docked to
+            // i.e. dockSpaceName is ignored if the user previously moved the window to another space
+        );
     }
     ImGui::SetItemTooltip("By clicking this button, you can show an additional window");
 

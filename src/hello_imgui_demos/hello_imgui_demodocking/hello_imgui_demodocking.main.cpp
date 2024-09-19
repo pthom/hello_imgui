@@ -183,12 +183,12 @@ void DemoShowAdditionalWindow(AppState& appState)
 {
     // In order to add a dockable window during execution, you should use
     //     HelloImGui::AddDockableWindow()
-
-    // Note: you should not modify manually the content of the vector runnerParams.dockingParams.dockableWindows
+    // Note: you should not modify manually the content of runnerParams.dockingParams.dockableWindows
     //       (since HelloImGui is constantly looping on it)
-    const char* windowName = "Additional Window";
+
     ImGui::PushFont(appState.TitleFont->font); ImGui::Text("Dynamically add window"); ImGui::PopFont();
 
+    const char* windowName = "Additional Window";
     if (ImGui::Button("Show additional window"))
     {
         HelloImGui::DockableWindow additionalWindow;

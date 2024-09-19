@@ -634,6 +634,7 @@ namespace AddDockableWindowHelper
     };
 
     std::vector<DockableWindowWaitingForAddition> gDockableWindowsToAdd;
+    std::vector<std::string> gDockableWindowsToRemove;
 
     void AddDockableWindow(const DockableWindow& dockableWindow)
     {
@@ -646,14 +647,16 @@ namespace AddDockableWindowHelper
         {
             if (dockableWindow.state == DockableWindowAdditionState::Waiting)
             {
-                ImGui::Begin(dockableWindow.dockableWindow.label.c_str());
-                ImGui::Dummy(ImVec2(10, 10));
-                ImGui::End();
-
                 auto dockId = HelloImGui::GetRunnerParams()->dockingParams.dockSpaceIdFromName(dockableWindow.dockableWindow.dockSpaceName);
                 if (dockId.has_value())
-                    ImGui::DockBuilderDockWindow(dockableWindow.dockableWindow.label.c_str(), dockId.value());
+                {
+                    ImGui::Begin(dockableWindow.dockableWindow.label.c_str());
+                    ImGui::Dummy(ImVec2(10, 10));
+                    ImGui::End();
 
+                    ImGui::DockBuilderDockWindow(dockableWindow.dockableWindow.label.c_str(), 21423345);
+                    //ImGui::DockBuilderDockWindow(dockableWindow.dockableWindow.label.c_str(), dockId.value());
+                }
                 dockableWindow.state = DockableWindowAdditionState::AddedAsDummyToImGui;
             }
         }
@@ -661,6 +664,7 @@ namespace AddDockableWindowHelper
 
     void Callback_2_PreNewFrame()
     {
+        // Add the dockable windows that have been added as dummy to ImGui to HelloImGui
         for (auto & dockableWindow: gDockableWindowsToAdd)
         {
             if (dockableWindow.state == DockableWindowAdditionState::AddedAsDummyToImGui)
@@ -670,7 +674,7 @@ namespace AddDockableWindowHelper
             }
         }
 
-        // Remove the dockable windows that have been added to HelloImGui
+        // Forget about the dockable windows that have been added to HelloImGui
         gDockableWindowsToAdd.erase(  // typical C++ shenanigans
             std::remove_if(
                 gDockableWindowsToAdd.begin(),
@@ -681,6 +685,23 @@ namespace AddDockableWindowHelper
             ),
             gDockableWindowsToAdd.end()
         );
+
+        // Remove the dockable windows that have been requested to be removed
+        auto& dockableWindows = HelloImGui::GetRunnerParams()->dockingParams.dockableWindows;
+        for (const auto& dockableWindowName: gDockableWindowsToRemove)
+        {
+            dockableWindows.erase(
+                std::remove_if(
+                    dockableWindows.begin(),
+                    dockableWindows.end(),
+                    [&dockableWindowName](const DockableWindow& dockableWindow) {
+                        return dockableWindow.label == dockableWindowName;
+                    }
+                ),
+                dockableWindows.end()
+            );
+        }
+        gDockableWindowsToRemove.clear();
     }
 
 } // namespace AddDockableWindowHelper
@@ -693,17 +714,7 @@ void AddDockableWindow(const DockableWindow& dockableWindow)
 
 void RemoveDockableWindow(const std::string& dockableWindowName)
 {
-    auto& dockableWindows = HelloImGui::GetRunnerParams()->dockingParams.dockableWindows;
-    dockableWindows.erase(
-        std::remove_if(
-            dockableWindows.begin(),
-            dockableWindows.end(),
-            [&dockableWindowName](const DockableWindow& dockableWindow) {
-                return dockableWindow.label == dockableWindowName;
-            }
-        ),
-        dockableWindows.end()
-    );
+    AddDockableWindowHelper::gDockableWindowsToRemove.push_back(dockableWindowName);
 }
 
 

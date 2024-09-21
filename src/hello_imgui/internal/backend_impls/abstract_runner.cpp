@@ -1332,7 +1332,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     }
 
     // Handle AddDockableWindow(): this call should be done before ImGui::NewFrame
-    if (!insideReentrantCall)
+    if (!insideReentrantCall && mIdxFrame > 3)
         AddDockableWindowHelper::Callback_2_PreNewFrame();
 
     if ((params.callbacks.PreNewFrame) && !insideReentrantCall)
@@ -1354,7 +1354,8 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     }
 
     // Handle AddDockableWindow(): this call should be done when ImGui is accepting widgets
-    AddDockableWindowHelper::Callback_1_GuiRender();
+    if (mIdxFrame > 3)
+        AddDockableWindowHelper::Callback_1_GuiRender();
 
     // iii/ At the end of the second frame, we measure the size of the widgets and use it as the application window size,
     // if the user required auto size

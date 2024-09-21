@@ -711,14 +711,23 @@ namespace AddDockableWindowHelper
                 }
                 if (!doesWindowHavePreviousSetting || dockableWindow.forceDockspace)
                 {
-                    auto dockId = HelloImGui::GetRunnerParams()->dockingParams.dockSpaceIdFromName(dockableWindow.dockableWindow.dockSpaceName);
-                    if (dockId.has_value())
+                    auto dockSpaceName = dockableWindow.dockableWindow.dockSpaceName;
+                    if (!dockSpaceName.empty())
                     {
-                        ImGui::Begin(dockableWindow.dockableWindow.label.c_str());
-                        ImGui::Dummy(ImVec2(10, 10));
-                        ImGui::End();
+                        auto dockId = HelloImGui::GetRunnerParams()->dockingParams.dockSpaceIdFromName(dockSpaceName);
+                        if (dockId.has_value())
+                        {
+                            ImGui::Begin(dockableWindow.dockableWindow.label.c_str());
+                            //ImGui::Dummy(ImVec2(10, 10));
+                            dockableWindow.dockableWindow.GuiFunction();
+                            ImGui::End();
 
-                        ImGui::DockBuilderDockWindow(dockableWindow.dockableWindow.label.c_str(), dockId.value());
+                            ImGui::DockBuilderDockWindow(dockableWindow.dockableWindow.label.c_str(), dockId.value());
+                        }
+                        else
+                        {
+                            fprintf(stderr, "DockableWindow %s: dockSpaceName %s not found\n", dockableWindow.dockableWindow.label.c_str(), dockableWindow.dockableWindow.dockSpaceName.c_str());
+                        }
                     }
                 }
 

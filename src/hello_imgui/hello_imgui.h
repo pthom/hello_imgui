@@ -94,6 +94,10 @@ void Run(
 //
 // A typical use case is:
 //    ```cpp
+//    HelloImGui::RunnerParams runnerParams;
+//    runnerParams.callbacks.ShowGui = ...; // your GUI function
+//    // Optionally, choose between Sleep, EarlyReturn, or Auto for fps idling mode:
+//    // runnerParams.fpsIdling.fpsIdlingMode = HelloImGui::FpsIdlingMode::Sleep; // or EarlyReturn, Auto
 //    Renderer renderer(runnerParams); // note: a distinct copy of the `RunnerParams` will be stored inside the HelloImGui::GetRunnerParams()
 //    while (! HelloImGui::GetRunnerParams()->appShallExit)
 //    {
@@ -102,11 +106,12 @@ void Run(
 //   ```
 //
 // **Notes:**
-//  1. Depending on the configuration (such as `fpsIdle`), `HelloImGui` may enter an idle state to reduce CPU usage,
-//     if no events are received (e.g., no input or interaction).
-//     In this case, `Render()` will either sleep or return immediately:
-//     - On Emscripten, `Render()` will return immediately to avoid blocking the main thread.
-//     - On other platforms, it will sleep
+//  1. Depending on the configuration (`runnerParams.fpsIdling.fpsIdlingMode`), `HelloImGui` may enter an idle state to
+//     reduce CPU usage, if no events are received (e.g., no input or interaction).
+//     In this case, `Render()` will either sleep or return immediately.
+//     By default,
+//       - On Emscripten, `Render()` will return immediately to avoid blocking the main thread.
+//       - On other platforms, it will sleep
 //  2. Only one instance of `Renderer` can exist at a time.
 //  3. If constructed with `RunnerParams`, a copy of the `RunnerParams` will be made (which you can access with `GetRunnerParams())`.
 class Renderer

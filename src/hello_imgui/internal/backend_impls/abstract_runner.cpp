@@ -1071,16 +1071,23 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         params.fpsIdling.isIdling = shallIdle;
         if (shallIdle)
         {
-            bool idleByEarlyReturn_Emscripten = false;
-            #ifdef __EMSCRIPTEN__
-                idleByEarlyReturn_Emscripten = true;
-            #endif
+            bool idleByEarlyReturn = false;
 
-            if (idleByEarlyReturn_Emscripten)
+            if (params.fpsIdling.fpsIdlingMode == FpsIdlingMode::EarlyReturn)
+                idleByEarlyReturn = true;
+
+            if (params.fpsIdling.fpsIdlingMode == FpsIdlingMode::Auto)
             {
                 // Under emscripten, the idling implementation is different:
                 // we cannot sleep (which would lead to a busy wait), so we skip rendering
                 // if the last frame was rendered in time for the desired FPS
+                #ifdef __EMSCRIPTEN__
+                idleByEarlyReturn = true;
+                #endif
+            }
+
+            if (idleByEarlyReturn)
+            {
                 if (fnWasLastFrameRenderedInTimeForDesiredFps())
                     return true;
             }

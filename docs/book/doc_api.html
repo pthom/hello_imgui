@@ -200,6 +200,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
+
 <li class="toctree-l1"><a class="reference internal" href="build.html">Build instructions</a></li>
 </ul>
 
@@ -398,6 +399,7 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">API</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#run-application">Run Application</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#run-application-while-handling-the-rendering-loop">Run Application while handling the rendering loop</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#place-widgets-in-a-dpi-aware-way">Place widgets in a DPI-aware way</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#load-fonts">Load fonts</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#applications-assets">Applications assets</a><ul class="visible nav section-nav flex-column">
@@ -469,6 +471,66 @@ Runs an application, by providing the Gui function, the window title, etc.</p></
 the elements in the <code class="docutils literal notranslate"><span class="pre">RunnerParams</span></code> struct, or in the simpler  <code class="docutils literal notranslate"><span class="pre">SimpleRunnerParams</span></code>.</p>
 <p><strong>HelloImGui::GetRunnerParams()</strong>  will return the runnerParams of the current application.</p>
 </section>
+<section class="tex2jax_ignore mathjax_ignore" id="run-application-while-handling-the-rendering-loop">
+<h1>Run Application while handling the rendering loop<a class="headerlink" href="#run-application-while-handling-the-rendering-loop" title="Permalink to this heading">#</a></h1>
+<p>If you want to be in control of the rendering loop, you may use the class <code class="docutils literal notranslate"><span class="pre">HelloImGui::Renderer</span></code> (available since September 2024)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// HelloImGui::Renderer is an alternative to HelloImGui::Run, allowing fine-grained control over the rendering process.</span>
+<span class="c1">// - It is customizable like HelloImGui::Run: construct it with `RunnerParams` or `SimpleRunnerParams`</span>
+<span class="c1">// - `Render()` will render the application for one frame:</span>
+<span class="c1">//   Ensure that `Render()` is triggered regularly (e.g., through a loop or other mechanism) to maintain responsiveness.</span>
+<span class="c1">//   This method must be called on the main thread.</span>
+<span class="c1">//</span>
+<span class="c1">// A typical use case is:</span>
+<span class="c1">//    ```cpp</span>
+<span class="c1">//    HelloImGui::RunnerParams runnerParams;</span>
+<span class="c1">//    runnerParams.callbacks.ShowGui = ...; // your GUI function</span>
+<span class="c1">//    // Optionally, choose between Sleep, EarlyReturn, or Auto for fps idling mode:</span>
+<span class="c1">//    // runnerParams.fpsIdling.fpsIdlingMode = HelloImGui::FpsIdlingMode::Sleep; // or EarlyReturn, Auto</span>
+<span class="c1">//    Renderer renderer(runnerParams); // note: a distinct copy of the `RunnerParams` will be stored inside the HelloImGui::GetRunnerParams()</span>
+<span class="c1">//    while (! HelloImGui::GetRunnerParams()-&gt;appShallExit)</span>
+<span class="c1">//    {</span>
+<span class="c1">//        renderer.Render();</span>
+<span class="c1">//    }</span>
+<span class="c1">//   ```</span>
+<span class="c1">//</span>
+<span class="c1">// **Notes:**</span>
+<span class="c1">//  1. Depending on the configuration (`runnerParams.fpsIdling.fpsIdlingMode`), `HelloImGui` may enter an idle state to</span>
+<span class="c1">//     reduce CPU usage, if no events are received (e.g., no input or interaction).</span>
+<span class="c1">//     In this case, `Render()` will either sleep or return immediately.</span>
+<span class="c1">//     By default,</span>
+<span class="c1">//       - On Emscripten, `Render()` will return immediately to avoid blocking the main thread.</span>
+<span class="c1">//       - On other platforms, it will sleep</span>
+<span class="c1">//  2. Only one instance of `Renderer` can exist at a time.</span>
+<span class="c1">//  3. If constructed with `RunnerParams`, a copy of the `RunnerParams` will be made (which you can access with `GetRunnerParams())`.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Renderer</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Initializes with the full customizable `RunnerParams` to set up the application.</span>
+<span class="w">    </span><span class="c1">// Nb: a distinct copy of the `RunnerParams` will be made, and you can access it with `GetRunnerParams()`.</span>
+<span class="w">    </span><span class="n">Renderer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">RunnerParams</span><span class="o">&amp;</span><span class="w"> </span><span class="n">runnerParams</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Initializes with SimpleRunnerParams.</span>
+<span class="w">    </span><span class="n">Renderer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SimpleRunnerParams</span><span class="o">&amp;</span><span class="w"> </span><span class="n">simpleParams</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Initializes with a simple GUI function and additional parameters.</span>
+<span class="w">    </span><span class="n">Renderer</span><span class="p">(</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">VoidFunction</span><span class="w"> </span><span class="o">&amp;</span><span class="n">guiFunction</span><span class="p">,</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">windowTitle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">windowSizeAuto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">windowRestorePreviousGeometry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">ScreenSize</span><span class="w"> </span><span class="o">&amp;</span><span class="n">windowSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DefaultWindowSize</span><span class="p">,</span>
+<span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">fpsIdle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">10.f</span>
+<span class="w">    </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Render the current frame (or return immediately if in idle state).</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">Render</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Destructor (automatically tears down HelloImGui).</span>
+<span class="w">    </span><span class="o">~</span><span class="n">Renderer</span><span class="p">();</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="place-widgets-in-a-dpi-aware-way">
 <h1>Place widgets in a DPI-aware way<a class="headerlink" href="#place-widgets-in-a-dpi-aware-way" title="Permalink to this heading">#</a></h1>
@@ -489,6 +551,12 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 <span class="kt">float</span><span class="w"> </span><span class="nf">EmSize</span><span class="p">();</span>
 <span class="c1">// __HelloImGui::EmSize(nbLines)__ returns a size corresponding to nbLines text lines</span>
 <span class="kt">float</span><span class="w"> </span><span class="nf">EmSize</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">nbLines</span><span class="p">);</span>
+
+<span class="c1">// __HelloImGui::PixelToEm()__ converts a Vec2 in pixels coord to a Vec2 in em units</span>
+<span class="n">ImVec2</span><span class="w"> </span><span class="nf">PixelsToEm</span><span class="p">(</span><span class="n">ImVec2</span><span class="w"> </span><span class="n">pixels</span><span class="p">);</span>
+
+<span class="c1">// __HelloImGui::PixelSizeToEm()__ converts a size in pixels coord to a size in em units</span>
+<span class="kt">float</span><span class="w">  </span><span class="nf">PixelSizeToEm</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">pixelSize</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -702,7 +770,14 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 <hr class="docutils" />
 <section class="tex2jax_ignore mathjax_ignore" id="utility-functions">
 <h1>Utility functions<a class="headerlink" href="#utility-functions" title="Permalink to this heading">#</a></h1>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// `GetRunnerParams()`:  a convenience function that will return the runnerParams</span>
+<span class="c1">// of the current application</span>
+<span class="w">    </span><span class="n">RunnerParams</span><span class="o">*</span><span class="w"> </span><span class="nf">GetRunnerParams</span><span class="p">();</span>
+
+<span class="c1">// `IsUsingHelloImGui()`: returns true if the application is using HelloImGui</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsUsingHelloImGui</span><span class="p">();</span>
+
+<span class="c1">// `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.</span>
 <span class="c1">//  May differ from ImGui::GetIO().FrameRate, since one can choose the duration</span>
 <span class="c1">//  for the calculation of the mean value of the fps</span>
 <span class="c1">//  Returns the current FrameRate. May differ from ImGui::GetIO().FrameRate,</span>
@@ -744,6 +819,15 @@ as is done with the <a class="reference external" href="https://lyty.dev/css/css
 
 <span class="c1">// `CurrentLayoutName()`: returns the name of the current layout</span>
 <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w">    </span><span class="nf">CurrentLayoutName</span><span class="p">();</span>
+
+<span class="c1">// `AddDockableWindow()`: will add a dockable window to the current layout.</span>
+<span class="c1">// Will dock the window to the dockspace it belongs to if forceDockspace is true,</span>
+<span class="c1">// otherwise will dock it to the last space it was docked to (using saved settings)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">AddDockableWindow</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DockableWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">dockableWindow</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">forceDockspace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+
+<span class="c1">// `RemoveDockableWindow()`: will remove a dockable window from the current layout.</span>
+<span class="c1">// (dockableWindowName is the label of the window, as provided in the DockableWindow struct)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">RemoveDockableWindow</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">dockableWindowName</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -1114,6 +1198,7 @@ for more information on how to fine tune DPI handling when using Hello ImGui.</p
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">API</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#run-application">Run Application</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#run-application-while-handling-the-rendering-loop">Run Application while handling the rendering loop</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#place-widgets-in-a-dpi-aware-way">Place widgets in a DPI-aware way</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#load-fonts">Load fonts</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#applications-assets">Applications assets</a><ul class="visible nav section-nav flex-column">

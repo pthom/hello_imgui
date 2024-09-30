@@ -830,6 +830,22 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 ```cpp
 
+// FpsIdlingMode is an enum that describes the different modes of idling when rendering the GUI.
+// - Sleep: the application will sleep when idling to reduce CPU usage.
+// - EarlyReturn: rendering will return immediately when idling.
+//   This is specifically designed for event-driven, and real-time applications.
+//   Avoid using it in a tight loop without pauses, as it may cause excessive CPU consumption.
+// - Auto: use platform-specific default behavior.
+//    On most platforms, it will sleep. On Emscripten, `Render()` will return immediately
+//    to avoid blocking the main thread.
+// Note: you can override the default behavior by explicitly setting Sleep or EarlyReturn.
+enum class FpsIdlingMode
+{
+    Sleep,
+    EarlyReturn,
+    Auto,
+};
+
 // FpsIdling is a struct that contains Fps Idling parameters
 struct FpsIdling
 {
@@ -861,6 +877,10 @@ struct FpsIdling
     // `rememberEnableIdling`: _bool, default=true_.
     //  If true, the last value of enableIdling is restored from the settings at startup.
     bool  rememberEnableIdling = false;
+
+    // `fpsIdlingMode`: _FpsIdlingMode, default=FpsIdlingMode::Automatic_.
+    // Sets the mode of idling when rendering the GUI (Sleep, EarlyReturn, Automatic)
+    FpsIdlingMode fpsIdlingMode = FpsIdlingMode::Auto;
 };
 ```
 
@@ -1135,7 +1155,7 @@ struct DockingSplit
     // `direction`: *ImGuiDir_* 
     //  (enum with ImGuiDir_Down, ImGuiDir_Down, ImGuiDir_Left, ImGuiDir_Right)*
     //  Direction where this dock space should be created.
-    ImGuiDir_ direction;
+    ImGuiDir direction;
 
     // `ratio`: _float, default=0.25f_. 
     //  Ratio of the initialDock size that should be used by the new dock space.
@@ -1148,7 +1168,7 @@ struct DockingSplit
 
     // Constructor
     DockingSplit(const DockSpaceName& initialDock_ = "", const DockSpaceName& newDock_ = "",
-                 ImGuiDir_ direction_ = ImGuiDir_Down, float ratio_ = 0.25f,
+                 ImGuiDir direction_ = ImGuiDir_Down, float ratio_ = 0.25f,
                  ImGuiDockNodeFlags nodeFlags_ = ImGuiDockNodeFlags_None)
         : initialDock(initialDock_), newDock(newDock_), direction(direction_), ratio(ratio_), nodeFlags(nodeFlags_) {}
 };
@@ -1163,7 +1183,7 @@ struct DockableWindow
 {
     // --------------- Main params -------------------
 
-    // `label`: _string_. Title of the window.
+    // `label`: _string_. Title of the window. It should be unique! Use "##" to add a unique suffix if needed.
     std::string label;
 
     // `dockSpaceName`: _DockSpaceName (aka string)_.
@@ -1310,11 +1330,7 @@ struct DockingParams
     bool focusDockableWindow(const std::string& windowName);
 
     // `optional<ImGuiID> dockSpaceIdFromName(const std::string& dockSpaceName)`:
-    // may return the ImGuiID corresponding to the dockspace with this name.
-    // **Warning**: this will work reliably only if
-    //     layoutCondition = DockingLayoutCondition::ApplicationStart.
-    // In other cases, the ID may be cached by ImGui himself at the first run,
-    // and HelloImGui will *not* know it on subsequent runs!
+    // returns the ImGuiID corresponding to the dockspace with this name
     std::optional<ImGuiID> dockSpaceIdFromName(const std::string& dockSpaceName);
 };
 ```

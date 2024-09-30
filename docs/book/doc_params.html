@@ -200,6 +200,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
+
 <li class="toctree-l1"><a class="reference internal" href="build.html">Build instructions</a></li>
 </ul>
 
@@ -1256,7 +1257,23 @@ the elements in the <code class="docutils literal notranslate"><span class="pre"
 <section class="tex2jax_ignore mathjax_ignore" id="fps-idling">
 <h1>Fps Idling<a class="headerlink" href="#fps-idling" title="Permalink to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h">runner_params.h</a>.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// FpsIdling is a struct that contains Fps Idling parameters</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// FpsIdlingMode is an enum that describes the different modes of idling when rendering the GUI.</span>
+<span class="c1">// - Sleep: the application will sleep when idling to reduce CPU usage.</span>
+<span class="c1">// - EarlyReturn: rendering will return immediately when idling.</span>
+<span class="c1">//   This is specifically designed for event-driven, and real-time applications.</span>
+<span class="c1">//   Avoid using it in a tight loop without pauses, as it may cause excessive CPU consumption.</span>
+<span class="c1">// - Auto: use platform-specific default behavior.</span>
+<span class="c1">//    On most platforms, it will sleep. On Emscripten, `Render()` will return immediately</span>
+<span class="c1">//    to avoid blocking the main thread.</span>
+<span class="c1">// Note: you can override the default behavior by explicitly setting Sleep or EarlyReturn.</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">FpsIdlingMode</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Sleep</span><span class="p">,</span>
+<span class="w">    </span><span class="n">EarlyReturn</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Auto</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="c1">// FpsIdling is a struct that contains Fps Idling parameters</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">FpsIdling</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="c1">// `fpsIdle`: _float, default=9_.</span>
@@ -1287,6 +1304,10 @@ the elements in the <code class="docutils literal notranslate"><span class="pre"
 <span class="w">    </span><span class="c1">// `rememberEnableIdling`: _bool, default=true_.</span>
 <span class="w">    </span><span class="c1">//  If true, the last value of enableIdling is restored from the settings at startup.</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w">  </span><span class="n">rememberEnableIdling</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// `fpsIdlingMode`: _FpsIdlingMode, default=FpsIdlingMode::Automatic_.</span>
+<span class="w">    </span><span class="c1">// Sets the mode of idling when rendering the GUI (Sleep, EarlyReturn, Automatic)</span>
+<span class="w">    </span><span class="n">FpsIdlingMode</span><span class="w"> </span><span class="n">fpsIdlingMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FpsIdlingMode</span><span class="o">::</span><span class="n">Auto</span><span class="p">;</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -1542,7 +1563,7 @@ specifies the list of dockable windows, along with their default location, and t
 <span class="w">    </span><span class="c1">// `direction`: *ImGuiDir_* </span>
 <span class="w">    </span><span class="c1">//  (enum with ImGuiDir_Down, ImGuiDir_Down, ImGuiDir_Left, ImGuiDir_Right)*</span>
 <span class="w">    </span><span class="c1">//  Direction where this dock space should be created.</span>
-<span class="w">    </span><span class="n">ImGuiDir_</span><span class="w"> </span><span class="n">direction</span><span class="p">;</span>
+<span class="w">    </span><span class="n">ImGuiDir</span><span class="w"> </span><span class="n">direction</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// `ratio`: _float, default=0.25f_. </span>
 <span class="w">    </span><span class="c1">//  Ratio of the initialDock size that should be used by the new dock space.</span>
@@ -1555,7 +1576,7 @@ specifies the list of dockable windows, along with their default location, and t
 
 <span class="w">    </span><span class="c1">// Constructor</span>
 <span class="w">    </span><span class="n">DockingSplit</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DockSpaceName</span><span class="o">&amp;</span><span class="w"> </span><span class="n">initialDock_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">DockSpaceName</span><span class="o">&amp;</span><span class="w"> </span><span class="n">newDock_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span>
-<span class="w">                 </span><span class="n">ImGuiDir_</span><span class="w"> </span><span class="n">direction_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImGuiDir_Down</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">ratio_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.25f</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">ImGuiDir</span><span class="w"> </span><span class="n">direction_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImGuiDir_Down</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">ratio_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.25f</span><span class="p">,</span>
 <span class="w">                 </span><span class="n">ImGuiDockNodeFlags</span><span class="w"> </span><span class="n">nodeFlags_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImGuiDockNodeFlags_None</span><span class="p">)</span>
 <span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">initialDock</span><span class="p">(</span><span class="n">initialDock_</span><span class="p">),</span><span class="w"> </span><span class="n">newDock</span><span class="p">(</span><span class="n">newDock_</span><span class="p">),</span><span class="w"> </span><span class="n">direction</span><span class="p">(</span><span class="n">direction_</span><span class="p">),</span><span class="w"> </span><span class="n">ratio</span><span class="p">(</span><span class="n">ratio_</span><span class="p">),</span><span class="w"> </span><span class="n">nodeFlags</span><span class="p">(</span><span class="n">nodeFlags_</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 <span class="p">};</span>
@@ -1569,7 +1590,7 @@ specifies the list of dockable windows, along with their default location, and t
 <span class="p">{</span>
 <span class="w">    </span><span class="c1">// --------------- Main params -------------------</span>
 
-<span class="w">    </span><span class="c1">// `label`: _string_. Title of the window.</span>
+<span class="w">    </span><span class="c1">// `label`: _string_. Title of the window. It should be unique! Use &quot;##&quot; to add a unique suffix if needed.</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">label</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// `dockSpaceName`: _DockSpaceName (aka string)_.</span>
@@ -1715,11 +1736,7 @@ specifies the list of dockable windows, along with their default location, and t
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="nf">focusDockableWindow</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">windowName</span><span class="p">);</span>
 
 <span class="w">    </span><span class="c1">// `optional&lt;ImGuiID&gt; dockSpaceIdFromName(const std::string&amp; dockSpaceName)`:</span>
-<span class="w">    </span><span class="c1">// may return the ImGuiID corresponding to the dockspace with this name.</span>
-<span class="w">    </span><span class="c1">// **Warning**: this will work reliably only if</span>
-<span class="w">    </span><span class="c1">//     layoutCondition = DockingLayoutCondition::ApplicationStart.</span>
-<span class="w">    </span><span class="c1">// In other cases, the ID may be cached by ImGui himself at the first run,</span>
-<span class="w">    </span><span class="c1">// and HelloImGui will *not* know it on subsequent runs!</span>
+<span class="w">    </span><span class="c1">// returns the ImGuiID corresponding to the dockspace with this name</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">ImGuiID</span><span class="o">&gt;</span><span class="w"> </span><span class="n">dockSpaceIdFromName</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">dockSpaceName</span><span class="p">);</span>
 <span class="p">};</span>
 </pre></div>

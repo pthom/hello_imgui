@@ -736,6 +736,11 @@ function(him_has_opengl3 target)
 
     if (IOS OR EMSCRIPTEN)
         set(HELLOIMGUI_USE_GLAD OFF CACHE INTERNAL "" FORCE)
+        target_compile_definitions(${target}
+            PUBLIC
+            IMGUI_IMPL_OPENGL_ES3
+            HELLOIMGUI_USE_GLES3
+        )
     else()
         set(HELLOIMGUI_USE_GLAD ON CACHE INTERNAL "" FORCE)
     endif()

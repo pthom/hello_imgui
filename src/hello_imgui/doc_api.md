@@ -279,6 +279,12 @@ ImVec2 ImageProportionalSize(const ImVec2& askedSize, const ImVec2& imageSize);
 
 ```cpp
 
+// `GetRunnerParams()`:  a convenience function that will return the runnerParams
+// of the current application
+    RunnerParams* GetRunnerParams();
+
+// `IsUsingHelloImGui()`: returns true if the application is using HelloImGui
+    bool IsUsingHelloImGui();
 
 // `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
 //  May differ from ImGui::GetIO().FrameRate, since one can choose the duration

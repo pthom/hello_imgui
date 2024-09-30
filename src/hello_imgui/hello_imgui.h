@@ -82,18 +82,72 @@ void Run(
     float fpsIdle = 10.f
 );
 
-// `GetRunnerParams()`:  a convenience function that will return the runnerParams
-// of the current application
-RunnerParams* GetRunnerParams();
 
-// `IsUsingHelloImGui()`: returns true if the application is using HelloImGui
-bool IsUsingHelloImGui();
+// =========================== HelloImGui::Renderer ==================================
+// @@md#HelloImGui::Renderer
+
+// HelloImGui::Renderer is an alternative to HelloImGui::Run, allowing fine-grained control over the rendering process.
+// - It is customizable like HelloImGui::Run: construct it with `RunnerParams` or `SimpleRunnerParams`
+// - `Render()` will render the application for one frame:
+//   Ensure that `Render()` is triggered regularly (e.g., through a loop or other mechanism) to maintain responsiveness.
+//   This method must be called on the main thread.
+//
+// A typical use case is:
+//    ```cpp
+//    Renderer renderer(runnerParams); // note: a distinct copy of the `RunnerParams` will be stored inside the HelloImGui::GetRunnerParams()
+//    while (! HelloImGui::GetRunnerParams()->appShallExit)
+//    {
+//        renderer.Render();
+//    }
+//   ```
+//
+// **Notes:**
+//  1. Depending on the configuration (such as `fpsIdle`), `HelloImGui` may enter an idle state to reduce CPU usage,
+//     if no events are received (e.g., no input or interaction).
+//     In this case, `Render()` will either sleep or return immediately:
+//     - On Emscripten, `Render()` will return immediately to avoid blocking the main thread.
+//     - On other platforms, it will sleep
+//  2. Only one instance of `Renderer` can exist at a time.
+//  3. If constructed with `RunnerParams`, a copy of the `RunnerParams` will be made (which you can access with `GetRunnerParams())`.
+class Renderer
+{
+public:
+    // Initializes with the full customizable `RunnerParams` to set up the application.
+    // Nb: a distinct copy of the `RunnerParams` will be made, and you can access it with `GetRunnerParams()`.
+    Renderer(const RunnerParams& runnerParams);
+
+    // Initializes with SimpleRunnerParams.
+    Renderer(const SimpleRunnerParams& simpleParams);
+
+    // Initializes with a simple GUI function and additional parameters.
+    Renderer(
+        const VoidFunction &guiFunction,
+        const std::string &windowTitle = "",
+        bool windowSizeAuto = false,
+        bool windowRestorePreviousGeometry = false,
+        const ScreenSize &windowSize = DefaultWindowSize,
+        float fpsIdle = 10.f
+    );
+
+    // Render the current frame (or return immediately if in idle state).
+    void Render();
+
+    // Destructor (automatically tears down HelloImGui).
+    ~Renderer();
+};
+// @@md
 
 
 // ============================== Utility functions ===============================
 
 // @@md#UtilityFunctions
 
+// `GetRunnerParams()`:  a convenience function that will return the runnerParams
+// of the current application
+    RunnerParams* GetRunnerParams();
+
+// `IsUsingHelloImGui()`: returns true if the application is using HelloImGui
+    bool IsUsingHelloImGui();
 
 // `FrameRate(durationForMean = 0.5)`: Returns the current FrameRate.
 //  May differ from ImGui::GetIO().FrameRate, since one can choose the duration

@@ -26,8 +26,9 @@ public:
 
     void Setup();
     void CreateFramesAndRender(bool insideReentrantCall = false);
-    void RenderGui();
     void TearDown(bool gotException);
+
+    bool WasTearedDown() { return mWasTearedDown; }
 
     // Events for mobile devices
     void OnPause();
@@ -82,6 +83,7 @@ protected:
     #endif
 
 private:
+    void RenderGui();
     void InitImGuiContext();
     void SetImGuiPrefs();
     void InitRenderBackendCallbacks();
@@ -110,6 +112,7 @@ private:
     bool mPotentialFontLoadingError = false;
     int mIdxFrame = 0;
     bool mWasWindowAutoResizedOnPreviousFrame = false;
+    bool mWasTearedDown = false;
 
     // Differentiate between cases where the window was resized by code
     // and cases where the window was resized by the user

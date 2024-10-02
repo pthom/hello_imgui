@@ -200,7 +200,6 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
-
 <li class="toctree-l1"><a class="reference internal" href="build.html">Build instructions</a></li>
 </ul>
 
@@ -1257,23 +1256,7 @@ the elements in the <code class="docutils literal notranslate"><span class="pre"
 <section class="tex2jax_ignore mathjax_ignore" id="fps-idling">
 <h1>Fps Idling<a class="headerlink" href="#fps-idling" title="Permalink to this heading">#</a></h1>
 <p>See <a class="reference external" href="https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h">runner_params.h</a>.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// FpsIdlingMode is an enum that describes the different modes of idling when rendering the GUI.</span>
-<span class="c1">// - Sleep: the application will sleep when idling to reduce CPU usage.</span>
-<span class="c1">// - EarlyReturn: rendering will return immediately when idling.</span>
-<span class="c1">//   This is specifically designed for event-driven, and real-time applications.</span>
-<span class="c1">//   Avoid using it in a tight loop without pauses, as it may cause excessive CPU consumption.</span>
-<span class="c1">// - Auto: use platform-specific default behavior.</span>
-<span class="c1">//    On most platforms, it will sleep. On Emscripten, `Render()` will return immediately</span>
-<span class="c1">//    to avoid blocking the main thread.</span>
-<span class="c1">// Note: you can override the default behavior by explicitly setting Sleep or EarlyReturn.</span>
-<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">FpsIdlingMode</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="n">Sleep</span><span class="p">,</span>
-<span class="w">    </span><span class="n">EarlyReturn</span><span class="p">,</span>
-<span class="w">    </span><span class="n">Auto</span><span class="p">,</span>
-<span class="p">};</span>
-
-<span class="c1">// FpsIdling is a struct that contains Fps Idling parameters</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// FpsIdling is a struct that contains Fps Idling parameters</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">FpsIdling</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="c1">// `fpsIdle`: _float, default=9_.</span>
@@ -1304,10 +1287,6 @@ the elements in the <code class="docutils literal notranslate"><span class="pre"
 <span class="w">    </span><span class="c1">// `rememberEnableIdling`: _bool, default=true_.</span>
 <span class="w">    </span><span class="c1">//  If true, the last value of enableIdling is restored from the settings at startup.</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w">  </span><span class="n">rememberEnableIdling</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
-
-<span class="w">    </span><span class="c1">// `fpsIdlingMode`: _FpsIdlingMode, default=FpsIdlingMode::Automatic_.</span>
-<span class="w">    </span><span class="c1">// Sets the mode of idling when rendering the GUI (Sleep, EarlyReturn, Automatic)</span>
-<span class="w">    </span><span class="n">FpsIdlingMode</span><span class="w"> </span><span class="n">fpsIdlingMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FpsIdlingMode</span><span class="o">::</span><span class="n">Auto</span><span class="p">;</span>
 <span class="p">};</span>
 </pre></div>
 </div>

@@ -404,9 +404,11 @@ function(_him_add_freetype_to_imgui)
             endif()
 
             include(FetchContent)
-            if(IOS)
+            if(IOS OR (IMGUI_BUNDLE_BUILD_PYTHON AND NOT DEFINED CONAN_BUILD))
+                message(STATUS "Building freetype without harfbuzz, brotli, png")
                 set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
                 set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
+                set(FT_DISABLE_PNG ON CACHE BOOL "" FORCE)
             endif()
             FetchContent_Declare(
                 freetype

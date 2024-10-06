@@ -48,8 +48,7 @@ bool _CheckAdditionLayoutNamesUniqueness(const RunnerParams &runnerParams)
 }
 
 
-// =========================== HelloImGui::Renderer ==================================
-
+// =========================== Priv_SetupRunner ==================================
 //
 // Static instances to store the last runner and its parameters
 // -------------------------------------------------------------
@@ -120,42 +119,92 @@ static void Priv_TearDown(SetupMode setupMode)
     gLastRunnerParamsUserPointer = nullptr;
 }
 
-Renderer::Renderer(const HelloImGui::RunnerParams &runnerParams)
-{
-    HelloImGui::RunnerParams runnerParamsCopy = runnerParams;
-    Priv_SetupRunner(runnerParamsCopy, SetupMode::Renderer);
-}
 
-Renderer::Renderer(const HelloImGui::SimpleRunnerParams &simpleParams)
+// =========================== ManualRender ==================================
+namespace ManualRender
 {
-    RunnerParams fullParams = simpleParams.ToRunnerParams();
-    Priv_SetupRunner(fullParams, SetupMode::Renderer);
-}
+    // Enumeration to track the current state of the ManualRenderer
+    enum class RendererStatus
+    {
+        NotInitialized,
+        Initialized,
+    };
+    RendererStatus sCurrentStatus = RendererStatus::NotInitialized;
 
-Renderer::Renderer(const HelloImGui::VoidFunction &guiFunction, const std::string &windowTitle, bool windowSizeAuto,
-                   bool windowRestorePreviousGeometry, const HelloImGui::ScreenSize &windowSize, float fpsIdle)
-{
-    SimpleRunnerParams params;
-    params.guiFunction = guiFunction;
-    params.windowTitle = windowTitle;
-    params.windowSizeAuto = windowSizeAuto;
-    params.windowRestorePreviousGeometry = windowRestorePreviousGeometry;
-    params.windowSize = windowSize;
-    params.fpsIdle = fpsIdle;
-    RunnerParams fullParams = params.ToRunnerParams();
-    Priv_SetupRunner(fullParams, SetupMode::Renderer);
-}
+    // Changes the current status to Initialized if it was NotInitialized,
+    // otherwise raises an error (assert or exception)
+    void TrySwitchToInitialized()
+    {
+        if (sCurrentStatus == RendererStatus::Initialized)
+            IM_ASSERT(false && "HelloImGui::ManualRender::SetupFromXXX() cannot be called while already initialized. Call TearDown() first.");
+        sCurrentStatus = RendererStatus::Initialized;
+    }
 
-void Renderer::Render()
-{
-    IM_ASSERT(gLastRunner != nullptr && "HelloImGui::Renderer::Render() called without a valid runner");
-    gLastRunner->CreateFramesAndRender();
-}
+    // Changes the current status to NotInitialized if it was Initialized,
+    // otherwise raises an error (assert or exception)
+    void TrySwitchToNotInitialized()
+    {
+        if (sCurrentStatus == RendererStatus::NotInitialized)
+            IM_ASSERT(false && "HelloImGui::ManualRender::TearDown() cannot be called while not initialized.");
+        sCurrentStatus = RendererStatus::NotInitialized;
+    }
 
-Renderer::~Renderer()
-{
-    Priv_TearDown(SetupMode::Renderer);
-}
+    // Initializes the renderer with the full customizable `RunnerParams`.
+    // A distinct copy of `RunnerParams` is stored internally.
+    void SetupFromRunnerParams(const RunnerParams& runnerParams)
+    {
+        TrySwitchToInitialized();
+        RunnerParams runnerParamsCopy = runnerParams;
+        Priv_SetupRunner(runnerParamsCopy, SetupMode::Renderer);
+    }
+
+    // Initializes the renderer with `SimpleRunnerParams`.
+    void SetupFromSimpleRunnerParams(const SimpleRunnerParams& simpleParams)
+    {
+        TrySwitchToInitialized();
+        RunnerParams fullParams = simpleParams.ToRunnerParams();
+        Priv_SetupRunner(fullParams, SetupMode::Renderer);
+    }
+
+    // Initializes the renderer with a simple GUI function and additional parameters.
+    void SetupFromGuiFunction(
+        const VoidFunction& guiFunction,
+        const std::string& windowTitle,
+        bool windowSizeAuto,
+        bool windowRestorePreviousGeometry,
+        const ScreenSize& windowSize,
+        float fpsIdle
+    )
+    {
+        TrySwitchToInitialized();
+        SimpleRunnerParams params;
+        params.guiFunction = guiFunction;
+        params.windowTitle = windowTitle;
+        params.windowSizeAuto = windowSizeAuto;
+        params.windowRestorePreviousGeometry = windowRestorePreviousGeometry;
+        params.windowSize = windowSize;
+        params.fpsIdle = fpsIdle;
+        RunnerParams fullParams = params.ToRunnerParams();
+        Priv_SetupRunner(fullParams, SetupMode::Renderer);
+    }
+
+    // Renders the current frame. Should be called regularly to maintain the application's responsiveness.
+    void Render()
+    {
+        IM_ASSERT(gLastRunner != nullptr && "HelloImGui::Renderer::Render() called without a valid runner");
+        gLastRunner->CreateFramesAndRender();
+    }
+
+    // Tears down the renderer and releases all associated resources.
+    // After calling `TearDown()`, the InitFromXXX can be called with new parameters.
+    void TearDown()
+    {
+        TrySwitchToNotInitialized();
+        Priv_TearDown(SetupMode::Renderer);
+    }
+
+} // namespace ManualRender
+
 
 // =========================== HelloImGui::Run ==================================
 

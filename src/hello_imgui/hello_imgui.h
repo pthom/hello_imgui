@@ -82,64 +82,79 @@ void Run(
     float fpsIdle = 10.f
 );
 
+// =========================== HelloImGui::ManualRender ==================================
+// @@md#HelloImGui::ManualRender
 
-// =========================== HelloImGui::Renderer ==================================
-// @@md#HelloImGui::Renderer
-
-// HelloImGui::Renderer is an alternative to HelloImGui::Run, allowing fine-grained control over the rendering process.
-// - It is customizable like HelloImGui::Run: construct it with `RunnerParams` or `SimpleRunnerParams`
-// - `Render()` will render the application for one frame:
-//   Ensure that `Render()` is triggered regularly (e.g., through a loop or other mechanism) to maintain responsiveness.
-//   This method must be called on the main thread.
-//
-// A typical use case is:
-//    ```cpp
-//    HelloImGui::RunnerParams runnerParams;
-//    runnerParams.callbacks.ShowGui = ...; // your GUI function
-//    // Optionally, choose between Sleep, EarlyReturn, or Auto for fps idling mode:
-//    // runnerParams.fpsIdling.fpsIdlingMode = HelloImGui::FpsIdlingMode::Sleep; // or EarlyReturn, Auto
-//    Renderer renderer(runnerParams); // note: a distinct copy of the `RunnerParams` will be stored inside the HelloImGui::GetRunnerParams()
-//    while (! HelloImGui::GetRunnerParams()->appShallExit)
-//    {
-//        renderer.Render();
-//    }
-//   ```
-//
-// **Notes:**
-//  1. Depending on the configuration (`runnerParams.fpsIdling.fpsIdlingMode`), `HelloImGui` may enter an idle state to
-//     reduce CPU usage, if no events are received (e.g., no input or interaction).
-//     In this case, `Render()` will either sleep or return immediately.
-//     By default,
-//       - On Emscripten, `Render()` will return immediately to avoid blocking the main thread.
-//       - On other platforms, it will sleep
-//  2. Only one instance of `Renderer` can exist at a time.
-//  3. If constructed with `RunnerParams`, a copy of the `RunnerParams` will be made (which you can access with `GetRunnerParams())`.
-class Renderer
+namespace ManualRender
 {
-public:
-    // Initializes with the full customizable `RunnerParams` to set up the application.
-    // Nb: a distinct copy of the `RunnerParams` will be made, and you can access it with `GetRunnerParams()`.
-    Renderer(const RunnerParams& runnerParams);
+    // HelloImGui::ManualRender is a namespace that groups functions, allowing fine-grained control over the rendering process:
+    // - It is customizable like HelloImGui::Run: initialize it with `RunnerParams` or `SimpleRunnerParams`
+    // - `ManualRender::Render()` will render the application for one frame:
+    // - Ensure that `ManualRender::Render()` is triggered regularly (e.g., through a loop or other mechanism)
+    //   to maintain responsiveness. This method must be called on the main thread.
+    //
+    // A typical use case is:
+    // C++
+    //        ```cpp
+    //        HelloImGui::RunnerParams runnerParams;
+    //        runnerParams.callbacks.ShowGui = ...; // your GUI function
+    //        // Optionally, choose between Sleep, EarlyReturn, or Auto for fps idling mode:
+    //        // runnerParams.fpsIdling.fpsIdlingMode = HelloImGui::FpsIdlingMode::Sleep; // or EarlyReturn, Auto
+    //        HelloImGui::ManualRender::SetupFromRunnerParams(runnerParams);
+    //        while (!HelloImGui::GetRunnerParams()->appShallExit)
+    //        {
+    //            HelloImGui::ManualRender::Render();
+    //        }
+    //        HelloImGui::ManualRender::TearDown();
+    //        ```
+    // Python:
+    //        ```python
+    //        runnerParams = HelloImGui.RunnerParams()
+    //        runnerParams.callbacks.show_gui = ... # your GUI function
+    //        while not hello_imgui.get_runner_params().app_shall_exit:
+    //            hello_imgui.manual_render.render()
+    //        hello_imgui.manual_render.tear_down()
+    //        ```
+    //
+    // **Notes:**
+    //  1. Depending on the configuration (`runnerParams.fpsIdling.fpsIdlingMode`), `HelloImGui` may enter
+    //     an idle state to reduce CPU usage, if no events are received (e.g., no input or interaction).
+    //     In this case, `Render()` will either sleep or return immediately.
+    //     By default,
+    //       - On Emscripten, `ManualRender::Render()` will return immediately to avoid blocking the main thread.
+    //       - On other platforms, it will sleep
+    //  2. If initialized with `RunnerParams`, a copy of the `RunnerParams` will be made
+    //     (which can be accessed with `HelloImGui::GetRunnerParams()`).
 
-    // Initializes with SimpleRunnerParams.
-    Renderer(const SimpleRunnerParams& simpleParams);
+    // Initializes the rendering with the full customizable `RunnerParams`.
+    // This will initialize the platform backend (SDL, Glfw, etc.) and the rendering backend (OpenGL, Vulkan, etc.).
+    // A distinct copy of `RunnerParams` is stored internally.
+    void SetupFromRunnerParams(const RunnerParams& runnerParams);
 
-    // Initializes with a simple GUI function and additional parameters.
-    Renderer(
-        const VoidFunction &guiFunction,
-        const std::string &windowTitle = "",
+    // Initializes the rendering with `SimpleRunnerParams`.
+    // This will initialize the platform backend (SDL, Glfw, etc.) and the rendering backend (OpenGL, Vulkan, etc.).
+    void SetupFromSimpleRunnerParams(const SimpleRunnerParams& simpleParams);
+
+    // Initializes the renderer with a simple GUI function and additional parameters.
+    // This will initialize the platform backend (SDL, Glfw, etc.) and the rendering backend (OpenGL, Vulkan, etc.).
+    void SetupFromGuiFunction(
+        const VoidFunction& guiFunction,
+        const std::string& windowTitle = "",
         bool windowSizeAuto = false,
         bool windowRestorePreviousGeometry = false,
-        const ScreenSize &windowSize = DefaultWindowSize,
+        const ScreenSize& windowSize = DefaultWindowSize,
         float fpsIdle = 10.f
     );
 
-    // Render the current frame (or return immediately if in idle state).
+    // Renders the current frame. Should be called regularly to maintain the application's responsiveness.
     void Render();
 
-    // Destructor (automatically tears down HelloImGui).
-    ~Renderer();
-};
+    // Tears down the renderer and releases all associated resources.
+    // This will release the platform backend (SDL, Glfw, etc.) and the rendering backend (OpenGL, Vulkan, etc.).
+    // After calling `TearDown()`, the InitFromXXX can be called with new parameters.
+    void TearDown();
+} // namespace ManualRender
+
 // @@md
 
 

@@ -7,10 +7,10 @@ HelloImGui is extremely easy to use: there is **one** main function in the API, 
 @import "hello_imgui.h" {md_id=HelloImGui::Run}
 
 # Run Application while handling the rendering loop
-If you want to be in control of the rendering loop, you may use the class `HelloImGui::Renderer` (available since September 2024)
+If you want to be in control of the rendering loop, you may use the namespace `HelloImGui::ManualRender` (available since September 2024)
 
 ```cpp
-@import "hello_imgui.h" {md_id=HelloImGui::Renderer}
+@import "hello_imgui.h" {md_id=HelloImGui::ManualRender}
 ```
 
 ----

@@ -106,6 +106,22 @@ std::string IniFolderLocation(IniFolderType iniFolderType);
 
 // @@md#FpsIdling
 
+// FpsIdlingMode is an enum that describes the different modes of idling when rendering the GUI.
+// - Sleep: the application will sleep when idling to reduce CPU usage.
+// - EarlyReturn: rendering will return immediately when idling.
+//   This is specifically designed for event-driven, and real-time applications.
+//   Avoid using it in a tight loop without pauses, as it may cause excessive CPU consumption.
+// - Auto: use platform-specific default behavior.
+//    On most platforms, it will sleep. On Emscripten, `Render()` will return immediately
+//    to avoid blocking the main thread.
+// Note: you can override the default behavior by explicitly setting Sleep or EarlyReturn.
+enum class FpsIdlingMode
+{
+    Sleep,
+    EarlyReturn,
+    Auto,
+};
+
 // FpsIdling is a struct that contains Fps Idling parameters
 struct FpsIdling
 {
@@ -137,6 +153,10 @@ struct FpsIdling
     // `rememberEnableIdling`: _bool, default=true_.
     //  If true, the last value of enableIdling is restored from the settings at startup.
     bool  rememberEnableIdling = false;
+
+    // `fpsIdlingMode`: _FpsIdlingMode, default=FpsIdlingMode::Automatic_.
+    // Sets the mode of idling when rendering the GUI (Sleep, EarlyReturn, Automatic)
+    FpsIdlingMode fpsIdlingMode = FpsIdlingMode::Auto;
 };
 // @@md
 

@@ -120,12 +120,10 @@ AbstractRunner::~AbstractRunner()
 }
 
 
-#ifndef USEHACK
 void AbstractRunner::Run()
 {
     Setup();
 
-    mIdxFrame = 0;
 #ifdef HELLOIMGUI_MOBILEDEVICE
     while (true)
         CreateFramesAndRender();
@@ -145,7 +143,7 @@ void AbstractRunner::Run()
     }
 #endif
 }
-#endif
+
 
 #ifdef HELLO_IMGUI_IMGUI_SHARED
 static void*   MyMallocWrapper(size_t size, void* user_data)    { IM_UNUSED(user_data); return malloc(size); }
@@ -783,6 +781,8 @@ void AbstractRunner::Setup()
     // Create a remote display handler if needed
     mRemoteDisplayHandler.Create();
     mRemoteDisplayHandler.SendFonts();
+
+    mIdxFrame = 0;
 }
 
 
@@ -1071,16 +1071,23 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         params.fpsIdling.isIdling = shallIdle;
         if (shallIdle)
         {
-            bool idleByEarlyReturn_Emscripten = false;
-            #ifdef __EMSCRIPTEN__
-                idleByEarlyReturn_Emscripten = true;
-            #endif
+            bool idleByEarlyReturn = false;
 
-            if (idleByEarlyReturn_Emscripten)
+            if (params.fpsIdling.fpsIdlingMode == FpsIdlingMode::EarlyReturn)
+                idleByEarlyReturn = true;
+
+            if (params.fpsIdling.fpsIdlingMode == FpsIdlingMode::Auto)
             {
                 // Under emscripten, the idling implementation is different:
                 // we cannot sleep (which would lead to a busy wait), so we skip rendering
                 // if the last frame was rendered in time for the desired FPS
+                #ifdef __EMSCRIPTEN__
+                idleByEarlyReturn = true;
+                #endif
+            }
+
+            if (idleByEarlyReturn)
+            {
                 if (fnWasLastFrameRenderedInTimeForDesiredFps())
                     return true;
             }
@@ -1421,6 +1428,8 @@ void AbstractRunner::OnLowMemory()
 
 void AbstractRunner::TearDown(bool gotException)
 {
+    IM_ASSERT(!mWasTearedDown && "TearDown() called twice!");
+    mWasTearedDown = true;
     if (! gotException)
     {
         // Store screenshot before exiting

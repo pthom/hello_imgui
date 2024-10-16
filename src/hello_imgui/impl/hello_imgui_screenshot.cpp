@@ -13,15 +13,25 @@ namespace HelloImGui
     }
 
     ImageBuffer gFinalAppWindowScreenshotRgbBuffer;
+    float gFinalAppWindowScreenshotFramebufferScale = 1.0f;
 
     void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b)
     {
         gFinalAppWindowScreenshotRgbBuffer = b;
     }
+    void setFinalAppWindowScreenshotFramebufferScale(float scale)
+    {
+        gFinalAppWindowScreenshotFramebufferScale = scale;
+    }
 
     ImageBuffer FinalAppWindowScreenshotRgbBuffer()
     {
         return gFinalAppWindowScreenshotRgbBuffer;
+    }
+
+    float FinalAppWindowScreenshotFramebufferScale()
+    {
+        return gFinalAppWindowScreenshotFramebufferScale;
     }
 
 }

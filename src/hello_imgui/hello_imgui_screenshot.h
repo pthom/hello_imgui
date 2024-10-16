@@ -25,4 +25,5 @@ namespace HelloImGui
     ImageBuffer AppWindowScreenshotRgbBuffer();
 
     ImageBuffer FinalAppWindowScreenshotRgbBuffer();
+    float FinalAppWindowScreenshotFramebufferScale();
 }

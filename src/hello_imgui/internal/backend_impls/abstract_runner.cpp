@@ -78,6 +78,7 @@ namespace HelloImGui
 {
 // Encapsulated inside hello_imgui_screenshot.cpp
 void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
+void setFinalAppWindowScreenshotFramebufferScale(float scale);
 
 // Encapsulated inside hello_imgui_font.cpp
 bool _reloadAllDpiResponsiveFonts();
@@ -1436,6 +1437,8 @@ void AbstractRunner::TearDown(bool gotException)
         {
             ImageBuffer b = ScreenshotRgb();
             setFinalAppWindowScreenshotRgbBuffer(b);
+            float scale = (ImGui::GetIO().DisplayFramebufferScale.x + ImGui::GetIO().DisplayFramebufferScale.y) / 2.f;
+            setFinalAppWindowScreenshotFramebufferScale(scale);
         }
         if (params.appWindowParams.restorePreviousGeometry)
             HelloImGuiIniSettings::SaveLastRunWindowBounds(IniSettingsLocation(params),

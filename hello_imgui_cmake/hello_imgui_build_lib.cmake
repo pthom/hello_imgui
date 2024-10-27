@@ -278,6 +278,9 @@ function(him_build_imgui)
         endif()
         if (HELLOIMGUI_USE_FREETYPE)
             _him_add_freetype_to_imgui()
+            if (HELLOIMGUI_USE_FREETYPE_PLUTOSVG)
+                _him_add_freetype_plutosvg_to_imgui()
+            endif()
         endif()
     endif()
 endfunction()
@@ -359,25 +362,16 @@ function(_him_do_build_imgui)
 endfunction()
 
 function(_him_add_freetype_to_imgui)
-    # Add freetype + lunasvg to imgui
-    # This is especially useful to support emojis (possibly colored) in imgui
-    # See doc:
-    #     https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#using-colorful-glyphsemojis
-    # We have to
+    # Add freetype
     # - add imgui_freetype.cpp and imgui_freetype.h to imgui
     # - enable freetype in imgui via IMGUI_ENABLE_FREETYPE
-    # - enable lunasvg in imgui via IMGUI_ENABLE_FREETYPE_LUNASVG
-    # - add lunasvg to imgui
     # - define IMGUI_USE_WCHAR32 in imgui
-
     # Note: also change add_imgui.cmake in bundle!
 
-    #
     # 1. Build or find freetype (if downloaded, make sure it is static)
-    #
     if(TARGET freetype)
         message(STATUS "HelloImGui: using freetype target")
-        set(freetype_linked_library freetype)
+        set(HIM_FREETYPE_LINKED_LIBRARY freetype CACHE STRING "" FORCE)
     else()
         set(download_freetype OFF)
         if (HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED AND NOT HELLOIMGUI_FETCH_FORBIDDEN)
@@ -417,7 +411,7 @@ function(_him_add_freetype_to_imgui)
                 GIT_PROGRESS TRUE
             )
             FetchContent_MakeAvailable(freetype)
-            set(freetype_linked_library freetype)
+            set(HIM_FREETYPE_LINKED_LIBRARY freetype CACHE STRING "" FORCE)
             hello_imgui_msvc_target_set_folder(freetype ${HELLOIMGUI_SOLUTIONFOLDER}/external)
 
             set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
@@ -431,12 +425,21 @@ function(_him_add_freetype_to_imgui)
                 ")
             endif()
             find_package(Freetype 2.12 REQUIRED)
-            set(freetype_linked_library Freetype::Freetype)
+            set(HIM_FREETYPE_LINKED_LIBRARY Freetype::Freetype CACHE STRING "" FORCE)
         endif()
     endif()
 
-    target_link_libraries(imgui PUBLIC ${freetype_linked_library})
+    # 2. Add freetype to imgui
+    target_link_libraries(imgui PUBLIC ${HIM_FREETYPE_LINKED_LIBRARY})
+    target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE)
 
+    # 3. Add support for wchar32 (for emojis, and other unicode characters)
+    target_sources(imgui PRIVATE
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.cpp
+        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.h)
+    target_compile_definitions(imgui PUBLIC IMGUI_USE_WCHAR32)
+
+    # 4. Prepare Log info
     if(TARGET freetype)
         set(HELLOIMGUI_FREETYPE_SELECTED_INFO "Use target freetype" CACHE INTERNAL "" FORCE)
     elseif(download_freetype)
@@ -444,46 +447,56 @@ function(_him_add_freetype_to_imgui)
     else()
         set(HELLOIMGUI_FREETYPE_SELECTED_INFO "Use system Library" CACHE INTERNAL "" FORCE)
     endif()
+endfunction()
 
-    #
-    # 2. Build lunasvg (static)
-    #
-    # Fetch and build lunasvg
-    if(NOT TARGET lunasvg)
-        # Try using lunasvg unofficial package from vcpkg
-        find_package(unofficial-lunasvg CONFIG QUIET)
-        if(unofficial-lunasvg_FOUND)
-            target_link_libraries(imgui PRIVATE unofficial::lunasvg::lunasvg)
-        elseif(NOT HELLOIMGUI_FETCH_FORBIDDEN)
-            set(backup_shared_lib ${BUILD_SHARED_LIBS})
-            set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-            include(FetchContent)
-            FetchContent_Declare(lunasvg
-                GIT_REPOSITORY https://github.com/sammycage/lunasvg
-                GIT_TAG        v2.3.9
-                GIT_PROGRESS TRUE
-            )
-            FetchContent_MakeAvailable(lunasvg)
-            set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
-            target_link_libraries(imgui PUBLIC lunasvg)
-            get_target_property(lunasvg_include_dirs lunasvg INTERFACE_INCLUDE_DIRECTORIES)
-            # Patch lunasvg include dir, for installable version (CMake install shenanigans)
-            set_target_properties(lunasvg PROPERTIES INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/_deps/lunasvg-src/include>)
-            get_target_property(lunasvg_include_dirs lunasvg INTERFACE_INCLUDE_DIRECTORIES)
 
-            him_add_installable_dependency(lunasvg)
-            hello_imgui_msvc_target_set_folder(lunasvg ${HELLOIMGUI_SOLUTIONFOLDER}/external)
-        endif()
+function(_him_add_freetype_plutosvg_to_imgui)
+    # Add freetype + plutosvg to imgui
+    # This is especially useful to support emojis (possibly colored) in imgui
+    # See doc:
+    #     https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#using-colorful-glyphsemojis
+    # We have to
+    # - enable plutosvg in imgui via IMGUI_ENABLE_FREETYPE_PLUTOSVG
+    # - add plutosvg + plutovg to imgui
+    if (HELLOIMGUI_FETCH_FORBIDDEN OR NOT HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
+        message(WARNING "Cannot add plutosvg because fetching is forbidden")
+        return()
     endif()
 
-    #
-    # 3. Add freetype and LunaSvg support to imgui
-    #    with support for wchar32 (for emojis, and other unicode characters)
-    target_sources(imgui PRIVATE
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.cpp
-        ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.h)
-    target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE IMGUI_ENABLE_FREETYPE_LUNASVG)
-    target_compile_definitions(imgui PUBLIC IMGUI_USE_WCHAR32)
+    set(backup_build_shared_libs ${BUILD_SHARED_LIBS})
+    set(BUILD_SHARED_LIBS OFF)
+
+    # Fetch & build plutovg at configure time
+    include(FetchContent)
+    FetchContent_Declare(plutovg
+        GIT_REPOSITORY https://github.com/sammycage/plutovg
+        GIT_TAG        v0.0.8
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(plutovg)
+
+    # Fetch plutosvg at configure time, then compile manually at build time
+    # (the stock CMakeLists of plutosvg is not compatible with a custom install of freetype)
+    FetchContent_Populate(
+        plutosvg
+        GIT_REPOSITORY https://github.com/sammycage/plutosvg
+        GIT_TAG v0.0.2
+        SOURCE_DIR ${CMAKE_BINARY_DIR}/plutosvg_source
+        BINARY_DIR ${CMAKE_BINARY_DIR}/plutosvg_build
+    )
+    add_library(plutosvg STATIC ${plutosvg_SOURCE_DIR}/source/plutosvg.c)
+    target_include_directories(plutosvg PUBLIC $<BUILD_INTERFACE:${plutosvg_SOURCE_DIR}/source>)
+    target_compile_definitions(plutosvg PUBLIC PLUTOSVG_HAS_FREETYPE PLUTOSVG_BUILD_STATIC)
+    target_link_libraries(plutosvg PUBLIC ${HIM_FREETYPE_LINKED_LIBRARY} plutovg)
+    him_add_installable_dependency(plutosvg)
+
+    target_link_libraries(imgui PUBLIC plutosvg)
+    target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
+
+    set(BUILD_SHARED_LIBS ${backup_build_shared_libs})
+
+    # Prepare Log info
+    set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - downloaded plutosvg" CACHE INTERNAL "" FORCE)
 endfunction()
 
 

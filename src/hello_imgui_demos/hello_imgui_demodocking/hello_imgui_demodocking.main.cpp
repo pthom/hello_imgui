@@ -497,7 +497,7 @@ void DemoFonts(AppState& appState)
 #ifdef IMGUI_ENABLE_FREETYPE
     ImGui::Text("Colored Fonts");
     ImGui::PushFont(appState.ColorFont->font);
-    ImGui::Text("C O L O R !");
+    ImGui::Text("COLOR!");
     ImGui::PopFont();
     if (ImGui::IsItemHovered())
         ImGui::SetTooltip("Example with Playbox-FREE.otf font");

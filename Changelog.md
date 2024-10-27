@@ -1,5 +1,8 @@
 Version numbers are synced between hello_imgui and imgui_bundle.
 
+# v1.6.0 WIP
+* SVG Font rendering: plutosvg replaces lunasvg (option HELLOIMGUI_USE_FREETYPE_PLUTOSVG on by default)
+
 # v1.5.0
 * Improved rendering on Windows (via antialiasing)
 * Add IniFolderType.AbsolutePath

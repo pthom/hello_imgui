@@ -107,6 +107,7 @@ if(ANDROID OR MINGW)
 endif()
 # Note: to reduce wasm size, you may want to disable freetype on emscripten.
 option(HELLOIMGUI_USE_FREETYPE "Use freetype for text rendering" ${freetype_default})
+option(HELLOIMGUI_USE_FREETYPE_PLUTOSVG "Use plutosvg to load svg fonts" ON)
 
 #------------------------------------------------------------------------------
 # <Dependencies> # do not remove this line (used by the script that generates the documentation)
@@ -256,7 +257,7 @@ mark_as_advanced(HELLO_IMGUI_IMGUI_SHARED)
 # -----------------------------------------------------------------------------
 # By default, hello_imgui will download and build the required libraries automatically,
 # if they cannot be found via cmake's find_package:
-#   glfw3, lunasvg, freetype
+#   glfw3, plutosvg, freetype
 # To build offline, you can for example pre-install the required libraries with vcpkg,
 # but you can also install them via a system package manager, or add them manually as targets.
 #
@@ -267,13 +268,13 @@ mark_as_advanced(HELLO_IMGUI_IMGUI_SHARED)
 #
 #    git clone https://github.com/microsoft/vcpkg
 #    ./vcpkg/bootstrap-vcpkg.sh
-#    ./vcpkg/vcpkg install glfw3 freetype lunasvg
+#    ./vcpkg/vcpkg install glfw3 freetype
 #    export CMAKE_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake
 #    mkdir build && cd build
 #    cmake ..
 #
 # Note: under windows, you could specify a static triplet (x64-windows-static):
-#     ./vcpkg/vcpkg install freetype:x64-windows-static glfw3:x64-windows-static lunasvg:x64-windows-static
+#     ./vcpkg/vcpkg install freetype:x64-windows-static glfw3:x64-windows-static
 #
 # -----------------------------------------------------------------------------
 # How to use ImGui package from vcpkg (*not* recommended)
@@ -287,9 +288,9 @@ mark_as_advanced(HELLO_IMGUI_IMGUI_SHARED)
 #
 #    git clone https://github.com/microsoft/vcpkg
 #    ./vcpkg/bootstrap-vcpkg.sh
-#    ./vcpkg/vcpkg install glfw3 freetype lunasvg
+#    ./vcpkg/vcpkg install glfw3 freetype
 #    # install imgui from vcpkg, with the correct options
-#    ./vcpkg/vcpkg install "imgui[docking-experimental,freetype-lunasvg,glfw-binding,opengl3-binding]"
+#    ./vcpkg/vcpkg install "imgui[docking-experimental,glfw-binding,opengl3-binding]"
 #
 #    export CMAKE_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake
 #    mkdir build && cd build

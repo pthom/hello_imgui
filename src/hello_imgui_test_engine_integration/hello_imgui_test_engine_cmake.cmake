@@ -86,8 +86,28 @@ endfunction()
 function(configure_imgui_test_engine_with_python_gil)
     # 1. imgui_test_engine should move the GIL between threads
     target_compile_definitions(imgui_test_engine PUBLIC IMGUI_TEST_ENGINE_WITH_PYTHON_GIL)
-    find_package(Python3 COMPONENTS Development)
-    target_link_libraries(imgui_test_engine PUBLIC Python3::Python)
+
+    # Development.Module is available since CMake 3.18 only,
+    # hence the main CMakeList specifies
+    #   cmake_minimum_required(VERSION 3.18)
+    find_package(Python 3.8 COMPONENTS Development.Module)
+    # Debug messages to verify Python detection
+    if(Python_FOUND)
+        message(STATUS "Python found:")
+        message(STATUS "  Executable: ${Python_EXECUTABLE}")
+        message(STATUS "  Include Dir: ${Python_INCLUDE_DIRS}")
+        message(STATUS "  Libraries: ${Python_LIBRARIES}")
+    else()
+        message(FATAL_ERROR "Python development components not found.")
+    endif()
+
+    if (SKBUILD)
+        # linking with Python::Python will fail with skbuild...
+        target_include_directories(imgui_test_engine PUBLIC ${Python_INCLUDE_DIRS})
+    else()
+        # Not linking with Python::Python will fail outside of skbuild...
+        target_link_libraries(imgui_test_engine PUBLIC Python::Python)
+    endif()
 endfunction()
 
 

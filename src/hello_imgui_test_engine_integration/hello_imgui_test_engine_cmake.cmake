@@ -90,7 +90,16 @@ function(configure_imgui_test_engine_with_python_gil)
     # Development.Module is available since CMake 3.18 only,
     # hence the main CMakeList specifies
     #   cmake_minimum_required(VERSION 3.18)
-    find_package(Python 3.8 COMPONENTS Development.Module)
+    if(SKBUILD)
+        # we only need the Development.Module component to build native modules
+        find_package(Python 3.8 REQUIRED COMPONENTS Interpreter Development.Module)
+    else()
+        # when building via CMake, we may need the full Development component to be able to debug the native module
+        # warning, Starting with CMake 3.18, the FindPython module introduced more granular components:
+        # Development.Module (and probably others)
+        find_package(Python 3.8 REQUIRED COMPONENTS Interpreter Development)
+    endif()
+
     # Debug messages to verify Python detection
     if(Python_FOUND)
         message(STATUS "Python found:")

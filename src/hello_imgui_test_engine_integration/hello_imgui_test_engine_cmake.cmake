@@ -86,14 +86,8 @@ endfunction()
 function(configure_imgui_test_engine_with_python_gil)
     # 1. imgui_test_engine should move the GIL between threads
     target_compile_definitions(imgui_test_engine PUBLIC IMGUI_TEST_ENGINE_WITH_PYTHON_GIL)
-    # 2. and for this it needs to link with pybind
-    if(SKBUILD)
-        # if building wheel, only add include path to pybind11 and python
-        target_link_libraries(imgui_test_engine PUBLIC pybind11::pybind11)
-    else()
-        # if building an app, link the python interpreter
-        target_link_libraries(imgui_test_engine PUBLIC pybind11::embed)
-    endif()
+    find_package(Python3 COMPONENTS Development)
+    target_link_libraries(imgui_test_engine PUBLIC Python3::Python)
 endfunction()
 
 

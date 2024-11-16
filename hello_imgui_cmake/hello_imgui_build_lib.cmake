@@ -458,7 +458,7 @@ function(_him_add_freetype_plutosvg_to_imgui)
     # We have to
     # - enable plutosvg in imgui via IMGUI_ENABLE_FREETYPE_PLUTOSVG
     # - add plutosvg + plutovg to imgui
-    if (HELLOIMGUI_FETCH_FORBIDDEN OR NOT HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED)
+    if (HELLOIMGUI_FETCH_FORBIDDEN OR (NOT HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED AND NOT HELLOIMGUI_FREETYPE_STATIC))
         message(WARNING "Cannot add plutosvg because fetching is forbidden")
         return()
     endif()

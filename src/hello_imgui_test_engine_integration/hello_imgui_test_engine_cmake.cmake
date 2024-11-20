@@ -117,6 +117,11 @@ function(configure_imgui_test_engine_with_python_gil)
         # Not linking with Python::Python will fail outside of skbuild...
         target_link_libraries(imgui_test_engine PUBLIC Python::Python)
     endif()
+
+    if (WIN32)
+        # Band aid for windows debug build, where the python lib may not be found...
+        target_link_directories(imgui_test_engine PUBLIC ${Python_LIBRARY_DIRS})
+    endif()
 endfunction()
 
 

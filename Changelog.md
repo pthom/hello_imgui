@@ -6,6 +6,7 @@ Version numbers are synced between hello_imgui and imgui_bundle.
 * demo_docking: better demonstration / theme customization
 * Add `HelloImGui::ManualRender: a namespace that groups functions, allowing fine-grained control over the rendering process
 * Work on pyodide integration (for ImGui Bundle)
+* Improve font rendering on iOS
 
 
 # v1.5.0

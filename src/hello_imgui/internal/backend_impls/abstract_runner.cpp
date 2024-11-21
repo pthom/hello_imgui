@@ -370,6 +370,9 @@ float _DefaultOsFontRenderingScale()
         // while screen renders at 2x scale.
         fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
     #endif
+    #ifdef HELLOIMGUI_IOS
+    fontSizeIncreaseFactor = 2.0; // Retina
+    #endif
 
     #ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY
     if (HelloImGui::GetRunnerParams()->remoteParams.enableRemoting)

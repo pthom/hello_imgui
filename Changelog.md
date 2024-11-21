@@ -1,7 +1,12 @@
 Version numbers are synced between hello_imgui and imgui_bundle.
 
-# v1.6.0 WIP
+# v1.6.0
 * SVG Font rendering: plutosvg replaces lunasvg (option HELLOIMGUI_USE_FREETYPE_PLUTOSVG on by default)
+* Added AddDockableWindow / RemoveDockableWindow
+* demo_docking: better demonstration / theme customization
+* Add `HelloImGui::ManualRender: a namespace that groups functions, allowing fine-grained control over the rendering process
+* Work on pyodide integration (for ImGui Bundle)
+
 
 # v1.5.0
 * Improved rendering on Windows (via antialiasing)

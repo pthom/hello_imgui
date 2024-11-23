@@ -1207,7 +1207,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
                         // We may get an error  on the first frame upon restarting a second HelloImGui app
                         // in a row, when using Pyodide (probably a remaining texture from the previous app)
                         // "Format and type RGB/UNSIGNED_BYTE incompatible with this RGB8 attachment..."
-                        // This is a known issue, and we should not warn about it.
+                        // This is a known issue and we should not warn about it.
                         shall_warn = false;
                     }
                     #endif

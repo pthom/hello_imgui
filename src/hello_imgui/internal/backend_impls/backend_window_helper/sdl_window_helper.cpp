@@ -130,6 +130,28 @@ namespace HelloImGui { namespace BackendApi
         SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
         #endif
 
+        #ifdef __EMSCRIPTEN__
+        if (appWindowParams.emscriptenKeyboardElement == EmscriptenKeyboardElement::Window)
+            SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, "#window");
+        else if (appWindowParams.emscriptenKeyboardElement == EmscriptenKeyboardElement::Document)
+            SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, "#document");
+        else if (appWindowParams.emscriptenKeyboardElement == EmscriptenKeyboardElement::Screen)
+            SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, "#screen");
+        else if (appWindowParams.emscriptenKeyboardElement == EmscriptenKeyboardElement::Canvas)
+            SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, "#canvas");
+        else if (appWindowParams.emscriptenKeyboardElement == EmscriptenKeyboardElement::Default)
+        {
+            // If Default:
+            // - the default SDL behavior is used, which is to capture the keyboard events for the window,
+            //   if no previous hint was set in the javascript code.
+
+            // - under Pyodide, the default behavior is to capture the keyboard events for the canvas.
+            #ifdef IMGUI_BUNDLE_BUILD_PYODIDE
+            SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, "#canvas");
+            #endif
+        }
+        #endif // __EMSCRIPTEN__
+
         // If the window is created with the SDL_WINDOW_ALLOW_HIGHDPI flag,
         // its size in pixels may differ from its size in screen coordinates on platforms with high-DPI support
         // (e.g. iOS and macOS).

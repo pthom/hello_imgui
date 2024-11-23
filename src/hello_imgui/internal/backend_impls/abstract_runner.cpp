@@ -870,6 +870,32 @@ void AbstractRunner::RenderGui()
 
 void _UpdateFrameRateStats(); // See hello_imgui.cpp
 
+#ifdef HELLOIMGUI_HAS_OPENGL
+static std::string GetOpenGlErrorDescription(GLenum error)
+{
+    switch (error)
+    {
+        case GL_NO_ERROR:
+            return "No error";
+        case GL_INVALID_ENUM:
+            return "GL_INVALID_ENUM: An unacceptable value is specified for an enumerated argument.";
+        case GL_INVALID_VALUE:
+            return "GL_INVALID_VALUE: A numeric argument is out of range.";
+        case GL_INVALID_OPERATION:
+            return "GL_INVALID_OPERATION: The specified operation is not allowed in the current state.";
+        case GL_INVALID_FRAMEBUFFER_OPERATION:
+            return "GL_INVALID_FRAMEBUFFER_OPERATION: The framebuffer object is not complete.";
+        case GL_OUT_OF_MEMORY:
+            return "GL_OUT_OF_MEMORY: There is not enough memory left to execute the command.";
+        // case GL_STACK_UNDERFLOW:
+        //     return "GL_STACK_UNDERFLOW: An attempt has been made to perform an operation that would cause an internal stack to underflow.";
+        // case GL_STACK_OVERFLOW:
+        //     return "GL_STACK_OVERFLOW: An attempt has been made to perform an operation that would cause an internal stack to overflow.";
+        default:
+            return "Unknown error";
+    }
+}
+#endif
 
 void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 {
@@ -1173,9 +1199,25 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
             if (mIdxFrame == 0)
             {
                 auto error = glGetError();
-                if (error != 0)
+                if (error != GL_NO_ERROR)
                 {
-                    fprintf(stderr, "OpenGL error detected on first frame: %d. May be the font texture is too big\n", error);
+                    bool shall_warn = true;
+                    #ifdef IMGUI_BUNDLE_BUILD_PYODIDE
+                    if (error == GL_INVALID_OPERATION) {
+                        // We may get an error  on the first frame upon restarting a second HelloImGui app
+                        // in a row, when using Pyodide (probably a remaining texture from the previous app)
+                        // "Format and type RGB/UNSIGNED_BYTE incompatible with this RGB8 attachment..."
+                        // This is a known issue, and we should not warn about it.
+                        shall_warn = false;
+                    }
+                    #endif
+                    if (shall_warn)
+                        fprintf(
+                            stderr,
+                            "OpenGL error detected on first frame: %d (%s). May be the font texture is too big\n",
+                            error,
+                            GetOpenGlErrorDescription(error).c_str()
+                        );
                 }
             }
         }

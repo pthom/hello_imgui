@@ -85,7 +85,7 @@ protected:
 private:
     void RenderGui();
     void InitImGuiContext();
-    void SetImGuiPrefs();
+    void CheckPrefs();
     void InitRenderBackendCallbacks();
 
     void SetupDpiAwareParams();

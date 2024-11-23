@@ -535,7 +535,7 @@ void AbstractRunner::InitImGuiContext()
 #endif
 }
 
-void AbstractRunner::SetImGuiPrefs()
+void AbstractRunner::CheckPrefs()
 {
     if (params.imGuiWindowParams.enableViewports)
     {
@@ -549,6 +549,14 @@ void AbstractRunner::SetImGuiPrefs()
     #else
         ImGui::GetIO().IniFilename = "";
     #endif
+
+#ifndef IMGUI_BUNDLE_WITH_TEST_ENGINE
+    if (params.useImGuiTestEngine)
+    {
+        fprintf(stderr, "HelloImGui: RunnerParam.useImGuiTestEngine is true, but HelloImGui was not built with support for ImGui Test Engine. Disabling!\n");
+        params.useImGuiTestEngine = false;
+    }
+#endif
 }
 
 
@@ -684,7 +692,7 @@ void AbstractRunner::Setup()
     InitRenderBackendCallbacks();
 
     InitImGuiContext();
-    SetImGuiPrefs();
+    CheckPrefs();
 
     // Init platform backend (SDL, Glfw)
     Impl_InitPlatformBackend();

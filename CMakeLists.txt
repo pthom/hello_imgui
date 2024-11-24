@@ -196,7 +196,9 @@ option(HELLOIMGUI_BUILD_TESTS "Build tests" OFF)
 #------------------------------------------------------------------------------
 # Options / ImGui Test Engine
 #------------------------------------------------------------------------------
-option(HELLOIMGUI_WITH_TEST_ENGINE "Provide ImGui Test engine" OFF)
+if (NOT DEFINED HELLOIMGUI_WITH_TEST_ENGINE)
+    option(HELLOIMGUI_WITH_TEST_ENGINE "Provide ImGui Test engine" OFF)
+endif()
 message(STATUS "HELLOIMGUI_WITH_TEST_ENGINE=${HELLOIMGUI_WITH_TEST_ENGINE}")
 
 #------------------------------------------------------------------------------

@@ -550,7 +550,7 @@ void AbstractRunner::CheckPrefs()
         ImGui::GetIO().IniFilename = "";
     #endif
 
-#ifndef IMGUI_BUNDLE_WITH_TEST_ENGINE
+#ifndef HELLOIMGUI_WITH_TEST_ENGINE
     if (params.useImGuiTestEngine)
     {
         fprintf(stderr, "HelloImGui: RunnerParam.useImGuiTestEngine is true, but HelloImGui was not built with support for ImGui Test Engine. Disabling!\n");

@@ -53,9 +53,61 @@ namespace HelloImGui
         mBackendWindowHelper = std::make_unique<BackendApi::SdlWindowHelper>();
     }
 
+    // SetSdlHint_EmscriptenKeyboardElement:
+    // This hint shall be set **before** SDL_Init
+    /**
+     * Doc from SDL2:
+     * override the binding element for keyboard inputs for Emscripten builds
+     *
+     * This hint only applies to the emscripten platform.
+     *
+     * The variable can be one of:
+     *
+     * - "#window": the javascript window object (this is the default)
+     * - "#document": the javascript document object
+     * - "#screen": the javascript window.screen object
+     * - "#canvas": the WebGL canvas element
+     *
+     * Any other string without a leading # sign applies to the element on the
+     * page with that ID.
+     */
+    static void SetSdlHint_EmscriptenKeyboardElement(const AppWindowParams & appWindowParams)
+    {
+        auto fnSetHint = [](const char * hintValue)
+        {
+            printf("SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, %s)\n", hintValue);
+            auto success = SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, hintValue);
+            IM_ASSERT(success == SDL_TRUE && "SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT) failed");
+        };
+        #ifdef __EMSCRIPTEN__
+        if (appWindowParams.emscriptenKeyboardElement == EmscriptenKeyboardElement::Window)
+            fnSetHint("#window");
+        else if (appWindowParams.emscriptenKeyboardElement == EmscriptenKeyboardElement::Document)
+            fnSetHint("#document");
+        else if (appWindowParams.emscriptenKeyboardElement == EmscriptenKeyboardElement::Screen)
+            fnSetHint("#screen");
+        else if (appWindowParams.emscriptenKeyboardElement == EmscriptenKeyboardElement::Canvas)
+            fnSetHint("#canvas");
+        else if (appWindowParams.emscriptenKeyboardElement == EmscriptenKeyboardElement::Default)
+        {
+            // If Default:
+            // - the default SDL behavior is used, which is to capture the keyboard events for the window,
+            //   if no previous hint was set in the javascript code.
+
+            // - under Pyodide, the default behavior is to capture the keyboard events for the canvas.
+            #ifdef IMGUI_BUNDLE_BUILD_PYODIDE
+            fnSetHint("#canvas");
+            #endif
+        }
+        #endif // __EMSCRIPTEN__
+    }
+
 
     void RunnerSdl2::Impl_InitPlatformBackend()
     {
+        // This hint shall be set **before** SDL_Init
+        SetSdlHint_EmscriptenKeyboardElement(params.appWindowParams);
+
         auto flags = SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER;
 #ifdef __EMSCRIPTEN__
         flags = SDL_INIT_VIDEO | SDL_INIT_TIMER;

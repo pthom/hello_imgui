@@ -75,7 +75,7 @@ namespace HelloImGui
     {
         auto fnSetHint = [](const char * hintValue)
         {
-            printf("SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, %s)\n", hintValue);
+            // printf("SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, %s)\n", hintValue);
             auto success = SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, hintValue);
             IM_ASSERT(success == SDL_TRUE && "SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT) failed");
         };

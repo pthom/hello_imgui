@@ -3,8 +3,8 @@ vcpkg_check_linkage(ONLY_STATIC_LIBRARY) # this mirrors ImGui's portfile behavio
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO pthom/hello_imgui
-    REF b95830dc7f4d6da9c7d278d21c9af03999b90f14
-    SHA512 a7b83a3735975da9e117a775f722f183763fb8a706c43bb44190a74191a4618cdb5c6852973c1d429330354cc40438ff51602fc73eaa89a6d5a1ac5a392701eb
+    REF "v${VERSION}"
+    SHA512 b44741e27278974f6a545a3143abd18027d98503cc912085e08528c467197fb208d2d4876e483f74e518f3dfc14d12c3579e379b9939dc364a1fff4ee98bb8f5
     HEAD_REF master
 )
 
@@ -20,9 +20,21 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     "freetype-lunasvg" HELLOIMGUI_USE_FREETYPE # When hello_imgui is built with freetype, it will also build with lunasvg
 )
 
+if (NOT HELLOIMGUI_HAS_OPENGL3
+    AND NOT HELLOIMGUI_HAS_METAL
+    AND NOT HELLOIMGUI_HAS_VULKAN
+    AND NOT HELLOIMGUI_HAS_DIRECTX11
+    AND NOT HELLOIMGUI_HAS_DIRECTX12)
+    set(no_rendering_backend ON)
+endif()
+
+if (NOT HELLOIMGUI_USE_GLFW3 AND NOT HELLOIMGUI_USE_SDL2)
+    set(no_platform_backend ON)
+endif()
+
 
 set(platform_options "")
-if(WIN32)
+if(VCPKG_TARGET_IS_WINDOWS)
     # Standard win32 options (these are the defaults for HelloImGui)
     # we could add a vcpkg feature for this, but it would have to be platform specific
     list(APPEND platform_options
@@ -31,7 +43,7 @@ if(WIN32)
     )
 endif()
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+if(VCPKG_TARGET_IS_OSX OR VCPKG_TARGET_IS_IOS)
     # Standard macOS options (these are the defaults for HelloImGui)
     # we could add a vcpkg feature for this, but it would have to be platform specific
     list(APPEND platform_options
@@ -43,29 +55,29 @@ endif()
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
-        -DHELLOIMGUI_BUILD_DEMOS=OFF
-        -DHELLOIMGUI_BUILD_DOCS=OFF
-        -DHELLOIMGUI_BUILD_TESTS=OFF
+    -DHELLOIMGUI_BUILD_DEMOS=OFF
+    -DHELLOIMGUI_BUILD_DOCS=OFF
+    -DHELLOIMGUI_BUILD_TESTS=OFF
 
-        # vcpkg does not support ImGui Test Engine, so we cannot enable it
-        -DHELLOIMGUI_WITH_TEST_ENGINE=OFF
+    # vcpkg does not support ImGui Test Engine, so we cannot enable it
+    -DHELLOIMGUI_WITH_TEST_ENGINE=OFF
 
-        -DHELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE=ON
-        -DHELLO_IMGUI_IMGUI_SHARED=OFF
-        -DHELLOIMGUI_BUILD_IMGUI=OFF
+    -DHELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE=ON
+    -DHELLO_IMGUI_IMGUI_SHARED=OFF
+    -DHELLOIMGUI_BUILD_IMGUI=OFF
 
-        ${platform_options}
+    ${platform_options}
 
-        # Rendering backends
-        -DHELLOIMGUI_HAS_OPENGL3=${HELLOIMGUI_HAS_OPENGL3}
-        -DHELLOIMGUI_HAS_METAL=${HELLOIMGUI_HAS_METAL}
-        -DHELLOIMGUI_HAS_VULKAN=${HELLOIMGUI_HAS_VULKAN}
-        -DHELLOIMGUI_HAS_DIRECTX11=${HELLOIMGUI_HAS_DIRECTX11}
-        -DHELLOIMGUI_HAS_DIRECTX12=${HELLOIMGUI_HAS_DIRECTX12}
+    # Rendering backends
+    -DHELLOIMGUI_HAS_OPENGL3=${HELLOIMGUI_HAS_OPENGL3}
+    -DHELLOIMGUI_HAS_METAL=${HELLOIMGUI_HAS_METAL}
+    -DHELLOIMGUI_HAS_VULKAN=${HELLOIMGUI_HAS_VULKAN}
+    -DHELLOIMGUI_HAS_DIRECTX11=${HELLOIMGUI_HAS_DIRECTX11}
+    -DHELLOIMGUI_HAS_DIRECTX12=${HELLOIMGUI_HAS_DIRECTX12}
 
-        # Platform backends
-        -DHELLOIMGUI_USE_GLFW3=${HELLOIMGUI_USE_GLFW3}
-        -DHELLOIMGUI_USE_SDL2=${HELLOIMGUI_USE_SDL2}
+    # Platform backends
+    -DHELLOIMGUI_USE_GLFW3=${HELLOIMGUI_USE_GLFW3}
+    -DHELLOIMGUI_USE_SDL2=${HELLOIMGUI_USE_SDL2}
 )
 
 vcpkg_cmake_install()
@@ -80,3 +92,35 @@ file(REMOVE_RECURSE
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
+
+if (no_rendering_backend OR no_platform_backend)
+    message(STATUS "
+    ########################################################################
+       !!!!                    WARNING                              !!!!!
+       !!!!   Installed hello-imgui without a viable backend        !!!!!
+    ########################################################################
+
+    When installing hello-imgui, you should specify:
+
+     - At least one (or more) rendering backend (OpenGL3, Metal, Vulkan, DirectX11, DirectX12)
+       Make your choice according to your needs and your target platforms, between:
+          opengl3-binding              # This is the recommended choice, especially for beginners
+          metal-binding                # Apple only, advanced users only
+          experimental-vulkan-binding  # Advanced users only
+          experimental-dx11-binding    # Windows only, still experimental
+          experimental-dx12-binding    # Windows only, advanced users only, still experimental
+
+     - At least one (or more) platform backend (SDL2, Glfw3):
+      Make your choice according to your needs and your target platforms, between:
+          glfw-binding
+          sdl-binding
+
+    For example, you could use:
+        vcpkg install \"hello-imgui[opengl3-binding,glfw-binding]\"
+
+    ########################################################################
+       !!!!                    WARNING                              !!!!!
+       !!!!   Installed hello-imgui without a viable backend        !!!!!
+    ########################################################################
+    ")
+endif()

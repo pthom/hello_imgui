@@ -1,6 +1,6 @@
 {
   "name": "hello-imgui",
-  "version": "1.4.1",
+  "version": "1.6.0",
   "description": "Hello ImGui: unleash your creativity in app development and prototyping",
   "homepage": "https://pthom.github.io/hello_imgui/",
   "license": "MIT",
@@ -20,10 +20,6 @@
       "name": "vcpkg-cmake-config",
       "host": true
     }
-  ],
-  "default-features": [
-    "glfw-binding",
-    "opengl3-binding"
   ],
   "features": {
     "experimental-dx11-binding": {

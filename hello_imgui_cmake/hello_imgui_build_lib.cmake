@@ -785,7 +785,12 @@ function(_him_link_opengl_es_sdl target)
 endfunction()
 
 function(_him_add_glad)
+    # Will link glad to hello_imgui
+    # Sets cache variable HELLOIMGUI_GLAD_LIBRARY to the library that should be linked
+    # when using glad (can be glad::glad or glad, and can be used by other targets,
+    # such as ImmVision)
     if(TARGET glad)
+        set(HELLOIMGUI_GLAD_LIBRARY glad CACHE STRING "" FORCE)
         return()
     endif()
 
@@ -793,6 +798,7 @@ function(_him_add_glad)
     if(glad_FOUND)
         message(STATUS "HelloImGui: using glad from find_package(glad)")
         target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glad::glad)
+        set(HELLOIMGUI_GLAD_LIBRARY glad::glad CACHE STRING "" FORCE)
         return()
     endif()
 
@@ -819,6 +825,7 @@ function(_him_add_glad)
 
     hello_imgui_msvc_target_set_folder(glad ${HELLOIMGUI_SOLUTIONFOLDER}/external/OpenGL_Loaders)
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glad)
+    set(HELLOIMGUI_GLAD_LIBRARY glad CACHE STRING "" FORCE)
 
     him_add_installable_dependency(glad)
     if(HELLOIMGUI_INSTALL)

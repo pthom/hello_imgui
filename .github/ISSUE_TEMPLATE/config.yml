@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Hello ImGui Documentation
+    url: https://pthom.github.io/hello_imgui/
+    about: This is the official documentation for Hello ImGui.
+  - name: Dear ImGui Manual
+    url: https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html
+    about: This is an interactive manual for Dear ImGui. Its show all the widgets and features of Dear ImGui with C++ and Python code.
+  - name: Discussions
+    url: https://github.com/pthom/hello_imgui/discussions
+    about: This is the official place to discuss about Hello ImGui.
+  - name: Dear ImGui Bundle Documentation
+    url: https://pthom.github.io/imgui_bundle/
+    about: This is the official documentation for Dear ImGui Bundle.
+  - name: Dear ImGui Bundle Interactive Manual
+    url: https://traineq.org/ImGuiBundle/emscripten/bin/demo_imgui_bundle.html
+    about: This is the official interactive demo for Dear ImGui Bundle, with lots of examples (with code)

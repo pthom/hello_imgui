@@ -141,6 +141,8 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
     if (! gOverrideAssetsFolder.empty())
         r.push_back({gOverrideAssetsFolder, "folder provided by HelloImGui::SetAssetsFolder()"});
 
+    r.push_back({"", "absolute path or current working directory"});
+
     // For apple bundle, search at the bundle resources folder
     #ifdef HELLOIMGUI_INSIDE_APPLE_BUNDLE
     r.push_back({GetBundlePath() + "/Contents/Resources/" + gAssetsSubfolderFolderName, "AppleAppBundle/Contents/Resources/assets"});

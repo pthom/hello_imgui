@@ -453,19 +453,11 @@ function(_him_add_freetype_to_imgui)
 endfunction()
 
 
-function(_him_add_freetype_plutosvg_to_imgui)
-    # Add freetype + plutosvg to imgui
-    # This is especially useful to support emojis (possibly colored) in imgui
-    # See doc:
-    #     https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#using-colorful-glyphsemojis
-    # We have to
-    # - enable plutosvg in imgui via IMGUI_ENABLE_FREETYPE_PLUTOSVG
-    # - add plutosvg + plutovg to imgui
-    if (HELLOIMGUI_FETCH_FORBIDDEN OR (NOT HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED AND NOT HELLOIMGUI_FREETYPE_STATIC))
-        message(WARNING "Cannot add plutosvg because fetching is forbidden")
-        return()
-    endif()
 
+function(_him_fetch_and_compile_plutosvg)
+    # Fetch and compile plutosvg with build options:
+    #     PLUTOSVG_HAS_FREETYPE (important! otherwise, plutosvg will not use freetype)
+    #     PLUTOSVG_BUILD_STATIC
     set(backup_build_shared_libs ${BUILD_SHARED_LIBS})
     set(BUILD_SHARED_LIBS OFF)
 
@@ -493,13 +485,48 @@ function(_him_add_freetype_plutosvg_to_imgui)
     target_link_libraries(plutosvg PUBLIC ${HIM_FREETYPE_LINKED_LIBRARY} plutovg)
     him_add_installable_dependency(plutosvg)
 
-    target_link_libraries(imgui PUBLIC plutosvg)
-    target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
-
     set(BUILD_SHARED_LIBS ${backup_build_shared_libs})
+endfunction()
 
-    # Prepare Log info
-    set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - downloaded plutosvg" CACHE INTERNAL "" FORCE)
+
+function(_him_add_freetype_plutosvg_to_imgui)
+    # Add freetype + plutosvg to imgui
+    # This is especially useful to support emojis (possibly colored) in imgui
+    # See doc:
+    #     https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#using-colorful-glyphsemojis
+    # We have to
+    # - compile or use a version of plutosvg with freetype support (PLUTOSVG_HAS_FREETYPE)
+    # - enable plutosvg in imgui via IMGUI_ENABLE_FREETYPE_PLUTOSVG
+    # - add plutosvg + plutovg to imgui
+
+    # Option 1 (disabled at the moment, but left as an inspiration): use system plutosvg
+    #
+    # Note for package maintainers (conda, etc.): 
+    #    the cache variable IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS may be used to detect
+    #    if fetching external libraries is disallowed. It is set to ON for conda for example.
+    # Below is an example code that could be used
+    #
+    # if (IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS)
+    #     find_library(PLUTOVG_LIBRARIES plutovg REQUIRED)  # Warning: plutovg must be compiled with freetype support (PLUTOSVG_HAS_FREETYPE)
+    #     target_link_libraries(imgui PRIVATE ${PLUTOVG_LIBRARIES})
+    #     target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
+    #     set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - use system plutosvg" CACHE INTERNAL "" FORCE)
+    #     # early return
+    #     return()
+    # endif()
+
+    # Option 2: download and compile plutosvg
+    set(can_download_freetype (HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED OR HELLOIMGUI_FREETYPE_STATIC))
+    if (HELLOIMGUI_FETCH_FORBIDDEN OR NOT can_download_freetype)
+        message(WARNING "Cannot add plutosvg because fetching is forbidden")
+        return()
+    else()
+        _him_fetch_and_compile_plutosvg()
+        target_link_libraries(imgui PUBLIC plutosvg)
+        target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
+        # Prepare Log info
+        set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - downloaded plutosvg" CACHE INTERNAL "" FORCE)
+    endif()
 endfunction()
 
 

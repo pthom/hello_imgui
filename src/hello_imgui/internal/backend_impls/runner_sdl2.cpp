@@ -33,6 +33,7 @@
 #include <SDL_main.h>
 #include <sstream>
 #include <functional>
+#include <stdio.h>
 
 namespace HelloImGui
 {
@@ -304,6 +305,24 @@ namespace HelloImGui
     void RunnerSdl2::Impl_CreateGlContext()
     {
         mGlContext = SDL_GL_CreateContext((SDL_Window *)mWindow);
+        #ifdef IMGUI_BUNDLE_BUILD_PYODIDE
+        if (mGlContext == nullptr)
+        {
+            printf(R"(
+            When using Pyodide, you need to modify Makefile.envs so that emscripten targets WebGL 2.
+
+            Edit pyodide/Makefile.envs, and modify MAIN_MODULE_LDFLAGS like below:
+
+                export MAIN_MODULE_LDFLAGS= $(LDFLAGS_BASE) \
+	                -s MAIN_MODULE=1 \
+                    ... \
+                    ... \
+                    -sMAX_WEBGL_VERSION=2  \
+                    ... \
+            )");
+            IM_ASSERT(mGlContext != nullptr && "Please see the message above");
+        }
+        #endif // IMGUI_BUNDLE_BUILD_PYODIDE
         IM_ASSERT(mGlContext != nullptr);
 
         SDL_GL_MakeCurrent((SDL_Window *)mWindow, mGlContext); // KK No

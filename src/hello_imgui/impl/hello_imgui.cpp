@@ -409,10 +409,10 @@ void ChangeWindowSize(const ScreenSize &windowSize)
 }
 
 
-void ChangeWindowFullMonitorWorkArea()
+void UseWindowFullMonitorWorkArea()
 {
     
-    gLastRunner->ChangeWindowFullMonitorWorkArea();
+    gLastRunner->UseWindowFullMonitorWorkArea();
 }
 
 

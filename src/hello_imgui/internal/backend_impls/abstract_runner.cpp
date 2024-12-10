@@ -220,7 +220,7 @@ void AbstractRunner::ChangeWindowSize(HelloImGui::ScreenSize windowSize)
     mBackendWindowHelper->SetWindowBounds(mWindow, bounds);
 }
 
-void AbstractRunner::ChangeWindowFullMonitorWorkArea()
+void AbstractRunner::UseWindowFullMonitorWorkArea()
 {
     auto screenBounds = mGeometryHelper->GetCurrentMonitorWorkArea(mBackendWindowHelper.get(),mWindow);
     this->setWasWindowResizedByCodeDuringThisFrame();

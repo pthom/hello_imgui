@@ -194,9 +194,9 @@ std::string GetBackendDescription();
 void ChangeWindowSize(const ScreenSize &windowSize);
 
 
-// `ChangeWindowFullMonitorWorkArea()`: sets the window size to the monitor work area
+// `UseWindowFullMonitorWorkArea()`: sets the window size to the monitor work area
 // (useful if you want to change the window size during execution)
-void ChangeWindowFullMonitorWorkArea();
+void UseWindowFullMonitorWorkArea();
 
 // @@md
 

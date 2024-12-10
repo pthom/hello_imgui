@@ -220,6 +220,13 @@ void AbstractRunner::ChangeWindowSize(HelloImGui::ScreenSize windowSize)
     mBackendWindowHelper->SetWindowBounds(mWindow, bounds);
 }
 
+void AbstractRunner::UseWindowFullMonitorWorkArea()
+{
+    auto screenBounds = mGeometryHelper->GetCurrentMonitorWorkArea(mBackendWindowHelper.get(),mWindow);
+    this->setWasWindowResizedByCodeDuringThisFrame();
+    mBackendWindowHelper->SetWindowBounds(mWindow, screenBounds);
+}
+
 bool AbstractRunner::ShallSizeWindowRelativeTo96Ppi() 
 {
     bool shallSizeRelativeTo96Ppi;

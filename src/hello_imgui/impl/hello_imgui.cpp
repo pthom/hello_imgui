@@ -408,6 +408,14 @@ void ChangeWindowSize(const ScreenSize &windowSize)
     gLastRunner->ChangeWindowSize(windowSize);
 }
 
+
+void UseWindowFullMonitorWorkArea()
+{
+    
+    gLastRunner->UseWindowFullMonitorWorkArea();
+}
+
+
 bool ShouldRemoteDisplay()
 {
     return gLastRunner->ShouldRemoteDisplay();

@@ -40,6 +40,7 @@ public:
     ImageBuffer ScreenshotRgb() { return mRenderingBackendCallbacks->Impl_ScreenshotRgb_3D(); }
 
     void ChangeWindowSize(ScreenSize windowSize);
+    void UseWindowFullMonitorWorkArea();
 
     void LayoutSettings_SwitchLayout(const std::string& layoutName);
     bool ShouldRemoteDisplay();

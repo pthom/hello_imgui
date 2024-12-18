@@ -80,13 +80,29 @@ enum class SetupMode
     Run
 };
 
+static SetupMode gSetupMode = SetupMode::Renderer;
+
+static void Priv_TearDown();
+
 static void Priv_SetupRunner(RunnerParams &passedUserParams, SetupMode setupMode)
 {
+#ifdef IMGUI_BUNDLE_BUILD_PYTHON
+    // For python, we forgive the user for not calling TearDown() before calling Renderer()
+    // since it might be due to a Python exception, which might be recoverable, if running
+    // in a Python REPL, a notebook, or Pyodide.
+    if (gRendererInstanceCount > 0)
+    {
+        printf("HelloImGui: calling TearDown() prior to Setup (probable prior exception in Python).\n");
+        Priv_TearDown();
+    }
+#else
+    if (gRendererInstanceCount > 0)
+        throw std::runtime_error("Only one instance of `HelloImGui::Renderer` can exist at a time.");
+#endif
+    gSetupMode = setupMode;
     bool isUserPointer = (setupMode == SetupMode::Run);  // When using HelloImGui::Run, we may modify the user's runnerParams
     bool shallSetupTearDown = (setupMode == SetupMode::Renderer);  // When using HelloImGui::Renderer, we shall call Setup/TearDown()
 
-    if (gRendererInstanceCount > 0)
-        throw std::runtime_error("Only one instance of `HelloImGui::Renderer` can exist at a time.");
     if (!isUserPointer)
         gLastRunnerParamsOpt = passedUserParams; // Store a copy of the user's runnerParams
     else
@@ -107,10 +123,10 @@ static void Priv_SetupRunner(RunnerParams &passedUserParams, SetupMode setupMode
     gRendererInstanceCount++;
 }
 
-static void Priv_TearDown(SetupMode setupMode)
+static void Priv_TearDown()
 {
     IM_ASSERT(gLastRunner != nullptr && "HelloImGui::Renderer::~Renderer() called without a valid runner");
-    bool shallSetupTearDown = (setupMode == SetupMode::Renderer);  // When using HelloImGui::Renderer, we shall call Setup/TearDown()
+    bool shallSetupTearDown = (gSetupMode == SetupMode::Renderer);  // When using HelloImGui::Renderer, we shall call Setup/TearDown()
     if (shallSetupTearDown)
         gLastRunner->TearDown(false);
     gLastRunner = nullptr;
@@ -200,7 +216,7 @@ namespace ManualRender
     void TearDown()
     {
         TrySwitchToNotInitialized();
-        Priv_TearDown(SetupMode::Renderer);
+        Priv_TearDown();
     }
 
 } // namespace ManualRender
@@ -212,7 +228,7 @@ void Run(RunnerParams& runnerParams)
 {
     Priv_SetupRunner(runnerParams, SetupMode::Run);
     gLastRunner->Run();
-    Priv_TearDown(SetupMode::Run);
+    Priv_TearDown();
 }
 
 void Run(const SimpleRunnerParams& simpleRunnerParams)

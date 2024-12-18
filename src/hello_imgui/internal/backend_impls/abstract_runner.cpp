@@ -424,6 +424,9 @@ void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
         {
             auto bounds = mBackendWindowHelper->GetWindowBounds(mWindow);
 
+            auto monitorBounds =
+                (mGeometryHelper->GetCurrentMonitorWorkArea(mBackendWindowHelper.get(), mWindow));
+
             // update size
             bounds.size = {(int)((float)bounds.size[0] * scaleFactor),
                            (int)((float)bounds.size[1] * scaleFactor)};
@@ -432,7 +435,6 @@ void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
             if (   (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::MonitorCenter)
                 || (params.appWindowParams.windowGeometry.positionMode == HelloImGui::WindowPositionMode::OsDefault))
             {
-                auto monitorBounds = (mGeometryHelper->GetCurrentMonitorWorkArea(mBackendWindowHelper.get(), mWindow));
                 ForDim2(dim)
                     bounds.position[dim] =
                         monitorBounds.Center()[dim] - bounds.size[dim] / 2;
@@ -443,6 +445,9 @@ void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
                 ForDim2(dim) 
                     bounds.position[dim] = (int)((float)bounds.position[dim] * scaleFactor);
             }
+            
+            bounds = monitorBounds.EnsureWindowFitsThisMonitor(bounds);
+
             setWasWindowResizedByCodeDuringThisFrame();
             mBackendWindowHelper->SetWindowBounds(mWindow, bounds);
         }

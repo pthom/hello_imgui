@@ -37,6 +37,10 @@ include(${CMAKE_CURRENT_LIST_DIR}/hello_imgui_cmake/utils/cache_hello_imgui_path
 #     * It will automatically link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
 #     * It will embed the assets (for desktop, mobile, and emscripten apps)
 #     * It will perform additional customization (app icon and name on mobile platforms, etc)
+#     * On desktop platforms, it will perform a "portable install" (i.e. assets and executable are in the same folder)
+#
+# If you want to control the install of your app, you can set HELLOIMGUI_ADD_APP_WITH_INSTALL to OFF
+# See an example in https://github.com/pthom/hello_imgui_template/blob/main/CMakeLists.txt
 #
 include(hello_imgui_add_app)
 

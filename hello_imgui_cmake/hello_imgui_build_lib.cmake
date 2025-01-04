@@ -452,12 +452,9 @@ function(_him_add_freetype_to_imgui)
     endif()
 endfunction()
 
+function(_him_fetch_and_compile_plutovg_plutosvg)
+    # Fetch and compile plutovg and plutosvg
 
-
-function(_him_fetch_and_compile_plutosvg)
-    # Fetch and compile plutosvg with build options:
-    #     PLUTOSVG_HAS_FREETYPE (important! otherwise, plutosvg will not use freetype)
-    #     PLUTOSVG_BUILD_STATIC
     set(backup_build_shared_libs ${BUILD_SHARED_LIBS})
     set(BUILD_SHARED_LIBS OFF)
 
@@ -472,6 +469,9 @@ function(_him_fetch_and_compile_plutosvg)
 
     # Fetch plutosvg at configure time, then compile manually at build time
     # (the stock CMakeLists of plutosvg is not compatible with a custom install of freetype)
+    # with build options:
+    #     PLUTOSVG_HAS_FREETYPE (important! otherwise, plutosvg will not use freetype)
+    #     PLUTOSVG_BUILD_STATIC
     FetchContent_Populate(
         plutosvg
         GIT_REPOSITORY https://github.com/sammycage/plutosvg
@@ -490,16 +490,17 @@ endfunction()
 
 
 function(_him_add_freetype_plutosvg_to_imgui)
-    # Add freetype + plutosvg to imgui
+    # Add freetype + plutovs/plutosvg to imgui
     # This is especially useful to support emojis (possibly colored) in imgui
     # See doc:
     #     https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#using-colorful-glyphsemojis
     # We have to
+    # - compile or use a version of plutovg
     # - compile or use a version of plutosvg with freetype support (PLUTOSVG_HAS_FREETYPE)
     # - enable plutosvg in imgui via IMGUI_ENABLE_FREETYPE_PLUTOSVG
     # - add plutosvg + plutovg to imgui
 
-    # Option 1 (disabled at the moment, but left as an inspiration): use system plutosvg
+    # Option 1 (disabled at the moment, but left as an inspiration): use system plutosvg + plutovg
     #
     # Note for package maintainers (conda, etc.): 
     #    the cache variable IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS may be used to detect
@@ -507,8 +508,9 @@ function(_him_add_freetype_plutosvg_to_imgui)
     # Below is an example code that could be used
     #
     # if (IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS)
-    #     find_library(PLUTOVG_LIBRARIES plutovg REQUIRED)  # Warning: plutovg must be compiled with freetype support (PLUTOSVG_HAS_FREETYPE)
-    #     target_link_libraries(imgui PRIVATE ${PLUTOVG_LIBRARIES})
+    #     find_library(PLUTOVG_LIBRARIES plutovg REQUIRED)
+    #     find_library(PLUTOVG_LIBRARIES plutosvg REQUIRED)  # Warning: plutosvg must be compiled with freetype support (PLUTOSVG_HAS_FREETYPE)
+    #     target_link_libraries(imgui PRIVATE ${PLUTOVG_LIBRARIES} ${PLUTOSVG_LIBRARIES})
     #     target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
     #     set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - use system plutosvg" CACHE INTERNAL "" FORCE)
     #     # early return
@@ -521,7 +523,7 @@ function(_him_add_freetype_plutosvg_to_imgui)
         message(WARNING "Cannot add plutosvg because fetching is forbidden")
         return()
     else()
-        _him_fetch_and_compile_plutosvg()
+        _him_fetch_and_compile_plutovg_plutosvg()
         target_link_libraries(imgui PUBLIC plutosvg)
         target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
         # Prepare Log info

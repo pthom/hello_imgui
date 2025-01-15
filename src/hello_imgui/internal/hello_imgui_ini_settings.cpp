@@ -24,9 +24,10 @@ namespace HelloImGui
             std::string AlnumOrUnderscore(const std::string& s)
             {
                 std::string r;
+
                 for (char c : s)
                 {
-                    if (isalnum(c))
+                    if (isalnum(static_cast<unsigned char>(c)))
                         r += c;
                     else
                         r += "_";

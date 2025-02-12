@@ -462,7 +462,7 @@ function(_him_fetch_and_compile_plutovg_plutosvg)
     include(FetchContent)
     FetchContent_Declare(plutovg
         GIT_REPOSITORY https://github.com/sammycage/plutovg
-        GIT_TAG        v0.0.8
+        GIT_TAG        v0.0.12
         GIT_PROGRESS TRUE
     )
     FetchContent_MakeAvailable(plutovg)
@@ -470,18 +470,17 @@ function(_him_fetch_and_compile_plutovg_plutosvg)
     # Fetch plutosvg at configure time, then compile manually at build time
     # (the stock CMakeLists of plutosvg is not compatible with a custom install of freetype)
     # with build options:
-    #     PLUTOSVG_HAS_FREETYPE (important! otherwise, plutosvg will not use freetype)
     #     PLUTOSVG_BUILD_STATIC
     FetchContent_Populate(
         plutosvg
         GIT_REPOSITORY https://github.com/sammycage/plutosvg
-        GIT_TAG v0.0.2
+        GIT_TAG v0.0.5
         SOURCE_DIR ${CMAKE_BINARY_DIR}/plutosvg_source
         BINARY_DIR ${CMAKE_BINARY_DIR}/plutosvg_build
     )
     add_library(plutosvg STATIC ${plutosvg_SOURCE_DIR}/source/plutosvg.c)
     target_include_directories(plutosvg PUBLIC $<BUILD_INTERFACE:${plutosvg_SOURCE_DIR}/source>)
-    target_compile_definitions(plutosvg PUBLIC PLUTOSVG_HAS_FREETYPE PLUTOSVG_BUILD_STATIC)
+    target_compile_definitions(plutosvg PUBLIC PLUTOSVG_BUILD_STATIC)
     target_link_libraries(plutosvg PUBLIC ${HIM_FREETYPE_LINKED_LIBRARY} plutovg)
     him_add_installable_dependency(plutosvg)
 
@@ -496,7 +495,7 @@ function(_him_add_freetype_plutosvg_to_imgui)
     #     https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#using-colorful-glyphsemojis
     # We have to
     # - compile or use a version of plutovg
-    # - compile or use a version of plutosvg with freetype support (PLUTOSVG_HAS_FREETYPE)
+    # - compile or use a version of plutosvg with freetype support
     # - enable plutosvg in imgui via IMGUI_ENABLE_FREETYPE_PLUTOSVG
     # - add plutosvg + plutovg to imgui
 
@@ -509,7 +508,7 @@ function(_him_add_freetype_plutosvg_to_imgui)
     #
     # if (IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS)
     #     find_library(PLUTOVG_LIBRARIES plutovg REQUIRED)
-    #     find_library(PLUTOVG_LIBRARIES plutosvg REQUIRED)  # Warning: plutosvg must be compiled with freetype support (PLUTOSVG_HAS_FREETYPE)
+    #     find_library(PLUTOVG_LIBRARIES plutosvg REQUIRED)
     #     target_link_libraries(imgui PRIVATE ${PLUTOVG_LIBRARIES} ${PLUTOSVG_LIBRARIES})
     #     target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
     #     set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - use system plutosvg" CACHE INTERNAL "" FORCE)

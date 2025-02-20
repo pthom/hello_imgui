@@ -499,7 +499,7 @@ static ImGuiWindowFlags WindowFlagsNothing()
 {
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
     window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-                    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings;
+                    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
     window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
     return window_flags;
 }
@@ -525,7 +525,7 @@ void DoShowToolbar(
     if (windowBg.w != 0.f)
         ImGui::PushStyleColor(ImGuiCol_WindowBg, windowBg);
     static bool p_open = true;
-    ImGui::Begin(windowId.c_str(), &p_open, WindowFlagsNothing());
+    ImGui::Begin(windowId.c_str(), &p_open, WindowFlagsNothing() | ImGuiWindowFlags_NoScrollbar);
     ImGui::PopStyleVar(3);
     if (windowBg.w != 0.f)
         ImGui::PopStyleColor();

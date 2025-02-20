@@ -49,6 +49,9 @@ jobs:
         with:
           submodules: false
 
+      - name: Setup interactive tmate session
+        uses: mxschmitt/action-tmate@v3
+
       - name: install glfw & sdl requirements
         if : ${{ matrix.config.os == 'ubuntu-latest' }}
         shell: bash

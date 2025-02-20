@@ -33,7 +33,7 @@ jobs:
         if : ${{ matrix.config.os == 'ubuntu-latest' }}
         shell: bash
         run: |
-          sudo apt-get update && sudo apt-get install -y libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config libx11-dev libxft-dev libxext-dev autoconf automake libtool pkg-config
+          sudo apt-get update && sudo apt-get install -y libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config libx11-dev libxft-dev libxext-dev autoconf automake libtool pkg-config libltdl-dev
 
       - name: vcpkg install
         uses: johnwason/vcpkg-action@v6

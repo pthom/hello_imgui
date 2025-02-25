@@ -313,6 +313,11 @@ option(HELLOIMGUI_WITH_NETIMGUI "Use netImgui for remote rendering" OFF)
 # Using https://github.com/ggerganov/imgui-ws
 option(HELLOIMGUI_WITH_IMGUIWS "Use imgui-ws for remote rendering" OFF)
 
+#------------------------------------------------------------------------------
+# Use external JSON
+#------------------------------------------------------------------------------
+option(HELLOIMGUI_USE_EXTERNAL_JSON "Use external nlohmann_json library" OFF)
+
 ###############################################################################
 # End of options
 ###############################################################################

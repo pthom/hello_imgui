@@ -313,6 +313,12 @@ option(HELLOIMGUI_WITH_NETIMGUI "Use netImgui for remote rendering" OFF)
 # Using https://github.com/ggerganov/imgui-ws
 option(HELLOIMGUI_WITH_IMGUIWS "Use imgui-ws for remote rendering" OFF)
 
+#------------------------------------------------------------------------------
+# Use external JSON (i.e. use a custom version, provided that your CMake scripts
+# ensure that linking with nlohmann_json::nlohmann_json will work)
+#------------------------------------------------------------------------------
+option(HELLOIMGUI_USE_EXTERNAL_JSON "Use external nlohmann_json library" OFF)
+
 ###############################################################################
 # End of options
 ###############################################################################

@@ -501,7 +501,7 @@ function(_him_add_freetype_plutosvg_to_imgui)
 
     # Option 1 (disabled at the moment, but left as an inspiration): use system plutosvg + plutovg
     #
-    # Note for package maintainers (conda, etc.): 
+    # Note for package maintainers (conda, etc.):
     #    the cache variable IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS may be used to detect
     #    if fetching external libraries is disallowed. It is set to ON for conda for example.
     # Below is an example code that could be used
@@ -1190,24 +1190,30 @@ endfunction()
 # Add nlohmann_json: API = him_add_nlohmann_json
 ###################################################################################################
 function(him_add_nlohmann_json)
-    find_package(nlohmann_json CONFIG QUIET)
-    if(nlohmann_json_FOUND)
-        message(STATUS "HelloImGui: using nlohmann_json from find_package(nlohmann_json)")
+    if (HELLOIMGUI_USE_EXTERNAL_JSON)
+        message(STATUS "HelloImGui: using externally provided nlohmann_json")
         target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC nlohmann_json::nlohmann_json)
-        set(HELLOIMGUI_NLOHMANN_JSON_SELECTED_INFO "Found via find_package(nlohmann_json)" CACHE INTERNAL "" FORCE)
+        set(HELLOIMGUI_NLOHMANN_JSON_SELECTED_INFO "Provided externally" CACHE INTERNAL "" FORCE)
     else()
-        message(STATUS "HelloImGui: using nlohmann_json from external/nlohmann_json")
-        set(nlohmann_json_dir ${HELLOIMGUI_BASEPATH}/external/nlohmann_json)
-        add_library(nlohmann_json INTERFACE)
-        target_include_directories(nlohmann_json INTERFACE $<BUILD_INTERFACE:${nlohmann_json_dir}>)
-        # target_compile_definitions(nlohmann_json INTERFACE NLOHMANN_JSON_NOEXCEPTION)
-        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC nlohmann_json)
-        set(HELLOIMGUI_NLOHMANN_JSON_SELECTED_INFO "Using external/nlohmann_json" CACHE INTERNAL "" FORCE)
+        find_package(nlohmann_json CONFIG QUIET)
+        if(nlohmann_json_FOUND)
+            message(STATUS "HelloImGui: using nlohmann_json from find_package(nlohmann_json)")
+            target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC nlohmann_json::nlohmann_json)
+            set(HELLOIMGUI_NLOHMANN_JSON_SELECTED_INFO "Found via find_package(nlohmann_json)" CACHE INTERNAL "" FORCE)
+        else()
+            message(STATUS "HelloImGui: using nlohmann_json from external/nlohmann_json")
+            set(nlohmann_json_dir ${HELLOIMGUI_BASEPATH}/external/nlohmann_json)
+            add_library(nlohmann_json INTERFACE)
+            target_include_directories(nlohmann_json INTERFACE $<BUILD_INTERFACE:${nlohmann_json_dir}>)
+            # target_compile_definitions(nlohmann_json INTERFACE NLOHMANN_JSON_NOEXCEPTION)
+            target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC nlohmann_json)
+            set(HELLOIMGUI_NLOHMANN_JSON_SELECTED_INFO "Using external/nlohmann_json" CACHE INTERNAL "" FORCE)
 
-        him_add_installable_dependency(nlohmann_json)
-        if(HELLOIMGUI_INSTALL)
-            install(FILES ${nlohmann_json_dir}/nlohmann/json.hpp DESTINATION include/nlohmann/json.hpp)
-            install(FILES ${nlohmann_json_dir}/nlohmann/json_fwd.hpp DESTINATION include/nlohmann/json_fwd.hpp)
+            him_add_installable_dependency(nlohmann_json)
+            if(HELLOIMGUI_INSTALL)
+                install(FILES ${nlohmann_json_dir}/nlohmann/json.hpp DESTINATION include/nlohmann/json.hpp)
+                install(FILES ${nlohmann_json_dir}/nlohmann/json_fwd.hpp DESTINATION include/nlohmann/json_fwd.hpp)
+            endif()
         endif()
     endif()
 endfunction()
@@ -1301,6 +1307,7 @@ function(him_main_add_hello_imgui_library)
     him_build_imgui()
     him_add_hello_imgui()
     him_add_nlohmann_json()
+
     if (HELLOIMGUI_WITH_TEST_ENGINE)
         add_imgui_test_engine()
     endif()

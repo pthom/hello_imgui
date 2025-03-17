@@ -314,7 +314,11 @@ namespace ImGuiTheme
             style.GrabRounding = 0.0f;
             style.TabRounding = 0.0f;
             style.TabBorderSize = 0.0f;
+#if IMGUI_VERSION_NUM >= 19190
+            style.TabCloseButtonMinWidthUnselected = 0.0f;
+#else
             style.TabMinWidthForCloseButton = 0.0f;
+#endif
             style.ColorButtonPosition = ImGuiDir_Left;
             style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
             style.SelectableTextAlign = ImVec2(0.0f, 0.0f);
@@ -408,7 +412,11 @@ namespace ImGuiTheme
             style.GrabRounding = 0.0f;
             style.TabRounding = 0.0f;
             style.TabBorderSize = 1.0f;
+#if IMGUI_VERSION_NUM >= 19190
+            style.TabCloseButtonMinWidthUnselected = 0.0f;
+#else
             style.TabMinWidthForCloseButton = 0.0f;
+#endif
             style.ColorButtonPosition = ImGuiDir_Right;
             style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
             style.SelectableTextAlign = ImVec2(0.0f, 0.0f);
@@ -577,7 +585,11 @@ namespace ImGuiTheme
             style.GrabRounding = 0.0f;
             style.TabRounding = 4.0f;
             style.TabBorderSize = 0.0f;
+#if IMGUI_VERSION_NUM >= 19190
+            style.TabCloseButtonMinWidthUnselected = 0.0f;
+#else
             style.TabMinWidthForCloseButton = 0.0f;
+#endif
             style.ColorButtonPosition = ImGuiDir_Right;
             style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
             style.SelectableTextAlign = ImVec2(0.0f, 0.0f);
@@ -615,7 +627,11 @@ namespace ImGuiTheme
             style.GrabRounding = 2.0f;
             style.TabRounding = 4.0f;
             style.TabBorderSize = 1.0f;
+#if IMGUI_VERSION_NUM >= 19190
+            style.TabCloseButtonMinWidthUnselected = 0.0f;
+#else
             style.TabMinWidthForCloseButton = 0.0f;
+#endif
             style.ColorButtonPosition = ImGuiDir_Right;
             style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
             style.SelectableTextAlign = ImVec2(0.0f, 0.0f);
@@ -814,7 +830,11 @@ namespace ImGuiTheme
             style.ScrollbarSize = 15.5f;
             style.GrabMinSize = 10.89999961853027f;
             style.TabBorderSize = 1.0f;
+#if IMGUI_VERSION_NUM >= 19190
+            style.TabCloseButtonMinWidthUnselected = 0.0f;
+#else
             style.TabMinWidthForCloseButton = 0.0f;
+#endif
             style.ColorButtonPosition = ImGuiDir_Right;
             style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
             style.SelectableTextAlign = ImVec2(0.0f, 0.5f);

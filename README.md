@@ -24,7 +24,6 @@ _See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/
 
 **Vcpkg**<br/>
 [![VcpkgDeps](https://github.com/pthom/hello_imgui/workflows/VcpkgDeps/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/VcpkgDeps.yml)
-[![VcpkgPackage](https://github.com/pthom/hello_imgui/workflows/VcpkgPackage/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/VcpkgPackage.yml)
 
 # Hello ImGui
 

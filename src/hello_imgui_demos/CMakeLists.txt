@@ -21,3 +21,8 @@ foreach(target_name ${subdirs})
         hello_imgui_msvc_target_set_folder(${target_name} ${HELLOIMGUI_SOLUTIONFOLDER}/hello_imgui_demos)
     endif()
 endforeach()
+
+option(HELLOIMGUI_BUILD_GLFW_OPENGL3_BARE_EXAMPLE "Build ImGui glfw+OpenGL3 bare example" OFF)
+if (HELLOIMGUI_BUILD_GLFW_OPENGL3_BARE_EXAMPLE)
+    add_subdirectory(example_glfw_opengl3)
+endif()

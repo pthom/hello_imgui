@@ -102,10 +102,6 @@ namespace HelloImGui
         // callbacks->Impl_ScreenshotRgb_3D     = [] { return ImageBuffer{}; };
         // callbacks->Impl_GetFrameBufferSize;   //= [] { return ScreenSize{0, 0}; };
 
-        callbacks->Impl_CreateFontTexture = ImGui_ImplVulkan_CreateFontsTexture;
-        callbacks->Impl_DestroyFontTexture = ImGui_ImplVulkan_DestroyFontsTexture;
-
-
         return callbacks;
     }
 

@@ -98,10 +98,6 @@ namespace HelloImGui
         VoidFunction                  Impl_Shutdown_3D          = [] { HIMG_ERROR("Empty function"); };
         std::function<ImageBuffer()>  Impl_ScreenshotRgb_3D     = [] { return ImageBuffer{}; };
         std::function<ScreenSize()>   Impl_GetFrameBufferSize;   //= [] { return ScreenSize{0, 0}; };
-
-        // Callbacks for font texture creation/destruction during runtime (unsupported by DirectX11&12)
-        VoidFunction                  Impl_DestroyFontTexture  = [] { HIMG_ERROR("Empty function"); };
-        VoidFunction                  Impl_CreateFontTexture   = [] { HIMG_ERROR("Empty function"); };
     };
 
     using RenderingCallbacksPtr = std::shared_ptr<RenderingCallbacks>;

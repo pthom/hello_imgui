@@ -951,9 +951,6 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
             if (_reloadAllDpiResponsiveFonts())
             {
                 DpiLog("_CheckDpiAwareParamsChanges returned true => reloaded all fonts\n");
-                // cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
-                mRenderingBackendCallbacks->Impl_DestroyFontTexture();
-                mRenderingBackendCallbacks->Impl_CreateFontTexture();
                 mRemoteDisplayHandler.SendFonts();
             }
         }
@@ -1177,12 +1174,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         {
             params.callbacks.LoadAdditionalFonts();
             ImGui::GetIO().Fonts->Build();
-            // cf https://github.com/ocornut/imgui/issues/6547
-            // We need to recreate the rendering backend device objects
-            mRenderingBackendCallbacks->Impl_DestroyFontTexture();
-            mRenderingBackendCallbacks->Impl_CreateFontTexture();
             params.callbacks.LoadAdditionalFonts = nullptr;
-
             mRemoteDisplayHandler.SendFonts();
         }
     };

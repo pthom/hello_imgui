@@ -90,7 +90,6 @@ private:
     void InitRenderBackendCallbacks();
 
     void SetupDpiAwareParams();
-    bool CheckDpiAwareParamsChanges();
     void PrepareWindowGeometry();
     void AdjustWindowBoundsAfterCreation_IfDpiChangedBetweenRuns();
     void HandleDpiOnSecondFrame();

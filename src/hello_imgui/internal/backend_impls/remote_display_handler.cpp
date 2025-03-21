@@ -714,16 +714,6 @@ bool RemoteDisplayHandler::ShouldRemoteDisplay()
     #endif
 }
 
-bool RemoteDisplayHandler::CheckDpiAwareParamsChanges()
-{
-    if (!IsConnectedToRemoteDisplay())
-        return false;
-    #ifdef HELLOIMGUI_WITH_NETIMGUI
-    return NetimguiUtils::UpdateDpiAwareParams_Netimgui();
-    #else
-    return false;
-    #endif
-}
 
 void RemoteDisplayHandler::Create()
 {

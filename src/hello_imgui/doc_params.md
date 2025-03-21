@@ -600,6 +600,18 @@ struct AppWindowParams
     // If true, HelloImGui will handle the edgeInsets on iOS.
     bool       handleEdgeInsets = true;
 
+
+    // --------------- Emscripten ------------------
+    // `emscriptenKeyboardElement`: _EmscriptenKeyboardElement, default=Default_. HTML element in which SDL will capture the keyboard events.
+    // (For Emscripten only)
+    // Choose between: Window, Document, Screen, Canvas, Default.
+    // If Default:
+    // - the default SDL behavior is used, which is to capture the keyboard events for the window,
+    //   if no previous hint was set in the javascript code.
+    // - under Pyodide, the default behavior is to capture the keyboard events for the canvas.
+    EmscriptenKeyboardElement emscriptenKeyboardElement = EmscriptenKeyboardElement::Default;
+
+
     // ----------------- repaint the window during resize -----------------
     // Very advanced and reserved for advanced C++ users.
     // If you set this to true, the window will be repainted during resize.
@@ -906,12 +918,6 @@ Source: [dpi_aware.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 //    By default, Hello ImGui will compute them automatically,
 //    when dpiWindowSizeFactor and fontRenderingScale are set to 0.
 //
-// Parameters to improve font rendering quality:
-// ---------------------------------------------
-// - `fontOversampleH` and `fontOversampleV` : Font oversampling parameters
-//     Rasterize at higher quality for sub-pixel positioning. Probably unused if freeType is used.
-//     If not zero, these values will be used to set the oversampling factor when loading fonts.
-//
 //
 // How to set those values manually:
 // ---------------------------------
@@ -954,23 +960,6 @@ struct DpiAwareParams
     //   This leads to a better rendering quality on some platforms.
     // (This parameter will be used to set ImGui::GetIO().FontGlobalScale at startup)
     float fontRenderingScale = 0.0f;
-
-    // `onlyUseFontDpiResponsive`
-    // If true, guarantees that only HelloImGui::LoadDpiResponsiveFont will be used to load fonts.
-    // (also for the default font)
-    bool onlyUseFontDpiResponsive = false;
-
-    // `fontOversampleH` and `fontOversampleV` : Font oversampling parameters
-    // Rasterize at higher quality for sub-pixel positioning. Probably unused if freeType is used.
-    // If not zero, these values will be used to set the oversampling factor when loading fonts.
-    // (i.e. they will be set in ImFontConfig::OversampleH and ImFontConfig::OversampleV)
-    // OversampleH: The difference between 2 and 3 for OversampleH is minimal.
-    //              You can reduce this to 1 for large glyphs save memory.
-    // OversampleV: This is not really useful as we don't use sub-pixel positions on the Y axis.
-    // Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.
-    int             fontOversampleH = 0;  // Default is 2 in ImFontConfig
-    int             fontOversampleV = 0;  // Default is 1 in ImFontConfig
-
 
     // `dpiFontLoadingFactor`
     //     factor by which font size should be multiplied at loading time to get a similar

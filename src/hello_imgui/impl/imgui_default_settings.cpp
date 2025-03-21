@@ -26,12 +26,7 @@ void LoadDefaultFont_WithFontAwesomeIcons()
         return;
     }
 
-    bool useDpiResponsiveFonts = runnerParams->dpiAwareParams.onlyUseFontDpiResponsive;
-
-    if (useDpiResponsiveFonts)
-        LoadFontDpiResponsive(fontFilename, fontSize);
-    else
-        LoadFont(fontFilename, fontSize);
+    LoadFont(fontFilename, fontSize);
 
     if (defaultIconFont == HelloImGui::DefaultIconFont::NoIcons)
         return;
@@ -49,11 +44,7 @@ void LoadDefaultFont_WithFontAwesomeIcons()
 
     HelloImGui::FontLoadingParams fontParams;
     fontParams.mergeToLastFont = true;
-
-    if (useDpiResponsiveFonts)
-        LoadFontDpiResponsive(iconFontFile, fontSize, fontParams);
-    else
-        LoadFont(iconFontFile, fontSize, fontParams);
+    LoadFont(iconFontFile, fontSize, fontParams);
 }
 
 void SetupDefaultImGuiConfig()

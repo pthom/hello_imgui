@@ -63,11 +63,6 @@ struct DpiAwareParams
     // (This parameter will be used to set ImGui::GetIO().FontGlobalScale at startup)
     float fontRenderingScale = 0.0f;
 
-    // `onlyUseFontDpiResponsive`
-    // If true, guarantees that only HelloImGui::LoadDpiResponsiveFont will be used to load fonts.
-    // (also for the default font)
-    bool onlyUseFontDpiResponsive = false;
-
     // `dpiFontLoadingFactor`
     //     factor by which font size should be multiplied at loading time to get a similar
     //     visible size on different OSes.
@@ -92,7 +87,7 @@ Using ImVec2 with fixed values is *almost always a bad idea* if you intend your
 application to be used on high DPI screens!
 Otherwise, widgets might be misplaced or too small on different screens and/or OS.
 
-Instead you should use scale your widgets and windows relatively to the font size,
+Instead, you should use scale your widgets and windows relatively to the font size,
 as is done with the [em CSS Unit](https://lyty.dev/css/css-unit.html).
 
 @@md
@@ -213,7 +208,7 @@ It is typically 1 on windows, and 0.5 on macOS retina screens.
 
 ### Using HelloImGui (recommended)
 
-[`HelloImGui::LoadFont()` and `HelloImGui::LoadFontDpiResponsive`](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts) will load fonts
+[`HelloImGui::LoadFont()`](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts) will load fonts
  with the correct size, taking into account the DPI scaling.
 
 ### Using Dear ImGui

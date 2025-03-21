@@ -81,7 +81,6 @@ void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 void setFinalAppWindowScreenshotFramebufferScale(float scale);
 
 // Encapsulated inside hello_imgui_font.cpp
-bool _reloadAllDpiResponsiveFonts();
 bool ShouldRemoteDisplay();
 
 // Encapsulated inside docking_details.cpp
@@ -312,32 +311,6 @@ void _LogDpiParams(const std::string& origin, const HelloImGui::DpiAwareParams& 
 	DpiLog("    DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
 	DpiLog("        (ImGui FontGlobalScale: %f)\n", io.FontGlobalScale);
 	DpiLog("	    (ImGui DisplayFramebufferScale=%f, %f)\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
-}
-
-
-bool AbstractRunner::CheckDpiAwareParamsChanges()
-{
-    auto& dpiAwareParams = params.dpiAwareParams;
-    auto& io = ImGui::GetIO();
-
-	// Check changes
-	bool didFontGlobalScaleChange = dpiAwareParams.fontRenderingScale != io.FontGlobalScale;
-	if (didFontGlobalScaleChange)
-	{
-		DpiLog("Warning: didFontGlobalScaleChange=:true\n");
-		dpiAwareParams.fontRenderingScale = io.FontGlobalScale;
-	}
-
-    bool didDpiAwareParamsChangeOnRemoteServer = mRemoteDisplayHandler.CheckDpiAwareParamsChanges();
-
-	if (didFontGlobalScaleChange || didDpiAwareParamsChangeOnRemoteServer)
-	{
-		DpiLog("New DpiAwareParams:\n");
-		_LogDpiParams("_CheckDpiAwareParamsChanges (changed!)", dpiAwareParams);
-		return true;
-	}
-	else
-		return false;
 }
 
 
@@ -930,19 +903,6 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     // When running in python, they *need* to have the GIL!
     //
 
-    // Reload fonts if DPI scale changed
-    auto fnReloadFontsIfDpiScaleChanged = [this]()
-    {
-        if (CheckDpiAwareParamsChanges())
-        {
-            if (_reloadAllDpiResponsiveFonts())
-            {
-                DpiLog("_CheckDpiAwareParamsChanges returned true => reloaded all fonts\n");
-                mRemoteDisplayHandler.SendFonts();
-            }
-        }
-    };
-
     auto fnHandleLayout = [this]()
     {
         LayoutSettings_HandleChanges();
@@ -1339,7 +1299,6 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
     {
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
-        fnReloadFontsIfDpiScaleChanged();
         fnHandleLayout();
     }
 

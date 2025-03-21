@@ -68,10 +68,10 @@ struct AppState
 
     MyAppSettings myAppSettings; // This values will be stored in the application settings
 
-    HelloImGui::FontDpiResponsive *TitleFont;
-    HelloImGui::FontDpiResponsive *ColorFont;
-    HelloImGui::FontDpiResponsive *EmojiFont;
-    HelloImGui::FontDpiResponsive *LargeIconFont;
+    ImFont *TitleFont;
+    ImFont *ColorFont;
+    ImFont *EmojiFont;
+    ImFont *LargeIconFont;
 };
 
 
@@ -80,25 +80,24 @@ struct AppState
 //////////////////////////////////////////////////////////////////////////
 void LoadFonts(AppState& appState) // This is called by runnerParams.callbacks.LoadAdditionalFonts
 {
-	auto runnerParams = HelloImGui::GetRunnerParams();
-	runnerParams->dpiAwareParams.onlyUseFontDpiResponsive=true;
+    auto runnerParams = HelloImGui::GetRunnerParams();
 
     runnerParams->callbacks.defaultIconFont = HelloImGui::DefaultIconFont::FontAwesome6;
     // First, load the default font (the default font should be loaded first)
     HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons();
     // Then load the other fonts
-    appState.TitleFont = HelloImGui::LoadFontDpiResponsive("fonts/DroidSans.ttf", 18.f);
+    appState.TitleFont = HelloImGui::LoadFont("fonts/DroidSans.ttf", 18.f);
 
     HelloImGui::FontLoadingParams fontLoadingParamsEmoji;
-    appState.EmojiFont = HelloImGui::LoadFontDpiResponsive("fonts/NotoEmoji-Regular.ttf", 24.f, fontLoadingParamsEmoji);
+    appState.EmojiFont = HelloImGui::LoadFont("fonts/NotoEmoji-Regular.ttf", 24.f, fontLoadingParamsEmoji);
 
     HelloImGui::FontLoadingParams fontLoadingParamsLargeIcon;
-    appState.LargeIconFont = HelloImGui::LoadFontDpiResponsive("fonts/fontawesome-webfont.ttf", 24.f, fontLoadingParamsLargeIcon);
+    appState.LargeIconFont = HelloImGui::LoadFont("fonts/fontawesome-webfont.ttf", 24.f, fontLoadingParamsLargeIcon);
 #ifdef IMGUI_ENABLE_FREETYPE
     // Found at https://www.colorfonts.wtf/
     HelloImGui::FontLoadingParams fontLoadingParamsColor;
     fontLoadingParamsColor.loadColor = true;
-    appState.ColorFont = HelloImGui::LoadFontDpiResponsive("fonts/Playbox/Playbox-FREE.otf", 24.f, fontLoadingParamsColor);
+    appState.ColorFont = HelloImGui::LoadFont("fonts/Playbox/Playbox-FREE.otf", 24.f, fontLoadingParamsColor);
 #endif
 }
 
@@ -156,7 +155,7 @@ void SaveMyAppSettings(const AppState& appState)
 // Display a button that will hide the application window
 void DemoHideWindow(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont->font); ImGui::Text("Hide app window"); ImGui::PopFont();
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("Hide app window"); ImGui::PopFont();
     static double lastHideTime = -1.;
     if (ImGui::Button("Hide"))
     {
@@ -184,7 +183,7 @@ void DemoShowAdditionalWindow(AppState& appState)
     // Note: you should not modify manually the content of runnerParams.dockingParams.dockableWindows
     //       (since HelloImGui is constantly looping on it)
 
-    ImGui::PushFont(appState.TitleFont->font); ImGui::Text("Dynamically add window"); ImGui::PopFont();
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("Dynamically add window"); ImGui::PopFont();
 
     const char* windowName = "Additional Window";
     if (ImGui::Button("Show additional window"))
@@ -210,7 +209,7 @@ void DemoShowAdditionalWindow(AppState& appState)
 
 void DemoLogs(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont->font); ImGui::Text("Log Demo"); ImGui::PopFont();
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("Log Demo"); ImGui::PopFont();
 
     ImGui::BeginGroup();
     // Edit a float using a slider from 0.0f to 1.0f
@@ -234,7 +233,7 @@ void DemoLogs(AppState& appState)
 
 void DemoUserSettings(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont->font); ImGui::Text("User settings"); ImGui::PopFont();
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("User settings"); ImGui::PopFont();
     ImGui::BeginGroup();
     ImGui::SetNextItemWidth(HelloImGui::EmSize(7.f));
 
@@ -249,7 +248,7 @@ void DemoUserSettings(AppState& appState)
 
 void DemoRocket(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont->font); ImGui::Text("Status Bar Demo"); ImGui::PopFont();
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("Status Bar Demo"); ImGui::PopFont();
     ImGui::BeginGroup();
     if (appState.rocket_state == AppState::RocketState::Init)
     {
@@ -286,7 +285,7 @@ void DemoRocket(AppState& appState)
 
 void DemoDockingFlags(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont->font); ImGui::Text("Main dock space node flags"); ImGui::PopFont();
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("Main dock space node flags"); ImGui::PopFont();
     ImGui::TextWrapped(R"(
 This will edit the ImGuiDockNodeFlags for "MainDockSpace".
 Most flags are inherited by children dock spaces.
@@ -321,13 +320,13 @@ Most flags are inherited by children dock spaces.
 
 void GuiWindowLayoutCustomization(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont->font); ImGui::Text("Switch between layouts"); ImGui::PopFont();
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("Switch between layouts"); ImGui::PopFont();
     ImGui::Text("with the menu \"View/Layouts\"");
     if (ImGui::IsItemHovered())
         ImGui::SetTooltip("Each layout remembers separately the modifications applied by the user, \nand the selected layout is restored at startup");
     ImGui::Separator();
 
-    ImGui::PushFont(appState.TitleFont->font); ImGui::Text("Change the theme"); ImGui::PopFont();
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("Change the theme"); ImGui::PopFont();
     ImGui::Text("with the menu \"View/Theme\"");
     if (ImGui::IsItemHovered())
         ImGui::SetTooltip("The selected theme is remembered and restored at startup");
@@ -358,7 +357,7 @@ void GuiWindowAlternativeTheme(AppState& appState)
     if (windowOpened)
     {
         // Display some widgets
-        ImGui::PushFont(appState.TitleFont->font); ImGui::Text("Alternative Theme"); ImGui::PopFont();
+        ImGui::PushFont(appState.TitleFont); ImGui::Text("Alternative Theme"); ImGui::PopFont();
         ImGui::Text("This window uses a different theme");
         ImGui::SetItemTooltip("    ImGuiTheme::ImGuiTweakedTheme tweakedTheme;\n"
                               "    tweakedTheme.Theme = ImGuiTheme::ImGuiTheme_WhiteIsWhite;\n"
@@ -447,7 +446,7 @@ Handling Japanese font is of course possible within ImGui / Hello ImGui!
 
 void DemoAssets(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont->font); ImGui::Text("Image From Asset"); ImGui::PopFont();
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("Image From Asset"); ImGui::PopFont();
 
     HelloImGui::BeginGroupColumn();
     ImGui::Dummy(HelloImGui::EmToVec2(0.f, 0.45f));
@@ -458,7 +457,7 @@ void DemoAssets(AppState& appState)
 
 void DemoFonts(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont->font); ImGui::Text("Fonts"); ImGui::PopFont();
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("Fonts"); ImGui::PopFont();
     ImGui::TextWrapped("Mix icons " ICON_FA_FACE_SMILE " and text " ICON_FA_ROCKET "");
     if (ImGui::IsItemHovered())
         ImGui::SetTooltip("Example with Font Awesome Icons");
@@ -467,7 +466,7 @@ void DemoFonts(AppState& appState)
 
     ImGui::BeginGroup();
     {
-        ImGui::PushFont(appState.EmojiFont->font);
+        ImGui::PushFont(appState.EmojiFont);
         // ✌️ (Victory Hand Emoji)
         ImGui::Text(U8_TO_CHAR(u8"\U0000270C\U0000FE0F"));
         ImGui::SameLine();
@@ -494,7 +493,7 @@ void DemoFonts(AppState& appState)
 
 #ifdef IMGUI_ENABLE_FREETYPE
     ImGui::Text("Colored Fonts");
-    ImGui::PushFont(appState.ColorFont->font);
+    ImGui::PushFont(appState.ColorFont);
     ImGui::Text("COLOR!");
     ImGui::PopFont();
     if (ImGui::IsItemHovered())
@@ -504,7 +503,7 @@ void DemoFonts(AppState& appState)
 
 void DemoThemes(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont->font); ImGui::Text("Themes"); ImGui::PopFont();
+    ImGui::PushFont(appState.TitleFont); ImGui::Text("Themes"); ImGui::PopFont();
     auto& tweakedTheme = HelloImGui::GetRunnerParams()->imGuiWindowParams.tweakedTheme;
 
     ImGui::BeginGroup();
@@ -587,7 +586,7 @@ void ShowAppMenuItems()
 
 void ShowTopToolbar(AppState& appState)
 {
-    ImGui::PushFont(appState.LargeIconFont->font);
+    ImGui::PushFont(appState.LargeIconFont);
     if (ImGui::Button(ICON_FA_POWER_OFF))
         HelloImGui::GetRunnerParams()->appShallExit = true;
 
@@ -608,7 +607,7 @@ void ShowTopToolbar(AppState& appState)
 
 void ShowRightToolbar(AppState& appState)
 {
-    ImGui::PushFont(appState.LargeIconFont->font);
+    ImGui::PushFont(appState.LargeIconFont);
     if (ImGui::Button(ICON_FA_CIRCLE_ARROW_LEFT))
         HelloImGui::Log(HelloImGui::LogLevel::Info, "Clicked on Circle left in the right toolbar");
 

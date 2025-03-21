@@ -158,13 +158,6 @@ See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/he
         // if true, the font size will be adjusted automatically to account for HighDPI
         bool adjustSizeToDpi = true;
 
-        // if true, the font will be loaded with the full glyph range
-        bool useFullGlyphRange = false;
-        // if set, fontConfig.GlyphRanges, and
-        //   fontConfig.OversampleH / fontConfig.OversampleV will be set to 1
-        //   when useFullGlyphRange is true (this is useful to save memory)
-        bool reduceMemoryUsageIfFullGlyphRange = true;
-
         // if true, the font will be merged to the last font
         bool mergeToLastFont = false;
 
@@ -176,14 +169,6 @@ See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/he
         // Otherwise, it will be loaded from the filesystem
         bool insideAssets = true;
 
-        // the ranges of glyphs to load, as a list of pairs of ImWchar
-        //    - if empty, the default glyph range will be used
-        //    - you can specify several ranges
-        //    - intervals bounds are inclusive
-        // Note: in order to use common ranges defined by ImGui (GetGlyphRangesJapanese, GetGlyphRangesChinese, ...)
-        //       use TranslateCommonGlyphRanges (or translate_common_glyph_ranges in Python)
-        std::vector<ImWcharPair> glyphRanges = {};
-
         // ImGui native font config to use
         ImFontConfig fontConfig = ImFontConfig();
 
@@ -194,30 +179,9 @@ See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/he
         ImFontConfig fontConfigFontAwesome = ImFontConfig();
     };
 
-    // A font that will be automatically resized to account for changes in DPI
-    // Use LoadAdaptiveFont instead of LoadFont to get this behavior.
-    // Fonts loaded with LoadAdaptiveFont will be reloaded during execution
-    // if ImGui::GetIO().FontGlobalScale is changed.
-    struct FontDpiResponsive
-    {
-        ImFont* font = nullptr;
-        std::string fontFilename;
-        float fontSize = 0.f;
-        FontLoadingParams fontLoadingParams;
-    };
-
 
     // Loads a font with the specified parameters
-    // (this font will not adapt to DPI changes after startup)
     ImFont* LoadFont(
-        const std::string & fontFilename, float fontSize,
-        const FontLoadingParams & params = {});
-
-    // Loads a font with the specified parameters
-    // This font will adapt to DPI changes after startup.
-    // Only fonts loaded with LoadAdaptiveFont will adapt to DPI changes:
-    // avoid mixing LoadFont/LoadFontDpiResponsive)
-    FontDpiResponsive* LoadFontDpiResponsive(
         const std::string & fontFilename, float fontSize,
         const FontLoadingParams & params = {});
 
@@ -386,6 +350,11 @@ std::string GetBackendDescription();
 // `ChangeWindowSize(const ScreenSize &windowSize)`: sets the window size
 // (useful if you want to change the window size during execution)
 void ChangeWindowSize(const ScreenSize &windowSize);
+
+
+// `UseWindowFullMonitorWorkArea()`: sets the window size to the monitor work area
+// (useful if you want to change the window size during execution)
+void UseWindowFullMonitorWorkArea();
 
 ```
 

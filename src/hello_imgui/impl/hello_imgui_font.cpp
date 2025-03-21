@@ -129,76 +129,11 @@ namespace HelloImGui
         return font;
     }
 
-	std::vector<FontDpiResponsive> gAllDpiResponsiveFonts;
-	bool gWasLoadFontBareCalled = false;
-	bool gWasLoadFontDpiResponsiveCalled = false;
+    ImFont* LoadFont(const std::string & fontFilename, float fontSize_, const FontLoadingParams& params_)
+    {
+        return _LoadFontImpl(fontFilename, fontSize_, params_);
+    }
 
-
-	ImFont* LoadFont(const std::string & fontFilename, float fontSize_, const FontLoadingParams& params_)
-	{
-		IM_ASSERT((!gWasLoadFontDpiResponsiveCalled) && "If using LoadFontDpiResponsive(), only use it, and do not use LoadFont()!");
-
-        if (IsUsingHelloImGui())
-        {
-            auto runnerParams = HelloImGui::GetRunnerParams();
-            IM_ASSERT(! runnerParams->dpiAwareParams.onlyUseFontDpiResponsive && "If runnerParams->dpiAwareParams.onlyUseFontDpiResponsive is true, you must use LoadFontDpiResponsive() instead of LoadFont()");
-        }
-
-		gWasLoadFontBareCalled = true;
-		//printf("LoadFont(%s, %f)\n", fontFilename.c_str(), fontSize_);
-		return _LoadFontImpl(fontFilename, fontSize_, params_);
-	}
-
-	FontDpiResponsive* LoadFontDpiResponsive(const std::string & fontFilename, float fontSize,
-											const FontLoadingParams & fontLoadingParams)
-	{
-		IM_ASSERT((!gWasLoadFontBareCalled) && "If using LoadFontDpiResponsive(), set runnerParams.dpiAwareParams.onlyUseFontDpiResponsive=true and do not not use LoadFont()!");
-		gWasLoadFontDpiResponsiveCalled = true;
-
-		// Ensure that we have enough capacity, so that pointers remain valid
-		constexpr size_t maxFonts = 100;
-		if (gAllDpiResponsiveFonts.capacity() == 0)
-			gAllDpiResponsiveFonts.reserve(maxFonts);
-		// Whine if we are about to exceed the capacity
-		IM_ASSERT(gAllDpiResponsiveFonts.size() < maxFonts - 1 && "Too many fonts loaded");
-		// Insert a new element at the end of the vector
-		gAllDpiResponsiveFonts.push_back({ nullptr, fontFilename, fontSize, fontLoadingParams });
-
-		// Get the pointer to the newly inserted element (which we will return)
-		FontDpiResponsive* dpiResponsiveFont = &gAllDpiResponsiveFonts.back();
-
-		//printf("LoadFontDpiResponsive(%s, %f)\n", fontFilename.c_str(), fontSize);
-		dpiResponsiveFont->font = _LoadFontImpl(fontFilename, fontSize, fontLoadingParams);
-		dpiResponsiveFont->fontSize = fontSize;
-		dpiResponsiveFont->fontFilename = fontFilename;
-		dpiResponsiveFont->fontLoadingParams = fontLoadingParams;
-		return dpiResponsiveFont;
-	}
-
-	bool _reloadAllDpiResponsiveFonts()
-	{
-		if (gWasLoadFontBareCalled)
-		{
-			// fprintf(stderr, "_reloadAllDpiResponsiveFonts failed: ony call LoadFontDpiResponsive if you want this to work\n");
-			return false;
-		}
-		if (gAllDpiResponsiveFonts.empty())
-			return false;
-		printf("_reloadAllDpiResponsiveFonts\n");
-		auto& imguiFonts = ImGui::GetIO().Fonts;
-		imguiFonts->Clear();
-		for (auto & dpiResponsiveFont : gAllDpiResponsiveFonts)
-		{
-			float fontSize = dpiResponsiveFont.fontSize;
-			const std::string & fontFilename = dpiResponsiveFont.fontFilename;
-			const FontLoadingParams & fontLoadingParams = dpiResponsiveFont.fontLoadingParams;
-			ImFont* newFont = _LoadFontImpl(fontFilename, fontSize, fontLoadingParams);
-			dpiResponsiveFont.font = newFont;
-		}
-		bool buildSuccess = imguiFonts->Build();
-		IM_ASSERT(buildSuccess && "_reloadAllDpiResponsiveFonts: Failed to build fonts");
-		return true;
-	}
 
     bool DidCallHelloImGuiLoadFontTTF()
     {

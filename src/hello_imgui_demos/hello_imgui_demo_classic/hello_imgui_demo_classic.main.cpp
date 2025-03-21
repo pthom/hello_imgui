@@ -3,12 +3,11 @@
 
 
 // Demonstrate how to load additional fonts (fonts - part 1/3)
-HelloImGui::FontDpiResponsive * gCustomFont = nullptr;
+ImFont * gCustomFont = nullptr;
 void MyLoadFonts()
 {
-	HelloImGui::GetRunnerParams()->dpiAwareParams.onlyUseFontDpiResponsive = true;
 	HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons(); // The font that is loaded first is the default font
-	gCustomFont = HelloImGui::LoadFontDpiResponsive("fonts/Akronim-Regular.ttf", 40.f); // will be loaded from the assets folder
+	gCustomFont = HelloImGui::LoadFont("fonts/Akronim-Regular.ttf", 40.f); // will be loaded from the assets folder
 }
 
 
@@ -42,7 +41,7 @@ int main(int , char *[]) {
             ImGui::Text("An icon from fontawesome " ICON_FA_SMILE);
 
             // Demo custom font usage (fonts - part 3/3)
-            ImGui::PushFont(gCustomFont->font);
+            ImGui::PushFont(gCustomFont);
             ImGui::Text("Custom font");
             ImGui::PopFont();
 

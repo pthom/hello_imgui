@@ -6,16 +6,6 @@
 
 namespace HelloImGui
 {
-    using ImWcharPair = std::array<ImWchar, 2>;
-
-    // Utility to translate DearImGui common Unicode ranges to ImWcharPair (Python)
-    //   (get_glyph_ranges_chinese_simplified_common, get_glyph_ranges_japanese, ...)
-    std::vector<ImWcharPair> translate_common_glyph_ranges(const std::vector<ImWchar> & glyphRanges);
-
-    // Utility to translate DearImGui common Unicode ranges to ImWcharPair (C++)
-    //   (GetGlyphRangesChineseSimplifiedCommon, GetGlyphRangesJapanese, ...)
-    std::vector<ImWcharPair> TranslateCommonGlyphRanges(const ImWchar* glyphRanges);
-
     // @@md#Fonts
 
     // When loading fonts, use
@@ -34,13 +24,6 @@ namespace HelloImGui
         // if true, the font size will be adjusted automatically to account for HighDPI
         bool adjustSizeToDpi = true;
 
-        // if true, the font will be loaded with the full glyph range
-        bool useFullGlyphRange = false;
-        // if set, fontConfig.GlyphRanges, and
-        //   fontConfig.OversampleH / fontConfig.OversampleV will be set to 1
-        //   when useFullGlyphRange is true (this is useful to save memory)
-        bool reduceMemoryUsageIfFullGlyphRange = true;
-
         // if true, the font will be merged to the last font
         bool mergeToLastFont = false;
 
@@ -51,14 +34,6 @@ namespace HelloImGui
         // if true, the font will be loaded using HelloImGui asset system.
         // Otherwise, it will be loaded from the filesystem
         bool insideAssets = true;
-
-        // the ranges of glyphs to load, as a list of pairs of ImWchar
-        //    - if empty, the default glyph range will be used
-        //    - you can specify several ranges
-        //    - intervals bounds are inclusive
-        // Note: in order to use common ranges defined by ImGui (GetGlyphRangesJapanese, GetGlyphRangesChinese, ...)
-        //       use TranslateCommonGlyphRanges (or translate_common_glyph_ranges in Python)
-        std::vector<ImWcharPair> glyphRanges = {};
 
         // ImGui native font config to use
         ImFontConfig fontConfig = ImFontConfig();
@@ -102,16 +77,19 @@ namespace HelloImGui
     //
     // Deprecated API below, kept for compatibility (uses LoadFont internally)
     //
+    [[deprecated("Use LoadFont instead")]]
     ImFont* LoadFontTTF(
         const std::string & fontFilename,
         float fontSize,
-        bool useFullGlyphRange = false,
+        bool useFullGlyphRange = false,  // Not used anymore (since ImGui now uses full glyph range by default)
         ImFontConfig config = ImFontConfig()
         );
+
+    [[deprecated("Use LoadFont instead")]]
     ImFont* LoadFontTTF_WithFontAwesomeIcons(
         const std::string & fontFilename,
         float fontSize,
-        bool useFullGlyphRange = false,
+        bool useFullGlyphRange = false, // Not used anymore (since ImGui now uses full glyph range by default)
         ImFontConfig configFont = ImFontConfig(),
         ImFontConfig configIcons = ImFontConfig()
         );

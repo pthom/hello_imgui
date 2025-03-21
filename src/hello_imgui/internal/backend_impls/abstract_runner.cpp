@@ -299,19 +299,6 @@ void ReadDpiAwareParams(DpiAwareParams* dpiAwareParams)
         if (fontRenderingScale.has_value())
             dpiAwareParams->fontRenderingScale = fontRenderingScale.value();
     }
-
-    if (dpiAwareParams->fontOversampleH == 0)
-    {
-        auto fontOversampleH = HelloImGuiIniAnyParentFolder::readIntValue("DpiAwareParams", "fontOversampleH");
-        if (fontOversampleH.has_value())
-            dpiAwareParams->fontOversampleH = fontOversampleH.value();
-    }
-    if (dpiAwareParams->fontOversampleV == 0)
-    {
-        auto fontOversampleV = HelloImGuiIniAnyParentFolder::readIntValue("DpiAwareParams", "fontOversampleV");
-        if (fontOversampleV.has_value())
-            dpiAwareParams->fontOversampleV = fontOversampleV.value();
-    }
 }
 
 

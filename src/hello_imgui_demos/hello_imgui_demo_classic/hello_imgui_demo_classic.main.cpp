@@ -1,4 +1,5 @@
 #include "hello_imgui/hello_imgui.h"
+#include "hello_imgui/icons_font_awesome_4.h"
 
 
 // Demonstrate how to load additional fonts (fonts - part 1/3)
@@ -36,6 +37,9 @@ int main(int , char *[]) {
             static int counter = 0;
 
             ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+            // Demo FontAwesome 4 (included by LoadDefaultFont_WithFontAwesomeIcons)
+            ImGui::Text("An icon from fontawesome " ICON_FA_SMILE);
 
             // Demo custom font usage (fonts - part 3/3)
             ImGui::PushFont(gCustomFont->font);

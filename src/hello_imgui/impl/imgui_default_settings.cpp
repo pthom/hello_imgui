@@ -14,7 +14,7 @@ namespace ImGuiDefaultSettings
 
 void LoadDefaultFont_WithFontAwesomeIcons()
 {
-	auto runnerParams = HelloImGui::GetRunnerParams();
+    auto runnerParams = HelloImGui::GetRunnerParams();
     auto defaultIconFont = runnerParams->callbacks.defaultIconFont;
     float fontSize = 15.f;
 
@@ -26,14 +26,14 @@ void LoadDefaultFont_WithFontAwesomeIcons()
         return;
     }
 
-	bool useDpiResponsiveFonts = runnerParams->dpiAwareParams.onlyUseFontDpiResponsive;
+    bool useDpiResponsiveFonts = runnerParams->dpiAwareParams.onlyUseFontDpiResponsive;
 
-	if (useDpiResponsiveFonts)
-    	LoadFontDpiResponsive(fontFilename, fontSize);
-	else
-		LoadFont(fontFilename, fontSize);
+    if (useDpiResponsiveFonts)
+        LoadFontDpiResponsive(fontFilename, fontSize);
+    else
+        LoadFont(fontFilename, fontSize);
 
-	if (defaultIconFont == HelloImGui::DefaultIconFont::NoIcons)
+    if (defaultIconFont == HelloImGui::DefaultIconFont::NoIcons)
         return;
 
     std::string iconFontFile;
@@ -49,12 +49,11 @@ void LoadDefaultFont_WithFontAwesomeIcons()
 
     HelloImGui::FontLoadingParams fontParams;
     fontParams.mergeToLastFont = true;
-    fontParams.useFullGlyphRange = true;
 
-	if (useDpiResponsiveFonts)
-    	LoadFontDpiResponsive(iconFontFile, fontSize, fontParams);
-	else
-		LoadFont(iconFontFile, fontSize, fontParams);
+    if (useDpiResponsiveFonts)
+        LoadFontDpiResponsive(iconFontFile, fontSize, fontParams);
+    else
+        LoadFont(iconFontFile, fontSize, fontParams);
 }
 
 void SetupDefaultImGuiConfig()

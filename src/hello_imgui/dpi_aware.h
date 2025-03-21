@@ -20,12 +20,6 @@ namespace HelloImGui
 //    By default, Hello ImGui will compute them automatically,
 //    when dpiWindowSizeFactor and fontRenderingScale are set to 0.
 //
-// Parameters to improve font rendering quality:
-// ---------------------------------------------
-// - `fontOversampleH` and `fontOversampleV` : Font oversampling parameters
-//     Rasterize at higher quality for sub-pixel positioning. Probably unused if freeType is used.
-//     If not zero, these values will be used to set the oversampling factor when loading fonts.
-//
 //
 // How to set those values manually:
 // ---------------------------------
@@ -73,18 +67,6 @@ struct DpiAwareParams
     // If true, guarantees that only HelloImGui::LoadDpiResponsiveFont will be used to load fonts.
     // (also for the default font)
     bool onlyUseFontDpiResponsive = false;
-
-    // `fontOversampleH` and `fontOversampleV` : Font oversampling parameters
-    // Rasterize at higher quality for sub-pixel positioning. Probably unused if freeType is used.
-    // If not zero, these values will be used to set the oversampling factor when loading fonts.
-    // (i.e. they will be set in ImFontConfig::OversampleH and ImFontConfig::OversampleV)
-    // OversampleH: The difference between 2 and 3 for OversampleH is minimal.
-    //              You can reduce this to 1 for large glyphs save memory.
-    // OversampleV: This is not really useful as we don't use sub-pixel positions on the Y axis.
-    // Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.
-    int             fontOversampleH = 0;  // Default is 2 in ImFontConfig
-    int             fontOversampleV = 0;  // Default is 1 in ImFontConfig
-
 
     // `dpiFontLoadingFactor`
     //     factor by which font size should be multiplied at loading time to get a similar

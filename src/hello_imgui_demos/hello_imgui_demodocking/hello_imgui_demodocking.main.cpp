@@ -90,11 +90,9 @@ void LoadFonts(AppState& appState) // This is called by runnerParams.callbacks.L
     appState.TitleFont = HelloImGui::LoadFontDpiResponsive("fonts/DroidSans.ttf", 18.f);
 
     HelloImGui::FontLoadingParams fontLoadingParamsEmoji;
-    fontLoadingParamsEmoji.useFullGlyphRange = true;
     appState.EmojiFont = HelloImGui::LoadFontDpiResponsive("fonts/NotoEmoji-Regular.ttf", 24.f, fontLoadingParamsEmoji);
 
     HelloImGui::FontLoadingParams fontLoadingParamsLargeIcon;
-    fontLoadingParamsLargeIcon.useFullGlyphRange = true;
     appState.LargeIconFont = HelloImGui::LoadFontDpiResponsive("fonts/fontawesome-webfont.ttf", 24.f, fontLoadingParamsLargeIcon);
 #ifdef IMGUI_ENABLE_FREETYPE
     // Found at https://www.colorfonts.wtf/

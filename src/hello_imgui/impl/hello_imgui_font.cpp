@@ -200,44 +200,6 @@ namespace HelloImGui
 		return true;
 	}
 
-
-    ImFont* LoadFontTTF(const std::string & fontFilename, float fontSize, bool useFullGlyphRange, ImFontConfig config)
-    {
-        FontLoadingParams fontLoadingParams;
-        fontLoadingParams.fontConfig = config;
-        ImFont* font = LoadFont(fontFilename, fontSize, fontLoadingParams);
-        return font;
-    }
-
-    ImFont* LoadFontTTF_WithFontAwesomeIcons(
-        const std::string & fontFilename,
-        float fontSize,
-        bool useFullGlyphRange,
-        ImFontConfig configFont,
-        ImFontConfig configIcons)
-    {
-        FontLoadingParams fontLoadingParams;
-        fontLoadingParams.fontConfig = configFont;
-        fontLoadingParams.mergeFontAwesome = true;
-        fontLoadingParams.fontConfigFontAwesome = configIcons;
-
-        ImFont* font = LoadFont(fontFilename, fontSize, fontLoadingParams);
-        return font;
-    }
-
-    ImFont* MergeFontAwesomeToLastFont(float fontSize, ImFontConfig config)
-    {
-        static std::string faFile = "fonts/fontawesome-webfont.ttf";
-
-        FontLoadingParams fontLoadingParams;
-        fontLoadingParams.mergeToLastFont = true;
-        fontLoadingParams.fontConfig = config;
-        fontLoadingParams.fontConfig.MergeMode = true;
-        ImFont* font = LoadFont(faFile, fontSize, fontLoadingParams);
-        return font;
-    }
-
-
     bool DidCallHelloImGuiLoadFontTTF()
     {
         return HelloImGui::gDidCallHelloImGuiLoadFontTTF;

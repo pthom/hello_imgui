@@ -74,28 +74,6 @@ namespace HelloImGui
 
     // @@md
 
-    //
-    // Deprecated API below, kept for compatibility (uses LoadFont internally)
-    //
-    [[deprecated("Use LoadFont instead")]]
-    ImFont* LoadFontTTF(
-        const std::string & fontFilename,
-        float fontSize,
-        bool useFullGlyphRange = false,  // Not used anymore (since ImGui now uses full glyph range by default)
-        ImFontConfig config = ImFontConfig()
-        );
-
-    [[deprecated("Use LoadFont instead")]]
-    ImFont* LoadFontTTF_WithFontAwesomeIcons(
-        const std::string & fontFilename,
-        float fontSize,
-        bool useFullGlyphRange = false, // Not used anymore (since ImGui now uses full glyph range by default)
-        ImFontConfig configFont = ImFontConfig(),
-        ImFontConfig configIcons = ImFontConfig()
-        );
-    ImFont* MergeFontAwesomeToLastFont(float fontSize, ImFontConfig config = ImFontConfig());
-
-
     // indicates that fonts were loaded using HelloImGui::LoadFont. In that case, fonts may have been resized to
     // account for HighDPI (on macOS and emscripten)
     bool DidCallHelloImGuiLoadFontTTF();

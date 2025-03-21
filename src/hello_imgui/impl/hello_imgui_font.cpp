@@ -20,8 +20,6 @@
 
 namespace HelloImGui
 {
-    bool gDidCallHelloImGuiLoadFontTTF = false;
-
     float WindowContentScale()
     {
         /*
@@ -77,17 +75,22 @@ namespace HelloImGui
         dstFontConfig->Name[bufferSize - 1] = '\0'; // Ensure null termination
     }
 
-    ImFont* _LoadFontImpl(const std::string & fontFilename, float fontSize_, const FontLoadingParams& params_)
+    ImFont* _LoadFontImpl(const std::string & fontFilename, const float fontSize_, const FontLoadingParams& params_)
     {
-        gDidCallHelloImGuiLoadFontTTF = true;
-
         FontLoadingParams params = params_;
+        float fontSize = fontSize_;
 
         Priv_CopyDebugFontNameToFontConfig(fontFilename, fontSize_, &params.fontConfig);
 
-        float fontSize = fontSize_;
         if (params.adjustSizeToDpi)
-            fontSize *= HelloImGui::DpiFontLoadingFactor();
+        {
+            // May be load the font at a different size depending on the DPI
+            float fontLoadingFactor = GetDpiAwareParams()->DpiFontLoadingFactor();
+            fontSize = fontSize * fontLoadingFactor;
+            // May rasterize the font at a different density depending on the DPI
+            float rasterizerDensity = GetDpiAwareParams()->DpiFontRasterizerDensity();
+            params.fontConfig.RasterizerDensity = rasterizerDensity;
+        }
 
         if (params.loadColor)
         {
@@ -133,11 +136,4 @@ namespace HelloImGui
     {
         return _LoadFontImpl(fontFilename, fontSize_, params_);
     }
-
-
-    bool DidCallHelloImGuiLoadFontTTF()
-    {
-        return HelloImGui::gDidCallHelloImGuiLoadFontTTF;
-    }
-
 }

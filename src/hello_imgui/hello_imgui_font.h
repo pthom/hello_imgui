@@ -1,6 +1,7 @@
 #pragma once
 #include "imgui.h"
 #include <vector>
+#include <string>
 
 
 namespace HelloImGui
@@ -21,6 +22,7 @@ namespace HelloImGui
     struct FontLoadingParams
     {
         // if true, the font size will be adjusted automatically to account for HighDPI
+        //
         bool adjustSizeToDpi = true;
 
         // if true, the font will be merged to the last font
@@ -51,8 +53,4 @@ namespace HelloImGui
         const FontLoadingParams & params = {});
 
     // @@md
-
-    // indicates that fonts were loaded using HelloImGui::LoadFont. In that case, fonts may have been resized to
-    // account for HighDPI (on macOS and emscripten)
-    bool DidCallHelloImGuiLoadFontTTF();
 }

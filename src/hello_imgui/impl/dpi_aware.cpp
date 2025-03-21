@@ -74,20 +74,4 @@ namespace HelloImGui
         }
     }
 
-
-    float DpiWindowSizeFactor()
-    {
-        return GetDpiAwareParams()->dpiWindowSizeFactor;
-    }
-
-    float DpiFontLoadingFactor()
-    {
-        return GetDpiAwareParams()->DpiFontLoadingFactor();
-    }
-
-    float ImGuiDefaultFontGlobalScale()
-    {
-        return GetDpiAwareParams()->fontRenderingScale;
-    }
-
 }

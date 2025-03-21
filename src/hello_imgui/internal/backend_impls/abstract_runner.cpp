@@ -369,9 +369,8 @@ void AbstractRunner::SetupDpiAwareParams()
     {
         params.dpiAwareParams.fontRenderingScale = _DefaultOsFontRenderingScale();
     }
-    ImGui::GetIO().FontGlobalScale = params.dpiAwareParams.fontRenderingScale;
 
-	_LogDpiParams("SetupDpiAwareParams", params.dpiAwareParams);
+    _LogDpiParams("SetupDpiAwareParams", params.dpiAwareParams);
 }
 
 
@@ -737,14 +736,6 @@ void AbstractRunner::Setup()
     params.callbacks.LoadAdditionalFonts = nullptr;
     bool buildSuccess = ImGui::GetIO().Fonts->Build();
     IM_ASSERT(buildSuccess && "ImGui::GetIO().Fonts->Build() failed!");
-    {
-        // Reset FontGlobalScale if we did not use HelloImGui font loading mechanism
-        if (! HelloImGui::DidCallHelloImGuiLoadFontTTF())
-        {
-            float dpiFactor = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
-            ImGui::GetIO().FontGlobalScale = dpiFactor;
-        }
-    }
 
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
     HelloImGuiIniSettings::LoadHelloImGuiMiscSettings(IniSettingsLocation(params), &params);

@@ -232,9 +232,7 @@ namespace HelloImGui { namespace BackendApi
         #if TARGET_OS_MAC // is true for any software platform that's derived from macOS, which includes iOS, watchOS, and tvOS
             // with apple, the OS handles the scaling, so we don't need to do anything
             return 1.f;
-        #elif defined(_WIN32) || defined(__ANDROID__)
-            // Shall linux use this branch? To be confirmed
-            // under linux: SDL_GetDisplayDPI can fail (at least on ubuntu 22 / Parallels VM)
+        #elif defined(_WIN32) || defined(__ANDROID__)|| defined(__linux__)
             float ddpi, hdpi, vdpi;
             if (SDL_GetDisplayDPI(0, &ddpi, &hdpi, &vdpi) != 0)
             {

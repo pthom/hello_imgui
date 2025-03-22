@@ -954,21 +954,27 @@ struct DpiAwareParams
     //     factor (that is either 1 or < 1.) by which fonts glyphs should be scaled at rendering time.
     //  On macOS retina screens, it will be 0.5, since macOS APIs hide the real resolution of the screen.
     //  Changing this value will *not* change the visible font size on the screen, however it will
-    //  affect the size of the loaded glyphs.
+    //  affect the size of font textures that are loaded.
     //  For example, if fontRenderingScale=0.5 (which is the default on a macOS retina screen),
-    //  a font size of 16 will be loaded as if it was 32, and will be rendered at half size.
+    //  the font texture will be rasterized at 1/0.5 = 2 times the size of the font.
     //   This leads to a better rendering quality on some platforms.
     // (This parameter will be used to set ImGui::GetIO().FontGlobalScale at startup)
     float fontRenderingScale = 0.0f;
 
-    // `dpiFontLoadingFactor`
-    //     factor by which font size should be multiplied at loading time to get a similar
-    //     visible size on different OSes.
+    // `DpiFontLoadingFactor`
+    //     factor by which font size should be multiplied at loading time to get a similar visible size on different OSes.
+    //     This is equal to dpiWindowSizeFactor
     //  The size will be equivalent to a size given for a 96 PPI screen
     float DpiFontLoadingFactor() const {
-        float r = dpiWindowSizeFactor / fontRenderingScale;
-        return r;
-    };
+        return dpiWindowSizeFactor;
+    }
+
+    // `DpiFontRasterizerDensity`
+    //     Rasterizer density to use when loading fonts (applied to ImFontConfig.RasterizerDensity)
+    float DpiFontRasterizerDensity() const {
+        return 1.f / fontRenderingScale;
+    }
+
 };
 
 // ----------------------------------------------------------------------------

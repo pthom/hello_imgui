@@ -38,12 +38,6 @@ namespace HelloImGui
 
         // ImGui native font config to use
         ImFontConfig fontConfig = ImFontConfig();
-
-        // if true, the font will be loaded and then FontAwesome icons will be merged to it
-        // (deprecated, use mergeToLastFont instead, and load in two steps)
-        // This will use an old version of FontAwesome (FontAwesome 4)
-        bool mergeFontAwesome = false;
-        ImFontConfig fontConfigFontAwesome = ImFontConfig();
     };
 
 
@@ -51,6 +45,18 @@ namespace HelloImGui
     ImFont* LoadFont(
         const std::string & fontFilename, float fontSize,
         const FontLoadingParams & params = {});
+
+    ImFont* LoadFontTTF(
+        const std::string & fontFilename,
+        float fontSize,
+        ImFontConfig config = ImFontConfig()
+    );
+
+    ImFont* LoadFontTTF_WithFontAwesomeIcons(
+        const std::string & fontFilename,
+        float fontSize,
+        ImFontConfig configFont = ImFontConfig()
+    );
 
     // @@md
 }

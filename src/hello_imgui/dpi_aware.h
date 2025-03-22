@@ -127,6 +127,25 @@ DpiAwareParams* GetDpiAwareParams();
 
 
 // ----------------------------------------------------------------------------
+
+//
+// Legacy API, you should use RunnerParams.dpiAwareParams instead
+//
+namespace HelloImGui
+{
+    // Multiply font sizes by this factor when loading fonts manually with ImGui::GetIO().Fonts->AddFont...
+    // (HelloImGui::LoadFontTTF does this by default)
+    float DpiFontLoadingFactor();
+
+    // DpiWindowSizeFactor() is the factor by which window size should be multiplied to get a similar visible size on different OSes.
+    // It returns ApplicationScreenPixelPerInch / 96  under windows and linux. Under macOS, it will return 1.
+    float DpiWindowSizeFactor();
+
+} // namespace HelloImGui
+
+
+
+// ----------------------------------------------------------------------------
 //           Handling screens with high DPI
 // ----------------------------------------------------------------------------
 /*

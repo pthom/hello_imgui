@@ -74,4 +74,15 @@ namespace HelloImGui
         }
     }
 
+
+    float DpiWindowSizeFactor()
+    {
+        return GetDpiAwareParams()->dpiWindowSizeFactor;
+    }
+
+    float DpiFontLoadingFactor()
+    {
+        return GetDpiAwareParams()->DpiFontLoadingFactor();
+    }
+
 }

@@ -7,6 +7,17 @@
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
 
+// Poor man's fix for C++ late arrival in the unicode party:
+//    - C++17: u8"my string" is of type const char*
+//    - C++20: u8"my string" is of type const char8_t*
+// However, ImGui text functions expect const char*.
+#ifdef __cpp_char8_t
+#define U8_TO_CHAR(x) reinterpret_cast<const char*>(x)
+#else
+#define U8_TO_CHAR(x) x
+#endif
+
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -15,6 +26,8 @@
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif
+#include "imgui_freetype.h"
+
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
@@ -28,6 +41,9 @@
 #ifdef __EMSCRIPTEN__
 #include "../libs/emscripten/emscripten_mainloop_stub.h"
 #endif
+
+#include "hello_imgui/icons_font_awesome_4.h"
+
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -117,12 +133,37 @@ int main(int, char**)
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
     // - Our Emscripten build process allows embedding fonts to be accessible at runtime from the "fonts/" folder. See Makefile.emscripten for details.
 
+    float fontSize = 15.f;
+
     const char* fontPath = "/Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/imgui_bundle_dynfont/external/hello_imgui/hello_imgui/hello_imgui_assets/fonts/DroidSans.ttf";
     float realDisplayFrameBufferScale = 2.f;
     ImFontConfig fontConfig;
     fontConfig.RasterizerDensity = realDisplayFrameBufferScale;
-    io.Fonts->AddFontFromFileTTF(fontPath, 14.f, &fontConfig);
+    ImFont * firstFont = io.Fonts->AddFontFromFileTTF(fontPath, fontSize, &fontConfig);
     // io.FontGlobalScale = 0.5f;  // would make the font too small
+
+    const char* faPath = "/Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/imgui_bundle_dynfont/external/hello_imgui/hello_imgui/hello_imgui_assets/fonts/fontawesome-webfont.ttf";
+    ImFontConfig faConfig;
+    faConfig.MergeMode = true;
+    faConfig.PixelSnapH = true;
+    //faConfig.GlyphMinAdvanceX = icon_font_fize;
+    faConfig.RasterizerDensity = realDisplayFrameBufferScale;
+    ImFont * faFont = io.Fonts->AddFontFromFileTTF(faPath, fontSize, &faConfig);
+
+    const char* colorFontFile = "/Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/imgui_bundle_dynfont/external/hello_imgui/hello_imgui/src/hello_imgui_demos/hello_imgui_demodocking/assets/fonts/Playbox/Playbox-FREE.otf";
+    ImFontConfig colorFontConfig;
+    colorFontConfig.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_LoadColor;
+    colorFontConfig.RasterizerDensity = realDisplayFrameBufferScale;
+    ImFont * colorFont = io.Fonts->AddFontFromFileTTF(colorFontFile, fontSize, &colorFontConfig);
+
+    //const char* notoColorFile = "/Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/imgui_dynfont_study/fonts/NotoColorEmoji.ttf";
+    const char* notoColorFile = "/Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/imgui_bundle_dynfont/bindings/imgui_bundle/demos_assets/fonts/NotoEmoji-Regular.ttf";
+    ImFontConfig notoColorConfig;
+    notoColorConfig.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_LoadColor;
+    notoColorConfig.RasterizerDensity = realDisplayFrameBufferScale;
+    ImFont * notoColorFont = io.Fonts->AddFontFromFileTTF(notoColorFile, fontSize, &notoColorConfig);
+
+    //ImGui::GetIO().Fonts->Build();
 
     //io.Fonts->AddFontDefault();
     //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
@@ -173,7 +214,21 @@ int main(int, char**)
             static float f = 0.0f;
             static int counter = 0;
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+            ImGui::Begin("Hello, world!");
+
+            ImGui::PushFont(notoColorFont);
+            // ✌️ (Victory Hand Emoji)
+            ImGui::Text(U8_TO_CHAR(u8"\U0000270C\U0000FE0F"));
+            ImGui::SameLine();
+            // ❤️ (Red Heart Emoji)
+            ImGui::Text(U8_TO_CHAR(u8"\U00002764\U0000FE0F"));
+            ImGui::PopFont();
+
+            ImGui::PushFont(colorFont);
+            ImGui::Text("COLOR");
+            ImGui::PopFont();
+
+            ImGui::Text("Icon: " ICON_FA_SMILE);
 
             ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
             ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state

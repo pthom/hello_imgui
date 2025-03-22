@@ -452,9 +452,9 @@ function(_him_add_freetype_to_imgui)
     endif()
 endfunction()
 
+
 function(_him_fetch_and_compile_plutovg_plutosvg)
     # Fetch and compile plutovg and plutosvg
-
     set(backup_build_shared_libs ${BUILD_SHARED_LIBS})
     set(BUILD_SHARED_LIBS OFF)
 
@@ -462,7 +462,7 @@ function(_him_fetch_and_compile_plutovg_plutosvg)
     include(FetchContent)
     FetchContent_Declare(plutovg
         GIT_REPOSITORY https://github.com/sammycage/plutovg
-        GIT_TAG        v0.0.12
+        GIT_TAG        v1.0.0
         GIT_PROGRESS TRUE
     )
     FetchContent_MakeAvailable(plutovg)
@@ -474,13 +474,13 @@ function(_him_fetch_and_compile_plutovg_plutosvg)
     FetchContent_Populate(
         plutosvg
         GIT_REPOSITORY https://github.com/sammycage/plutosvg
-        GIT_TAG v0.0.5
+        GIT_TAG v0.0.6
         SOURCE_DIR ${CMAKE_BINARY_DIR}/plutosvg_source
         BINARY_DIR ${CMAKE_BINARY_DIR}/plutosvg_build
     )
     add_library(plutosvg STATIC ${plutosvg_SOURCE_DIR}/source/plutosvg.c)
     target_include_directories(plutosvg PUBLIC $<BUILD_INTERFACE:${plutosvg_SOURCE_DIR}/source>)
-    target_compile_definitions(plutosvg PUBLIC PLUTOSVG_BUILD_STATIC)
+    target_compile_definitions(plutosvg PUBLIC PLUTOSVG_HAS_FREETYPE PLUTOSVG_BUILD_STATIC)
     target_link_libraries(plutosvg PUBLIC ${HIM_FREETYPE_LINKED_LIBRARY} plutovg)
     him_add_installable_dependency(plutosvg)
 

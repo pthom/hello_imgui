@@ -154,8 +154,10 @@ void SaveMyAppSettings(const AppState& appState)
 
 void ShowTitle(AppState& appState, const char* title)
 {
-    ImGui::PushFont(appState.TitleFont, appState.TitleFont->DefaultSize);
+    ImGui::PushFont(appState.TitleFont);
+    // ImGui::PushFontSize(appState.TitleFont->DefaultSize);  // incompatible with vcpkg's version
     ImGui::Text("%s", title);
+    // ImGui::PopFontSize();  // incompatible with vcpkg's version
     ImGui::PopFont();
 }
 

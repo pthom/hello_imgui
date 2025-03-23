@@ -152,10 +152,17 @@ void SaveMyAppSettings(const AppState& appState)
 //    Gui functions used in this demo
 //////////////////////////////////////////////////////////////////////////
 
+void ShowTitle(AppState& appState, const char* title)
+{
+    ImGui::PushFont(appState.TitleFont, appState.TitleFont->DefaultSize);
+    ImGui::Text("%s", title);
+    ImGui::PopFont();
+}
+
 // Display a button that will hide the application window
 void DemoHideWindow(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont); ImGui::Text("Hide app window"); ImGui::PopFont();
+    ShowTitle(appState, "Hide app window");
     static double lastHideTime = -1.;
     if (ImGui::Button("Hide"))
     {
@@ -182,8 +189,7 @@ void DemoShowAdditionalWindow(AppState& appState)
     //     HelloImGui::AddDockableWindow()
     // Note: you should not modify manually the content of runnerParams.dockingParams.dockableWindows
     //       (since HelloImGui is constantly looping on it)
-
-    ImGui::PushFont(appState.TitleFont); ImGui::Text("Dynamically add window"); ImGui::PopFont();
+    ShowTitle(appState, "Dynamically add window");
 
     const char* windowName = "Additional Window";
     if (ImGui::Button("Show additional window"))
@@ -209,7 +215,7 @@ void DemoShowAdditionalWindow(AppState& appState)
 
 void DemoLogs(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont); ImGui::Text("Log Demo"); ImGui::PopFont();
+    ShowTitle(appState, "Log Demo");
 
     ImGui::BeginGroup();
     // Edit a float using a slider from 0.0f to 1.0f
@@ -233,7 +239,7 @@ void DemoLogs(AppState& appState)
 
 void DemoUserSettings(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont); ImGui::Text("User settings"); ImGui::PopFont();
+    ShowTitle(appState, "User settings");
     ImGui::BeginGroup();
     ImGui::SetNextItemWidth(HelloImGui::EmSize(7.f));
 
@@ -248,7 +254,7 @@ void DemoUserSettings(AppState& appState)
 
 void DemoRocket(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont); ImGui::Text("Status Bar Demo"); ImGui::PopFont();
+    ShowTitle(appState, "Status Bar Demo");
     ImGui::BeginGroup();
     if (appState.rocket_state == AppState::RocketState::Init)
     {
@@ -285,7 +291,7 @@ void DemoRocket(AppState& appState)
 
 void DemoDockingFlags(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont); ImGui::Text("Main dock space node flags"); ImGui::PopFont();
+    ShowTitle(appState, "Main dock space node flags");
     ImGui::TextWrapped(R"(
 This will edit the ImGuiDockNodeFlags for "MainDockSpace".
 Most flags are inherited by children dock spaces.
@@ -320,7 +326,7 @@ Most flags are inherited by children dock spaces.
 
 void GuiWindowLayoutCustomization(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont); ImGui::Text("Switch between layouts"); ImGui::PopFont();
+    ShowTitle(appState, "Switch between layouts");
     ImGui::Text("with the menu \"View/Layouts\"");
     if (ImGui::IsItemHovered())
         ImGui::SetTooltip("Each layout remembers separately the modifications applied by the user, \nand the selected layout is restored at startup");
@@ -446,7 +452,7 @@ Handling Japanese font is of course possible within ImGui / Hello ImGui!
 
 void DemoAssets(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont); ImGui::Text("Image From Asset"); ImGui::PopFont();
+    ShowTitle(appState, "Image From Asset");
 
     HelloImGui::BeginGroupColumn();
     ImGui::Dummy(HelloImGui::EmToVec2(0.f, 0.45f));
@@ -457,7 +463,7 @@ void DemoAssets(AppState& appState)
 
 void DemoFonts(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont); ImGui::Text("Fonts"); ImGui::PopFont();
+    ShowTitle(appState, "Fonts");
     ImGui::TextWrapped("Mix icons " ICON_FA_FACE_SMILE " and text " ICON_FA_ROCKET "");
     if (ImGui::IsItemHovered())
         ImGui::SetTooltip("Example with Font Awesome Icons");
@@ -503,7 +509,7 @@ void DemoFonts(AppState& appState)
 
 void DemoThemes(AppState& appState)
 {
-    ImGui::PushFont(appState.TitleFont); ImGui::Text("Themes"); ImGui::PopFont();
+    ShowTitle(appState, "Themes");
     auto& tweakedTheme = HelloImGui::GetRunnerParams()->imGuiWindowParams.tweakedTheme;
 
     ImGui::BeginGroup();

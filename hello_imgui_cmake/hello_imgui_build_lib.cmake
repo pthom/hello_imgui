@@ -988,12 +988,10 @@ function(_him_fetch_sdl_if_needed)
 endfunction()
 
 function(_him_fetch_declare_sdl)
-    # iOS and Android were tested with SDL 2.28.5
-    # other platforms, not yet
     if (IOS OR ANDROID)
-        set(sdl_version 2.28.5)
+        set(sdl_version 2.28.5)  # iOS and Android were tested with SDL 2.28.5
     else()
-        set(sdl_version 2.24.2)
+        set(sdl_version 2.32.4)
     endif()
 
     message(STATUS "Fetching SDL version ${sdl_version}")

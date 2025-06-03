@@ -87,9 +87,6 @@ namespace HelloImGui
             // May be load the font at a different size depending on the DPI
             float fontLoadingFactor = GetDpiAwareParams()->DpiFontLoadingFactor();
             fontSize = fontSize * fontLoadingFactor;
-            // May rasterize the font at a different density depending on the DPI
-            float rasterizerDensity = GetDpiAwareParams()->DpiFontRasterizerDensity();
-            params.fontConfig.RasterizerDensity = rasterizerDensity;
         }
 
         if (params.loadColor)

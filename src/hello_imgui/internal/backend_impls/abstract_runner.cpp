@@ -256,19 +256,14 @@ void ReadDpiAwareParams(DpiAwareParams* dpiAwareParams)
     // cf dpi_aware.h
     //
     // Hello ImGui will try its best to automatically handle DPI scaling for you.
-    // It does this by setting two values:
     //
     // - `dpiWindowSizeFactor`:
     //        factor by which window size should be multiplied
     //
-    // - `fontRenderingScale`:
-    //     factor by which fonts glyphs should be scaled at rendering time
-    //     (typically 1 on windows, and 0.5 on macOS retina screens)
+    //    By default, Hello ImGui will compute it automatically,
+    //    when dpiWindowSizeFactor is set to 0.
     //
-    //    By default, Hello ImGui will compute them automatically,
-    //    when dpiWindowSizeFactor and fontRenderingScale are set to 0.
-    //
-    // How to set those values manually:
+    // How to set manually:
     // ---------------------------------
     // If it fails (i.e. your window and/or fonts are too big or too small),
     // you may set them manually:
@@ -282,7 +277,6 @@ void ReadDpiAwareParams(DpiAwareParams* dpiAwareParams)
     // ------------------------------
     //     [DpiAwareParams]
     //     dpiWindowSizeFactor=2
-    //     fontRenderingScale=0.5
     //
 
     if (dpiAwareParams->dpiWindowSizeFactor == 0.f)
@@ -292,12 +286,6 @@ void ReadDpiAwareParams(DpiAwareParams* dpiAwareParams)
             dpiAwareParams->dpiWindowSizeFactor = dpiWindowSizeFactor.value();
     }
 
-    if (dpiAwareParams->fontRenderingScale == 0.f)
-    {
-        auto fontRenderingScale = HelloImGuiIniAnyParentFolder::readFloatValue("DpiAwareParams", "fontRenderingScale");
-        if (fontRenderingScale.has_value())
-            dpiAwareParams->fontRenderingScale = fontRenderingScale.value();
-    }
 }
 
 
@@ -307,46 +295,9 @@ void _LogDpiParams(const std::string& origin, const HelloImGui::DpiAwareParams& 
 	std::stringstream msg;
 	DpiLog("DpiAwareParams: %s\n", origin.c_str());
 	DpiLog("    dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
-	DpiLog("    fontRenderingScale=%f\n", dpiAwareParams.fontRenderingScale);
 	DpiLog("    DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
 	DpiLog("        (ImGui FontGlobalScale: %f)\n", io.FontGlobalScale);
 	DpiLog("	    (ImGui DisplayFramebufferScale=%f, %f)\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
-}
-
-
-float _DefaultOsFontRenderingScale()
-{
-    float fontSizeIncreaseFactor = 1.f;
-
-    #ifdef __EMSCRIPTEN__
-        // Query the brower to ask for devicePixelRatio
-        double windowDevicePixelRatio = EM_ASM_DOUBLE( {
-            var scale = window.devicePixelRatio;
-            return scale;
-        }
-        );
-        printf("window.devicePixelRatio=%lf\n", windowDevicePixelRatio);
-
-        fontSizeIncreaseFactor = windowDevicePixelRatio;
-    #endif
-    #ifdef HELLOIMGUI_MACOS
-        // Crisp fonts on macOS:
-        // cf https://github.com/ocornut/imgui/issues/5301
-        // Issue with macOS is that it pretends screen has 2x fewer pixels than it actually does.
-        // This simplifies application development in most cases, but in our case we happen to render fonts at 1x scale
-        // while screen renders at 2x scale.
-        fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
-    #endif
-    #ifdef HELLOIMGUI_IOS
-    fontSizeIncreaseFactor = 2.0; // Retina
-    #endif
-
-    #ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY
-    if (HelloImGui::GetRunnerParams()->remoteParams.enableRemoting)
-        fontSizeIncreaseFactor = 1.f;
-    #endif
-
-    return 1.0f / fontSizeIncreaseFactor;
 }
 
 
@@ -363,11 +314,6 @@ void AbstractRunner::SetupDpiAwareParams()
         }
         #endif
         params.dpiAwareParams.dpiWindowSizeFactor = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
-    }
-
-    if (params.dpiAwareParams.fontRenderingScale == 0.f)
-    {
-        params.dpiAwareParams.fontRenderingScale = _DefaultOsFontRenderingScale();
     }
 
     _LogDpiParams("SetupDpiAwareParams", params.dpiAwareParams);

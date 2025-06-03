@@ -62,7 +62,6 @@ namespace HelloImGui
             static bool wasInited = false;
             if (!wasInited)
             {
-                gDpiAwareParams.fontRenderingScale = 1.f;
                 gDpiAwareParams.dpiWindowSizeFactor = 1.f;
                 wasInited = true;
             }

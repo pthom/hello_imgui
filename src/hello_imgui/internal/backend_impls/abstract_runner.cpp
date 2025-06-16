@@ -296,7 +296,7 @@ void _LogDpiParams(const std::string& origin, const HelloImGui::DpiAwareParams& 
 	DpiLog("DpiAwareParams: %s\n", origin.c_str());
 	DpiLog("    dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
 	DpiLog("    DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
-	DpiLog("        (ImGui FontGlobalScale: %f)\n", io.FontGlobalScale);
+	DpiLog("        (ImGui FontScaleMain: %f)\n", ImGui::GetStyle().FontScaleMain);
 	DpiLog("	    (ImGui DisplayFramebufferScale=%f, %f)\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
 }
 

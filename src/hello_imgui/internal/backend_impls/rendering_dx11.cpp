@@ -132,9 +132,6 @@ namespace HelloImGui
 
         //         callbacks->Impl_GetFrameBufferSize;   //= [] { return ScreenSize{0, 0}; };
 
-        callbacks->Impl_CreateFontTexture = [] { HIMG_ERROR("DX11 does not support font texture creation/deletion at runtim"); };
-        callbacks->Impl_DestroyFontTexture = [] { HIMG_ERROR("DX11 does not support font texture creation/deletion at runtim"); };
-
         return callbacks;
     }
 

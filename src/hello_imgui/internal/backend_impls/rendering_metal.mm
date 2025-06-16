@@ -102,13 +102,6 @@ namespace HelloImGui
             ImGui_ImplMetal_Shutdown();
         };
 
-        callbacks->Impl_CreateFontTexture = []
-        {
-            auto& gMetalGlobals = GetMetalGlobals();
-            ImGui_ImplMetal_CreateFontsTexture(gMetalGlobals.mtlDevice);
-        };
-        callbacks->Impl_DestroyFontTexture = ImGui_ImplMetal_DestroyFontsTexture;
-
         return callbacks;
     }
 

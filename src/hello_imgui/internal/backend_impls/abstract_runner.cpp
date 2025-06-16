@@ -81,7 +81,6 @@ void setFinalAppWindowScreenshotRgbBuffer(const ImageBuffer& b);
 void setFinalAppWindowScreenshotFramebufferScale(float scale);
 
 // Encapsulated inside hello_imgui_font.cpp
-bool _reloadAllDpiResponsiveFonts();
 bool ShouldRemoteDisplay();
 
 // Encapsulated inside docking_details.cpp
@@ -257,19 +256,14 @@ void ReadDpiAwareParams(DpiAwareParams* dpiAwareParams)
     // cf dpi_aware.h
     //
     // Hello ImGui will try its best to automatically handle DPI scaling for you.
-    // It does this by setting two values:
     //
     // - `dpiWindowSizeFactor`:
     //        factor by which window size should be multiplied
     //
-    // - `fontRenderingScale`:
-    //     factor by which fonts glyphs should be scaled at rendering time
-    //     (typically 1 on windows, and 0.5 on macOS retina screens)
+    //    By default, Hello ImGui will compute it automatically,
+    //    when dpiWindowSizeFactor is set to 0.
     //
-    //    By default, Hello ImGui will compute them automatically,
-    //    when dpiWindowSizeFactor and fontRenderingScale are set to 0.
-    //
-    // How to set those values manually:
+    // How to set manually:
     // ---------------------------------
     // If it fails (i.e. your window and/or fonts are too big or too small),
     // you may set them manually:
@@ -283,7 +277,6 @@ void ReadDpiAwareParams(DpiAwareParams* dpiAwareParams)
     // ------------------------------
     //     [DpiAwareParams]
     //     dpiWindowSizeFactor=2
-    //     fontRenderingScale=0.5
     //
 
     if (dpiAwareParams->dpiWindowSizeFactor == 0.f)
@@ -293,25 +286,6 @@ void ReadDpiAwareParams(DpiAwareParams* dpiAwareParams)
             dpiAwareParams->dpiWindowSizeFactor = dpiWindowSizeFactor.value();
     }
 
-    if (dpiAwareParams->fontRenderingScale == 0.f)
-    {
-        auto fontRenderingScale = HelloImGuiIniAnyParentFolder::readFloatValue("DpiAwareParams", "fontRenderingScale");
-        if (fontRenderingScale.has_value())
-            dpiAwareParams->fontRenderingScale = fontRenderingScale.value();
-    }
-
-    if (dpiAwareParams->fontOversampleH == 0)
-    {
-        auto fontOversampleH = HelloImGuiIniAnyParentFolder::readIntValue("DpiAwareParams", "fontOversampleH");
-        if (fontOversampleH.has_value())
-            dpiAwareParams->fontOversampleH = fontOversampleH.value();
-    }
-    if (dpiAwareParams->fontOversampleV == 0)
-    {
-        auto fontOversampleV = HelloImGuiIniAnyParentFolder::readIntValue("DpiAwareParams", "fontOversampleV");
-        if (fontOversampleV.has_value())
-            dpiAwareParams->fontOversampleV = fontOversampleV.value();
-    }
 }
 
 
@@ -321,72 +295,9 @@ void _LogDpiParams(const std::string& origin, const HelloImGui::DpiAwareParams& 
 	std::stringstream msg;
 	DpiLog("DpiAwareParams: %s\n", origin.c_str());
 	DpiLog("    dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
-	DpiLog("    fontRenderingScale=%f\n", dpiAwareParams.fontRenderingScale);
 	DpiLog("    DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
 	DpiLog("        (ImGui FontGlobalScale: %f)\n", io.FontGlobalScale);
 	DpiLog("	    (ImGui DisplayFramebufferScale=%f, %f)\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
-}
-
-
-bool AbstractRunner::CheckDpiAwareParamsChanges()
-{
-    auto& dpiAwareParams = params.dpiAwareParams;
-    auto& io = ImGui::GetIO();
-
-	// Check changes
-	bool didFontGlobalScaleChange = dpiAwareParams.fontRenderingScale != io.FontGlobalScale;
-	if (didFontGlobalScaleChange)
-	{
-		DpiLog("Warning: didFontGlobalScaleChange=:true\n");
-		dpiAwareParams.fontRenderingScale = io.FontGlobalScale;
-	}
-
-    bool didDpiAwareParamsChangeOnRemoteServer = mRemoteDisplayHandler.CheckDpiAwareParamsChanges();
-
-	if (didFontGlobalScaleChange || didDpiAwareParamsChangeOnRemoteServer)
-	{
-		DpiLog("New DpiAwareParams:\n");
-		_LogDpiParams("_CheckDpiAwareParamsChanges (changed!)", dpiAwareParams);
-		return true;
-	}
-	else
-		return false;
-}
-
-
-float _DefaultOsFontRenderingScale()
-{
-    float fontSizeIncreaseFactor = 1.f;
-
-    #ifdef __EMSCRIPTEN__
-        // Query the brower to ask for devicePixelRatio
-        double windowDevicePixelRatio = EM_ASM_DOUBLE( {
-            var scale = window.devicePixelRatio;
-            return scale;
-        }
-        );
-        printf("window.devicePixelRatio=%lf\n", windowDevicePixelRatio);
-
-        fontSizeIncreaseFactor = windowDevicePixelRatio;
-    #endif
-    #ifdef HELLOIMGUI_MACOS
-        // Crisp fonts on macOS:
-        // cf https://github.com/ocornut/imgui/issues/5301
-        // Issue with macOS is that it pretends screen has 2x fewer pixels than it actually does.
-        // This simplifies application development in most cases, but in our case we happen to render fonts at 1x scale
-        // while screen renders at 2x scale.
-        fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
-    #endif
-    #ifdef HELLOIMGUI_IOS
-    fontSizeIncreaseFactor = 2.0; // Retina
-    #endif
-
-    #ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY
-    if (HelloImGui::GetRunnerParams()->remoteParams.enableRemoting)
-        fontSizeIncreaseFactor = 1.f;
-    #endif
-
-    return 1.0f / fontSizeIncreaseFactor;
 }
 
 
@@ -405,13 +316,7 @@ void AbstractRunner::SetupDpiAwareParams()
         params.dpiAwareParams.dpiWindowSizeFactor = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
     }
 
-    if (params.dpiAwareParams.fontRenderingScale == 0.f)
-    {
-        params.dpiAwareParams.fontRenderingScale = _DefaultOsFontRenderingScale();
-    }
-    ImGui::GetIO().FontGlobalScale = params.dpiAwareParams.fontRenderingScale;
-
-	_LogDpiParams("SetupDpiAwareParams", params.dpiAwareParams);
+    _LogDpiParams("SetupDpiAwareParams", params.dpiAwareParams);
 }
 
 
@@ -777,14 +682,6 @@ void AbstractRunner::Setup()
     params.callbacks.LoadAdditionalFonts = nullptr;
     bool buildSuccess = ImGui::GetIO().Fonts->Build();
     IM_ASSERT(buildSuccess && "ImGui::GetIO().Fonts->Build() failed!");
-    {
-        // Reset FontGlobalScale if we did not use HelloImGui font loading mechanism
-        if (! HelloImGui::DidCallHelloImGuiLoadFontTTF())
-        {
-            float dpiFactor = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
-            ImGui::GetIO().FontGlobalScale = dpiFactor;
-        }
-    }
 
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
     HelloImGuiIniSettings::LoadHelloImGuiMiscSettings(IniSettingsLocation(params), &params);
@@ -942,22 +839,6 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     // Some lambdas may call user callbacks, and are named with a suffix "UserCallback".
     // When running in python, they *need* to have the GIL!
     //
-
-    // Reload fonts if DPI scale changed
-    auto fnReloadFontsIfDpiScaleChanged = [this]()
-    {
-        if (CheckDpiAwareParamsChanges())
-        {
-            if (_reloadAllDpiResponsiveFonts())
-            {
-                DpiLog("_CheckDpiAwareParamsChanges returned true => reloaded all fonts\n");
-                // cf https://github.com/ocornut/imgui/issues/6547: we need to recreate the rendering backend device objects
-                mRenderingBackendCallbacks->Impl_DestroyFontTexture();
-                mRenderingBackendCallbacks->Impl_CreateFontTexture();
-                mRemoteDisplayHandler.SendFonts();
-            }
-        }
-    };
 
     auto fnHandleLayout = [this]()
     {
@@ -1177,12 +1058,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         {
             params.callbacks.LoadAdditionalFonts();
             ImGui::GetIO().Fonts->Build();
-            // cf https://github.com/ocornut/imgui/issues/6547
-            // We need to recreate the rendering backend device objects
-            mRenderingBackendCallbacks->Impl_DestroyFontTexture();
-            mRenderingBackendCallbacks->Impl_CreateFontTexture();
             params.callbacks.LoadAdditionalFonts = nullptr;
-
             mRemoteDisplayHandler.SendFonts();
         }
     };
@@ -1360,7 +1236,6 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
     {
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
-        fnReloadFontsIfDpiScaleChanged();
         fnHandleLayout();
     }
 

@@ -17,9 +17,6 @@ namespace HelloImGui
 
         callbacks->Impl_Shutdown_3D = [] {};
 
-        callbacks->Impl_CreateFontTexture = [] {};
-        callbacks->Impl_DestroyFontTexture = [] {};
-
         return callbacks;
     }
 

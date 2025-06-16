@@ -31,10 +31,6 @@ namespace HelloImGui
         // (return false if no remote display is configured/compiled)
         bool ShouldRemoteDisplay();
 
-        // May update GetRunnerParams()->dpiAwareParams by interrogating the remote display
-        // (return false if no remote display is configured/compiled)
-        bool CheckDpiAwareParamsChanges();
-
         // Can the user quit the application?
         bool CanQuitApp();
 

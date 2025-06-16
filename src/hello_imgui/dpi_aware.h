@@ -8,26 +8,14 @@ namespace HelloImGui
 //
 // Hello ImGui will try its best to automatically handle DPI scaling for you.
 //
-// Parameters to change the scaling behavior:
+// Parameter to change the scaling behavior:
 // ------------------------------------------
 // - `dpiWindowSizeFactor`:
 //        factor by which window size should be multiplied
-//
-// - `fontRenderingScale`:
-//     factor by which fonts glyphs should be scaled at rendering time
-//     (typically 1 on windows, and 0.5 on macOS retina screens)
-//
-//    By default, Hello ImGui will compute them automatically,
-//    when dpiWindowSizeFactor and fontRenderingScale are set to 0.
-//
-// Parameters to improve font rendering quality:
-// ---------------------------------------------
-// - `fontOversampleH` and `fontOversampleV` : Font oversampling parameters
-//     Rasterize at higher quality for sub-pixel positioning. Probably unused if freeType is used.
-//     If not zero, these values will be used to set the oversampling factor when loading fonts.
+//    By default, Hello ImGui will compute it automatically, when it is set to 0.
 //
 //
-// How to set those values manually:
+// How to set manually:
 // ---------------------------------
 // If it fails (i.e. your window and/or fonts are too big or too small),
 // you may set them manually:
@@ -58,42 +46,14 @@ struct DpiAwareParams
     //  and the resulting value will be stored in `dpiWindowSizeFactor`.
     float dpiWindowSizeFactor = 0.0f;
 
-    // `fontRenderingScale`
-    //     factor (that is either 1 or < 1.) by which fonts glyphs should be scaled at rendering time.
-    //  On macOS retina screens, it will be 0.5, since macOS APIs hide the real resolution of the screen.
-    //  Changing this value will *not* change the visible font size on the screen, however it will
-    //  affect the size of the loaded glyphs.
-    //  For example, if fontRenderingScale=0.5 (which is the default on a macOS retina screen),
-    //  a font size of 16 will be loaded as if it was 32, and will be rendered at half size.
-    //   This leads to a better rendering quality on some platforms.
-    // (This parameter will be used to set ImGui::GetIO().FontGlobalScale at startup)
-    float fontRenderingScale = 0.0f;
-
-    // `onlyUseFontDpiResponsive`
-    // If true, guarantees that only HelloImGui::LoadDpiResponsiveFont will be used to load fonts.
-    // (also for the default font)
-    bool onlyUseFontDpiResponsive = false;
-
-    // `fontOversampleH` and `fontOversampleV` : Font oversampling parameters
-    // Rasterize at higher quality for sub-pixel positioning. Probably unused if freeType is used.
-    // If not zero, these values will be used to set the oversampling factor when loading fonts.
-    // (i.e. they will be set in ImFontConfig::OversampleH and ImFontConfig::OversampleV)
-    // OversampleH: The difference between 2 and 3 for OversampleH is minimal.
-    //              You can reduce this to 1 for large glyphs save memory.
-    // OversampleV: This is not really useful as we don't use sub-pixel positions on the Y axis.
-    // Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.
-    int             fontOversampleH = 0;  // Default is 2 in ImFontConfig
-    int             fontOversampleV = 0;  // Default is 1 in ImFontConfig
-
-
-    // `dpiFontLoadingFactor`
-    //     factor by which font size should be multiplied at loading time to get a similar
-    //     visible size on different OSes.
+    // `DpiFontLoadingFactor`
+    //     factor by which font size should be multiplied at loading time to get a similar visible size on different OSes.
+    //     This is equal to dpiWindowSizeFactor
     //  The size will be equivalent to a size given for a 96 PPI screen
     float DpiFontLoadingFactor() const {
-        float r = dpiWindowSizeFactor / fontRenderingScale;
-        return r;
-    };
+        return dpiWindowSizeFactor;
+    }
+
 };
 
 // ----------------------------------------------------------------------------
@@ -110,7 +70,7 @@ Using ImVec2 with fixed values is *almost always a bad idea* if you intend your
 application to be used on high DPI screens!
 Otherwise, widgets might be misplaced or too small on different screens and/or OS.
 
-Instead you should use scale your widgets and windows relatively to the font size,
+Instead, you should use scale your widgets and windows relatively to the font size,
 as is done with the [em CSS Unit](https://lyty.dev/css/css-unit.html).
 
 @@md
@@ -146,21 +106,20 @@ DpiAwareParams* GetDpiAwareParams();
 // ----------------------------------------------------------------------------
 
 //
-// Legacy API, you should use RunnerParams.dpAwareParams instead
+// Legacy API, you should use RunnerParams.dpiAwareParams instead
 //
 namespace HelloImGui
 {
-// Multiply font sizes by this factor when loading fonts manually with ImGui::GetIO().Fonts->AddFont...
-// (HelloImGui::LoadFontTTF does this by default)
-float DpiFontLoadingFactor();
+    // Multiply font sizes by this factor when loading fonts manually with ImGui::GetIO().Fonts->AddFont...
+    // (HelloImGui::LoadFontTTF does this by default)
+    float DpiFontLoadingFactor();
 
-// DpiWindowSizeFactor() is the factor by which window size should be multiplied to get a similar visible size on different OSes.
-// It returns ApplicationScreenPixelPerInch / 96  under windows and linux. Under macOS, it will return 1.
-float DpiWindowSizeFactor();
+    // DpiWindowSizeFactor() is the factor by which window size should be multiplied to get a similar visible size on different OSes.
+    // It returns ApplicationScreenPixelPerInch / 96 under windows and linux. Under macOS, it will return 1.
+    float DpiWindowSizeFactor();
 
-// returns the default value that should be stored inside `ImGui::GetIO().FontGlobalScale`
-float ImGuiDefaultFontGlobalScale();
 } // namespace HelloImGui
+
 
 
 // ----------------------------------------------------------------------------
@@ -221,31 +180,16 @@ Notes:
 - You cannot change DisplayFramebufferScale manually, it will be reset at each new frame, by asking the platform backend.
 
 
-## FontGlobalScale
-
-`ImGui::GetIO().FontGlobalScale` is a factor by which fonts glyphs should be scaled at rendering time.
-It is typically 1 on windows, and 0.5 on macOS retina screens.
-
-
 ## How to load fonts with the correct size
 
 ### Using HelloImGui (recommended)
 
-[`HelloImGui::LoadFont()` and `HelloImGui::LoadFontDpiResponsive`](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts) will load fonts
+[`HelloImGui::LoadFont()`](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts) will load fonts
  with the correct size, taking into account the DPI scaling.
 
 ### Using Dear ImGui
 `ImGui::GetIO().Fonts->AddFontFromFileTTF()` loads a font with a given size, in *physical pixels*.
-
-If for example, DisplayFramebufferScale is (2,2), and you load a font with a size of 16, it will by default be rendered
- with size of 16 *virtual screen coordinate pixels* (i.e. 32 physical pixels). This will lead to blurry text.
-To solve this, you should load your font with a size of 16 *virtual screen coordinate pixels* (i.e. 32 physical pixels),
-and set `ImGui::GetIO().FontGlobalScale` to 0.5.
-
-Helpers if using `ImGui::GetIO().Fonts->AddFontFromFileTTF()`:
-- `HelloImGui::ImGuiDefaultFontGlobalScale()` returns the default value that should be stored inside `ImGui::GetIO().FontGlobalScale`.
-- `HelloImGui::DpiFontLoadingFactor()` returns a factor by which you shall multiply your font sizes when loading them.
-
+KKDYNFONT: TBC...
 
 ## Reproducible physical window sizes (in mm or inches)
 

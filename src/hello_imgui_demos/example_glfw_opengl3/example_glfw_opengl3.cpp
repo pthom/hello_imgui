@@ -152,14 +152,14 @@ int main(int, char**)
 
     const char* colorFontFile = "/Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/imgui_bundle_dynfont/external/hello_imgui/hello_imgui/src/hello_imgui_demos/hello_imgui_demodocking/assets/fonts/Playbox/Playbox-FREE.otf";
     ImFontConfig colorFontConfig;
-    colorFontConfig.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_LoadColor;
+    colorFontConfig.FontLoaderFlags |= ImGuiFreeTypeLoaderFlags_LoadColor;
     colorFontConfig.RasterizerDensity = realDisplayFrameBufferScale;
     ImFont * colorFont = io.Fonts->AddFontFromFileTTF(colorFontFile, fontSize, &colorFontConfig);
 
     //const char* notoColorFile = "/Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/imgui_dynfont_study/fonts/NotoColorEmoji.ttf";
     const char* notoColorFile = "/Users/pascal/dvp/OpenSource/ImGuiWork/_Bundle/imgui_bundle_dynfont/bindings/imgui_bundle/demos_assets/fonts/NotoEmoji-Regular.ttf";
     ImFontConfig notoColorConfig;
-    notoColorConfig.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_LoadColor;
+    notoColorConfig.FontLoaderFlags |= ImGuiFreeTypeLoaderFlags_LoadColor;
     notoColorConfig.RasterizerDensity = realDisplayFrameBufferScale;
     ImFont * notoColorFont = io.Fonts->AddFontFromFileTTF(notoColorFile, fontSize, &notoColorConfig);
 

@@ -92,7 +92,11 @@ namespace HelloImGui
         if (params.loadColor)
         {
 #ifdef IMGUI_ENABLE_FREETYPE
+#if IMGUI_VERSION_NUM >= 19198
             params.fontConfig.FontLoaderFlags |= ImGuiFreeTypeLoaderFlags_LoadColor;
+#else
+            params.fontConfig.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_LoadColor;
+#endif
 #else
             IM_ASSERT(false && "FontLoadingParmas.loadColor requires freetype (IMGUI_ENABLE_FREETYPE)");
             return nullptr;

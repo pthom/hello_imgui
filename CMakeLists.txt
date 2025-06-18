@@ -4,7 +4,7 @@ else()
     cmake_minimum_required(VERSION 3.10)
 endif()
 
-project(hello-imgui LANGUAGES C CXX VERSION "1.6.3")
+project(hello-imgui LANGUAGES C CXX VERSION "1.91.99")  # 1.92.0 WIP - This mirrors IMGUI_VERSION_NUM in imgui.h
 set(CMAKE_CXX_STANDARD 17)
 
 if (IOS)

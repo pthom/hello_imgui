@@ -10,14 +10,15 @@
 namespace HelloImGui { namespace BackendApi
 {
 #ifdef HELLOIMGUI_HAS_OPENGL3
-    static int QueryMaxAntiAliasingSamples()
+    static int QueryMaxAntiAliasingSamples(const OpenGlOptionsFilled_& openGlOptions)
     {
         // First create a dummy window to make OpenGL context current
-        GLFWwindow* dummyWindow = []
+        GLFWwindow* dummyWindow = [openGlOptions]
         {
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, openGlOptions.MajorVersion);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, openGlOptions.MinorVersion);
+            if (openGlOptions.UseCoreProfile)
+                glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
             glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
             return glfwCreateWindow(64, 32, "Dummy", nullptr, nullptr);
         }();
@@ -41,7 +42,7 @@ namespace HelloImGui { namespace BackendApi
     static void ApplyAntiAliasingSamples(const OpenGlOptionsFilled_& openGlOptions)
     {
         int userQuerySamples = openGlOptions.AntiAliasingSamples;
-        int maxGpuSamples = QueryMaxAntiAliasingSamples();
+        int maxGpuSamples = QueryMaxAntiAliasingSamples(openGlOptions);
         int effectiveSamples = 8;
 
         if (effectiveSamples > maxGpuSamples)

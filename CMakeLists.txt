@@ -4,7 +4,7 @@ else()
     cmake_minimum_required(VERSION 3.10)
 endif()
 
-project(hello-imgui LANGUAGES C CXX VERSION "1.91.99")  # 1.92.0 WIP - This mirrors IMGUI_VERSION_NUM in imgui.h
+project(hello-imgui LANGUAGES C CXX VERSION "1.92.0")  # 1.92.0 - This mirrors IMGUI_VERSION_NUM in imgui.h
 set(CMAKE_CXX_STANDARD 17)
 
 if (IOS)
@@ -427,3 +427,14 @@ endif()
 # Log info
 #------------------------------------------------------------------------------
 him_log_configuration()
+
+#find_package(OpenGL REQUIRED)
+#add_executable(ex_glfw_opengl3
+#    external/imgui/examples/example_glfw_opengl3/main.cpp
+#)
+#target_link_libraries(ex_glfw_opengl3 PRIVATE hello_imgui OpenGL::GL)
+#
+#add_executable(ex_sdl2_opengl3
+#    external/imgui/examples/example_sdl2_opengl3/main.cpp
+#)
+#target_link_libraries(ex_sdl2_opengl3 PRIVATE hello_imgui OpenGL::GL)

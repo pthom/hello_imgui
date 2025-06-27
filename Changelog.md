@@ -1,5 +1,14 @@
 Version numbers are synced between hello_imgui and imgui_bundle.
 
+# v1.92.0
+Version numbers are now synced between "Dear ImGui" "Hello ImGui" and "Dear ImGui Bundle".
+
+* ImGui: Many Font related changes: this release brings many changes on the ImGui side (v1.92.0): do read the [release notes for ImGui v1.92.0](https://github.com/ocornut/imgui/releases/tag/v1.92.0)
+TLDR: Fonts may be rendered at any size. Glyphs are loaded and rasterized dynamically. No need to specify ranges, prebake etc. 
+
+* Removed FontDpiResponsive: this is now handled by ImGui itself
+* Removed FontLoadingParams.glyphRanges, since ranges are not needed anymore by ImGui
+
 # v1.6.3
 - Assets: can search with absolute path or from current working directory
 - Add utility function void UseWindowFullMonitorWorkArea()

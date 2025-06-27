@@ -427,14 +427,3 @@ endif()
 # Log info
 #------------------------------------------------------------------------------
 him_log_configuration()
-
-#find_package(OpenGL REQUIRED)
-#add_executable(ex_glfw_opengl3
-#    external/imgui/examples/example_glfw_opengl3/main.cpp
-#)
-#target_link_libraries(ex_glfw_opengl3 PRIVATE hello_imgui OpenGL::GL)
-#
-#add_executable(ex_sdl2_opengl3
-#    external/imgui/examples/example_sdl2_opengl3/main.cpp
-#)
-#target_link_libraries(ex_sdl2_opengl3 PRIVATE hello_imgui OpenGL::GL)

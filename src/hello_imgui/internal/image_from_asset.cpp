@@ -93,10 +93,13 @@ namespace HelloImGui
     }
 
 
-    void ImageFromAsset(
+    void ImageFromAsset_Impl(
         const char *assetPath, const ImVec2& size,
         const ImVec2& uv0, const ImVec2& uv1,
-        const ImVec4& tint_col, const ImVec4& border_col)
+        bool withBg,
+        const ImVec4& tint_col = ImVec4(1,1,1,1),
+        const ImVec4& border_col = ImVec4(0,0,0,0)
+        )
     {
         auto cachedImage = _GetCachedImage(assetPath);
         if (cachedImage == nullptr)
@@ -107,7 +110,25 @@ namespace HelloImGui
         auto textureId = cachedImage->TextureID();
         auto imageSize = ImVec2((float)cachedImage->Width, (float)cachedImage->Height);
         ImVec2 displayedSize = ImageProportionalSize(size, imageSize);
-        ImGui::ImageWithBg(textureId, displayedSize, uv0, uv1, tint_col, border_col);
+        if (withBg)
+            ImGui::ImageWithBg(textureId, displayedSize, uv0, uv1, tint_col, border_col);
+        else
+            ImGui::Image(textureId, displayedSize, uv0, uv1);
+    }
+
+    void ImageFromAsset(
+        const char *assetPath, const ImVec2& size,
+        const ImVec2& uv0, const ImVec2& uv1)
+    {
+        ImageFromAsset_Impl(assetPath, size, uv0, uv1, false);
+    }
+
+    void ImageFromAssetWithBg(
+        const char *assetPath, const ImVec2& size,
+        const ImVec2& uv0, const ImVec2& uv1,
+        const ImVec4& tint_col, const ImVec4& border_col)
+    {
+        ImageFromAsset_Impl(assetPath, size, uv0, uv1, true, tint_col, border_col);
     }
 
     bool ImageButtonFromAsset(const char *assetPath, const ImVec2& size, const ImVec2& uv0,  const ImVec2& uv1, int frame_padding, const ImVec4& bg_col, const ImVec4& tint_col)

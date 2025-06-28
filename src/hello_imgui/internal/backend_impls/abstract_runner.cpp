@@ -680,8 +680,6 @@ void AbstractRunner::Setup()
     ImGui::GetIO().Fonts->Clear();
     params.callbacks.LoadAdditionalFonts();
     params.callbacks.LoadAdditionalFonts = nullptr;
-    bool buildSuccess = ImGui::GetIO().Fonts->Build();
-    IM_ASSERT(buildSuccess && "ImGui::GetIO().Fonts->Build() failed!");
 
     DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
     HelloImGuiIniSettings::LoadHelloImGuiMiscSettings(IniSettingsLocation(params), &params);
@@ -1057,7 +1055,6 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         if (params.callbacks.LoadAdditionalFonts != nullptr)
         {
             params.callbacks.LoadAdditionalFonts();
-            ImGui::GetIO().Fonts->Build();
             params.callbacks.LoadAdditionalFonts = nullptr;
             mRemoteDisplayHandler.SendFonts();
         }

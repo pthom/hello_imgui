@@ -101,6 +101,10 @@ void LoadFonts(AppState& appState) // This is called by runnerParams.callbacks.L
 #endif
 }
 
+void PushFontWithDefaultSize(ImFont* font)
+{
+    ImGui::PushFont(font, font->LegacySize);
+}
 
 //////////////////////////////////////////////////////////////////////////
 //    Save additional settings in the ini file
@@ -154,7 +158,7 @@ void SaveMyAppSettings(const AppState& appState)
 
 void ShowTitle(AppState& appState, const char* title)
 {
-    ImGui::PushFont(appState.TitleFont);
+    PushFontWithDefaultSize(appState.TitleFont);
     // ImGui::PushFontSize(appState.TitleFont->DefaultSize);  // incompatible with vcpkg's version
     ImGui::Text("%s", title);
     // ImGui::PopFontSize();  // incompatible with vcpkg's version
@@ -305,12 +309,12 @@ Most flags are inherited by children dock spaces.
         std::string tip;
     };
     std::vector<DockFlagWithInfo> all_flags = {
-        {ImGuiDockNodeFlags_NoSplit, "NoSplit", "prevent Dock Nodes from being split"},
+        {ImGuiDockNodeFlags_NoDockingSplit, "NoDockingSplit", "prevent Dock Nodes from being split"},
         {ImGuiDockNodeFlags_NoResize, "NoResize", "prevent Dock Nodes from being resized"},
         {ImGuiDockNodeFlags_AutoHideTabBar, "AutoHideTabBar",
          "show tab bar only if multiple windows\n"
          "You will need to restore the layout after changing (Menu \"View/Restore Layout\")"},
-        {ImGuiDockNodeFlags_NoDockingInCentralNode, "NoDockingInCentralNode",
+        {ImGuiDockNodeFlags_NoDockingOverCentralNode, "NoDockingOverCentralNode",
          "prevent docking in central node\n"
          "(only works with the main dock space)"},
         // {ImGuiDockNodeFlags_PassthruCentralNode, "PassthruCentralNode", "advanced"},
@@ -334,7 +338,7 @@ void GuiWindowLayoutCustomization(AppState& appState)
         ImGui::SetTooltip("Each layout remembers separately the modifications applied by the user, \nand the selected layout is restored at startup");
     ImGui::Separator();
 
-    ImGui::PushFont(appState.TitleFont); ImGui::Text("Change the theme"); ImGui::PopFont();
+    PushFontWithDefaultSize(appState.TitleFont); ImGui::Text("Change the theme"); ImGui::PopFont();
     ImGui::Text("with the menu \"View/Theme\"");
     if (ImGui::IsItemHovered())
         ImGui::SetTooltip("The selected theme is remembered and restored at startup");
@@ -365,7 +369,7 @@ void GuiWindowAlternativeTheme(AppState& appState)
     if (windowOpened)
     {
         // Display some widgets
-        ImGui::PushFont(appState.TitleFont); ImGui::Text("Alternative Theme"); ImGui::PopFont();
+        PushFontWithDefaultSize(appState.TitleFont); ImGui::Text("Alternative Theme"); ImGui::PopFont();
         ImGui::Text("This window uses a different theme");
         ImGui::SetItemTooltip("    ImGuiTheme::ImGuiTweakedTheme tweakedTheme;\n"
                               "    tweakedTheme.Theme = ImGuiTheme::ImGuiTheme_WhiteIsWhite;\n"
@@ -474,7 +478,7 @@ void DemoFonts(AppState& appState)
 
     ImGui::BeginGroup();
     {
-        ImGui::PushFont(appState.EmojiFont);
+        PushFontWithDefaultSize(appState.EmojiFont);
         // ✌️ (Victory Hand Emoji)
         ImGui::Text(U8_TO_CHAR(u8"\U0000270C\U0000FE0F"));
         ImGui::SameLine();
@@ -501,7 +505,7 @@ void DemoFonts(AppState& appState)
 
 #ifdef IMGUI_ENABLE_FREETYPE
     ImGui::Text("Colored Fonts");
-    ImGui::PushFont(appState.ColorFont);
+    PushFontWithDefaultSize(appState.ColorFont);
     ImGui::Text("COLOR!");
     ImGui::PopFont();
     if (ImGui::IsItemHovered())
@@ -594,7 +598,7 @@ void ShowAppMenuItems()
 
 void ShowTopToolbar(AppState& appState)
 {
-    ImGui::PushFont(appState.LargeIconFont);
+    PushFontWithDefaultSize(appState.LargeIconFont);
     if (ImGui::Button(ICON_FA_POWER_OFF))
         HelloImGui::GetRunnerParams()->appShallExit = true;
 
@@ -615,7 +619,7 @@ void ShowTopToolbar(AppState& appState)
 
 void ShowRightToolbar(AppState& appState)
 {
-    ImGui::PushFont(appState.LargeIconFont);
+    PushFontWithDefaultSize(appState.LargeIconFont);
     if (ImGui::Button(ICON_FA_CIRCLE_ARROW_LEFT))
         HelloImGui::Log(HelloImGui::LogLevel::Info, "Clicked on Circle left in the right toolbar");
 

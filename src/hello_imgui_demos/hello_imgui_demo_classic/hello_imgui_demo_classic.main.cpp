@@ -41,7 +41,7 @@ int main(int , char *[]) {
             ImGui::Text("An icon from fontawesome " ICON_FA_SMILE);
 
             // Demo custom font usage (fonts - part 3/3)
-            ImGui::PushFont(gCustomFont);
+            ImGui::PushFont(gCustomFont, gCustomFont->LegacySize);
             ImGui::Text("Custom font");
             ImGui::PopFont();
 

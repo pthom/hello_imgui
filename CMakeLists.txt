@@ -100,6 +100,8 @@ option(HELLOIMGUI_HAS_DIRECTX12 "Use DirectX12 as a rendering backend" OFF)
 option(HELLOIMGUI_HEADLESS "Allow headless mode (will use Null rendering/platform backend)" OFF)
 # </Backends>  # do not remove this line (used by the script that generates the documentation)
 
+option(IMGUI_DISABLE_OBSOLETE_FUNCTIONS "Disable ImGui obsolete functions" OFF)
+
 #------------------------------------------------------------------------------
 # Options / Freetype
 #------------------------------------------------------------------------------

@@ -354,6 +354,9 @@ function(_him_do_build_imgui)
     else()
         add_library(imgui ${imgui_sources})
     endif()
+    if (IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
+        target_compile_definitions(imgui PUBLIC IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
+    endif()
     target_include_directories(imgui PUBLIC
         $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}>
         $<BUILD_INTERFACE:${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends>

@@ -358,9 +358,9 @@ AssetFileData LoadAssetFileData(const char *assetPath)
     return data;
 }
 
-void setLoadAssetFileDataFunction(LoadAssetFileDataFunc newLoadAssetFileDataFunc)
+void SetLoadAssetFileDataFunction(LoadAssetFileDataFunc newLoadAssetFileDataFunc)
 {
-    loadAssetFileDataFunc = newLoadAssetFileDataFunc;
+    loadAssetFileDataFunc = std::move(newLoadAssetFileDataFunc);
 }
 
 #endif // #ifdef HELLOIMGUI_USE_SDL2

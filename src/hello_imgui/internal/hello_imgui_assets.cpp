@@ -350,20 +350,21 @@ void FreeAssetFileData(AssetFileData * assetFileData)
     assetFileData = nullptr;
 }
 
-static LoadAssetFileDataFunc loadAssetFileDataFunc = DefaultLoadAssetFileData;
+#endif // #ifdef HELLOIMGUI_USE_SDL2
 
+//
+// Tooling to make it possible to redirect asset loading
+//
+static LoadAssetFileDataFunc loadAssetFileDataFunc = DefaultLoadAssetFileData;
 AssetFileData LoadAssetFileData(const char *assetPath)
 {
     AssetFileData data = loadAssetFileDataFunc(assetPath);
     return data;
 }
-
 void SetLoadAssetFileDataFunction(LoadAssetFileDataFunc newLoadAssetFileDataFunc)
 {
     loadAssetFileDataFunc = std::move(newLoadAssetFileDataFunc);
 }
-
-#endif // #ifdef HELLOIMGUI_USE_SDL2
 
 
 }  // namespace HelloImGui

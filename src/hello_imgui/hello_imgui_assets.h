@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <functional>
 
 namespace HelloImGui
 {
@@ -38,6 +39,8 @@ struct AssetFileData
 // You *have* to call FreeAssetFileData to free the memory, except if you use
 // ImGui::GetIO().Fonts->AddFontFromMemoryTTF, which will take ownership of the
 // data and free it for you.
+// This function can be redirected with setLoadAssetFileDataFunction. If not redirected,
+// it calls DefaultLoadAssetFileData.
 AssetFileData LoadAssetFileData(const char *assetPath);
 
 // FreeAssetFileData(AssetFileData *)
@@ -47,6 +50,17 @@ AssetFileData LoadAssetFileData(const char *assetPath);
 void FreeAssetFileData(AssetFileData * assetFileData);
 // @@md
 
+// Function type to redirect asset loads. Function receives a path and
+// returns an AssetFileData structure. By default, it points to
+// DefaultLoadAssetFileData.
+using LoadAssetFileDataFunc = std::function<AssetFileData(const char*)>;
+
+// Redirect asset loads to user-defined function
+void SetLoadAssetFileDataFunction(LoadAssetFileDataFunc func);
+
+// This function actually performs the asset load, as described in
+// LoadAssetFileData
+AssetFileData DefaultLoadAssetFileData(const char *assetPath);
 
 // @@md#assetFileFullPath
 

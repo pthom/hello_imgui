@@ -114,7 +114,7 @@ application to be used on high DPI screens!
 Otherwise, widgets might be misplaced or too small on different screens and/or OS.
 
 Instead, you should use scale your widgets and windows relatively to the font size,
-as is done with the [em CSS Unit](https://lyty.dev/css/css-unit.html).
+as is done with the [em CSS Unit](https://www.w3schools.com/cssref/css_units.php).
 
 
 ```cpp
@@ -215,6 +215,8 @@ struct AssetFileData
 // You *have* to call FreeAssetFileData to free the memory, except if you use
 // ImGui::GetIO().Fonts->AddFontFromMemoryTTF, which will take ownership of the
 // data and free it for you.
+// This function can be redirected with setLoadAssetFileDataFunction. If not redirected,
+// it calls DefaultLoadAssetFileData.
 AssetFileData LoadAssetFileData(const char *assetPath);
 
 // FreeAssetFileData(AssetFileData *)
@@ -278,9 +280,15 @@ See [image_from_asset.h](https://github.com/pthom/hello_imgui/blob/master/src/he
 // `HelloImGui::ImageFromAsset(const char *assetPath, size, ...)`: 
 // will display a static image from the assets.
 void ImageFromAsset(const char *assetPath, const ImVec2& size = ImVec2(0, 0),
-                    const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1),
-                    const ImVec4& tint_col = ImVec4(1,1,1,1),
-                    const ImVec4& border_col = ImVec4(0,0,0,0));
+                    const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1));
+
+// `HelloImGui::ImageFromAsset(const char *assetPath, size, ...)`:
+// will display a static image from the assets, with a colored background and a border.
+void ImageFromAssetWithBg(const char *assetPath, const ImVec2& size = ImVec2(0, 0),
+            const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1),
+            const ImVec4& tint_col = ImVec4(1,1,1,1),
+            const ImVec4& border_col = ImVec4(0,0,0,0));
+
 
 // `bool HelloImGui::ImageButtonFromAsset(const char *assetPath, size, ...)`:
 // will display a button using an image from the assets.

@@ -113,8 +113,8 @@ Using ImVec2 with fixed values is *almost always a bad idea* if you intend your
 application to be used on high DPI screens!
 Otherwise, widgets might be misplaced or too small on different screens and/or OS.
 
-Instead you should use scale your widgets and windows relatively to the font size,
-as is done with the [em CSS Unit](https://lyty.dev/css/css-unit.html).
+Instead, you should use scale your widgets and windows relatively to the font size,
+as is done with the [em CSS Unit](https://www.w3schools.com/cssref/css_units.php).
 
 
 ```cpp
@@ -156,14 +156,8 @@ See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/he
     struct FontLoadingParams
     {
         // if true, the font size will be adjusted automatically to account for HighDPI
+        //
         bool adjustSizeToDpi = true;
-
-        // if true, the font will be loaded with the full glyph range
-        bool useFullGlyphRange = false;
-        // if set, fontConfig.GlyphRanges, and
-        //   fontConfig.OversampleH / fontConfig.OversampleV will be set to 1
-        //   when useFullGlyphRange is true (this is useful to save memory)
-        bool reduceMemoryUsageIfFullGlyphRange = true;
 
         // if true, the font will be merged to the last font
         bool mergeToLastFont = false;
@@ -176,50 +170,27 @@ See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/he
         // Otherwise, it will be loaded from the filesystem
         bool insideAssets = true;
 
-        // the ranges of glyphs to load, as a list of pairs of ImWchar
-        //    - if empty, the default glyph range will be used
-        //    - you can specify several ranges
-        //    - intervals bounds are inclusive
-        // Note: in order to use common ranges defined by ImGui (GetGlyphRangesJapanese, GetGlyphRangesChinese, ...)
-        //       use TranslateCommonGlyphRanges (or translate_common_glyph_ranges in Python)
-        std::vector<ImWcharPair> glyphRanges = {};
-
         // ImGui native font config to use
         ImFontConfig fontConfig = ImFontConfig();
-
-        // if true, the font will be loaded and then FontAwesome icons will be merged to it
-        // (deprecated, use mergeToLastFont instead, and load in two steps)
-        // This will use an old version of FontAwesome (FontAwesome 4)
-        bool mergeFontAwesome = false;
-        ImFontConfig fontConfigFontAwesome = ImFontConfig();
-    };
-
-    // A font that will be automatically resized to account for changes in DPI
-    // Use LoadAdaptiveFont instead of LoadFont to get this behavior.
-    // Fonts loaded with LoadAdaptiveFont will be reloaded during execution
-    // if ImGui::GetIO().FontGlobalScale is changed.
-    struct FontDpiResponsive
-    {
-        ImFont* font = nullptr;
-        std::string fontFilename;
-        float fontSize = 0.f;
-        FontLoadingParams fontLoadingParams;
     };
 
 
     // Loads a font with the specified parameters
-    // (this font will not adapt to DPI changes after startup)
     ImFont* LoadFont(
         const std::string & fontFilename, float fontSize,
         const FontLoadingParams & params = {});
 
-    // Loads a font with the specified parameters
-    // This font will adapt to DPI changes after startup.
-    // Only fonts loaded with LoadAdaptiveFont will adapt to DPI changes:
-    // avoid mixing LoadFont/LoadFontDpiResponsive)
-    FontDpiResponsive* LoadFontDpiResponsive(
-        const std::string & fontFilename, float fontSize,
-        const FontLoadingParams & params = {});
+    ImFont* LoadFontTTF(
+        const std::string & fontFilename,
+        float fontSize,
+        ImFontConfig config = ImFontConfig()
+    );
+
+    ImFont* LoadFontTTF_WithFontAwesomeIcons(
+        const std::string & fontFilename,
+        float fontSize,
+        ImFontConfig configFont = ImFontConfig()
+    );
 
 ```
 
@@ -244,6 +215,8 @@ struct AssetFileData
 // You *have* to call FreeAssetFileData to free the memory, except if you use
 // ImGui::GetIO().Fonts->AddFontFromMemoryTTF, which will take ownership of the
 // data and free it for you.
+// This function can be redirected with setLoadAssetFileDataFunction. If not redirected,
+// it calls DefaultLoadAssetFileData.
 AssetFileData LoadAssetFileData(const char *assetPath);
 
 // FreeAssetFileData(AssetFileData *)
@@ -307,9 +280,15 @@ See [image_from_asset.h](https://github.com/pthom/hello_imgui/blob/master/src/he
 // `HelloImGui::ImageFromAsset(const char *assetPath, size, ...)`: 
 // will display a static image from the assets.
 void ImageFromAsset(const char *assetPath, const ImVec2& size = ImVec2(0, 0),
-                    const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1),
-                    const ImVec4& tint_col = ImVec4(1,1,1,1),
-                    const ImVec4& border_col = ImVec4(0,0,0,0));
+                    const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1));
+
+// `HelloImGui::ImageFromAsset(const char *assetPath, size, ...)`:
+// will display a static image from the assets, with a colored background and a border.
+void ImageFromAssetWithBg(const char *assetPath, const ImVec2& size = ImVec2(0, 0),
+            const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1),
+            const ImVec4& tint_col = ImVec4(1,1,1,1),
+            const ImVec4& border_col = ImVec4(0,0,0,0));
+
 
 // `bool HelloImGui::ImageButtonFromAsset(const char *assetPath, size, ...)`:
 // will display a button using an image from the assets.
@@ -386,6 +365,11 @@ std::string GetBackendDescription();
 // `ChangeWindowSize(const ScreenSize &windowSize)`: sets the window size
 // (useful if you want to change the window size during execution)
 void ChangeWindowSize(const ScreenSize &windowSize);
+
+
+// `UseWindowFullMonitorWorkArea()`: sets the window size to the monitor work area
+// (useful if you want to change the window size during execution)
+void UseWindowFullMonitorWorkArea();
 
 ```
 
@@ -686,31 +670,16 @@ Notes:
 - You cannot change DisplayFramebufferScale manually, it will be reset at each new frame, by asking the platform backend.
 
 
-## FontGlobalScale
-
-`ImGui::GetIO().FontGlobalScale` is a factor by which fonts glyphs should be scaled at rendering time.
-It is typically 1 on windows, and 0.5 on macOS retina screens.
-
-
 ## How to load fonts with the correct size
 
 ### Using HelloImGui (recommended)
 
-[`HelloImGui::LoadFont()` and `HelloImGui::LoadFontDpiResponsive`](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts) will load fonts
+[`HelloImGui::LoadFont()`](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts) will load fonts
  with the correct size, taking into account the DPI scaling.
 
 ### Using Dear ImGui
 `ImGui::GetIO().Fonts->AddFontFromFileTTF()` loads a font with a given size, in *physical pixels*.
-
-If for example, DisplayFramebufferScale is (2,2), and you load a font with a size of 16, it will by default be rendered
- with size of 16 *virtual screen coordinate pixels* (i.e. 32 physical pixels). This will lead to blurry text.
-To solve this, you should load your font with a size of 16 *virtual screen coordinate pixels* (i.e. 32 physical pixels),
-and set `ImGui::GetIO().FontGlobalScale` to 0.5.
-
-Helpers if using `ImGui::GetIO().Fonts->AddFontFromFileTTF()`:
-- `HelloImGui::ImGuiDefaultFontGlobalScale()` returns the default value that should be stored inside `ImGui::GetIO().FontGlobalScale`.
-- `HelloImGui::DpiFontLoadingFactor()` returns a factor by which you shall multiply your font sizes when loading them.
-
+KKDYNFONT: TBC...
 
 ## Reproducible physical window sizes (in mm or inches)
 

@@ -113,7 +113,7 @@ How to use the theme tweaking utilities provided by Hello ImGui
 
 Hello ImGui is based on [Dear ImGui](https://github.com/ocornut/imgui) (MIT License), by Omar Cornut. Portions use [ImGui Test Engine](https://github.com/ocornut/imgui_test_engine), which is governed by a [specific license](https://github.com/ocornut/imgui_test_engine/blob/main/imgui_test_engine/LICENSE.txt)
 
-Portions of this software use the [FreeType Project](https://www.freetype.org), [lunasvg](https://github.com/sammycage/lunasvg) (MIT License), [GLFW](https://www.glfw.org/) (zlib/libpng license), [SDL](https://www.libsdl.org/) (zlib license).
+Portions of this software use the [FreeType Project](https://www.freetype.org), [plutosvg](https://github.com/sammycage/plutosvg) (MIT License), [GLFW](https://www.glfw.org/) (zlib/libpng license), [SDL](https://www.libsdl.org/) (zlib license).
 
 ### License
 

@@ -561,11 +561,21 @@ void DoCreateFullScreenImGuiWindow(const RunnerParams& runnerParams, bool useDoc
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    if (useDocking)
+    {
+        // When using docking, we want the window to have no padding, so that docked windows
+        // stick to the edges of the app window
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    }
+
     static bool p_open = true;
     std::string windowTitle = useDocking ? "MainDockSpace" : "Main window (title bar invisible)";
     ImGui::Begin(windowTitle.c_str(), &p_open, WindowFlagsNothing());
-    ImGui::PopStyleVar(3);
+
+    if (useDocking)
+        ImGui::PopStyleVar(3);
+    else
+        ImGui::PopStyleVar(2);
 }
 
 

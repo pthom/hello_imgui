@@ -763,6 +763,9 @@ void AbstractRunner::RenderGui()
         {
             ImGui::EndGroup();
             ImVec2 userWidgetsSize = ImGui::GetItemRectSize();
+            auto windowPadding = ImGui::GetStyle().WindowPadding;
+            userWidgetsSize.x += ImGui::GetStyle().WindowPadding.x * 2;
+            userWidgetsSize.y += ImGui::GetStyle().WindowPadding.y * 2;
             mGeometryHelper->TrySetWindowSize(
                 mBackendWindowHelper.get(), mWindow, userWidgetsSize,
                 this->setWasWindowResizedByCodeDuringThisFrame);

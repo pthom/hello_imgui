@@ -522,11 +522,12 @@ void DoShowToolbar(
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, HelloImGui::EmToVec2(windowPaddingEm));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0.f, 0.f));
     if (windowBg.w != 0.f)
         ImGui::PushStyleColor(ImGuiCol_WindowBg, windowBg);
     static bool p_open = true;
     ImGui::Begin(windowId.c_str(), &p_open, WindowFlagsNothing() | ImGuiWindowFlags_NoScrollbar);
-    ImGui::PopStyleVar(3);
+    ImGui::PopStyleVar(4);
     if (windowBg.w != 0.f)
         ImGui::PopStyleColor();
     toolbarFunction();

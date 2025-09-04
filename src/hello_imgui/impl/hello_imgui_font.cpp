@@ -145,12 +145,16 @@ namespace HelloImGui
         fontLoadingParams.fontConfig = configFont;
         ImFont* font = LoadFont(fontFilename, fontSize, fontLoadingParams);
 
-        // Add FontAwesome4 icons
+        // Add FontAwesome icons
         {
-            static std::string faFile = "fonts/fontawesome-webfont.ttf";
+            auto defaultIconFont = HelloImGui::GetRunnerParams()->callbacks.defaultIconFont;
+            std::string iconFontFile = "fonts/fontawesome-webfont.ttf";
+            if (defaultIconFont == HelloImGui::DefaultIconFont::FontAwesome6)
+                iconFontFile = "fonts/Font_Awesome_6_Free-Solid-900.otf";
+
             FontLoadingParams fontLoadingParamsFa;
             fontLoadingParamsFa.mergeToLastFont = true;
-            font = LoadFont(faFile, fontSize, fontLoadingParamsFa);
+            font = LoadFont(iconFontFile, fontSize, fontLoadingParamsFa);
         }
 
         return font;

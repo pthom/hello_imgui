@@ -1,7 +1,16 @@
 *Version numbers are synced between "Dear ImGui", "Hello ImGui" and "Dear ImGui Bundle"*
 
 # Unreleased
-* Separate ImageFromAsset and ImageFromAssetWithBg: use ImageFromAssetWithBg to display images with a background or border. 
+
+# v1.92.3
+* toolbars: fix issue in toolbar min size (thanks @wkjarosz)
+### Assets
+* Separate ImageFromAsset and ImageFromAssetWithBg: use ImageFromAssetWithBg to display images with a background or border.
+* Add `SetLoadAssetFileDataFunction(LoadAssetFileDataFunc func)` (Redirect asset loads to user-defined function). Thanks to Jorg Neves Bliesener
+* LoadFontTTF_WithFontAwesomeIcons: can load FontAwesome 6
+### cmake
+* Add cmake option IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+* cmake: can use plutosvg without downloading (using HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED=OFF)
 
 # v1.92.0
 Version numbers are now synced between "Dear ImGui" "Hello ImGui" and "Dear ImGui Bundle".

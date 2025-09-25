@@ -545,6 +545,12 @@ make<span class="w"> </span>-j
 <span class="nb">endif</span><span class="p">()</span>
 <span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_DOWNLOAD_GLFW_IF_NEEDED</span><span class="w"> </span><span class="s2">&quot;Download and build GLFW if needed&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">autodownload_default</span><span class="o">}</span><span class="p">)</span>
 <span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED</span><span class="w"> </span><span class="s2">&quot;Download and build SDL2 if needed&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">autodownload_default</span><span class="o">}</span><span class="p">)</span>
+
+<span class="c"># HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED:</span>
+<span class="c"># - if ON: freetype will be downloaded and built if needed.</span>
+<span class="c">#   plutosvg will also be downloaded and built if needed (if HELLOIMGUI_USE_FREETYPE_PLUTOSVG is ON)</span>
+<span class="c"># - if OFF: freetype shall be provided by the system, or by the user (via CMAKE_PREFIX_PATH or add_subdirectory).</span>
+<span class="c">#   Same for plutosvg (if HELLOIMGUI_USE_FREETYPE_PLUTOSVG is ON)</span>
 <span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED</span><span class="w"> </span><span class="s2">&quot;Download and build Freetype if needed&quot;</span><span class="w"> </span><span class="o">${</span><span class="nv">autodownload_default</span><span class="o">}</span><span class="p">)</span>
 <span class="nb">option</span><span class="p">(</span><span class="s">HELLOIMGUI_FREETYPE_STATIC</span><span class="w"> </span><span class="s2">&quot;Force static linking of freetype (only used for python bindings)&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
 </pre></div>

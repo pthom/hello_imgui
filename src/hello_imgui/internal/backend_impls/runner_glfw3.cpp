@@ -112,8 +112,10 @@ namespace HelloImGui
     {
         // Note: call of RenderingCallbacks_Impl_SwapBuffers
         #ifdef HELLOIMGUI_HAS_OPENGL
+        #ifndef __EMSCRIPTEN__  // glfwSwapBuffers is not implemented on emscripten/browser (pongasoft)
             if (params.rendererBackendType == RendererBackendType::OpenGL3)
                 glfwSwapBuffers((GLFWwindow *)mWindow);
+        #endif
         #endif
         #ifdef HELLOIMGUI_HAS_METAL
             if (params.rendererBackendType == RendererBackendType::Metal)

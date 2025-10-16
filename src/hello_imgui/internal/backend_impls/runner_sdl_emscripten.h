@@ -1,5 +1,5 @@
 #pragma once
-#ifdef __EMSCRIPTEN__
+#if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_SDL2)
 
 #include "hello_imgui/internal/backend_impls/runner_sdl2.h"
 
@@ -20,4 +20,4 @@ namespace HelloImGui
 
 }  // namespace HelloImGui
 
-#endif  // #ifdef __EMSCRIPTEN__
+#endif  // #if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_SDL2)

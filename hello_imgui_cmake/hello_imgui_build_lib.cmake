@@ -551,7 +551,9 @@ function(him_sanity_checks)
     endif()
 
     if (no_backend_option_chosen AND NOT HELLOIMGUI_USING_VCPKG_TOOLCHAIN)
-        # use SDL for emscripten and iOS, GLFW for the rest
+        # use SDL2 for emscripten and iOS, GLFW for the rest
+        # (We may want to use glfw for emscripten too, using pongasoft/emscripten-glfw
+        #  which is quite good. However this requires more testing)
         if (EMSCRIPTEN OR IOS)
             set(HELLOIMGUI_USE_SDL2 ON CACHE BOOL "" FORCE)
             set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
@@ -1047,10 +1049,19 @@ endfunction()
 # Glfw platform backend: API = him_use_glfw_backend
 ###################################################################################################
 function(him_use_glfw3_backend target)
-    _him_fetch_glfw_if_needed()
-    if (NOT TARGET glfw) # if glfw is not built as part of the whole build, find it
-        find_package(glfw3 CONFIG REQUIRED)
+    if (EMSCRIPTEN)
+        # Use pongasoft/emscripten-glfw contrib port of glfw3 for emscripten
+        # cf https://github.com/pongasoft/emscripten-glfw
+        message(STATUS "HelloImGui: using pongasoft/emscripten-glfw (--use-port=contrib.glfw3)")
+        target_compile_options(${HELLOIMGUI_TARGET} PUBLIC --use-port=contrib.glfw3)
+        target_link_options(${HELLOIMGUI_TARGET} PUBLIC --use-port=contrib.glfw3)
+    else()
+        _him_fetch_glfw_if_needed()
+        if (NOT TARGET glfw) # if glfw is not built as part of the whole build, find it
+            find_package(glfw3 CONFIG REQUIRED)
+        endif()
     endif()
+
     target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC glfw)
 
     # vcpkg will have added those files to imgui

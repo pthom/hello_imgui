@@ -8,6 +8,7 @@
 #include "hello_imgui/renderer_backend_options.h"
 #include "hello_imgui/dpi_aware.h"
 #include <vector>
+#include <string>
 
 namespace HelloImGui
 {
@@ -43,6 +44,9 @@ enum class RendererBackendType
 };
 
 // @@md
+
+std::string PlatformBackendTypeToString(PlatformBackendType platformBackendType);
+std::string RendererBackendTypeToString(RendererBackendType rendererBackendType);
 
 // --------------------------------------------------------------------------------------------------------------------
 

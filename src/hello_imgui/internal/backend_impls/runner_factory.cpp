@@ -3,6 +3,7 @@
 #include "hello_imgui/internal/backend_impls/runner_glfw3.h"
 #include "hello_imgui/internal/backend_impls/runner_sdl2.h"
 #include "hello_imgui/internal/backend_impls/runner_sdl_emscripten.h"
+#include "hello_imgui/internal/backend_impls/runner_glfw3_emscripten.h"
 #include "hello_imgui/internal/backend_impls/runner_null.h"
 
 namespace HelloImGui
@@ -50,14 +51,15 @@ void ChooseNullBackendsIfUsingRemote(RunnerParams* runnerParams)
     #endif
 }
 
-
 std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
 {
     ChooseBackendTypesIfSelectedAsFirstAvailable(&params);
     ChooseNullBackendsIfUsingRemote(&params);
     if (params.platformBackendType == PlatformBackendType::Glfw)
     {
-        #ifdef HELLOIMGUI_USE_GLFW3
+        #if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_GLFW3)
+            return std::make_unique<RunnerGlfw3Emscripten>(params);
+        #elif defined(HELLOIMGUI_USE_GLFW3)
             return std::make_unique<RunnerGlfw3>(params);
         #else
             return nullptr;
@@ -65,7 +67,7 @@ std::unique_ptr<AbstractRunner> FactorRunner(RunnerParams& params)
     }
     else if (params.platformBackendType == PlatformBackendType::Sdl)
     {
-        #if defined(__EMSCRIPTEN__)
+        #if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_SDL2)
             return std::make_unique<RunnerSdlEmscripten>(params);
         #elif defined(HELLOIMGUI_USE_SDL2)
             return std::make_unique<RunnerSdl2>(params);

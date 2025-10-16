@@ -3,6 +3,9 @@
 #include "window_geometry_helper.h"
 #include "GLFW/glfw3.h"
 
+#ifdef __EMSCRIPTEN__
+#include <GLFW/emscripten_glfw3.h>
+#endif
 
 namespace HelloImGui { namespace BackendApi
 {
@@ -94,10 +97,12 @@ namespace HelloImGui { namespace BackendApi
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         }
 
+#ifndef __EMSCRIPTEN__
         if (appWindowParams.borderless)
             glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         else
             glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+#endif
 
         if (appWindowParams.resizable)
             glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
@@ -109,7 +114,20 @@ namespace HelloImGui { namespace BackendApi
         // GLFW_SCALE_TO_MONITOR is set to false: we set manually the window size in screen coordinates,
         // then AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired() may resize the window at the second frame
         // (depending on the monitor on which it is placed)
+#ifndef __EMSCRIPTEN__
+        // GLFW_SCALE_TO_MONITOR is deprecated for emscripten
+        // (and if set to true, the rendering is too big)
         glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_FALSE);
+#endif
+
+#ifdef __EMSCRIPTEN__
+        // Make hi dpi aware (note that GLFW_SCALE_FRAMEBUFFER already defaults to GLFW_TRUE
+        // so technically this is not necessary)
+        glfwWindowHint(GLFW_SCALE_FRAMEBUFFER, GLFW_TRUE);
+
+        // setting the association window <-> canvas
+        emscripten_glfw_set_next_window_canvas_selector("#canvas");
+#endif
 
         auto window = glfwCreateWindow(
             windowSize[0], windowSize[1],
@@ -119,6 +137,11 @@ namespace HelloImGui { namespace BackendApi
         );
         if (window == nullptr)
             BACKEND_THROW("BackendGlfw::CreateWindow / glfwCreateWindow failed");
+
+#ifdef __EMSCRIPTEN__
+        // makes the canvas resizable and match the full window size
+        emscripten_glfw_make_canvas_resizable(window, "window", nullptr);
+#endif
 
         if (appWindowParams.windowGeometry.windowSizeState == WindowSizeState::Minimized)
             glfwIconifyWindow(window);
@@ -222,7 +245,7 @@ namespace HelloImGui { namespace BackendApi
 
     float GlfwWindowHelper::GetWindowSizeDpiScaleFactor(WindowPointer window)
     {
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__EMSCRIPTEN__)
         return 1.f;
 #else
         ImVec2 scale = _GetWindowContentScale(window);

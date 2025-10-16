@@ -371,7 +371,9 @@ float FrameRate(float durationForMean)
 
 std::string PlatformBackendTypeToString(PlatformBackendType platformBackendType)
 {
-    if (platformBackendType == PlatformBackendType::Glfw)
+    if (platformBackendType == PlatformBackendType::FirstAvailable)
+        return "FirstAvailable";
+    else if (platformBackendType == PlatformBackendType::Glfw)
         return "Glfw";
     else if (platformBackendType == PlatformBackendType::Sdl)
         return "Sdl";
@@ -383,7 +385,9 @@ std::string PlatformBackendTypeToString(PlatformBackendType platformBackendType)
 
 std::string RendererBackendTypeToString(RendererBackendType rendererBackendType)
 {
-    if (rendererBackendType == RendererBackendType::OpenGL3)
+    if (rendererBackendType == RendererBackendType::FirstAvailable)
+        return "FirstAvailable";
+    else if (rendererBackendType == RendererBackendType::OpenGL3)
         return "OpenGL3";
     else if (rendererBackendType == RendererBackendType::Vulkan)
         return "Vulkan";

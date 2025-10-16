@@ -1246,9 +1246,6 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         fnHandleWindowSizeAndPositionOnFirstFrames_AndAfterResize();
     }
 
-    // nbEventsBeforePollAndIdle enables us to detect if an event was received
-    int nbEventsBeforePollAndIdle = ImGui::GetCurrentContext()->InputEventsQueue.size();
-
     // Handle idling: this will either sleep (almost all platforms) or skip rendering (emscripten)
     {
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
@@ -1269,7 +1266,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
     // Detect if an event was received, and store the time of the last event
     {
-        if (ImGui::GetCurrentContext()->InputEventsQueue.size() > nbEventsBeforePollAndIdle)
+        if (ImGui::GetCurrentContext()->InputEventsQueue.size() > 0)
             gStatics.timeLastEvent = Internal::ClockSeconds();
     }
 

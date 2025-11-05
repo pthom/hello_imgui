@@ -39,15 +39,18 @@ function(_hello_imgui_create_windows_ico assets_location)
 endfunction()
 
 function(_hello_imgui_add_windows_icon app_name assets_location)
-    _hello_imgui_create_windows_ico(${assets_location})
-    set(custom_app_icon ${CMAKE_CURRENT_BINARY_DIR}/icon.ico)
+    set(custom_app_icon ${assets_location}/app_settings/icon.ico)
     if (NOT EXISTS ${custom_app_icon})
-        return()
+        _hello_imgui_create_windows_ico(${assets_location})
+        set(custom_app_icon ${CMAKE_CURRENT_BINARY_DIR}/icon.ico)
+        if (NOT EXISTS ${custom_app_icon})
+            return()
+        endif()
     endif()
 
     # Create rc file
     set(icon_rc_file "${CMAKE_CURRENT_BINARY_DIR}/app_${app_name}.rc")
-    set(icon_rc_file_contents "IDI_ICON1 ICON DISCARDABLE \"${custom_app_icon}\"")
+    set(icon_rc_file_contents "#define IDI_ICON1 101\nIDI_ICON1 ICON DISCARDABLE \"${custom_app_icon}\"")
     file(WRITE ${icon_rc_file} ${icon_rc_file_contents})
 
     # Add the rc file to the executable

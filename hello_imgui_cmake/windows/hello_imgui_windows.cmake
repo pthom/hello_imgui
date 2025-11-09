@@ -39,8 +39,8 @@ function(_hello_imgui_create_windows_ico assets_location)
 endfunction()
 
 function(_hello_imgui_add_windows_icon app_name assets_location)
-    set(custom_app_icon ${assets_location}/app_settings/icon.ico)
-    if (NOT EXISTS ${custom_app_icon})
+    set(custom_app_icon ${assets_location}/app_settings/icon.ico)  # If user provided an ico file, use it
+    if (NOT EXISTS ${custom_app_icon})  # Otherwise, try to create one from png
         _hello_imgui_create_windows_ico(${assets_location})
         set(custom_app_icon ${CMAKE_CURRENT_BINARY_DIR}/icon.ico)
         if (NOT EXISTS ${custom_app_icon})

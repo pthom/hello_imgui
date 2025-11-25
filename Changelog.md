@@ -2,6 +2,13 @@
 
 # Unreleased
 
+# v1.92.5
+* Update ImGui to v1.92.5-docking
+* InputTextResizable: fix for node editor (can't resize multiline edit when inside a node)
+* AbstractRunner: improve non idling detection
+* Emscripten: can also run using glfw3 (via pongasoft/emscripten-glfw)
+* windows: Support icon.ico in _hello_imgui_add_windows_icon
+
 # v1.92.3
 * toolbars: fix issue in toolbar min size (thanks @wkjarosz)
 ### Assets

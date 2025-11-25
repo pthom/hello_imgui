@@ -244,7 +244,9 @@ void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int w
         gVkGlobals.Instance, gVkGlobals.PhysicalDevice, gVkGlobals.Device, wd,
         gVkGlobals.QueueFamily, gVkGlobals.Allocator,
         width, height,
-        gVkGlobals.MinImageCount);
+        gVkGlobals.MinImageCount,
+        0  // image_usage
+        );
 }
 
 void CleanupVulkan()

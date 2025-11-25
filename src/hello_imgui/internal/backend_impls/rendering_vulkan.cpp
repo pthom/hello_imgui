@@ -45,7 +45,8 @@ namespace HelloImGui
                                                            gVkGlobals.Device, &gVkGlobals.ImGuiMainWindowData,
                                                            gVkGlobals.QueueFamily, gVkGlobals.Allocator,
                                                            screenSize[0], screenSize[1],
-                                                           gVkGlobals.MinImageCount);
+                                                           gVkGlobals.MinImageCount,
+                                                           0);
                     gVkGlobals.ImGuiMainWindowData.FrameIndex = 0;
                     gVkGlobals.SwapChainRebuild = false;
                 }

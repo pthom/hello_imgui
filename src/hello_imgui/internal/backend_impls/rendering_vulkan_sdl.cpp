@@ -12,12 +12,6 @@
 #include "hello_imgui/hello_imgui_logger.h"
 #include "hello_imgui/hello_imgui.h"
 
-#if IMGUI_VERSION_NUM  >= 19030
-// The API changed with this commit
-// https://github.com/ocornut/imgui/commit/f80e65a406885beedf68856057b278343d5c1407
-#define IMGUI_VULKAN_RENDER_PASS_IN_STRUCTURE
-#endif
-
 namespace HelloImGui
 {
     // Below is implementation of RenderingCallbacks_LinkWindowingToRenderingBackend
@@ -60,19 +54,16 @@ namespace HelloImGui
             init_info.Queue = gVkGlobals.Queue;
             init_info.PipelineCache = gVkGlobals.PipelineCache;
             init_info.DescriptorPool = gVkGlobals.DescriptorPool;
-            init_info.Subpass = 0;
             init_info.MinImageCount = gVkGlobals.MinImageCount;
             init_info.ImageCount = wd->ImageCount;
-            init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
             init_info.Allocator = gVkGlobals.Allocator;
             init_info.CheckVkResultFn = HelloImGui::VulkanSetup::check_vk_result;
 
-#ifdef IMGUI_VULKAN_RENDER_PASS_IN_STRUCTURE
-            init_info.RenderPass = wd->RenderPass;
+            init_info.PipelineInfoMain.Subpass = 0;
+            init_info.PipelineInfoMain.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+            init_info.PipelineInfoMain.RenderPass = wd->RenderPass;
+
             ImGui_ImplVulkan_Init(&init_info);
-#else
-            ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
-#endif
         }
     }
 

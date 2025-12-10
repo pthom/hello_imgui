@@ -110,9 +110,8 @@ namespace HelloImGui
         if (params.insideAssets)
         {
             AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());
-            params.fontConfig.FontDataOwnedByAtlas = false;
+            params.fontConfig.FontDataOwnedByAtlas = true;
             font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSize, &params.fontConfig);
-            FreeAssetFileData(&fontData);
         }
         else
         {

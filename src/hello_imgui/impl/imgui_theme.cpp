@@ -5,6 +5,7 @@
 // Some themes were adapted by themes posted by ImGui users at https://github.com/ocornut/imgui/issues/707
 //
 #include "hello_imgui/imgui_theme.h"
+#include "hello_imgui/runner_params.h"
 #include <string>
 #include <stack>
 #include <functional>
@@ -981,10 +982,12 @@ namespace ImGuiTheme
         return ImGuiStyle();
     }
 
-    void ApplyTheme(ImGuiTheme_ theme)
+    void ApplyTheme(ImGuiTheme_ theme, const HelloImGui::RunnerParams& runnerParams)
     {
         ImGuiStyle style = ThemeToStyle(theme);
         ImGui::GetStyle() = style;
+        if (runnerParams.callbacks.ThemeChanged)
+            runnerParams.callbacks.ThemeChanged();
     }
 
     ImGuiStyle TweakedThemeThemeToStyle(const ImGuiTweakedTheme& tweaked_theme)

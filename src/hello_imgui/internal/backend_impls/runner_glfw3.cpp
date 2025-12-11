@@ -178,7 +178,6 @@ namespace HelloImGui
     void RunnerGlfw3::Impl_CreateGlContext()
     {
         glfwMakeContextCurrent((GLFWwindow *) mWindow); // OpenGl!
-        glfwSwapInterval(1);  // Enable vsync (openGL only, not vulkan)
     }
 
     void RunnerGlfw3::Impl_Select_Gl_Version()
@@ -272,6 +271,14 @@ namespace HelloImGui
         }
     }
 
-
+    void RunnerGlfw3::Impl_ApplyVsyncSetting()
+    {
+        #ifdef HELLOIMGUI_HAS_OPENGL
+        if (params.fpsIdling.vsyncToMonitor)
+            glfwSwapInterval(1);
+        else
+            glfwSwapInterval(0);
+        #endif
+    }
 }  // namespace HelloImGui
 #endif  // #ifdef HELLOIMGUI_USE_GLFW3

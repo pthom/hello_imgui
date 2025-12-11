@@ -25,6 +25,7 @@ class RunnerGlfw3 : public AbstractRunner
         void Impl_Cleanup() override;
         void Impl_SwapBuffers() override;
         void Impl_SetWindowIcon() override;
+        void Impl_ApplyVsyncSetting() override;
 
         //
         // Linking the platform backend (SDL, Glfw, ...) to the rendering backend (OpenGL, ...)

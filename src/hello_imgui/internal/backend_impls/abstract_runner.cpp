@@ -641,6 +641,7 @@ void AbstractRunner::Setup()
         {
             Impl_CreateGlContext();
             Impl_InitGlLoader();
+            ApplyVsyncToMonitor_Cached();
         }
     #endif
 
@@ -1141,6 +1142,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
             Impl_UpdateAndRenderAdditionalPlatformWindows();
 
+        ApplyVsyncToMonitor_Cached();
         Impl_SwapBuffers();
 
         mRemoteDisplayHandler.Heartbeat_PostImGuiRender();
@@ -1423,6 +1425,16 @@ bool AbstractRunner::ShouldRemoteDisplay()
     return mRemoteDisplayHandler.ShouldRemoteDisplay();
 }
 
+void AbstractRunner::ApplyVsyncToMonitor_Cached()
+{
+    bool desired = params.fpsIdling.vsyncToMonitor;
+
+    if (mApplyVsyncToMonitor_LastValue != desired)
+    {
+        mApplyVsyncToMonitor_LastValue = desired;
+        Impl_ApplyVsyncSetting();
+    }
+}
 
 
 }  // namespace HelloImGui

@@ -11,7 +11,7 @@ namespace HelloImGui
         {
             // Typical C++ shamanic incantations to get a time in seconds
         private:
-            using Clock = std::chrono::high_resolution_clock;
+            using Clock = std::chrono::steady_clock;  // use a steady clock, i.e monotonic
             using second = std::chrono::duration<double, std::ratio<1>>;
             std::chrono::time_point<Clock> mStart;
 

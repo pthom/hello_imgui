@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <functional>
+#include <optional>
 
 namespace HelloImGui
 {
@@ -68,6 +69,10 @@ protected:
     virtual void Impl_SwapBuffers() = 0;
     virtual void Impl_Cleanup() = 0;
     virtual void Impl_SetWindowIcon() {}
+    virtual void Impl_ApplyVsyncSetting() {}
+
+    void ApplyVsyncToMonitor_Cached();  // calls Impl_ApplyVsyncSetting() only if needed
+    std::optional<bool> mApplyVsyncToMonitor_LastValue = std::nullopt;
 
     //
     // Linking the platform backend (SDL, Glfw, ...) to the rendering backend (OpenGL, ...)

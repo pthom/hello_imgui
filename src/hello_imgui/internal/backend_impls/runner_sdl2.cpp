@@ -326,7 +326,6 @@ namespace HelloImGui
         IM_ASSERT(mGlContext != nullptr);
 
         SDL_GL_MakeCurrent((SDL_Window *)mWindow, mGlContext); // KK No
-        SDL_GL_SetSwapInterval(1);  // Enable vsync
         params.backendPointers.sdlGlContext = mGlContext;
     }
     void RunnerSdl2::Impl_InitGlLoader() { gOpenGlSetupSdl.InitGlLoader(); }
@@ -410,6 +409,16 @@ namespace HelloImGui
                 IM_ASSERT(false && "DirectX12 backend not available");
             #endif
         }
+    }
+
+    void RunnerSdl2::Impl_ApplyVsyncSetting()
+    {
+#ifdef HELLOIMGUI_HAS_OPENGL
+        if (params.fpsIdling.vsyncToMonitor)
+            SDL_GL_SetSwapInterval(1);
+        else
+            SDL_GL_SetSwapInterval(0);
+#endif
     }
 
 }  // namespace HelloImGui

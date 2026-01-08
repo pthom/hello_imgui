@@ -468,6 +468,7 @@ function(_him_fetch_and_compile_plutovg_plutosvg)
         GIT_TAG        v1.0.0
         GIT_PROGRESS TRUE
     )
+    set(PLUTOVG_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(plutovg)
 
     # Fetch plutosvg at configure time, then compile manually at build time

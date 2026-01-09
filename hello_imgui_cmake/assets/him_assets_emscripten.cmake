@@ -17,7 +17,7 @@ function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
             ${real_output_directory}/${app_name}.data
             ${real_output_directory}/${app_name}.js
             ${real_output_directory}/${app_name}.wasm
-            DESTINATION ${CMAKE_INSTALL_PREFIX}
+            DESTINATION .
         )
     endif()
 endfunction()

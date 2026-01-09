@@ -92,6 +92,6 @@ function(hello_imgui_platform_customization app_name assets_location)
 
     # Install app to install directory
     if (MACOSX AND HELLOIMGUI_ADD_APP_WITH_INSTALL)
-        install(TARGETS ${app_name} DESTINATION ${CMAKE_INSTALL_PREFIX})
+        install(TARGETS ${app_name} DESTINATION .)
     endif()
 endfunction()

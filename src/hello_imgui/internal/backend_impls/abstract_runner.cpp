@@ -463,12 +463,6 @@ void AbstractRunner::CheckPrefs()
 #endif
     }
 
-    #ifndef IMGUI_BUNDLE_PYTHON_API
-        ImGui::GetIO().IniFilename = NULL;
-    #else
-        ImGui::GetIO().IniFilename = "";
-    #endif
-
 #ifndef HELLOIMGUI_WITH_TEST_ENGINE
     if (params.useImGuiTestEngine)
     {
@@ -611,6 +605,12 @@ void AbstractRunner::Setup()
     InitRenderBackendCallbacks();
 
     InitImGuiContext();
+
+    // Ini file handling
+    ImGui::GetIO().IniFilename = nullptr; // We handle ini file loading/saving ourselves (see calls to ImGui::LoadIniSettingsFromMemory)
+    if (params.iniClearPreviousSettings)
+        HelloImGui::DeleteIniSettings(params);
+
     CheckPrefs();
 
     // Init platform backend (SDL, Glfw)

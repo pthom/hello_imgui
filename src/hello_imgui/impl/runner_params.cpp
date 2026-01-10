@@ -25,8 +25,11 @@ namespace HelloImGui
 
 
     // IniSettingsLocation returns the path to the ini file for the application settings.
-    std::string IniSettingsLocation(const RunnerParams& runnerParams)
+    std::optional<std::string> IniSettingsLocation(const RunnerParams& runnerParams)
     {
+        if (runnerParams.iniDisable)
+            return std::nullopt;
+
         auto _getIniFileName = [& runnerParams]() -> std::string
         {
             auto _stringToSaneFilename=[](const std::string& s, const std::string& extension) -> std::string
@@ -83,8 +86,11 @@ namespace HelloImGui
     // DeleteIniSettings deletes the ini file for the application settings.
     void DeleteIniSettings(const RunnerParams& runnerParams)
     {
-        std::string iniFullFilename = IniSettingsLocation(runnerParams);
+        std::optional<std::string> iniFullFilenameOpt = IniSettingsLocation(runnerParams);
+        if (!iniFullFilenameOpt.has_value())
+            return;
 
+        std::string iniFullFilename = iniFullFilenameOpt.value();
         if (iniFullFilename.empty())
             return;
 
@@ -98,8 +104,11 @@ namespace HelloImGui
     // HasIniSettings returns true if the ini file for the application settings exists.
     bool HasIniSettings(const RunnerParams& runnerParams)
     {
-        std::string iniFullFilename = IniSettingsLocation(runnerParams);
+        std::optional<std::string> iniFullFilenameOpt = IniSettingsLocation(runnerParams);
+        if (!iniFullFilenameOpt.has_value())
+            return false;
 
+        std::string iniFullFilename = iniFullFilenameOpt.value();
         if (iniFullFilename.empty())
             return false;
 

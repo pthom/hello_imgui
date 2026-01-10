@@ -180,8 +180,12 @@ namespace HelloImGui
             FunctionalUtils::write_text_file(iniPartsFilename, iniPartsContent);
         }
 
-        void SaveLastRunWindowBounds(const std::string& iniPartsFilename, const ScreenBounds& windowBounds)
+        void SaveLastRunWindowBounds(const std::optional<std::string>& iniPartsFilenameOpt, const ScreenBounds& windowBounds)
         {
+            if (!iniPartsFilenameOpt.has_value())
+                return;
+
+            const std::string& iniPartsFilename = iniPartsFilenameOpt.value();
             auto& dpiAwareParams = HelloImGui::GetRunnerParams()->dpiAwareParams;
             IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
 
@@ -195,9 +199,12 @@ namespace HelloImGui
             iniParts.WriteToFile(iniPartsFilename);
         }
 
-        std::optional<ScreenBounds> LoadLastRunWindowBounds(const std::string& iniPartsFilename)
+        std::optional<ScreenBounds> LoadLastRunWindowBounds(const std::optional<std::string>& iniPartsFilenameOpt)
         {
-            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            if (!iniPartsFilenameOpt.has_value())
+                return std::nullopt;
+
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilenameOpt.value());
 
             if (!iniParts.HasIniPart("AppWindow"))
                 return std::nullopt;
@@ -250,9 +257,11 @@ namespace HelloImGui
 
         }
 
-        std::optional<float> LoadLastRunDpiWindowSizeFactor(const std::string& iniPartsFilename)
+        std::optional<float> LoadLastRunDpiWindowSizeFactor(const std::optional<std::string>& iniPartsFilename)
         {
-            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            if (!iniPartsFilename.has_value())
+                return std::nullopt;
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename.value());
 
             if (!iniParts.HasIniPart("AppWindow"))
                 return std::nullopt;
@@ -288,33 +297,39 @@ namespace HelloImGui
         }
 
 
-        void LoadImGuiSettings(const std::string& iniPartsFilename, const std::string& layoutName)
+        void LoadImGuiSettings(const std::optional<std::string>& iniPartsFilename, const std::string& layoutName)
         {
+            if (!iniPartsFilename.has_value())
+                return;
             std::string iniPartName = "ImGui_" + details::SanitizeIniNameOrCategory(layoutName);
 
-            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename.value());
             if (!iniParts.HasIniPart(iniPartName))
                 return;
             auto imguiSettingsContent = iniParts.GetIniPart(iniPartName);
             ImGui::LoadIniSettingsFromMemory(imguiSettingsContent.c_str());
         }
 
-        void SaveImGuiSettings(const std::string& iniPartsFilename, const std::string& layoutName)
+        void SaveImGuiSettings(const std::optional<std::string>& iniPartsFilename, const std::string& layoutName)
         {
+            if (!iniPartsFilename.has_value())
+                return;
             std::string iniPartName = "ImGui_" + details::SanitizeIniNameOrCategory(layoutName);
 
             std::string imguiSettingsContent = ImGui::SaveIniSettingsToMemory();
 
-            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename.value());
             iniParts.SetIniPart(iniPartName, imguiSettingsContent);
-            iniParts.WriteToFile(iniPartsFilename);
+            iniParts.WriteToFile(iniPartsFilename.value());
         }
 
-        bool HasUserDockingSettingsInImguiSettings(const std::string& iniPartsFilename, const DockingParams& dockingParams)
+        bool HasUserDockingSettingsInImguiSettings(const std::optional<std::string>& iniPartsFilename, const DockingParams& dockingParams)
         {
+            if (!iniPartsFilename.has_value())
+                return false;
             std::string iniPartName = "ImGui_" + details::SanitizeIniNameOrCategory(dockingParams.layoutName);
 
-            auto iniParts = HelloImGuiIniSettings::IniParts::LoadFromFile(iniPartsFilename);
+            auto iniParts = HelloImGuiIniSettings::IniParts::LoadFromFile(iniPartsFilename.value());
             if (!iniParts.HasIniPart(iniPartName))
                 return false;
 
@@ -344,8 +359,10 @@ namespace HelloImGui
         }
 
 
-        void SaveDockableWindowsVisibility(const std::string& iniPartsFilename, const DockingParams& dockingParams)
+        void SaveDockableWindowsVisibility(const std::optional<std::string>& iniPartsFilename, const DockingParams& dockingParams)
         {
+            if (!iniPartsFilename.has_value())
+                return;
             std::string iniPartName = "Layout_" + details::SanitizeIniNameOrCategory(dockingParams.layoutName);
 
             ini::IniFile iniFile;
@@ -358,16 +375,18 @@ namespace HelloImGui
                 }
             }
 
-            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename.value());
             iniParts.SetIniPart(iniPartName, iniFile.encode());
-            iniParts.WriteToFile(iniPartsFilename);
+            iniParts.WriteToFile(iniPartsFilename.value());
         }
 
-        void LoadDockableWindowsVisibility(const std::string& iniPartsFilename, DockingParams* inOutDockingParams)
+        void LoadDockableWindowsVisibility(const std::optional<std::string>& iniPartsFilename, DockingParams* inOutDockingParams)
         {
+            if (!iniPartsFilename.has_value())
+                return;
             std::string iniPartName = "Layout_" + details::SanitizeIniNameOrCategory(inOutDockingParams->layoutName);
 
-            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename.value());
             if (! iniParts.HasIniPart(iniPartName))
                 return;
 
@@ -388,7 +407,7 @@ namespace HelloImGui
             }
         }
 
-        void LoadSplitIds(const std::string& iniPartsFilename)
+        void LoadSplitIds(const std::optional<std::string>& iniPartsFilename)
         {
             const std::string iniPartName = "SplitIds";
             std::string serialized = LoadUserPref(iniPartsFilename, iniPartName);
@@ -396,21 +415,23 @@ namespace HelloImGui
                 SplitIdsHelper::LoadSplitIds(serialized);
         }
 
-        void SaveSplitIds(const std::string& iniPartsFilename)
+        void SaveSplitIds(const std::optional<std::string>& iniPartsFilename)
         {
             const std::string iniPartName = "SplitIds";
             std::string serialized = SplitIdsHelper::SaveSplitIds();
             SaveUserPref(iniPartsFilename, iniPartName, serialized);
         }
 
-        void LoadHelloImGuiMiscSettings(const std::string& iniPartsFilename, RunnerParams* inOutRunnerParams)
+        void LoadHelloImGuiMiscSettings(const std::optional<std::string>& iniPartsFilename, RunnerParams* inOutRunnerParams)
         {
+            if (!iniPartsFilename.has_value())
+                return;
             std::string iniPartName = "HelloImGui_Misc";
 
             std::string layoutName = "";
             std::string themeName = "";
             {
-                IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+                IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename.value());
                 if (iniParts.HasIniPart(iniPartName))
                 {
                     ini::IniFile iniFile;
@@ -460,8 +481,10 @@ namespace HelloImGui
             LoadSplitIds(iniPartsFilename);
         }
 
-        void SaveHelloImGuiMiscSettings(const std::string& iniPartsFilename, const RunnerParams& runnerParams)
+        void SaveHelloImGuiMiscSettings(const std::optional<std::string>& iniPartsFilename, const RunnerParams& runnerParams)
         {
+            if (!iniPartsFilename.has_value())
+                return;
             std::string iniPartName = "HelloImGui_Misc";
             ini::IniFile iniFile;
             if (runnerParams.rememberSelectedAlternativeLayout)
@@ -478,24 +501,28 @@ namespace HelloImGui
                 iniFile["Idling"]["EnableIdling"] = runnerParams.fpsIdling.enableIdling;
             }
 
-            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename.value());
             iniParts.SetIniPart(iniPartName, iniFile.encode());
-            iniParts.WriteToFile(iniPartsFilename);
+            iniParts.WriteToFile(iniPartsFilename.value());
 
             SaveSplitIds(iniPartsFilename);
         }
 
 
-        void  SaveUserPref(const std::string& iniPartsFilename, const std::string& userPrefName, const std::string& userPrefContent)
+        void  SaveUserPref(const std::optional<std::string>& iniPartsFilename, const std::string& userPrefName, const std::string& userPrefContent)
         {
-            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            if (!iniPartsFilename.has_value())
+                return;
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename.value());
             iniParts.SetIniPart(userPrefName, userPrefContent + "\n");
-            iniParts.WriteToFile(iniPartsFilename);
+            iniParts.WriteToFile(iniPartsFilename.value());
         }
 
-        std::string LoadUserPref(const std::string& iniPartsFilename, const std::string& userPrefName)
+        std::string LoadUserPref(const std::optional<std::string>& iniPartsFilename, const std::string& userPrefName)
         {
-            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename);
+            if (!iniPartsFilename.has_value())
+                return "";
+            IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename.value());
             if (iniParts.HasIniPart(userPrefName))
             {
                 std::string contentWithNewLine = iniParts.GetIniPart(userPrefName);

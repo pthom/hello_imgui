@@ -3,6 +3,9 @@
 #include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
 
 #include <optional>
+#include <string>
+#include <vector>
+#include <functional>
 
 
 namespace HelloImGui
@@ -12,9 +15,9 @@ namespace HelloImGui
     public:
         WindowGeometry& mGeometry;
         bool mRestoreLast;
-        std::string mWindowGeometryIniFilename;
+        std::optional<std::string> mWindowGeometryIniFilename;
 
-        WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast, std::string windowGeometryIniFilename);
+        WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast, std::optional<std::string> windowGeometryIniFilename);
 
         bool HasInitialWindowSizeInfo() const;
         ScreenBounds AppWindowBoundsInitial(const std::vector<ScreenBounds>& allMonitorsWorkAreas);

@@ -59,27 +59,27 @@ namespace HelloImGui
         //
         // The settings below are global to the app
         //
-        void SaveLastRunWindowBounds(const std::string& iniPartsFilename, const ScreenBounds& windowBounds);
-        std::optional<ScreenBounds> LoadLastRunWindowBounds(const std::string& iniPartsFilename);
-        std::optional<float> LoadLastRunDpiWindowSizeFactor(const std::string& iniPartsFilename);
-        void SaveHelloImGuiMiscSettings(const std::string& iniPartsFilename, const RunnerParams& runnerParams);
-        void LoadHelloImGuiMiscSettings(const std::string& iniPartsFilename, RunnerParams* inOutRunnerParams);
+        void SaveLastRunWindowBounds(const std::optional<std::string>& iniPartsFilename, const ScreenBounds& windowBounds);
+        std::optional<ScreenBounds> LoadLastRunWindowBounds(const std::optional<std::string>& iniPartsFilename);
+        std::optional<float> LoadLastRunDpiWindowSizeFactor(const std::optional<std::string>& iniPartsFilename);
+        void SaveHelloImGuiMiscSettings(const std::optional<std::string>& iniPartsFilename, const RunnerParams& runnerParams);
+        void LoadHelloImGuiMiscSettings(const std::optional<std::string>& iniPartsFilename, RunnerParams* inOutRunnerParams);
 
         //
         // The settings below are saved with values that can differ from layout to layout
         //
-        void LoadImGuiSettings(const std::string& iniPartsFilename, const std::string& layoutName);
-        void SaveImGuiSettings(const std::string& iniPartsFilename, const std::string& layoutName);
-        bool HasUserDockingSettingsInImguiSettings(const std::string& iniPartsFilename, const DockingParams& dockingParams);
+        void LoadImGuiSettings(const std::optional<std::string>& iniPartsFilename, const std::string& layoutName);
+        void SaveImGuiSettings(const std::optional<std::string>& iniPartsFilename, const std::string& layoutName);
+        bool HasUserDockingSettingsInImguiSettings(const std::optional<std::string>& iniPartsFilename, const DockingParams& dockingParams);
 
-        void SaveDockableWindowsVisibility(const std::string& iniPartsFilename, const DockingParams& dockingParams);
-        void LoadDockableWindowsVisibility(const std::string& iniPartsFilename, DockingParams* inOutDockingParams);
+        void SaveDockableWindowsVisibility(const std::optional<std::string>& iniPartsFilename, const DockingParams& dockingParams);
+        void LoadDockableWindowsVisibility(const std::optional<std::string>& iniPartsFilename, DockingParams* inOutDockingParams);
 
         //
         // User prefs
         //
-        void        SaveUserPref(const std::string& iniPartsFilename, const std::string& userPrefName, const std::string& userPrefContent);
-        std::string LoadUserPref(const std::string& iniPartsFilename, const std::string& userPrefName);
+        void        SaveUserPref(const std::optional<std::string>& iniPartsFilename, const std::string& userPrefName, const std::string& userPrefContent);
+        std::string LoadUserPref(const std::optional<std::string>& iniPartsFilename, const std::string& userPrefName);
 
     }
 }

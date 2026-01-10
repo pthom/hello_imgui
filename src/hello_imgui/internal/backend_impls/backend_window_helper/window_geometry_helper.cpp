@@ -8,8 +8,8 @@
 
 namespace HelloImGui
 {
-    WindowGeometryHelper::WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast, std::string windowGeometryIniFilename) :
-        mGeometry(geometry), mRestoreLast(restoreLast), mWindowGeometryIniFilename(std::move(windowGeometryIniFilename))
+    WindowGeometryHelper::WindowGeometryHelper(WindowGeometry &geometry, bool restoreLast, std::optional<std::string> windowGeometryIniFilename) :
+        mGeometry(geometry), mRestoreLast(restoreLast), mWindowGeometryIniFilename(windowGeometryIniFilename)
         {}
 
     bool WindowGeometryHelper::HasInitialWindowSizeInfo() const

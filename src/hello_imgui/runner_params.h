@@ -183,11 +183,11 @@ struct FpsIdling
     bool isIdling = false;
 
 
-    // `rememberEnableIdling`: _bool, default = true_.
+    // `rememberEnableIdling`: _bool, default = false.
     //
     // If true, the value of enableIdling will be restored from previous
     // saved settings on startup.
-    bool rememberEnableIdling = true;
+    bool rememberEnableIdling = false;
 
 
     // `fpsIdlingMode`: _FpsIdlingMode, default = FpsIdlingMode::Auto_.

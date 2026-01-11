@@ -12,6 +12,8 @@
 #include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
 #endif
 
+#include "hello_imgui/internal/platform/platform_detection.h"
+
 
 namespace HelloImGui { namespace BackendApi
 {
@@ -161,6 +163,12 @@ namespace HelloImGui { namespace BackendApi
         SDL_GetWindowPosition(window, &windowPosition[0], &windowPosition[1]);
         SDL_GetWindowSize(window, &windowSize[0], &windowSize[1]);
 
+        // Set topMost if requested (only on desktop platforms)
+#ifdef HELLOIMGUI_IS_DESKTOP_PLATFORM
+        if (appWindowParams.topMost)
+            SDL_SetWindowAlwaysOnTop(window, SDL_TRUE);
+#endif
+
         // printf("Final window size: %ix%i\n", windowSize[0], windowSize[1]);
         // printf("Final window position: %ix%i\n", windowPosition[0], windowPosition[1]);
 
@@ -270,6 +278,13 @@ namespace HelloImGui { namespace BackendApi
         Uint32 flags = SDL_GetWindowFlags((SDL_Window  *)window);
         bool hidden = (flags & SDL_WINDOW_HIDDEN) != 0;
         return hidden;
+    }
+
+    void SdlWindowHelper::SetWindowTopMost(WindowPointer window, bool topMost)
+    {
+#ifdef HELLOIMGUI_IS_DESKTOP_PLATFORM
+        SDL_SetWindowAlwaysOnTop((SDL_Window *) window, topMost ? SDL_TRUE : SDL_FALSE);
+#endif
     }
 
     }} // namespace HelloImGui { namespace BackendApi

@@ -44,6 +44,7 @@ namespace HelloImGui { namespace BackendApi
 
         void HideWindow(WindowPointer window) override {}
         void ShowWindow(WindowPointer window) override {}
+        void SetWindowTopMost(WindowPointer window, bool topMost) override {}
         bool IsWindowHidden(WindowPointer window) override { return false; }
 
     private:

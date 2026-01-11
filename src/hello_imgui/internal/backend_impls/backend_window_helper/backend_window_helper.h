@@ -80,6 +80,8 @@ namespace HelloImGui { namespace BackendApi
         virtual void ShowWindow(WindowPointer window) = 0;
         virtual bool IsWindowHidden(WindowPointer window) = 0;
 
+        virtual void SetWindowTopMost(WindowPointer window, bool topMost) = 0;
+
         // Screenshot!
     };
 }} // namespace HelloImGui { namespace BackendApi

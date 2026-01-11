@@ -7,6 +7,8 @@
 #include <GLFW/emscripten_glfw3.h>
 #endif
 
+#include "hello_imgui/internal/platform/platform_detection.h"
+
 namespace HelloImGui { namespace BackendApi
 {
     std::function<void()> gRenderCallbackDuringResize_Glfw;
@@ -108,6 +110,13 @@ namespace HelloImGui { namespace BackendApi
             glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         else
             glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+#ifdef HELLOIMGUI_IS_DESKTOP_PLATFORM
+        if (appWindowParams.topMost)
+            glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
+        else
+            glfwWindowHint(GLFW_FLOATING, GLFW_FALSE);
+#endif
 
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
@@ -267,6 +276,13 @@ namespace HelloImGui { namespace BackendApi
     {
         int visible = glfwGetWindowAttrib((GLFWwindow *) window, GLFW_VISIBLE);
         return (visible == 0);
+    }
+
+    void GlfwWindowHelper::SetWindowTopMost(WindowPointer window, bool topMost)
+    {
+#ifdef HELLOIMGUI_IS_DESKTOP_PLATFORM
+        glfwSetWindowAttrib((GLFWwindow *) window, GLFW_FLOATING, topMost ? GLFW_TRUE : GLFW_FALSE);
+#endif
     }
 
 //    void truc(WindowPointer window)

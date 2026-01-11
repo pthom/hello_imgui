@@ -102,6 +102,7 @@ struct AbstractRunnerStatics
     std::string lastLoadedLayout;
     bool isFirstLayoutSwitch = true;
     bool lastHiddenState = false;
+    bool lastTopMostState = false;
     double timeLastEvent = -1.;
     double lastRefreshTime = 0.;
 };
@@ -923,6 +924,13 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
                 //mBackendWindowHelper->ShowWindow(mWindow);
             }
             gStatics.lastHiddenState = params.appWindowParams.hidden;
+
+            // Set initial topMost state (ignore if fullscreen)
+            if (params.appWindowParams.windowGeometry.fullScreenMode == FullScreenMode::NoFullScreen)
+            {
+                mBackendWindowHelper->SetWindowTopMost(mWindow, params.appWindowParams.topMost);
+                gStatics.lastTopMostState = params.appWindowParams.topMost;
+            }
         }
         // On subsequent frames, we take into account user modifications of appWindowParams.hidden
         if (mIdxFrame > 3)
@@ -934,6 +942,16 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
                     mBackendWindowHelper->HideWindow(mWindow);
                 else
                     mBackendWindowHelper->ShowWindow(mWindow);
+            }
+
+            // Handle dynamic topMost changes (ignore if fullscreen)
+            if (params.appWindowParams.windowGeometry.fullScreenMode == FullScreenMode::NoFullScreen)
+            {
+                if (params.appWindowParams.topMost != gStatics.lastTopMostState)
+                {
+                    gStatics.lastTopMostState = params.appWindowParams.topMost;
+                    mBackendWindowHelper->SetWindowTopMost(mWindow, params.appWindowParams.topMost);
+                }
             }
         }
 

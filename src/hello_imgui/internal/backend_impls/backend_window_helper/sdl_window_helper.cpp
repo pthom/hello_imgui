@@ -196,8 +196,10 @@ namespace HelloImGui { namespace BackendApi
         // Despite those efforts, the app does not come to the front under MacOS
         auto sdlWindow = (SDL_Window *)(window);
         SDL_ShowWindow(sdlWindow);
+#ifdef HELLOIMGUI_IS_DESKTOP_PLATFORM
         SDL_FlashWindow(sdlWindow, SDL_FLASH_UNTIL_FOCUSED);
         SDL_RaiseWindow(sdlWindow);
+#endif
     }
 
     ScreenBounds SdlWindowHelper::GetWindowBounds(WindowPointer window)

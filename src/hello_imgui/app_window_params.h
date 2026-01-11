@@ -3,9 +3,6 @@
 #include "hello_imgui/screen_bounds.h"
 #include <string>
 
-#ifdef __APPLE__
-#include <TargetConditionals.h>
-#endif
 
 namespace HelloImGui
 {

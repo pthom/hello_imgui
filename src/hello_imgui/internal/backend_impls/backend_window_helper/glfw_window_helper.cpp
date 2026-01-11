@@ -211,8 +211,10 @@ namespace HelloImGui { namespace BackendApi
     {
         auto glfwWindow = (GLFWwindow *)(window);
         glfwShowWindow(glfwWindow);
+#ifdef HELLOIMGUI_IS_DESKTOP_PLATFORM
         glfwFocusWindow(glfwWindow);
         glfwRequestWindowAttention(glfwWindow);
+#endif
     }
 
     ScreenBounds GlfwWindowHelper::GetWindowBounds(WindowPointer window)

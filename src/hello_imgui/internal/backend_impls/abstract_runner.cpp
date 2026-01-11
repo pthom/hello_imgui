@@ -918,7 +918,10 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
             if (params.appWindowParams.hidden)
                 mBackendWindowHelper->HideWindow(mWindow);
             else
-                mBackendWindowHelper->ShowWindow(mWindow);
+            {
+                mBackendWindowHelper->RaiseWindow(mWindow);
+                //mBackendWindowHelper->ShowWindow(mWindow);
+            }
             gStatics.lastHiddenState = params.appWindowParams.hidden;
         }
         // On subsequent frames, we take into account user modifications of appWindowParams.hidden

@@ -468,7 +468,7 @@ std::string IniFolderLocation(IniFolderType iniFolderType);
 ```cpp
 
 // IniSettingsLocation returns the path to the ini file for the application settings.
-std::string IniSettingsLocation(const RunnerParams& runnerParams);
+std::optional<std::string> IniSettingsLocation(const RunnerParams& runnerParams);
 
 // HasIniSettings returns true if the ini file for the application settings exists.
 bool HasIniSettings(const RunnerParams& runnerParams);

@@ -16,6 +16,7 @@ namespace HelloImGui
         r.appWindowParams.restorePreviousGeometry = self.windowRestorePreviousGeometry;
 
         r.appWindowParams.windowTitle = self.windowTitle;
+        r.appWindowParams.topMost = self.topMost;
 
         r.fpsIdling.fpsIdle = self.fpsIdle;
         r.fpsIdling.enableIdling = self.enableIdling;

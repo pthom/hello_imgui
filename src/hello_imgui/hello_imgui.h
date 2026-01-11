@@ -79,7 +79,8 @@ void Run(
     bool windowSizeAuto = false,
     bool windowRestorePreviousGeometry = false,
     const ScreenSize &windowSize = DefaultWindowSize,
-    float fpsIdle = 10.f
+    float fpsIdle = 10.f,
+    bool topMost = false
 );
 
 // =========================== HelloImGui::ManualRender ==================================
@@ -143,7 +144,8 @@ namespace ManualRender
         bool windowSizeAuto = false,
         bool windowRestorePreviousGeometry = false,
         const ScreenSize& windowSize = DefaultWindowSize,
-        float fpsIdle = 10.f
+        float fpsIdle = 10.f,
+        bool topMost = false
     );
 
     // Renders the current frame. Should be called regularly to maintain the application's responsiveness.

@@ -189,7 +189,8 @@ namespace ManualRender
         bool windowSizeAuto,
         bool windowRestorePreviousGeometry,
         const ScreenSize& windowSize,
-        float fpsIdle
+        float fpsIdle,
+        bool topMost
     )
     {
         TrySwitchToInitialized();
@@ -200,6 +201,7 @@ namespace ManualRender
         params.windowRestorePreviousGeometry = windowRestorePreviousGeometry;
         params.windowSize = windowSize;
         params.fpsIdle = fpsIdle;
+        params.topMost = topMost;
         RunnerParams fullParams = params.ToRunnerParams();
         Priv_SetupRunner(fullParams, SetupMode::Renderer);
     }
@@ -243,7 +245,8 @@ void Run(
     bool windowSizeAuto,
     bool windowRestorePreviousGeometry,
     const ScreenSize& windowSize,
-    float fpsIdle
+    float fpsIdle,
+    bool topMost
 )
 {
     SimpleRunnerParams params;
@@ -253,6 +256,7 @@ void Run(
     params.windowRestorePreviousGeometry = windowRestorePreviousGeometry;
     params.windowSize = windowSize;
     params.fpsIdle = fpsIdle;
+    params.topMost = topMost;
     Run(params);
 }
 

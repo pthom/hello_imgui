@@ -177,6 +177,12 @@ struct RunnerParams
     // `iniFilename_useAppWindowTitle`: _bool, default = true_.
     // Shall the iniFilename be derived from appWindowParams.windowTitle (if not empty)
     bool iniFilename_useAppWindowTitle = true;
+    // `iniDisable`: _bool, default = false_.
+    // If true, do not save or load any settings to or from an ini file.
+    bool iniDisable = false;
+    // `iniClearPreviousSettings`: _bool, default = false_.
+    // If true, delete any previous settings ini file at application startup.
+    bool iniClearPreviousSettings = false;
 
 
     // --------------- Exit -------------------
@@ -563,6 +569,13 @@ struct AppWindowParams
     // Full screen windows cannot be hidden.
     bool hidden = false;
 
+    // `topMost`: _bool, default = false_. Should the window stay on top of other windows.
+    // This is taken into account dynamically (you can change this at runtime).
+    // Note: This is only supported on desktop platforms (Windows, macOS, Linux).
+    // On mobile platforms (iOS, Android) and web (Emscripten), this setting is ignored.
+    // This setting is also ignored when the window is in fullscreen mode.
+    bool topMost = false;
+
 
     // --------------- Borderless window params ------------------
 
@@ -915,11 +928,11 @@ struct FpsIdling
     bool isIdling = false;
 
 
-    // `rememberEnableIdling`: _bool, default = true_.
+    // `rememberEnableIdling`: _bool, default = false.
     //
     // If true, the value of enableIdling will be restored from previous
     // saved settings on startup.
-    bool rememberEnableIdling = true;
+    bool rememberEnableIdling = false;
 
 
     // `fpsIdlingMode`: _FpsIdlingMode, default = FpsIdlingMode::Auto_.

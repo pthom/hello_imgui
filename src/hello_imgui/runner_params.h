@@ -439,6 +439,11 @@ struct SimpleRunnerParams
     //      HelloImGui::GetRunnerParams()->fpsIdling.enableIdling = false;
     bool  enableIdling = true;
 
+    // `topMost`: _bool, default=false_.
+    //  If true, the window will stay on top of other windows (desktop platforms only).
+    //  Useful especially when running from notebooks to keep the app visible above the browser.
+    bool topMost = false;
+
     RunnerParams ToRunnerParams() const;
 };
 // @@md

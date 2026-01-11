@@ -31,6 +31,11 @@
 #include "imgui_impl_glfw.h"
 #include <imgui.h>
 
+#include <thread>
+#include <cstdlib>
+//extern char **environ;
+
+
 
 namespace HelloImGui
 {
@@ -99,8 +104,59 @@ namespace HelloImGui
         #endif
     }
 
+
+    static void _ForceHideWindow_IfRunningInside_Notebook_MacOs_WithDebugger(GLFWwindow *window)
+    {
+    #ifdef __APPLE__
+        // For some reason the window did sometimes stay opened (although inactive)
+        // when used under python / notebook / macOS / vscode, even after a call to Impl_Cleanup()
+
+        // macOS Cocoa's window management is asynchronous. When running under Python
+        // debuggers (PyCharm, VS Code) or Jupyter notebooks, the event loop interaction
+        // causes glfwHideWindow() to not complete before glfwDestroyWindow() is called.
+        // This results in "ghost" windows that remain visible but inactive.
+        //
+        // The workaround: explicitly hide the window and wait for Cocoa's event processing
+        // to complete before destroying it. All three steps are required:
+        // 1. glfwHideWindow() - initiates the async hide operation
+        // 2. glfwPollEvents() - processes Cocoa's event queue
+        // 3. Time delay - gives Cocoa's main thread time to execute the hide
+
+        // This will trigger only when running inside in a notebook with debugger (such as vscode)
+        // (and is not needed inside browser based jupyter lab or notebook)
+
+        // Debug code that was used for env detection: print all environment variables
+        // for (char **env = environ; *env != nullptr; env++) {
+        //     if (strstr(*env, "PY") || strstr(*env, "JUPYTER") || strstr(*env, "IPYTHON"))
+        //         printf("Found: %s\n", *env);
+        // }
+        // Found: PYTHONUNBUFFERED=1
+        // Found: PYTHONIOENCODING=utf-8
+        // Found: PYDEVD_IPYTHON_COMPATIBLE_DEBUGGING=1
+        // Found: PYTHON_FROZEN_MODULES=on
+        // Found: PYDEVD_USE_FRAME_EVAL=NO
+
+        bool shouldForceHideWindow = getenv("PYDEVD_IPYTHON_COMPATIBLE_DEBUGGING") != nullptr ||
+               getenv("PYDEVD_USE_FRAME_EVAL") != nullptr;
+        if (shouldForceHideWindow)
+        {
+            if (window)
+            {
+                glfwHideWindow(window);
+                for (int i = 0; i < 5; i++)
+                {
+                    glfwPollEvents();
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                }
+            }
+        }
+#endif
+    }
+
     void RunnerGlfw3::Impl_Cleanup()
     {
+        _ForceHideWindow_IfRunningInside_Notebook_MacOs_WithDebugger((GLFWwindow *)mWindow);
+
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
 

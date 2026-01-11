@@ -193,6 +193,7 @@ namespace HelloImGui
 
     void RunnerGlfw3::Impl_SetWindowIcon()
     {
+#ifndef __APPLE__
         std::string iconFile = "app_settings/icon.png";
         if (!HelloImGui::AssetExists(iconFile))
             return;
@@ -216,6 +217,7 @@ namespace HelloImGui
         else
             HIMG_LOG("RunnerGlfwOpenGl3::Impl_SetWindowIcon: Failed to load window icon: " + iconFile);
         HelloImGui::FreeAssetFileData(&imageAsset);
+#endif
     }
 
 

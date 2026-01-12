@@ -5,9 +5,12 @@
 // Some themes were adapted by themes posted by ImGui users at https://github.com/ocornut/imgui/issues/707
 //
 #include "hello_imgui/imgui_theme.h"
+#include "hello_imgui/runner_params.h"
 #include <string>
 #include <stack>
 #include <functional>
+
+#include "hello_imgui/hello_imgui.h"
 
 namespace ImGuiTheme
 {
@@ -985,6 +988,9 @@ namespace ImGuiTheme
     {
         ImGuiStyle style = ThemeToStyle(theme);
         ImGui::GetStyle() = style;
+        auto runnerParams = HelloImGui::GetRunnerParams();
+        if (runnerParams->callbacks.ThemeChanged)
+            runnerParams->callbacks.ThemeChanged();
     }
 
     ImGuiStyle TweakedThemeThemeToStyle(const ImGuiTweakedTheme& tweaked_theme)
@@ -1056,6 +1062,9 @@ namespace ImGuiTheme
                 {
                     changed = true;
                     *theme = theme_i;
+                    auto runnerParams = HelloImGui::GetRunnerParams();
+                    if (runnerParams->callbacks.ThemeChanged)
+                        runnerParams->callbacks.ThemeChanged();
                 }
                 if (is_selected)
                     ImGui::SetItemDefaultFocus();

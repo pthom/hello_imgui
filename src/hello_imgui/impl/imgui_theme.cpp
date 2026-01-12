@@ -10,6 +10,8 @@
 #include <stack>
 #include <functional>
 
+#include "hello_imgui/hello_imgui.h"
+
 namespace ImGuiTheme
 {
     namespace ThemeTweakImpl
@@ -982,12 +984,13 @@ namespace ImGuiTheme
         return ImGuiStyle();
     }
 
-    void ApplyTheme(ImGuiTheme_ theme, const HelloImGui::RunnerParams& runnerParams)
+    void ApplyTheme(ImGuiTheme_ theme)
     {
         ImGuiStyle style = ThemeToStyle(theme);
         ImGui::GetStyle() = style;
-        if (runnerParams.callbacks.ThemeChanged)
-            runnerParams.callbacks.ThemeChanged();
+        auto runnerParams = HelloImGui::GetRunnerParams();
+        if (runnerParams->callbacks.ThemeChanged)
+            runnerParams->callbacks.ThemeChanged();
     }
 
     ImGuiStyle TweakedThemeThemeToStyle(const ImGuiTweakedTheme& tweaked_theme)

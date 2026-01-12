@@ -474,7 +474,7 @@ namespace HelloImGui
             {
                 auto theme = ImGuiTheme::ImGuiTheme_FromName(themeName.c_str());
                 inOutRunnerParams->imGuiWindowParams.tweakedTheme.Theme = theme;
-                ImGuiTheme::ApplyTheme(theme, *inOutRunnerParams);
+                ImGuiTheme::ApplyTheme(theme);
             }
             HelloImGui::SwitchLayout(layoutName);
 

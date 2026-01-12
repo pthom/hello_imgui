@@ -81,7 +81,7 @@ void ShowThemeTweakGuiWindow_Static()
     ShowThemeTweakGuiWindow(&gShowTweakWindow);
 }
 
-void MenuTheme(const RunnerParams& runnerParams)
+void MenuTheme()
 {
     auto& tweakedTheme = HelloImGui::GetRunnerParams()->imGuiWindowParams.tweakedTheme;
 
@@ -97,7 +97,7 @@ void MenuTheme(const RunnerParams& runnerParams)
             if (ImGui::MenuItem(ImGuiTheme::ImGuiTheme_Name(theme), nullptr, selected))
             {
                 tweakedTheme.Theme = theme;
-                ImGuiTheme::ApplyTheme(theme, runnerParams);
+                ImGuiTheme::ApplyTheme(theme);
             }
         }
         ImGui::EndMenu();
@@ -272,7 +272,7 @@ void MenuView_Misc(RunnerParams& runnerParams)
 	}
 
     if (runnerParams.imGuiWindowParams.showMenu_View_Themes)
-        MenuTheme(runnerParams);
+        MenuTheme();
 }
 
 void ShowViewMenu(RunnerParams & runnerParams)

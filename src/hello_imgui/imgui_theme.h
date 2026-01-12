@@ -7,9 +7,6 @@
 // provided the origin of those files is stated in the copied version
 // Some themes were adapted by themes posted by ImGui users at https://github.com/ocornut/imgui/issues/707
 //
-namespace HelloImGui{
-    struct RunnerParams;
-}
 
 namespace ImGuiTheme
 {
@@ -37,7 +34,7 @@ namespace ImGuiTheme
     const char* ImGuiTheme_Name(ImGuiTheme_ theme);
     ImGuiTheme_ ImGuiTheme_FromName(const char* themeName);
     ImGuiStyle ThemeToStyle(ImGuiTheme_ theme);
-    void ApplyTheme(ImGuiTheme_ theme, const HelloImGui::RunnerParams& params);
+    void ApplyTheme(ImGuiTheme_ theme);
 
 
     struct ImGuiThemeTweaks

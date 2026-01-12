@@ -1062,6 +1062,9 @@ namespace ImGuiTheme
                 {
                     changed = true;
                     *theme = theme_i;
+                    auto runnerParams = HelloImGui::GetRunnerParams();
+                    if (runnerParams->callbacks.ThemeChanged)
+                        runnerParams->callbacks.ThemeChanged();
                 }
                 if (is_selected)
                     ImGui::SetItemDefaultFocus();

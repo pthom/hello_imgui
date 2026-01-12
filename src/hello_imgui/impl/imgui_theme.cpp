@@ -7,6 +7,7 @@
 #include "hello_imgui/imgui_theme.h"
 #include <string>
 #include <stack>
+#include <functional>
 
 namespace ImGuiTheme
 {
@@ -177,28 +178,28 @@ namespace ImGuiTheme
     {
         ImGuiStyle ImGui_StyleColorsClassic()
         {
-            ImGuiStyle style;
+            auto & style = ImGui::GetStyle();
             ImGui::StyleColorsClassic(&style);
             return style;
         }
 
         ImGuiStyle ImGui_StyleColorsDark()
         {
-            ImGuiStyle style;
+            auto & style = ImGui::GetStyle();
             ImGui::StyleColorsDark(&style);
             return style;
         }
 
         ImGuiStyle ImGui_StyleColorsLight()
         {
-            ImGuiStyle style;
+            auto & style = ImGui::GetStyle();
             ImGui::StyleColorsLight(&style);
             return style;
         }
 
         ImGuiStyle SoDark(float hue)
         {
-            ImGuiStyle style;
+            auto & style = ImGui::GetStyle();
             ImVec4* colors = style.Colors;
             colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
             colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
@@ -286,7 +287,7 @@ namespace ImGuiTheme
 
         ImGuiStyle MaterialFlat()
         {
-            ImGuiStyle style;
+            auto & style = ImGui::GetStyle();
             // Material Flat style by ImJC1C from ImThemes
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.5f;
@@ -384,7 +385,7 @@ namespace ImGuiTheme
         ImGuiStyle PhotoshopStyle()
         {
             // Photoshop style by Derydoca from ImThemes
-            ImGuiStyle style;
+            auto & style = ImGui::GetStyle();
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.6000000238418579f;
@@ -483,7 +484,7 @@ namespace ImGuiTheme
 
         ImGuiStyle ShadesOfGray(float rounding=0.f, float value_multiplier_front=1.f, float value_multiplier_bg=1.f)
         {
-            ImGuiStyle style;
+            auto & style = ImGui::GetStyle();
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.6000000238418579f;
@@ -599,7 +600,7 @@ namespace ImGuiTheme
         ImGuiStyle Cherry()
         {
             // Cherry style by r-lyeh from ImThemes
-            ImGuiStyle style;
+            auto & style = ImGui::GetStyle();
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.6000000238418579f;
@@ -709,7 +710,7 @@ namespace ImGuiTheme
             )
         {
             // Darcula style by ice1000 from ImThemes
-            ImGuiStyle style;
+            auto & style = ImGui::GetStyle();
 
             style.Colors[ImGuiCol_Text] = ImVec4(0.7333333492279053f, 0.7333333492279053f, 0.7333333492279053f, 1.0f);
             style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.3450980484485626f, 0.3450980484485626f, 0.3450980484485626f, 1.0f);
@@ -807,7 +808,7 @@ namespace ImGuiTheme
         ImGuiStyle LightRounded()
         {
             // Fork of Light style from ImThemes
-            ImGuiStyle style;
+            auto & style = ImGui::GetStyle();
 
             ThemeTweakImpl::ApplyRounding(style, 3.f, 3.f);
 
@@ -924,27 +925,27 @@ namespace ImGuiTheme
     {
         ImGuiTheme_ Theme;
         char Name[256];
-        ImGuiStyle Style;
+        std::function<ImGuiStyle()> GetStyleFn;
     };
 
     ThemeInfo gThemeInfos[] = {
-        {ImGuiTheme_ImGuiColorsClassic,    "ImGuiColorsClassic",  ThemesImpl::ImGui_StyleColorsClassic() },
-        {ImGuiTheme_ImGuiColorsLight,      "ImGuiColorsLight",    ThemesImpl::ImGui_StyleColorsLight() },
-        {ImGuiTheme_ImGuiColorsDark,       "ImGuiColorsDark",     ThemesImpl::ImGui_StyleColorsDark()},
-        {ImGuiTheme_MaterialFlat,          "MaterialFlat",        ThemesImpl::MaterialFlat()},
-        {ImGuiTheme_PhotoshopStyle,        "PhotoshopStyle",      ThemesImpl::PhotoshopStyle()},
-        {ImGuiTheme_GrayVariations,        "GrayVariations",        ThemesImpl::ShadesOfGray(3.f, 1.f, 1.f)},
-        {ImGuiTheme_GrayVariations_Darker, "GrayVariations_Darker",  ThemesImpl::ShadesOfGray(3.f, 1.136f, 0.865f)},
-        {ImGuiTheme_MicrosoftStyle,        "MicrosoftStyle",      ThemesImpl::MicrosoftStyle()},
-        {ImGuiTheme_Cherry,                "Cherry",              ThemesImpl::Cherry()},
-        {ImGuiTheme_Darcula,               "Darcula",             ThemesImpl::Darcula()},
-        {ImGuiTheme_DarculaDarker,         "DarculaDarker",       ThemesImpl::DarculaDarker()},
-        {ImGuiTheme_LightRounded,          "LightRounded",        ThemesImpl::LightRounded()},
-        {ImGuiTheme_SoDark_AccentBlue,     "SoDark_AccentBlue",   ThemesImpl::SoDark(0.548f)},
-        {ImGuiTheme_SoDark_AccentYellow,   "SoDark_AccentYellow", ThemesImpl::SoDark(0.163f)},
-        {ImGuiTheme_SoDark_AccentRed,      "SoDark_AccentRed",    ThemesImpl::SoDark(0.f)},
-        {ImGuiTheme_BlackIsBlack,          "BlackIsBlack",        ThemesImpl::BlackIsBlack()},
-        {ImGuiTheme_WhiteIsWhite,          "WhiteIsWhite",        ThemesImpl::WhiteIsWhite()},
+        {ImGuiTheme_ImGuiColorsClassic,    "ImGuiColorsClassic",  ThemesImpl::ImGui_StyleColorsClassic },
+        {ImGuiTheme_ImGuiColorsLight,      "ImGuiColorsLight",    ThemesImpl::ImGui_StyleColorsLight },
+        {ImGuiTheme_ImGuiColorsDark,       "ImGuiColorsDark",     ThemesImpl::ImGui_StyleColorsDark},
+        {ImGuiTheme_MaterialFlat,          "MaterialFlat",        ThemesImpl::MaterialFlat},
+        {ImGuiTheme_PhotoshopStyle,        "PhotoshopStyle",      ThemesImpl::PhotoshopStyle},
+        {ImGuiTheme_GrayVariations,        "GrayVariations",        [](){return ThemesImpl::ShadesOfGray(3.f, 1.f, 1.f);}},
+        {ImGuiTheme_GrayVariations_Darker, "GrayVariations_Darker",  [](){return ThemesImpl::ShadesOfGray(3.f, 1.136f, 0.865f);}},
+        {ImGuiTheme_MicrosoftStyle,        "MicrosoftStyle",      ThemesImpl::MicrosoftStyle},
+        {ImGuiTheme_Cherry,                "Cherry",              ThemesImpl::Cherry},
+        {ImGuiTheme_Darcula,               "Darcula",          [](){return    ThemesImpl::Darcula();}},
+        {ImGuiTheme_DarculaDarker,         "DarculaDarker",       ThemesImpl::DarculaDarker},
+        {ImGuiTheme_LightRounded,          "LightRounded",        ThemesImpl::LightRounded},
+        {ImGuiTheme_SoDark_AccentBlue,     "SoDark_AccentBlue",   [](){return ThemesImpl::SoDark(0.548f);}},
+        {ImGuiTheme_SoDark_AccentYellow,   "SoDark_AccentYellow", [](){return ThemesImpl::SoDark(0.163f);}},
+        {ImGuiTheme_SoDark_AccentRed,      "SoDark_AccentRed",    [](){return ThemesImpl::SoDark(0.f);}},
+        {ImGuiTheme_BlackIsBlack,          "BlackIsBlack",        ThemesImpl::BlackIsBlack},
+        {ImGuiTheme_WhiteIsWhite,          "WhiteIsWhite",        ThemesImpl::WhiteIsWhite},
     };
 
     const char* ImGuiTheme_Name(ImGuiTheme_ theme)
@@ -975,7 +976,7 @@ namespace ImGuiTheme
         for (size_t i = 0; i < IM_ARRAYSIZE(gThemeInfos); ++i)
         {
             if (gThemeInfos[i].Theme == theme)
-                return gThemeInfos[i].Style;
+                return gThemeInfos[i].GetStyleFn();
         }
         return ImGuiStyle();
     }

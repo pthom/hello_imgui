@@ -52,18 +52,14 @@ bool _CheckAdditionLayoutNamesUniqueness(const RunnerParams &runnerParams)
 //
 // Static instances to store the last runner and its parameters
 // -------------------------------------------------------------
-// gLastRunnerParamsOpt may contain a valid value if Renderer(const RunnerParams& ) was used
-std::optional<RunnerParams> gLastRunnerParamsOpt;
-// gLastRunnerParamsUserPointer may contain a valid value if Run(RunnerParams& ) was used
-// (we may modify the user's runnerParams in this case)
+// gLastRunnerParamsUserPointer contains a pointer to the user's runnerParams
+// This is used for both Run() and ManualRender::SetupFromRunnerParams()
 static RunnerParams* gLastRunnerParamsUserPointer = nullptr;
 // a pointer to the current AbstractRunner
 static std::unique_ptr<AbstractRunner> gLastRunner;
 
 static RunnerParams* Priv_CurrentRunnerParamsPtr()
 {
-    if (gLastRunnerParamsOpt.has_value())
-        return &gLastRunnerParamsOpt.value();
     if (gLastRunnerParamsUserPointer != nullptr)
         return gLastRunnerParamsUserPointer;
     return nullptr;
@@ -100,13 +96,12 @@ static void Priv_SetupRunner(RunnerParams &passedUserParams, SetupMode setupMode
         throw std::runtime_error("Only one instance of `HelloImGui::Renderer` can exist at a time.");
 #endif
     gSetupMode = setupMode;
-    bool isUserPointer = (setupMode == SetupMode::Run);  // When using HelloImGui::Run, we may modify the user's runnerParams
+    // Both Run and ManualRender::SetupFromRunnerParams now use a user pointer
+    // to allow modifications to the user's runnerParams
     bool shallSetupTearDown = (setupMode == SetupMode::Renderer);  // When using HelloImGui::Renderer, we shall call Setup/TearDown()
 
-    if (!isUserPointer)
-        gLastRunnerParamsOpt = passedUserParams; // Store a copy of the user's runnerParams
-    else
-        gLastRunnerParamsUserPointer = &passedUserParams; // Store a pointer to the user's runnerParams
+    // Store a pointer to the user's runnerParams
+    gLastRunnerParamsUserPointer = &passedUserParams;
 
     IM_ASSERT(Priv_CurrentRunnerParamsPtr() != nullptr);
     RunnerParams &runnerParams = *Priv_CurrentRunnerParamsPtr();
@@ -131,7 +126,6 @@ static void Priv_TearDown()
         gLastRunner->TearDown(false);
     gLastRunner = nullptr;
     gRendererInstanceCount = 0;
-    gLastRunnerParamsOpt.reset();
     gLastRunnerParamsUserPointer = nullptr;
 }
 
@@ -166,12 +160,11 @@ namespace ManualRender
     }
 
     // Initializes the renderer with the full customizable `RunnerParams`.
-    // A distinct copy of `RunnerParams` is stored internally.
-    void SetupFromRunnerParams(const RunnerParams& runnerParams)
+    // A reference to the user's `RunnerParams` is kept internally.
+    void SetupFromRunnerParams(RunnerParams& runnerParams)
     {
         TrySwitchToInitialized();
-        RunnerParams runnerParamsCopy = runnerParams;
-        Priv_SetupRunner(runnerParamsCopy, SetupMode::Renderer);
+        Priv_SetupRunner(runnerParams, SetupMode::Renderer);
     }
 
     // Initializes the renderer with `SimpleRunnerParams`.

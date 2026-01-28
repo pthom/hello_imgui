@@ -55,6 +55,10 @@ bool _CheckAdditionLayoutNamesUniqueness(const RunnerParams &runnerParams)
 // gLastRunnerParamsUserPointer contains a pointer to the user's runnerParams
 // This is used for both Run() and ManualRender::SetupFromRunnerParams()
 static RunnerParams* gLastRunnerParamsUserPointer = nullptr;
+// gStoredRunnerParams stores a copy of RunnerParams when created from SimpleRunnerParams or GuiFunction
+// This is necessary because SetupFromRunnerParams keeps a pointer to the runnerParams,
+// so we need to keep it alive between Setup and TearDown
+static std::optional<RunnerParams> gStoredRunnerParams;
 // a pointer to the current AbstractRunner
 static std::unique_ptr<AbstractRunner> gLastRunner;
 
@@ -127,6 +131,7 @@ static void Priv_TearDown()
     gLastRunner = nullptr;
     gRendererInstanceCount = 0;
     gLastRunnerParamsUserPointer = nullptr;
+    gStoredRunnerParams.reset();  // Clear the stored RunnerParams
 }
 
 
@@ -171,8 +176,9 @@ namespace ManualRender
     void SetupFromSimpleRunnerParams(const SimpleRunnerParams& simpleParams)
     {
         TrySwitchToInitialized();
-        RunnerParams fullParams = simpleParams.ToRunnerParams();
-        Priv_SetupRunner(fullParams, SetupMode::Renderer);
+        // Store the runnerParams to keep it alive for the entire lifecycle
+        gStoredRunnerParams = simpleParams.ToRunnerParams();
+        Priv_SetupRunner(gStoredRunnerParams.value(), SetupMode::Renderer);
     }
 
     // Initializes the renderer with a simple GUI function and additional parameters.
@@ -195,8 +201,9 @@ namespace ManualRender
         params.windowSize = windowSize;
         params.fpsIdle = fpsIdle;
         params.topMost = topMost;
-        RunnerParams fullParams = params.ToRunnerParams();
-        Priv_SetupRunner(fullParams, SetupMode::Renderer);
+        // Store the runnerParams to keep it alive for the entire lifecycle
+        gStoredRunnerParams = params.ToRunnerParams();
+        Priv_SetupRunner(gStoredRunnerParams.value(), SetupMode::Renderer);
     }
 
     // Renders the current frame. Should be called regularly to maintain the application's responsiveness.

@@ -246,6 +246,12 @@ if (EMSCRIPTEN)
 endif()
 
 
+
+#------------------------------------------------------------------------------
+# Advanced build options / ImPlot
+#------------------------------------------------------------------------------
+option(HELLOIMGUI_USE_IMPLOT "Enable ImPlot support" ON)
+option(HELLOIMGUI_DOWNLOAD_IMPLOT_IF_NEEDED "Download ImPlot if not found" ON)
 #------------------------------------------------------------------------------
 # Advanced build options / HelloImGui
 #------------------------------------------------------------------------------

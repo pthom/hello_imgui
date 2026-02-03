@@ -249,12 +249,60 @@ function(him_add_hello_imgui)
     else()
         target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui)
     endif()
-
+    if (HELLOIMGUI_USE_IMPLOT)
+        target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC implot)
+        target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_USE_IMPLOT)
+    endif()
     add_library(hello-imgui::hello_imgui ALIAS hello_imgui)
     him_add_installable_dependency(${HELLOIMGUI_TARGET})
 endfunction()
+###################################################################################################
+# Build implot: API = him_build_implot
+###################################################################################################
+function(him_build_implot)
+    if (NOT HELLOIMGUI_USE_IMPLOT)
+        return()
+    endif()
 
+    # Попробовать найти системный пакет
+    find_package(implot CONFIG QUIET)
+    if (implot_FOUND)
+        message(STATUS "HelloImGui: using ImPlot from find_package")
+        return()
+    endif()
 
+    if (HELLOIMGUI_FETCH_FORBIDDEN OR NOT HELLOIMGUI_DOWNLOAD_IMPLOT_IF_NEEDED)
+        message(FATAL_ERROR "ImPlot not found and fetching is forbidden")
+    endif()
+
+    message(STATUS "HelloImGui: downloading and building ImPlot")
+
+    include(FetchContent)
+    FetchContent_Declare(
+            implot
+            GIT_REPOSITORY https://github.com/epezent/implot.git
+            GIT_TAG        v0.17
+            GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(implot)
+
+    add_library(implot
+            ${implot_SOURCE_DIR}/implot.cpp
+            ${implot_SOURCE_DIR}/implot_items.cpp
+    )
+
+    target_include_directories(implot PUBLIC
+            $<BUILD_INTERFACE:${implot_SOURCE_DIR}>
+    )
+
+    target_link_libraries(implot PUBLIC imgui)
+
+    add_library(implot::implot ALIAS implot)
+
+    him_add_installable_dependency(implot)
+
+    hello_imgui_msvc_target_set_folder(implot ${HELLOIMGUI_SOLUTIONFOLDER}/external)
+endfunction()
 ###################################################################################################
 # Build imgui: API = him_build_imgui + him_install_imgui (to be called at the end)
 ###################################################################################################
@@ -323,6 +371,14 @@ function(him_install_imgui)
 
         if(HELLOIMGUI_USE_FREETYPE)
             install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.h DESTINATION include)
+        endif()
+        if(TARGET implot)
+            install(TARGETS implot DESTINATION ./lib/)
+            install(FILES
+                    ${implot_SOURCE_DIR}/implot.h
+                    ${implot_SOURCE_DIR}/implot_internal.h
+                    DESTINATION include
+            )
         endif()
     endif()
 endfunction()
@@ -1319,6 +1375,7 @@ function(him_main_add_hello_imgui_library)
     him_sanity_checks()
     him_add_stb_image()
     him_build_imgui()
+    him_build_implot()
     him_add_hello_imgui()
     him_add_nlohmann_json()
 

@@ -1368,6 +1368,9 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     // so that it can *NOT* be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
     ImGui::NewFrame();
 
+    if ((params.callbacks.PostNewFrame) && !insideReentrantCall)
+        params.callbacks.PostNewFrame();
+
     {
         fnCheckOpenGlErrorOnFirstFrame_WarnPotentialFontError(); // not in a SCOPED_RELEASE_GIL_ON_MAIN_THREAD, because it is very fast and rare
 

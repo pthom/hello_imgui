@@ -50,7 +50,13 @@ endfunction()
 
 
 function(hello_imgui_bundle_assets app_name assets_location)
-    set(common_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_assets)
+    # if using imgui_bundle, use its common assets folder
+    if (DEFINED IMGUI_BUNDLE_PATH AND IS_DIRECTORY ${IMGUI_BUNDLE_PATH}/imgui_bundle_assets)
+        set(common_assets_folder ${IMGUI_BUNDLE_PATH}/imgui_bundle_assets)
+    else()
+        set(common_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_assets)
+    endif()
+
     set(local_assets_folder ${assets_location})
 
     set(common_assets_folder_copy ${CMAKE_CURRENT_BINARY_DIR}/tmp/common_assets)

@@ -552,10 +552,9 @@ function(him_sanity_checks)
     endif()
 
     if (no_backend_option_chosen AND NOT HELLOIMGUI_USING_VCPKG_TOOLCHAIN)
-        # use SDL2 for emscripten and iOS, GLFW for the rest
-        # (We may want to use glfw for emscripten too, using pongasoft/emscripten-glfw
-        #  which is quite good. However this requires more testing)
-        if (EMSCRIPTEN OR IOS)
+        # use SDL2 for iOS, GLFW for the rest
+        # (We use pongasoft/emscripten-glfw under emscripten, which has good support for the clipboard)
+        if (IOS)
             set(HELLOIMGUI_USE_SDL2 ON CACHE BOOL "" FORCE)
             set(HELLOIMGUI_HAS_OPENGL3 ON CACHE BOOL "" FORCE)
         else()

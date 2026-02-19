@@ -59,13 +59,14 @@ function(hello_imgui_bundle_assets app_name assets_location)
 
     set(local_assets_folder ${assets_location})
 
-    set(common_assets_folder_copy ${CMAKE_CURRENT_BINARY_DIR}/tmp/common_assets)
-    file(REMOVE_RECURSE ${common_assets_folder_copy})
+    # We bundle common assets folder (only the missing ones from the local assets folder)
+    set(additional_common_assets_folder ${CMAKE_CURRENT_BINARY_DIR}/tmp/${app_name}_additional_common_assets_folder)
+    file(REMOVE_RECURSE ${additional_common_assets_folder})
     hello_imgui_copy_folder1_files_missing_from_folder2(
-        ${common_assets_folder} ${local_assets_folder} ${common_assets_folder_copy})
+        ${common_assets_folder} ${local_assets_folder} ${additional_common_assets_folder})
+    hello_imgui_bundle_assets_from_folder(${app_name} ${additional_common_assets_folder})
 
-    hello_imgui_bundle_assets_from_folder(${app_name} ${common_assets_folder_copy})
-    
+    # Then we bundle the local assets folder (which can override the common assets)
     if (IS_DIRECTORY ${local_assets_folder})
         message(VERBOSE "hello_imgui_bundle_assets: ${app_name} found local assets")
         hello_imgui_bundle_assets_from_folder(${app_name} ${local_assets_folder})

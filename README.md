@@ -128,7 +128,7 @@ How to use a custom 3D background in your app
 
 [Dear ImGui Bundle](https://pthom.github.io/imgui_bundle/), a full-fledged library, built on top of Hello ImGui, provides lots of additional widgets ([imgui](https://github.com/ocornut/imgui.git), [implot](https://github.com/epezent/implot), [imgui-node-editor](https://github.com/thedmd/imgui-node-editor), [ImFileDialog](https://github.com/pthom/ImFileDialog.git), [ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit), [imgui_md](https://github.com/mekhontsev/imgui_md.git)), as well as complete python bindings.
 
-<img src="https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/demos_assets/images/logo_imgui_bundle_512.png" width=100>
+<img src="https://raw.githubusercontent.com/pthom/imgui_bundle/main/logo/logo_imgui_bundle_512.png" width=100>
 
 [online interactive demo](https://traineq.org/ImGuiBundle/emscripten/bin/demo_imgui_bundle.html) - [Source for C++ demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_cpp) - [Source for Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_python)
 

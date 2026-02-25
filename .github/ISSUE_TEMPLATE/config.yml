@@ -4,7 +4,7 @@ contact_links:
     url: https://pthom.github.io/hello_imgui/
     about: This is the official documentation for Hello ImGui.
   - name: Dear ImGui Manual
-    url: https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html
+    url: https://pthom.github.io/imgui_manual/
     about: This is an interactive manual for Dear ImGui. Its show all the widgets and features of Dear ImGui with C++ and Python code.
   - name: Discussions
     url: https://github.com/pthom/hello_imgui/discussions

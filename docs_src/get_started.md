@@ -45,4 +45,4 @@ With an Immediate mode GUI you can for example display a button and handle the c
 :language: cpp
 ```
 
-[ImGui Manual](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html) is a great resource to learn interactively about all the widgets provided by Dear ImGui.
+[ImGui Manual](https://pthom.github.io/imgui_manual/) is a great resource to learn interactively about all the widgets provided by Dear ImGui.

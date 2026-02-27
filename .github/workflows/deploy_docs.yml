@@ -1,0 +1,58 @@
+name: Deploy Docs
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'docs_src/**'
+      - 'src/hello_imgui/doc_*.src.md'
+      - 'src/hello_imgui/hello_imgui.h'
+      - 'src/hello_imgui/runner_params.h'
+      - 'src/hello_imgui/hello_imgui_api.md'
+      - 'tools/doc/**'
+      - 'README.src.md'
+      - '.github/workflows/deploy_docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install -r docs_src/requirements.txt
+
+      - name: Build docs
+        run: |
+          python tools/doc/process_md_docs.py
+          cd docs_src && jupyter-book build .
+
+      - name: Prepare pages artifact
+        run: |
+          mkdir -p _site
+          touch _site/.nojekyll
+          echo '<head><meta http-equiv="refresh" content="0; URL=book/"></head>' > _site/index.html
+          cp -a docs_src/_build/html _site/book
+
+      - uses: actions/upload-pages-artifact@v3
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

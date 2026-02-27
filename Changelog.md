@@ -1,6 +1,41 @@
 *Version numbers are synced between "Dear ImGui", "Hello ImGui" and "Dear ImGui Bundle"*
 
-# Unreleased
+# v1.92.6
+
+* Update ImGui to v1.92.6-docking
+
+**New Callbacks:**
+
+* Add callback PostNewFrame
+* Add ThemeChanged callback (Fixes #156)
+
+**New RunnerParams:**
+
+* Added params iniDisable & iniClearPreviousSettings
+* add topMost window attribute
+* FpsIdling : Add configurable vsyncToMonitor + fpsMax. This introduces a new vsyncToMonitor field in FpsIdling, allowing users to
+enable/disable synchronization with the monitor refresh rate.
+* Added params to control ini file settings
+```cpp
+// `iniDisable`: _bool, default = false_. If true, do not save or load any settings to or from an ini file.
+bool iniDisable = false;
+// `iniClearPreviousSettings`: _bool, default = false_. If true, delete any previous settings ini file at application startup.
+bool iniClearPreviousSettings = false;
+```
+
+**Emscripten** 
+  * add loading spinner overlay to default shell template
+  * use Glfw3 by default instead of Sdl2. We use pongasoft/emscripten-glfw under emscripten, which has good support for the clipboard
+
+**Fixes:**
+* Fix: ManualRender RunnerParams lifetime management 
+    Issue: https://github.com/pthom/imgui_bundle/issues/417
+* RaiseWindow at startup (improve SDL initial show on macOS)
+
+**Assets Handling:**
+* Add AddAssetsSearchPath to allow adding additional search paths for assets (e.g. to load assets from a different location, or to load additional assets without modifying the original assets folder)
+
+
 
 # v1.92.5
 * Update ImGui to v1.92.5-docking

@@ -4,7 +4,7 @@ else()
     cmake_minimum_required(VERSION 3.10)
 endif()
 
-project(hello-imgui LANGUAGES C CXX VERSION "1.92.5")  # 1.92.5 - This mirrors IMGUI_VERSION_NUM in imgui.h
+project(hello-imgui LANGUAGES C CXX VERSION "1.92.6")  # 1.92.6 - This mirrors IMGUI_VERSION_NUM in imgui.h
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 

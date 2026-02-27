@@ -110,8 +110,14 @@ namespace HelloImGui
         if (params.insideAssets)
         {
             AssetFileData fontData = LoadAssetFileData(fontFilename.c_str());
+            // Copy into IM_ALLOC buffer so that IM_FREE works at shutdown
+            // (fontData.data was allocated by malloc/SDL_LoadFile, not IM_ALLOC)
+            int dataSize = (int)fontData.dataSize;
+            void* imguiOwnedData = IM_ALLOC(dataSize);
+            memcpy(imguiOwnedData, fontData.data, dataSize);
+            FreeAssetFileData(&fontData);
             params.fontConfig.FontDataOwnedByAtlas = true;
-            font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(fontData.data, (int)fontData.dataSize, fontSize, &params.fontConfig);
+            font = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(imguiOwnedData, dataSize, fontSize, &params.fontConfig);
         }
         else
         {

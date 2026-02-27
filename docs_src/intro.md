@@ -78,12 +78,12 @@ How to use a custom 3D background in your app
 
 ### ImGui Manual
 
-[ImGui Manual](https://pthom.github.io/imgui_manual/) is an interactive Manual for Dear ImGui, built with Hello ImGui.
+[ImGui Manual](https://pthom.github.io/imgui_explorer/) is an interactive Manual for Dear ImGui, built with Hello ImGui.
 
-[![](https://github.com/pthom/hello_imgui/blob/master/docs_src/images/manual.jpg?raw=true)](https://pthom.github.io/imgui_manual/)
+[![](https://github.com/pthom/hello_imgui/blob/master/docs_src/images/manual.jpg?raw=true)](https://pthom.github.io/imgui_explorer/)
 
-[Online manual](https://pthom.github.io/imgui_manual/) -
-[Source](https://github.com/pthom/imgui_manual)
+[Online manual](https://pthom.github.io/imgui_explorer/) -
+[Source](https://github.com/pthom/imgui_explorer)
 
 
 ### RPN Calculator

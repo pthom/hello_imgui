@@ -1,10 +1,12 @@
 default:
     just --list
 
-doc_process_md:
+# Build the doc (html and pdf)
+doc_build:
     python docs_src/process_md_docs.py
-    cd docs_src && jupyter-book build .
+    cd docs_src && jupyter book build --html && jupyter book build --pdf
 
-# Deploy the book to GitHub pages (this will update the docs branch)
-doc_deploy:
-    ./docs_src/deploy_book.sh
+# Serve the doc while working on them (deployment is via github action)
+doc_serve:
+    python docs_src/process_md_docs.py
+    cd docs_src && jupyter book start

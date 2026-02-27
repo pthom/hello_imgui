@@ -36,13 +36,17 @@ jobs:
         with:
           python-version: '3.x'
 
+      - uses: typst-community/setup-typst@v4
+
       - name: Install dependencies
         run: pip install -r docs_src/requirements.txt
 
       - name: Build docs
+        env:
+          BASE_URL: /hello_imgui/book/
         run: |
           python tools/doc/process_md_docs.py
-          cd docs_src && jupyter-book build .
+          cd docs_src && jupyter book build --html && jupyter book build --pdf
 
       - name: Prepare pages artifact
         run: |
@@ -50,6 +54,7 @@ jobs:
           touch _site/.nojekyll
           echo '<head><meta http-equiv="refresh" content="0; URL=book/"></head>' > _site/index.html
           cp -a docs_src/_build/html _site/book
+          cp docs_src/_build/exports/hello_imgui_book.pdf _site/hello_imgui_book.pdf
 
       - uses: actions/upload-pages-artifact@v3
 

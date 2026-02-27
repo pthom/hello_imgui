@@ -1,5 +1,6 @@
 # Hello ImGui
 
+![logo](images/logo_hello_imgui_small.png)
 
 Hello ImGui is a library designed to make multiplatform app development as simple as writing a "Hello World" program, built on top of [Dear ImGui](https://github.com/ocornut/imgui).
 

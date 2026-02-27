@@ -1,0 +1,31 @@
+version: 1
+project:
+  title: Hello ImGui
+  copyright: '2024'
+  github: pthom/hello_imgui
+
+  # PDF export: built with `jupyter book build --pdf`
+  exports:
+    - format: pdf
+      output: _build/exports/hello_imgui_book.pdf
+      template: lapreprint-typst
+      articles:  # needs to be rewritten explicitely for pdf
+        - intro.md
+        - get_started.md
+        - doc_params.md
+        - doc_api.md
+        - building.md
+
+  # Table of contents: defines site navigation and page order
+  toc:
+    - file: intro.md
+    - file: get_started.md
+    - file: doc_params.md
+    - file: doc_api.md
+    - file: building.md
+
+site:
+  options:
+    logo: ../logo/logo_hello_imgui_small.png
+    folders: true
+  template: book-theme

@@ -103,7 +103,7 @@ How to use a custom 3D background in your app
 
 <img src="https://raw.githubusercontent.com/pthom/imgui_bundle/main/logo/logo_imgui_bundle_512.png" width=100>
 
-[online interactive demo](https://traineq.org/ImGuiBundle/emscripten/bin/demo_imgui_bundle.html) - [Source for C++ demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_cpp) - [Source for Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_python)
+[online interactive demo](https://traineq.org/imgui_bundle_explorer) - [Source for C++ demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_cpp) - [Source for Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_python)
 
 
 ### Theme tweaking

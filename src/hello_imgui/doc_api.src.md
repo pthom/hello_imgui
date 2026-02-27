@@ -47,6 +47,12 @@ See [hello_imgui_assets.h](https://github.com/pthom/hello_imgui/blob/master/src/
 @import "hello_imgui_assets.h" {md_id=assetFileFullPath}
 ```
 
+## Set assets folder
+
+```cpp
+@import "hello_imgui_assets.h" {md_id=AssetsSearchPaths}
+```
+
 
 ## Display images from assets
 See [image_from_asset.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/image_from_asset.h).

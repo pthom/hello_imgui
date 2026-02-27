@@ -67,13 +67,13 @@ namespace ManualRender
     //     By default,
     //       - On Emscripten, `ManualRender::Render()` will return immediately to avoid blocking the main thread.
     //       - On other platforms, it will sleep
-    //  2. If initialized with `RunnerParams`, a copy of the `RunnerParams` will be made
+    //  2. If initialized with `RunnerParams`, a reference to the user's `RunnerParams` is kept
     //     (which can be accessed with `HelloImGui::GetRunnerParams()`).
 
     // Initializes the rendering with the full customizable `RunnerParams`.
     // This will initialize the platform backend (SDL, Glfw, etc.) and the rendering backend (OpenGL, Vulkan, etc.).
-    // A distinct copy of `RunnerParams` is stored internally.
-    void SetupFromRunnerParams(const RunnerParams& runnerParams);
+    // A reference to the user's `RunnerParams` is kept internally (similar to HelloImGui::Run).
+    void SetupFromRunnerParams(RunnerParams& runnerParams);
 
     // Initializes the rendering with `SimpleRunnerParams`.
     // This will initialize the platform backend (SDL, Glfw, etc.) and the rendering backend (OpenGL, Vulkan, etc.).
@@ -87,7 +87,8 @@ namespace ManualRender
         bool windowSizeAuto = false,
         bool windowRestorePreviousGeometry = false,
         const ScreenSize& windowSize = DefaultWindowSize,
-        float fpsIdle = 10.f
+        float fpsIdle = 10.f,
+        bool topMost = false
     );
 
     // Renders the current frame. Should be called regularly to maintain the application's responsiveness.
@@ -247,9 +248,42 @@ std::string AssetFileFullPath(const std::string& assetRelativeFilename,
 // Returns true if this asset file exists
 bool AssetExists(const std::string& assetRelativeFilename);
 
+```
+
+## Set assets folder
+
+```cpp
+
 // Sets the assets folder location
 // (when using this, automatic assets installation on mobile platforms may not work)
 void SetAssetsFolder(const std::string& folder);
+
+// Assets search paths provide additional locations where assets can be found,
+// giving a unified view across multiple folders. When loading an asset, the
+// search order is:
+//   1. The main assets folder (set by SetAssetsFolder(), or the default
+//      platform-specific locations such as exe_folder/assets)
+//   2. Each search path added by AddAssetsSearchPath(), in order
+//   3. Other built-in platform-specific fallback locations
+//
+// The first match wins. This is useful when assets are split across
+// directories — for example, core assets (fonts, icons) in one folder
+// and demo-specific assets (extra images, specialty fonts) in another.
+//
+// Note: search paths are a runtime-only mechanism. Unlike the main assets
+// folder (which CMake can bundle into the application for mobile/emscripten),
+// search path folders are not automatically embedded at compile time.
+// They are intended for desktop or Python usage where the filesystem
+// is directly accessible.
+
+// Add a folder to the asset search paths.
+void AddAssetsSearchPath(const std::string& folder);
+
+// Remove all previously added search paths.
+void ClearAssetsSearchPaths();
+
+// Return the current list of search paths.
+const std::vector<std::string>& GetAssetsSearchPaths();
 
 ```
 

@@ -111,6 +111,7 @@ namespace HelloImGui
 std::string gAssetsSubfolderFolderName = "assets";
 
 std::string gOverrideAssetsFolder = "";
+std::vector<std::string> gAssetsSearchPaths;
 
 void overrideAssetsFolder(const char* folder)
 {
@@ -127,6 +128,21 @@ void SetAssetsFolder(const std::string& folder)
     SetAssetsFolder(folder.c_str());
 }
 
+void AddAssetsSearchPath(const std::string& folder)
+{
+    gAssetsSearchPaths.push_back(folder);
+}
+
+void ClearAssetsSearchPaths()
+{
+    gAssetsSearchPaths.clear();
+}
+
+const std::vector<std::string>& GetAssetsSearchPaths()
+{
+    return gAssetsSearchPaths;
+}
+
 struct AssetFolderWithDesignation
 {
     std::string folder;
@@ -140,6 +156,10 @@ std::vector<AssetFolderWithDesignation> computePossibleAssetsFolders()
     // Search inside gOverrideAssetsFolder set by SetAssetsFolder()
     if (! gOverrideAssetsFolder.empty())
         r.push_back({gOverrideAssetsFolder, "folder provided by HelloImGui::SetAssetsFolder()"});
+
+    // Search inside additional search paths added by AddAssetsSearchPath()
+    for (const auto& searchPath : gAssetsSearchPaths)
+        r.push_back({searchPath, "folder provided by HelloImGui::AddAssetsSearchPath()"});
 
     r.push_back({"", "absolute path or current working directory"});
 

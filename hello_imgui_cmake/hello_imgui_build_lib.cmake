@@ -410,11 +410,16 @@ function(_him_add_freetype_to_imgui)
                 set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
                 set(FT_DISABLE_PNG ON CACHE BOOL "" FORCE)
             endif()
+            set(_him_fetch_extra_args "")
+            if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.28)
+                set(_him_fetch_extra_args EXCLUDE_FROM_ALL)
+            endif()
             FetchContent_Declare(
                 freetype
                 GIT_REPOSITORY https://github.com/freetype/freetype.git
                 GIT_TAG        VER-2-13-3
                 GIT_PROGRESS TRUE
+                ${_him_fetch_extra_args}
             )
             FetchContent_MakeAvailable(freetype)
             set(HIM_FREETYPE_LINKED_LIBRARY freetype CACHE STRING "" FORCE)
@@ -463,10 +468,15 @@ function(_him_fetch_and_compile_plutovg_plutosvg)
 
     # Fetch & build plutovg at configure time
     include(FetchContent)
+    set(_him_fetch_extra_args "")
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.28)
+        set(_him_fetch_extra_args EXCLUDE_FROM_ALL)
+    endif()
     FetchContent_Declare(plutovg
         GIT_REPOSITORY https://github.com/sammycage/plutovg
         GIT_TAG        v1.0.0
         GIT_PROGRESS TRUE
+        ${_him_fetch_extra_args}
     )
     set(PLUTOVG_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(plutovg)

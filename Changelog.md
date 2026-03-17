@@ -1,4 +1,8 @@
-*Version numbers are synced between "Dear ImGui", "Hello ImGui" and "Dear ImGui Bundle"*
+*Version numbers are synced between Hello ImGui and Dear ImGui Bundle, using the scheme `major.minor.patch` where `patch = ImGui_patch × 100 + release`. For example, ImGui v1.92.6 → v1.92.600, and a bugfix release becomes v1.92.601.*
+
+# v1.92.601
+
+* Fix potential memory error in font handling (_LoadFontImpl: pass font buffer allocated with IM_ALLOC)
 
 # v1.92.6
 

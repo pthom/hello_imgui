@@ -170,6 +170,39 @@ namespace HelloImGui
         return {cachedImage->TextureID(), ImVec2((float)cachedImage->Width, (float)cachedImage->Height)};
     }
 
+    void ImageData::Free()
+    {
+        if (data)
+        {
+            stbi_image_free(data);
+            data = nullptr;
+        }
+        width = height = channels = 0;
+    }
+
+    ImageData LoadImageDataFromAsset(const char* assetPath, int desired_channels)
+    {
+        ImageData result;
+        auto assetData = LoadAssetFileData(assetPath);
+        if (assetData.data == nullptr)
+        {
+            HelloImGui::Log(LogLevel::Warning, "LoadImageDataFromAsset: failed to load asset %s", assetPath);
+            return result;
+        }
+        result.data = stbi_load_from_memory(
+            (unsigned char*)assetData.data, (int)assetData.dataSize,
+            &result.width, &result.height, &result.channels, desired_channels);
+        FreeAssetFileData(&assetData);
+        if (result.data == nullptr)
+        {
+            HelloImGui::Log(LogLevel::Warning, "LoadImageDataFromAsset: failed to decode image %s", assetPath);
+            return result;
+        }
+        if (desired_channels > 0)
+            result.channels = desired_channels;
+        return result;
+    }
+
     namespace internal
     {
         void Free_ImageFromAssetMap()

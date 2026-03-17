@@ -40,6 +40,19 @@ function(hello_imgui_bundle_assets_from_folder app_name assets_folder)
         FILE(GLOB_RECURSE children_files_only LIST_DIRECTORIES false RELATIVE ${assets_folder} ${assets_folder}/*)
         hello_imgui_get_real_output_directory(${app_name} real_output_directory)
         set(dst_folder "${real_output_directory}/assets")
+        # Collect unique parent directories so we can create them before copying
+        # (cmake -E copy_if_different does not create parent directories,
+        # and with parallel builds the directory may not exist yet)
+        set(_asset_dirs "")
+        foreach(child ${children_files_only})
+            get_filename_component(_child_dir "${dst_folder}/${child}" DIRECTORY)
+            list(APPEND _asset_dirs "${_child_dir}")
+        endforeach()
+        list(REMOVE_DUPLICATES _asset_dirs)
+        foreach(_dir ${_asset_dirs})
+            add_custom_command(TARGET ${app_name} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E make_directory "${_dir}")
+        endforeach()
         foreach(child ${children_files_only})
             add_custom_command(TARGET ${app_name} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different

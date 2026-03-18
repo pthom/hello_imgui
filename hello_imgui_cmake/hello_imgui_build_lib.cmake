@@ -486,7 +486,20 @@ function(_him_fetch_and_compile_plutovg_plutosvg)
         ${_him_fetch_extra_args}
     )
     set(PLUTOVG_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+    # Band-aid: plutovg's CMakeLists uses file(RELATIVE_PATH) which requires absolute paths,
+    # but scikit-build-core may set a relative CMAKE_INSTALL_PREFIX.
+    # Temporarily make it absolute, then restore after FetchContent.
+    # (A PR has been submitted to plutovg to add a PLUTOVG_INSTALL option instead:
+    #  https://github.com/sammycage/plutovg/pull/71)
+    set(PLUTOVG_INSTALL OFF CACHE BOOL "" FORCE)  # Prepare for plutovg's upcoming PLUTOVG_INSTALL option
+    set(_him_saved_install_prefix "${CMAKE_INSTALL_PREFIX}")
+    if(NOT IS_ABSOLUTE "${CMAKE_INSTALL_PREFIX}")
+        get_filename_component(CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" ABSOLUTE
+            BASE_DIR "${CMAKE_BINARY_DIR}")
+    endif()
     FetchContent_MakeAvailable(plutovg)
+    set(CMAKE_INSTALL_PREFIX "${_him_saved_install_prefix}")
 
     # Fetch plutosvg at configure time, then compile manually at build time
     # (the stock CMakeLists of plutosvg is not compatible with a custom install of freetype)

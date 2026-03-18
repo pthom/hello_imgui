@@ -897,6 +897,11 @@ function(him_has_metal target)
             ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.h
             ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.mm
         )
+        # imgui_impl_metal.mm uses ARC bridge casts — compile with -fobjc-arc
+        set_source_files_properties(
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_metal.mm
+            TARGET_DIRECTORY ${target}
+            PROPERTIES COMPILE_FLAGS "-fobjc-arc")
     endif()
     target_compile_definitions(${HELLOIMGUI_TARGET} PUBLIC HELLOIMGUI_HAS_METAL)
     set(HELLOIMGUI_HAS_METAL ON CACHE BOOL "" FORCE)

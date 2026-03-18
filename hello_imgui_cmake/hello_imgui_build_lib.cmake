@@ -480,7 +480,7 @@ function(_him_fetch_and_compile_plutovg_plutosvg)
     endif()
     FetchContent_Declare(plutovg
         GIT_REPOSITORY https://github.com/sammycage/plutovg
-        GIT_TAG        v1.0.0
+        GIT_TAG        v1.3.2
         GIT_PROGRESS TRUE
         ${_him_fetch_extra_args}
     )
@@ -494,7 +494,7 @@ function(_him_fetch_and_compile_plutovg_plutosvg)
     FetchContent_Populate(
         plutosvg
         GIT_REPOSITORY https://github.com/sammycage/plutosvg
-        GIT_TAG v0.0.6
+        GIT_TAG v0.0.7
         SOURCE_DIR ${CMAKE_BINARY_DIR}/plutosvg_source
         BINARY_DIR ${CMAKE_BINARY_DIR}/plutosvg_build
     )

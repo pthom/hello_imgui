@@ -294,7 +294,7 @@ function(him_install_imgui)
             return()
         endif()
 
-        install(TARGETS imgui DESTINATION ./lib/)
+        install(TARGETS imgui DESTINATION lib)
         file(GLOB imgui_headers
             ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.h
             ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/*.h
@@ -452,6 +452,7 @@ function(_him_add_freetype_to_imgui)
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         set_source_files_properties(
             ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.cpp
+            TARGET_DIRECTORY imgui
             PROPERTIES COMPILE_FLAGS "-Wno-deprecated-declarations")
     endif()
     target_compile_definitions(imgui PUBLIC IMGUI_USE_WCHAR32)

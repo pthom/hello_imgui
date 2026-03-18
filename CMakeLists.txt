@@ -1,8 +1,4 @@
-if (EMSCRIPTEN)
-    cmake_minimum_required(VERSION 3.13) # emscripten uses target_link_options (cmake 3.13+)
-else()
-    cmake_minimum_required(VERSION 3.10)
-endif()
+cmake_minimum_required(VERSION 3.18)
 
 project(hello-imgui LANGUAGES C CXX VERSION "1.92.601")  # Version synced with Dear ImGui Bundle (patch = ImGui_patch × 100 + release)
 set(CMAKE_CXX_STANDARD 17)

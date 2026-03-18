@@ -448,6 +448,12 @@ function(_him_add_freetype_to_imgui)
     target_sources(imgui PRIVATE
         ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.cpp
         ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.h)
+    # Suppress Apple Clang warning about sprintf in third-party plutosvg-ft.h
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        set_source_files_properties(
+            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/freetype/imgui_freetype.cpp
+            PROPERTIES COMPILE_FLAGS "-Wno-deprecated-declarations")
+    endif()
     target_compile_definitions(imgui PUBLIC IMGUI_USE_WCHAR32)
 
     # 4. Prepare Log info

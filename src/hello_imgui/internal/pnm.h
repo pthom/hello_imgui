@@ -274,15 +274,15 @@ namespace pnm
     {
         inline namespace pixel_literals
         {
-            inline bit_pixel operator"" _bit(unsigned long long x)
+            inline bit_pixel operator""_bit(unsigned long long x)
             {
                 return bit_pixel(x != 0);
             }
-            inline gray_pixel operator"" _gray(unsigned long long x)
+            inline gray_pixel operator""_gray(unsigned long long x)
             {
                 return gray_pixel(static_cast<std::uint8_t>(x & 0xFFu));
             }
-            inline rgb_pixel operator"" _rgb(unsigned long long x)
+            inline rgb_pixel operator""_rgb(unsigned long long x)
             {
                 const std::uint8_t R(static_cast<std::uint8_t>((x >> 16) & 0xFFu));
                 const std::uint8_t G(static_cast<std::uint8_t>((x >>  8) & 0xFFu));
@@ -1049,7 +1049,7 @@ namespace pnm
 
         namespace literals
         {
-            inline std::string operator"" _str(const char* s, std::size_t len)
+            inline std::string operator""_str(const char* s, std::size_t len)
             {
                 return std::string(s, len);
             }

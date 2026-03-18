@@ -2,7 +2,16 @@
 
 # v1.92.601
 
+* Add `LoadImageDataFromAsset()` — decode an image from assets into CPU memory (C++ only), with configurable channel count
+
+**Warnings hunt**
 * Fix potential memory error in font handling (_LoadFontImpl: pass font buffer allocated with IM_ALLOC)
+* Compile `imgui_impl_metal.mm` with `-fobjc-arc` (fixes ARC bridge cast warnings on macOS)
+* Suppress Apple Clang `-Wdeprecated-declarations` warning in `imgui_freetype.cpp` (caused by `sprintf` in third-party `plutosvg-ft.h`)
+* Update plutovg to v1.3.2 and plutosvg to v0.0.7
+* Workaround plutovg `file(RELATIVE_PATH)` error when `CMAKE_INSTALL_PREFIX` is relative (scikit-build-core wheel builds)
+* Normalize install path (`./lib/` → `lib`) to fix CMake CMP0177 warning
+* cmake/assets: create asset destination dirs before `copy_if_different`
 
 # v1.92.6
 

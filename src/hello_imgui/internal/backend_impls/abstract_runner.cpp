@@ -141,7 +141,9 @@ void AbstractRunner::Run()
     catch(std::exception&)
     {
         // Late handling of user exceptions: TearDown backend and rethrow
-        TearDown(true);
+        // (skip if TearDown already ran — e.g. it threw an exception itself)
+        if (!mWasTearedDown)
+            TearDown(true);
         throw;
     }
 #endif

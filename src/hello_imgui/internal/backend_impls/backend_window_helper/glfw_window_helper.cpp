@@ -5,6 +5,7 @@
 
 #ifdef __EMSCRIPTEN__
 #include <GLFW/emscripten_glfw3.h>
+#include <emscripten.h>
 #endif
 
 #include "hello_imgui/internal/platform/platform_detection.h"
@@ -150,6 +151,23 @@ namespace HelloImGui { namespace BackendApi
 #ifdef __EMSCRIPTEN__
         // makes the canvas resizable and match the full window size
         emscripten_glfw_make_canvas_resizable(window, "window", nullptr);
+
+        // Let browser handle zoom shortcuts (Ctrl/Cmd + Plus/Minus/0).
+        // We intercept at the JS level (capture phase) because GLFW key codes are
+        // based on physical key positions (US layout), but browser zoom shortcuts
+        // are character-based — which differ across keyboard layouts (e.g. French AZERTY).
+        if (appWindowParams.emscriptenAllowBrowserZoomShortcuts)
+        {
+            EM_ASM({
+                document.addEventListener('keydown', function(e) {
+                    if (e.metaKey || e.ctrlKey) {
+                        if (e.key === '+' || e.key === '=' || e.key === '-' || e.key === '0') {
+                            e.stopImmediatePropagation();
+                        }
+                    }
+                }, true);
+            });
+        }
 #endif
 
         if (appWindowParams.windowGeometry.windowSizeState == WindowSizeState::Minimized)

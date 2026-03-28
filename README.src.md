@@ -1,8 +1,3 @@
-<a href="://pthom.github.io/hello_imgui/"><img src="logo/logo_hello_imgui.png" width="120"></a>
-
-_See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/) for API, usage and build instructions._
-
-
 **OpenGL**<br/>
 [![Win_Mac_Linux](https://github.com/pthom/hello_imgui/actions/workflows/Win_Mac_Linux.yml/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Win_Mac_Linux.yml)
 [![MinGW](https://github.com/pthom/hello_imgui/actions/workflows/MinGW.yml/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/MinGW.yml)
@@ -23,8 +18,8 @@ _See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/
 [![Automate](https://github.com/pthom/hello_imgui/actions/workflows/Automate.yml/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Automate.yml)
 [![StarterTemplate](https://github.com/pthom/hello_imgui/actions/workflows/StarterTemplate.yml/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/StarterTemplate.yml)
 
-**Vcpkg**<br/>
-[![VcpkgDeps](https://github.com/pthom/hello_imgui/actions/workflows/VcpkgDeps.yml/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/VcpkgDeps.yml)
+
+_See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/) for API, usage and build instructions._
 
 <!-- INTRO -->
 

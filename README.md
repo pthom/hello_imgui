@@ -1,8 +1,3 @@
-<a href="://pthom.github.io/hello_imgui/"><img src="logo/logo_hello_imgui.png" width="120"></a>
-
-_See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/) for API, usage and build instructions._
-
-
 **OpenGL**<br/>
 [![Win_Mac_Linux](https://github.com/pthom/hello_imgui/actions/workflows/Win_Mac_Linux.yml/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Win_Mac_Linux.yml)
 [![MinGW](https://github.com/pthom/hello_imgui/actions/workflows/MinGW.yml/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/MinGW.yml)
@@ -23,12 +18,17 @@ _See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/
 [![Automate](https://github.com/pthom/hello_imgui/actions/workflows/Automate.yml/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/Automate.yml)
 [![StarterTemplate](https://github.com/pthom/hello_imgui/actions/workflows/StarterTemplate.yml/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/StarterTemplate.yml)
 
-**Vcpkg**<br/>
-[![VcpkgDeps](https://github.com/pthom/hello_imgui/actions/workflows/VcpkgDeps.yml/badge.svg)](https://github.com/pthom/hello_imgui/actions/workflows/VcpkgDeps.yml)
+
+_See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/) for API, usage and build instructions._
 
 # Hello ImGui
 
-![logo](images/logo_hello_imgui_small.png)
+![logo](https://traineq.org/HelloImGui/logo_hello_imgui_small.png)
+
+> *Dear ImGui apps made simple: desktop, mobile, and web from one codebase.*
+>
+>  Minimal code. Maximally readable.
+
 
 Hello ImGui is a library designed to make multiplatform app development as simple as writing a "Hello World" program, built on top of [Dear ImGui](https://github.com/ocornut/imgui).
 

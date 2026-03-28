@@ -1,6 +1,11 @@
 # Hello ImGui
 
-![logo](images/logo_hello_imgui_small.png)
+![logo](https://traineq.org/HelloImGui/logo_hello_imgui_small.png)
+
+> *Dear ImGui apps made simple: desktop, mobile, and web from one codebase.*
+>
+>  Minimal code. Maximally readable.
+
 
 Hello ImGui is a library designed to make multiplatform app development as simple as writing a "Hello World" program, built on top of [Dear ImGui](https://github.com/ocornut/imgui).
 

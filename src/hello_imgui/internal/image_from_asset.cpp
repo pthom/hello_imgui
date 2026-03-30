@@ -203,6 +203,102 @@ namespace HelloImGui
         return result;
     }
 
+    // Create a backend-specific image object and upload decoded RGBA data to GPU.
+    // Returns nullptr on failure. Frees rgba_data via stbi_image_free.
+    static ImageAbstractPtr _CreateImageFromRgba(unsigned char* rgba_data, int width, int height)
+    {
+        if (rgba_data == nullptr)
+            return nullptr;
+
+        HelloImGui::RendererBackendType rendererBackendType = HelloImGui::GetRunnerParams()->rendererBackendType;
+        ImageAbstractPtr concreteImage;
+
+        #ifdef HELLOIMGUI_HAS_OPENGL
+            if (rendererBackendType == RendererBackendType::OpenGL3)
+                concreteImage = std::make_shared<ImageOpenGl>();
+        #endif
+        #if defined(HELLOIMGUI_HAS_METAL)
+            if (rendererBackendType == RendererBackendType::Metal)
+                concreteImage = std::make_shared<ImageMetal>();
+        #endif
+        #if defined(HELLOIMGUI_HAS_VULKAN)
+            if (rendererBackendType == RendererBackendType::Vulkan)
+                concreteImage = std::make_shared<ImageVulkan>();
+        #endif
+        #if defined(HELLOIMGUI_HAS_DIRECTX11)
+            if (rendererBackendType == RendererBackendType::DirectX11)
+                concreteImage = std::make_shared<ImageDx11>();
+        #endif
+
+        if (concreteImage == nullptr)
+        {
+            HelloImGui::Log(LogLevel::Warning, "_CreateImageFromRgba: not implemented for this rendering backend!");
+            stbi_image_free(rgba_data);
+            return nullptr;
+        }
+
+        concreteImage->Width = width;
+        concreteImage->Height = height;
+        concreteImage->_impl_StoreTexture(width, height, rgba_data);
+        stbi_image_free(rgba_data);
+        return concreteImage;
+    }
+
+
+    ImageData LoadImageDataFromEncodedData(const void* data, size_t dataSize, int desired_channels)
+    {
+        ImageData result;
+        result.data = stbi_load_from_memory(
+            (const unsigned char*)data, (int)dataSize,
+            &result.width, &result.height, &result.channels, desired_channels);
+        if (result.data == nullptr)
+        {
+            HelloImGui::Log(LogLevel::Warning, "LoadImageDataFromEncodedData: failed to decode image data");
+            return result;
+        }
+        if (desired_channels > 0)
+            result.channels = desired_channels;
+        return result;
+    }
+
+
+    ImageAndSize ImageAndSizeFromEncodedData(
+        const void* data, size_t dataSize,
+        const std::string& cacheKey)
+    {
+        // Check cache
+        if (!cacheKey.empty() && gImageFromAssetMap.find(cacheKey) != gImageFromAssetMap.end())
+        {
+            auto& cached = gImageFromAssetMap.at(cacheKey);
+            if (cached)
+                return {cached->TextureID(), ImVec2((float)cached->Width, (float)cached->Height)};
+            return {};
+        }
+
+        // Decode with stbi
+        int width, height;
+        unsigned char* rgba_data = stbi_load_from_memory(
+            (const unsigned char*)data, (int)dataSize,
+            &width, &height, NULL, 4);
+
+        if (rgba_data == NULL)
+        {
+            HelloImGui::Log(LogLevel::Warning, "ImageAndSizeFromEncodedData: failed to decode image data");
+            return {};
+        }
+
+        auto concreteImage = _CreateImageFromRgba(rgba_data, width, height);
+        if (!concreteImage)
+            return {};
+
+        // Cache if key provided
+        if (!cacheKey.empty())
+            gImageFromAssetMap[cacheKey] = concreteImage;
+
+        return {concreteImage->TextureID(), ImVec2((float)width, (float)height)};
+    }
+
+
     namespace internal
     {
         void Free_ImageFromAssetMap()

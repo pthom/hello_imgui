@@ -21,6 +21,8 @@ namespace HelloImGui
         r.fpsIdling.fpsIdle = self.fpsIdle;
         r.fpsIdling.enableIdling = self.enableIdling;
 
+        r.iniDisable = self.iniDisable;
+
         return r;
     }
 

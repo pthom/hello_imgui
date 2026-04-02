@@ -234,7 +234,9 @@ namespace HelloImGui
     std::string IniFolderLocation(IniFolderType iniFolderType)
     {
 #ifdef __EMSCRIPTEN__
-        return "/";     // Emscripten uses a virtual file system, so we can't use any of the other paths
+        if (iniFolderType == IniFolderType::CurrentFolder)
+            return "";
+        return "/";
 #else
         switch(iniFolderType)
         {

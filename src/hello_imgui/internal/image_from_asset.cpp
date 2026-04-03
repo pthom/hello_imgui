@@ -203,8 +203,8 @@ namespace HelloImGui
         return result;
     }
 
-    // Create a backend-specific image object and upload decoded RGBA data to GPU.
-    // Returns nullptr on failure. Frees rgba_data via stbi_image_free.
+    // Create a backend-specific image object and upload RGBA data to GPU.
+    // Does NOT free rgba_data - the caller is responsible for freeing it.
     static ImageAbstractPtr _CreateImageFromRgba(unsigned char* rgba_data, int width, int height)
     {
         if (rgba_data == nullptr)
@@ -233,14 +233,12 @@ namespace HelloImGui
         if (concreteImage == nullptr)
         {
             HelloImGui::Log(LogLevel::Warning, "_CreateImageFromRgba: not implemented for this rendering backend!");
-            stbi_image_free(rgba_data);
             return nullptr;
         }
 
         concreteImage->Width = width;
         concreteImage->Height = height;
         concreteImage->_impl_StoreTexture(width, height, rgba_data);
-        stbi_image_free(rgba_data);
         return concreteImage;
     }
 
@@ -288,6 +286,7 @@ namespace HelloImGui
         }
 
         auto concreteImage = _CreateImageFromRgba(rgba_data, width, height);
+        stbi_image_free(rgba_data);
         if (!concreteImage)
             return {};
 
@@ -298,6 +297,31 @@ namespace HelloImGui
         return {concreteImage->TextureID(), ImVec2((float)width, (float)height)};
     }
 
+
+    ImageAndSize CreateTextureFromRgbaData(
+        const unsigned char* rgbaData, int width, int height)
+    {
+        auto concreteImage = _CreateImageFromRgba(
+            const_cast<unsigned char*>(rgbaData), width, height);
+        if (!concreteImage)
+            return {};
+        return {concreteImage->TextureID(), ImVec2((float)width, (float)height)};
+    }
+
+    void DeleteTexture(ImTextureID textureId)
+    {
+        // Check if it's in the asset cache first
+        for (auto it = gImageFromAssetMap.begin(); it != gImageFromAssetMap.end(); ++it)
+        {
+            if (it->second && it->second->TextureID() == textureId)
+            {
+                gImageFromAssetMap.erase(it);
+                return;
+            }
+        }
+        // Not in cache - caller must handle GPU deletion directly
+        // (the ImageAbstract destructor handles this when the shared_ptr dies)
+    }
 
     namespace internal
     {

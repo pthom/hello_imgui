@@ -1,7 +1,7 @@
 #pragma once
 #ifdef HELLOIMGUI_HAS_METAL
 
-#include "image_abstract.h"
+#include "hello_imgui/texture_gpu.h"
 
 #include <Metal/Metal.h>
 #include <QuartzCore/CAMetalLayer.h>
@@ -10,10 +10,10 @@
 
 namespace HelloImGui
 {
-    struct ImageMetal: public ImageAbstract
+    struct TextureGpuMetal: public TextureGpu
     {
-        ImageMetal() = default;
-        ~ImageMetal() override;
+        TextureGpuMetal() = default;
+        ~TextureGpuMetal() override;
 
         ImTextureID TextureID() override;
         void _impl_StoreTexture(int width, int height, unsigned char* image_data_rgba) override;

@@ -1,16 +1,16 @@
 #pragma once
 #ifdef HELLOIMGUI_HAS_VULKAN
 
-#include "image_abstract.h"
+#include "hello_imgui/texture_gpu.h"
 #include <vulkan/vulkan.h>
 #include <memory>
 
 namespace HelloImGui
 {
-    struct ImageVulkan: public ImageAbstract
+    struct TextureGpuVulkan: public TextureGpu
     {
-        ImageVulkan() = default;
-        ~ImageVulkan() override;
+        TextureGpuVulkan() = default;
+        ~TextureGpuVulkan() override;
 
         ImTextureID TextureID() override;
         void _impl_StoreTexture(int width, int height, unsigned char* image_data_rgba) override;

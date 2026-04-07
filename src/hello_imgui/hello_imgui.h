@@ -10,6 +10,7 @@
 #include "hello_imgui/hello_imgui_error.h"
 #include "hello_imgui/hello_imgui_logger.h"
 #include "hello_imgui/image_from_asset.h"
+#include "hello_imgui/texture_gpu.h"
 #include "hello_imgui/imgui_theme.h"
 #include "hello_imgui/hello_imgui_theme.h"
 #include "hello_imgui/hello_imgui_font.h"

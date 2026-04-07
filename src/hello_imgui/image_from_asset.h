@@ -111,17 +111,8 @@ ImageAndSize ImageAndSizeFromEncodedData(
     const void* data, size_t dataSize,
     const std::string& cacheKey = "");
 
-// `HelloImGui::CreateTextureFromRgbaData(rgbaData, width, height)`:
-// Upload raw RGBA pixel data to the GPU and return the texture ID and size.
-// The caller retains ownership of rgbaData (it is not freed).
-// The returned texture is not cached - the caller manages its lifetime.
-// Call DeleteTexture() to free the GPU resource when done.
-ImageAndSize CreateTextureFromRgbaData(
-    const unsigned char* rgbaData, int width, int height);
-
-// `HelloImGui::DeleteTexture(textureId)`:
-// Free a GPU texture created by CreateTextureFromRgbaData.
-void DeleteTexture(ImTextureID textureId);
+// To upload raw RGBA pixel data to a caller-owned GPU texture, see
+// `HelloImGui::CreateTextureGpuFromRgbaData()` in `texture_gpu.h`.
 
 // @@md
 

@@ -80,7 +80,7 @@ struct AppState
     float maxR = 1.0f, maxG = 1.0f, maxB = 1.0f;
 
     ImageEdr imageEdr = ImageEdr(512, 512);
-    HelloImGui::ImageMetal imageMetal;
+    HelloImGui::TextureGpuMetal imageMetal;
 
     AppState()
     {

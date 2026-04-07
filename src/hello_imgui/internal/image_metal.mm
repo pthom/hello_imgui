@@ -7,7 +7,7 @@
 namespace HelloImGui
 {
 
-    void ImageMetal::_impl_StoreTexture(int width, int height, unsigned char* image_data_rgba)
+    void TextureGpuMetal::_impl_StoreTexture(int width, int height, unsigned char* image_data_rgba)
     {
         auto gMetalGlobals = GetMetalGlobals();
 
@@ -28,7 +28,7 @@ namespace HelloImGui
         [textureDescriptor release];
     }
 
-    void ImageMetal::StoreTextureFloat16Rgba(int width, int height, uint16_t* image_data_float16_rgba)
+    void TextureGpuMetal::StoreTextureFloat16Rgba(int width, int height, uint16_t* image_data_float16_rgba)
     {
         auto gMetalGlobals = GetMetalGlobals();
 
@@ -53,12 +53,12 @@ namespace HelloImGui
     }
 
 
-    ImageMetal::~ImageMetal()
+    TextureGpuMetal::~TextureGpuMetal()
     {
         [Texture release];
     }
 
-    ImTextureID ImageMetal::TextureID()
+    ImTextureID TextureGpuMetal::TextureID()
     {
         return (ImTextureID)Texture;
     }

@@ -27,7 +27,7 @@ namespace HelloImGui
         return 0xFFFFFFFF; // Unable to find memoryType
     }
 
-    void ImageVulkan::_impl_StoreTexture(int width, int height, unsigned char* image_data_rgba)
+    void TextureGpuVulkan::_impl_StoreTexture(int width, int height, unsigned char* image_data_rgba)
     {
         VulkanGlobals& vkGlobals = GetVulkanGlobals();
         
@@ -216,7 +216,7 @@ namespace HelloImGui
     }
 
     // Destructor to clean up Vulkan resources
-    ImageVulkan::~ImageVulkan()
+    TextureGpuVulkan::~TextureGpuVulkan()
     {
         VulkanGlobals& vkGlobals = GetVulkanGlobals();
         auto& self = *this;
@@ -230,7 +230,7 @@ namespace HelloImGui
         ImGui_ImplVulkan_RemoveTexture(self.DS);
     }
 
-    ImTextureID ImageVulkan::TextureID()
+    ImTextureID TextureGpuVulkan::TextureID()
     {
         return (ImTextureID)DS;
         //return (ImTextureID)(intptr_t)ImageView;

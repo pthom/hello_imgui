@@ -1,6 +1,6 @@
 #include "hello_imgui/image_from_asset.h"
 
-#include "hello_imgui/internal/image_abstract.h"
+#include "hello_imgui/texture_gpu.h"
 #include "hello_imgui/hello_imgui.h"
 #include "image_opengl.h"
 #include "image_dx11.h"
@@ -35,32 +35,32 @@ namespace HelloImGui
         return r;
     }
 
-    static std::unordered_map<std::string, ImageAbstractPtr > gImageFromAssetMap;
+    static std::unordered_map<std::string, TextureGpuPtr > gImageFromAssetMap;
 
 
-    static ImageAbstractPtr _GetCachedImage(const char*assetPath)
+    static TextureGpuPtr _GetCachedImage(const char*assetPath)
     {
         if (gImageFromAssetMap.find(assetPath) != gImageFromAssetMap.end())
             return gImageFromAssetMap.at(assetPath);
 
         HelloImGui::RendererBackendType rendererBackendType = HelloImGui::GetRunnerParams()->rendererBackendType;
-        ImageAbstractPtr concreteImage;
+        TextureGpuPtr concreteImage;
 
         #ifdef HELLOIMGUI_HAS_OPENGL
             if (rendererBackendType == RendererBackendType::OpenGL3)
-                concreteImage = std::make_shared<ImageOpenGl>();
+                concreteImage = std::make_shared<TextureGpuOpenGl>();
         #endif
         #if defined(HELLOIMGUI_HAS_METAL)
             if (rendererBackendType == RendererBackendType::Metal)
-                concreteImage = std::make_shared<ImageMetal>();
+                concreteImage = std::make_shared<TextureGpuMetal>();
         #endif
         #if defined(HELLOIMGUI_HAS_VULKAN)
             if (rendererBackendType == RendererBackendType::Vulkan)
-                concreteImage = std::make_shared<ImageVulkan>();
+                concreteImage = std::make_shared<TextureGpuVulkan>();
         #endif
         #if defined(HELLOIMGUI_HAS_DIRECTX11)
             if (rendererBackendType == RendererBackendType::DirectX11)
-                concreteImage = std::make_shared<ImageDx11>();
+                concreteImage = std::make_shared<TextureGpuDx11>();
         #endif
         if (concreteImage == nullptr)
         {
@@ -203,36 +203,36 @@ namespace HelloImGui
         return result;
     }
 
-    // Create a backend-specific image object and upload RGBA data to GPU.
+    // Create a backend-specific TextureGpu and upload RGBA data to GPU.
     // Does NOT free rgba_data - the caller is responsible for freeing it.
-    static ImageAbstractPtr _CreateImageFromRgba(unsigned char* rgba_data, int width, int height)
+    static TextureGpuPtr _CreateTextureGpuFromRgba(unsigned char* rgba_data, int width, int height)
     {
         if (rgba_data == nullptr)
             return nullptr;
 
         HelloImGui::RendererBackendType rendererBackendType = HelloImGui::GetRunnerParams()->rendererBackendType;
-        ImageAbstractPtr concreteImage;
+        TextureGpuPtr concreteImage;
 
         #ifdef HELLOIMGUI_HAS_OPENGL
             if (rendererBackendType == RendererBackendType::OpenGL3)
-                concreteImage = std::make_shared<ImageOpenGl>();
+                concreteImage = std::make_shared<TextureGpuOpenGl>();
         #endif
         #if defined(HELLOIMGUI_HAS_METAL)
             if (rendererBackendType == RendererBackendType::Metal)
-                concreteImage = std::make_shared<ImageMetal>();
+                concreteImage = std::make_shared<TextureGpuMetal>();
         #endif
         #if defined(HELLOIMGUI_HAS_VULKAN)
             if (rendererBackendType == RendererBackendType::Vulkan)
-                concreteImage = std::make_shared<ImageVulkan>();
+                concreteImage = std::make_shared<TextureGpuVulkan>();
         #endif
         #if defined(HELLOIMGUI_HAS_DIRECTX11)
             if (rendererBackendType == RendererBackendType::DirectX11)
-                concreteImage = std::make_shared<ImageDx11>();
+                concreteImage = std::make_shared<TextureGpuDx11>();
         #endif
 
         if (concreteImage == nullptr)
         {
-            HelloImGui::Log(LogLevel::Warning, "_CreateImageFromRgba: not implemented for this rendering backend!");
+            HelloImGui::Log(LogLevel::Warning, "_CreateTextureGpuFromRgba: not implemented for this rendering backend!");
             return nullptr;
         }
 
@@ -285,7 +285,7 @@ namespace HelloImGui
             return {};
         }
 
-        auto concreteImage = _CreateImageFromRgba(rgba_data, width, height);
+        auto concreteImage = _CreateTextureGpuFromRgba(rgba_data, width, height);
         stbi_image_free(rgba_data);
         if (!concreteImage)
             return {};
@@ -298,29 +298,14 @@ namespace HelloImGui
     }
 
 
-    ImageAndSize CreateTextureFromRgbaData(
+    TextureGpuPtr CreateTextureGpuFromRgbaData(
         const unsigned char* rgbaData, int width, int height)
     {
-        auto concreteImage = _CreateImageFromRgba(
+        // _CreateTextureGpuFromRgba uploads the pixel data into a fresh
+        // backend-specific TextureGpu and returns the owning shared_ptr.
+        // We just forward it: callers own the lifetime.
+        return _CreateTextureGpuFromRgba(
             const_cast<unsigned char*>(rgbaData), width, height);
-        if (!concreteImage)
-            return {};
-        return {concreteImage->TextureID(), ImVec2((float)width, (float)height)};
-    }
-
-    void DeleteTexture(ImTextureID textureId)
-    {
-        // Check if it's in the asset cache first
-        for (auto it = gImageFromAssetMap.begin(); it != gImageFromAssetMap.end(); ++it)
-        {
-            if (it->second && it->second->TextureID() == textureId)
-            {
-                gImageFromAssetMap.erase(it);
-                return;
-            }
-        }
-        // Not in cache - caller must handle GPU deletion directly
-        // (the ImageAbstract destructor handles this when the shared_ptr dies)
     }
 
     namespace internal

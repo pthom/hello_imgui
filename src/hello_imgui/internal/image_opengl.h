@@ -2,15 +2,15 @@
 #ifdef HELLOIMGUI_HAS_OPENGL
 
 #include "hello_imgui/hello_imgui_include_opengl.h"
-#include "image_abstract.h"
+#include "hello_imgui/texture_gpu.h"
 #include <memory>
 
 namespace HelloImGui
 {
-    struct ImageOpenGl: public ImageAbstract
+    struct TextureGpuOpenGl: public TextureGpu
     {
-        ImageOpenGl() = default;
-        ~ImageOpenGl() override;
+        TextureGpuOpenGl() = default;
+        ~TextureGpuOpenGl() override;
 
         ImTextureID TextureID() override;
         void _impl_StoreTexture(int width, int height, unsigned char* image_data_rgba) override;

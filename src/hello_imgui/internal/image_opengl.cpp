@@ -6,7 +6,7 @@
 
 namespace HelloImGui
 {
-    void ImageOpenGl::_impl_StoreTexture(int width, int height, unsigned char* image_data_rgba)
+    void TextureGpuOpenGl::_impl_StoreTexture(int width, int height, unsigned char* image_data_rgba)
     {
         auto& self = *this;
         glGenTextures(1, &self.TextureId);
@@ -23,13 +23,13 @@ namespace HelloImGui
                      height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data_rgba);
     }
 
-    ImTextureID ImageOpenGl::TextureID()
+    ImTextureID TextureGpuOpenGl::TextureID()
     {
         auto& self = *this;
         return (ImTextureID)(intptr_t)self.TextureId;
     }
 
-    ImageOpenGl::~ImageOpenGl()
+    TextureGpuOpenGl::~TextureGpuOpenGl()
     {
         glDeleteTextures(1, &TextureId);
     }

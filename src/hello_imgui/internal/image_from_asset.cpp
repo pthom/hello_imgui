@@ -57,11 +57,38 @@ namespace HelloImGui
     }
 
 
+    // Lazy GL loader init for callers who use the asset / texture helpers
+    // outside of HelloImGui::Run() (e.g. imgui_md hosted in a pure GLFW +
+    // PyOpenGL Python backend, or a vanilla glfw+opengl3 C++ app).
+    //
+    // Inside HelloImGui::Run(), the runner has already initialized GLAD via
+    // its own platform-specific path — we must not interfere with that.
+    //
+    // Called from _GetCachedImage / _CreateTextureGpuFromRgba just before the
+    // first GPU upload. By the time those run, the user is in a frame and a
+    // GL context is current, so gladLoadGL() works correctly. (Doing this in
+    // imgui_md::InitializeMarkdown() instead is wrong: in immapp apps that
+    // function runs from Priv_Setup, *before* HelloImGui::Run has created
+    // the GL context — gladLoadGL() then crashes on macOS and corrupts
+    // libGL refcounts on Linux.)
+    static void _EnsureGlLoaderForStandalone()
+    {
+        if (IsUsingHelloImGui())
+            return;
+        static bool sLoaderInitialized = false;
+        if (sLoaderInitialized)
+            return;
+        InitGlLoader();
+        sLoaderInitialized = true;
+    }
+
+
     static TextureGpuPtr _GetCachedImage(const char*assetPath)
     {
         if (gImageFromAssetMap.find(assetPath) != gImageFromAssetMap.end())
             return gImageFromAssetMap.at(assetPath);
 
+        _EnsureGlLoaderForStandalone();
         HelloImGui::RendererBackendType rendererBackendType = _ResolveBackendType();
         TextureGpuPtr concreteImage;
 
@@ -229,6 +256,7 @@ namespace HelloImGui
         if (rgba_data == nullptr)
             return nullptr;
 
+        _EnsureGlLoaderForStandalone();
         HelloImGui::RendererBackendType rendererBackendType = _ResolveBackendType();
         TextureGpuPtr concreteImage;
 

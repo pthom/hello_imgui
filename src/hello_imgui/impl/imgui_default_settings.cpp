@@ -40,7 +40,10 @@ void LoadDefaultFont_WithFontAwesomeIcons()
         return;
 
     if ( ! HelloImGui::AssetExists(iconFontFile))
+    {
+        fprintf(stderr, "Can't load icon font %s \n", iconFontFile.c_str());
         return;
+    }
 
     HelloImGui::FontLoadingParams fontParams;
     fontParams.mergeToLastFont = true;

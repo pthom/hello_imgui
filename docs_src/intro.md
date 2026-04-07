@@ -70,7 +70,7 @@ The docking demo show how to handle complex layouts, use themes, store user sett
 
 ![](https://github.com/pthom/hello_imgui/blob/master/docs_src/images/docking.jpg?raw=true)
 
-[Online demo](https://traineq.org/ImGuiBundle/emscripten/bin/demo_docking.html) - [Source](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp) - Video tutorial: [how to handle multiple complex layouts](https://www.youtube.com/watch?v=XKxmz__F4ow)
+[Online demo](https://traineq.org/imgui_bundle_explorer/demo_docking.html) - [Source](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp) - Video tutorial: [how to handle multiple complex layouts](https://www.youtube.com/watch?v=XKxmz__F4ow)
 
 ### Custom 3D background
 
@@ -78,7 +78,7 @@ How to use a custom 3D background in your app
 
 ![](https://github.com/pthom/hello_imgui/blob/master/docs_src/images/custom_background.jpg?raw=true≥)
 
-[Online demo](https://traineq.org/ImGuiBundle/emscripten/bin/demo_custom_background.html) - [Source](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_custom_background/hello_custom_background.main.cpp)
+[Online demo](https://traineq.org/imgui_bundle_explorer/demo_custom_background.html) - [Source](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_custom_background/hello_custom_background.main.cpp)
 
 
 ### ImGui Manual

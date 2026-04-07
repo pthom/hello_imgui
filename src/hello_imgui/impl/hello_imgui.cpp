@@ -2,6 +2,9 @@
 #include "hello_imgui/internal/backend_impls/runner_factory.h"
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/internal/docking_details.h"
+#if defined(HELLOIMGUI_HAS_OPENGL) && defined(HELLOIMGUI_USE_GLAD)
+#include <glad/glad.h>
+#endif
 #include "imgui_internal.h"
 #include <deque>
 #include <set>
@@ -274,6 +277,34 @@ RunnerParams* GetRunnerParams()
 bool IsUsingHelloImGui()
 {
     return Priv_CurrentRunnerParamsPtr() != nullptr;
+}
+
+bool InitGlLoader()
+{
+#if defined(HELLOIMGUI_HAS_OPENGL) && defined(HELLOIMGUI_USE_GLAD)
+    // Use GLAD's no-loader entry point: it dlsyms the GL functions out of
+    // the system OpenGL library directly (LoadLibrary("opengl32.dll") on
+    // Windows, dlopen("libGL.so") on Linux, dlopen("OpenGL.framework") on
+    // macOS). This is independent of any windowing library, so it works
+    // even when HelloImGui's bundled GLFW is in a "not initialized" state
+    // — which is the standalone case (e.g. imgui_md hosted in a pure
+    // Python glfw + PyOpenGL backend, where the user's `glfw` Python
+    // package is a separate GLFW binary from HelloImGui's bundled one).
+    int status = gladLoadGL();
+    if (status == 0)
+    {
+        fprintf(stderr,
+            "HelloImGui::InitGlLoader(): gladLoadGL() failed. "
+            "Make sure a GL context is current before calling this.\n");
+        return false;
+    }
+    return true;
+#else
+    fprintf(stderr,
+        "HelloImGui::InitGlLoader(): HelloImGui was not compiled with the "
+        "GLAD OpenGL loader (HELLOIMGUI_USE_GLAD).\n");
+    return false;
+#endif
 }
 
 void SwitchLayout(const std::string& layoutName)

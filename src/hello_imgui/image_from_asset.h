@@ -114,6 +114,14 @@ ImageAndSize ImageAndSizeFromEncodedData(
 // To upload raw RGBA pixel data to a caller-owned GPU texture, see
 // `HelloImGui::CreateTextureGpuFromRgbaData()` in `texture_gpu.h`.
 
+// `HelloImGui::FreeImageCache()`: clears the asset image cache shared by
+//  `ImageFromAsset`, `ImageAndSizeFromAsset` and `ImageAndSizeFromEncodedData`.
+//  Inside a `HelloImGui::Run()` context this is called automatically at
+//  shutdown. When using imgui_md (or any of the helpers above) without
+//  `Run()`, the cache lives until process exit unless you call this manually
+//  before destroying your GL context.
+void FreeImageCache();
+
 // @@md
 
 namespace internal

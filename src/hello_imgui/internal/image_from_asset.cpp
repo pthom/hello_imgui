@@ -38,12 +38,31 @@ namespace HelloImGui
     static std::unordered_map<std::string, TextureGpuPtr > gImageFromAssetMap;
 
 
+    // Resolve which renderer backend to use when creating a TextureGpu.
+    // Inside HelloImGui::Run(), the value comes from RunnerParams.
+    // Outside Run() (e.g. imgui_md hosted in a pure GLFW + PyOpenGL backend),
+    // we fall back to OpenGL3 if it is compiled in. Phase 7 of the
+    // imgui_md-without-HelloImGui work explicitly scopes standalone use to
+    // OpenGL3 only — Metal/Vulkan/DX11 require device handles that the runner
+    // would normally create, and we don't expose an injection API for those.
+    static RendererBackendType _ResolveBackendType()
+    {
+        if (IsUsingHelloImGui())
+            return GetRunnerParams()->rendererBackendType;
+#ifdef HELLOIMGUI_HAS_OPENGL
+        return RendererBackendType::OpenGL3;
+#else
+        return RendererBackendType::FirstAvailable;  // hits the "not implemented" path below
+#endif
+    }
+
+
     static TextureGpuPtr _GetCachedImage(const char*assetPath)
     {
         if (gImageFromAssetMap.find(assetPath) != gImageFromAssetMap.end())
             return gImageFromAssetMap.at(assetPath);
 
-        HelloImGui::RendererBackendType rendererBackendType = HelloImGui::GetRunnerParams()->rendererBackendType;
+        HelloImGui::RendererBackendType rendererBackendType = _ResolveBackendType();
         TextureGpuPtr concreteImage;
 
         #ifdef HELLOIMGUI_HAS_OPENGL
@@ -210,7 +229,7 @@ namespace HelloImGui
         if (rgba_data == nullptr)
             return nullptr;
 
-        HelloImGui::RendererBackendType rendererBackendType = HelloImGui::GetRunnerParams()->rendererBackendType;
+        HelloImGui::RendererBackendType rendererBackendType = _ResolveBackendType();
         TextureGpuPtr concreteImage;
 
         #ifdef HELLOIMGUI_HAS_OPENGL
@@ -308,11 +327,16 @@ namespace HelloImGui
             const_cast<unsigned char*>(rgbaData), width, height);
     }
 
+    void FreeImageCache()
+    {
+        gImageFromAssetMap.clear();
+    }
+
     namespace internal
     {
         void Free_ImageFromAssetMap()
         {
-            gImageFromAssetMap.clear();
+            FreeImageCache();
         }
     }
 

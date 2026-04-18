@@ -5,7 +5,7 @@ contact_links:
     about: This is the official documentation for Hello ImGui.
   - name: Dear ImGui Manual
     url: https://pthom.github.io/imgui_explorer/
-    about: Dear ImGui Explorer: an interactive manual for ImGui.
+    about: "Dear ImGui Explorer: an interactive manual for ImGui."
   - name: Discussions
     url: https://github.com/pthom/hello_imgui/discussions
     about: This is the official place to discuss about Hello ImGui.

@@ -14,6 +14,8 @@ namespace HelloImGui
     ImageBuffer OpenglScreenshotRgb()
     {
         auto draw_data = ImGui::GetDrawData();
+        IM_ASSERT(draw_data != nullptr &&
+            "OpenglScreenshotRgb: ImGui::GetDrawData() is NULL ! Must be called between ImGui::Render() and the next ImGui::NewFrame() (e.g. from AbstractRunner::TearDown). Cannot be called from show_gui() since that runs between NewFrame and Render.");
         int fb_width = (int)(draw_data->DisplaySize.x * draw_data->FramebufferScale.x);
         int fb_height = (int)(draw_data->DisplaySize.y * draw_data->FramebufferScale.y);
 

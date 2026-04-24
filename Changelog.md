@@ -1,5 +1,33 @@
 *Version numbers are synced between Hello ImGui and Dear ImGui Bundle, using the scheme `major.minor.patch` where `patch = ImGui_patch × 100 + release`. For example, ImGui v1.92.6 → v1.92.600, and a bugfix release becomes v1.92.601.*
 
+# v1.92.700
+
+* Update ImGui to v1.92.7-docking
+
+**RunnerParams:**
+* Add `iniDisable` to `SimpleRunnerParams`: enables to never save/load prefs
+
+**Textures & images:**
+* Add public `TextureGpu` RAII handle (replaces internal `ImageAbstract`)
+* Add `CreateTextureFromRgbaData` and `DeleteTexture`
+* Add `ImageAndSizeFromEncodedData` and `LoadImageDataFromEncodedData` (decode images from in-memory buffers)
+* Allow image / texture helpers to be used outside `HelloImGui::Run()` (adds `_EnsureGlLoaderForStandalone()` called by `_GetCachedImage`)
+
+**Emscripten:**
+* `IniFolderLocation` on emscripten now returns `""` for `CurrentFolder` (and `"/"` for other types)
+
+**Fixes:**
+* Skip `TearDown` if already ran at exit (e.g. if it threw an exception itself)
+* `LoadDefaultFont_WithFontAwesomeIcons`: log if icon font not found
+
+**Docs:**
+* Document theming usage
+
+**Internals**
+* Add `emscriptenAllowBrowserZoomShortcuts` preference (true by default) to forward browser zoom shortcuts to the browser
+* Add `_PrivIdleFrameWaitDurationForPythonAsyncIo` (internal, for Python async integration)
+
+
 # v1.92.601
 
 * Add `LoadImageDataFromAsset()` — decode an image from assets into CPU memory (C++ only), with configurable channel count

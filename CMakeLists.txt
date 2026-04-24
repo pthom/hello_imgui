@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(hello-imgui LANGUAGES C CXX VERSION "1.92.601")  # Version synced with Dear ImGui Bundle (patch = ImGui_patch × 100 + release)
+project(hello-imgui LANGUAGES C CXX VERSION "1.92.700")  # Version synced with Dear ImGui Bundle (patch = ImGui_patch × 100 + release)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 

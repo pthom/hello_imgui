@@ -23,7 +23,7 @@ _See the [HelloImGui documentation website](https://pthom.github.io/hello_imgui/
 
 # Hello ImGui
 
-![logo](https://traineq.org/HelloImGui/logo_hello_imgui_small.png)
+![logo](https://imgui-bundle.pages.dev/resources/logo_hello_imgui_small.png)
 
 > *Dear ImGui apps made simple: desktop, mobile, and web from one codebase.*
 >
@@ -93,7 +93,7 @@ The docking demo show how to handle complex layouts, use themes, store user sett
 
 ![](https://github.com/pthom/hello_imgui/blob/master/docs_src/images/docking.jpg?raw=true)
 
-[Online demo](https://traineq.org/imgui_bundle_explorer/demo_docking.html) - [Source](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp) - Video tutorial: [how to handle multiple complex layouts](https://www.youtube.com/watch?v=XKxmz__F4ow)
+[Online demo](https://imgui-bundle.pages.dev/explorer/demo_docking.html) - [Source](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp) - Video tutorial: [how to handle multiple complex layouts](https://www.youtube.com/watch?v=XKxmz__F4ow)
 
 ### Custom 3D background
 
@@ -101,7 +101,7 @@ How to use a custom 3D background in your app
 
 ![](https://github.com/pthom/hello_imgui/blob/master/docs_src/images/custom_background.jpg?raw=true≥)
 
-[Online demo](https://traineq.org/imgui_bundle_explorer/demo_custom_background.html) - [Source](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_custom_background/hello_custom_background.main.cpp)
+[Online demo](https://imgui-bundle.pages.dev/explorer/demo_custom_background.html) - [Source](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui_demos/hello_custom_background/hello_custom_background.main.cpp)
 
 
 ### ImGui Manual
@@ -131,7 +131,7 @@ How to use a custom 3D background in your app
 
 <img src="https://raw.githubusercontent.com/pthom/imgui_bundle/main/logo/logo_imgui_bundle_512.png" width=100>
 
-[online interactive demo](https://traineq.org/imgui_bundle_explorer) - [Source for C++ demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_cpp) - [Source for Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_python)
+[online interactive demo](https://imgui-bundle.pages.dev/explorer/) - [Source for C++ demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_cpp) - [Source for Python demos](https://github.com/pthom/imgui_bundle/tree/main/bindings/imgui_bundle/demos_python)
 
 
 ### Theme tweaking

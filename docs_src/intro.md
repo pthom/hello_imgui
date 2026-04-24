@@ -38,7 +38,7 @@ Its flexibility makes it suited for complex applications, as well as for simple 
 
 ## Full manual (PDF)
 
-View or download the [full pdf](https://raw.githubusercontent.com/pthom/imgui_related_docs/refs/heads/main/manuals/hello_imgui_manual.pdf)  for this manual. You may feed it into a LLM such as ChatGPT, so that it can help you when using Hello ImGui.
+View or download the [full pdf](https://pthom.github.io/hello_imgui/hello_imgui_book.pdf)  for this manual. You may feed it into a LLM such as ChatGPT, so that it can help you when using Hello ImGui.
 
 
 

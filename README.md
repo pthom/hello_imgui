@@ -120,7 +120,7 @@ How to use a custom 3D background in your app
 
 ![](https://github.com/pthom/rpn_calculator/blob/main/screenshot.png?raw=true)
 
-[Online demo](https://traineq.org/HelloImGui/rpn/rpn_calculator.html) - [Source](https://github.com/pthom/rpn_calculator/) - [Video tutorial](https://www.youtube.com/watch?v=dArP4lBnOr8)
+[Online demo](https://imgui-bundle.pages.dev/resources/hello_imgui/demos/rpn/rpn_calculator.html) - [Source](https://github.com/pthom/rpn_calculator/) - [Video tutorial](https://www.youtube.com/watch?v=dArP4lBnOr8)
 
 ### Starter template
 [The starter template](https://github.com/pthom/hello_imgui_template) will get you started in 5 minutes, and shows how to embed assets, customize the app icon (etc.), on all platforms.

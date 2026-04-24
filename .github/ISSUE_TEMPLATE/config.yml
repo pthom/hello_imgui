@@ -10,7 +10,7 @@ contact_links:
     url: https://github.com/pthom/hello_imgui/discussions
     about: This is the official place to discuss about Hello ImGui.
   - name: Dear ImGui Bundle Documentation
-    url: https://pthom.github.io/imgui_bundle/
+    url: https://imgui-bundle.pages.dev/
     about: This is the official documentation for Dear ImGui Bundle.
   - name: Dear ImGui Bundle Interactive Manual
     url: https://imgui-bundle.pages.dev/explorer/

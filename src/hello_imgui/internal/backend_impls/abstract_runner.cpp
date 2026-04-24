@@ -3,6 +3,7 @@
 #include "hello_imgui/internal/borderless_movable.h"
 #include "hello_imgui/internal/clock_seconds.h"
 #include "hello_imgui/internal/docking_details.h"
+#include "hello_imgui/internal/idle_frame_wait_for_python_async_io.h"
 #include "hello_imgui/internal/hello_imgui_ini_settings.h"
 #include "hello_imgui/internal/hello_imgui_ini_any_parent_folder.h"
 #include "hello_imgui/internal/menu_statusbar.h"
@@ -105,11 +106,20 @@ struct AbstractRunnerStatics
     bool lastTopMostState = false;
     double timeLastEvent = -1.;
     double lastRefreshTime = 0.;
+    float idleFrameWaitForAsync = 0.f;
 };
 
 static AbstractRunnerStatics gStatics;
 
 static void ResetAbstractRunnerStatics() { gStatics = AbstractRunnerStatics(); }
+
+namespace Internal
+{
+    float _PrivIdleFrameWaitDurationForPythonAsyncIo()
+    {
+        return gStatics.idleFrameWaitForAsync;
+    }
+}
 
 
 
@@ -1051,6 +1061,9 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     {
         bool shallSkipRenderingThisFrame = false;  // will be the return value
         double now = Internal::ClockSeconds();
+        // Reset the async wait hint; will be filled in if EarlyReturn decides
+        // the caller should pace itself before the next Render() call.
+        gStatics.idleFrameWaitForAsync = 0.f;
 
         // Which strategy shall we apply
         bool idleByEarlyReturn = false;
@@ -1079,7 +1092,15 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
             if (idleByEarlyReturn)
             {
                 if (fnInactiveIdling_WasLastFrameRenderedInTimeForDesiredFps(now))
+                {
                     shallSkipRenderingThisFrame = true;
+                    if (params.fpsIdling.fpsIdle > 0.f)
+                    {
+                        double idleWait = 1. / (double)params.fpsIdling.fpsIdle - (now - gStatics.lastRefreshTime);
+                        if (idleWait > 0.)
+                            gStatics.idleFrameWaitForAsync = (float)idleWait;
+                    }
+                }
             }
             else
             {
@@ -1095,7 +1116,11 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         if (maxFps_SleepDurationNeeded > 0.)
         {
             if (idleByEarlyReturn)
+            {
                 shallSkipRenderingThisFrame = true;
+                if ((float)maxFps_SleepDurationNeeded > gStatics.idleFrameWaitForAsync)
+                    gStatics.idleFrameWaitForAsync = (float)maxFps_SleepDurationNeeded;
+            }
             else
                 std::this_thread::sleep_for(std::chrono::duration<double>(maxFps_SleepDurationNeeded));
         }

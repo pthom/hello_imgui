@@ -149,13 +149,13 @@ namespace ManualRender
     };
     RendererStatus sCurrentStatus = RendererStatus::NotInitialized;
 
-    // Changes the current status to Initialized if it was NotInitialized,
-    // otherwise raises an error (assert or exception)
-    void TrySwitchToInitialized()
+    // Asserts that the renderer is currently NotInitialized, without changing state.
+    // Every public Setup* entry point calls this FIRST, before any state mutation,
+    // so that on collision we throw while globals are still pristine.
+    void AssertNotInitialized()
     {
         if (sCurrentStatus == RendererStatus::Initialized)
             IM_ASSERT(false && "HelloImGui::ManualRender::SetupFromXXX() cannot be called while already initialized. Call TearDown() first.");
-        sCurrentStatus = RendererStatus::Initialized;
     }
 
     // Changes the current status to NotInitialized if it was Initialized,
@@ -169,19 +169,25 @@ namespace ManualRender
 
     // Initializes the renderer with the full customizable `RunnerParams`.
     // A reference to the user's `RunnerParams` is kept internally.
+    // This is the single funnel: SetupFromSimpleRunnerParams and SetupFromGuiFunction
+    // both delegate here, so the not-initialized check and the state flip happen in
+    // exactly one place.
     void SetupFromRunnerParams(RunnerParams& runnerParams)
     {
-        TrySwitchToInitialized();
+        AssertNotInitialized();
         Priv_SetupRunner(runnerParams, SetupMode::Renderer);
+        // Flip state only after success — if Priv_SetupRunner throws, we stay
+        // NotInitialized so a follow-up TearDown() doesn't operate on partial state.
+        sCurrentStatus = RendererStatus::Initialized;
     }
 
     // Initializes the renderer with `SimpleRunnerParams`.
     void SetupFromSimpleRunnerParams(const SimpleRunnerParams& simpleParams)
     {
-        TrySwitchToInitialized();
+        AssertNotInitialized();
         // Store the runnerParams to keep it alive for the entire lifecycle
         gStoredRunnerParams = simpleParams.ToRunnerParams();
-        Priv_SetupRunner(gStoredRunnerParams.value(), SetupMode::Renderer);
+        SetupFromRunnerParams(gStoredRunnerParams.value());
     }
 
     // Initializes the renderer with a simple GUI function and additional parameters.
@@ -195,7 +201,7 @@ namespace ManualRender
         bool topMost
     )
     {
-        TrySwitchToInitialized();
+        AssertNotInitialized();
         SimpleRunnerParams params;
         params.guiFunction = guiFunction;
         params.windowTitle = windowTitle;
@@ -204,9 +210,7 @@ namespace ManualRender
         params.windowSize = windowSize;
         params.fpsIdle = fpsIdle;
         params.topMost = topMost;
-        // Store the runnerParams to keep it alive for the entire lifecycle
-        gStoredRunnerParams = params.ToRunnerParams();
-        Priv_SetupRunner(gStoredRunnerParams.value(), SetupMode::Renderer);
+        SetupFromSimpleRunnerParams(params);
     }
 
     // Renders the current frame. Should be called regularly to maintain the application's responsiveness.

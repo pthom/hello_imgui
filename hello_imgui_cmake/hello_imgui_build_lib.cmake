@@ -501,6 +501,18 @@ function(_him_fetch_and_compile_plutovg_plutosvg)
     FetchContent_MakeAvailable(plutovg)
     set(CMAKE_INSTALL_PREFIX "${_him_saved_install_prefix}")
 
+    # Work around an MSVC 14.51 (VS 2026) optimizer ICE (C1001 in pass p2)
+    # when compiling plutovg-font.c with /O1 or /O2. /Od is the only opt
+    # level that works. Font loading runs once at startup, so disabling
+    # optimization for this single TU has no measurable runtime impact.
+    if(MSVC AND TARGET plutovg)
+        set_source_files_properties(
+            "${plutovg_SOURCE_DIR}/source/plutovg-font.c"
+            TARGET_DIRECTORY plutovg
+            PROPERTIES COMPILE_OPTIONS "/Od"
+        )
+    endif()
+
     # Fetch plutosvg at configure time, then compile manually at build time
     # (the stock CMakeLists of plutosvg is not compatible with a custom install of freetype)
     # with build options:

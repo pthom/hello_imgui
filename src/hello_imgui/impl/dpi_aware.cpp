@@ -79,9 +79,4 @@ namespace HelloImGui
         return GetDpiAwareParams()->dpiWindowSizeFactor;
     }
 
-    float DpiFontLoadingFactor()
-    {
-        return GetDpiAwareParams()->DpiFontLoadingFactor();
-    }
-
 }

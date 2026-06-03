@@ -123,8 +123,6 @@ RunnerParams +-- RendererBackendType
 
 class DpiAwareParams {
     + float dpiWindowSizeFactor = 0.0f;
-    + float fontRenderingScale = 0.0f;
-    + float DpiFontLoadingFactor()
 }
 
 RunnerParams +-- DpiAwareParams

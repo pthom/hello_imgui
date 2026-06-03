@@ -82,12 +82,10 @@ namespace HelloImGui
 
         Priv_CopyDebugFontNameToFontConfig(fontFilename, fontSize_, &params.fontConfig);
 
-        if (params.adjustSizeToDpi)
-        {
-            // May be load the font at a different size depending on the DPI
-            float fontLoadingFactor = GetDpiAwareParams()->DpiFontLoadingFactor();
-            fontSize = fontSize * fontLoadingFactor;
-        }
+        // Note: fonts are loaded at their nominal size. HighDPI scaling is applied at
+        // display time through ImGui::GetStyle().FontScaleDpi (set by the runner from
+        // dpiAwareParams.dpiWindowSizeFactor). The 1.92 dynamic font atlas rasterizes
+        // glyphs on demand at the scaled size, so they stay crisp.
 
         if (params.loadColor)
         {

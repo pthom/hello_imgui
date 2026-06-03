@@ -191,7 +191,7 @@ namespace HelloImGui
             auto& dpiAwareParams = HelloImGui::GetRunnerParams()->dpiAwareParams;
 
             float newFontLoadingRatio = NetImgui::GetFontSizeLoadingRatio();
-            float currentFontLoadingRatio = dpiAwareParams.DpiFontLoadingFactor();
+            float currentFontLoadingRatio = dpiAwareParams.dpiWindowSizeFactor;
             if (fabs(currentFontLoadingRatio - newFontLoadingRatio) > 0.001f)
             {
                 didFontLoadingRatioChangeOnRemoteServer = true;
@@ -199,8 +199,11 @@ namespace HelloImGui
                 float oldDpiWindowSizeFactor = dpiAwareParams.dpiWindowSizeFactor;
                 float ratioScaling = newFontLoadingRatio / currentFontLoadingRatio;
                 dpiAwareParams.dpiWindowSizeFactor = dpiAwareParams.dpiWindowSizeFactor * ratioScaling;
+                // Keep the font DPI scale in sync with the new factor (fonts are scaled at
+                // display time via FontScaleDpi, so no font reload is needed).
+                ImGui::GetStyle().FontScaleDpi = dpiAwareParams.dpiWindowSizeFactor;
                 ImGui::GetStyle().ScaleAllSizes(ratioScaling);
-                float new_diff = fabs(dpiAwareParams.DpiFontLoadingFactor() - newFontLoadingRatio);
+                float new_diff = fabs(dpiAwareParams.dpiWindowSizeFactor - newFontLoadingRatio);
                 IM_ASSERT(new_diff < 0.001f);
                 NetimguiLog("UpdateDpiAwareParams_Netimgui: didFontLoadingRatioChange=true \n"
                        "    currentFontLoadingRatio=%f newFontLoadingRatio=%f\n"

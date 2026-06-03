@@ -310,8 +310,8 @@ void _LogDpiParams(const std::string& origin, const HelloImGui::DpiAwareParams& 
 	std::stringstream msg;
 	DpiLog("DpiAwareParams: %s\n", origin.c_str());
 	DpiLog("    dpiWindowSizeFactor=%f\n", dpiAwareParams.dpiWindowSizeFactor);
-	DpiLog("    DpiFontLoadingFactor()=%f\n", dpiAwareParams.DpiFontLoadingFactor());
 	DpiLog("        (ImGui FontScaleMain: %f)\n", ImGui::GetStyle().FontScaleMain);
+	DpiLog("        (ImGui FontScaleDpi: %f)\n", ImGui::GetStyle().FontScaleDpi);
 	DpiLog("	    (ImGui DisplayFramebufferScale=%f, %f)\n", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
 }
 
@@ -330,6 +330,12 @@ void AbstractRunner::SetupDpiAwareParams()
         #endif
         params.dpiAwareParams.dpiWindowSizeFactor = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
     }
+
+    // Apply the DPI factor to fonts via ImGui's standard DPI channel.
+    // Fonts are loaded at their nominal size and scaled at display time by FontScaleDpi
+    // (the 1.92 dynamic atlas rasterizes glyphs on demand, so they stay crisp).
+    // Widget paddings/spacings are scaled separately by ScaleAllSizes (see HandleDpiOnSecondFrame).
+    ImGui::GetStyle().FontScaleDpi = params.dpiAwareParams.dpiWindowSizeFactor;
 
     _LogDpiParams("SetupDpiAwareParams", params.dpiAwareParams);
 }
@@ -688,11 +694,11 @@ void AbstractRunner::Setup()
     #endif
 
     //
-    // load fonts & set ImGui::GetIO().FontGlobalScale
+    // load fonts
     //
 
-    // LoadAdditionalFonts will load fonts and resize them by 1./FontGlobalScale
-    // (if and only if it uses HelloImGui::LoadFontTTF instead of ImGui's font loading functions)
+    // Fonts are loaded at their nominal size. HighDPI scaling is applied at display time
+    // through ImGui::GetStyle().FontScaleDpi, which was set in SetupDpiAwareParams().
     ImGui::GetIO().Fonts->Clear();
     params.callbacks.LoadAdditionalFonts();
     params.callbacks.LoadAdditionalFonts = nullptr;

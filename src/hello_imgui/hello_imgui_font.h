@@ -21,10 +21,6 @@ namespace HelloImGui
     // Font loading parameters: several options are available (color, merging, range, ...)
     struct FontLoadingParams
     {
-        // if true, the font size will be adjusted automatically to account for HighDPI
-        //
-        bool adjustSizeToDpi = true;
-
         // if true, the font will be merged to the last font
         bool mergeToLastFont = false;
 

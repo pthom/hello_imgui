@@ -213,7 +213,12 @@ std::string AssetFileFullPath(const std::string& assetFilename, bool assertIfNot
     auto possibleAssetsFolders = computePossibleAssetsFolders();
     for (const auto& assetsFolder: possibleAssetsFolders)
     {
-        std::string path = assetsFolder.folder + "/" + assetFilename;
+        // When folder is empty, treat assetFilename as-is (absolute path, or
+        // relative to the current working directory). Prepending "/" here would
+        // turn a relative name into a filesystem-root path and break both cases.
+        std::string path = assetsFolder.folder.empty()
+            ? assetFilename
+            : assetsFolder.folder + "/" + assetFilename;
         if (FileUtils::IsRegularFile(path))
             return path;
     }

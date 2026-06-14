@@ -8,13 +8,6 @@
 
 #include <unordered_map>
 
-#ifdef IMGUI_BUNDLE_PYTHON_UNSUPPORTED_API
-#define INSIDE_IMGUI_BUNDLE
-#endif
-#ifdef INSIDE_IMGUI_BUNDLE
-bool Priv_ImGuiNodeEditor_IsInCanvas();  // From imgui.cpp, within the imgui_bundle branch
-#endif
-
 
 namespace HelloImGui
 {
@@ -177,13 +170,7 @@ namespace HelloImGui
             }
         };
 
-        // In imgui-node-editor, multiline does not work well with resizing
         bool canResize = textInput->Resizable;
-        #ifdef INSIDE_IMGUI_BUNDLE
-        bool inNodeEditorAndMultiline = Priv_ImGuiNodeEditor_IsInCanvas() && textInput->Multiline;
-        if (inNodeEditorAndMultiline)
-            canResize = false;
-        #endif
         if (canResize)
         {
             ImVec2 newSizePixels = HelloImGui::WidgetWithResizeHandle(label, gui_cb, 0.8f);

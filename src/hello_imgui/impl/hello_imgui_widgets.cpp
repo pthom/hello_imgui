@@ -83,16 +83,18 @@ namespace HelloImGui
 
         // Color: use the same style entries as ImGui's native window/popup resize grip,
         // so this handle matches the popup grip (cf ImGui::UpdateWindowManualResize).
-        ImU32 color = ImGui::GetColorU32(ImGuiCol_ResizeGrip);
+        // alphaMul scales each state's alpha down a bit, to make the handle more discreet.
+        const float alphaMul = 0.5f;
+        ImU32 color = ImGui::GetColorU32(ImGuiCol_ResizeGrip, alphaMul);
         if (ImGui::IsMouseHoveringRect(zone.Min, zone.Max))
         {
             ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNWSE);
-            color = ImGui::GetColorU32(ImGuiCol_ResizeGripHovered);
+            color = ImGui::GetColorU32(ImGuiCol_ResizeGripHovered, alphaMul);
         }
         if (resizingState->Resizing)
         {
             ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNWSE);
-            color = ImGui::GetColorU32(ImGuiCol_ResizeGripActive);
+            color = ImGui::GetColorU32(ImGuiCol_ResizeGripActive, alphaMul);
         }
 
         ImGui::GetWindowDrawList()->AddTriangleFilled(br, bl, tr, color);

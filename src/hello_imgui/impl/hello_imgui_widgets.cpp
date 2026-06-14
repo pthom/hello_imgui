@@ -88,22 +88,21 @@ namespace HelloImGui
 
         ImVec2 mouseDelta = resizingState->MousePosition - previousResizingState.MousePosition;
 
-        // Color
-        ImU32 color = ImGui::GetColorU32(ImGuiCol_Button);
+        // Color: use the same style entries as ImGui's native window/popup resize grip,
+        // so this handle matches the popup grip (cf ImGui::UpdateWindowManualResize).
+        ImU32 color = ImGui::GetColorU32(ImGuiCol_ResizeGrip);
         if (ImGui::IsMouseHoveringRect(zone.Min, zone.Max))
         {
             ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNWSE);
-            color = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+            color = ImGui::GetColorU32(ImGuiCol_ResizeGripHovered);
         }
         if (resizingState->Resizing)
         {
             ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNWSE);
-            color = ImGui::GetColorU32(ImGuiCol_ButtonActive);
+            color = ImGui::GetColorU32(ImGuiCol_ResizeGripActive);
         }
 
         ImGui::GetWindowDrawList()->AddTriangleFilled(br, bl, tr, color);
-
-        if (mouseInZoneBeforeAfter)
 
         if (!resizingState->Resizing)
         {

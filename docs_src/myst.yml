@@ -28,4 +28,5 @@ site:
   options:
     logo: ../logo/logo_hello_imgui_small.png
     folders: true
+    favicon: ../logo/logo_hello_imgui_small.png
   template: book-theme

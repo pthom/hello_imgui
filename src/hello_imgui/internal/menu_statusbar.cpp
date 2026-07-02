@@ -46,7 +46,11 @@ void ShowDefaultAppMenu_Quit(RunnerParams & runnerParams)
             if (hasCustomAppMenuItems)
                 ImGui::Separator();
             if (ImGui::MenuItem( "Quit"))
-                runnerParams.appShallExit = true;
+            {
+                bool allowExit = runnerParams.callbacks.ConfirmExit ? runnerParams.callbacks.ConfirmExit() : true;
+                if (allowExit)
+                    runnerParams.appShallExit = true;
+            }
         }
         ImGui::EndMenu();
     }

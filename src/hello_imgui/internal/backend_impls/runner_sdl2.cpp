@@ -145,12 +145,16 @@ namespace HelloImGui
                     continue;
             }
             ImGui_ImplSDL2_ProcessEvent(&event);
-            if (event.type == SDL_QUIT)
-                params.appShallExit = true;
-            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE &&
-                event.window.windowID == SDL_GetWindowID((SDL_Window *)mWindow))
+            bool closeRequested =
+                (event.type == SDL_QUIT)
+                || (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE
+                    && event.window.windowID == SDL_GetWindowID((SDL_Window *)mWindow));
+            if (closeRequested)
             {
-                params.appShallExit = true;
+                // SDL close is edge-triggered (a consumed event), so a veto needs nothing reset.
+                bool allowExit = params.callbacks.ConfirmExit ? params.callbacks.ConfirmExit() : true;
+                if (allowExit)
+                    params.appShallExit = true;
             }
         }
     }

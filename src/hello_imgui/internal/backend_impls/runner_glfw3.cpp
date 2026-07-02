@@ -87,7 +87,14 @@ namespace HelloImGui
         glfwPollEvents();
         bool exitRequired = (glfwWindowShouldClose((GLFWwindow *)mWindow) != 0);
         if (exitRequired)
-            params.appShallExit = true;
+        {
+            bool allowExit = params.callbacks.ConfirmExit ? params.callbacks.ConfirmExit() : true;
+            if (allowExit)
+                params.appShallExit = true;
+            else
+                // Veto: clear GLFW's sticky close flag, or the next poll re-requests exit.
+                glfwSetWindowShouldClose((GLFWwindow *)mWindow, GLFW_FALSE);
+        }
     }
 
     void RunnerGlfw3::Impl_NewFrame_PlatformBackend() { ImGui_ImplGlfw_NewFrame(); }

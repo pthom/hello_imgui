@@ -38,6 +38,8 @@ class RunnerGlfw3 : public AbstractRunner
             std::string Impl_GlslVersion() const override;
             void Impl_CreateGlContext() override;
             void Impl_InitGlLoader() override;
+        private:
+            void Impl_TryApplyFloatBuffer();
         #endif
 };
 

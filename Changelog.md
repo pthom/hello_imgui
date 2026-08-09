@@ -1,5 +1,11 @@
 *Version numbers are synced between Hello ImGui and Dear ImGui Bundle, using the scheme `major.minor.patch` where `patch = ImGui_patch × 100 + release`. For example, ImGui v1.92.6 → v1.92.600, and a bugfix release becomes v1.92.601.*
 
+# Unreleased
+
+**RendererBackendOptions:**
+* `requestFloatBuffer` is now also supported by the OpenGL3 + Glfw backend (it used to be Metal-only), enabling HDR/EDR display output on Windows and Linux. This requires a GLFW that defines `GLFW_FLOATBUFFER` (no stock release does yet, but HDR-enabling forks such as https://github.com/Tom94/glfw do); it is silently ignored otherwise. HelloImGui now probes whether a floating point framebuffer can actually be created, and resets `requestFloatBuffer` to false if not, so applications can read the field back to know what they got.
+
+
 # v1.92.700
 
 * Update ImGui to v1.92.7-docking

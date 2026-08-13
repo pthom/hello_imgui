@@ -1240,12 +1240,18 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     };
 
 
-    // Render and Swap
-    auto fnRenderAndSwap = [this]()
+    // Render
+    // (separate from Swap below, so that the BeforeSwap user callback can run in between,
+    //  outside of any SCOPED_RELEASE_GIL_ON_MAIN_THREAD block)
+    auto fnRender = [this]()
     {
         ImGui::Render();
         mRenderingBackendCallbacks->Impl_RenderDrawData_To_3D();
+    };
 
+    // Swap
+    auto fnSwap = [this]()
+    {
         if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
             Impl_UpdateAndRenderAdditionalPlatformWindows();
 
@@ -1425,7 +1431,16 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
     {
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
-        fnRenderAndSwap();
+        fnRender();
+    }
+
+    // BeforeSwap is a user callback, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
+    if (params.callbacks.BeforeSwap)
+        params.callbacks.BeforeSwap();
+
+    {
+        SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
+        fnSwap();
     }
 
     // AfterSwap is a user callback, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD

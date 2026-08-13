@@ -1,5 +1,11 @@
 *Version numbers are synced between Hello ImGui and Dear ImGui Bundle, using the scheme `major.minor.patch` where `patch = ImGui_patch × 100 + release`. For example, ImGui v1.92.6 → v1.92.600, and a bugfix release becomes v1.92.601.*
 
+# Unreleased
+
+**New Callbacks:**
+* Add `BeforeSwap` callback: called after ImGui's draw data was rendered to the 3D backend, but before the frame is swapped to the screen. Enables a final full-screen post-process pass over the whole frame (e.g. a color-management pass), which is not possible with `BeforeImGuiRender` (too early: the draw data is not rendered yet) nor with `AfterSwap` (too late: the frame is already presented).
+
+
 # v1.92.700
 
 * Update ImGui to v1.92.7-docking

@@ -89,6 +89,8 @@ struct RendererBackendOptions
     // Before setting this to true, first check `hasEdrSupport()`
     // Note: HelloImGui sets this back to false if the request could not be satisfied, so you
     // can read it back once Run() has created the window, to know what you actually got.
+    // Note: on macOS, EDR output requires the Metal backend: even with a floating point
+    // framebuffer, OpenGL surfaces are composited clamped to standard range.
     //
     // This is an advanced and experimental option: HDR display support is still evolving in the
     // operating systems, in Glfw and in Wayland, so its behavior may have to change in the future.

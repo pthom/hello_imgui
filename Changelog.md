@@ -4,6 +4,8 @@
 
 **RendererBackendOptions:**
 * `requestFloatBuffer` is now also supported by the OpenGL3 + Glfw backend (it used to be Metal-only), enabling HDR/EDR display output on Windows and Linux. This requires a GLFW that defines `GLFW_FLOATBUFFER` (no stock release does yet, but HDR-enabling forks such as https://github.com/Tom94/glfw do); it is silently ignored otherwise. HelloImGui now probes whether a floating point framebuffer can actually be created, and resets `requestFloatBuffer` to false if not, so applications can read the field back to know what they got.
+**New Callbacks:**
+* Add `BeforeSwap` callback: called after ImGui's draw data was rendered to the 3D backend, but before the frame is swapped to the screen. Enables a final full-screen post-process pass over the whole frame (e.g. a color-management pass), which is not possible with `BeforeImGuiRender` (too early: the draw data is not rendered yet) nor with `AfterSwap` (too late: the frame is already presented).
 
 
 # v1.92.700

@@ -48,6 +48,8 @@ namespace HelloImGui
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
         // SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
+        // Emscripten cannot provide a floating point framebuffer
+        params.rendererBackendOptions.requestFloatBuffer = false;
     }
 
     std::string RunnerGlfw3Emscripten::Impl_GlslVersion() const

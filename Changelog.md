@@ -1,9 +1,29 @@
 *Version numbers are synced between Hello ImGui and Dear ImGui Bundle, using the scheme `major.minor.patch` where `patch = ImGui_patch × 100 + release`. For example, ImGui v1.92.6 → v1.92.600, and a bugfix release becomes v1.92.601.*
 
-# Unreleased
+# v1.92.900
+
+* Update ImGui to v1.92.9b-docking
 
 **New Callbacks:**
 * Add `BeforeSwap` callback: called after ImGui's draw data was rendered to the 3D backend, but before the frame is swapped to the screen. Enables a final full-screen post-process pass over the whole frame (e.g. a color-management pass), which is not possible with `BeforeImGuiRender` (too early: the draw data is not rendered yet) nor with `AfterSwap` (too late: the frame is already presented).
+* Add `ConfirmExit` callback: called when the user requests to close the app window (window close button, Cmd-Q / Alt-F4, or the App/Quit menu). Return false to cancel the exit, e.g. to confirm quitting when there are unsaved changes.
+
+**RendererBackendOptions:**
+* `requestFloatBuffer` is now also supported by the OpenGL3 + Glfw backend (it used to be Metal-only), enabling HDR/EDR display output on Windows and Linux. This requires a GLFW that defines `GLFW_FLOATBUFFER` (no stock release does yet, but HDR-enabling forks such as https://github.com/Tom94/glfw do); it is silently ignored otherwise. HelloImGui now probes whether a floating point framebuffer can actually be created, and resets `requestFloatBuffer` to false if not, so applications can read the field back to know what they got. See the new `hello_edr_opengl` demo. Note: on macOS, EDR output still requires the Metal backend.
+
+**HighDPI:**
+* Fonts are now scaled via `style.FontScaleDpi` instead of at load time (finalizes the ImGui v1.92 transition). Breaking change: removes `FontLoadingParams::adjustSizeToDpi` and `DpiFontLoadingFactor()`
+
+**Widgets:**
+* `WidgetWithResizeHandle`: the handle color now uses `ImGuiCol_ResizeGrip` (with alphaMul=0.5)
+* `InputTextResizable`: can now be resized even inside a node (node editor)
+
+**Fixes:**
+* `AssetFileFullPath` can find files in the current folder (was broken)
+* Fix an MSVC internal compiler error on `plutovg-font.c` (compile it with /Od)
+
+**Internals:**
+* `ManualRender`: refactor behavior, simpler and closer to `ImmApp::ManualRender`
 
 
 # v1.92.700

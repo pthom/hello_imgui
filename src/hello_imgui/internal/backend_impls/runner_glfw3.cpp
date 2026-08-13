@@ -245,10 +245,57 @@ namespace HelloImGui
         glfwMakeContextCurrent((GLFWwindow *) mWindow); // OpenGl!
     }
 
+#if defined(GLFW_FLOATBUFFER)
+    // Request a floating point framebuffer if one can actually be obtained: probe with a throwaway
+    // window first (as QueryMaxAntiAliasingSamples does), since a failing glfwCreateWindow would
+    // otherwise abort the application. requestFloatBuffer is updated to reflect what was obtained.
+    void RunnerGlfw3::Impl_TryApplyFloatBuffer()
+    {
+        if (! params.rendererBackendOptions.requestFloatBuffer)
+            return;
+
+        auto openGlOptions = gOpenGlSetupGlfw.OpenGlOptionsWithUserSettings();
+
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, openGlOptions.MajorVersion);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, openGlOptions.MinorVersion);
+        if (openGlOptions.UseCoreProfile)
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_FLOATBUFFER, GLFW_TRUE);
+        GLFWwindow* probeWindow = glfwCreateWindow(64, 32, "Probe", nullptr, nullptr);
+
+        glfwDefaultWindowHints();
+
+        if (probeWindow)
+        {
+            glfwDestroyWindow(probeWindow);
+        }
+        else
+        {
+            fprintf(stderr, "HelloImGui: could not obtain a floating point framebuffer, falling back to a standard one.\n");
+            params.rendererBackendOptions.requestFloatBuffer = false;
+        }
+    }
+#endif
+
     void RunnerGlfw3::Impl_Select_Gl_Version()
     {
+#if defined(GLFW_FLOATBUFFER)
+        // Before SelectOpenGlVersion(): the probe resets the window hints when it is done.
+        Impl_TryApplyFloatBuffer();
+#else
+        // This version of Glfw cannot provide a floating point framebuffer
+        params.rendererBackendOptions.requestFloatBuffer = false;
+#endif
+
         auto openGlOptions = gOpenGlSetupGlfw.OpenGlOptionsWithUserSettings();
         gOpenGlSetupGlfw.SelectOpenGlVersion(openGlOptions);
+
+#if defined(GLFW_FLOATBUFFER)
+        // After SelectOpenGlVersion(): it may itself create a temporary window.
+        if (params.rendererBackendOptions.requestFloatBuffer)
+            glfwWindowHint(GLFW_FLOATBUFFER, GLFW_TRUE);
+#endif
     }
 
     std::string RunnerGlfw3::Impl_GlslVersion() const

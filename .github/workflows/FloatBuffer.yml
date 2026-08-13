@@ -1,0 +1,49 @@
+name: "FloatBuffer"
+
+# Test that the GLFW_FLOATBUFFER code path (floating point framebuffer for HDR/EDR,
+# see RendererBackendOptions::requestFloatBuffer) still compiles.
+# It is guarded by #if defined(GLFW_FLOATBUFFER), which no stock Glfw release defines yet,
+# so the other CI builds compile it out. Here we build against an HDR-enabling Glfw fork
+# (https://github.com/Tom94/glfw), then check that the guarded code was compiled in.
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+
+
+jobs:
+  build:
+    name: Cpp
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: apt install xorg-dev libfreetype-dev
+        run: sudo apt-get update && sudo apt-get install -y xorg-dev libfreetype-dev
+
+      - name: Build and install a Glfw fork which defines GLFW_FLOATBUFFER
+        run: |
+          git clone https://github.com/Tom94/glfw.git glfw_fork
+          cd glfw_fork
+          git checkout 2cc924c234423f635aee654073e5bb5a216392dd
+          cmake -B build -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF \
+                -DGLFW_BUILD_WAYLAND=OFF -DCMAKE_INSTALL_PREFIX=$HOME/glfw_fork_install
+          cmake --build build -j 3
+          cmake --install build
+
+      - name: Build hello_imgui against the Glfw fork
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_PREFIX_PATH=$HOME/glfw_fork_install \
+                -DHELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build . -j 3
+
+      - name: Check that the GLFW_FLOATBUFFER code path was compiled in
+        run: |
+          nm $(find build -name libhello_imgui.a) | grep -q Impl_TryApplyFloatBuffer
+          echo "OK: the float buffer code path is present"

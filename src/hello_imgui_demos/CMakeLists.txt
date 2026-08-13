@@ -14,9 +14,11 @@ if(HELLOIMGUI_HAS_METAL)
     # Demo of EDR (Extended Dynamic Range) support, only for Metal
     list(APPEND subdirs hello_edr)
 endif()
-if(HELLOIMGUI_HAS_OPENGL3 AND NOT EMSCRIPTEN)
-    # Demo of EDR (Extended Dynamic Range) support, for OpenGL3 + Glfw
-    # (requires a Glfw fork which defines GLFW_FLOATBUFFER, see hello_edr_opengl.cpp)
+if(HELLOIMGUI_HAS_OPENGL3 AND NOT EMSCRIPTEN AND NOT IOS AND NOT ANDROID
+   AND NOT HELLOIMGUI_USE_GLES3 AND NOT HELLOIMGUI_USE_GLES2)
+    # Demo of EDR (Extended Dynamic Range) support, for OpenGL3 + Glfw, desktop OpenGL only
+    # (requires a Glfw fork which defines GLFW_FLOATBUFFER, see hello_edr_opengl.cpp;
+    #  the demo queries the default framebuffer with GL_BACK_LEFT, which does not exist in GLES)
     list(APPEND subdirs hello_edr_opengl)
 endif()
 

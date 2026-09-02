@@ -1243,13 +1243,12 @@ function(him_install)
         file(GLOB internal_headers internal/*.h)
         install(FILES ${internal_headers} DESTINATION include/hello_imgui/internal)
 
-        if(CMAKE_BUILD_TYPE STREQUAL "Release")
-            install(DIRECTORY ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake DESTINATION share/${PROJECT_NAME})
-            install(DIRECTORY ${HELLOIMGUI_BASEPATH}/hello_imgui_assets DESTINATION share/${PROJECT_NAME})
-            if (NOT IOS AND NOT ANDROID)
-                install(FILES ${HELLOIMGUI_BASEPATH}/README.md DESTINATION share/${PROJECT_NAME})
-            endif()
-        endif()
+        # hello_imgui_cmake/ and hello_imgui_assets/ are needed by hello_imgui_add_app() at consumer
+        # configure time. They must stay siblings (the scripts locate the assets via ../hello_imgui_assets),
+        # and are installed next to the cmake package config, which includes hello_imgui_add_app.cmake.
+        install(DIRECTORY ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake DESTINATION ${HELLOIMGUI_INSTALL_CMAKE_DIR})
+        install(DIRECTORY ${HELLOIMGUI_BASEPATH}/hello_imgui_assets DESTINATION ${HELLOIMGUI_INSTALL_CMAKE_DIR})
+        install(FILES ${HELLOIMGUI_BASEPATH}/README.md DESTINATION share/${PROJECT_NAME})
     endif()
 
 endfunction()

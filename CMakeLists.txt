@@ -216,6 +216,13 @@ message(STATUS "HELLOIMGUI_WITH_TEST_ENGINE=${HELLOIMGUI_WITH_TEST_ENGINE}")
 # By default, hello_imgui install its targets only if it is the top level project
 #------------------------------------------------------------------------------
 option(HELLOIMGUI_INSTALL "Install hello_imgui" ${PROJECT_IS_TOP_LEVEL})
+# A parent project that ships hello_imgui inside its own CMake package (e.g. imgui_bundle)
+# can redirect the install: its targets then join the parent's export set, and
+# hello_imgui_cmake/ + hello_imgui_assets/ land in the parent's cmake dir.
+# When HELLOIMGUI_INSTALL_EXPORT is left to its default, the hello_imgui package
+# config (find_package(hello_imgui)) is produced.
+set(HELLOIMGUI_INSTALL_EXPORT "hello_imgui-targets" CACHE STRING "Export set receiving hello_imgui's installed targets")
+set(HELLOIMGUI_INSTALL_CMAKE_DIR "lib/cmake/hello_imgui" CACHE STRING "Install dir for the cmake package files, hello_imgui_cmake/ and hello_imgui_assets/")
 
 #------------------------------------------------------------------------------
 # Instructions: how to enable Emscripten multithreading support
@@ -407,32 +414,36 @@ if(HELLOIMGUI_INSTALL)
     # inspired from https://iamsorush.com/posts/cpp-cmake-config/
     message(STATUS "HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
     install(TARGETS ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}
-        EXPORT hello_imgui-targets
+        EXPORT ${HELLOIMGUI_INSTALL_EXPORT}
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         RUNTIME DESTINATION bin
         INCLUDES DESTINATION include)
 
-    install(EXPORT hello_imgui-targets
-        FILE hello_imgui-targets.cmake
-        NAMESPACE hello_imgui::
-        DESTINATION lib/cmake/hello_imgui)
+    # The hello_imgui package config is only produced when hello_imgui owns its export set
+    # (otherwise a parent project exports and describes the targets in its own package)
+    if(HELLOIMGUI_INSTALL_EXPORT STREQUAL "hello_imgui-targets")
+        install(EXPORT hello_imgui-targets
+            FILE hello_imgui-targets.cmake
+            NAMESPACE hello_imgui::
+            DESTINATION ${HELLOIMGUI_INSTALL_CMAKE_DIR})
 
-    include(CMakePackageConfigHelpers)
-    write_basic_package_version_file(
-        "hello_imgui-config-version.cmake"
-        VERSION ${hello_imgui_VERSION}
-        COMPATIBILITY AnyNewerVersion)
+        include(CMakePackageConfigHelpers)
+        write_basic_package_version_file(
+            "hello_imgui-config-version.cmake"
+            VERSION ${hello_imgui_VERSION}
+            COMPATIBILITY AnyNewerVersion)
 
-    install(FILES "hello_imgui_cmake/hello_imgui-config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config-version.cmake"
-        DESTINATION lib/cmake/hello_imgui)
+        install(FILES "hello_imgui_cmake/hello_imgui-config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config-version.cmake"
+            DESTINATION ${HELLOIMGUI_INSTALL_CMAKE_DIR})
 
-    # Deprecated compatibility shim for the former package name "hello-imgui"
-    install(FILES "hello_imgui_cmake/hello-imguiConfig.cmake"
-        DESTINATION lib/cmake/hello-imgui)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config-version.cmake"
-        RENAME "hello-imguiConfigVersion.cmake"
-        DESTINATION lib/cmake/hello-imgui)
+        # Deprecated compatibility shim for the former package name "hello-imgui"
+        install(FILES "hello_imgui_cmake/hello-imguiConfig.cmake"
+            DESTINATION lib/cmake/hello-imgui)
+        install(FILES "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config-version.cmake"
+            RENAME "hello-imguiConfigVersion.cmake"
+            DESTINATION lib/cmake/hello-imgui)
+    endif()
 endif()
 
 #------------------------------------------------------------------------------

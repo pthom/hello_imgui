@@ -442,7 +442,37 @@ if(HELLOIMGUI_INSTALL)
             VERSION ${hello_imgui_VERSION}
             COMPATIBILITY AnyNewerVersion)
 
-        install(FILES "hello_imgui_cmake/hello_imgui-config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config-version.cmake"
+        # hello_imgui-config.cmake is generated: its find_dependency() calls depend on the build options
+        set(HIM_CFG_IMGUI_PACKAGE OFF)
+        set(HIM_CFG_GLAD_PACKAGE OFF)
+        set(HIM_CFG_JSON_PACKAGE OFF)
+        set(HIM_CFG_FREETYPE OFF)
+        set(HIM_CFG_GLFW3 OFF)
+        set(HIM_CFG_SDL2 OFF)
+        set(HIM_CFG_OPENGL OFF)
+        if(HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+            set(HIM_CFG_IMGUI_PACKAGE ON)
+        endif()
+        if(HELLOIMGUI_GLAD_LIBRARY STREQUAL "glad::glad")
+            set(HIM_CFG_GLAD_PACKAGE ON)
+        endif()
+        if(HELLOIMGUI_NLOHMANN_JSON_SELECTED_INFO MATCHES "find_package")
+            set(HIM_CFG_JSON_PACKAGE ON)
+        endif()
+        if(HELLOIMGUI_USE_FREETYPE AND NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)  # freetype is added to imgui only when hello_imgui builds imgui
+            set(HIM_CFG_FREETYPE ON)
+        endif()
+        if(HELLOIMGUI_USE_GLFW3)
+            set(HIM_CFG_GLFW3 ON)
+        endif()
+        if(HELLOIMGUI_USE_SDL2)
+            set(HIM_CFG_SDL2 ON)
+        endif()
+        if(HELLOIMGUI_HAS_OPENGL3)
+            set(HIM_CFG_OPENGL ON)
+        endif()
+        configure_file("hello_imgui_cmake/hello_imgui-config.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config.cmake" @ONLY)
+        install(FILES "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config-version.cmake"
             DESTINATION ${HELLOIMGUI_INSTALL_CMAKE_DIR})
 
         # Deprecated compatibility shim for the former package name "hello-imgui"

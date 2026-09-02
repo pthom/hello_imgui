@@ -469,113 +469,118 @@ function(_him_add_freetype_to_imgui)
 endfunction()
 
 
-function(_him_fetch_and_compile_plutovg_plutosvg)
-    # Fetch and compile plutovg and plutosvg
-    set(backup_build_shared_libs ${BUILD_SHARED_LIBS})
-    set(BUILD_SHARED_LIBS OFF)
-
-    # Fetch & build plutovg at configure time
-    include(FetchContent)
-    set(_him_fetch_extra_args "")
-    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.28)
-        set(_him_fetch_extra_args EXCLUDE_FROM_ALL)
+function(_him_compile_plutosvg_from_submodule)
+    # Compile plutosvg and plutovg into a single static library named "plutosvg".
+    # Sources: git submodule external/plutosvg (plutovg is a submodule of plutosvg).
+    # Neither upstream CMakeLists is used:
+    # - plutosvg's is not compatible with a custom install of freetype
+    # - plutovg's would give a separate target, which is not part of hello_imgui's install
+    set(plutosvg_SOURCE_DIR ${HELLOIMGUI_BASEPATH}/external/plutosvg)
+    set(plutovg_SOURCE_DIR ${plutosvg_SOURCE_DIR}/plutovg)
+    if(NOT EXISTS ${plutovg_SOURCE_DIR}/include/plutovg.h)
+        message(FATAL_ERROR "hello_imgui: the plutosvg submodule is missing (external/plutosvg). "
+            "Run: git submodule update --init --recursive\n"
+            "(or set HELLOIMGUI_USE_SYSTEM_PLUTOSVG=ON to link an installed plutosvg)")
     endif()
-    FetchContent_Declare(plutovg
-        GIT_REPOSITORY https://github.com/sammycage/plutovg
-        GIT_TAG        v1.3.2
-        GIT_PROGRESS TRUE
-        ${_him_fetch_extra_args}
+
+    # plutovg sources: all of source/*.c (the submodule is pinned, so the glob is stable)
+    file(GLOB plutovg_sources ${plutovg_SOURCE_DIR}/source/*.c)
+    add_library(plutosvg STATIC ${plutosvg_SOURCE_DIR}/source/plutosvg.c ${plutovg_sources})
+
+    # Build options, mirroring plutovg's and plutosvg's CMakeLists (static build, freetype enabled)
+    target_include_directories(plutosvg
+        PUBLIC
+            $<BUILD_INTERFACE:${plutosvg_SOURCE_DIR}/source>
+            $<BUILD_INTERFACE:${plutovg_SOURCE_DIR}/include>   # plutosvg.h includes <plutovg.h>
+        PRIVATE
+            ${plutovg_SOURCE_DIR}/source
     )
-    set(PLUTOVG_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    target_compile_definitions(plutosvg
+        PUBLIC PLUTOSVG_HAS_FREETYPE PLUTOSVG_BUILD_STATIC PLUTOVG_BUILD_STATIC
+        PRIVATE PLUTOSVG_BUILD PLUTOVG_BUILD
+    )
+    set_target_properties(plutosvg PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED ON C_VISIBILITY_PRESET hidden)
+    target_link_libraries(plutosvg PUBLIC ${HIM_FREETYPE_LINKED_LIBRARY})
 
-    # Band-aid: plutovg's CMakeLists uses file(RELATIVE_PATH) which requires absolute paths,
-    # but scikit-build-core may set a relative CMAKE_INSTALL_PREFIX.
-    # Temporarily make it absolute, then restore after FetchContent.
-    # (A PR has been submitted to plutovg to add a PLUTOVG_INSTALL option instead:
-    #  https://github.com/sammycage/plutovg/pull/71)
-    set(PLUTOVG_INSTALL OFF CACHE BOOL "" FORCE)  # Prepare for plutovg's upcoming PLUTOVG_INSTALL option
-    set(_him_saved_install_prefix "${CMAKE_INSTALL_PREFIX}")
-    if(NOT IS_ABSOLUTE "${CMAKE_INSTALL_PREFIX}")
-        get_filename_component(CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" ABSOLUTE
-            BASE_DIR "${CMAKE_BINARY_DIR}")
+    # plutovg's system dependencies (libm, threads)
+    find_library(MATH_LIBRARY m)
+    if(MATH_LIBRARY)
+        target_link_libraries(plutosvg PRIVATE m)
     endif()
-    FetchContent_MakeAvailable(plutovg)
-    set(CMAKE_INSTALL_PREFIX "${_him_saved_install_prefix}")
+    include(CheckIncludeFile)
+    check_include_file("threads.h" HAVE_THREADS_H)
+    if(HAVE_THREADS_H)
+        target_compile_definitions(plutosvg PRIVATE HAVE_THREADS_H)
+    endif()
+    find_package(Threads)
+    if(Threads_FOUND)
+        target_link_libraries(plutosvg PRIVATE Threads::Threads)
+    endif()
+    find_library(STDTHREADS_LIBRARY stdthreads)
+    if(STDTHREADS_LIBRARY)
+        target_link_libraries(plutosvg PRIVATE stdthreads)
+    endif()
 
     # Work around an MSVC 14.51 (VS 2026) optimizer ICE (C1001 in pass p2)
     # when compiling plutovg-font.c with /O1 or /O2. /Od is the only opt
     # level that works. Font loading runs once at startup, so disabling
     # optimization for this single TU has no measurable runtime impact.
-    if(MSVC AND TARGET plutovg)
-        set_source_files_properties(
-            "${plutovg_SOURCE_DIR}/source/plutovg-font.c"
-            TARGET_DIRECTORY plutovg
-            PROPERTIES COMPILE_OPTIONS "/Od"
-        )
+    if(MSVC)
+        set_source_files_properties(${plutovg_SOURCE_DIR}/source/plutovg-font.c PROPERTIES COMPILE_OPTIONS "/Od")
     endif()
 
-    # Fetch plutosvg at configure time, then compile manually at build time
-    # (the stock CMakeLists of plutosvg is not compatible with a custom install of freetype)
-    # with build options:
-    #     PLUTOSVG_BUILD_STATIC
-    FetchContent_Populate(
-        plutosvg
-        GIT_REPOSITORY https://github.com/sammycage/plutosvg
-        GIT_TAG v0.0.7
-        SOURCE_DIR ${CMAKE_BINARY_DIR}/plutosvg_source
-        BINARY_DIR ${CMAKE_BINARY_DIR}/plutosvg_build
-    )
-    add_library(plutosvg STATIC ${plutosvg_SOURCE_DIR}/source/plutosvg.c)
-    target_include_directories(plutosvg PUBLIC $<BUILD_INTERFACE:${plutosvg_SOURCE_DIR}/source>)
-    target_compile_definitions(plutosvg PUBLIC PLUTOSVG_HAS_FREETYPE PLUTOSVG_BUILD_STATIC)
-    target_link_libraries(plutosvg PUBLIC ${HIM_FREETYPE_LINKED_LIBRARY} plutovg)
     him_add_installable_dependency(plutosvg)
+endfunction()
 
-    set(BUILD_SHARED_LIBS ${backup_build_shared_libs})
+
+function(_him_find_system_plutosvg)
+    # Provide an imported target named "plutosvg" from an installed plutosvg (+ plutovg),
+    # e.g. from conda, vcpkg or a Linux distribution.
+    # plutosvg must have been built with freetype support (PLUTOSVG_ENABLE_FREETYPE).
+    # GLOBAL: imgui may be defined in another directory (e.g. by imgui_bundle)
+    find_package(plutosvg CONFIG QUIET)
+    if(TARGET plutosvg::plutosvg)
+        add_library(plutosvg INTERFACE IMPORTED GLOBAL)
+        target_link_libraries(plutosvg INTERFACE plutosvg::plutosvg)
+        set(found_via "cmake package")
+    else()
+        find_package(PkgConfig QUIET)
+        if(PKG_CONFIG_FOUND)
+            pkg_check_modules(PLUTOSVG QUIET IMPORTED_TARGET GLOBAL plutosvg)
+        endif()
+        if(TARGET PkgConfig::PLUTOSVG)
+            add_library(plutosvg INTERFACE IMPORTED GLOBAL)
+            target_link_libraries(plutosvg INTERFACE PkgConfig::PLUTOSVG)
+            set(found_via "pkg-config")
+        else()
+            message(FATAL_ERROR "hello_imgui: HELLOIMGUI_USE_SYSTEM_PLUTOSVG is ON, but plutosvg was not found "
+                "(neither via find_package(plutosvg CONFIG) nor via pkg-config)")
+        endif()
+    endif()
+    set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - system plutosvg (${found_via})" CACHE INTERNAL "" FORCE)
 endfunction()
 
 
 function(_him_add_freetype_plutosvg_to_imgui)
-    # Add freetype + plutovs/plutosvg to imgui
+    # Add freetype + plutosvg/plutovg to imgui
     # This is especially useful to support emojis (possibly colored) in imgui
     # See doc:
     #     https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#using-colorful-glyphsemojis
     # We have to
-    # - compile or use a version of plutovg
-    # - compile or use a version of plutosvg with freetype support
+    # - provide a target "plutosvg" (plutosvg + plutovg, with freetype support), from either:
+    #     the parent project (add_subdirectory), an installed plutosvg (HELLOIMGUI_USE_SYSTEM_PLUTOSVG),
+    #     or the git submodule external/plutosvg (default)
     # - enable plutosvg in imgui via IMGUI_ENABLE_FREETYPE_PLUTOSVG
-    # - add plutosvg + plutovg to imgui
-
-    # Option 1 (disabled at the moment, but left as an inspiration): use system plutosvg + plutovg
-    #
-    # Note for package maintainers (conda, etc.):
-    #    the cache variable IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS may be used to detect
-    #    if fetching external libraries is disallowed. It is set to ON for conda for example.
-    # Below is an example code that could be used
-    #
-    # if (IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS)
-    #     find_library(PLUTOVG_LIBRARIES plutovg REQUIRED)
-    #     find_library(PLUTOVG_LIBRARIES plutosvg REQUIRED)
-    #     target_link_libraries(imgui PRIVATE ${PLUTOVG_LIBRARIES} ${PLUTOSVG_LIBRARIES})
-    #     target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
-    #     set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - use system plutosvg" CACHE INTERNAL "" FORCE)
-    #     # early return
-    #     return()
-    # endif()
-
-    # Option 2: download and compile plutosvg
-    set(can_download_freetype (HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED OR HELLOIMGUI_FREETYPE_STATIC))
-    if (HELLOIMGUI_FETCH_FORBIDDEN OR NOT can_download_freetype)
-        target_link_libraries(imgui PUBLIC plutosvg)
-        target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
-        set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - use plutosvg" CACHE INTERNAL "" FORCE)
+    if(TARGET plutosvg)
+        set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - user-provided plutosvg" CACHE INTERNAL "" FORCE)
+    elseif(HELLOIMGUI_USE_SYSTEM_PLUTOSVG)
+        _him_find_system_plutosvg()
     else()
-        _him_fetch_and_compile_plutovg_plutosvg()
-        target_link_libraries(imgui PUBLIC plutosvg)
-        target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
-        # Prepare Log info
-        set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - downloaded plutosvg" CACHE INTERNAL "" FORCE)
+        _him_compile_plutosvg_from_submodule()
+        set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - bundled plutosvg" CACHE INTERNAL "" FORCE)
     endif()
+    target_link_libraries(imgui PUBLIC plutosvg)
+    target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
 endfunction()
 
 

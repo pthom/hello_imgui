@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(hello-imgui LANGUAGES C CXX VERSION "1.92.700")  # Version synced with Dear ImGui Bundle (patch = ImGui_patch × 100 + release)
+project(hello_imgui LANGUAGES C CXX VERSION "1.92.700")  # Version synced with Dear ImGui Bundle (patch = ImGui_patch × 100 + release)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -390,42 +390,48 @@ endif()
 
 
 #------------------------------------------------------------------------------
-# CMake shenanigans so that find_package(hello-imgui CONFIG REQUIRED) works
+# Install & export, so that find_package(hello_imgui CONFIG REQUIRED) works
 #------------------------------------------------------------------------------
-# These elements are mainly used to build a vcpkg compatible package.
-# Important note:
-#     - the CMake package is named hello-imgui (with a "-")
-#     - the CMake target is named hello_imgui (with a "_")
-# To link with hello_imgui, you need to use:
-#     find_package(hello-imgui CONFIG REQUIRED)
-#     target_link_libraries(your_target PRIVATE hello-imgui::hello_imgui)  # note the variation "-" vs "_"
+# The CMake package, the namespace and the main target are all named hello_imgui.
+# To link with hello_imgui, you can use:
+#     find_package(hello_imgui CONFIG REQUIRED)
+#     target_link_libraries(your_target PRIVATE hello_imgui::hello_imgui)
 # However, the simplest use is:
-#     find_package(hello-imgui CONFIG REQUIRED)
+#     find_package(hello_imgui CONFIG REQUIRED)
 #     hello_imgui_add_app(test test.cpp) # this will automatically link with hello_imgui
+# Note: find_package(hello-imgui) (the former package name) still works via a
+# deprecated compatibility shim, see hello_imgui_cmake/hello-imguiConfig.cmake
 #------------------------------------------------------------------------------
 if(HELLOIMGUI_INSTALL)
     # inspired from https://iamsorush.com/posts/cpp-cmake-config/
     message(STATUS "HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
     install(TARGETS ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}
-        EXPORT hello-imgui-targets
+        EXPORT hello_imgui-targets
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         RUNTIME DESTINATION bin
         INCLUDES DESTINATION include)
 
-    install(EXPORT hello-imgui-targets
-        FILE hello-imgui-targets.cmake
-        NAMESPACE hello-imgui::
+    install(EXPORT hello_imgui-targets
+        FILE hello_imgui-targets.cmake
+        NAMESPACE hello_imgui::
         DESTINATION lib/cmake/hello_imgui)
 
     include(CMakePackageConfigHelpers)
     write_basic_package_version_file(
-        "hello-imguiConfigVersion.cmake"
+        "hello_imgui-config-version.cmake"
         VERSION ${hello_imgui_VERSION}
         COMPATIBILITY AnyNewerVersion)
 
-    install(FILES "hello_imgui_cmake/hello-imguiConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/hello-imguiConfigVersion.cmake"
+    install(FILES "hello_imgui_cmake/hello_imgui-config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config-version.cmake"
         DESTINATION lib/cmake/hello_imgui)
+
+    # Deprecated compatibility shim for the former package name "hello-imgui"
+    install(FILES "hello_imgui_cmake/hello-imguiConfig.cmake"
+        DESTINATION lib/cmake/hello-imgui)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config-version.cmake"
+        RENAME "hello-imguiConfigVersion.cmake"
+        DESTINATION lib/cmake/hello-imgui)
 endif()
 
 #------------------------------------------------------------------------------

@@ -250,7 +250,8 @@ function(him_add_hello_imgui)
         target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui)
     endif()
 
-    add_library(hello-imgui::hello_imgui ALIAS hello_imgui)
+    add_library(hello_imgui::hello_imgui ALIAS hello_imgui)
+    add_library(hello-imgui::hello_imgui ALIAS hello_imgui)  # deprecated former namespace
     him_add_installable_dependency(${HELLOIMGUI_TARGET})
 endfunction()
 

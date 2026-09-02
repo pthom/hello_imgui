@@ -111,6 +111,16 @@ endif()
 # Note: to reduce wasm size, you may want to disable freetype on emscripten.
 option(HELLOIMGUI_USE_FREETYPE "Use freetype for text rendering" ${freetype_default})
 option(HELLOIMGUI_USE_FREETYPE_PLUTOSVG "Use plutosvg to load svg fonts" ON)
+# plutosvg (+ plutovg) is compiled from the git submodule external/plutosvg by default.
+# Packagers (conda, vcpkg, Linux distributions) can link an installed plutosvg instead:
+# it is found via find_package(plutosvg CONFIG) or pkg-config, and must be built with freetype support.
+# Defaults to ON when IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS is set (conda build of imgui_bundle).
+if(IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS)
+    set(system_plutosvg_default ON)
+else()
+    set(system_plutosvg_default OFF)
+endif()
+option(HELLOIMGUI_USE_SYSTEM_PLUTOSVG "Use an installed plutosvg instead of compiling the submodule" ${system_plutosvg_default})
 
 #------------------------------------------------------------------------------
 # <Dependencies> # do not remove this line (used by the script that generates the documentation)
@@ -156,9 +166,8 @@ option(HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED "Download and build SDL2 if needed" ${a
 
 # HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED:
 # - if ON: freetype will be downloaded and built if needed.
-#   plutosvg will also be downloaded and built if needed (if HELLOIMGUI_USE_FREETYPE_PLUTOSVG is ON)
 # - if OFF: freetype shall be provided by the system, or by the user (via CMAKE_PREFIX_PATH or add_subdirectory).
-#   Same for plutosvg (if HELLOIMGUI_USE_FREETYPE_PLUTOSVG is ON)
+# (plutosvg is never downloaded: see HELLOIMGUI_USE_SYSTEM_PLUTOSVG above)
 option(HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED "Download and build Freetype if needed" ${autodownload_default})
 option(HELLOIMGUI_FREETYPE_STATIC "Force static linking of freetype (only used for python bindings)" OFF)
 

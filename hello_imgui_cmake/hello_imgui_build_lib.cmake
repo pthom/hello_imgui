@@ -387,6 +387,9 @@ function(_him_add_freetype_to_imgui)
     # Note: also change add_imgui.cmake in bundle!
 
     # 1. Build or find freetype (if downloaded, make sure it is static)
+    # HELLOIMGUI_FREETYPE_DOWNLOADED: read by the generated package configs, which must not
+    # find_dependency(Freetype) when freetype is part of the install
+    set(HELLOIMGUI_FREETYPE_DOWNLOADED OFF CACHE INTERNAL "" FORCE)
     if(TARGET freetype)
         message(STATUS "HelloImGui: using freetype target")
         set(HIM_FREETYPE_LINKED_LIBRARY freetype CACHE STRING "" FORCE)
@@ -411,9 +414,9 @@ function(_him_add_freetype_to_imgui)
             set(backup_shared_lib ${BUILD_SHARED_LIBS})
             set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
-            if (NOT HELLOIMGUI_INSTALL)
-                set(SKIP_INSTALL_ALL ON CACHE INTERNAL "" FORCE) # disable Freetype install
-            endif()
+            # Freetype's own install rules are disabled: when installing, hello_imgui installs
+            # the downloaded freetype itself, as part of its export set (see below)
+            set(SKIP_INSTALL_ALL ON CACHE INTERNAL "" FORCE)
 
             include(FetchContent)
             if(IOS OR (IMGUI_BUNDLE_BUILD_PYTHON AND NOT DEFINED CONAN_BUILD))
@@ -421,6 +424,13 @@ function(_him_add_freetype_to_imgui)
                 set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
                 set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
                 set(FT_DISABLE_PNG ON CACHE BOOL "" FORCE)
+            endif()
+            if (HELLOIMGUI_INSTALL)
+                # The downloaded freetype becomes part of the install: without its optional
+                # dependencies, so that the package stays self-contained
+                foreach(_ft_dep ZLIB BZIP2 PNG HARFBUZZ BROTLI)
+                    set(FT_DISABLE_${_ft_dep} ON CACHE BOOL "" FORCE)
+                endforeach()
             endif()
             set(_him_fetch_extra_args "")
             if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.28)
@@ -435,6 +445,17 @@ function(_him_add_freetype_to_imgui)
             )
             FetchContent_MakeAvailable(freetype)
             set(HIM_FREETYPE_LINKED_LIBRARY freetype CACHE STRING "" FORCE)
+            set(HELLOIMGUI_FREETYPE_DOWNLOADED ON CACHE INTERNAL "" FORCE)
+            if (HELLOIMGUI_INSTALL)
+                # Install the downloaded freetype along with hello_imgui (its target advertises
+                # include/freetype2 as install include dir; mirror freetype's own header install)
+                him_add_installable_dependency(freetype)
+                install(DIRECTORY ${freetype_SOURCE_DIR}/include/ DESTINATION include/freetype2
+                    PATTERN "internal" EXCLUDE PATTERN "ftconfig.h" EXCLUDE PATTERN "ftoption.h" EXCLUDE)
+                install(FILES ${freetype_BINARY_DIR}/include/freetype/config/ftconfig.h
+                              ${freetype_BINARY_DIR}/include/freetype/config/ftoption.h
+                    DESTINATION include/freetype2/freetype/config)
+            endif()
             hello_imgui_msvc_target_set_folder(freetype ${HELLOIMGUI_SOLUTIONFOLDER}/external)
 
             set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)

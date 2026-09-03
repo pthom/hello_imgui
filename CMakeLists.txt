@@ -465,7 +465,9 @@ if(HELLOIMGUI_INSTALL)
         if(HELLOIMGUI_NLOHMANN_JSON_SELECTED_INFO MATCHES "find_package")
             set(HIM_CFG_JSON_PACKAGE ON)
         endif()
-        if(HELLOIMGUI_USE_FREETYPE AND NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)  # freetype is added to imgui only when hello_imgui builds imgui
+        # freetype is a dependency to find only when it is a system library:
+        # it is added to imgui only when hello_imgui builds imgui, and a downloaded freetype is part of the install
+        if(HELLOIMGUI_USE_FREETYPE AND NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE AND NOT HELLOIMGUI_FREETYPE_DOWNLOADED)
             set(HIM_CFG_FREETYPE ON)
         endif()
         if(HELLOIMGUI_USE_GLFW3)

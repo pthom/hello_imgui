@@ -1,5 +1,13 @@
 include(${CMAKE_CURRENT_LIST_DIR}/utils/cache_hello_imgui_paths.cmake)
 
+# MACOSX is set by hello_imgui's CMakeLists when building the library; when building an app
+# against an installed hello_imgui, that CMakeLists is not run, so set it here too.
+if(APPLE AND NOT IOS AND NOT DEFINED MACOSX)
+    set(MACOSX TRUE)
+endif()
+# When building against an installed hello_imgui, reuse the build options recorded at install time
+include(${CMAKE_CURRENT_LIST_DIR}/hello_imgui_installed_options.cmake OPTIONAL)
+
 #
 # hello_imgui_add_app is a helper function, similar to cmake's "add_executable"
 #

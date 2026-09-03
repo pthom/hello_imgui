@@ -276,8 +276,8 @@ function(him_build_imgui)
         set(HELLOIMGUI_BUILD_IMGUI OFF CACHE BOOL "" FORCE)
         find_package(imgui CONFIG REQUIRED)
     else()
+        _him_checkout_submodules_if_needed()
         if (HELLOIMGUI_BUILD_IMGUI)
-            _him_checkout_imgui_submodule_if_needed()
             _him_do_build_imgui()
         endif()
         if (HELLOIMGUI_USE_FREETYPE)
@@ -329,18 +329,29 @@ function(him_install_imgui)
 endfunction()
 
 
-function(_him_checkout_imgui_submodule_if_needed)
-    if (HELLOIMGUI_BUILD_IMGUI)
-        # if HELLOIMGUI_IMGUI_SOURCE_DIR is  CMAKE_CURRENT_LIST_DIR/imgui
-        # and the submodule is not present, update submodules
-        if (HELLOIMGUI_IMGUI_SOURCE_DIR STREQUAL ${HELLOIMGUI_BASEPATH}/external/imgui)
-            if (NOT EXISTS ${HELLOIMGUI_IMGUI_SOURCE_DIR}/imgui.h)
-                # Run git submodule update --init --recursive
-                message(WARNING "Updating imgui submodule")
-                execute_process(
-                    COMMAND git submodule update --init --recursive
-                    WORKING_DIRECTORY ${HELLOIMGUI_BASEPATH})
-            endif()
+function(_him_checkout_submodules_if_needed)
+    # Self-heal an incomplete checkout (e.g. "git submodule update --init" without --recursive,
+    # or actions/checkout with "submodules: true", which both skip nested submodules):
+    # fetch the submodules needed by the current configuration.
+    # Only within a git checkout (never in an extracted source archive, which is complete).
+    set(missing "")
+    if (HELLOIMGUI_BUILD_IMGUI
+        AND "${HELLOIMGUI_IMGUI_SOURCE_DIR}" STREQUAL "${HELLOIMGUI_BASEPATH}/external/imgui"
+        AND NOT EXISTS ${HELLOIMGUI_IMGUI_SOURCE_DIR}/imgui.h)
+        list(APPEND missing "external/imgui")
+    endif()
+    if (HELLOIMGUI_USE_FREETYPE AND HELLOIMGUI_USE_FREETYPE_PLUTOSVG AND NOT HELLOIMGUI_USE_SYSTEM_PLUTOSVG
+        AND NOT EXISTS ${HELLOIMGUI_BASEPATH}/external/plutosvg/plutovg/include/plutovg.h)
+        list(APPEND missing "external/plutosvg (with its nested plutovg)")
+    endif()
+    if (missing AND EXISTS ${HELLOIMGUI_BASEPATH}/.git)
+        message(WARNING "hello_imgui: missing submodule(s): ${missing}. Running 'git submodule update --init --recursive'")
+        execute_process(
+            COMMAND git submodule update --init --recursive
+            WORKING_DIRECTORY ${HELLOIMGUI_BASEPATH}
+            RESULT_VARIABLE git_result)
+        if (NOT git_result EQUAL 0)
+            message(FATAL_ERROR "hello_imgui: 'git submodule update --init --recursive' failed (missing: ${missing})")
         endif()
     endif()
 endfunction()

@@ -429,6 +429,12 @@ if(HELLOIMGUI_INSTALL)
         RUNTIME DESTINATION bin
         INCLUDES DESTINATION include)
 
+    # Record the build options that hello_imgui_add_app() must reuse from an install
+    configure_file("hello_imgui_cmake/hello_imgui_installed_options.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui_installed_options.cmake" @ONLY)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui_installed_options.cmake"
+        DESTINATION ${HELLOIMGUI_INSTALL_CMAKE_DIR}/hello_imgui_cmake)
+
     # The hello_imgui package config is only produced when hello_imgui owns its export set
     # (otherwise a parent project exports and describes the targets in its own package)
     if(HELLOIMGUI_INSTALL_EXPORT STREQUAL "hello_imgui-targets")

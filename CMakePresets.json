@@ -80,6 +80,17 @@
       "cacheVariables": {
         "HELLOIMGUI_HEADLESS": "ON"
       }
+    },
+    {
+      "name": "install_package",
+      "description": "Build hello_imgui (no demos) and install it into build_install/install",
+      "binaryDir": "${sourceDir}/build_install",
+      "installDir": "${sourceDir}/build_install/install",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "HELLOIMGUI_BUILD_DEMOS": "OFF",
+        "CMAKE_FIND_NO_INSTALL_PREFIX": "ON"
+      }
     }
   ]
 }

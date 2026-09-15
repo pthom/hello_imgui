@@ -1,5 +1,6 @@
 #include "hello_imgui/screen_bounds.h"
 
+#include <optional>
 #include <sstream>
 #include <vector>
 #include <string>
@@ -99,11 +100,13 @@ std::string IntPairToString(std::array<int, 2> v)
     return ss.str();
 }
 
-std::array<int, 2> StringToIntPair(const std::string& s)
+// Returns std::nullopt on parse failure (values may legitimately be negative,
+// e.g. a window position on a monitor left of or above the primary monitor)
+std::optional<std::array<int, 2>> StringToIntPair(const std::string& s)
 {
     auto items = details::splitString(s, ',');
     if (items.size() != 2)
-        return {-1, -1};
+        return std::nullopt;
 
     std::array<int, 2> r;
     for (size_t i = 0; i < 2; ++i)
@@ -115,7 +118,7 @@ std::array<int, 2> StringToIntPair(const std::string& s)
         }
         catch(const std::exception&)
         {
-            return {-1, -1};
+            return std::nullopt;
         }
     }
     return r;

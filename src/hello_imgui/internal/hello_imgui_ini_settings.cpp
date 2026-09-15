@@ -15,7 +15,7 @@ namespace HelloImGui
 
 
     std::string IntPairToString(std::array<int, 2> v);
-    std::array<int, 2> StringToIntPair(const std::string& s);
+    std::optional<std::array<int, 2>> StringToIntPair(const std::string& s);
 
     namespace HelloImGuiIniSettings
     {
@@ -233,8 +233,9 @@ namespace HelloImGui
                     return std::nullopt;
                 auto strValue = appWindowSection["WindowPosition"].as<std::string>();
                 auto intPair = StringToIntPair(strValue);
-                if (intPair[0] >= 0)
-                    screenBounds.position = intPair;
+                // Positions may be negative, e.g. on a monitor left of or above the primary monitor
+                if (intPair.has_value())
+                    screenBounds.position = intPair.value();
                 else
                     failed = true;
             }
@@ -244,8 +245,8 @@ namespace HelloImGui
                     return std::nullopt;
                 auto strValue = appWindowSection["WindowSize"].as<std::string>();
                 auto intPair = StringToIntPair(strValue);
-                if (intPair[0] >= 0)
-                    screenBounds.size = intPair;
+                if (intPair.has_value() && (*intPair)[0] > 0 && (*intPair)[1] > 0)
+                    screenBounds.size = intPair.value();
                 else
                     failed = true;
             }

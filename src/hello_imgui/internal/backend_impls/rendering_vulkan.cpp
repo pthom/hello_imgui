@@ -2,6 +2,8 @@
 #include "rendering_vulkan.h"
 #include "hello_imgui/hello_imgui.h"
 
+#include <exception>
+
 
 namespace HelloImGui
 {
@@ -91,12 +93,20 @@ namespace HelloImGui
 
         callbacks->Impl_Shutdown_3D = []
         {
+            // Shutdown shall never throw: it may run after a Vulkan error (which would then be hidden)
             auto & gVkGlobals = HelloImGui::GetVulkanGlobals();
             VkResult err = vkDeviceWaitIdle(gVkGlobals.Device);
-            HelloImGui::VulkanSetup::check_vk_result(err);
-            ImGui_ImplVulkan_Shutdown();
-            HelloImGui::VulkanSetup::CleanupVulkanWindow();
-            HelloImGui::VulkanSetup::CleanupVulkan();
+            HelloImGui::VulkanSetup::log_vk_result(err);
+            try
+            {
+                ImGui_ImplVulkan_Shutdown();
+                HelloImGui::VulkanSetup::CleanupVulkanWindow();
+                HelloImGui::VulkanSetup::CleanupVulkan();
+            }
+            catch (const std::exception& e)
+            {
+                fprintf(stderr, "[vulkan] Error during shutdown: %s\n", e.what());
+            }
         };
 
         // callbacks->Impl_ScreenshotRgb_3D     = [] { return ImageBuffer{}; };

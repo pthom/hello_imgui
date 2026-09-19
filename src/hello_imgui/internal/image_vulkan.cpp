@@ -4,6 +4,8 @@
 #include "imgui.h"
 #include "hello_imgui/internal/backend_impls/rendering_vulkan.h"
 
+#include <stdexcept>
+
 // Inspired from https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples#example-for-vulkan-users
 // WARNING: THIS IS ONE WAY TO DO THIS AMONG MANY, and provided for informational purpose.
 // Unfortunately due to the nature of Vulkan, it is not really possible
@@ -24,7 +26,7 @@ namespace HelloImGui
             if ((type_filter & (1 << i)) && (mem_properties.memoryTypes[i].propertyFlags & properties) == properties)
                 return i;
 
-        return 0xFFFFFFFF; // Unable to find memoryType
+        throw std::runtime_error("Vulkan error: TextureGpuVulkan: unable to find a suitable memory type");
     }
 
     void TextureGpuVulkan::_impl_StoreTexture(int width, int height, unsigned char* image_data_rgba)
@@ -211,9 +213,9 @@ namespace HelloImGui
         VulkanGlobals& vkGlobals = GetVulkanGlobals();
         auto& self = *this;
 
-        // The last submitted frames may still use this texture
+        // The last submitted frames may still use this texture (only log errors: a destructor shall not throw)
         VkResult err = vkDeviceWaitIdle(vkGlobals.Device);
-        VulkanSetup::check_vk_result(err);
+        VulkanSetup::log_vk_result(err);
 
         vkDestroyImageView(vkGlobals.Device, self.ImageView, nullptr);
         vkDestroyImage(vkGlobals.Device, self.Image, nullptr);

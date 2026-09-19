@@ -13,6 +13,9 @@
 
 #include "hello_imgui/hello_imgui_logger.h"
 
+#include <stdexcept>
+#include <string>
+
 
 // Validation layers: enabled by the CMake option HELLOIMGUI_VULKAN_VALIDATION (and in MSVC debug builds)
 #if defined(_DEBUG) || defined(HELLOIMGUI_VULKAN_VALIDATION)
@@ -22,13 +25,44 @@
 
 namespace HelloImGui::VulkanSetup
 {
+static const char* VkResultName(VkResult err)
+{
+    switch (err)
+    {
+        case VK_NOT_READY: return "VK_NOT_READY";
+        case VK_TIMEOUT: return "VK_TIMEOUT";
+        case VK_INCOMPLETE: return "VK_INCOMPLETE";
+        case VK_SUBOPTIMAL_KHR: return "VK_SUBOPTIMAL_KHR";
+        case VK_ERROR_OUT_OF_HOST_MEMORY: return "VK_ERROR_OUT_OF_HOST_MEMORY";
+        case VK_ERROR_OUT_OF_DEVICE_MEMORY: return "VK_ERROR_OUT_OF_DEVICE_MEMORY";
+        case VK_ERROR_INITIALIZATION_FAILED: return "VK_ERROR_INITIALIZATION_FAILED";
+        case VK_ERROR_DEVICE_LOST: return "VK_ERROR_DEVICE_LOST";
+        case VK_ERROR_MEMORY_MAP_FAILED: return "VK_ERROR_MEMORY_MAP_FAILED";
+        case VK_ERROR_LAYER_NOT_PRESENT: return "VK_ERROR_LAYER_NOT_PRESENT";
+        case VK_ERROR_EXTENSION_NOT_PRESENT: return "VK_ERROR_EXTENSION_NOT_PRESENT";
+        case VK_ERROR_INCOMPATIBLE_DRIVER: return "VK_ERROR_INCOMPATIBLE_DRIVER";
+        case VK_ERROR_FRAGMENTED_POOL: return "VK_ERROR_FRAGMENTED_POOL";
+        case VK_ERROR_OUT_OF_POOL_MEMORY: return "VK_ERROR_OUT_OF_POOL_MEMORY";
+        case VK_ERROR_SURFACE_LOST_KHR: return "VK_ERROR_SURFACE_LOST_KHR";
+        case VK_ERROR_OUT_OF_DATE_KHR: return "VK_ERROR_OUT_OF_DATE_KHR";
+        default: return "see VkResult in vulkan_core.h";
+    }
+}
+
+bool log_vk_result(VkResult err)
+{
+    if (err == VK_SUCCESS)
+        return true;
+    fprintf(stderr, "[vulkan] Error: VkResult = %d (%s)\n", err, VkResultName(err));
+    return err > 0;
+}
+
 void check_vk_result(VkResult err)
 {
-    if (err == 0)
-        return;
-    fprintf(stderr, "[vulkan] Error: VkResult = %d\n", err);
-    if (err < 0)
-        abort();
+    // Errors (negative values) throw: AbstractRunner::Run() will tear down the app and rethrow
+    // (a Python user then gets a RuntimeError instead of a dead interpreter)
+    if (!log_vk_result(err))
+        throw std::runtime_error(std::string("Vulkan error: ") + VkResultName(err) + " (" + std::to_string(err) + ")");
 }
 
 #ifdef IMGUI_VULKAN_DEBUG_REPORT
@@ -46,37 +80,6 @@ bool IsExtensionAvailable(const ImVector<VkExtensionProperties>& properties, con
         if (strcmp(p.extensionName, extension) == 0)
             return true;
     return false;
-}
-
-VkPhysicalDevice SetupVulkan_SelectPhysicalDevice()
-{
-    auto& gVkGlobals = HelloImGui::GetVulkanGlobals();
-
-    uint32_t gpu_count;
-    VkResult err = vkEnumeratePhysicalDevices(gVkGlobals.Instance, &gpu_count, nullptr);
-    check_vk_result(err);
-    IM_ASSERT(gpu_count > 0);
-
-    ImVector<VkPhysicalDevice> gpus;
-    gpus.resize(gpu_count);
-    err = vkEnumeratePhysicalDevices(gVkGlobals.Instance, &gpu_count, gpus.Data);
-    check_vk_result(err);
-
-    // If a number >1 of GPUs got reported, find discrete GPU if present, or use first one available. This covers
-    // most common cases (multi-gpu/integrated+dedicated graphics). Handling more complicated setups (multiple
-    // dedicated GPUs) is out of scope of this sample.
-    for (VkPhysicalDevice& device : gpus)
-    {
-        VkPhysicalDeviceProperties properties;
-        vkGetPhysicalDeviceProperties(device, &properties);
-        if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-            return device;
-    }
-
-    // Use first GPU (Integrated) is a Discrete one is not available.
-    if (gpu_count > 0)
-        return gpus[0];
-    return VK_NULL_HANDLE;
 }
 
 void SetupVulkan(ImVector<const char*> instance_extensions)
@@ -138,23 +141,12 @@ void SetupVulkan(ImVector<const char*> instance_extensions)
     }
 
     // Select Physical Device (GPU)
-    gVkGlobals.PhysicalDevice = SetupVulkan_SelectPhysicalDevice();
+    gVkGlobals.PhysicalDevice = ImGui_ImplVulkanH_SelectPhysicalDevice(gVkGlobals.Instance);
+    IM_ASSERT(gVkGlobals.PhysicalDevice != VK_NULL_HANDLE);
 
     // Select graphics queue family
-    {
-        uint32_t count;
-        vkGetPhysicalDeviceQueueFamilyProperties(gVkGlobals.PhysicalDevice, &count, nullptr);
-        VkQueueFamilyProperties* queues = (VkQueueFamilyProperties*)malloc(sizeof(VkQueueFamilyProperties) * count);
-        vkGetPhysicalDeviceQueueFamilyProperties(gVkGlobals.PhysicalDevice, &count, queues);
-        for (uint32_t i = 0; i < count; i++)
-            if (queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
-            {
-                gVkGlobals.QueueFamily = i;
-                break;
-            }
-        free(queues);
-        IM_ASSERT(gVkGlobals.QueueFamily != (uint32_t)-1);
-    }
+    gVkGlobals.QueueFamily = ImGui_ImplVulkanH_SelectQueueFamilyIndex(gVkGlobals.PhysicalDevice);
+    IM_ASSERT(gVkGlobals.QueueFamily != (uint32_t)-1);
 
     // Create Logical Device (with 1 queue)
     {

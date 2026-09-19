@@ -17,10 +17,12 @@ namespace HelloImGui
     // Functions from imgui examples/example_glfw_vulkan/main.cpp
     namespace VulkanSetup
     {
+        // check_vk_result: logs, and throws std::runtime_error on errors (negative values)
         void check_vk_result(VkResult err);
+        // log_vk_result: only logs (for shutdown code and destructors, which shall never throw). Returns false on errors.
+        bool log_vk_result(VkResult err);
         VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData);
         bool IsExtensionAvailable(const ImVector<VkExtensionProperties>& properties, const char* extension);
-        VkPhysicalDevice SetupVulkan_SelectPhysicalDevice();
         void SetupVulkan(ImVector<const char*> instance_extensions);
         void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height);
         void CleanupVulkan();

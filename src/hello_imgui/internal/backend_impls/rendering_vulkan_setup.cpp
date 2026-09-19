@@ -14,7 +14,8 @@
 #include "hello_imgui/hello_imgui_logger.h"
 
 
-#ifdef _DEBUG
+// Validation layers: enabled by the CMake option HELLOIMGUI_VULKAN_VALIDATION (and in MSVC debug builds)
+#if defined(_DEBUG) || defined(HELLOIMGUI_VULKAN_VALIDATION)
 #define IMGUI_VULKAN_DEBUG_REPORT
 #endif
 
@@ -166,10 +167,9 @@ void SetupVulkan(ImVector<const char*> instance_extensions)
         vkEnumerateDeviceExtensionProperties(gVkGlobals.PhysicalDevice, nullptr, &properties_count, nullptr);
         properties.resize(properties_count);
         vkEnumerateDeviceExtensionProperties(gVkGlobals.PhysicalDevice, nullptr, &properties_count, properties.Data);
-#ifdef VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME
-        if (IsExtensionAvailable(properties, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
-            device_extensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
-#endif
+        // Required when available (MoltenVK). Not using VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, which is only defined by vulkan_beta.h
+        if (IsExtensionAvailable(properties, "VK_KHR_portability_subset"))
+            device_extensions.push_back("VK_KHR_portability_subset");
 
         const float queue_priority[] = { 1.0f };
         VkDeviceQueueCreateInfo queue_info[1] = {};
@@ -274,6 +274,8 @@ void CleanupVulkanWindow()
         gVkGlobals.Device,
         &gVkGlobals.ImGuiMainWindowData,
         gVkGlobals.Allocator);
+    // Since imgui 1.92.6, ImGui_ImplVulkanH_DestroyWindow does not destroy the surface (it is user provided)
+    vkDestroySurfaceKHR(gVkGlobals.Instance, gVkGlobals.ImGuiMainWindowData.Surface, gVkGlobals.Allocator);
 }
 
 void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data)
@@ -285,11 +287,11 @@ void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data)
     VkSemaphore render_complete_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
     err = vkAcquireNextImageKHR(gVkGlobals.Device, wd->Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &wd->FrameIndex);
     if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
-    {
         gVkGlobals.SwapChainRebuild = true;
+    if (err == VK_ERROR_OUT_OF_DATE_KHR)
         return;
-    }
-    check_vk_result(err);
+    if (err != VK_SUBOPTIMAL_KHR)  // when suboptimal, the image was acquired: render it
+        check_vk_result(err);
 
     ImGui_ImplVulkanH_Frame* fd = &wd->Frames[wd->FrameIndex];
     {
@@ -359,12 +361,12 @@ void FramePresent(ImGui_ImplVulkanH_Window* wd)
     info.pImageIndices = &wd->FrameIndex;
     VkResult err = vkQueuePresentKHR(gVkGlobals.Queue, &info);
     if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
-    {
         gVkGlobals.SwapChainRebuild = true;
+    if (err == VK_ERROR_OUT_OF_DATE_KHR)
         return;
-    }
-    check_vk_result(err);
-    wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount; // Now we can use the next set of semaphores
+    if (err != VK_SUBOPTIMAL_KHR)
+        check_vk_result(err);
+    wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->SemaphoreCount; // Now we can use the next set of semaphores
 }
 
 } // namespace HelloImGui::VulkanSetup

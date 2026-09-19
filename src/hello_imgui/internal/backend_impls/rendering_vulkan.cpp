@@ -32,13 +32,12 @@ namespace HelloImGui
         callbacks->Impl_NewFrame_3D = [callbacks]
         {
             auto & gVkGlobals = HelloImGui::GetVulkanGlobals();
-            auto window = HelloImGui::GetRunnerParams()->backendPointers.glfwWindow;
 
             // Resize swap chain?
-            if (gVkGlobals.SwapChainRebuild)
             {
                 ScreenSize screenSize  = callbacks->Impl_GetFrameBufferSize();
-                if (screenSize[0] > 0 && screenSize[0] > 0)
+                bool sizeChanged = (gVkGlobals.ImGuiMainWindowData.Width != screenSize[0]) || (gVkGlobals.ImGuiMainWindowData.Height != screenSize[1]);
+                if (screenSize[0] > 0 && screenSize[1] > 0 && (gVkGlobals.SwapChainRebuild || sizeChanged))
                 {
                     ImGui_ImplVulkan_SetMinImageCount(gVkGlobals.MinImageCount);
                     ImGui_ImplVulkanH_CreateOrResizeWindow(gVkGlobals.Instance, gVkGlobals.PhysicalDevice,

@@ -85,40 +85,42 @@ namespace HelloImGui
         // Create Descriptor Set using ImGUI's implementation
         self.DS = ImGui_ImplVulkan_AddTexture(self.ImageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        // Create Upload Buffer
+        // Create Upload Buffer (staging buffer, freed once the upload is done)
+        VkBuffer upload_buffer = VK_NULL_HANDLE;
+        VkDeviceMemory upload_buffer_memory = VK_NULL_HANDLE;
         {
             VkBufferCreateInfo buffer_info = {};
             buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
             buffer_info.size = image_size;
             buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
             buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-            err = vkCreateBuffer(vkGlobals.Device, &buffer_info, vkGlobals.Allocator, &self.UploadBuffer);
+            err = vkCreateBuffer(vkGlobals.Device, &buffer_info, vkGlobals.Allocator, &upload_buffer);
             VulkanSetup::check_vk_result(err);
             VkMemoryRequirements req;
-            vkGetBufferMemoryRequirements(vkGlobals.Device, self.UploadBuffer, &req);
+            vkGetBufferMemoryRequirements(vkGlobals.Device, upload_buffer, &req);
             VkMemoryAllocateInfo alloc_info = {};
             alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
             alloc_info.allocationSize = req.size;
             alloc_info.memoryTypeIndex = findMemoryType(req.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-            err = vkAllocateMemory(vkGlobals.Device, &alloc_info, vkGlobals.Allocator, &self.UploadBufferMemory);
+            err = vkAllocateMemory(vkGlobals.Device, &alloc_info, vkGlobals.Allocator, &upload_buffer_memory);
             VulkanSetup::check_vk_result(err);
-            err = vkBindBufferMemory(vkGlobals.Device, self.UploadBuffer, self.UploadBufferMemory, 0);
+            err = vkBindBufferMemory(vkGlobals.Device, upload_buffer, upload_buffer_memory, 0);
             VulkanSetup::check_vk_result(err);
         }
 
         // Upload to Buffer:
         {
             void* map = NULL;
-            err = vkMapMemory(vkGlobals.Device, self.UploadBufferMemory, 0, image_size, 0, &map);
+            err = vkMapMemory(vkGlobals.Device, upload_buffer_memory, 0, image_size, 0, &map);
             VulkanSetup::check_vk_result(err);
             memcpy(map, image_data_rgba, image_size);
             VkMappedMemoryRange range[1] = {};
             range[0].sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-            range[0].memory = self.UploadBufferMemory;
+            range[0].memory = upload_buffer_memory;
             range[0].size = image_size;
             err = vkFlushMappedMemoryRanges(vkGlobals.Device, 1, range);
             VulkanSetup::check_vk_result(err);
-            vkUnmapMemory(vkGlobals.Device, self.UploadBufferMemory);
+            vkUnmapMemory(vkGlobals.Device, upload_buffer_memory);
         }
 
         // Create a command buffer that will perform following steps when hit in the command queue.
@@ -163,7 +165,7 @@ namespace HelloImGui
             region.imageExtent.width = self.Width;
             region.imageExtent.height = self.Height;
             region.imageExtent.depth = 1;
-            vkCmdCopyBufferToImage(command_buffer, self.UploadBuffer, self.Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+            vkCmdCopyBufferToImage(command_buffer, upload_buffer, self.Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
             VkImageMemoryBarrier use_barrier[1] = {};
             use_barrier[0].sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -194,6 +196,11 @@ namespace HelloImGui
             VulkanSetup::check_vk_result(err);
         }
 
+        // The upload is complete: free the command buffer and the staging buffer
+        vkFreeCommandBuffers(vkGlobals.Device, command_pool, 1, &command_buffer);
+        vkDestroyBuffer(vkGlobals.Device, upload_buffer, vkGlobals.Allocator);
+        vkFreeMemory(vkGlobals.Device, upload_buffer_memory, vkGlobals.Allocator);
+
 
         //this->imTextureId = (ImTextureID)(intptr_t)vkImageView;
     }
@@ -208,8 +215,6 @@ namespace HelloImGui
         VkResult err = vkDeviceWaitIdle(vkGlobals.Device);
         VulkanSetup::check_vk_result(err);
 
-        vkFreeMemory(vkGlobals.Device, self.UploadBufferMemory, nullptr);
-        vkDestroyBuffer(vkGlobals.Device, self.UploadBuffer, nullptr);
         vkDestroyImageView(vkGlobals.Device, self.ImageView, nullptr);
         vkDestroyImage(vkGlobals.Device, self.Image, nullptr);
         vkFreeMemory(vkGlobals.Device, self.ImageMemory, nullptr);

@@ -87,6 +87,7 @@ option(HELLOIMGUI_USE_SDL2 "Use Sdl2 as a platform backend" OFF)
 option(HELLOIMGUI_HAS_OPENGL3 "Use OpenGL3 as a rendering backend" OFF)
 option(HELLOIMGUI_HAS_METAL "Use Metal as a rendering backend" OFF)
 option(HELLOIMGUI_HAS_VULKAN "Use Vulkan as a rendering backend" OFF)
+option(HELLOIMGUI_VULKAN_VALIDATION "Vulkan: enable the validation layers (VK_LAYER_KHRONOS_validation, provided by the Vulkan SDK), and report their messages on stderr" OFF)
 option(HELLOIMGUI_HAS_DIRECTX11 "Use DirectX11 as a rendering backend" OFF)
 option(HELLOIMGUI_HAS_DIRECTX12 "Use DirectX12 as a rendering backend" OFF)
 

@@ -26,6 +26,53 @@ namespace HelloImGui
         UINT64                  FenceValue;
     };
 
+    // Simple free list based allocator for SRV descriptors
+    // (from imgui examples/example_win32_directx12/main.cpp)
+    // imgui_impl_dx12 allocates one descriptor per texture (the font atlas may be recreated at any time)
+    struct Dx12DescriptorHeapAllocator
+    {
+        ID3D12DescriptorHeap*       Heap = nullptr;
+        D3D12_DESCRIPTOR_HEAP_TYPE  HeapType = D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;
+        D3D12_CPU_DESCRIPTOR_HANDLE HeapStartCpu = {};
+        D3D12_GPU_DESCRIPTOR_HANDLE HeapStartGpu = {};
+        UINT                        HeapHandleIncrement = 0;
+        ImVector<int>               FreeIndices;
+
+        void Create(ID3D12Device* device, ID3D12DescriptorHeap* heap)
+        {
+            IM_ASSERT(Heap == nullptr && FreeIndices.empty());
+            Heap = heap;
+            D3D12_DESCRIPTOR_HEAP_DESC desc = heap->GetDesc();
+            HeapType = desc.Type;
+            HeapStartCpu = Heap->GetCPUDescriptorHandleForHeapStart();
+            HeapStartGpu = Heap->GetGPUDescriptorHandleForHeapStart();
+            HeapHandleIncrement = device->GetDescriptorHandleIncrementSize(HeapType);
+            FreeIndices.reserve((int)desc.NumDescriptors);
+            for (int n = desc.NumDescriptors; n > 0; n--)
+                FreeIndices.push_back(n - 1);
+        }
+        void Destroy()
+        {
+            Heap = nullptr;
+            FreeIndices.clear();
+        }
+        void Alloc(D3D12_CPU_DESCRIPTOR_HANDLE* out_cpu_desc_handle, D3D12_GPU_DESCRIPTOR_HANDLE* out_gpu_desc_handle)
+        {
+            IM_ASSERT(FreeIndices.Size > 0);
+            int idx = FreeIndices.back();
+            FreeIndices.pop_back();
+            out_cpu_desc_handle->ptr = HeapStartCpu.ptr + (idx * HeapHandleIncrement);
+            out_gpu_desc_handle->ptr = HeapStartGpu.ptr + (idx * HeapHandleIncrement);
+        }
+        void Free(D3D12_CPU_DESCRIPTOR_HANDLE cpu_desc_handle, D3D12_GPU_DESCRIPTOR_HANDLE gpu_desc_handle)
+        {
+            int cpu_idx = (int)((cpu_desc_handle.ptr - HeapStartCpu.ptr) / HeapHandleIncrement);
+            int gpu_idx = (int)((gpu_desc_handle.ptr - HeapStartGpu.ptr) / HeapHandleIncrement);
+            IM_ASSERT(cpu_idx == gpu_idx);
+            FreeIndices.push_back(cpu_idx);
+        }
+    };
+
     // Functions from imgui examples/example_win32_directx12/main.cpp
     namespace Dx12Setup
     {
@@ -40,6 +87,7 @@ namespace HelloImGui
 
     constexpr int                    NUM_FRAMES_IN_FLIGHT = 3;
     constexpr int                    NUM_BACK_BUFFERS = 3;
+    constexpr int                    SRV_HEAP_SIZE = 64;
 
     // Data
     struct Dx12Globals
@@ -51,6 +99,7 @@ namespace HelloImGui
         ID3D12Device*                pd3dDevice = nullptr;
         ID3D12DescriptorHeap*        pd3dRtvDescHeap = nullptr;
         ID3D12DescriptorHeap*        pd3dSrvDescHeap = nullptr;
+        Dx12DescriptorHeapAllocator  pd3dSrvDescHeapAlloc;
         ID3D12CommandQueue*          pd3dCommandQueue = nullptr;
         ID3D12GraphicsCommandList*   pd3dCommandList = nullptr;
         ID3D12Fence*                 fence = nullptr;

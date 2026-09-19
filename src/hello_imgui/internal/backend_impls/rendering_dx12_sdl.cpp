@@ -42,10 +42,18 @@ namespace HelloImGui
         }
 
         ImGui_ImplSDL2_InitForD3D(window);
-        ImGui_ImplDX12_Init(gDxGlobals.pd3dDevice, NUM_FRAMES_IN_FLIGHT,
-                            DXGI_FORMAT_R8G8B8A8_UNORM, gDxGlobals.pd3dSrvDescHeap,
-                            gDxGlobals.pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
-                            gDxGlobals.pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
+        ImGui_ImplDX12_InitInfo init_info = {};
+        init_info.Device = gDxGlobals.pd3dDevice;
+        init_info.CommandQueue = gDxGlobals.pd3dCommandQueue;
+        init_info.NumFramesInFlight = NUM_FRAMES_IN_FLIGHT;
+        init_info.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+        init_info.DSVFormat = DXGI_FORMAT_UNKNOWN;
+        init_info.SrvDescriptorHeap = gDxGlobals.pd3dSrvDescHeap;
+        init_info.SrvDescriptorAllocFn = [](ImGui_ImplDX12_InitInfo*, D3D12_CPU_DESCRIPTOR_HANDLE* out_cpu_handle, D3D12_GPU_DESCRIPTOR_HANDLE* out_gpu_handle)
+            { GetDx12Globals().pd3dSrvDescHeapAlloc.Alloc(out_cpu_handle, out_gpu_handle); };
+        init_info.SrvDescriptorFreeFn = [](ImGui_ImplDX12_InitInfo*, D3D12_CPU_DESCRIPTOR_HANDLE cpu_handle, D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle)
+            { GetDx12Globals().pd3dSrvDescHeapAlloc.Free(cpu_handle, gpu_handle); };
+        ImGui_ImplDX12_Init(&init_info);
 
     }
 

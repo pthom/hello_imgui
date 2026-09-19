@@ -99,10 +99,11 @@ namespace HelloImGui
             {
                 D3D12_DESCRIPTOR_HEAP_DESC desc = {};
                 desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-                desc.NumDescriptors = 1;
+                desc.NumDescriptors = SRV_HEAP_SIZE;
                 desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
                 if (gDxGlobals.pd3dDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&gDxGlobals.pd3dSrvDescHeap)) != S_OK)
                     return false;
+                gDxGlobals.pd3dSrvDescHeapAlloc.Create(gDxGlobals.pd3dDevice, gDxGlobals.pd3dSrvDescHeap);
             }
 
             {
@@ -160,6 +161,7 @@ namespace HelloImGui
             if (gDxGlobals.pd3dCommandQueue) { gDxGlobals.pd3dCommandQueue->Release(); gDxGlobals.pd3dCommandQueue = nullptr; }
             if (gDxGlobals.pd3dCommandList) { gDxGlobals.pd3dCommandList->Release(); gDxGlobals.pd3dCommandList = nullptr; }
             if (gDxGlobals.pd3dRtvDescHeap) { gDxGlobals.pd3dRtvDescHeap->Release(); gDxGlobals.pd3dRtvDescHeap = nullptr; }
+            gDxGlobals.pd3dSrvDescHeapAlloc.Destroy();
             if (gDxGlobals.pd3dSrvDescHeap) { gDxGlobals.pd3dSrvDescHeap->Release(); gDxGlobals.pd3dSrvDescHeap = nullptr; }
             if (gDxGlobals.fence) { gDxGlobals.fence->Release(); gDxGlobals.fence = nullptr; }
             if (gDxGlobals.fenceEvent) { CloseHandle(gDxGlobals.fenceEvent); gDxGlobals.fenceEvent = nullptr; }

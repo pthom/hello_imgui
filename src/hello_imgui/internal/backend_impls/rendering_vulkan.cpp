@@ -27,6 +27,23 @@ namespace HelloImGui
             HelloImGui::VulkanSetup::FramePresent(wd);
     }
 
+    void SetVulkanVsync(bool vsyncToMonitor)
+    {
+        auto & gVkGlobals = HelloImGui::GetVulkanGlobals();
+        gVkGlobals.VsyncToMonitor = vsyncToMonitor;
+
+        ImGui_ImplVulkanH_Window* wd = &gVkGlobals.ImGuiMainWindowData;
+        if (wd->Surface == VK_NULL_HANDLE)
+            return; // Window not created yet: SetupVulkanWindow() will use VsyncToMonitor
+
+        VkPresentModeKHR presentMode = HelloImGui::VulkanSetup::SelectPresentMode(wd);
+        if (presentMode != wd->PresentMode)
+        {
+            wd->PresentMode = presentMode;
+            gVkGlobals.SwapChainRebuild = true; // the present mode belongs to the swapchain
+        }
+    }
+
     RenderingCallbacksPtr PrepareBackendCallbacksCommonVulkan()
     {
         auto callbacks = std::make_shared<RenderingCallbacks>();

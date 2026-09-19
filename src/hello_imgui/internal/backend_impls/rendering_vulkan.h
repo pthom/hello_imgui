@@ -25,6 +25,7 @@ namespace HelloImGui
         bool IsExtensionAvailable(const ImVector<VkExtensionProperties>& properties, const char* extension);
         void SetupVulkan(ImVector<const char*> instance_extensions);
         void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height);
+        VkPresentModeKHR SelectPresentMode(ImGui_ImplVulkanH_Window* wd);  // according to VulkanGlobals.VsyncToMonitor
         void CleanupVulkan();
         void CleanupVulkanWindow();
         void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data);
@@ -48,6 +49,7 @@ namespace HelloImGui
         ImGui_ImplVulkanH_Window ImGuiMainWindowData;
         int                      MinImageCount = 2;
         bool                     SwapChainRebuild = false;
+        bool                     VsyncToMonitor = true;  // set via SetVulkanVsync()
 
         // The maximum number of image sampler descriptor and descriptor set is set at startup
         // Yoy may need to increase these values if you use a lot of images in your application.
@@ -58,6 +60,9 @@ namespace HelloImGui
 
     //  Impl of RenderingCallbacks_Impl_SwapBuffers
     void SwapVulkanBuffers();
+
+    // Impl of Impl_ApplyVsyncSetting (fpsIdling.vsyncToMonitor): selects the present mode of the swapchain
+    void SetVulkanVsync(bool vsyncToMonitor);
 
     RenderingCallbacksPtr PrepareBackendCallbacksCommonVulkan();
 

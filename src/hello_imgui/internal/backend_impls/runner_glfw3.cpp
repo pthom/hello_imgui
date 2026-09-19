@@ -391,6 +391,10 @@ namespace HelloImGui
         else
             glfwSwapInterval(0);
         #endif
+        #ifdef HELLOIMGUI_HAS_VULKAN
+        if (params.rendererBackendType == RendererBackendType::Vulkan)
+            SetVulkanVsync(params.fpsIdling.vsyncToMonitor);
+        #endif
     }
 }  // namespace HelloImGui
 #endif  // #ifdef HELLOIMGUI_USE_GLFW3

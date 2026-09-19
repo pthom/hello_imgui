@@ -200,6 +200,23 @@ void SetupVulkan(ImVector<const char*> instance_extensions)
     }
 }
 
+VkPresentModeKHR SelectPresentMode(ImGui_ImplVulkanH_Window* wd)
+{
+    // - vsync: FIFO (always available)
+    // - no vsync: MAILBOX or IMMEDIATE, when the device provides them (otherwise, FIFO, i.e. vsync remains)
+    auto& gVkGlobals = HelloImGui::GetVulkanGlobals();
+    if (gVkGlobals.VsyncToMonitor)
+    {
+        VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_FIFO_KHR };
+        return ImGui_ImplVulkanH_SelectPresentMode(gVkGlobals.PhysicalDevice, wd->Surface, &present_modes[0], IM_ARRAYSIZE(present_modes));
+    }
+    else
+    {
+        VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_IMMEDIATE_KHR, VK_PRESENT_MODE_FIFO_KHR };
+        return ImGui_ImplVulkanH_SelectPresentMode(gVkGlobals.PhysicalDevice, wd->Surface, &present_modes[0], IM_ARRAYSIZE(present_modes));
+    }
+}
+
 // All the ImGui_ImplVulkanH_XXX structures/functions are optional helpers used by the demo.
 // Your real engine/app may not use them.
 void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height)
@@ -223,13 +240,7 @@ void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int w
     wd->SurfaceFormat = ImGui_ImplVulkanH_SelectSurfaceFormat(gVkGlobals.PhysicalDevice, wd->Surface, requestSurfaceImageFormat, (size_t)IM_ARRAYSIZE(requestSurfaceImageFormat), requestSurfaceColorSpace);
 
     // Select Present Mode
-#ifdef IMGUI_UNLIMITED_FRAME_RATE
-    VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_IMMEDIATE_KHR, VK_PRESENT_MODE_FIFO_KHR };
-#else
-    VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_FIFO_KHR };
-#endif
-    wd->PresentMode = ImGui_ImplVulkanH_SelectPresentMode(gVkGlobals.PhysicalDevice, wd->Surface, &present_modes[0], IM_ARRAYSIZE(present_modes));
-    //printf("[vulkan] Selected PresentMode = %d\n", wd->PresentMode);
+    wd->PresentMode = SelectPresentMode(wd);
 
     // Create SwapChain, RenderPass, Framebuffer, etc.
     IM_ASSERT(gVkGlobals.MinImageCount >= 2);

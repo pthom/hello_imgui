@@ -68,6 +68,9 @@ namespace HelloImGui
     //  Impl of RenderingCallbacks_Impl_SwapBuffers
     void SwapVulkanBuffers();
 
+    // Screen capture for imgui_test_engine (ImGuiTestEngineIO::ScreenCaptureFunc)
+    bool ImGuiApp_ImplVulkan_CaptureFramebuffer(ImGuiID viewport_id, int x, int y, int w, int h, unsigned int* pixels, void* user_data);
+
     // Impl of Impl_ApplyVsyncSetting (fpsIdling.vsyncToMonitor): selects the present mode of the swapchain
     void SetVulkanVsync(bool vsyncToMonitor);
 

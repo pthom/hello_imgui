@@ -1,7 +1,11 @@
 #include "imgui_test_engine/imgui_te_engine.h"
+#include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/runner_params.h"
 #include "hello_imgui/internal/functional_utils.h"
 #include "hello_imgui/internal/backend_impls/opengl_setup_helper/opengl_screenshot.h"
+#ifdef HELLOIMGUI_HAS_VULKAN
+#include "hello_imgui/internal/backend_impls/rendering_vulkan.h"
+#endif
 
 namespace HelloImGui
 {
@@ -17,8 +21,15 @@ namespace HelloImGui
             test_io.ConfigVerboseLevelOnError = ImGuiTestVerboseLevel_Debug;
             test_io.ConfigRunSpeed = ImGuiTestRunSpeed_Normal; // Default to slowest mode in this demo
 
+            // Screen capture: depends on the rendering backend selected at runtime
+            auto rendererBackendType = HelloImGui::GetRunnerParams()->rendererBackendType;
 #ifdef HELLOIMGUI_HAS_OPENGL
-            test_io.ScreenCaptureFunc = HelloImGui::ImGuiApp_ImplGL_CaptureFramebuffer;
+            if (rendererBackendType == RendererBackendType::OpenGL3)
+                test_io.ScreenCaptureFunc = HelloImGui::ImGuiApp_ImplGL_CaptureFramebuffer;
+#endif
+#ifdef HELLOIMGUI_HAS_VULKAN
+            if (rendererBackendType == RendererBackendType::Vulkan)
+                test_io.ScreenCaptureFunc = HelloImGui::ImGuiApp_ImplVulkan_CaptureFramebuffer;
 #endif
         }
 

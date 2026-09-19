@@ -27,6 +27,35 @@ namespace HelloImGui
             HelloImGui::VulkanSetup::FramePresent(wd);
     }
 
+    bool ImGuiApp_ImplVulkan_CaptureFramebuffer(ImGuiID viewport_id, int x, int y, int w, int h, unsigned int* pixels, void* user_data)
+    {
+        IM_UNUSED(viewport_id);
+        IM_UNUSED(user_data);
+
+        // Full frame screenshot (in framebuffer pixels), from which we extract the requested rectangle (given in logical pixels)
+        ImageBuffer screenshot = HelloImGui::VulkanSetup::ScreenshotRgb();
+        if (screenshot.width == 0 || screenshot.height == 0)
+            return false;
+        ImVec2 framebufferScale = ImGui::GetDrawData()->FramebufferScale;  // not null, since the screenshot succeeded
+
+        for (int _y = 0; _y < h; ++_y)
+        {
+            for (int _x = 0; _x < w; ++_x)
+            {
+                size_t xs = (size_t)((float)(x + _x) * framebufferScale.x), ys = (size_t)((float)(y + _y) * framebufferScale.y);
+                unsigned char* dst = (unsigned char*)&pixels[_y * w + _x];
+                if (xs < screenshot.width && ys < screenshot.height)
+                {
+                    const uint8_t* src = &screenshot.bufferRgb[(ys * screenshot.width + xs) * 3];
+                    dst[0] = src[0]; dst[1] = src[1]; dst[2] = src[2]; dst[3] = 255;
+                }
+                else
+                    dst[0] = dst[1] = dst[2] = dst[3] = 0;
+            }
+        }
+        return true;
+    }
+
     void SetVulkanVsync(bool vsyncToMonitor)
     {
         auto & gVkGlobals = HelloImGui::GetVulkanGlobals();

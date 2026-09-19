@@ -70,7 +70,7 @@ TEST_CASE("testing HelloImGuiIniSettings::LoadLastRunWindowBounds")
 {
     auto writeTempIniFile = [](const std::string& appWindowContent) -> std::string
     {
-        std::string filename = std::filesystem::temp_directory_path() / "hello_imgui_test_window_bounds.ini";
+        std::string filename = (std::filesystem::temp_directory_path() / "hello_imgui_test_window_bounds.ini").string();
         std::ofstream ofs(filename);
         ofs << ";;;<<<AppWindow>>>;;;\n[AppWindow]\n" << appWindowContent;
         return filename;

@@ -3,6 +3,7 @@
 
 #include "imgui_impl_vulkan.h"
 #include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
+#include "hello_imgui/hello_imgui_screenshot.h"
 
 #include <vulkan/vulkan.h>
 
@@ -28,8 +29,13 @@ namespace HelloImGui
         VkPresentModeKHR SelectPresentMode(ImGui_ImplVulkanH_Window* wd);  // according to VulkanGlobals.VsyncToMonitor
         void CleanupVulkan();
         void CleanupVulkanWindow();
-        void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data);
+        // FrameRender: returns false if the frame was not rendered (swapchain out of date).
+        // If captureBuffer is provided, the rendered image is also copied into it (see ScreenshotRgb)
+        bool FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data, VkBuffer captureBuffer = VK_NULL_HANDLE);
         void FramePresent(ImGui_ImplVulkanH_Window* wd);
+        uint32_t FindMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties);
+        // ScreenshotRgb: must be called between ImGui::Render() and the next ImGui::NewFrame() (returns an empty buffer otherwise)
+        ImageBuffer ScreenshotRgb();
     }
 
     // Data
@@ -50,6 +56,7 @@ namespace HelloImGui
         int                      MinImageCount = 2;
         bool                     SwapChainRebuild = false;
         bool                     VsyncToMonitor = true;  // set via SetVulkanVsync()
+        VkImageUsageFlags        SwapchainImageUsage = 0; // VK_IMAGE_USAGE_TRANSFER_SRC_BIT when the surface supports it (required by ScreenshotRgb)
 
         // The maximum number of image sampler descriptor and descriptor set is set at startup
         // Yoy may need to increase these values if you use a lot of images in your application.

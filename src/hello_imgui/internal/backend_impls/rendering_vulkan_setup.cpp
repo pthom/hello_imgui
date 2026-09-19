@@ -242,6 +242,15 @@ void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int w
     // Select Present Mode
     wd->PresentMode = SelectPresentMode(wd);
 
+    // Screenshots copy from the swapchain images: request TRANSFER_SRC when the surface supports it
+    {
+        VkSurfaceCapabilitiesKHR surfaceCapabilities;
+        VkResult err = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gVkGlobals.PhysicalDevice, wd->Surface, &surfaceCapabilities);
+        check_vk_result(err);
+        if (surfaceCapabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT)
+            gVkGlobals.SwapchainImageUsage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+    }
+
     // Create SwapChain, RenderPass, Framebuffer, etc.
     IM_ASSERT(gVkGlobals.MinImageCount >= 2);
     ImGui_ImplVulkanH_CreateOrResizeWindow(
@@ -249,7 +258,7 @@ void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int w
         gVkGlobals.QueueFamily, gVkGlobals.Allocator,
         width, height,
         gVkGlobals.MinImageCount,
-        0  // image_usage
+        gVkGlobals.SwapchainImageUsage
         );
 }
 
@@ -281,7 +290,7 @@ void CleanupVulkanWindow()
     vkDestroySurfaceKHR(gVkGlobals.Instance, gVkGlobals.ImGuiMainWindowData.Surface, gVkGlobals.Allocator);
 }
 
-void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data)
+bool FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data, VkBuffer captureBuffer)
 {
     auto& gVkGlobals = HelloImGui::GetVulkanGlobals();
     VkResult err;
@@ -292,7 +301,7 @@ void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data)
     if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
         gVkGlobals.SwapChainRebuild = true;
     if (err == VK_ERROR_OUT_OF_DATE_KHR)
-        return;
+        return false;
     if (err != VK_SUBOPTIMAL_KHR)  // when suboptimal, the image was acquired: render it
         check_vk_result(err);
 
@@ -330,6 +339,40 @@ void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data)
 
     // Submit command buffer
     vkCmdEndRenderPass(fd->CommandBuffer);
+
+    // Optional capture: copy the rendered image (which the render pass left in PRESENT_SRC layout) into captureBuffer
+    if (captureBuffer != VK_NULL_HANDLE)
+    {
+        VkImageMemoryBarrier barrier = {};
+        barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.image = fd->Backbuffer;
+        barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        barrier.subresourceRange.levelCount = 1;
+        barrier.subresourceRange.layerCount = 1;
+
+        barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+        barrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        vkCmdPipelineBarrier(fd->CommandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+        VkBufferImageCopy region = {};
+        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        region.imageSubresource.layerCount = 1;
+        region.imageExtent.width = (uint32_t)wd->Width;
+        region.imageExtent.height = (uint32_t)wd->Height;
+        region.imageExtent.depth = 1;
+        vkCmdCopyImageToBuffer(fd->CommandBuffer, fd->Backbuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, captureBuffer, 1, &region);
+
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+        barrier.dstAccessMask = 0;
+        barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        vkCmdPipelineBarrier(fd->CommandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+    }
+
     {
         VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
         VkSubmitInfo info = {};
@@ -347,6 +390,97 @@ void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data)
         err = vkQueueSubmit(gVkGlobals.Queue, 1, &info, fd->Fence);
         check_vk_result(err);
     }
+    return true;
+}
+
+uint32_t FindMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties)
+{
+    auto& gVkGlobals = HelloImGui::GetVulkanGlobals();
+    VkPhysicalDeviceMemoryProperties mem_properties;
+    vkGetPhysicalDeviceMemoryProperties(gVkGlobals.PhysicalDevice, &mem_properties);
+
+    for (uint32_t i = 0; i < mem_properties.memoryTypeCount; i++)
+        if ((type_filter & (1 << i)) && (mem_properties.memoryTypes[i].propertyFlags & properties) == properties)
+            return i;
+
+    throw std::runtime_error("Vulkan error: unable to find a suitable memory type");
+}
+
+ImageBuffer ScreenshotRgb()
+{
+    // The image presented by the last frame does not belong to us anymore. So, we render the current draw data once more
+    // into a newly acquired image, copy it into a host visible buffer within the same command buffer, then present it
+    // (it is identical to the previous frame: no visual effect).
+    auto& gVkGlobals = HelloImGui::GetVulkanGlobals();
+    ImGui_ImplVulkanH_Window* wd = &gVkGlobals.ImGuiMainWindowData;
+
+    ImDrawData* draw_data = ImGui::GetDrawData();  // null outside of [ImGui::Render(), ImGui::NewFrame()]
+    if (draw_data == nullptr || draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f)
+        return ImageBuffer{};
+    if (gVkGlobals.SwapChainRebuild || gVkGlobals.SwapchainImageUsage == 0 || wd->Width <= 0 || wd->Height <= 0)
+        return ImageBuffer{};
+    const VkFormat format = wd->SurfaceFormat.format;
+    const bool isBgra = (format == VK_FORMAT_B8G8R8A8_UNORM || format == VK_FORMAT_B8G8R8A8_SRGB);
+    const bool isRgba = (format == VK_FORMAT_R8G8B8A8_UNORM || format == VK_FORMAT_R8G8B8A8_SRGB);
+    if (!isBgra && !isRgba)
+        return ImageBuffer{};
+
+    const size_t width = (size_t)wd->Width, height = (size_t)wd->Height;
+    const VkDeviceSize bufferSize = (VkDeviceSize)(width * height * 4);
+    VkResult err;
+
+    // Host visible buffer
+    VkBuffer buffer = VK_NULL_HANDLE;
+    VkDeviceMemory bufferMemory = VK_NULL_HANDLE;
+    {
+        VkBufferCreateInfo buffer_info = {};
+        buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        buffer_info.size = bufferSize;
+        buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+        buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        err = vkCreateBuffer(gVkGlobals.Device, &buffer_info, gVkGlobals.Allocator, &buffer);
+        check_vk_result(err);
+        VkMemoryRequirements req;
+        vkGetBufferMemoryRequirements(gVkGlobals.Device, buffer, &req);
+        VkMemoryAllocateInfo alloc_info = {};
+        alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        alloc_info.allocationSize = req.size;
+        alloc_info.memoryTypeIndex = FindMemoryType(req.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+        err = vkAllocateMemory(gVkGlobals.Device, &alloc_info, gVkGlobals.Allocator, &bufferMemory);
+        check_vk_result(err);
+        err = vkBindBufferMemory(gVkGlobals.Device, buffer, bufferMemory, 0);
+        check_vk_result(err);
+    }
+
+    ImageBuffer r;
+    if (FrameRender(wd, draw_data, buffer))
+    {
+        // Wait for the frame to be rendered and copied
+        err = vkWaitForFences(gVkGlobals.Device, 1, &wd->Frames[wd->FrameIndex].Fence, VK_TRUE, UINT64_MAX);
+        check_vk_result(err);
+
+        void* mapped = nullptr;
+        err = vkMapMemory(gVkGlobals.Device, bufferMemory, 0, bufferSize, 0, &mapped);
+        check_vk_result(err);
+        r.width = width;
+        r.height = height;
+        r.bufferRgb.resize(width * height * 3);
+        const uint8_t* src = (const uint8_t*)mapped;
+        uint8_t* dst = r.bufferRgb.data();
+        for (size_t i = 0; i < width * height; ++i, src += 4, dst += 3)
+        {
+            dst[0] = isBgra ? src[2] : src[0];
+            dst[1] = src[1];
+            dst[2] = isBgra ? src[0] : src[2];
+        }
+        vkUnmapMemory(gVkGlobals.Device, bufferMemory);
+
+        FramePresent(wd);
+    }
+
+    vkDestroyBuffer(gVkGlobals.Device, buffer, gVkGlobals.Allocator);
+    vkFreeMemory(gVkGlobals.Device, bufferMemory, gVkGlobals.Allocator);
+    return r;
 }
 
 void FramePresent(ImGui_ImplVulkanH_Window* wd)

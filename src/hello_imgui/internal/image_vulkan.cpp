@@ -4,8 +4,6 @@
 #include "imgui.h"
 #include "hello_imgui/internal/backend_impls/rendering_vulkan.h"
 
-#include <stdexcept>
-
 // Inspired from https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples#example-for-vulkan-users
 // WARNING: THIS IS ONE WAY TO DO THIS AMONG MANY, and provided for informational purpose.
 // Unfortunately due to the nature of Vulkan, it is not really possible
@@ -13,21 +11,6 @@
 
 namespace HelloImGui
 {
-
-    // Helper function to find Vulkan memory type bits. See ImGui_ImplVulkan_MemoryType() in imgui_impl_vulkan.cpp
-    uint32_t findMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties)
-    {
-        auto& g_PhysicalDevice = GetVulkanGlobals().PhysicalDevice;
-
-        VkPhysicalDeviceMemoryProperties mem_properties;
-        vkGetPhysicalDeviceMemoryProperties(g_PhysicalDevice, &mem_properties);
-
-        for (uint32_t i = 0; i < mem_properties.memoryTypeCount; i++)
-            if ((type_filter & (1 << i)) && (mem_properties.memoryTypes[i].propertyFlags & properties) == properties)
-                return i;
-
-        throw std::runtime_error("Vulkan error: TextureGpuVulkan: unable to find a suitable memory type");
-    }
 
     void TextureGpuVulkan::_impl_StoreTexture(int width, int height, unsigned char* image_data_rgba)
     {
@@ -63,7 +46,7 @@ namespace HelloImGui
             VkMemoryAllocateInfo alloc_info = {};
             alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
             alloc_info.allocationSize = req.size;
-            alloc_info.memoryTypeIndex = findMemoryType(req.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+            alloc_info.memoryTypeIndex = VulkanSetup::FindMemoryType(req.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
             err = vkAllocateMemory(vkGlobals.Device, &alloc_info, vkGlobals.Allocator, &self.ImageMemory);
             VulkanSetup::check_vk_result(err);
             err = vkBindImageMemory(vkGlobals.Device, self.Image, self.ImageMemory, 0);
@@ -103,7 +86,7 @@ namespace HelloImGui
             VkMemoryAllocateInfo alloc_info = {};
             alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
             alloc_info.allocationSize = req.size;
-            alloc_info.memoryTypeIndex = findMemoryType(req.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+            alloc_info.memoryTypeIndex = VulkanSetup::FindMemoryType(req.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
             err = vkAllocateMemory(vkGlobals.Device, &alloc_info, vkGlobals.Allocator, &upload_buffer_memory);
             VulkanSetup::check_vk_result(err);
             err = vkBindBufferMemory(vkGlobals.Device, upload_buffer, upload_buffer_memory, 0);

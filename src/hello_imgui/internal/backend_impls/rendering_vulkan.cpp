@@ -64,7 +64,7 @@ namespace HelloImGui
                                                            gVkGlobals.QueueFamily, gVkGlobals.Allocator,
                                                            screenSize[0], screenSize[1],
                                                            gVkGlobals.MinImageCount,
-                                                           0);
+                                                           gVkGlobals.SwapchainImageUsage);
                     gVkGlobals.ImGuiMainWindowData.FrameIndex = 0;
                     gVkGlobals.SwapChainRebuild = false;
                 }
@@ -126,7 +126,7 @@ namespace HelloImGui
             }
         };
 
-        // callbacks->Impl_ScreenshotRgb_3D     = [] { return ImageBuffer{}; };
+        callbacks->Impl_ScreenshotRgb_3D = [] { return HelloImGui::VulkanSetup::ScreenshotRgb(); };
         // callbacks->Impl_GetFrameBufferSize;   //= [] { return ScreenSize{0, 0}; };
 
         return callbacks;

@@ -82,25 +82,8 @@ namespace HelloImGui
             VulkanSetup::check_vk_result(err);
         }
 
-        // Create Sampler
-        {
-            VkSamplerCreateInfo sampler_info{};
-            sampler_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-            sampler_info.magFilter = VK_FILTER_LINEAR;
-            sampler_info.minFilter = VK_FILTER_LINEAR;
-            sampler_info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-            sampler_info.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT; // outside image bounds just use border color
-            sampler_info.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-            sampler_info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-            sampler_info.minLod = -1000;
-            sampler_info.maxLod = 1000;
-            sampler_info.maxAnisotropy = 1.0f;
-            err = vkCreateSampler(vkGlobals.Device, &sampler_info, vkGlobals.Allocator, &self.Sampler);
-            VulkanSetup::check_vk_result(err);
-        }
-
         // Create Descriptor Set using ImGUI's implementation
-        self.DS = ImGui_ImplVulkan_AddTexture(self.Sampler, self.ImageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        self.DS = ImGui_ImplVulkan_AddTexture(self.ImageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         // Create Upload Buffer
         {
@@ -221,9 +204,12 @@ namespace HelloImGui
         VulkanGlobals& vkGlobals = GetVulkanGlobals();
         auto& self = *this;
 
+        // The last submitted frames may still use this texture
+        VkResult err = vkDeviceWaitIdle(vkGlobals.Device);
+        VulkanSetup::check_vk_result(err);
+
         vkFreeMemory(vkGlobals.Device, self.UploadBufferMemory, nullptr);
         vkDestroyBuffer(vkGlobals.Device, self.UploadBuffer, nullptr);
-        vkDestroySampler(vkGlobals.Device, self.Sampler, nullptr);
         vkDestroyImageView(vkGlobals.Device, self.ImageView, nullptr);
         vkDestroyImage(vkGlobals.Device, self.Image, nullptr);
         vkFreeMemory(vkGlobals.Device, self.ImageMemory, nullptr);

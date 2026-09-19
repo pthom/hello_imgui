@@ -21,7 +21,6 @@ namespace HelloImGui
         VkImageView     ImageView = nullptr;
         VkImage         Image = nullptr;
         VkDeviceMemory  ImageMemory = nullptr;
-        VkSampler       Sampler = nullptr;
         VkBuffer        UploadBuffer = nullptr;
         VkDeviceMemory  UploadBufferMemory = nullptr;
     };

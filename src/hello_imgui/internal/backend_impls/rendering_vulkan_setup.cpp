@@ -189,17 +189,18 @@ void SetupVulkan(ImVector<const char*> instance_extensions)
     }
 
     // Create Descriptor Pool
-    // The example only requires a single combined image sampler descriptor for the font image and only uses one descriptor set (for that)
-    // If you wish to load e.g. additional textures you may need to alter pools sizes.
+    // Since imgui 1.93, the Vulkan backend uses separate image views + samplers (instead of combined image samplers):
+    // one VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE descriptor set per texture, plus a few VK_DESCRIPTOR_TYPE_SAMPLER ones.
     {
         VkDescriptorPoolSize pool_sizes[] =
             {
-                { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, gVkGlobals.PoolCreateInfo_PoolSizes },
+                { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, gVkGlobals.PoolCreateInfo_PoolSizes },
+                { VK_DESCRIPTOR_TYPE_SAMPLER, IMGUI_IMPL_VULKAN_MINIMUM_SAMPLER_POOL_SIZE },
             };
         VkDescriptorPoolCreateInfo pool_info = {};
         pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-        pool_info.maxSets = gVkGlobals.PoolCreateInfo_MaxSets;
+        pool_info.maxSets = gVkGlobals.PoolCreateInfo_MaxSets + IMGUI_IMPL_VULKAN_MINIMUM_SAMPLER_POOL_SIZE;
         pool_info.poolSizeCount = (uint32_t)IM_ARRAYSIZE(pool_sizes);
         pool_info.pPoolSizes = pool_sizes;
         err = vkCreateDescriptorPool(gVkGlobals.Device, &pool_info, gVkGlobals.Allocator, &gVkGlobals.DescriptorPool);

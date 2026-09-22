@@ -1,5 +1,14 @@
 *Version numbers are synced between Hello ImGui and Dear ImGui Bundle, using the scheme `major.minor.patch` where `patch = ImGui_patch × 100 + release`. For example, ImGui v1.92.6 → v1.92.600, and a bugfix release becomes v1.92.601.*
 
+# Changes in upcoming release
+
+**plutosvg / plutovg:**
+* Now git submodules (`external/plutosvg`, with plutovg as its own submodule), updated to plutosvg v0.0.8 and plutovg v1.3.3. They are no longer downloaded at configure time, which also makes the release source archives complete. Both are compiled into a single static library `plutosvg`, part of the install.
+* New option `HELLOIMGUI_USE_SYSTEM_PLUTOSVG`: link an installed plutosvg (found via `find_package(plutosvg CONFIG)` or pkg-config; it must be built with freetype support) instead of compiling the submodule. Defaults to ON when `IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS` is set. Packagers (conda, vcpkg, distributions) should use this.
+
+**CMake package renamed to `hello_imgui`:**
+* `find_package(hello_imgui)` and `hello_imgui::hello_imgui` replace `find_package(hello-imgui)` and `hello-imgui::hello_imgui`, so that the package, namespace and target share one name. The former name still works through a deprecated compatibility shim, to be removed in a future release. The config files are now installed in `lib/cmake/hello_imgui/`, where `find_package` can find them without vcpkg's config fixup. (The vcpkg port keeps its `hello-imgui` name, as vcpkg forbids underscores.)
+
 # v1.92.900
 
 * Update ImGui to v1.92.9b-docking

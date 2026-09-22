@@ -250,7 +250,8 @@ function(him_add_hello_imgui)
         target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui)
     endif()
 
-    add_library(hello-imgui::hello_imgui ALIAS hello_imgui)
+    add_library(hello_imgui::hello_imgui ALIAS hello_imgui)
+    add_library(hello-imgui::hello_imgui ALIAS hello_imgui)  # deprecated former namespace
     him_add_installable_dependency(${HELLOIMGUI_TARGET})
 endfunction()
 
@@ -275,8 +276,8 @@ function(him_build_imgui)
         set(HELLOIMGUI_BUILD_IMGUI OFF CACHE BOOL "" FORCE)
         find_package(imgui CONFIG REQUIRED)
     else()
+        _him_checkout_submodules_if_needed()
         if (HELLOIMGUI_BUILD_IMGUI)
-            _him_checkout_imgui_submodule_if_needed()
             _him_do_build_imgui()
         endif()
         if (HELLOIMGUI_USE_FREETYPE)
@@ -328,18 +329,29 @@ function(him_install_imgui)
 endfunction()
 
 
-function(_him_checkout_imgui_submodule_if_needed)
-    if (HELLOIMGUI_BUILD_IMGUI)
-        # if HELLOIMGUI_IMGUI_SOURCE_DIR is  CMAKE_CURRENT_LIST_DIR/imgui
-        # and the submodule is not present, update submodules
-        if (HELLOIMGUI_IMGUI_SOURCE_DIR STREQUAL ${HELLOIMGUI_BASEPATH}/external/imgui)
-            if (NOT EXISTS ${HELLOIMGUI_IMGUI_SOURCE_DIR}/imgui.h)
-                # Run git submodule update --init --recursive
-                message(WARNING "Updating imgui submodule")
-                execute_process(
-                    COMMAND git submodule update --init --recursive
-                    WORKING_DIRECTORY ${HELLOIMGUI_BASEPATH})
-            endif()
+function(_him_checkout_submodules_if_needed)
+    # Self-heal an incomplete checkout (e.g. "git submodule update --init" without --recursive,
+    # or actions/checkout with "submodules: true", which both skip nested submodules):
+    # fetch the submodules needed by the current configuration.
+    # Only within a git checkout (never in an extracted source archive, which is complete).
+    set(missing "")
+    if (HELLOIMGUI_BUILD_IMGUI
+        AND "${HELLOIMGUI_IMGUI_SOURCE_DIR}" STREQUAL "${HELLOIMGUI_BASEPATH}/external/imgui"
+        AND NOT EXISTS ${HELLOIMGUI_IMGUI_SOURCE_DIR}/imgui.h)
+        list(APPEND missing "external/imgui")
+    endif()
+    if (HELLOIMGUI_USE_FREETYPE AND HELLOIMGUI_USE_FREETYPE_PLUTOSVG AND NOT HELLOIMGUI_USE_SYSTEM_PLUTOSVG
+        AND NOT EXISTS ${HELLOIMGUI_BASEPATH}/external/plutosvg/plutovg/include/plutovg.h)
+        list(APPEND missing "external/plutosvg (with its nested plutovg)")
+    endif()
+    if (missing AND EXISTS ${HELLOIMGUI_BASEPATH}/.git)
+        message(WARNING "hello_imgui: missing submodule(s): ${missing}. Running 'git submodule update --init --recursive'")
+        execute_process(
+            COMMAND git submodule update --init --recursive
+            WORKING_DIRECTORY ${HELLOIMGUI_BASEPATH}
+            RESULT_VARIABLE git_result)
+        if (NOT git_result EQUAL 0)
+            message(FATAL_ERROR "hello_imgui: 'git submodule update --init --recursive' failed (missing: ${missing})")
         endif()
     endif()
 endfunction()
@@ -375,6 +387,9 @@ function(_him_add_freetype_to_imgui)
     # Note: also change add_imgui.cmake in bundle!
 
     # 1. Build or find freetype (if downloaded, make sure it is static)
+    # HELLOIMGUI_FREETYPE_DOWNLOADED: read by the generated package configs, which must not
+    # find_dependency(Freetype) when freetype is part of the install
+    set(HELLOIMGUI_FREETYPE_DOWNLOADED OFF CACHE INTERNAL "" FORCE)
     if(TARGET freetype)
         message(STATUS "HelloImGui: using freetype target")
         set(HIM_FREETYPE_LINKED_LIBRARY freetype CACHE STRING "" FORCE)
@@ -399,9 +414,9 @@ function(_him_add_freetype_to_imgui)
             set(backup_shared_lib ${BUILD_SHARED_LIBS})
             set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
-            if (NOT HELLOIMGUI_INSTALL)
-                set(SKIP_INSTALL_ALL ON CACHE INTERNAL "" FORCE) # disable Freetype install
-            endif()
+            # Freetype's own install rules are disabled: when installing, hello_imgui installs
+            # the downloaded freetype itself, as part of its export set (see below)
+            set(SKIP_INSTALL_ALL ON CACHE INTERNAL "" FORCE)
 
             include(FetchContent)
             if(IOS OR (IMGUI_BUNDLE_BUILD_PYTHON AND NOT DEFINED CONAN_BUILD))
@@ -409,6 +424,13 @@ function(_him_add_freetype_to_imgui)
                 set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "" FORCE)
                 set(FT_DISABLE_BROTLI ON CACHE BOOL "" FORCE)
                 set(FT_DISABLE_PNG ON CACHE BOOL "" FORCE)
+            endif()
+            if (HELLOIMGUI_INSTALL)
+                # The downloaded freetype becomes part of the install: without its optional
+                # dependencies, so that the package stays self-contained
+                foreach(_ft_dep ZLIB BZIP2 PNG HARFBUZZ BROTLI)
+                    set(FT_DISABLE_${_ft_dep} ON CACHE BOOL "" FORCE)
+                endforeach()
             endif()
             set(_him_fetch_extra_args "")
             if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.28)
@@ -423,6 +445,17 @@ function(_him_add_freetype_to_imgui)
             )
             FetchContent_MakeAvailable(freetype)
             set(HIM_FREETYPE_LINKED_LIBRARY freetype CACHE STRING "" FORCE)
+            set(HELLOIMGUI_FREETYPE_DOWNLOADED ON CACHE INTERNAL "" FORCE)
+            if (HELLOIMGUI_INSTALL)
+                # Install the downloaded freetype along with hello_imgui (its target advertises
+                # include/freetype2 as install include dir; mirror freetype's own header install)
+                him_add_installable_dependency(freetype)
+                install(DIRECTORY ${freetype_SOURCE_DIR}/include/ DESTINATION include/freetype2
+                    PATTERN "internal" EXCLUDE PATTERN "ftconfig.h" EXCLUDE PATTERN "ftoption.h" EXCLUDE)
+                install(FILES ${freetype_BINARY_DIR}/include/freetype/config/ftconfig.h
+                              ${freetype_BINARY_DIR}/include/freetype/config/ftoption.h
+                    DESTINATION include/freetype2/freetype/config)
+            endif()
             hello_imgui_msvc_target_set_folder(freetype ${HELLOIMGUI_SOLUTIONFOLDER}/external)
 
             set(BUILD_SHARED_LIBS ${backup_shared_lib} CACHE BOOL "" FORCE)
@@ -468,113 +501,118 @@ function(_him_add_freetype_to_imgui)
 endfunction()
 
 
-function(_him_fetch_and_compile_plutovg_plutosvg)
-    # Fetch and compile plutovg and plutosvg
-    set(backup_build_shared_libs ${BUILD_SHARED_LIBS})
-    set(BUILD_SHARED_LIBS OFF)
-
-    # Fetch & build plutovg at configure time
-    include(FetchContent)
-    set(_him_fetch_extra_args "")
-    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.28)
-        set(_him_fetch_extra_args EXCLUDE_FROM_ALL)
+function(_him_compile_plutosvg_from_submodule)
+    # Compile plutosvg and plutovg into a single static library named "plutosvg".
+    # Sources: git submodule external/plutosvg (plutovg is a submodule of plutosvg).
+    # Neither upstream CMakeLists is used:
+    # - plutosvg's is not compatible with a custom install of freetype
+    # - plutovg's would give a separate target, which is not part of hello_imgui's install
+    set(plutosvg_SOURCE_DIR ${HELLOIMGUI_BASEPATH}/external/plutosvg)
+    set(plutovg_SOURCE_DIR ${plutosvg_SOURCE_DIR}/plutovg)
+    if(NOT EXISTS ${plutovg_SOURCE_DIR}/include/plutovg.h)
+        message(FATAL_ERROR "hello_imgui: the plutosvg submodule is missing (external/plutosvg). "
+            "Run: git submodule update --init --recursive\n"
+            "(or set HELLOIMGUI_USE_SYSTEM_PLUTOSVG=ON to link an installed plutosvg)")
     endif()
-    FetchContent_Declare(plutovg
-        GIT_REPOSITORY https://github.com/sammycage/plutovg
-        GIT_TAG        v1.3.2
-        GIT_PROGRESS TRUE
-        ${_him_fetch_extra_args}
+
+    # plutovg sources: all of source/*.c (the submodule is pinned, so the glob is stable)
+    file(GLOB plutovg_sources ${plutovg_SOURCE_DIR}/source/*.c)
+    add_library(plutosvg STATIC ${plutosvg_SOURCE_DIR}/source/plutosvg.c ${plutovg_sources})
+
+    # Build options, mirroring plutovg's and plutosvg's CMakeLists (static build, freetype enabled)
+    target_include_directories(plutosvg
+        PUBLIC
+            $<BUILD_INTERFACE:${plutosvg_SOURCE_DIR}/source>
+            $<BUILD_INTERFACE:${plutovg_SOURCE_DIR}/include>   # plutosvg.h includes <plutovg.h>
+        PRIVATE
+            ${plutovg_SOURCE_DIR}/source
     )
-    set(PLUTOVG_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    target_compile_definitions(plutosvg
+        PUBLIC PLUTOSVG_HAS_FREETYPE PLUTOSVG_BUILD_STATIC PLUTOVG_BUILD_STATIC
+        PRIVATE PLUTOSVG_BUILD PLUTOVG_BUILD
+    )
+    set_target_properties(plutosvg PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED ON C_VISIBILITY_PRESET hidden)
+    target_link_libraries(plutosvg PUBLIC ${HIM_FREETYPE_LINKED_LIBRARY})
 
-    # Band-aid: plutovg's CMakeLists uses file(RELATIVE_PATH) which requires absolute paths,
-    # but scikit-build-core may set a relative CMAKE_INSTALL_PREFIX.
-    # Temporarily make it absolute, then restore after FetchContent.
-    # (A PR has been submitted to plutovg to add a PLUTOVG_INSTALL option instead:
-    #  https://github.com/sammycage/plutovg/pull/71)
-    set(PLUTOVG_INSTALL OFF CACHE BOOL "" FORCE)  # Prepare for plutovg's upcoming PLUTOVG_INSTALL option
-    set(_him_saved_install_prefix "${CMAKE_INSTALL_PREFIX}")
-    if(NOT IS_ABSOLUTE "${CMAKE_INSTALL_PREFIX}")
-        get_filename_component(CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" ABSOLUTE
-            BASE_DIR "${CMAKE_BINARY_DIR}")
+    # plutovg's system dependencies (libm, threads)
+    find_library(MATH_LIBRARY m)
+    if(MATH_LIBRARY)
+        target_link_libraries(plutosvg PRIVATE m)
     endif()
-    FetchContent_MakeAvailable(plutovg)
-    set(CMAKE_INSTALL_PREFIX "${_him_saved_install_prefix}")
+    include(CheckIncludeFile)
+    check_include_file("threads.h" HAVE_THREADS_H)
+    if(HAVE_THREADS_H)
+        target_compile_definitions(plutosvg PRIVATE HAVE_THREADS_H)
+    endif()
+    find_package(Threads)
+    if(Threads_FOUND)
+        target_link_libraries(plutosvg PRIVATE Threads::Threads)
+    endif()
+    find_library(STDTHREADS_LIBRARY stdthreads)
+    if(STDTHREADS_LIBRARY)
+        target_link_libraries(plutosvg PRIVATE stdthreads)
+    endif()
 
     # Work around an MSVC 14.51 (VS 2026) optimizer ICE (C1001 in pass p2)
     # when compiling plutovg-font.c with /O1 or /O2. /Od is the only opt
     # level that works. Font loading runs once at startup, so disabling
     # optimization for this single TU has no measurable runtime impact.
-    if(MSVC AND TARGET plutovg)
-        set_source_files_properties(
-            "${plutovg_SOURCE_DIR}/source/plutovg-font.c"
-            TARGET_DIRECTORY plutovg
-            PROPERTIES COMPILE_OPTIONS "/Od"
-        )
+    if(MSVC)
+        set_source_files_properties(${plutovg_SOURCE_DIR}/source/plutovg-font.c PROPERTIES COMPILE_OPTIONS "/Od")
     endif()
 
-    # Fetch plutosvg at configure time, then compile manually at build time
-    # (the stock CMakeLists of plutosvg is not compatible with a custom install of freetype)
-    # with build options:
-    #     PLUTOSVG_BUILD_STATIC
-    FetchContent_Populate(
-        plutosvg
-        GIT_REPOSITORY https://github.com/sammycage/plutosvg
-        GIT_TAG v0.0.7
-        SOURCE_DIR ${CMAKE_BINARY_DIR}/plutosvg_source
-        BINARY_DIR ${CMAKE_BINARY_DIR}/plutosvg_build
-    )
-    add_library(plutosvg STATIC ${plutosvg_SOURCE_DIR}/source/plutosvg.c)
-    target_include_directories(plutosvg PUBLIC $<BUILD_INTERFACE:${plutosvg_SOURCE_DIR}/source>)
-    target_compile_definitions(plutosvg PUBLIC PLUTOSVG_HAS_FREETYPE PLUTOSVG_BUILD_STATIC)
-    target_link_libraries(plutosvg PUBLIC ${HIM_FREETYPE_LINKED_LIBRARY} plutovg)
     him_add_installable_dependency(plutosvg)
+endfunction()
 
-    set(BUILD_SHARED_LIBS ${backup_build_shared_libs})
+
+function(_him_find_system_plutosvg)
+    # Provide an imported target named "plutosvg" from an installed plutosvg (+ plutovg),
+    # e.g. from conda, vcpkg or a Linux distribution.
+    # plutosvg must have been built with freetype support (PLUTOSVG_ENABLE_FREETYPE).
+    # GLOBAL: imgui may be defined in another directory (e.g. by imgui_bundle)
+    find_package(plutosvg CONFIG QUIET)
+    if(TARGET plutosvg::plutosvg)
+        add_library(plutosvg INTERFACE IMPORTED GLOBAL)
+        target_link_libraries(plutosvg INTERFACE plutosvg::plutosvg)
+        set(found_via "cmake package")
+    else()
+        find_package(PkgConfig QUIET)
+        if(PKG_CONFIG_FOUND)
+            pkg_check_modules(PLUTOSVG QUIET IMPORTED_TARGET GLOBAL plutosvg)
+        endif()
+        if(TARGET PkgConfig::PLUTOSVG)
+            add_library(plutosvg INTERFACE IMPORTED GLOBAL)
+            target_link_libraries(plutosvg INTERFACE PkgConfig::PLUTOSVG)
+            set(found_via "pkg-config")
+        else()
+            message(FATAL_ERROR "hello_imgui: HELLOIMGUI_USE_SYSTEM_PLUTOSVG is ON, but plutosvg was not found "
+                "(neither via find_package(plutosvg CONFIG) nor via pkg-config)")
+        endif()
+    endif()
+    set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - system plutosvg (${found_via})" CACHE INTERNAL "" FORCE)
 endfunction()
 
 
 function(_him_add_freetype_plutosvg_to_imgui)
-    # Add freetype + plutovs/plutosvg to imgui
+    # Add freetype + plutosvg/plutovg to imgui
     # This is especially useful to support emojis (possibly colored) in imgui
     # See doc:
     #     https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#using-colorful-glyphsemojis
     # We have to
-    # - compile or use a version of plutovg
-    # - compile or use a version of plutosvg with freetype support
+    # - provide a target "plutosvg" (plutosvg + plutovg, with freetype support), from either:
+    #     the parent project (add_subdirectory), an installed plutosvg (HELLOIMGUI_USE_SYSTEM_PLUTOSVG),
+    #     or the git submodule external/plutosvg (default)
     # - enable plutosvg in imgui via IMGUI_ENABLE_FREETYPE_PLUTOSVG
-    # - add plutosvg + plutovg to imgui
-
-    # Option 1 (disabled at the moment, but left as an inspiration): use system plutosvg + plutovg
-    #
-    # Note for package maintainers (conda, etc.):
-    #    the cache variable IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS may be used to detect
-    #    if fetching external libraries is disallowed. It is set to ON for conda for example.
-    # Below is an example code that could be used
-    #
-    # if (IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS)
-    #     find_library(PLUTOVG_LIBRARIES plutovg REQUIRED)
-    #     find_library(PLUTOVG_LIBRARIES plutosvg REQUIRED)
-    #     target_link_libraries(imgui PRIVATE ${PLUTOVG_LIBRARIES} ${PLUTOSVG_LIBRARIES})
-    #     target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
-    #     set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - use system plutosvg" CACHE INTERNAL "" FORCE)
-    #     # early return
-    #     return()
-    # endif()
-
-    # Option 2: download and compile plutosvg
-    set(can_download_freetype (HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED OR HELLOIMGUI_FREETYPE_STATIC))
-    if (HELLOIMGUI_FETCH_FORBIDDEN OR NOT can_download_freetype)
-        target_link_libraries(imgui PUBLIC plutosvg)
-        target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
-        set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - use plutosvg" CACHE INTERNAL "" FORCE)
+    if(TARGET plutosvg)
+        set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - user-provided plutosvg" CACHE INTERNAL "" FORCE)
+    elseif(HELLOIMGUI_USE_SYSTEM_PLUTOSVG)
+        _him_find_system_plutosvg()
     else()
-        _him_fetch_and_compile_plutovg_plutosvg()
-        target_link_libraries(imgui PUBLIC plutosvg)
-        target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
-        # Prepare Log info
-        set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - downloaded plutosvg" CACHE INTERNAL "" FORCE)
+        _him_compile_plutosvg_from_submodule()
+        set(HELLOIMGUI_FREETYPE_SELECTED_INFO "${HELLOIMGUI_FREETYPE_SELECTED_INFO} - bundled plutosvg" CACHE INTERNAL "" FORCE)
     endif()
+    target_link_libraries(imgui PUBLIC plutosvg)
+    target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE_PLUTOSVG)
 endfunction()
 
 
@@ -1242,13 +1280,12 @@ function(him_install)
         file(GLOB internal_headers internal/*.h)
         install(FILES ${internal_headers} DESTINATION include/hello_imgui/internal)
 
-        if(CMAKE_BUILD_TYPE STREQUAL "Release")
-            install(DIRECTORY ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake DESTINATION share/${PROJECT_NAME})
-            install(DIRECTORY ${HELLOIMGUI_BASEPATH}/hello_imgui_assets DESTINATION share/${PROJECT_NAME})
-            if (NOT IOS AND NOT ANDROID)
-                install(FILES ${HELLOIMGUI_BASEPATH}/README.md DESTINATION share/${PROJECT_NAME})
-            endif()
-        endif()
+        # hello_imgui_cmake/ and hello_imgui_assets/ are needed by hello_imgui_add_app() at consumer
+        # configure time. They must stay siblings (the scripts locate the assets via ../hello_imgui_assets),
+        # and are installed next to the cmake package config, which includes hello_imgui_add_app.cmake.
+        install(DIRECTORY ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake DESTINATION ${HELLOIMGUI_INSTALL_CMAKE_DIR})
+        install(DIRECTORY ${HELLOIMGUI_BASEPATH}/hello_imgui_assets DESTINATION ${HELLOIMGUI_INSTALL_CMAKE_DIR})
+        install(FILES ${HELLOIMGUI_BASEPATH}/README.md DESTINATION share/${PROJECT_NAME})
     endif()
 
 endfunction()

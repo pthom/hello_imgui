@@ -1,0 +1,8 @@
+# Generated when hello_imgui is installed. Records the build options that hello_imgui_add_app()
+# must reuse when building apps against this install, because they must match the way the
+# library was compiled (e.g. HELLOIMGUI_INSIDE_APPLE_BUNDLE is a compile definition of hello_imgui).
+set(HELLOIMGUI_MACOS_NO_BUNDLE "@HELLOIMGUI_MACOS_NO_BUNDLE@")
+set(HELLOIMGUI_WIN32_NO_CONSOLE "@HELLOIMGUI_WIN32_NO_CONSOLE@")
+set(HELLOIMGUI_WIN32_AUTO_WINMAIN "@HELLOIMGUI_WIN32_AUTO_WINMAIN@")
+set(HELLOIMGUI_EMSCRIPTEN_PTHREAD "@HELLOIMGUI_EMSCRIPTEN_PTHREAD@")
+set(HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH "@HELLOIMGUI_EMSCRIPTEN_PTHREAD_ALLOW_MEMORY_GROWTH@")

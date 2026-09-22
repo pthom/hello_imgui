@@ -1,5 +1,13 @@
 include(${CMAKE_CURRENT_LIST_DIR}/utils/cache_hello_imgui_paths.cmake)
 
+# MACOSX is set by hello_imgui's CMakeLists when building the library; when building an app
+# against an installed hello_imgui, that CMakeLists is not run, so set it here too.
+if(APPLE AND NOT IOS AND NOT DEFINED MACOSX)
+    set(MACOSX TRUE)
+endif()
+# When building against an installed hello_imgui, reuse the build options recorded at install time
+include(${CMAKE_CURRENT_LIST_DIR}/hello_imgui_installed_options.cmake OPTIONAL)
+
 #
 # hello_imgui_add_app is a helper function, similar to cmake's "add_executable"
 #
@@ -140,7 +148,7 @@ function(hello_imgui_prepare_app app_name assets_location)
     hello_imgui_bundle_assets(${app_name} ${assets_location})
     hello_imgui_platform_customization(${app_name} ${assets_location})
 
-    target_link_libraries(${app_name} PRIVATE hello-imgui::hello_imgui)
+    target_link_libraries(${app_name} PRIVATE hello_imgui::hello_imgui)
 
     if (ANDROID AND HELLOIMGUI_CREATE_ANDROID_STUDIO_PROJECT)
         set(apkCMake_applicationIdUrlPart ${HELLO_IMGUI_BUNDLE_IDENTIFIER_URL_PART})

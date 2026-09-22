@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(hello-imgui LANGUAGES C CXX VERSION "1.92.700")  # Version synced with Dear ImGui Bundle (patch = ImGui_patch × 100 + release)
+project(hello_imgui LANGUAGES C CXX VERSION "1.92.700")  # Version synced with Dear ImGui Bundle (patch = ImGui_patch × 100 + release)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -112,6 +112,16 @@ endif()
 # Note: to reduce wasm size, you may want to disable freetype on emscripten.
 option(HELLOIMGUI_USE_FREETYPE "Use freetype for text rendering" ${freetype_default})
 option(HELLOIMGUI_USE_FREETYPE_PLUTOSVG "Use plutosvg to load svg fonts" ON)
+# plutosvg (+ plutovg) is compiled from the git submodule external/plutosvg by default.
+# Packagers (conda, vcpkg, Linux distributions) can link an installed plutosvg instead:
+# it is found via find_package(plutosvg CONFIG) or pkg-config, and must be built with freetype support.
+# Defaults to ON when IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS is set (conda build of imgui_bundle).
+if(IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS)
+    set(system_plutosvg_default ON)
+else()
+    set(system_plutosvg_default OFF)
+endif()
+option(HELLOIMGUI_USE_SYSTEM_PLUTOSVG "Use an installed plutosvg instead of compiling the submodule" ${system_plutosvg_default})
 
 #------------------------------------------------------------------------------
 # <Dependencies> # do not remove this line (used by the script that generates the documentation)
@@ -157,9 +167,8 @@ option(HELLOIMGUI_DOWNLOAD_SDL_IF_NEEDED "Download and build SDL2 if needed" ${a
 
 # HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED:
 # - if ON: freetype will be downloaded and built if needed.
-#   plutosvg will also be downloaded and built if needed (if HELLOIMGUI_USE_FREETYPE_PLUTOSVG is ON)
 # - if OFF: freetype shall be provided by the system, or by the user (via CMAKE_PREFIX_PATH or add_subdirectory).
-#   Same for plutosvg (if HELLOIMGUI_USE_FREETYPE_PLUTOSVG is ON)
+# (plutosvg is never downloaded: see HELLOIMGUI_USE_SYSTEM_PLUTOSVG above)
 option(HELLOIMGUI_DOWNLOAD_FREETYPE_IF_NEEDED "Download and build Freetype if needed" ${autodownload_default})
 option(HELLOIMGUI_FREETYPE_STATIC "Force static linking of freetype (only used for python bindings)" OFF)
 
@@ -216,6 +225,13 @@ message(STATUS "HELLOIMGUI_WITH_TEST_ENGINE=${HELLOIMGUI_WITH_TEST_ENGINE}")
 # By default, hello_imgui install its targets only if it is the top level project
 #------------------------------------------------------------------------------
 option(HELLOIMGUI_INSTALL "Install hello_imgui" ${PROJECT_IS_TOP_LEVEL})
+# A parent project that ships hello_imgui inside its own CMake package (e.g. imgui_bundle)
+# can redirect the install: its targets then join the parent's export set, and
+# hello_imgui_cmake/ + hello_imgui_assets/ land in the parent's cmake dir.
+# When HELLOIMGUI_INSTALL_EXPORT is left to its default, the hello_imgui package
+# config (find_package(hello_imgui)) is produced.
+set(HELLOIMGUI_INSTALL_EXPORT "hello_imgui-targets" CACHE STRING "Export set receiving hello_imgui's installed targets")
+set(HELLOIMGUI_INSTALL_CMAKE_DIR "lib/cmake/hello_imgui" CACHE STRING "Install dir for the cmake package files, hello_imgui_cmake/ and hello_imgui_assets/")
 
 #------------------------------------------------------------------------------
 # Instructions: how to enable Emscripten multithreading support
@@ -391,42 +407,90 @@ endif()
 
 
 #------------------------------------------------------------------------------
-# CMake shenanigans so that find_package(hello-imgui CONFIG REQUIRED) works
+# Install & export, so that find_package(hello_imgui CONFIG REQUIRED) works
 #------------------------------------------------------------------------------
-# These elements are mainly used to build a vcpkg compatible package.
-# Important note:
-#     - the CMake package is named hello-imgui (with a "-")
-#     - the CMake target is named hello_imgui (with a "_")
-# To link with hello_imgui, you need to use:
-#     find_package(hello-imgui CONFIG REQUIRED)
-#     target_link_libraries(your_target PRIVATE hello-imgui::hello_imgui)  # note the variation "-" vs "_"
+# The CMake package, the namespace and the main target are all named hello_imgui.
+# To link with hello_imgui, you can use:
+#     find_package(hello_imgui CONFIG REQUIRED)
+#     target_link_libraries(your_target PRIVATE hello_imgui::hello_imgui)
 # However, the simplest use is:
-#     find_package(hello-imgui CONFIG REQUIRED)
+#     find_package(hello_imgui CONFIG REQUIRED)
 #     hello_imgui_add_app(test test.cpp) # this will automatically link with hello_imgui
+# Note: find_package(hello-imgui) (the former package name) still works via a
+# deprecated compatibility shim, see hello_imgui_cmake/hello-imguiConfig.cmake
 #------------------------------------------------------------------------------
 if(HELLOIMGUI_INSTALL)
     # inspired from https://iamsorush.com/posts/cpp-cmake-config/
     message(STATUS "HELLOIMGUI_INSTALLABLE_DEPENDENCIES=${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}")
     install(TARGETS ${HELLOIMGUI_INSTALLABLE_DEPENDENCIES}
-        EXPORT hello-imgui-targets
+        EXPORT ${HELLOIMGUI_INSTALL_EXPORT}
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         RUNTIME DESTINATION bin
         INCLUDES DESTINATION include)
 
-    install(EXPORT hello-imgui-targets
-        FILE hello-imgui-targets.cmake
-        NAMESPACE hello-imgui::
-        DESTINATION lib/cmake/hello_imgui)
+    # Record the build options that hello_imgui_add_app() must reuse from an install
+    configure_file("hello_imgui_cmake/hello_imgui_installed_options.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui_installed_options.cmake" @ONLY)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui_installed_options.cmake"
+        DESTINATION ${HELLOIMGUI_INSTALL_CMAKE_DIR}/hello_imgui_cmake)
 
-    include(CMakePackageConfigHelpers)
-    write_basic_package_version_file(
-        "hello-imguiConfigVersion.cmake"
-        VERSION ${hello_imgui_VERSION}
-        COMPATIBILITY AnyNewerVersion)
+    # The hello_imgui package config is only produced when hello_imgui owns its export set
+    # (otherwise a parent project exports and describes the targets in its own package)
+    if(HELLOIMGUI_INSTALL_EXPORT STREQUAL "hello_imgui-targets")
+        install(EXPORT hello_imgui-targets
+            FILE hello_imgui-targets.cmake
+            NAMESPACE hello_imgui::
+            DESTINATION ${HELLOIMGUI_INSTALL_CMAKE_DIR})
 
-    install(FILES "hello_imgui_cmake/hello-imguiConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/hello-imguiConfigVersion.cmake"
-        DESTINATION lib/cmake/hello_imgui)
+        include(CMakePackageConfigHelpers)
+        write_basic_package_version_file(
+            "hello_imgui-config-version.cmake"
+            VERSION ${hello_imgui_VERSION}
+            COMPATIBILITY AnyNewerVersion)
+
+        # hello_imgui-config.cmake is generated: its find_dependency() calls depend on the build options
+        set(HIM_CFG_IMGUI_PACKAGE OFF)
+        set(HIM_CFG_GLAD_PACKAGE OFF)
+        set(HIM_CFG_JSON_PACKAGE OFF)
+        set(HIM_CFG_FREETYPE OFF)
+        set(HIM_CFG_GLFW3 OFF)
+        set(HIM_CFG_SDL2 OFF)
+        set(HIM_CFG_OPENGL OFF)
+        if(HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+            set(HIM_CFG_IMGUI_PACKAGE ON)
+        endif()
+        if(HELLOIMGUI_GLAD_LIBRARY STREQUAL "glad::glad")
+            set(HIM_CFG_GLAD_PACKAGE ON)
+        endif()
+        if(HELLOIMGUI_NLOHMANN_JSON_SELECTED_INFO MATCHES "find_package")
+            set(HIM_CFG_JSON_PACKAGE ON)
+        endif()
+        # freetype is a dependency to find only when it is a system library:
+        # it is added to imgui only when hello_imgui builds imgui, and a downloaded freetype is part of the install
+        if(HELLOIMGUI_USE_FREETYPE AND NOT HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE AND NOT HELLOIMGUI_FREETYPE_DOWNLOADED)
+            set(HIM_CFG_FREETYPE ON)
+        endif()
+        if(HELLOIMGUI_USE_GLFW3)
+            set(HIM_CFG_GLFW3 ON)
+        endif()
+        if(HELLOIMGUI_USE_SDL2)
+            set(HIM_CFG_SDL2 ON)
+        endif()
+        if(HELLOIMGUI_HAS_OPENGL3)
+            set(HIM_CFG_OPENGL ON)
+        endif()
+        configure_file("hello_imgui_cmake/hello_imgui-config.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config.cmake" @ONLY)
+        install(FILES "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config-version.cmake"
+            DESTINATION ${HELLOIMGUI_INSTALL_CMAKE_DIR})
+
+        # Deprecated compatibility shim for the former package name "hello-imgui"
+        install(FILES "hello_imgui_cmake/hello-imguiConfig.cmake"
+            DESTINATION lib/cmake/hello-imgui)
+        install(FILES "${CMAKE_CURRENT_BINARY_DIR}/hello_imgui-config-version.cmake"
+            RENAME "hello-imguiConfigVersion.cmake"
+            DESTINATION lib/cmake/hello-imgui)
+    endif()
 endif()
 
 #------------------------------------------------------------------------------

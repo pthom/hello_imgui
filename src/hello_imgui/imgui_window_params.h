@@ -22,7 +22,7 @@ enum class DefaultImGuiWindowType
     // (except for ImGui's default "debug" window)
     NoDefaultWindow
 };
-// @@md
+// @@/md
 
 
 // @@md#ImGuiWindowParams
@@ -145,6 +145,6 @@ struct ImGuiWindowParams
     ImVec4 backgroundColor = ImVec4(0.f, 0.f, 0.f, 0.f);
 
 };
-// @@md
+// @@/md
 
 }  // namespace HelloImGui

@@ -66,7 +66,7 @@ struct DockingParams
 Inside DockingParams, the member `dockingSplits` specifies the layout, and the member `dockableWindows`
  specifies the list of dockable windows, along with their default location, and their code (given by lambdas).
 
- @@md
+ @@/md
 
 
 @@md#DockingExample
@@ -150,7 +150,7 @@ runnerParams.dockingParams.dockableWindows = CreateDockableWindows();
 HelloImGui::Run(runnerParams);
 ```
 
-@@md
+@@/md
 */
 
 /*****************************************************************************/
@@ -199,7 +199,7 @@ struct DockingSplit
                  ImGuiDockNodeFlags nodeFlags_ = ImGuiDockNodeFlags_None)
         : initialDock(initialDock_), newDock(newDock_), direction(direction_), ratio(ratio_), nodeFlags(nodeFlags_) {}
 };
-// @@md
+// @@/md
 
 
 
@@ -292,7 +292,7 @@ struct DockableWindow
           canBeClosed(canBeClosed_) {}
 
 };
-// @@md
+// @@/md
 
 
 enum class DockingLayoutCondition
@@ -367,7 +367,7 @@ struct DockingParams
     // returns the ImGuiID corresponding to the dockspace with this name
     std::optional<ImGuiID> dockSpaceIdFromName(const std::string& dockSpaceName);
 };
-// @@md
+// @@/md
 
 } // namespace HelloImGui
 

@@ -56,7 +56,8 @@ def is_md_block_start(line, md_id):
 
 
 def is_md_block_end(line):
-    result = line.strip().startswith("@@md") or line.strip().startswith(f"// @@md")
+    # @@/md
+    result = line.strip().startswith("@@/md") or line.strip().startswith("// @@/md")
     return result
 
 

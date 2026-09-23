@@ -44,7 +44,7 @@ enum class RendererBackendType
     Null
 };
 
-// @@md
+// @@/md
 
 std::string PlatformBackendTypeToString(PlatformBackendType platformBackendType);
 std::string RendererBackendTypeToString(RendererBackendType rendererBackendType);
@@ -105,7 +105,7 @@ enum class IniFolderType
 // Returns the path corresponding to the given IniFolderType
 std::string IniFolderLocation(IniFolderType iniFolderType);
 
-// @@md
+// @@/md
 
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -231,7 +231,7 @@ struct FpsIdling
     //   - The lower (stricter) limit dominates.
     float fpsMax = 0.f;
 };
-// @@md
+// @@/md
 
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -370,7 +370,7 @@ struct RunnerParams
     RemoteParams remoteParams; // Parameters for Remote display (experimental, unsupported)
     #endif
 };
-// @@md
+// @@/md
 
 
 // @@md#IniIniSettingsLocation
@@ -384,7 +384,7 @@ bool HasIniSettings(const RunnerParams& runnerParams);
 // DeleteIniSettings deletes the ini file for the application settings.
 void DeleteIniSettings(const RunnerParams& runnerParams);
 
-// @@md
+// @@/md
 
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -450,6 +450,6 @@ struct SimpleRunnerParams
 
     RunnerParams ToRunnerParams() const;
 };
-// @@md
+// @@/md
 
 }  // namespace HelloImGui

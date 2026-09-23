@@ -60,7 +60,7 @@ struct OpenGlOptions
     //     - 16: optimal if using imgui-node-editor and you want to render very small text when unzooming
     std::optional<int> AntiAliasingSamples =  std::nullopt;
 };
-// @@md
+// @@/md
 
 
 // @@md#RendererBackendOptions
@@ -109,7 +109,7 @@ struct RendererBackendOptions
 //     src/hello_imgui/internal/backend_impls/rendering_dx11.h
 //     src/hello_imgui/internal/backend_impls/rendering_dx12.h
 
-// @@md
+// @@/md
 
 
 // (Private structure, not part of the public API)

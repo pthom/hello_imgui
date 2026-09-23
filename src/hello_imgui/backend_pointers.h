@@ -31,6 +31,6 @@ struct BackendPointers
     //  Only filled if the backend is SDL (or emscripten + sdl)
     void* sdlGlContext   = nullptr; /* SDL_GLContext  */
 };
-// @@md
+// @@/md
 
 }  // namespace HelloImGui

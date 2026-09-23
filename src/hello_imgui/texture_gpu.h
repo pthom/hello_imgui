@@ -58,5 +58,5 @@ using TextureGpuPtr = std::shared_ptr<TextureGpu>;
 TextureGpuPtr CreateTextureGpuFromRgbaData(
     const unsigned char* rgbaData, int width, int height);
 
-// @@md
+// @@/md
 }

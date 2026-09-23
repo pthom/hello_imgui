@@ -62,7 +62,7 @@ the elements in the `RunnerParams` struct, or in the simpler  `SimpleRunnerParam
 
 __HelloImGui::GetRunnerParams()__  will return the runnerParams of the current application.
 
-@@md
+@@/md
 */
 
 // `HelloImGui::Run(RunnerParams &)`: full signature, the most customizable version.
@@ -158,7 +158,7 @@ namespace ManualRender
     void TearDown();
 } // namespace ManualRender
 
-// @@md
+// @@/md
 
 
 // ============================== Utility functions ===============================
@@ -222,7 +222,7 @@ void ChangeWindowSize(const ScreenSize &windowSize);
 // (useful if you want to change the window size during execution)
 void UseWindowFullMonitorWorkArea();
 
-// @@md
+// @@/md
 
 
 // ============================== Layout Utils =============================
@@ -251,7 +251,7 @@ void AddDockableWindow(const DockableWindow& dockableWindow, bool forceDockspace
 // (dockableWindowName is the label of the window, as provided in the DockableWindow struct)
 void RemoveDockableWindow(const std::string& dockableWindowName);
 
-// @@md
+// @@/md
 
 
 // ============================== User prefs Utils =============================
@@ -269,7 +269,7 @@ void        SaveUserPref(const std::string& userPrefName, const std::string& use
 // `string LoadUserPref(string& userPrefName)`
 //  Shall be called in the callback runnerParams.callbacks.PostInit
 std::string LoadUserPref(const std::string& userPrefName);
-// @@md
+// @@/md
 
 
 // ============================== Menus defaults =============================
@@ -285,7 +285,7 @@ If you want to fully customize the menu:
 * implement the callback `RunnerParams.callbacks.ShowMenus`:
   it can optionally call `ShowViewMenu` and `ShowAppMenu` (see below).
 
-@@md
+@@/md
 */
 // @@md#MenuFunctions
 
@@ -296,6 +296,6 @@ void ShowViewMenu(RunnerParams & runnerParams);
 // `ShowAppMenu(RunnerParams & runnerParams)`:
 // shows the default App menu (including the Quit item)
 void ShowAppMenu(RunnerParams & runnerParams);
-// @@md
+// @@/md
 
 }

@@ -30,7 +30,7 @@ inline AnyEventCallback EmptyEventCallback() {return {}; }
 using ConfirmExitCallback = std::function<bool(void)>;
 inline ConfirmExitCallback EmptyConfirmExitCallback() { return {}; }
 
-// @@md
+// @@/md
 
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ struct MobileCallbacks
     // (before and after entering background or foreground).
     VoidFunction OnResume = EmptyVoidFunction();
 };
-// @@md
+// @@/md
 
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ struct EdgeToolbar
 
 std::vector<EdgeToolbarType> AllEdgeToolbarTypes();
 std::string EdgeToolbarTypeName(EdgeToolbarType e);
-// @@md
+// @@/md
 
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -119,7 +119,7 @@ enum class DefaultIconFont
     FontAwesome4,
     FontAwesome6
 };
-// @@md
+// @@/md
 
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -320,7 +320,7 @@ struct RunnerCallbacks
     MobileCallbacks mobileCallbacks;
 #endif
 };
-// @@md
+// @@/md
 
 
 // AppendCallback: legacy synonym for SequenceFunctions

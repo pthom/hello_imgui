@@ -122,7 +122,7 @@ ImageAndSize ImageAndSizeFromEncodedData(
 //  before destroying your GL context.
 void FreeImageCache();
 
-// @@md
+// @@/md
 
 namespace internal
 {

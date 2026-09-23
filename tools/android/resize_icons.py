@@ -52,7 +52,7 @@ your_app/
 └── ios/
 ```
 
-@@md
+@@/md
 """
 
 SOURCE_ICON = "mipmap-source/ic_launcher.png"

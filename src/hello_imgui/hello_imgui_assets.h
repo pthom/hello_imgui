@@ -22,7 +22,7 @@ my_app/
 
 Then you can load the asset "fonts/my_font.ttf", on all platforms.
 
-@@md
+@@/md
 */
 
 
@@ -49,7 +49,7 @@ AssetFileData LoadAssetFileData(const char *assetPath);
 // Note: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
 // and will free the memory for you.
 void FreeAssetFileData(AssetFileData * assetFileData);
-// @@md
+// @@/md
 
 // Function type to redirect asset loads. Function receives a path and
 // returns an AssetFileData structure. By default, it points to
@@ -82,7 +82,7 @@ std::string AssetFileFullPath(const std::string& assetRelativeFilename,
 // Returns true if this asset file exists
 bool AssetExists(const std::string& assetRelativeFilename);
 
-// @@md
+// @@/md
 
 // @@md#AssetsSearchPaths
 
@@ -117,7 +117,7 @@ void ClearAssetsSearchPaths();
 // Return the current list of search paths.
 const std::vector<std::string>& GetAssetsSearchPaths();
 
-// @@md
+// @@/md
 
 
 // Legacy API, kept for compatibility

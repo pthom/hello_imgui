@@ -54,7 +54,7 @@ struct DpiAwareParams
 
 // ----------------------------------------------------------------------------
 
-// @@md
+// @@/md
 
 /**
 @@md#DocEmToVec2
@@ -69,7 +69,7 @@ Otherwise, widgets might be misplaced or too small on different screens and/or O
 Instead, you should use scale your widgets and windows relatively to the font size,
 as is done with the [em CSS Unit](https://www.w3schools.com/cssref/css_units.php).
 
-@@md
+@@/md
 **/
 
 // @@md#EmToVec2
@@ -90,7 +90,7 @@ ImVec2 PixelsToEm(ImVec2 pixels);
 // __HelloImGui::PixelSizeToEm()__ converts a size in pixels coord to a size in em units
 float  PixelSizeToEm(float pixelSize);
 
-// @@md
+// @@/md
 
 // Returns the current DpiAwareParams, which are used
 // for font loading and window size scaling
@@ -201,5 +201,5 @@ Note: DpiWindowSizeFactor() is equal to `CurrentScreenPixelPerInch / 96` under w
 
 See [`HelloImGui::DpiAwareParams`](https://pthom.github.io/hello_imgui/book/doc-params/#dpi-aware-params)
 for more information on how to fine tune DPI handling when using Hello ImGui.
-@@md
+@@/md
 */

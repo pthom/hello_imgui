@@ -141,7 +141,7 @@ struct WindowGeometry
     //  (use sizeAuto at startup).
     bool resizeAppWindowAtNextFrame = false;
 };
-// @@md
+// @@/md
 
 
 // If there is a notch on the iPhone, you should not display inside these insets
@@ -254,6 +254,6 @@ struct AppWindowParams
     // (This API is not stable, as the name suggests, and this is not supported)
     bool repaintDuringResize_GotchaReentrantRepaint = false;
 };
-// @@md
+// @@/md
 
 }  // namespace HelloImGui

@@ -14,7 +14,7 @@ namespace HelloImGui
 * `FinalAppWindowScreenshotRgbBuffer()` returns a screenshot of the final screen of the last app window
   (this should be called after HelloImGui::Run() has ended)
 
-@@md
+@@/md
 */
     struct ImageBuffer
     {

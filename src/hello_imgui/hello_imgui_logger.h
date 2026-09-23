@@ -9,7 +9,7 @@ HelloImGui provides a simple Log utility that is able to collect message and dis
 * __HelloImGui::LogClear()__ will clear the Log list
 * __HelloImGui::LogGui()__ will display the Log widget
 
-@@md
+@@/md
 */
 namespace HelloImGui
 {

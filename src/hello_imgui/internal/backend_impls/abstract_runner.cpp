@@ -683,6 +683,19 @@ void AbstractRunner::Setup()
 
     Impl_LinkPlatformAndRenderBackends();
 
+    #ifdef __EMSCRIPTEN__
+        // In a browser, Dear ImGui's default for ConfigMacOSXBehaviors is false (it comes from __APPLE__ at compile
+        // time), and only its GLFW backend corrects it at run time. On an Apple platform, Cmd must act as Ctrl
+        // (Cmd+C copies). SetupImGuiConfig(), below, may still change it.
+        // (emscripten_run_script_int rather than EM_ASM: it also works in a side module, as in Pyodide)
+        const char* isApplePlatform =
+            "(function() { const data = navigator.userAgentData;"
+            "  const platform = (data && data.platform) || navigator.platform || '';"
+            "  return /mac|iphone|ipad|ipod/i.test(platform) ? 1 : 0; })()";
+        if (emscripten_run_script_int(isApplePlatform))
+            ImGui::GetIO().ConfigMacOSXBehaviors = true;
+    #endif
+
     if (params.callbacks.PostInit)
         params.callbacks.PostInit();
 

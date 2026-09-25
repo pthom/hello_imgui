@@ -130,10 +130,10 @@ def _line_comment_text(line: str, syntax: str) -> Optional[str]:
 
 def _container_opener(line: str, syntax: str) -> Optional[Tuple[str, str]]:
     """A string or block comment that starts the line (after its indentation): (its closing delimiter, the text
-    after the opener). Python: \"\"\" or ''', with an optional prefix such as r. C-like: /*."""
+    after the opener). Python: \"\"\" or ''', with an optional prefix such as r. C-like: /* or /**."""
     stripped = line.lstrip(" \t")
     if syntax == "clike" and stripped.startswith("/*"):
-        return "*/", stripped[2:]
+        return "*/", stripped[3:] if stripped.startswith("/**") else stripped[2:]
     if syntax == "python":
         q = 0
         while q < len(stripped) and q < 2 and stripped[q] in "rRbBuUfF":

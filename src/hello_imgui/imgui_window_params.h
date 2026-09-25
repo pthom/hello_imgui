@@ -8,7 +8,7 @@
 
 namespace HelloImGui
 {
-// @@md#DefaultImGuiWindowType
+// ::code DefaultImGuiWindowType
 
 // `DefaultImGuiWindowType` is an enum class that defines whether a full screen background
 // window is provided or not
@@ -22,10 +22,10 @@ enum class DefaultImGuiWindowType
     // (except for ImGui's default "debug" window)
     NoDefaultWindow
 };
-// @@/md
+// ::endcode
 
 
-// @@md#ImGuiWindowParams
+// ::code ImGuiWindowParams
 
 // `ImGuiWindowParams` is a struct that defines the ImGui inner windows params
 // These settings affect the imgui inner windows inside the application window.
@@ -145,6 +145,6 @@ struct ImGuiWindowParams
     ImVec4 backgroundColor = ImVec4(0.f, 0.f, 0.f, 0.f);
 
 };
-// @@/md
+// ::endcode
 
 }  // namespace HelloImGui

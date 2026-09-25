@@ -6,7 +6,7 @@
 
 namespace HelloImGui
 {
-    // @@md#Fonts
+    // ::code Fonts
 
     // When loading fonts, use
     //          HelloImGui::LoadFont(..)
@@ -54,5 +54,5 @@ namespace HelloImGui
         ImFontConfig configFont = ImFontConfig()
     );
 
-    // @@/md
+    // ::endcode
 }

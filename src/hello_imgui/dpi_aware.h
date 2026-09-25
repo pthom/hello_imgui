@@ -3,7 +3,7 @@
 
 namespace HelloImGui
 {
-// @@md#DpiAwareParams
+// ::code DpiAwareParams
 
 //
 // Hello ImGui will try its best to automatically handle DPI scaling for you.
@@ -54,10 +54,9 @@ struct DpiAwareParams
 
 // ----------------------------------------------------------------------------
 
-// @@/md
+// ::endcode
 
-/**
-@@md#DocEmToVec2
+/*::md DocEmToVec2
 
 Special care must be taken in order to correctly handle screen with high DPI
  (for example, almost all recent laptops screens).
@@ -69,10 +68,9 @@ Otherwise, widgets might be misplaced or too small on different screens and/or O
 Instead, you should use scale your widgets and windows relatively to the font size,
 as is done with the [em CSS Unit](https://www.w3schools.com/cssref/css_units.php).
 
-@@/md
-**/
+*/
 
-// @@md#EmToVec2
+// ::code EmToVec2
 //  __HelloImGui::EmToVec2()__ returns an ImVec2 that you can use to size
 //  or place your widgets in a DPI independent way.
 //  Values are in multiples of the font size (i.e. as in the em CSS unit).
@@ -90,7 +88,7 @@ ImVec2 PixelsToEm(ImVec2 pixels);
 // __HelloImGui::PixelSizeToEm()__ converts a size in pixels coord to a size in em units
 float  PixelSizeToEm(float pixelSize);
 
-// @@/md
+// ::endcode
 
 // Returns the current DpiAwareParams, which are used
 // for font loading and window size scaling
@@ -117,8 +115,7 @@ namespace HelloImGui
 // ----------------------------------------------------------------------------
 //           Handling screens with high DPI
 // ----------------------------------------------------------------------------
-/*
-@@md#HandlingScreenHighDPI
+/*::md HandlingScreenHighDPI
 
 _Note: This part is relevant only for more advanced usages. If you use `HelloImGui::LoadFont()`,
  and always use `HelloImGui::EmToVec2()` to place widgets, you do not need to worry about DPI handling_
@@ -201,5 +198,4 @@ Note: DpiWindowSizeFactor() is equal to `CurrentScreenPixelPerInch / 96` under w
 
 See [`HelloImGui::DpiAwareParams`](https://pthom.github.io/hello_imgui/book/doc-params/#dpi-aware-params)
 for more information on how to fine tune DPI handling when using Hello ImGui.
-@@/md
 */

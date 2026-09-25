@@ -41,8 +41,7 @@ namespace HelloImGui
 {
 
 // =========================== HelloImGui::Run ==================================
-/**
-@@md#HelloImGui::Run
+/*::md HelloImGui::Run
 
 __HelloImGui::Run()__ will run an application with a single call.
 
@@ -62,7 +61,6 @@ the elements in the `RunnerParams` struct, or in the simpler  `SimpleRunnerParam
 
 __HelloImGui::GetRunnerParams()__  will return the runnerParams of the current application.
 
-@@/md
 */
 
 // `HelloImGui::Run(RunnerParams &)`: full signature, the most customizable version.
@@ -85,7 +83,7 @@ void Run(
 );
 
 // =========================== HelloImGui::ManualRender ==================================
-// @@md#HelloImGui::ManualRender
+// ::code HelloImGui::ManualRender
 
 namespace ManualRender
 {
@@ -158,12 +156,12 @@ namespace ManualRender
     void TearDown();
 } // namespace ManualRender
 
-// @@/md
+// ::endcode
 
 
 // ============================== Utility functions ===============================
 
-// @@md#UtilityFunctions
+// ::code UtilityFunctions
 
 // `GetRunnerParams()`:  a convenience function that will return the runnerParams
 // of the current application
@@ -222,12 +220,12 @@ void ChangeWindowSize(const ScreenSize &windowSize);
 // (useful if you want to change the window size during execution)
 void UseWindowFullMonitorWorkArea();
 
-// @@/md
+// ::endcode
 
 
 // ============================== Layout Utils =============================
 
-// @@md#HelloImGui::Layouts
+// ::code HelloImGui::Layouts
 
 // In advanced cases when several layouts are available, you can switch between layouts.
 // See demo inside
@@ -251,12 +249,12 @@ void AddDockableWindow(const DockableWindow& dockableWindow, bool forceDockspace
 // (dockableWindowName is the label of the window, as provided in the DockableWindow struct)
 void RemoveDockableWindow(const std::string& dockableWindowName);
 
-// @@/md
+// ::endcode
 
 
 // ============================== User prefs Utils =============================
 
-// @@md#HelloImGui::UserPref
+// ::code HelloImGui::UserPref
 
 // You may store additional user settings in the application settings.
 // This is provided as a convenience only, and it is not intended to store large
@@ -269,13 +267,12 @@ void        SaveUserPref(const std::string& userPrefName, const std::string& use
 // `string LoadUserPref(string& userPrefName)`
 //  Shall be called in the callback runnerParams.callbacks.PostInit
 std::string LoadUserPref(const std::string& userPrefName);
-// @@/md
+// ::endcode
 
 
 // ============================== Menus defaults =============================
 
-/**
-@@md#MenuIntro
+/*::md MenuIntro
 
 Hello ImGui provides a default menu and status bar, which you can customize by using the params:
         `RunnerParams.imGuiWindowParams.` `showMenuBar` / `showMenu_App` / `showMenu_View`
@@ -285,9 +282,8 @@ If you want to fully customize the menu:
 * implement the callback `RunnerParams.callbacks.ShowMenus`:
   it can optionally call `ShowViewMenu` and `ShowAppMenu` (see below).
 
-@@/md
 */
-// @@md#MenuFunctions
+// ::code MenuFunctions
 
 // `ShowViewMenu(RunnerParams & runnerParams)`:
 // shows the View menu (where you can select the layout and docked windows visibility
@@ -296,6 +292,6 @@ void ShowViewMenu(RunnerParams & runnerParams);
 // `ShowAppMenu(RunnerParams & runnerParams)`:
 // shows the default App menu (including the Quit item)
 void ShowAppMenu(RunnerParams & runnerParams);
-// @@/md
+// ::endcode
 
 }

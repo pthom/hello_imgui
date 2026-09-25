@@ -5,7 +5,7 @@
 
 namespace HelloImGui
 {
-// @@md#TextureGpu
+// ::code TextureGpu
 
 // `HelloImGui::TextureGpu`: an opaque RAII handle that owns a GPU texture.
 //
@@ -58,5 +58,5 @@ using TextureGpuPtr = std::shared_ptr<TextureGpu>;
 TextureGpuPtr CreateTextureGpuFromRgbaData(
     const unsigned char* rgbaData, int width, int height);
 
-// @@/md
+// ::endcode
 }

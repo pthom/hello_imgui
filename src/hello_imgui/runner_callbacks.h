@@ -11,7 +11,7 @@ namespace HelloImGui
 {
 // --------------------------------------------------------------------------------------------------------------------
 
-// @@md#VoidFunction_AnyEventCallback
+// ::code VoidFunction_AnyEventCallback
 
 // VoidFunctionPointer can hold any void(void) function.
 using VoidFunction = std::function<void(void)>;
@@ -30,12 +30,12 @@ inline AnyEventCallback EmptyEventCallback() {return {}; }
 using ConfirmExitCallback = std::function<bool(void)>;
 inline ConfirmExitCallback EmptyConfirmExitCallback() { return {}; }
 
-// @@/md
+// ::endcode
 
 
 // --------------------------------------------------------------------------------------------------------------------
 
-// @@md#MobileCallbacks
+// ::code MobileCallbacks
 
 // MobileCallbacks is a struct that contains callbacks that are called by the application
 // when running under "Android, iOS and WinRT".
@@ -63,12 +63,12 @@ struct MobileCallbacks
     // (before and after entering background or foreground).
     VoidFunction OnResume = EmptyVoidFunction();
 };
-// @@/md
+// ::endcode
 
 
 // --------------------------------------------------------------------------------------------------------------------
 
-// @@md#EdgeToolbar
+// ::code EdgeToolbar
 
 // EdgeToolbarType: location of an Edge Toolbar
 enum class EdgeToolbarType
@@ -103,12 +103,12 @@ struct EdgeToolbar
 
 std::vector<EdgeToolbarType> AllEdgeToolbarTypes();
 std::string EdgeToolbarTypeName(EdgeToolbarType e);
-// @@/md
+// ::endcode
 
 
 // --------------------------------------------------------------------------------------------------------------------
 
-// @@md#DefaultIconFont
+// ::code DefaultIconFont
 
 // HelloImGui can optionally merge an icon font (FontAwesome 4 or 6) to the default font
 // - you need to include manually icons_font_awesome_4.h or icons_font_awesome_6.h:
@@ -119,12 +119,12 @@ enum class DefaultIconFont
     FontAwesome4,
     FontAwesome6
 };
-// @@/md
+// ::endcode
 
 
 // --------------------------------------------------------------------------------------------------------------------
 
-// @@md#RunnerCallbacks
+// ::code RunnerCallbacks
 // RunnerCallbacks is a struct that contains the callbacks
 // that are called by the application
 //
@@ -320,7 +320,7 @@ struct RunnerCallbacks
     MobileCallbacks mobileCallbacks;
 #endif
 };
-// @@/md
+// ::endcode
 
 
 // AppendCallback: legacy synonym for SequenceFunctions

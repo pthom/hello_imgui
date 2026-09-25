@@ -7,7 +7,7 @@ namespace HelloImGui
 {
 
 
-// @@md#RemoteParams
+// ::code RemoteParams
 
 // RemoteParams is a struct that contains the settings for displaying the application on a remote device.
 // using https://github.com/sammyfreg/netImgui
@@ -38,7 +38,7 @@ struct RemoteParams
     bool transmitWindowSize = false;
 };
 
-// @@/md
+// ::endcode
 
 
 }  // namespace HelloImGui

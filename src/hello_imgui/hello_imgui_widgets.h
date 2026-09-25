@@ -15,7 +15,7 @@ namespace HelloImGui
 
     void EndGroupColumn();   // calls ImGui::EndGroup() + ImGui::SameLine()
 
-    // @@md#WidgetWithResizeHandle
+    // ::code WidgetWithResizeHandle
 
     // WidgetWithResizeHandle: adds a resize handle to a widget
     // Example usage with ImPlot:
@@ -39,12 +39,12 @@ namespace HelloImGui
         std::optional<VoidFunction> onItemHovered = std::nullopt
         );
 
-    // @@/md
+    // ::endcode
 
 
     // --------------------------------------------------------------------------------------------
 
-    // @@md#InputTextResizable
+    // ::code InputTextResizable
 
     // `InputTextResizable`: displays a resizable text input widget
     //
@@ -98,5 +98,5 @@ namespace HelloImGui
     std::string InputTextDataToString(const InputTextData& data);
     InputTextData InputTextDataFromString(const std::string& str);
 
-    // @@/md
+    // ::endcode
 }

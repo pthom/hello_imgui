@@ -3,7 +3,7 @@
 namespace HelloImGui
 {
 
-// @@md#BackendPointers
+// ::code BackendPointers
 //
 // BackendPointers is a struct that contains optional pointers to the
 // backend implementations (for SDL and GLFW).
@@ -31,6 +31,6 @@ struct BackendPointers
     //  Only filled if the backend is SDL (or emscripten + sdl)
     void* sdlGlContext   = nullptr; /* SDL_GLContext  */
 };
-// @@/md
+// ::endcode
 
 }  // namespace HelloImGui

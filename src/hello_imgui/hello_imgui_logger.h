@@ -1,7 +1,6 @@
 #pragma once
 #include "imgui.h"
-/**
-@@md#HelloImGui::Log
+/*::md HelloImGui::Log
 
 HelloImGui provides a simple Log utility that is able to collect message and display them with a specific widget.
 
@@ -9,7 +8,6 @@ HelloImGui provides a simple Log utility that is able to collect message and dis
 * __HelloImGui::LogClear()__ will clear the Log list
 * __HelloImGui::LogGui()__ will display the Log widget
 
-@@/md
 */
 namespace HelloImGui
 {

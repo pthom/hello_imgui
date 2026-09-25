@@ -1,6 +1,6 @@
 # Application parameters
 
-@import "hello_imgui.h" {md_id=HelloImGui::Run}
+![[hello_imgui.h#HelloImGui::Run]]
 
 # Diagram
 
@@ -15,24 +15,18 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 ## Simple runner params
 
-```cpp
-@import "runner_params.h" {md_id=SimpleRunnerParams}
-```
+![[runner_params.h#SimpleRunnerParams]]
 
 ---
 
 ## Full params
 
-```cpp
-@import "runner_params.h" {md_id=RunnerParams}
-```
+![[runner_params.h#RunnerParams]]
 
 ### Backend selection
 
 
-```cpp
-@import "runner_params.h" {md_id=PlatformBackendType}
-```
+![[runner_params.h#PlatformBackendType]]
 
 
 # Runner callbacks
@@ -40,14 +34,10 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 See [runner_callbacks.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_callbacks.h).
 
 ## Callbacks types
-```cpp
-@import "runner_callbacks.h" {md_id=VoidFunction_AnyEventCallback}
-```
+![[runner_callbacks.h#VoidFunction_AnyEventCallback]]
 
 ## RunnerCallbacks
-```cpp
-@import "runner_callbacks.h" {md_id=RunnerCallbacks}
-```
+![[runner_callbacks.h#RunnerCallbacks]]
 
 
 ## Edge Toolbars Callbacks
@@ -68,15 +58,11 @@ struct RunnerCallbacks
 ```
 
 Where:
-```cpp
-@import "runner_callbacks.h" {md_id=EdgeToolbar}
-```
+![[runner_callbacks.h#EdgeToolbar]]
 
 ## MobileCallbacks
 
-```cpp
-@import "runner_callbacks.h" {md_id=MobileCallbacks}
-```
+![[runner_callbacks.h#MobileCallbacks]]
 
 ----
 
@@ -86,15 +72,11 @@ See [app_window_params.h](https://github.com/pthom/hello_imgui/blob/master/src/h
 
 ## AppWindowParams
 
-```cpp
-@import "app_window_params.h" {md_id=AppWindowParams}
-```
+![[app_window_params.h#AppWindowParams]]
 
 ## WindowGeometry
 
-```cpp
-@import "app_window_params.h" {md_id=WindowGeometry}
-```
+![[app_window_params.h#WindowGeometry]]
 ----
 
 # ImGui window params
@@ -103,32 +85,24 @@ See [imgui_window_params.h](https://github.com/pthom/hello_imgui/blob/master/src
 
 ## ImGuiWindowParams
 
-```cpp
-@import "imgui_window_params.h" {md_id=ImGuiWindowParams}
-```
+![[imgui_window_params.h#ImGuiWindowParams]]
 
 ## Default window types
 
-```cpp
-@import "imgui_window_params.h" {md_id=DefaultImGuiWindowType}
-```
+![[imgui_window_params.h#DefaultImGuiWindowType]]
 
 # Fps Idling
 
 See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/runner_params.h).
 
-```cpp
-@import "runner_params.h" {md_id=FpsIdling}
-```
+![[runner_params.h#FpsIdling]]
 
 # Dpi Aware Params
 
 Optionally, DPI parameters can be fine-tuned. For detailed info, see [handling screens with high dpi](https://pthom.github.io/hello_imgui/book/doc_api.html#handling-screens-with-high-dpi)
 
 Source: [dpi_aware.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/dpi_aware.h)
-```cpp
-@import "dpi_aware.h" {md_id=DpiAwareParams}
-```
+![[dpi_aware.h#DpiAwareParams]]
 
 
 ----
@@ -137,40 +111,30 @@ Source: [dpi_aware.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 See [docking_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/docking_params.h).
 
-@import "docking_params.h" {md_id=DockingIntro}
+![[docking_params.h#DockingIntro]]
 
 ## Docking Params: Example usage
 
-@import "docking_params.h" {md_id=DockingExample}
+![[docking_params.h#DockingExample]]
 
 ## Docking Splits
 
-```cpp
-@import "docking_params.h" {md_id=DockingSplit}
-```
+![[docking_params.h#DockingSplit]]
 
 ## Dockable window
 
-```cpp
-@import "docking_params.h" {md_id=DockableWindow}
-```
+![[docking_params.h#DockableWindow]]
 
 ## Docking Params
 
-```cpp
-@import "docking_params.h" {md_id=DockingParams}
-```
+![[docking_params.h#DockingParams]]
 
 # Backend
 
 ## Backend Pointers
 
-```cpp
-@import "backend_pointers.h" {md_id=BackendPointers}
-```
+![[backend_pointers.h#BackendPointers]]
 
 ## Renderer Backend Options
 
-```cpp
-@import "renderer_backend_options.h" {md_id=RendererBackendOptions}
-```
+![[renderer_backend_options.h#RendererBackendOptions]]

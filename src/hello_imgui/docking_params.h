@@ -10,8 +10,7 @@
 
 namespace HelloImGui
 {
-/**
-@@md#DockingIntro
+/*::md DockingIntro
 
 HelloImGui makes it easy to use dockable windows
  (based on ImGui [docking branch](https://github.com/ocornut/imgui/tree/docking)).
@@ -66,10 +65,10 @@ struct DockingParams
 Inside DockingParams, the member `dockingSplits` specifies the layout, and the member `dockableWindows`
  specifies the list of dockable windows, along with their default location, and their code (given by lambdas).
 
- @@/md
+*/
 
 
-@@md#DockingExample
+/*::md DockingExample
 
 Below is an example that shows how to instantiate a layout:
 
@@ -150,7 +149,6 @@ runnerParams.dockingParams.dockableWindows = CreateDockableWindows();
 HelloImGui::Run(runnerParams);
 ```
 
-@@/md
 */
 
 /*****************************************************************************/
@@ -160,7 +158,7 @@ HelloImGui::Run(runnerParams);
 using DockSpaceName = std::string;
 
 
-// @@md#DockingSplit
+// ::code DockingSplit
 
 // DockingSplit is a struct that defines the way the docking splits should
 // be applied on the screen in order to create new Dock Spaces.
@@ -199,11 +197,11 @@ struct DockingSplit
                  ImGuiDockNodeFlags nodeFlags_ = ImGuiDockNodeFlags_None)
         : initialDock(initialDock_), newDock(newDock_), direction(direction_), ratio(ratio_), nodeFlags(nodeFlags_) {}
 };
-// @@/md
+// ::endcode
 
 
 
-// @@md#DockableWindow
+// ::code DockableWindow
 
 // DockableWindow is a struct that represents a window that can be docked.
 struct DockableWindow
@@ -292,7 +290,7 @@ struct DockableWindow
           canBeClosed(canBeClosed_) {}
 
 };
-// @@/md
+// ::endcode
 
 
 enum class DockingLayoutCondition
@@ -303,7 +301,7 @@ enum class DockingLayoutCondition
 };
 
 
-// @@md#DockingParams
+// ::code DockingParams
 
 // DockingParams contains all the settings concerning the docking:
 //     - list of splits
@@ -367,7 +365,7 @@ struct DockingParams
     // returns the ImGuiID corresponding to the dockspace with this name
     std::optional<ImGuiID> dockSpaceIdFromName(const std::string& dockSpaceName);
 };
-// @@/md
+// ::endcode
 
 } // namespace HelloImGui
 

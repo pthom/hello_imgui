@@ -16,7 +16,7 @@ namespace HelloImGui
 
 // --------------------------------------------------------------------------------------------------------------------
 
-// @@md#PlatformBackendType
+// ::code PlatformBackendType
 
 // You can select the platform backend type (SDL, GLFW) and the rendering backend type
 // via RunnerParams.platformBackendType and RunnerParams.renderingBackendType.
@@ -44,14 +44,14 @@ enum class RendererBackendType
     Null
 };
 
-// @@/md
+// ::endcode
 
 std::string PlatformBackendTypeToString(PlatformBackendType platformBackendType);
 std::string RendererBackendTypeToString(RendererBackendType rendererBackendType);
 
 // --------------------------------------------------------------------------------------------------------------------
 
-// @@md#IniFolderType
+// ::code IniFolderType
 
 // IniFolderType is an enum which describes where is the base path to store
 // the ini file for the application settings.
@@ -105,11 +105,11 @@ enum class IniFolderType
 // Returns the path corresponding to the given IniFolderType
 std::string IniFolderLocation(IniFolderType iniFolderType);
 
-// @@/md
+// ::endcode
 
 // --------------------------------------------------------------------------------------------------------------------
 
-// @@md#FpsIdling
+// ::code FpsIdling
 
 // FpsIdlingMode is an enum that describes the different modes of idling
 // when rendering the GUI.
@@ -231,11 +231,11 @@ struct FpsIdling
     //   - The lower (stricter) limit dominates.
     float fpsMax = 0.f;
 };
-// @@/md
+// ::endcode
 
 // --------------------------------------------------------------------------------------------------------------------
 
-// @@md#RunnerParams
+// ::code RunnerParams
 
 // RunnerParams contains the settings and callbacks needed to run an application.
 //
@@ -370,10 +370,10 @@ struct RunnerParams
     RemoteParams remoteParams; // Parameters for Remote display (experimental, unsupported)
     #endif
 };
-// @@/md
+// ::endcode
 
 
-// @@md#IniIniSettingsLocation
+// ::code IniIniSettingsLocation
 
 // IniSettingsLocation returns the path to the ini file for the application settings.
 std::optional<std::string> IniSettingsLocation(const RunnerParams& runnerParams);
@@ -384,11 +384,11 @@ bool HasIniSettings(const RunnerParams& runnerParams);
 // DeleteIniSettings deletes the ini file for the application settings.
 void DeleteIniSettings(const RunnerParams& runnerParams);
 
-// @@/md
+// ::endcode
 
 // --------------------------------------------------------------------------------------------------------------------
 
-// @@md#SimpleRunnerParams
+// ::code SimpleRunnerParams
 
 // SimpleRunnerParams is a struct that contains simpler params adapted for simple use cases.
 //For example, this is sufficient to run an application:
@@ -450,6 +450,6 @@ struct SimpleRunnerParams
 
     RunnerParams ToRunnerParams() const;
 };
-// @@/md
+// ::endcode
 
 }  // namespace HelloImGui

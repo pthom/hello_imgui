@@ -4,7 +4,7 @@
 
 namespace HelloImGui
 {
-// @@md#HelloImGui::ImageFromAsset
+// ::code HelloImGui::ImageFromAsset
 
 //
 //Images are loaded when first displayed, and then cached
@@ -122,7 +122,7 @@ ImageAndSize ImageAndSizeFromEncodedData(
 //  before destroying your GL context.
 void FreeImageCache();
 
-// @@/md
+// ::endcode
 
 namespace internal
 {

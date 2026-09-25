@@ -60,7 +60,7 @@ enum class WindowSizeMeasureMode
 
 
 
-// @@md#WindowGeometry
+// ::code WindowGeometry
 //
 // WindowGeometry is a struct that defines the window geometry.
 struct WindowGeometry
@@ -141,7 +141,7 @@ struct WindowGeometry
     //  (use sizeAuto at startup).
     bool resizeAppWindowAtNextFrame = false;
 };
-// @@/md
+// ::endcode
 
 
 // If there is a notch on the iPhone, you should not display inside these insets
@@ -154,7 +154,7 @@ struct EdgeInsets
 };
 
 
-// @@md#AppWindowParams
+// ::code AppWindowParams
 //
 // AppWindowParams is a struct that defines the application window display params.
 //See https://raw.githubusercontent.com/pthom/hello_imgui/master/src/hello_imgui/doc_src/hello_imgui_diagram.jpg
@@ -254,6 +254,6 @@ struct AppWindowParams
     // (This API is not stable, as the name suggests, and this is not supported)
     bool repaintDuringResize_GotchaReentrantRepaint = false;
 };
-// @@/md
+// ::endcode
 
 }  // namespace HelloImGui

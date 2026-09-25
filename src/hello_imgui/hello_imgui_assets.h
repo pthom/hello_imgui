@@ -5,8 +5,7 @@
 
 namespace HelloImGui
 {
-/**
-@@md#AssetsStructure
+/*::md AssetsStructure
 
 Assets located beside the application CMakeLists are embedded automatically.
 
@@ -22,11 +21,10 @@ my_app/
 
 Then you can load the asset "fonts/my_font.ttf", on all platforms.
 
-@@/md
 */
 
 
-// @@md#LoadAssetFileData
+// ::code LoadAssetFileData
 
 struct AssetFileData
 {
@@ -49,7 +47,7 @@ AssetFileData LoadAssetFileData(const char *assetPath);
 // Note: "ImGui::GetIO().Fonts->AddFontFromMemoryTTF" takes ownership of the data
 // and will free the memory for you.
 void FreeAssetFileData(AssetFileData * assetFileData);
-// @@/md
+// ::endcode
 
 // Function type to redirect asset loads. Function receives a path and
 // returns an AssetFileData structure. By default, it points to
@@ -63,7 +61,7 @@ void SetLoadAssetFileDataFunction(LoadAssetFileDataFunc func);
 // LoadAssetFileData
 AssetFileData DefaultLoadAssetFileData(const char *assetPath);
 
-// @@md#assetFileFullPath
+// ::code assetFileFullPath
 
 //`std::string AssetFileFullPath(const std::string& assetRelativeFilename)`
 // will return the path to assets.
@@ -82,9 +80,9 @@ std::string AssetFileFullPath(const std::string& assetRelativeFilename,
 // Returns true if this asset file exists
 bool AssetExists(const std::string& assetRelativeFilename);
 
-// @@/md
+// ::endcode
 
-// @@md#AssetsSearchPaths
+// ::code AssetsSearchPaths
 
 // Sets the assets folder location
 // (when using this, automatic assets installation on mobile platforms may not work)
@@ -117,7 +115,7 @@ void ClearAssetsSearchPaths();
 // Return the current list of search paths.
 const std::vector<std::string>& GetAssetsSearchPaths();
 
-// @@/md
+// ::endcode
 
 
 // Legacy API, kept for compatibility

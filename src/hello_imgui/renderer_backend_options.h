@@ -6,7 +6,7 @@ namespace HelloImGui
 {
 // --------------------------------------------------------------------------------------------------------------------
 
-// @@md#OpenGlOptions
+// ::code OpenGlOptions
 
 // OpenGlOptions contains advanced options used at the startup of OpenGL.
 // These parameters are reserved for advanced users.
@@ -60,10 +60,10 @@ struct OpenGlOptions
     //     - 16: optimal if using imgui-node-editor and you want to render very small text when unzooming
     std::optional<int> AntiAliasingSamples =  std::nullopt;
 };
-// @@/md
+// ::endcode
 
 
-// @@md#RendererBackendOptions
+// ::code RendererBackendOptions
 
 // `bool hasEdrSupport()`:
 // Check whether extended dynamic range (EDR), i.e. the ability to reproduce
@@ -109,7 +109,7 @@ struct RendererBackendOptions
 //     src/hello_imgui/internal/backend_impls/rendering_dx11.h
 //     src/hello_imgui/internal/backend_impls/rendering_dx12.h
 
-// @@/md
+// ::endcode
 
 
 // (Private structure, not part of the public API)

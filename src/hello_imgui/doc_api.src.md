@@ -4,31 +4,25 @@
 
 HelloImGui is extremely easy to use: there is **one** main function in the API, with three overloads.
 
-@import "hello_imgui.h" {md_id=HelloImGui::Run}
+![[hello_imgui.h#HelloImGui::Run]]
 
 # Run Application while handling the rendering loop
 If you want to be in control of the rendering loop, you may use the namespace `HelloImGui::ManualRender` (available since September 2024)
 
-```cpp
-@import "hello_imgui.h" {md_id=HelloImGui::ManualRender}
-```
+![[hello_imgui.h#HelloImGui::ManualRender]]
 
 ----
 
 # Place widgets in a DPI-aware way
 
-@import "dpi_aware.h" {md_id=DocEmToVec2}
+![[dpi_aware.h#DocEmToVec2]]
 
-```cpp
-@import "dpi_aware.h" {md_id=EmToVec2}
-```
+![[dpi_aware.h#EmToVec2]]
 
 ----
 # Load fonts
 See [hello_imgui_font.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui_font.h).
-```cpp
-@import "hello_imgui_font.h" {md_id=Fonts}
-```
+![[hello_imgui_font.h#Fonts]]
 
 ----
 
@@ -37,44 +31,32 @@ See [hello_imgui_assets.h](https://github.com/pthom/hello_imgui/blob/master/src/
 
 ## Load Assets as data buffer
 
-```cpp
-@import "hello_imgui_assets.h" {md_id=LoadAssetFileData}
-```
+![[hello_imgui_assets.h#LoadAssetFileData]]
 
 ## Get assets path
 
-```cpp
-@import "hello_imgui_assets.h" {md_id=assetFileFullPath}
-```
+![[hello_imgui_assets.h#assetFileFullPath]]
 
 ## Set assets folder
 
-```cpp
-@import "hello_imgui_assets.h" {md_id=AssetsSearchPaths}
-```
+![[hello_imgui_assets.h#AssetsSearchPaths]]
 
 
 ## Display images from assets
 See [image_from_asset.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/image_from_asset.h).
-```cpp
-@import "image_from_asset.h" {md_id=HelloImGui::ImageFromAsset}
-```
+![[image_from_asset.h#HelloImGui::ImageFromAsset]]
 
 ----
 
 # Utility functions
 
-```cpp
-@import "hello_imgui.h" {md_id=UtilityFunctions}
-```
+![[hello_imgui.h#UtilityFunctions]]
 
 ----
 # Switch between several layouts
 See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h).
     
-```cpp
-@import "hello_imgui.h" {md_id=HelloImGui::Layouts}
-```
+![[hello_imgui.h#HelloImGui::Layouts]]
 
 ----
 
@@ -82,32 +64,24 @@ See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_i
 
 ## Ini settings location
 
-```cpp
-@import "runner_params.h" {md_id=IniFolderType}
-```
+![[runner_params.h#IniFolderType]]
 
-```cpp
-@import "runner_params.h" {md_id=IniIniSettingsLocation}
-```
+![[runner_params.h#IniIniSettingsLocation]]
 
 ----
 
 ## Store user settings in the ini file
 See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h).
 
-```cpp
-@import "hello_imgui.h" {md_id=HelloImGui::UserPref}
-```
+![[hello_imgui.h#HelloImGui::UserPref]]
 
 ----
 
 # Customize Hello ImGui Menus
 
-@import "hello_imgui.h" {md_id=MenuIntro}
+![[hello_imgui.h#MenuIntro]]
 
-```cpp
-@import "hello_imgui.h" {md_id=MenuFunctions}
-```
+![[hello_imgui.h#MenuFunctions]]
 
 ---
 
@@ -115,18 +89,14 @@ See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_i
 
 ## InputTextResizable
 
-```cpp
-@import "hello_imgui_widgets.h" {md_id=InputTextResizable}
-```
+![[hello_imgui_widgets.h#InputTextResizable]]
 
 ## WidgetWithResizeHandle
 
-```cpp
-@import "hello_imgui_widgets.h" {md_id=WidgetWithResizeHandle}
-``` 
+![[hello_imgui_widgets.h#WidgetWithResizeHandle]]
 
 ---
 
 # Handling screens with high DPI
 
-@import "dpi_aware.h" {md_id=HandlingScreenHighDPI}
+![[dpi_aware.h#HandlingScreenHighDPI]]

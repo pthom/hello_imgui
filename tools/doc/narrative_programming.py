@@ -1,7 +1,7 @@
 """Narrative programming: the annotations of source files (::md, ::code) and the transclusions (![[file#name]]).
 
 Specification: https://github.com/pthom/imgui_rich_md/blob/main/docs/narrative_programming/narrative_programming_spec.md
-A port of imgui_rich_md's rich_md_narrative.cpp, checked by the same cases (imgui_rich_md/tests/narrative/cases).
+A port of imgui_rich_md's narrative_programming.cpp, checked by the same cases (imgui_rich_md/tests/narrative/cases).
 """
 
 from dataclasses import dataclass, field

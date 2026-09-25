@@ -6,8 +6,6 @@ import sys
 from PIL import Image
 
 doc_String = """
-@@md#resize_icons
-
 This script will create several android icons with correct size.
 
 Your app folder should look like this:
@@ -51,8 +49,6 @@ your_app/
 ├── hello_imgui_demodocking.main.cpp
 └── ios/
 ```
-
-@@/md
 """
 
 SOURCE_ICON = "mipmap-source/ic_launcher.png"

@@ -535,9 +535,8 @@ class Resolver:
         parsed = _parse(file, lines, syntax)
         if parsed.error:
             return self.error(line, parsed.error)
-        if not steps:  # the whole file, without its directive lines
-            code = [x for i, x in enumerate(parsed.lines) if not parsed.directive_only[i]]
-            return _code_block(_trim_blank_lines(code), language)
+        if not steps:  # the whole file, as it is (with its annotations)
+            return _code_block(_trim_blank_lines(parsed.lines), language)
         if len(steps) > 1:
             return self.error(line, "a source file has no headings: its targets are single names")
         name = steps[0]

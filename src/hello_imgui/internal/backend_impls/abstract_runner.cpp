@@ -683,60 +683,76 @@ void AbstractRunner::Setup()
 
     Impl_LinkPlatformAndRenderBackends();
 
-    #ifdef __EMSCRIPTEN__
-        // In a browser, Dear ImGui's default for ConfigMacOSXBehaviors is false (it comes from __APPLE__ at compile
-        // time), and only its GLFW backend corrects it at run time. On an Apple platform, Cmd must act as Ctrl
-        // (Cmd+C copies). SetupImGuiConfig(), below, may still change it.
-        // (emscripten_run_script_int rather than EM_ASM: it also works in a side module, as in Pyodide)
-        const char* isApplePlatform =
-            "(function() { const data = navigator.userAgentData;"
-            "  const platform = (data && data.platform) || navigator.platform || '';"
-            "  return /mac|iphone|ipad|ipod/i.test(platform) ? 1 : 0; })()";
-        if (emscripten_run_script_int(isApplePlatform))
-            ImGui::GetIO().ConfigMacOSXBehaviors = true;
-    #endif
-
-    if (params.callbacks.PostInit)
-        params.callbacks.PostInit();
-
-    params.callbacks.SetupImGuiConfig();
-
-    #ifdef HELLOIMGUI_WITH_TEST_ENGINE
-        if (params.useImGuiTestEngine)
-            TestEngineCallbacks::Setup();
-    #endif
-
-    //
-    // load fonts
-    //
-
-    // Fonts are loaded at their nominal size. HighDPI scaling is applied at display time
-    // through ImGui::GetStyle().FontScaleDpi, which was set in SetupDpiAwareParams().
-    ImGui::GetIO().Fonts->Clear();
-    params.callbacks.LoadAdditionalFonts();
-    params.callbacks.LoadAdditionalFonts = nullptr;
-
-    DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
-    HelloImGuiIniSettings::LoadHelloImGuiMiscSettings(IniSettingsLocation(params), &params);
-    SetLayoutResetIfNeeded();
-
-    ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
-
-    // Fix issue with ImGui & Viewports: title bar cannot be transparent
-    if (params.imGuiWindowParams.enableViewports)
+    // From here on, user callbacks run (PostInit, LoadAdditionalFonts, SetupImGuiStyle...) and may throw, e.g. on a
+    // missing font asset. Tear down the backends and the ImGui context before rethrowing: otherwise a new Setup after
+    // a caught exception (Python REPL, notebook, Pyodide) finds them, and fails ("Already initialized a platform
+    // backend!")
+    try
     {
-        auto& style = ImGui::GetStyle();
-        style.Colors[ImGuiCol_TitleBg].w = 1.f;
-        style.Colors[ImGuiCol_TitleBgActive].w = 1.f;
-        style.Colors[ImGuiCol_TitleBgCollapsed].w = 1.f;
+        #ifdef __EMSCRIPTEN__
+            // In a browser, Dear ImGui's default for ConfigMacOSXBehaviors is false (it comes from __APPLE__ at compile
+            // time), and only its GLFW backend corrects it at run time. On an Apple platform, Cmd must act as Ctrl
+            // (Cmd+C copies). SetupImGuiConfig(), below, may still change it.
+            // (emscripten_run_script_int rather than EM_ASM: it also works in a side module, as in Pyodide)
+            const char* isApplePlatform =
+                "(function() { const data = navigator.userAgentData;"
+                "  const platform = (data && data.platform) || navigator.platform || '';"
+                "  return /mac|iphone|ipad|ipod/i.test(platform) ? 1 : 0; })()";
+            if (emscripten_run_script_int(isApplePlatform))
+                ImGui::GetIO().ConfigMacOSXBehaviors = true;
+        #endif
+
+        if (params.callbacks.PostInit)
+            params.callbacks.PostInit();
+
+        params.callbacks.SetupImGuiConfig();
+
+        #ifdef HELLOIMGUI_WITH_TEST_ENGINE
+            if (params.useImGuiTestEngine)
+                TestEngineCallbacks::Setup();
+        #endif
+
+        //
+        // load fonts
+        //
+
+        // Fonts are loaded at their nominal size. HighDPI scaling is applied at display time
+        // through ImGui::GetStyle().FontScaleDpi, which was set in SetupDpiAwareParams().
+        ImGui::GetIO().Fonts->Clear();
+        params.callbacks.LoadAdditionalFonts();
+        params.callbacks.LoadAdditionalFonts = nullptr;
+
+        DockingDetails::ConfigureImGuiDocking(params.imGuiWindowParams);
+        HelloImGuiIniSettings::LoadHelloImGuiMiscSettings(IniSettingsLocation(params), &params);
+        SetLayoutResetIfNeeded();
+
+        ImGuiTheme::ApplyTweakedTheme(params.imGuiWindowParams.tweakedTheme);
+
+        // Fix issue with ImGui & Viewports: title bar cannot be transparent
+        if (params.imGuiWindowParams.enableViewports)
+        {
+            auto& style = ImGui::GetStyle();
+            style.Colors[ImGuiCol_TitleBg].w = 1.f;
+            style.Colors[ImGuiCol_TitleBgActive].w = 1.f;
+            style.Colors[ImGuiCol_TitleBgCollapsed].w = 1.f;
+        }
+        params.callbacks.SetupImGuiStyle();
+
+        // Create a remote display handler if needed
+        mRemoteDisplayHandler.Create();
+        mRemoteDisplayHandler.SendFonts();
+
+        mIdxFrame = 0;
     }
-    params.callbacks.SetupImGuiStyle();
-
-    // Create a remote display handler if needed
-    mRemoteDisplayHandler.Create();
-    mRemoteDisplayHandler.SendFonts();
-
-    mIdxFrame = 0;
+    catch (...)
+    {
+        if (!mWasTearedDown)
+        {
+            try { TearDown(true); }
+            catch (...) {}  // the original exception is the one to report
+        }
+        throw;
+    }
 }
 
 

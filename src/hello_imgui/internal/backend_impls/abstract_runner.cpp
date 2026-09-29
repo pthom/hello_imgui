@@ -50,6 +50,7 @@
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#include <string>
 #endif
 
 #include "rendering_opengl3.h"
@@ -672,6 +673,21 @@ void AbstractRunner::Setup()
     SetupDpiAwareParams();
     // Then adjust window size if needed
     AdjustWindowBoundsAfterCreation_IfDpiChangedBetweenRuns();
+
+#ifdef __EMSCRIPTEN__
+    // In a browser, the canvas fills the page's window. A popup window (opened by window.open with a size, e.g. an app
+    // launched from another page) takes the app's window size; a tab cannot be resized, and stays as it is.
+    // The size is in CSS pixels, which the browser maps to the screen's density: they play the role of the size
+    // relative to 96 PPI on a desktop. window.toolbar.visible is false only in a popup.
+    // (emscripten_run_script rather than EM_ASM: it also works in a side module, as in Pyodide)
+    if (!params.appWindowParams.windowGeometry.sizeAuto)
+    {
+        auto size = params.appWindowParams.windowGeometry.size;
+        std::string resizePopup = "if (!window.toolbar.visible) window.resizeBy("
+            + std::to_string(size[0]) + " - window.innerWidth, " + std::to_string(size[1]) + " - window.innerHeight)";
+        emscripten_run_script(resizePopup.c_str());
+    }
+#endif
 
 
     // This should be done before Impl_LinkPlatformAndRenderBackends()

@@ -22,6 +22,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/hello_imgui_installed_options.cmake OPTIONAL)
 #     * It will automatically link the target to the required libraries (hello_imgui, OpenGl, glad, etc)
 #     * It will embed the assets (for desktop, mobile, and emscripten apps)
 #     * It will perform additional customization (app icon and name on mobile platforms, etc)
+#     * With MSVC, it reads the sources as UTF-8 (/utf-8), as GCC, Clang and Emscripten do by default
 #
 function(hello_imgui_add_app)
     #############################################################################
@@ -81,6 +82,10 @@ function(hello_imgui_add_app)
     endif()
 
     hello_imgui_prepare_app(${app_name} ${assets_location})
+
+    # Dear ImGui's text is UTF-8. Without /utf-8, MSVC reads the sources in the local code page, and garbles the
+    # string literals that contain non-ASCII text.
+    target_compile_options(${app_name} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
 endfunction()
 
 

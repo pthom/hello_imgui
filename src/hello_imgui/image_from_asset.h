@@ -6,11 +6,12 @@ namespace HelloImGui
 {
 // ::code HelloImGui::ImageFromAsset
 
+// Images from the assets
 //
-//Images are loaded when first displayed, and then cached
+// Images are loaded when first displayed, and then cached
 // (they will be freed just before the application exits).
 //
-//For example, given this files structure:
+// For example, given this files structure:
 //```
 //├── CMakeLists.txt
 //├── assets/

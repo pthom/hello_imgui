@@ -102,8 +102,7 @@ struct RendererBackendOptions
 };
 
 
-// Note:
-// If using Metal, Vulkan or DirectX, you can find interesting pointers inside:
+// Metal, Vulkan and DirectX: the pointers to their objects are in the internal headers
 //     src/hello_imgui/internal/backend_impls/rendering_metal.h
 //     src/hello_imgui/internal/backend_impls/rendering_vulkan.h
 //     src/hello_imgui/internal/backend_impls/rendering_dx11.h

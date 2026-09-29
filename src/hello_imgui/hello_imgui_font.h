@@ -8,14 +8,11 @@ namespace HelloImGui
 {
     // ::code Fonts
 
-    // When loading fonts, use
-    //          HelloImGui::LoadFont(..)
-    //      or
-    //      	HelloImGui::LoadDpiResponsiveFont()
+    // Font loading
     //
-    // Use these functions instead of ImGui::GetIO().Fonts->AddFontFromFileTTF(),
-    // because they will automatically adjust the font size to account for HighDPI,
-    // and will help you to get consistent font size across different OSes.
+    // To load a font, use HelloImGui::LoadFont() or HelloImGui::LoadDpiResponsiveFont(),
+    // instead of ImGui::GetIO().Fonts->AddFontFromFileTTF(): they adjust the font size
+    // to the screen's DPI, and give a consistent font size across OSes.
 
     //
     // Font loading parameters: several options are available (color, merging, range, ...)

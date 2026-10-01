@@ -43,6 +43,9 @@ function(_add_imgui_test_engine_lib)
 
     if (HELLOIMGUI_STB_IMAGE_WRITE_IMPLEMENTATION)
         target_compile_definitions(imgui_test_engine PRIVATE IMGUI_DISABLE_STB_IMAGE_WRITE_IMPLEMENTATION)
+        # stbi_write_png then comes from stb_hello_imgui. Linkers that read static libraries in order (GNU ld)
+        # need it after imgui_test_engine, e.g. in an app that uses ImGui but no HelloImGui function.
+        target_link_libraries(imgui_test_engine PRIVATE stb_hello_imgui)
     endif()
     target_compile_definitions(imgui_test_engine PRIVATE
         IMGUI_STB_IMAGE_WRITE_FILENAME="${HELLOIMGUI_BASEPATH}/external/stb_hello_imgui/stb_image_write.h"

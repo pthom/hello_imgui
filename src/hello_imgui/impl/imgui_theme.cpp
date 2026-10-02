@@ -984,13 +984,22 @@ namespace ImGuiTheme
         return ImGuiStyle();
     }
 
+    // Calls RunnerParams::callbacks.ThemeChanged when an application runs under HelloImGui::Run().
+    // ImGuiTheme is also usable standalone (an ImGui context without HelloImGui): nothing to notify then.
+    static void NotifyThemeChanged()
+    {
+        if (!HelloImGui::IsUsingHelloImGui())
+            return;
+        auto& themeChanged = HelloImGui::GetRunnerParams()->callbacks.ThemeChanged;
+        if (themeChanged)
+            themeChanged();
+    }
+
     void ApplyTheme(ImGuiTheme_ theme)
     {
         ImGuiStyle style = ThemeToStyle(theme);
         ImGui::GetStyle() = style;
-        auto runnerParams = HelloImGui::GetRunnerParams();
-        if (runnerParams->callbacks.ThemeChanged)
-            runnerParams->callbacks.ThemeChanged();
+        NotifyThemeChanged();
     }
 
     ImGuiStyle TweakedThemeThemeToStyle(const ImGuiTweakedTheme& tweaked_theme)
@@ -1062,9 +1071,7 @@ namespace ImGuiTheme
                 {
                     changed = true;
                     *theme = theme_i;
-                    auto runnerParams = HelloImGui::GetRunnerParams();
-                    if (runnerParams->callbacks.ThemeChanged)
-                        runnerParams->callbacks.ThemeChanged();
+                    NotifyThemeChanged();
                 }
                 if (is_selected)
                     ImGui::SetItemDefaultFocus();

@@ -1,5 +1,18 @@
 *Version numbers are synced between Hello ImGui and Dear ImGui Bundle, using the scheme `major.minor.patch` where `patch = ImGui_patch × 100 + release`. For example, ImGui v1.92.6 → v1.92.600, and a bugfix release becomes v1.92.601.*
 
+# v1.92.901
+
+Maintenance release (ImGui stays at v1.92.9b-docking). Fixes reported while packaging v1.92.900 for vcpkg ([vcpkg PR #54216](https://github.com/microsoft/vcpkg/pull/54216), [#169](https://github.com/pthom/hello_imgui/issues/169)).
+
+**Fixes:**
+* CMake: `project(VERSION)` was still 1.92.700 in the v1.92.900 tag, so the installed `hello-imguiConfigVersion.cmake` advertised the wrong version (#169)
+* `ImGuiTheme::ApplyTheme` (and the theme list box) can again be used standalone, i.e. with an ImGui context but without `HelloImGui::Run()`. Since v1.92.6 they threw "HelloImGui::GetRunnerParams() would return null" (regression from the `ThemeChanged` callback)
+* Ini settings: restore saved window positions with negative coordinates, i.e. a window on a monitor left of (or above) the primary one (#168)
+
+**Licenses:**
+* Add the license texts of the redistributed fonts next to them: `hello_imgui_assets/fonts/LICENSE-DroidSans.txt` (Apache-2.0) and `hello_imgui_assets/fonts/LICENSE-FontAwesome.txt` (OFL-1.1, Font Awesome 4 and 6)
+* Add the MIT license text of the vendored inifile-cpp (`src/hello_imgui/internal/inicpp_LICENSE.txt`)
+
 # v1.92.900
 
 * Update ImGui to v1.92.9b-docking

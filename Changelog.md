@@ -9,6 +9,19 @@
 **CMake package renamed to `hello_imgui`:**
 * `find_package(hello_imgui)` and `hello_imgui::hello_imgui` replace `find_package(hello-imgui)` and `hello-imgui::hello_imgui`, so that the package, namespace and target share one name. The former name still works through a deprecated compatibility shim, to be removed in a future release. The config files are now installed in `lib/cmake/hello_imgui/`, where `find_package` can find them without vcpkg's config fixup. (The vcpkg port keeps its `hello-imgui` name, as vcpkg forbids underscores.)
 
+# v1.92.901
+
+Maintenance release (ImGui stays at v1.92.9b-docking). Fixes reported while packaging v1.92.900 for vcpkg ([vcpkg PR #54216](https://github.com/microsoft/vcpkg/pull/54216), [#169](https://github.com/pthom/hello_imgui/issues/169)).
+
+**Fixes:**
+* CMake: `project(VERSION)` was still 1.92.700 in the v1.92.900 tag, so the installed `hello-imguiConfigVersion.cmake` advertised the wrong version (#169)
+* `ImGuiTheme::ApplyTheme` (and the theme list box) can again be used standalone, i.e. with an ImGui context but without `HelloImGui::Run()`. Since v1.92.6 they threw "HelloImGui::GetRunnerParams() would return null" (regression from the `ThemeChanged` callback)
+* Ini settings: restore saved window positions with negative coordinates, i.e. a window on a monitor left of (or above) the primary one (#168)
+
+**Licenses:**
+* Add the license texts of the redistributed fonts next to them: `hello_imgui_assets/fonts/LICENSE-DroidSans.txt` (Apache-2.0) and `hello_imgui_assets/fonts/LICENSE-FontAwesome.txt` (OFL-1.1, Font Awesome 4 and 6)
+* Add the MIT license text of the vendored inifile-cpp (`src/hello_imgui/internal/inicpp_LICENSE.txt`)
+
 # v1.92.900
 
 * Update ImGui to v1.92.9b-docking

@@ -13,6 +13,13 @@ namespace HelloImGui
 
     namespace TestEngineCallbacks
     {
+        // The engine's constructor installs its std::thread coroutine: Setup() replaces it with this one, if set.
+        static ImGuiTestCoroutineInterface* gCoroutineInterface = nullptr;
+
+        void SetCoroutineInterface(ImGuiTestCoroutineInterface* coroutineInterface)
+        {
+            gCoroutineInterface = coroutineInterface;
+        }
 
         void _SetOptions()
         {
@@ -37,6 +44,8 @@ namespace HelloImGui
         {
             // Setup test engine
             GHImGuiTestEngine = ImGuiTestEngine_CreateContext();
+            if (gCoroutineInterface != nullptr)
+                ImGuiTestEngine_GetIO(GHImGuiTestEngine).CoroutineFuncs = gCoroutineInterface;
 
             _SetOptions();
 

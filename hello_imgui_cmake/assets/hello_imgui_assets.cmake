@@ -49,13 +49,18 @@ function(hello_imgui_copy_folder1_files_missing_from_folder2 folder_src_1 folder
 endfunction()
 
 
-function(hello_imgui_bundle_assets app_name assets_location)
-    # if using imgui_bundle, use its common assets folder
+# The folder of the assets common to all apps: imgui_bundle's when hello_imgui is used by it, else hello_imgui's
+function(hello_imgui_get_common_assets_folder out_var)
     if (DEFINED IMGUI_BUNDLE_PATH AND IS_DIRECTORY ${IMGUI_BUNDLE_PATH}/imgui_bundle_assets)
-        set(common_assets_folder ${IMGUI_BUNDLE_PATH}/imgui_bundle_assets)
+        set(${out_var} ${IMGUI_BUNDLE_PATH}/imgui_bundle_assets PARENT_SCOPE)
     else()
-        set(common_assets_folder ${HELLOIMGUI_BASEPATH}/hello_imgui_assets)
+        set(${out_var} ${HELLOIMGUI_BASEPATH}/hello_imgui_assets PARENT_SCOPE)
     endif()
+endfunction()
+
+
+function(hello_imgui_bundle_assets app_name assets_location)
+    hello_imgui_get_common_assets_folder(common_assets_folder)
 
     set(local_assets_folder ${assets_location})
 

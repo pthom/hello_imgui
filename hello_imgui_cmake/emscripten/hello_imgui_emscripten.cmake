@@ -103,19 +103,19 @@ function(_hello_imgui_create_emscripten_ico app_name assets_location)
     file(MAKE_DIRECTORY ${real_output_directory}) # make dir real_output_directory if needed
     set(final_icon ${real_output_directory}/${app_name}_favicon.png)
 
-    # if the user provided a custom icon, we use it
+    # The icon: the app's (assets/app_settings/icon.png), else the common assets' (the one the app gets as its window
+    # icon, since the common assets fill in what the app's assets lack), else hello_imgui's.
+    # (configure_file, since CMake's file(COPY) cannot rename)
     set(user_provided_app_png_icon ${assets_location}/app_settings/icon.png)
-
-    if (NOT EXISTS ${user_provided_app_png_icon})
-        # if the user did not provide a custom icon, we copy the standard hello_imgui icon
-        set(standard_favicon ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_favicon.png)
-        message(VERBOSE "_hello_imgui_create_ico: copying ${standard_favicon} to ${custom_app_icon} for app ${app_name}")
-        # copy and rename the standard_favicon to custom_app_icon
-        # CMake forces us to use configure_file if we want to rename the file... Whatever
-        configure_file(${standard_favicon} ${final_icon} COPYONLY)
-    else()
-        message(VERBOSE "_hello_imgui_create_ico: copying ${standard_favicon} to ${custom_app_icon} for app ${app_name}")
+    hello_imgui_get_common_assets_folder(common_assets_folder)
+    set(common_app_png_icon ${common_assets_folder}/app_settings/icon.png)
+    set(standard_favicon ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake/emscripten/hello_imgui_favicon.png)
+    if (EXISTS ${user_provided_app_png_icon})
         configure_file(${user_provided_app_png_icon} ${final_icon} COPYONLY)
+    elseif (EXISTS ${common_app_png_icon})
+        configure_file(${common_app_png_icon} ${final_icon} COPYONLY)
+    else()
+        configure_file(${standard_favicon} ${final_icon} COPYONLY)
     endif()
 
     if (HELLOIMGUI_ADD_APP_WITH_INSTALL)

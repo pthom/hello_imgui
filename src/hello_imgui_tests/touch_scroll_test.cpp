@@ -1,0 +1,222 @@
+// The swipe layer (internal/touch_scroll.cpp) through Dear ImGui's null backend: the mouse and its source are
+// injected, the scroll of the windows is read back. No HelloImGui::Run(): the layer is a function of the frame.
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "doctest.h"
+#include "imgui.h"
+#include "imgui_internal.h"
+#include "imgui_impl_null.h"
+#include "hello_imgui/internal/touch_scroll.h"
+
+namespace
+{
+using HelloImGui::TouchScrollMode;
+
+// A window at (0,0), 400x300: a button, a slider, a child of 30 lines, a wide child of one line, then 100 lines
+struct Bench
+{
+    Bench()
+    {
+        ImGui::CreateContext();
+        ImGui_ImplNull_Init();
+    }
+    ~Bench()
+    {
+        ImGui_ImplNull_Shutdown();
+        ImGui::DestroyContext();
+    }
+
+    TouchScrollMode mode = TouchScrollMode::Always;
+    bool steal = false;  // the GUI takes the active id while the button is down (a widget that wants a long press)
+    ImGuiID stealId = 0;
+    int clicks = 0;
+    float slider = 0.5f;
+    float scrollY = 0.f, childScrollY = 0.f, wideScrollX = 0.f;  // as of the last frame's Begin()
+    ImRect buttonRect, sliderRect, childRect, wideRect, linesRect;  // screen coordinates, as of the last frame
+    ImVec2 mouse;
+
+    void Frame()
+    {
+        ImGui_ImplNull_NewFrame();
+        ImGui::NewFrame();
+        ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(400.f, 300.f), ImGuiCond_Always);
+        ImGui::Begin("Bench", nullptr, ImGuiWindowFlags_NoTitleBar);
+        scrollY = ImGui::GetScrollY();
+        if (steal && ImGui::IsMouseDown(0))
+        {
+            stealId = ImGui::GetID("steal");
+            ImGui::SetActiveID(stealId, ImGui::GetCurrentWindow());
+            ImGui::KeepAliveID(stealId);
+        }
+        if (ImGui::Button("Button"))
+            clicks++;
+        buttonRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+        ImGui::SliderFloat("Slider", &slider, 0.f, 1.f);
+        sliderRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+        ImGui::BeginChild("Child", ImVec2(0.f, 80.f), ImGuiChildFlags_Borders);
+        childScrollY = ImGui::GetScrollY();
+        for (int i = 0; i < 30; ++i)
+            ImGui::Text("Child line %d", i);
+        ImGui::EndChild();
+        childRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+        ImGui::BeginChild("Wide", ImVec2(0.f, 60.f), ImGuiChildFlags_Borders, ImGuiWindowFlags_HorizontalScrollbar);  // tall enough: one line plus its scrollbar, no vertical scroll
+        wideScrollX = ImGui::GetScrollX();
+        ImGui::Text("A wide line, wider than the window, so that this child scrolls sideways and not vertically");
+        ImGui::EndChild();
+        wideRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+        ImVec2 linesPos = ImGui::GetCursorScreenPos();
+        for (int i = 0; i < 100; ++i)
+            ImGui::Text("Line %d", i);
+        linesRect = ImRect(linesPos, ImVec2(linesPos.x + 300.f, 290.f));
+        ImGui::End();
+        HelloImGui::UpdateTouchScroll(mode);
+        ImGui::Render();
+        ImGui_ImplNullRender_RenderDrawData(ImGui::GetDrawData());
+    }
+    void Frames(int n) { for (int i = 0; i < n; ++i) Frame(); }
+
+    void MoveTo(ImVec2 p)
+    {
+        mouse = p;
+        ImGui::GetIO().AddMousePosEvent(p.x, p.y);
+        Frame();
+    }
+    void Press(ImVec2 p)
+    {
+        MoveTo(p);
+        ImGui::GetIO().AddMouseButtonEvent(0, true);
+        Frame();
+    }
+    // The finger moves by `delta`, in steps of one frame
+    void Drag(ImVec2 delta, int steps)
+    {
+        for (int i = 1; i <= steps; ++i)
+            MoveTo(mouse + delta * ((float)i / (float)steps) - delta * ((float)(i - 1) / (float)steps));
+    }
+    // A release after a pause: the finger speed has decayed, no inertia follows
+    void ReleaseStill()
+    {
+        Frames(15);
+        Release();
+    }
+    void Release()
+    {
+        ImGui::GetIO().AddMouseButtonEvent(0, false);
+        Frames(3);  // the last wheel event, then the scroll target, then a frame to read
+    }
+    void Source(ImGuiMouseSource source) { ImGui::GetIO().AddMouseSourceEvent(source); }
+};
+
+bool Near(float a, float b, float tol = 3.f) { return ImFabs(a - b) <= tol; }
+}  // namespace
+
+TEST_CASE("Touch scroll: a swipe on the lines scrolls the window, a tap does not")
+{
+    Bench b;
+    b.Frames(3);
+    REQUIRE(b.scrollY == 0.f);
+    b.Press(b.linesRect.GetCenter());
+    b.Drag(ImVec2(0.f, -50.f), 5);
+    b.ReleaseStill();
+    CHECK(Near(b.scrollY, 50.f));
+    CHECK(ImGui::GetCurrentContext()->ActiveId == 0);
+    CHECK(ImGui::GetIO().ConfigInputTrickleEventQueue == true);
+
+    float before = b.scrollY;
+    b.Press(b.linesRect.GetCenter());
+    b.ReleaseStill();
+    CHECK(b.scrollY == before);
+    CHECK(b.clicks == 0);
+}
+
+TEST_CASE("Touch scroll: Auto acts with a touch source only, Disabled never")
+{
+    Bench b;
+    b.mode = TouchScrollMode::Auto;
+    b.Frames(3);
+    b.Press(b.linesRect.GetCenter());
+    b.Drag(ImVec2(0.f, -50.f), 5);
+    b.ReleaseStill();
+    CHECK(b.scrollY == 0.f);
+
+    b.Source(ImGuiMouseSource_TouchScreen);
+    b.Press(b.linesRect.GetCenter());
+    b.Drag(ImVec2(0.f, -50.f), 5);
+    b.ReleaseStill();
+    CHECK(Near(b.scrollY, 50.f));
+
+    b.mode = TouchScrollMode::Disabled;
+    b.Press(b.linesRect.GetCenter());
+    b.Drag(ImVec2(0.f, -50.f), 5);
+    b.ReleaseStill();
+    CHECK(Near(b.scrollY, 50.f));
+}
+
+TEST_CASE("Touch scroll: a press on a widget stays with the widget")
+{
+    Bench b;
+    b.Frames(3);
+    b.Press(b.buttonRect.GetCenter());
+    b.Drag(ImVec2(0.f, -50.f), 5);
+    b.ReleaseStill();
+    CHECK(b.scrollY == 0.f);
+    CHECK(b.clicks == 0);  // released away from the button
+
+    b.Press(b.sliderRect.GetCenter());
+    b.Drag(ImVec2(60.f, 0.f), 5);
+    b.ReleaseStill();
+    CHECK(b.scrollY == 0.f);
+    CHECK(b.slider > 0.6f);
+}
+
+TEST_CASE("Touch scroll: a widget that takes the active id after the press ends the swipe")
+{
+    Bench b;
+    b.Frames(3);
+    b.Press(b.linesRect.GetCenter());
+    b.steal = true;
+    b.Frame();
+    CHECK(ImGui::GetCurrentContext()->ActiveId == b.stealId);
+    b.Drag(ImVec2(0.f, -50.f), 5);
+    b.ReleaseStill();
+    CHECK(b.scrollY == 0.f);
+}
+
+TEST_CASE("Touch scroll: a child scrolls itself, and its parent when it cannot scroll that way")
+{
+    Bench b;
+    b.Frames(3);
+    b.Press(b.childRect.GetCenter());
+    b.Drag(ImVec2(0.f, -30.f), 3);
+    b.ReleaseStill();
+    CHECK(Near(b.childScrollY, 30.f));
+    CHECK(b.scrollY == 0.f);
+
+    b.Press(b.wideRect.GetCenter());
+    b.Drag(ImVec2(-30.f, 0.f), 3);
+    b.ReleaseStill();
+    CHECK(Near(b.wideScrollX, 30.f));
+    CHECK(b.scrollY == 0.f);
+
+    b.Press(b.wideRect.GetCenter());
+    b.Drag(ImVec2(0.f, -30.f), 3);
+    b.ReleaseStill();
+    CHECK(Near(b.scrollY, 30.f));
+    CHECK(Near(b.wideScrollX, 30.f));
+}
+
+TEST_CASE("Touch scroll: a flick keeps scrolling, then stops")
+{
+    Bench b;
+    b.Frames(3);
+    b.Press(b.linesRect.GetCenter());
+    b.Drag(ImVec2(0.f, -50.f), 5);  // 10 px per frame: 600 px/s
+    b.Release();
+    float atRelease = b.scrollY;
+    b.Frames(10);
+    CHECK(b.scrollY > atRelease + 20.f);
+    b.Frames(120);
+    float stopped = b.scrollY;
+    b.Frames(10);
+    CHECK(b.scrollY == stopped);
+}

@@ -28,6 +28,10 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 ![[runner_params.h#PlatformBackendType]]
 
+### Touch scroll
+
+![[runner_params.h#TouchScrollMode]]
+
 
 # Runner callbacks
 

@@ -1,0 +1,2 @@
+include(hello_imgui_add_app)
+hello_imgui_add_app(hello_touch_scroll hello_touch_scroll.main.cpp)

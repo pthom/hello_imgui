@@ -1,6 +1,7 @@
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
 #include "hello_imgui/hello_imgui_theme.h"
 #include "hello_imgui/internal/borderless_movable.h"
+#include "hello_imgui/internal/touch_scroll.h"
 #include "hello_imgui/internal/clock_seconds.h"
 #include "hello_imgui/internal/docking_details.h"
 #include "hello_imgui/internal/idle_frame_wait_for_python_async_io.h"
@@ -1474,6 +1475,8 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
     if (params.callbacks.BeforeImGuiRender)
         params.callbacks.BeforeImGuiRender();
+
+    UpdateTouchScroll(params.touchScrollMode);  // after all the GUI: a widget that took the press keeps it
 
     {
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;

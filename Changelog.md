@@ -2,6 +2,9 @@
 
 # Changes in upcoming release
 
+**Touch screens: scroll with a swipe**
+* A finger that drags the content of a window scrolls it, with inertia after the release, as on a phone. `RunnerParams::touchScrollMode` (`Auto`: when the input is a touch screen; `Always`: also with the mouse, to test on a desktop; `Disabled`). A widget that is active under the finger (a slider, a text selection) keeps the drag. Demo: `hello_touch_scroll`.
+
 **plutosvg / plutovg:**
 * Now git submodules (`external/plutosvg`, with plutovg as its own submodule), updated to plutosvg v0.0.8 and plutovg v1.3.3. They are no longer downloaded at configure time, which also makes the release source archives complete. Both are compiled into a single static library `plutosvg`, part of the install.
 * New option `HELLOIMGUI_USE_SYSTEM_PLUTOSVG`: link an installed plutosvg (found via `find_package(plutosvg CONFIG)` or pkg-config; it must be built with freetype support) instead of compiling the submodule. Defaults to ON when `IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS` is set. Packagers (conda, vcpkg, distributions) should use this.

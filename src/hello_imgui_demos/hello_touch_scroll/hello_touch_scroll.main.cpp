@@ -63,6 +63,8 @@ int main(int, char*[])
         ImGui::Text("FontScaleMain: %.2f", ImGui::GetStyle().FontScaleMain);
         ImGui::Separator();
         ImGui::Text("Clicks: %d   Slider: %.2f", nbClicks, slider);
+        static char text[64] = "";
+        ImGui::InputText("Text (the keyboard of a phone)", text, sizeof(text));
         ImGui::Separator();
 
         // A vertical slider and a big button

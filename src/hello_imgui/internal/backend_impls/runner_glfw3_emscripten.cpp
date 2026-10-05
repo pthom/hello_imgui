@@ -1,6 +1,7 @@
 #include "runner_glfw3_emscripten.h"
 #if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_GLFW3)
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
+#include "hello_imgui/internal/backend_impls/emscripten_keyboard.h"
 #include "hello_imgui/internal/touch_pinch.h"
 #include "imgui_internal.h"  // ImGuiInputEvent
 #include <iostream>
@@ -42,7 +43,8 @@ namespace HelloImGui
     void RunnerGlfw3Emscripten::Impl_InitPlatformBackend()
     {
         RunnerGlfw3::Impl_InitPlatformBackend();
-        InstallEmscriptenPointerProbe();  // here rather than in Run(): ManualRender does not go through Run()
+        InstallEmscriptenPointerProbe();
+        InstallEmscriptenKeyboard();  // here rather than in Run(): ManualRender does not go through Run()
     }
 
     void RunnerGlfw3Emscripten::Impl_PollEvents()
@@ -63,6 +65,7 @@ namespace HelloImGui
         }
         ImGui::GetIO().AddMouseSourceEvent(source);
         SetTouchPointers(EmscriptenFingerCount(), EmscriptenPinchScale());
+        UpdateEmscriptenKeyboard();
         RunnerGlfw3::Impl_PollEvents();
     }
 

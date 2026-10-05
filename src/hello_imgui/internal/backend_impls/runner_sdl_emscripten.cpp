@@ -1,6 +1,7 @@
 #include "runner_sdl_emscripten.h"
 #if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_SDL2)
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
+#include "hello_imgui/internal/backend_impls/emscripten_keyboard.h"
 #include "hello_imgui/internal/touch_pinch.h"
 #include <iostream>
 
@@ -43,11 +44,13 @@ namespace HelloImGui
         // SDL labels its own events (a finger or a mouse); the probe sees the second finger, for the pinch.
         RunnerSdl2::Impl_InitPlatformBackend();
         InstallEmscriptenPointerProbe();
+        InstallEmscriptenKeyboard();
     }
 
     void RunnerSdlEmscripten::Impl_PollEvents()
     {
         SetTouchPointers(EmscriptenFingerCount(), EmscriptenPinchScale());
+        UpdateEmscriptenKeyboard();
         RunnerSdl2::Impl_PollEvents();
     }
 

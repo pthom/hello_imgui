@@ -26,9 +26,16 @@ namespace
     // Tunables. The slop is in font sizes, so that it follows the DPI and the font scale.
     constexpr float kSlopFontSizes = 0.5f;      // a press that moved less than this is a tap, not a swipe
     constexpr float kHoldSeconds = 0.18f;       // a finger still for this long hands the press to the widget under it
-    constexpr float kInertiaDecay = 4.f;        // speed *= exp(-decay * dt) after the release: a flick lasts about a second
+    constexpr float kInertiaDecay = 2.f;        // speed *= exp(-decay * dt) after the release (iOS: 0.998 per ms)
     constexpr float kInertiaMinSpeed = 50.f;    // px/s: below this, a release starts no inertia, and the inertia ends
-    constexpr float kVelocitySmoothing = 15.f;  // per second: the finger speed is averaged over the last ~70 ms
+    constexpr float kFlickWindow = 0.05f;       // s: the lift speed is the finger's motion over this long before the lift
+    constexpr int kFlickSamples = 16;           // enough for the window at 240 fps
+
+    struct Sample
+    {
+        float time;
+        ImVec2 pos;
+    };
 
     struct State
     {
@@ -37,7 +44,8 @@ namespace
         ImGuiWindow* window = nullptr;  // the pressed window, then the one that scrolls
         ImGuiAxis axis = ImGuiAxis_None;
         ImVec2 pressPos;
-        ImVec2 velocity;                // of the finger, px/s, smoothed
+        Sample samples[kFlickSamples];  // the finger's recent positions, a ring: the lift speed comes from them
+        int nbSamples = 0, nextSample = 0;
         ImVec2 inertia;                 // px/s, after the release
         int replayedPresses = 0;        // presses queued by the layer, which it must not claim
     };
@@ -79,6 +87,33 @@ namespace
     }
 
     float Along(ImVec2 v, ImGuiAxis axis) { return axis == ImGuiAxis_X ? v.x : v.y; }
+
+    void AddSample(State& s, float time, ImVec2 pos)
+    {
+        s.samples[s.nextSample] = {time, pos};
+        s.nextSample = (s.nextSample + 1) % kFlickSamples;
+        s.nbSamples = ImMin(s.nbSamples + 1, kFlickSamples);
+    }
+
+    // The speed of the finger at the lift: its motion over the last kFlickWindow seconds (a quick flick accelerates
+    // until the finger leaves: an average over a longer time would lag behind it). A finger that paused before the
+    // lift gives zero.
+    ImVec2 LiftSpeed(const State& s, float now, ImVec2 pos)
+    {
+        const Sample* oldest = nullptr;
+        for (int i = 0; i < s.nbSamples; ++i)
+        {
+            const Sample& sample = s.samples[i];
+            if (sample.time <= now - kFlickWindow && (oldest == nullptr || sample.time > oldest->time))
+                oldest = &sample;  // the most recent sample at or before the window
+        }
+        if (oldest == nullptr)  // the press is younger than the window: all of it
+            for (int i = 0; i < s.nbSamples; ++i)
+                if (oldest == nullptr || s.samples[i].time < oldest->time)
+                    oldest = &s.samples[i];
+        float span = oldest ? now - oldest->time : 0.f;
+        return (span > 0.f) ? (pos - oldest->pos) / span : ImVec2(0.f, 0.f);
+    }
 
     void EndPress(State& s)
     {
@@ -147,7 +182,8 @@ void UpdateTouchScroll(TouchScrollMode mode)
                 s.owning = true;
                 s.window = w;
                 s.pressPos = io.MousePos;
-                s.velocity = ImVec2(0.f, 0.f);
+                s.nbSamples = s.nextSample = 0;
+                AddSample(s, (float)g.Time, io.MousePos);
             }
         }
     }
@@ -158,16 +194,18 @@ void UpdateTouchScroll(TouchScrollMode mode)
     if (s.owning && !io.MouseDown[ImGuiMouseButton_Left])  // the release: a flick keeps scrolling, a tap is replayed
     {
         ImGui::ClearActiveID();
-        bool flick = s.swiping && ImLengthSqr(s.velocity) > kInertiaMinSpeed * kInertiaMinSpeed;
+        ImVec2 speed = LiftSpeed(s, (float)g.Time, io.MousePos);
+        bool flick = s.swiping && ImLengthSqr(speed) > kInertiaMinSpeed * kInertiaMinSpeed;
         if (!s.swiping)
             ReplayPress(io, s, false);
-        s.inertia = flick ? s.velocity : ImVec2(0.f, 0.f);
+        s.inertia = flick ? speed : ImVec2(0.f, 0.f);
         EndPress(s);
     }
 
     if (s.owning)
     {
         ImGui::KeepAliveID(id);
+        AddSample(s, (float)g.Time, io.MousePos);
         ImVec2 delta = io.MouseDelta;
         if (!s.swiping)
         {
@@ -193,7 +231,6 @@ void UpdateTouchScroll(TouchScrollMode mode)
             float motion = Along(delta, s.axis);
             if (motion != 0.f)
                 ScrollBy(s.window, s.axis, motion);
-            s.velocity = ImLerp(s.velocity, delta / dt, ImMin(1.f, dt * kVelocitySmoothing));
         }
     }
 

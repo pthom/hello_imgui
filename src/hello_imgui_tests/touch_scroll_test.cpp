@@ -37,6 +37,7 @@ struct Bench
     bool steal = false;  // the GUI takes the active id while the button is down (a widget that wants a long press)
     ImGuiID stealId = 0;
     int clicks = 0;
+    int doubleClicks = 0;  // the frames where the widgets would see a double click (read after the layer ran)
     float slider = 0.5f;
     float scrollY = 0.f, childScrollY = 0.f, wideScrollX = 0.f;  // as of the last frame's Begin()
     float scrollMaxY = 0.f;
@@ -96,6 +97,8 @@ struct Bench
         ImGui::End();
         HelloImGui::UpdateTouchScroll(mode, longPressIsRightClick);
         HelloImGui::UpdateTouchPinch(pinchMode, pinchInterrupts);
+        if (ImGui::GetIO().MouseClickedCount[ImGuiMouseButton_Left] == 2)  // the layer runs before the widgets in the runner
+            doubleClicks++;
         ImGui::Render();
         HelloImGui::ApplyTouchOverscroll();
         lastVtxY = ImGui::FindWindowByName("Bench")->DrawList->VtxBuffer.back().pos.y;
@@ -199,6 +202,25 @@ TEST_CASE("Touch scroll: a tap on a button clicks it when the finger lifts, a sw
     b.ReleaseStill();
     CHECK(Near(b.scrollY, 50.f));
     CHECK(b.clicks == 1);
+}
+
+TEST_CASE("Touch scroll: two taps are a double click, a tap after a pause is not, one tap never is")
+{
+    Bench b;
+    b.Frames(3);
+    b.Press(b.buttonRect.GetCenter());
+    b.Release();
+    CHECK(b.clicks == 1);
+    CHECK(b.doubleClicks == 0);  // the replayed press does not pair with the finger's own press
+    b.Press(b.buttonRect.GetCenter());  // about 0.1 s after the first tap
+    b.Release();
+    CHECK(b.clicks == 2);
+    CHECK(b.doubleClicks == 1);
+    b.Frames(30);  // half a second
+    b.Press(b.buttonRect.GetCenter());
+    b.Release();
+    CHECK(b.clicks == 3);
+    CHECK(b.doubleClicks == 1);
 }
 
 TEST_CASE("Touch scroll: a hold hands the press to the widget under the finger")

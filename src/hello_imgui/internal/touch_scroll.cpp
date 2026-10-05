@@ -66,6 +66,9 @@ namespace
         float overscrollSpeed = 0.f;    // px/s, while it springs back
         int replayedPresses = 0;        // presses queued by the layer, which it must not claim
         bool watchingLongPress = false; // a touch press, still so far: a long press when it stays
+        double lastReplayTime = -1e9;   // the previous replayed press: the next one pairs with it (a double tap)
+        ImVec2 lastReplayPos;
+        int lastReplayCount = 0;
         float pressTime = 0.f;
     };
     State gState;
@@ -211,9 +214,20 @@ namespace
     void ReplayPress(ImGuiIO& io, State& s, bool fingerDown)
     {
         // ImGui counted the finger's press as a click when it happened: the replayed press would be the second
-        // click of a double click (a tap on a word of a text input selected the word)
-        io.MouseClickedTime[ImGuiMouseButton_Left] = -1e9;
-        io.AddMousePosEvent(io.MousePos.x, io.MousePos.y);
+        // click of a double click (a tap on a word of a text input selected the word). It pairs with the previous
+        // replayed press instead, so that two taps are a double click, as two clicks are (ImGui's rule, as of its
+        // processing of the previous one).
+        ImGuiContext& g = *GImGui;
+        const ImVec2 pos = io.MousePos;
+        bool repeated = (g.Time - s.lastReplayTime) < io.MouseDoubleClickTime
+                        && ImLengthSqr(pos - s.lastReplayPos) < io.MouseDoubleClickMaxDist * io.MouseDoubleClickMaxDist;
+        io.MouseClickedTime[ImGuiMouseButton_Left] = s.lastReplayTime;
+        io.MouseClickedPos[ImGuiMouseButton_Left] = s.lastReplayPos;
+        io.MouseClickedLastCount[ImGuiMouseButton_Left] = (ImU16)s.lastReplayCount;
+        s.lastReplayTime = g.Time;
+        s.lastReplayPos = pos;
+        s.lastReplayCount = repeated ? s.lastReplayCount + 1 : 1;
+        io.AddMousePosEvent(pos.x, pos.y);
         if (fingerDown)
             AddReplayedButtonEvent(io, false);
         AddReplayedButtonEvent(io, true);
@@ -269,6 +283,7 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
                 // A widget active from before (a text input being edited) loses the id, as with a press elsewhere
                 ImGui::SetActiveID(id, w);
                 ImGui::FocusWindow(w);  // what the press would have done
+                io.MouseClickedCount[ImGuiMouseButton_Left] = 1;  // a double click, if any, is the replayed press's
                 s.owning = true;
                 s.window = w;
                 s.pressPos = io.MousePos;

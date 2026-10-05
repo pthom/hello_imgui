@@ -32,7 +32,9 @@ namespace HelloImGui
 namespace
 {
     // Tunables. The slop is in font sizes, so that it follows the DPI and the font scale.
-    constexpr float kSlopFontSizes = 0.5f;      // a press that moved less than this is a tap, not a swipe
+    constexpr float kSlopFontSizes = 0.5f;      // a press that moved less than this is a tap, not a swipe (a mouse)
+    constexpr float kSlopFontSizesTouch = 1.f;  // the same for a finger, which jitters more, and is a finger wide
+    constexpr float kHoldRippleSeconds = 0.35f; // the ring drawn around the finger when the hold hands it the press
     constexpr float kHoldSeconds = 0.15f;       // a finger still for this long hands the press to the widget under it (iOS: 150 ms)
     constexpr float kLongPressSeconds = 0.5f;   // a finger still for this long is a right click (iOS: about 500 ms)
     constexpr float kInertiaDecay = 2.f;        // speed *= exp(-decay * dt) after the release (iOS: 0.998 per ms)
@@ -67,6 +69,8 @@ namespace
         int replayedPresses = 0;        // presses queued by the layer, which it must not claim
         bool watchingLongPress = false; // a touch press, still so far: a long press when it stays
         double lastReplayTime = -1e9;   // the previous replayed press: the next one pairs with it (a double tap)
+        double rippleTime = -1e9;       // when the hold handed the press over: a ring around the finger, briefly
+        ImVec2 ripplePos;
         ImVec2 lastReplayPos;
         int lastReplayCount = 0;
         float pressTime = 0.f;
@@ -74,6 +78,24 @@ namespace
     State gState;
 
     ImGuiID SentinelId() { return ImHashStr("##HelloImGui_TouchScroll"); }
+
+    float Slop(const ImGuiContext& g)
+    {
+        return g.FontSize * (g.IO.MouseSource == ImGuiMouseSource_TouchScreen ? kSlopFontSizesTouch : kSlopFontSizes);
+    }
+
+    // The feedback of the hold: a ring that grows and fades around the finger, so that the user knows the widget
+    // under it has the press, and the drag can start
+    void DrawHoldRipple(const State& s)
+    {
+        ImGuiContext& g = *GImGui;
+        float t = (float)(g.Time - s.rippleTime) / kHoldRippleSeconds;
+        if (t < 0.f || t > 1.f || !ImGui::IsMousePosValid(&s.ripplePos))
+            return;
+        float radius = g.FontSize * (0.8f + 1.2f * t);
+        ImU32 col = ImGui::GetColorU32(ImGuiCol_ButtonActive, 0.8f * (1.f - t));
+        ImGui::GetForegroundDrawList()->AddCircle(s.ripplePos, radius, col, 0, g.FontSize * 0.15f);
+    }
 
     // The axis of a swipe: the dominant direction of the finger (a swipe scrolls one axis, like the wheel)
     ImGuiAxis SwipeAxis(ImVec2 fromPress)
@@ -314,7 +336,7 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
     if (s.watchingLongPress)
     {
         bool lifted = !io.MouseDown[ImGuiMouseButton_Left] && s.replayedPresses == 0;
-        float slop = g.FontSize * kSlopFontSizes;
+        float slop = Slop(g);
         bool moved = ImGui::IsMousePosValid() && ImLengthSqr(io.MousePos - s.pressPos) > slop * slop;
         if (lifted || moved || s.owning && s.swiping || s.parked)
             s.watchingLongPress = false;
@@ -342,7 +364,7 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
         if (!s.swiping)
         {
             ImVec2 fromPress = io.MousePos - s.pressPos;
-            float slop = g.FontSize * kSlopFontSizes;
+            float slop = Slop(g);
             if (ImLengthSqr(fromPress) > slop * slop)
             {
                 s.axis = SwipeAxis(fromPress);
@@ -369,6 +391,8 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
                 ImGui::ClearActiveID();
                 ReplayPress(io, s, true);
                 EndPress(s);
+                s.rippleTime = g.Time;
+                s.ripplePos = io.MousePos;
             }
         }
         if (s.swiping)
@@ -403,6 +427,8 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
         else if (ImLengthSqr(s.inertia) < minSpeed * minSpeed)
             s.inertia = ImVec2(0.f, 0.f);
     }
+
+    DrawHoldRipple(s);
 
     // The content past its end springs back, unless a finger holds it there. The step is bounded: a long frame
     // would make the integration overshoot

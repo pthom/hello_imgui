@@ -56,6 +56,8 @@ namespace HelloImGui
         ImGuiContext& g = *ImGui::GetCurrentContext();
         for (ImGuiInputEvent& e : g.InputEventsQueue)
         {
+            if (e.AddedByTestEngine)  // the touch layer's own events (replayed, with the source they need)
+                continue;
             if (e.Type == ImGuiInputEventType_MousePos)
                 e.MousePos.MouseSource = source;
             else if (e.Type == ImGuiInputEventType_MouseButton)

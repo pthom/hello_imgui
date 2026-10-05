@@ -246,6 +246,21 @@ TEST_CASE("Touch scroll: on a touch screen, a lift leaves no pointer, so nothing
     b.MoveTo(b.buttonRect.GetCenter());  // the next touch brings a position back
     b.Frame();
     CHECK(ImGui::IsMousePosValid());
+
+}
+
+TEST_CASE("Touch scroll: on a touch screen, the release of a handover is not a lift, the pointer stays")
+{
+    Bench b;
+    b.mode = TouchScrollMode::Auto;
+    b.Frames(3);
+    b.Source(ImGuiMouseSource_TouchScreen);
+    b.Press(b.sliderRect.GetCenter());  // a hold: the slider gets the press, with the pointer where the finger is
+    b.Frames(20);
+    CHECK(ImGui::IsMousePosValid());
+    CHECK(ImGui::GetCurrentContext()->ActiveId != 0);
+    b.Release();
+    CHECK(!ImGui::IsMousePosValid());
 }
 
 TEST_CASE("Touch pinch: two fingers scale the font, and take the press from the swipe layer")
@@ -370,6 +385,23 @@ TEST_CASE("Touch scroll: a long press is a right click, a shorter one or a movin
     CHECK(!b.itemPopupOpen);
     b.Release();
     CHECK(b.clicks == 2);
+}
+
+TEST_CASE("Touch scroll: a long press on a slider, with a touch source, does not move it")
+{
+    Bench b;
+    b.mode = TouchScrollMode::Auto;
+    b.Frames(3);
+    b.Source(ImGuiMouseSource_TouchScreen);
+    b.Press(b.sliderRect.GetCenter());
+    b.Frames(15);  // the hold gave the slider the press, at the finger
+    float held = b.slider;
+    CHECK(held > 0.3f);
+    b.Frames(30);  // the long press takes it away: no frame with the button down at no position
+    CHECK(b.slider == held);
+    CHECK(!ImGui::GetIO().MouseDown[0]);
+    b.Release();
+    CHECK(b.slider == held);
 }
 
 TEST_CASE("Touch scroll: a widget that takes the active id after the press ends the swipe")

@@ -167,14 +167,20 @@ namespace
     }
 
     // The long press: the left press, held by the widget under the finger, is taken away by a release at an
-    // invalid position (not a click: the release is outside), then the right button clicks where the finger is
+    // invalid position (not a click: the release is outside), then the right button clicks where the finger is.
+    // The events carry the mouse source: with the touch source, ImGui's trickling delivers a position and the
+    // button event that follows it in separate frames, and the widget would see a frame with the button down at no
+    // position (a selection jumped to the start of its text, a slider to its minimum).
     void RightClick(ImGuiIO& io, ImVec2 pos)
     {
+        ImGuiMouseSource source = io.MouseSource;
+        io.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
         AddReplayedPosEvent(io, ImVec2(-FLT_MAX, -FLT_MAX));
         AddReplayedButtonEvent(io, false, ImGuiMouseButton_Left);
         AddReplayedPosEvent(io, pos);
         AddReplayedButtonEvent(io, true, ImGuiMouseButton_Right);
         AddReplayedButtonEvent(io, false, ImGuiMouseButton_Right);
+        io.AddMouseSourceEvent(source);
     }
 
     // The press goes to the widget under the finger: a release then a press, through the queue (two frames, with the
@@ -281,8 +287,10 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
     }
 
     // A finger that lifted (ours or a widget's): no pointer until the next touch. Queued after a replayed tap, whose
-    // press and release need the position (the queue keeps the order).
-    if (io.MouseSource == ImGuiMouseSource_TouchScreen && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+    // press and release need the position (the queue keeps the order). Not on the release of a handover (the finger
+    // is still down: the widget would see its drag at no position, a selection jumped to the start of its text).
+    if (io.MouseSource == ImGuiMouseSource_TouchScreen && ImGui::IsMouseReleased(ImGuiMouseButton_Left)
+        && s.replayedPresses == 0)
         io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
 
     if (s.owning && s.parked)

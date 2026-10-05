@@ -26,6 +26,9 @@ struct Bench
     float scrollY = 0.f;   // as of the last frame's Begin()
     int zooms = 0;         // the wheel notches the zooming item saw
     bool ownerLapse = false;  // the item does not claim the wheel this frame (as a widget whose hover flickers)
+    bool shortContent = false;  // the window's lines fit: nothing scrolls (a node editor's window)
+    bool itemOwnsWheel = true;  // false: the item reads the wheel without owning it (a node editor's zoom)
+    int wheelsSeen = 0;  // the wheel notches a non-owning item saw
     ImRect zoomRect, linesRect;
 
     void Frame()
@@ -37,18 +40,18 @@ struct Bench
         ImGui::SetNextWindowSize(ImVec2(400.f, 300.f), ImGuiCond_Always);
         ImGui::Begin("Bench", nullptr, ImGuiWindowFlags_NoTitleBar);
         scrollY = ImGui::GetScrollY();
-        for (int i = 0; i < 10; ++i)
+        for (int i = 0; i < (shortContent ? 3 : 10); ++i)
             ImGui::Text("Line %d", i);
         ImGui::InvisibleButton("zoom", ImVec2(300.f, 100.f));  // the zooming item, as ImPlot and ImmVision do it
         zoomRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
         if (ImGui::IsItemHovered())
         {
-            if (!ownerLapse)
+            if (!ownerLapse && itemOwnsWheel)
                 ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY);
             if (ImGui::GetIO().MouseWheel != 0.f)
                 zooms++;
         }
-        for (int i = 10; i < 100; ++i)
+        for (int i = 10; i < (shortContent ? 12 : 100); ++i)
             ImGui::Text("Line %d", i);
         ImGui::End();
         ImGui::Render();
@@ -145,4 +148,35 @@ TEST_CASE("Wheel session: a trackpad's small momentum events extend a session by
     b.Frames(12);
     b.Wheel(-1.f);  // the session ended with the tail (ImGui's timer): the item takes the wheel
     CHECK(b.zooms == 1);
+}
+
+TEST_CASE("Wheel session: a widget that reads the wheel without owning it keeps it when nothing scrolls (a node editor's zoom)")
+{
+    Bench b;
+    b.shortContent = true;
+    b.itemOwnsWheel = false;
+    b.Frames(3);
+    b.MoveTo(ImVec2(100.f, 20.f));  // a session starts on the lines: nothing scrolls there
+    b.Wheel(-1.f);
+    b.MoveTo(b.zoomRect.GetCenter());
+    b.Frames(2);
+    b.Wheel(-1.f);
+    b.Wheel(-1.f);
+    CHECK(b.zooms == 2);
+    CHECK(b.scrollY == 0.f);
+}
+
+TEST_CASE("Wheel session: a widget that reads the wheel without owning it sees none while the page scrolls over it")
+{
+    Bench b;
+    b.itemOwnsWheel = false;
+    b.Frames(3);
+    b.MoveTo(ImVec2(100.f, 20.f));
+    b.Wheel(-1.f);
+    float afterFirst = b.scrollY;
+    b.MoveTo(b.zoomRect.GetCenter());
+    b.Frames(2);
+    b.Wheel(-1.f);
+    CHECK(b.scrollY > afterFirst);  // ImGui scrolled the page: the session's
+    CHECK(b.zooms == 0);
 }

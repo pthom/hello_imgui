@@ -92,8 +92,12 @@ void UpdateWheelSession()
             ImGui::SetScrollY(s.window, s.window->Scroll.y);
         return;
     }
-    // The page's session: ImGui scrolled unless an item took the wheel over; then the page scrolls here. Either way
-    // the widgets see no wheel
+    // The page's session: ImGui scrolled, or an item took the wheel over (ImGui then did not scroll, and the page
+    // scrolls here). In both cases the widgets see no wheel. When neither happened (a window that cannot scroll, a
+    // widget that reads the wheel without owning it: a node editor's zoom), the wheel is left as it is
+    const bool ownedByItem = (WheelOwnerItem(g) != 0);
+    if (!scrolledByImGui && !ownedByItem)
+        return;
     if (!scrolledByImGui)
         ScrollByWheel(s.window, io.MouseWheel);
     io.MouseWheel = 0.f;

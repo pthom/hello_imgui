@@ -23,6 +23,10 @@
 // invalid (as when a mouse leaves the window), so that nothing is hovered while the content coasts, nor after a tap.
 // A finger still for half a second is a long press: a right click (the context menus), as on a phone. The widget
 // under it holds the left press by then (the hold): it is taken away first, by a release at an invalid position.
+// Past the end of the scroll, the content follows the finger with a growing resistance (the rubber band), and an
+// inertia that reaches the end overshoots; both spring back. ImGui clamps the scroll at each Begin(), so the content
+// past its end is drawn by moving its vertices after ImGui::Render() (ApplyTouchOverscroll), inside the window's
+// clip rect: its background, border and scrollbars stay.
 namespace HelloImGui
 {
 namespace
@@ -35,6 +39,8 @@ namespace
     constexpr float kInertiaMinSpeedEm = 3.f;   // font sizes per second: below this, a release starts no inertia, and the inertia ends
     constexpr float kFlickWindow = 0.05f;       // s: the lift speed is the finger's motion over this long before the lift
     constexpr int kFlickSamples = 16;           // enough for the window at 240 fps
+    constexpr float kRubberBandResistance = 0.55f;  // iOS: a drag of d past the end moves the content by (1 - 1 / (d * c / size + 1)) * size
+    constexpr float kBounceOmega = 12.f;        // 1/s: the content past its end springs back as a critically damped spring (settled in about 0.4 s)
 
     struct Sample
     {
@@ -55,6 +61,9 @@ namespace
         Sample samples[kFlickSamples];  // the finger's recent positions, a ring: the lift speed comes from them
         int nbSamples = 0, nextSample = 0;
         ImVec2 inertia;                 // px/s, after the release
+        float pull = 0.f;               // px: how far the finger dragged past the end of the scroll (the rubber band)
+        float overscroll = 0.f;         // px: the content is drawn this far past its end, along the axis (positive: toward the start)
+        float overscrollSpeed = 0.f;    // px/s, while it springs back
         int replayedPresses = 0;        // presses queued by the layer, which it must not claim
         bool watchingLongPress = false; // a touch press, still so far: a long press when it stays
         float pressTime = 0.f;
@@ -96,20 +105,32 @@ namespace
         }
     }
 
+    float Along(ImVec2 v, ImGuiAxis axis) { return axis == ImGuiAxis_X ? v.x : v.y; }
+
     // Scrolls the window by the finger's motion (the content follows the finger). Applied by its next Begin(),
-    // which is later in this frame. Returns false when the window is at its end in that direction.
-    bool ScrollBy(ImGuiWindow* w, ImGuiAxis axis, float motion)
+    // which is later in this frame. Returns the part of the motion past the end of the scroll (zero when all of it
+    // scrolls).
+    float ScrollBy(ImGuiWindow* w, ImGuiAxis axis, float motion)
     {
+        float scroll = Along(w->Scroll, axis), scrollMax = Along(w->ScrollMax, axis);
+        float room = (motion > 0.f) ? scroll : scrollMax - scroll;  // how far the content can still go that way
+        float absorbed = ImMin(ImFabs(motion), room);
         if (axis == ImGuiAxis_X)
-        {
-            ImGui::SetScrollX(w, w->Scroll.x - motion);
-            return (motion > 0.f) ? (w->Scroll.x > 0.f) : (w->Scroll.x < w->ScrollMax.x);
-        }
-        ImGui::SetScrollY(w, w->Scroll.y - motion);
-        return (motion > 0.f) ? (w->Scroll.y > 0.f) : (w->Scroll.y < w->ScrollMax.y);
+            ImGui::SetScrollX(w, scroll - motion);
+        else
+            ImGui::SetScrollY(w, scroll - motion);
+        return motion - ((motion > 0.f) ? absorbed : -absorbed);
     }
 
-    float Along(ImVec2 v, ImGuiAxis axis) { return axis == ImGuiAxis_X ? v.x : v.y; }
+    // The rubber band of iOS: the content follows a finger past the end, by less and less, never past the window
+    float RubberBand(float pull, const ImGuiWindow* w, ImGuiAxis axis)
+    {
+        float size = (axis == ImGuiAxis_X) ? w->InnerRect.GetWidth() : w->InnerRect.GetHeight();
+        if (pull == 0.f || size <= 0.f)
+            return 0.f;
+        float d = (1.f - 1.f / (ImFabs(pull) * kRubberBandResistance / size + 1.f)) * size;
+        return (pull > 0.f) ? d : -d;
+    }
 
     void AddSample(State& s, float time, ImVec2 pos)
     {
@@ -143,6 +164,7 @@ namespace
         s.owning = false;
         s.swiping = false;
         s.parked = false;
+        s.pull = 0.f;  // a content pulled past its end springs back
     }
 
     // A replayed event. The test engine erases, each frame, the queued events it did not add itself (the backend's):
@@ -222,6 +244,7 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
             ImGui::ClearActiveID();
         EndPress(s);
         s.inertia = ImVec2(0.f, 0.f);
+        s.overscroll = s.overscrollSpeed = 0.f;
         return;
     }
     const float dt = (io.DeltaTime > 0.f) ? io.DeltaTime : 1.f / 60.f;
@@ -235,6 +258,7 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
         else
         {
             s.inertia = ImVec2(0.f, 0.f);
+            s.overscroll = s.overscrollSpeed = 0.f;  // a bounce ends at once: the widgets are where they are drawn
             s.watchingLongPress = longPressIsRightClick && ImGui::IsMousePosValid();
             s.pressTime = (float)g.Time;
             s.pressPos = io.MousePos;
@@ -262,7 +286,7 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
         ImGui::ClearActiveID();
         ImVec2 speed = LiftSpeed(s, (float)g.Time, io.MousePos);
         const float minSpeed = kInertiaMinSpeedEm * g.FontSize;
-        bool flick = s.swiping && ImLengthSqr(speed) > minSpeed * minSpeed;
+        bool flick = s.swiping && s.pull == 0.f && ImLengthSqr(speed) > minSpeed * minSpeed;  // not from past the end
         if (!s.swiping && !s.parked)
             ReplayPress(io, s, false);
         s.inertia = flick ? speed : ImVec2(0.f, 0.f);
@@ -335,19 +359,107 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
         if (s.swiping)
         {
             float motion = Along(delta, s.axis);
+            if (s.pull * motion < 0.f)  // the finger comes back: the rubber band gives way before the content scrolls
+            {
+                float left = s.pull + motion;
+                bool stillPulled = (left * s.pull > 0.f);
+                s.pull = stillPulled ? left : 0.f;
+                motion = stillPulled ? 0.f : left;
+            }
             if (motion != 0.f)
-                ScrollBy(s.window, s.axis, motion);
+                s.pull += ScrollBy(s.window, s.axis, motion);
+            s.overscroll = RubberBand(s.pull, s.window, s.axis);
+            s.overscrollSpeed = 0.f;
         }
     }
 
     if (s.inertia.x != 0.f || s.inertia.y != 0.f)
     {
-        bool moving = ScrollBy(s.window, s.axis, Along(s.inertia, s.axis) * dt);
+        float speed = Along(s.inertia, s.axis);
+        float past = ScrollBy(s.window, s.axis, speed * dt);
         s.inertia = s.inertia * std::exp(-kInertiaDecay * dt);
         const float minSpeed = kInertiaMinSpeedEm * g.FontSize;
-        if (!moving || ImLengthSqr(s.inertia) < minSpeed * minSpeed)
+        if (past != 0.f)  // the end: the content overshoots at the speed it had, then springs back
+        {
+            s.overscroll = past;
+            s.overscrollSpeed = speed;
+            s.inertia = ImVec2(0.f, 0.f);
+        }
+        else if (ImLengthSqr(s.inertia) < minSpeed * minSpeed)
             s.inertia = ImVec2(0.f, 0.f);
     }
+
+    // The content past its end springs back, unless a finger holds it there. The step is bounded: a long frame
+    // would make the integration overshoot
+    if (s.pull == 0.f && (s.overscroll != 0.f || s.overscrollSpeed != 0.f))
+    {
+        float step = ImMin(dt, 1.f / 30.f);
+        s.overscrollSpeed += (-2.f * kBounceOmega * s.overscrollSpeed - kBounceOmega * kBounceOmega * s.overscroll) * step;
+        s.overscroll += s.overscrollSpeed * step;
+        if (ImFabs(s.overscroll) < 0.5f && ImFabs(s.overscrollSpeed) < kBounceOmega)
+            s.overscroll = s.overscrollSpeed = 0.f;
+    }
+}
+
+namespace
+{
+    // Moves the draw commands of a window by the overscroll, their clip rects with them, inside the clip rect of the
+    // window that scrolls. From the first vertex of the first command in `cmds`: a window's decorations (its
+    // background, border and scrollbars, drawn first) stay in place, a child window moves whole.
+    void TranslateDrawList(ImDrawList* dl, int firstCmd, ImVec2 offset, const ImRect& clip)
+    {
+        if (firstCmd >= dl->CmdBuffer.Size)
+            return;
+        int firstVtx = dl->VtxBuffer.Size;
+        for (int i = firstCmd; i < dl->CmdBuffer.Size; ++i)
+        {
+            ImDrawCmd& cmd = dl->CmdBuffer[i];
+            if (cmd.ElemCount == 0 || cmd.UserCallback != nullptr)
+                continue;
+            firstVtx = ImMin(firstVtx, (int)(dl->IdxBuffer[cmd.IdxOffset] + cmd.VtxOffset));
+            ImRect r(cmd.ClipRect.x + offset.x, cmd.ClipRect.y + offset.y, cmd.ClipRect.z + offset.x, cmd.ClipRect.w + offset.y);
+            r.ClipWithFull(clip);
+            cmd.ClipRect = ImVec4(r.Min.x, r.Min.y, r.Max.x, r.Max.y);
+        }
+        for (int i = firstVtx; i < dl->VtxBuffer.Size; ++i)
+            dl->VtxBuffer[i].pos += offset;
+    }
+
+    void TranslateChildren(ImGuiWindow* w, ImVec2 offset, const ImRect& clip)
+    {
+        for (ImGuiWindow* child : w->DC.ChildWindows)
+        {
+            if (!child->Active || (child->Flags & ImGuiWindowFlags_Popup))
+                continue;
+            TranslateDrawList(child->DrawList, 0, offset, clip);
+            TranslateChildren(child, offset, clip);
+        }
+    }
+}  // namespace
+
+void ApplyTouchOverscroll()
+{
+    State& s = gState;
+    ImGuiWindow* w = s.window;
+    if (s.overscroll == 0.f || w == nullptr || s.context != GImGui || !w->Active)
+        return;
+    ImVec2 offset = (s.axis == ImGuiAxis_X) ? ImVec2(s.overscroll, 0.f) : ImVec2(0.f, s.overscroll);
+    const ImRect clip = w->InnerClipRect;
+    // The window's decorations are clipped to its outer rect, its content to the inner rect: the content starts at
+    // the first command clipped inside it
+    ImDrawList* dl = w->DrawList;
+    int firstCmd = dl->CmdBuffer.Size;
+    for (int i = 0; i < dl->CmdBuffer.Size; ++i)
+    {
+        const ImVec4& c = dl->CmdBuffer[i].ClipRect;
+        if (dl->CmdBuffer[i].ElemCount > 0 && clip.Contains(ImRect(c.x, c.y, c.z, c.w)))
+        {
+            firstCmd = i;
+            break;
+        }
+    }
+    TranslateDrawList(dl, firstCmd, offset, clip);
+    TranslateChildren(w, offset, clip);
 }
 
 bool TouchScrollLetGo(bool evenAWidget)
@@ -356,6 +468,7 @@ bool TouchScrollLetGo(bool evenAWidget)
     State& s = gState;
     const ImGuiID id = SentinelId();
     s.inertia = ImVec2(0.f, 0.f);
+    s.pull = 0.f;
     if (s.owning)
     {
         s.swiping = false;

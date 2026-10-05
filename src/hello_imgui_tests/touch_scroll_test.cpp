@@ -39,6 +39,8 @@ struct Bench
     int clicks = 0;
     float slider = 0.5f;
     float scrollY = 0.f, childScrollY = 0.f, wideScrollX = 0.f;  // as of the last frame's Begin()
+    float scrollMaxY = 0.f;
+    float lastVtxY = 0.f;  // the y of the window's last drawn vertex (its last visible line): the overscroll moves it
     ImRect buttonRect, sliderRect, childRect, wideRect, linesRect;  // screen coordinates, as of the last frame
     ImVec2 mouse;
 
@@ -50,6 +52,7 @@ struct Bench
         ImGui::SetNextWindowSize(ImVec2(400.f, 300.f), ImGuiCond_Always);
         ImGui::Begin("Bench", nullptr, ImGuiWindowFlags_NoTitleBar);
         scrollY = ImGui::GetScrollY();
+        scrollMaxY = ImGui::GetScrollMaxY();
         rightDown = ImGui::GetIO().MouseDown[1];
         if (steal && ImGui::IsMouseDown(0))
         {
@@ -94,6 +97,8 @@ struct Bench
         HelloImGui::UpdateTouchScroll(mode, longPressIsRightClick);
         HelloImGui::UpdateTouchPinch(pinchMode, pinchInterrupts);
         ImGui::Render();
+        HelloImGui::ApplyTouchOverscroll();
+        lastVtxY = ImGui::FindWindowByName("Bench")->DrawList->VtxBuffer.back().pos.y;
         ImGui_ImplNullRender_RenderDrawData(ImGui::GetDrawData());
     }
     void Frames(int n) { for (int i = 0; i < n; ++i) Frame(); }
@@ -478,4 +483,53 @@ TEST_CASE("Touch scroll: a flick keeps scrolling, then stops")
     float stopped = b.scrollY;
     b.Frames(10);
     CHECK(b.scrollY == stopped);
+}
+
+TEST_CASE("Touch scroll: a drag past the start pulls the content, which springs back at the lift")
+{
+    Bench b;
+    b.Frames(3);
+    float rest = b.lastVtxY;
+    b.Press(b.linesRect.GetCenter());
+    b.Drag(ImVec2(0.f, 100.f), 5);  // down, while the window is at its start: nothing scrolls, the content follows
+    CHECK(b.scrollY == 0.f);
+    float pulled = b.lastVtxY;
+    CHECK(pulled > rest + 20.f);
+    CHECK(pulled < rest + 100.f);  // less than the finger: the rubber band
+    b.Frames(15);
+    CHECK(b.lastVtxY == pulled);  // held there by the finger
+    b.Drag(ImVec2(0.f, -40.f), 2);  // the finger comes back: the content follows it, still nothing scrolls
+    CHECK(b.lastVtxY < pulled);
+    CHECK(b.lastVtxY > rest);
+    CHECK(b.scrollY == 0.f);
+    b.Release();
+    b.Frames(60);
+    CHECK(b.lastVtxY == rest);
+    CHECK(b.scrollY == 0.f);
+}
+
+TEST_CASE("Touch scroll: a flick that reaches the end overshoots, then springs back to the end")
+{
+    Bench b;
+    b.Frames(3);
+    b.Press(b.linesRect.GetCenter());
+    b.Drag(ImVec2(0.f, -600.f), 6);  // 100 px per frame: thousands of px/s, enough to reach the end
+    b.Release();
+    bool overshot = false;
+    for (int i = 0; i < 120 && !overshot; ++i)
+    {
+        b.Frame();
+        if (b.scrollY == b.scrollMaxY)
+        {
+            float atEnd = b.lastVtxY;
+            b.Frames(2);
+            overshot = b.lastVtxY < atEnd;  // the content keeps going up past its end
+        }
+    }
+    CHECK(overshot);
+    b.Frames(60);
+    CHECK(b.scrollY == b.scrollMaxY);
+    float settled = b.lastVtxY;
+    b.Frames(5);
+    CHECK(b.lastVtxY == settled);
 }

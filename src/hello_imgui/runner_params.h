@@ -237,8 +237,8 @@ struct FpsIdling
 
 // ::code TouchScrollMode
 
-// TouchScrollMode: whether a finger that drags the content of a window scrolls it (the swipe, with inertia),
-// as on a phone. See RunnerParams::touchScrollMode.
+// TouchScrollMode: whether a finger that drags the content of a window scrolls it (the swipe, with inertia and a
+// bounce at the end), as on a phone. See RunnerParams::touchScrollMode.
 enum class TouchScrollMode
 {
     Auto,      // only when the input is a touch screen (io.MouseSource)

@@ -1299,6 +1299,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     auto fnRender = [this]()
     {
         ImGui::Render();
+        ApplyTouchOverscroll();
         mRenderingBackendCallbacks->Impl_RenderDrawData_To_3D();
     };
 

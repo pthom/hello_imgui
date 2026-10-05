@@ -2,6 +2,9 @@
 #include "hello_imgui/internal/backend_impls/runner_factory.h"
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/internal/docking_details.h"
+#ifdef __EMSCRIPTEN__
+#include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
+#endif
 #if defined(HELLOIMGUI_HAS_OPENGL) && defined(HELLOIMGUI_USE_GLAD)
 #include <glad/glad.h>
 #endif
@@ -269,6 +272,15 @@ void Run(
 
 
 // ============================== Utility functions ===============================
+
+void SetTapOpensUrl(ImVec2 rectMin, ImVec2 rectMax, const std::string& url)
+{
+#ifdef __EMSCRIPTEN__
+    EmscriptenRequestTapZone(rectMin, rectMax, url);
+#else
+    (void)rectMin; (void)rectMax; (void)url;
+#endif
+}
 
 RunnerParams* GetRunnerParams()
 {

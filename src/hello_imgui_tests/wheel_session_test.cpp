@@ -180,3 +180,18 @@ TEST_CASE("Wheel session: a widget that reads the wheel without owning it sees n
     CHECK(b.scrollY > afterFirst);  // ImGui scrolled the page: the session's
     CHECK(b.zooms == 0);
 }
+
+TEST_CASE("Wheel session: an item whose ownership comes one frame late keeps the wheel when nothing scrolls (fast frames)")
+{
+    Bench b;
+    b.shortContent = true;
+    b.Frames(3);
+    b.ownerLapse = true;  // the hover frame does not claim the wheel yet (the claim is for the next frame)
+    b.MoveTo(b.zoomRect.GetCenter());
+    b.ownerLapse = false;
+    b.Wheel(-1.f);  // nobody owns the wheel at this event: the item reads it, and claims it for the next frame
+    b.Wheel(-1.f);  // the item owns it now, nothing scrolled: the session is the item's
+    b.Wheel(-1.f);
+    CHECK(b.zooms == 3);
+    CHECK(b.scrollY == 0.f);
+}

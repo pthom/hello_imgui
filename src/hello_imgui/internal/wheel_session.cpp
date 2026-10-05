@@ -25,6 +25,7 @@ namespace
         bool startedOnItem = false;     // the item under the mouse owned the wheel at the first event: the item's session
         ImGuiID itemId = 0;             // that item
         ImGuiWindow* window = nullptr;  // the window the session scrolls
+        bool scrolled = false;          // the page scrolled during the session (by ImGui, or by the session)
         float timer = 0.f;              // s: the session ends when it runs out; each event adds its amount's worth (ImGui's rule:
                                         // a trackpad's small momentum events extend it by little)
     };
@@ -77,6 +78,7 @@ void UpdateWheelSession()
         s.active = true;
         s.itemId = WheelOwnerItem(g);
         s.startedOnItem = (s.itemId != 0);
+        s.scrolled = false;
         s.window = g.WheelingWindow ? g.WheelingWindow : g.HoveredWindow;  // ImGui locked the one it scrolled
     }
     s.timer = ImMin(s.timer + ImAbs(io.MouseWheel) * kSessionSeconds, kSessionSeconds);
@@ -95,11 +97,24 @@ void UpdateWheelSession()
     // The page's session: ImGui scrolled, or an item took the wheel over (ImGui then did not scroll, and the page
     // scrolls here). In both cases the widgets see no wheel. When neither happened (a window that cannot scroll, a
     // widget that reads the wheel without owning it: a node editor's zoom), the wheel is left as it is
-    const bool ownedByItem = (WheelOwnerItem(g) != 0);
-    if (!scrolledByImGui && !ownedByItem)
+    const ImGuiID ownerItem = WheelOwnerItem(g);
+    if (scrolledByImGui)
+        s.scrolled = true;
+    if (!scrolledByImGui && ownerItem == 0)
         return;
+    if (ownerItem != 0 && !s.scrolled)
+    {
+        // An item claimed the wheel while nothing has scrolled so far: the session was its own from the start, with
+        // its ownership one frame late (set from a hovered item, for the next frame)
+        s.startedOnItem = true;
+        s.itemId = ownerItem;
+        return;
+    }
     if (!scrolledByImGui)
+    {
         ScrollByWheel(s.window, io.MouseWheel);
+        s.scrolled = true;
+    }
     io.MouseWheel = 0.f;
 }
 }  // namespace HelloImGui

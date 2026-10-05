@@ -13,7 +13,7 @@ namespace
     constexpr float kPinchThreshold = 0.12f;  // the distance between the fingers changed by this much: a pinch
     constexpr float kDragSlopFontSizes = 0.6f;  // the fingers' middle moved this far: a drag (the two apart)
 
-    enum class Gesture { None, Undecided, Pinch, Drag };
+    enum class Gesture { None, Undecided, Pinch, DragStarting, Drag };
 
     struct State
     {
@@ -25,20 +25,15 @@ namespace
     };
     State gState;
 
-    // The right button's events, marked as the test engine marks its own (see the swipe layer), with the mouse
-    // source: the touch trickling would separate them from the positions
-    void RightButton(ImGuiIO& io, bool down)
+    // A button event, marked as the test engine marks its own (see the swipe layer), with the mouse source: the
+    // touch trickling would separate it from the positions
+    void ButtonEvent(ImGuiIO& io, ImGuiMouseButton button, bool down)
     {
         ImGuiContext& g = *GImGui;
         ImGuiMouseSource source = io.MouseSource;
         io.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
         int before = g.InputEventsQueue.Size;
-        if (down)
-            io.AddMouseButtonEvent(ImGuiMouseButton_Left, false);  // the first finger's press: no left drag with the right one
-        if (g.InputEventsQueue.Size > before)
-            g.InputEventsQueue.back().AddedByTestEngine = true;
-        before = g.InputEventsQueue.Size;
-        io.AddMouseButtonEvent(ImGuiMouseButton_Right, down);
+        io.AddMouseButtonEvent(button, down);
         if (g.InputEventsQueue.Size > before)
             g.InputEventsQueue.back().AddedByTestEngine = true;
         io.AddMouseSourceEvent(source);
@@ -75,19 +70,25 @@ void UpdateTouchPinch(TouchPinchMode mode, bool interruptsWidgets)
         }
         else if (ImLengthSqr(s.move) > slop * slop)
         {
-            // A right drag: the swipe layer lets the widgets see the mouse again, the first finger's position
-            // drives it (it is the mouse), the right button goes down
-            s.gesture = Gesture::Drag;
+            // A right drag: the swipe layer lets the widgets see the mouse again, the first finger's press is
+            // released, and the right button goes down a frame later (a plot cancels a box selection started
+            // in the frame of a left release); the first finger's position drives the drag (it is the mouse)
+            s.gesture = Gesture::DragStarting;
             TouchScrollRelease(true);
-            RightButton(g.IO, true);
+            ButtonEvent(g.IO, ImGuiMouseButton_Left, false);
         }
+    }
+    else if (s.gesture == Gesture::DragStarting && twoFingers)
+    {
+        s.gesture = Gesture::Drag;
+        ButtonEvent(g.IO, ImGuiMouseButton_Right, true);
     }
     if (s.gesture == Gesture::Pinch && twoFingers && mode == TouchPinchMode::FontScale)
         ImGui::GetStyle().FontScaleMain = ImClamp(s.baseScale * s.pinchScale, kFontScaleMin, kFontScaleMax);
     if (s.gesture != Gesture::None && !twoFingers)
     {
         if (s.gesture == Gesture::Drag)
-            RightButton(g.IO, false);
+            ButtonEvent(g.IO, ImGuiMouseButton_Right, false);
         s.gesture = Gesture::None;
     }
 }

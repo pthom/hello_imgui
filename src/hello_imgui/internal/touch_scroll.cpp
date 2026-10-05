@@ -29,7 +29,7 @@ namespace
     constexpr float kSlopFontSizes = 0.5f;      // a press that moved less than this is a tap, not a swipe
     constexpr float kHoldSeconds = 0.15f;       // a finger still for this long hands the press to the widget under it (iOS: 150 ms)
     constexpr float kInertiaDecay = 2.f;        // speed *= exp(-decay * dt) after the release (iOS: 0.998 per ms)
-    constexpr float kInertiaMinSpeed = 50.f;    // px/s: below this, a release starts no inertia, and the inertia ends
+    constexpr float kInertiaMinSpeedEm = 3.f;   // font sizes per second: below this, a release starts no inertia, and the inertia ends
     constexpr float kFlickWindow = 0.05f;       // s: the lift speed is the finger's motion over this long before the lift
     constexpr int kFlickSamples = 16;           // enough for the window at 240 fps
 
@@ -223,7 +223,8 @@ void UpdateTouchScroll(TouchScrollMode mode)
     {
         ImGui::ClearActiveID();
         ImVec2 speed = LiftSpeed(s, (float)g.Time, io.MousePos);
-        bool flick = s.swiping && ImLengthSqr(speed) > kInertiaMinSpeed * kInertiaMinSpeed;
+        const float minSpeed = kInertiaMinSpeedEm * g.FontSize;
+        bool flick = s.swiping && ImLengthSqr(speed) > minSpeed * minSpeed;
         if (!s.swiping && !s.parked)
             ReplayPress(io, s, false);
         s.inertia = flick ? speed : ImVec2(0.f, 0.f);
@@ -286,7 +287,8 @@ void UpdateTouchScroll(TouchScrollMode mode)
     {
         bool moving = ScrollBy(s.window, s.axis, Along(s.inertia, s.axis) * dt);
         s.inertia = s.inertia * std::exp(-kInertiaDecay * dt);
-        if (!moving || ImLengthSqr(s.inertia) < kInertiaMinSpeed * kInertiaMinSpeed)
+        const float minSpeed = kInertiaMinSpeedEm * g.FontSize;
+        if (!moving || ImLengthSqr(s.inertia) < minSpeed * minSpeed)
             s.inertia = ImVec2(0.f, 0.f);
     }
 }

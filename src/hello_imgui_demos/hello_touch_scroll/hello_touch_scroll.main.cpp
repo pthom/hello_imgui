@@ -69,9 +69,9 @@ int main(int, char*[])
         {
             ImGui::Text("The slider and the button below are usable on a touch screen, but they trigger after a small delay; to enable scroll detection.");
             static float v = 1.0;
-            ImGui::VSliderFloat("##v", ImVec2(20, 200), &v, 0.0f, 1.0f);
+            ImGui::VSliderFloat("##v", HelloImGui::EmToVec2(1.5f, 12.f), &v, 0.0f, 1.0f);
             ImGui::SameLine();
-            ImGui::Button("Click me##v", ImVec2(200, 200));
+            ImGui::Button("Click me##v", HelloImGui::EmToVec2(12.f, 12.f));
         }
 
         // Paragraphs to swipe on, with widgets and child windows between them
@@ -90,14 +90,14 @@ int main(int, char*[])
             }
             if (i == 2)
             {
-                ImGui::BeginChild("child", ImVec2(0.f, 150.f), ImGuiChildFlags_Borders);
+                ImGui::BeginChild("child", HelloImGui::EmToVec2(0.f, 9.f), ImGuiChildFlags_Borders);
                 for (int j = 0; j < 30; ++j)
                     ImGui::Text("Child line %2d: a swipe scrolls the child", j);
                 ImGui::EndChild();
             }
             if (i == 5)
             {
-                ImGui::BeginChild("wide", ImVec2(0.f, 100.f), ImGuiChildFlags_Borders,
+                ImGui::BeginChild("wide", HelloImGui::EmToVec2(0.f, 6.f), ImGuiChildFlags_Borders,
                                   ImGuiWindowFlags_HorizontalScrollbar);
                 for (int j = 0; j < 5; ++j)
                     ImGui::Text("Wide line %d: a horizontal swipe scrolls this child sideways, "

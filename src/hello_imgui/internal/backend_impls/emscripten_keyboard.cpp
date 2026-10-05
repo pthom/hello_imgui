@@ -36,6 +36,16 @@ if (!window.helloImGuiKeyboard) {
   button.id = 'helloImGuiKeyboardButton'; button.textContent = '⌨'; button.title = 'Keyboard';
   button.style.cssText = 'position:fixed;display:none;z-index:1001;font-size:24px;line-height:1;padding:6px 12px;border-radius:10px;border:1px solid #999;background:#333;color:#eee;';
   document.body.appendChild(input); document.body.appendChild(button);
+  // A debug overlay on the page (the url with 'kbddebug'): the field's events, to see what a phone sends
+  const debug = location.search.includes('kbddebug') || location.hash.includes('kbddebug');
+  let logEl = null;
+  if (debug) {
+    logEl = document.createElement('div');
+    logEl.style.cssText = 'position:fixed;left:0;bottom:0;width:100%;max-height:45%;overflow:auto;background:rgba(0,0,0,0.8);color:#8f8;font:12px monospace;z-index:1002;padding:4px;white-space:pre-wrap;';
+    document.body.appendChild(logEl);
+    logEl.addEventListener('touchstart', (e) => { logEl.innerText = ''; e.stopPropagation(); }, {capture: true});
+  }
+  const log = (m) => { if (logEl) logEl.innerText = new Date().toISOString().slice(14, 23) + ' ' + m + '\n' + logEl.innerText; };
   const canvasRect = () => { const c = document.getElementById('canvas'); return c ? c.getBoundingClientRect() : {left: 0, top: 0, width: 0}; };
   const scale = (r) => (K.displayW > 0 && r.width > 0) ? r.width / K.displayW : 1;
   const place = () => {
@@ -51,6 +61,7 @@ if (!window.helloImGuiKeyboard) {
   // The mirror of ImGui's text and caret (UTF-16 units): the field follows, without events of its own
   K.syncing = false;
   K.mirrorTo = (text, caret) => {
+    log('mirror: ' + JSON.stringify(text) + ' caret ' + caret + ' (field had ' + input.selectionStart + ')');
     K.syncing = true;
     if (input.value !== text) input.value = text;
     if (input.selectionStart !== caret || input.selectionEnd !== caret) { try { input.setSelectionRange(caret, caret); } catch (e) {} }
@@ -67,18 +78,40 @@ if (!window.helloImGuiKeyboard) {
     if (y >= top - h && y <= top + 2 * h) { input.focus(); refresh(); }
   }, {capture: true});
   // Typing: the field's new value against the mirror: a removal at the caret, an insertion
-  input.addEventListener('input', () => {
+  input.addEventListener('input', (e) => {
+    log('input: ' + (e.inputType || '?') + ' value ' + JSON.stringify(input.value) + ' sel ' + input.selectionStart + '-' + input.selectionEnd + (K.syncing ? ' (syncing)' : ''));
     if (K.syncing) return;
+    K.focusReset = false;
     const o = K.mirror, n = input.value;
     let p = 0; while (p < o.length && p < n.length && o[p] === n[p]) p++;
     let s = 0; while (s < o.length - p && s < n.length - p && o[o.length - 1 - s] === n[n.length - 1 - s]) s++;
     K.edits.push({at: p, removed: o.length - p - s, inserted: n.slice(p, n.length - s)});
     K.mirror = n; K.mirrorCaret = input.selectionStart; });
   // The caret moved by itself (the keyboard's trackpad, a tap in the field)
+  // On a focus, iOS puts the field's caret at zero, and reports it as a selection change a moment later: the
+  // mirror's caret is put back, and that report is not a move of the user's
+  K.focusReset = false;
+  const restoreCaret = () => {
+    K.syncing = true;
+    try { input.setSelectionRange(K.mirrorCaret, K.mirrorCaret); } catch (e) {}
+    K.syncing = false; };
   document.addEventListener('selectionchange', () => {
+    log('selectionchange: sel ' + input.selectionStart + '-' + input.selectionEnd + ' mirrorCaret ' + K.mirrorCaret
+        + (document.activeElement === input ? '' : ' (not focused)') + (K.syncing ? ' (syncing)' : '') + (K.focusReset ? ' (after focus)' : ''));
     if (K.syncing || document.activeElement !== input) return;
+    if (K.focusReset && input.selectionStart === 0 && input.selectionEnd === 0 && K.mirrorCaret !== 0) {
+      K.focusReset = false; restoreCaret(); return; }
+    K.focusReset = false;
     if (input.selectionStart !== K.mirrorCaret && input.selectionStart === input.selectionEnd) {
       K.mirrorCaret = input.selectionStart; K.caret = input.selectionStart; } });
+  input.addEventListener('focus', () => {
+    log('focus: value ' + JSON.stringify(input.value) + ' sel ' + input.selectionStart);
+    K.focusReset = true;
+    restoreCaret(); });
+  input.addEventListener('blur', () => log('blur'));
+  input.addEventListener('keydown', (e) => log('keydown: ' + e.key));
+  input.addEventListener('compositionstart', () => log('compositionstart'));
+  input.addEventListener('compositionend', (e) => log('compositionend: ' + JSON.stringify(e.data)));
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') { K.keys.push(e.key); e.preventDefault(); }
     e.stopPropagation(); });
@@ -88,7 +121,7 @@ if (!window.helloImGuiKeyboard) {
   input.addEventListener('blur', refresh);
   // The frame drains: the edits as "at|removed|inserted" lines, the caret, the keys
   K.drainEdits = () => { const e = K.edits.map(x => x.at + '|' + x.removed + '|' + x.inserted).join('\n'); K.edits = []; return e; };
-  K.drainCaret = () => { const c = K.caret; K.caret = -1; return c; };
+  K.drainCaret = () => { const c = K.caret; K.caret = -1; if (c >= 0) log('caret -> ImGui: ' + c); return c; };
   K.drainKeys = () => { const k = K.keys.join(','); K.keys = []; return k; };
 }
 )JS";

@@ -31,7 +31,9 @@ if (!window.helloImGuiKeyboard) {
   const input = document.createElement('textarea');
   input.id = 'helloImGuiTextInput'; input.autocapitalize = 'off'; input.autocomplete = 'off';
   input.setAttribute('autocorrect', 'on'); input.spellcheck = false; input.rows = 1;
-  input.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.01;border:0;padding:0;font-size:16px;z-index:1000;resize:none;';
+  // Invisible, but laid out like the text ImGui draws (the widget's width, its line height): the caret moved by the
+  // keyboard's trackpad travels pixels, in this layout; a 2 px wide field wrapped one character per line
+  input.style.cssText = 'position:fixed;left:0;top:0;width:200px;height:20px;opacity:0.01;border:0;padding:0;margin:0;font-size:16px;line-height:20px;z-index:1000;resize:none;white-space:pre;overflow:hidden;font-family:sans-serif;pointer-events:none;';  // no pointer events: the touches on the widget's line are ImGui's
   const button = document.createElement('button');
   button.id = 'helloImGuiKeyboardButton'; button.textContent = '⌨'; button.title = 'Keyboard';
   button.style.cssText = 'position:fixed;display:none;z-index:1001;font-size:24px;line-height:1;padding:6px 12px;border-radius:10px;border:1px solid #999;background:#333;color:#eee;';
@@ -50,7 +52,11 @@ if (!window.helloImGuiKeyboard) {
   const scale = (r) => (K.displayW > 0 && r.width > 0) ? r.width / K.displayW : 1;
   const place = () => {
     const r = canvasRect(), s = scale(r), x = r.left + K.x * s, y = r.top + K.y * s, h = K.h * s;
-    input.style.left = x + 'px'; input.style.top = (y + h) + 'px';
+    input.style.left = x + 'px'; input.style.top = y + 'px';
+    input.style.width = Math.max(120, r.left + r.width - x - 8) + 'px';
+    input.style.height = Math.max(20, h) + 'px';
+    input.style.lineHeight = Math.max(20, h) + 'px';
+    input.style.fontSize = Math.max(16, h * 0.75) + 'px';
     button.style.left = x + 'px'; button.style.top = (y + h + 8) + 'px'; };
   const refresh = () => {
     const focused = document.activeElement === input;
@@ -107,7 +113,8 @@ if (!window.helloImGuiKeyboard) {
   input.addEventListener('focus', () => {
     log('focus: value ' + JSON.stringify(input.value) + ' sel ' + input.selectionStart);
     K.focusReset = true;
-    restoreCaret(); });
+    restoreCaret();
+    setTimeout(restoreCaret, 0); });  // iOS applies its own reset after the handler
   input.addEventListener('blur', () => log('blur'));
   input.addEventListener('keydown', (e) => log('keydown: ' + e.key));
   input.addEventListener('compositionstart', () => log('compositionstart'));

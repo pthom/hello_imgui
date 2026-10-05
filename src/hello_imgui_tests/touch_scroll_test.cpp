@@ -37,12 +37,13 @@ struct Bench
     bool steal = false;  // the GUI takes the active id while the button is down (a widget that wants a long press)
     ImGuiID stealId = 0;
     int clicks = 0;
+    int repeats = 0;  // the presses of a button that repeats while held
     int doubleClicks = 0;  // the frames where the widgets would see a double click (read after the layer ran)
     float slider = 0.5f;
     float scrollY = 0.f, childScrollY = 0.f, wideScrollX = 0.f;  // as of the last frame's Begin()
     float scrollMaxY = 0.f;
     float lastVtxY = 0.f;  // the y of the window's last drawn vertex (its last visible line): the overscroll moves it
-    ImRect buttonRect, sliderRect, childRect, wideRect, linesRect;  // screen coordinates, as of the last frame
+    ImRect buttonRect, sliderRect, repeatRect, childRect, wideRect, linesRect;  // screen coordinates, as of the last frame
     ImVec2 mouse;
 
     void Frame()
@@ -73,6 +74,11 @@ struct Bench
         }
         ImGui::SliderFloat("Slider", &slider, 0.f, 1.f);
         sliderRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+        ImGui::PushItemFlag(ImGuiItemFlags_ButtonRepeat, true);
+        if (ImGui::Button("Repeat"))
+            repeats++;
+        ImGui::PopItemFlag();
+        repeatRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
         ImGui::BeginChild("Child", ImVec2(0.f, 80.f), ImGuiChildFlags_Borders);
         childScrollY = ImGui::GetScrollY();
         for (int i = 0; i < 30; ++i)
@@ -446,6 +452,22 @@ TEST_CASE("Touch scroll: a long press is a right click, a shorter one or a movin
     CHECK(!b.itemPopupOpen);
     b.Release();
     CHECK(b.clicks == 2);
+}
+
+TEST_CASE("Touch scroll: a button that repeats keeps the finger past the long press, and repeats")
+{
+    Bench b;
+    b.Frames(3);
+    b.Source(ImGuiMouseSource_TouchScreen);
+    b.Press(b.repeatRect.GetCenter());
+    b.Frames(60);  // one second: the hold hands the press over, the repeats start, the long press would fire at 0.5 s
+    CHECK(b.repeats > 5);
+    CHECK(b.windowPopupOpen == false);
+    CHECK(b.itemPopupOpen == false);
+    int repeatsSoFar = b.repeats;
+    b.Frames(12);
+    CHECK(b.repeats > repeatsSoFar);  // still repeating: the press was not taken away
+    b.Release();
 }
 
 TEST_CASE("Touch scroll: a long press on a slider, with a touch source, does not move it")

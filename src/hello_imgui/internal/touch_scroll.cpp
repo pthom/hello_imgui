@@ -343,7 +343,10 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
         bool lifted = !io.MouseDown[ImGuiMouseButton_Left] && s.replayedPresses == 0;
         float slop = Slop(g);
         bool moved = ImGui::IsMousePosValid() && ImLengthSqr(io.MousePos - s.pressPos) > slop * slop;
-        if (lifted || moved || s.owning && s.swiping || s.parked)
+        // A widget that acted on the press already (a button that repeats while held, a press-on-click button) keeps
+        // it: a right click would take it away in the middle of its action
+        bool widgetActed = (g.ActiveId != 0 && g.ActiveId != id && g.ActiveIdHasBeenPressedBefore);
+        if (lifted || moved || s.owning && s.swiping || s.parked || widgetActed)
             s.watchingLongPress = false;
         else if (!s.owning && (float)g.Time - s.pressTime >= kLongPressSeconds)
         {

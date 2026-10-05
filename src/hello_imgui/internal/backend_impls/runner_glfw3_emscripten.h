@@ -14,6 +14,7 @@ namespace HelloImGui
         void Run() override;
 
        protected:
+        void Impl_PollEvents() override;  // tells ImGui whether the pointer is a mouse, a finger or a pen, then polls
         void Impl_Select_Gl_Version() override;
         std::string Impl_GlslVersion() const override;
         void Impl_InitGlLoader() override;

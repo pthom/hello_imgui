@@ -43,11 +43,13 @@ int main(int, char*[])
     params.callbacks.ShowGui = [&]()
     {
         ImGuiIO& io = ImGui::GetIO();
-        // The source applies to the events queued after this call, i.e. the next frame's (a desktop backend sets no
-        // source, except on Windows: there, this overrides it)
-        io.AddMouseSourceEvent(simulateTouch ? ImGuiMouseSource_TouchScreen : ImGuiMouseSource_Mouse);
-
-        ImGui::Checkbox("Simulate a touch source", &simulateTouch);
+        // The source applies to the events queued after this call, i.e. the next frame's. A desktop backend sets no
+        // source (except on Windows); in the browser, HelloImGui reports the real one, which this overrides while
+        // checked (so that a mouse can play the finger)
+        if (simulateTouch)
+            io.AddMouseSourceEvent(ImGuiMouseSource_TouchScreen);
+        if (ImGui::Checkbox("Simulate a touch source", &simulateTouch) && !simulateTouch)
+            io.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
         const char* sourceNames[] = {"Mouse", "TouchScreen", "Pen"};
         ImGui::Text("io.MouseSource: %s", sourceNames[io.MouseSource]);
         int mode = (int)params.touchScrollMode;

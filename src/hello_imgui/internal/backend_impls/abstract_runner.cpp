@@ -2,6 +2,9 @@
 #include "hello_imgui/hello_imgui_theme.h"
 #include "hello_imgui/internal/borderless_movable.h"
 #include "hello_imgui/internal/touch_scroll.h"
+#ifdef __EMSCRIPTEN__
+#include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
+#endif
 #include "hello_imgui/internal/clock_seconds.h"
 #include "hello_imgui/internal/docking_details.h"
 #include "hello_imgui/internal/idle_frame_wait_for_python_async_io.h"
@@ -717,6 +720,9 @@ void AbstractRunner::Setup()
                 "  return /mac|iphone|ipad|ipod/i.test(platform) ? 1 : 0; })()";
             if (emscripten_run_script_int(isApplePlatform))
                 ImGui::GetIO().ConfigMacOSXBehaviors = true;
+            // A hint for the application: ImGui itself does not read it
+            if (EmscriptenHasTouchScreen())
+                ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
         #endif
 
         if (params.callbacks.PostInit)

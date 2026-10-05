@@ -1,5 +1,7 @@
 #include "runner_glfw3_emscripten.h"
 #if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_GLFW3)
+#include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
+#include "imgui_internal.h"  // ImGuiInputEvent
 #include <iostream>
 
 #include <emscripten.h>
@@ -22,6 +24,7 @@ namespace HelloImGui
         #endif
 
         gRunnerGlfw3Emscripten = this;
+        InstallEmscriptenPointerProbe();
         gRunnerGlfw3Emscripten->Setup();
 
         emscripten_cancel_main_loop();
@@ -34,6 +37,26 @@ namespace HelloImGui
         // int fps = 0; // 0 <=> let the browser decide. This is the recommended way, see
         // https://emscripten.org/docs/api_reference/emscripten.h.html#browser-execution-environment
         emscripten_set_main_loop_arg(emscripten_imgui_main_loop_glfw3, NULL, params.emscripten_fps, true);
+    }
+
+    void RunnerGlfw3Emscripten::Impl_PollEvents()
+    {
+        // GLFW cannot tell a finger from a mouse. The GLFW callbacks run inside the browser's event handlers, between
+        // two frames, and tagged their events with the source known then: the probe now knows the source of those
+        // events (the pointer type of the same gestures), so they are retagged, and the source is set for what follows.
+        ImGuiMouseSource source = LastEmscriptenPointerSource();
+        ImGuiContext& g = *ImGui::GetCurrentContext();
+        for (ImGuiInputEvent& e : g.InputEventsQueue)
+        {
+            if (e.Type == ImGuiInputEventType_MousePos)
+                e.MousePos.MouseSource = source;
+            else if (e.Type == ImGuiInputEventType_MouseButton)
+                e.MouseButton.MouseSource = source;
+            else if (e.Type == ImGuiInputEventType_MouseWheel)
+                e.MouseWheel.MouseSource = source;
+        }
+        ImGui::GetIO().AddMouseSourceEvent(source);
+        RunnerGlfw3::Impl_PollEvents();
     }
 
     void RunnerGlfw3Emscripten::Impl_Select_Gl_Version()

@@ -4,6 +4,33 @@
 
 #include <cstdio>
 
+static const char* kParagraphs[] = {
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore "
+    "magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo "
+    "consequat.",
+    "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur "
+    "sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem "
+    "aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
+    "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores "
+    "eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, "
+    "consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam "
+    "quaerat voluptatem.",
+    "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea "
+    "commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae "
+    "consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?",
+    "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque "
+    "corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in "
+    "culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+    "Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi "
+    "optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, "
+    "omnis dolor repellendus.",
+    "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates "
+    "repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut "
+    "reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.",
+};
+static const int kNbParagraphs = sizeof(kParagraphs) / sizeof(kParagraphs[0]);
+
 int main(int, char*[])
 {
     HelloImGui::RunnerParams params;
@@ -30,10 +57,20 @@ int main(int, char*[])
         ImGui::Text("Clicks: %d   Slider: %.2f", nbClicks, slider);
         ImGui::Separator();
 
-        for (int i = 0; i < 80; ++i)
+        // A vertical slider and a big button
         {
-            ImGui::Text("Line %2d: drag here to scroll, tap the buttons, drag the sliders", i);
-            if (i % 10 == 5)
+            ImGui::Text("The slider and the button below are usable on a touch screen, but they trigger after a small delay; to enable scroll detection.");
+            static float v = 1.0;
+            ImGui::VSliderFloat("##v", ImVec2(20, 200), &v, 0.0f, 1.0f);
+            ImGui::SameLine();
+            ImGui::Button("Click me##v", ImVec2(200, 200));
+        }
+
+        // Paragraphs to swipe on, with widgets and child windows between them
+        for (int i = 0; i < 2 * kNbParagraphs; ++i)
+        {
+            ImGui::TextWrapped("%s", kParagraphs[i % kNbParagraphs]);
+            if (i % 3 == 1)
             {
                 char label[32];
                 snprintf(label, sizeof(label), "Click me##%d", i);
@@ -43,14 +80,14 @@ int main(int, char*[])
                 snprintf(label, sizeof(label), "##slider%d", i);
                 ImGui::SliderFloat(label, &slider, 0.f, 1.f);
             }
-            if (i == 20)
+            if (i == 2)
             {
                 ImGui::BeginChild("child", ImVec2(0.f, 150.f), ImGuiChildFlags_Borders);
                 for (int j = 0; j < 30; ++j)
-                    ImGui::Text("Child line %2d: a swipe scrolls the child, then its parent", j);
+                    ImGui::Text("Child line %2d: a swipe scrolls the child", j);
                 ImGui::EndChild();
             }
-            if (i == 40)
+            if (i == 5)
             {
                 ImGui::BeginChild("wide", ImVec2(0.f, 100.f), ImGuiChildFlags_Borders,
                                   ImGuiWindowFlags_HorizontalScrollbar);

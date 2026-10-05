@@ -33,7 +33,10 @@ if (!window.helloImGuiKeyboard) {
   input.setAttribute('autocorrect', 'on'); input.spellcheck = false; input.rows = 1;
   // Invisible, but laid out like the text ImGui draws (the widget's width, its line height): the caret moved by the
   // keyboard's trackpad travels pixels, in this layout; a 2 px wide field wrapped one character per line
-  input.style.cssText = 'position:fixed;left:0;top:0;width:200px;height:20px;opacity:0.01;border:0;padding:0;margin:0;font-size:16px;line-height:20px;z-index:1000;resize:none;white-space:pre;overflow:hidden;font-family:sans-serif;pointer-events:none;';  // no pointer events: the touches on the widget's line are ImGui's
+  // Invisible through transparent colors, not opacity, and hit-testable while focused: iOS enters the keyboard's
+  // trackpad mode by hit-testing the text under the caret, and a field it cannot hit sends the caret to the start.
+  // Without the focus, the field takes no pointer events: the touches on the widget's line are ImGui's.
+  input.style.cssText = 'position:fixed;left:0;top:0;width:200px;height:20px;opacity:1;color:transparent;background:transparent;caret-color:transparent;outline:none;border:0;padding:0;margin:0;font-size:16px;line-height:20px;z-index:1000;resize:none;white-space:pre;overflow:hidden;font-family:sans-serif;pointer-events:none;-webkit-text-fill-color:transparent;';
   const button = document.createElement('button');
   button.id = 'helloImGuiKeyboardButton'; button.textContent = '⌨'; button.title = 'Keyboard';
   button.style.cssText = 'position:fixed;display:none;z-index:1001;font-size:24px;line-height:1;padding:6px 12px;border-radius:10px;border:1px solid #999;background:#333;color:#eee;';
@@ -60,6 +63,7 @@ if (!window.helloImGuiKeyboard) {
     button.style.left = x + 'px'; button.style.top = (y + h + 8) + 'px'; };
   const refresh = () => {
     const focused = document.activeElement === input;
+    input.style.pointerEvents = focused ? 'auto' : 'none';
     place();
     button.style.display = (K.want && !focused && window.helloImGuiPointerType === 1) ? 'block' : 'none';
     if (!K.want && focused) input.blur(); };
@@ -100,21 +104,30 @@ if (!window.helloImGuiKeyboard) {
   const restoreCaret = () => {
     K.syncing = true;
     try { input.setSelectionRange(K.mirrorCaret, K.mirrorCaret); } catch (e) {}
-    K.syncing = false; };
+    K.syncing = false;
+    const took = input.selectionStart === K.mirrorCaret;
+    log('restore caret ' + K.mirrorCaret + (took ? ' took' : ' ignored (field at ' + input.selectionStart + ')'));
+    return took; };
+  // iOS ignores a setSelectionRange made right after a programmatic focus: retried until it takes
+  let settleTimer = null;
+  const settleCaret = () => {
+    if (settleTimer) clearInterval(settleTimer);
+    let tries = 0;
+    settleTimer = setInterval(() => {
+      tries++;
+      if (document.activeElement !== input || restoreCaret() || tries > 20) { clearInterval(settleTimer); settleTimer = null; K.focusReset = false; }
+    }, 30); };
   document.addEventListener('selectionchange', () => {
     log('selectionchange: sel ' + input.selectionStart + '-' + input.selectionEnd + ' mirrorCaret ' + K.mirrorCaret
         + (document.activeElement === input ? '' : ' (not focused)') + (K.syncing ? ' (syncing)' : '') + (K.focusReset ? ' (after focus)' : ''));
     if (K.syncing || document.activeElement !== input) return;
-    if (K.focusReset && input.selectionStart === 0 && input.selectionEnd === 0 && K.mirrorCaret !== 0) {
-      K.focusReset = false; restoreCaret(); return; }
-    K.focusReset = false;
+    if (settleTimer || K.focusReset) return;  // the field settling after a focus: not a move of the user's
     if (input.selectionStart !== K.mirrorCaret && input.selectionStart === input.selectionEnd) {
       K.mirrorCaret = input.selectionStart; K.caret = input.selectionStart; } });
   input.addEventListener('focus', () => {
     log('focus: value ' + JSON.stringify(input.value) + ' sel ' + input.selectionStart);
     K.focusReset = true;
-    restoreCaret();
-    setTimeout(restoreCaret, 0); });  // iOS applies its own reset after the handler
+    settleCaret(); });
   input.addEventListener('blur', () => log('blur'));
   input.addEventListener('keydown', (e) => log('keydown: ' + e.key));
   input.addEventListener('compositionstart', () => log('compositionstart'));
@@ -280,6 +293,9 @@ void UpdateEmscriptenKeyboard()
         state->SetSelection(cursorBytes, cursorBytes);
         state->CursorAnimReset();
         state->CursorFollow = true;
+        // The mirror is in sync with this caret: written back to the field, it would pull a finger that moved on
+        // (the keyboard's trackpad) back to where it was a frame ago
+        gLast.mirrorCaret = Utf16Units(state->GetText(), state->GetCursorPos());
     }
     // The keys
     const char* keys = emscripten_run_script_string("window.helloImGuiKeyboard ? window.helloImGuiKeyboard.drainKeys() : ''");

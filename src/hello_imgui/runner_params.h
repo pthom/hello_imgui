@@ -402,10 +402,10 @@ struct RunnerParams
     // Two fingers that pinch scale the font (ImGui's style.FontScaleMain) while they stay on the screen.
     TouchPinchMode touchPinchMode = TouchPinchMode::FontScale;
 
-    // `touchPinchInterruptsWidgets`: _bool, default = true_.
+    // `touchPinchInterruptsWidgets`: _bool, default = false_.
     // When the second finger lands while a widget holds the first one (a slider dragged after a hold, a text
-    // selection): the pinch takes over (true), or the widget keeps its drag and the pinch is ignored (false).
-    bool touchPinchInterruptsWidgets = true;
+    // selection): the widget keeps its drag and the pinch is ignored (false), or the pinch takes over (true).
+    bool touchPinchInterruptsWidgets = false;
 
     #ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY
     RemoteParams remoteParams; // Parameters for Remote display (experimental, unsupported)

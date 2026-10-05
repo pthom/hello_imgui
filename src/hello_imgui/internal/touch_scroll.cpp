@@ -27,7 +27,7 @@ namespace
 {
     // Tunables. The slop is in font sizes, so that it follows the DPI and the font scale.
     constexpr float kSlopFontSizes = 0.5f;      // a press that moved less than this is a tap, not a swipe
-    constexpr float kHoldSeconds = 0.18f;       // a finger still for this long hands the press to the widget under it
+    constexpr float kHoldSeconds = 0.15f;       // a finger still for this long hands the press to the widget under it (iOS: 150 ms)
     constexpr float kInertiaDecay = 2.f;        // speed *= exp(-decay * dt) after the release (iOS: 0.998 per ms)
     constexpr float kInertiaMinSpeed = 50.f;    // px/s: below this, a release starts no inertia, and the inertia ends
     constexpr float kFlickWindow = 0.05f;       // s: the lift speed is the finger's motion over this long before the lift
@@ -76,6 +76,19 @@ namespace
                 break;
         }
         return w;
+    }
+
+    // Whether the window, or a parent, can scroll at all: when nothing can, a press has nothing to pre-empt
+    bool CanScrollSomewhere(const ImGuiWindow* w)
+    {
+        for (;; w = w->ParentWindow)
+        {
+            bool canScroll = (w->ScrollMax.x != 0.f || w->ScrollMax.y != 0.f) && !(w->Flags & ImGuiWindowFlags_NoScrollWithMouse);
+            if (canScroll)
+                return true;
+            if (!(w->Flags & ImGuiWindowFlags_ChildWindow))
+                return false;
+        }
     }
 
     // Scrolls the window by the finger's motion (the content follows the finger). Applied by its next Begin(),
@@ -188,7 +201,8 @@ void UpdateTouchScroll(TouchScrollMode mode)
         {
             s.inertia = ImVec2(0.f, 0.f);
             ImGuiWindow* w = g.HoveredWindow;
-            if (w != nullptr && !w->Collapsed && ImGui::IsMousePosValid() && w->InnerRect.Contains(io.MousePos))
+            if (w != nullptr && !w->Collapsed && ImGui::IsMousePosValid() && w->InnerRect.Contains(io.MousePos)
+                && CanScrollSomewhere(w))
             {
                 // A widget active from before (a text input being edited) loses the id, as with a press elsewhere
                 ImGui::SetActiveID(id, w);
@@ -234,10 +248,23 @@ void UpdateTouchScroll(TouchScrollMode mode)
             float slop = g.FontSize * kSlopFontSizes;
             if (ImLengthSqr(fromPress) > slop * slop)
             {
-                s.swiping = true;
                 s.axis = SwipeAxis(fromPress);
-                s.window = ScrollTarget(s.window, s.axis);
-                delta = fromPress;  // the content catches up with the finger
+                ImGuiWindow* target = ScrollTarget(s.window, s.axis);
+                bool canScroll = (s.axis == ImGuiAxis_X) ? (target->ScrollMax.x != 0.f) : (target->ScrollMax.y != 0.f);
+                if (canScroll)
+                {
+                    s.swiping = true;
+                    s.window = target;
+                    delta = fromPress;  // the content catches up with the finger
+                }
+                else
+                {
+                    // Nothing scrolls that way (a horizontal drag on a page that scrolls vertically): the widget
+                    // under the finger gets the press, and the drag from now on, without the hold
+                    ImGui::ClearActiveID();
+                    ReplayPress(io, s, true);
+                    EndPress(s);
+                }
             }
             else if (io.MouseDownDuration[ImGuiMouseButton_Left] >= kHoldSeconds)
             {

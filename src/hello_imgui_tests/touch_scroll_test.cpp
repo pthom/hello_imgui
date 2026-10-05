@@ -28,7 +28,9 @@ struct Bench
 
     TouchScrollMode mode = TouchScrollMode::Always;
     HelloImGui::TouchPinchMode pinchMode = HelloImGui::TouchPinchMode::FontScale;
-    bool pinchInterrupts = true;
+    bool pinchInterrupts = false;
+    bool shortContent = false;  // the window's lines fit: nothing to scroll (the child still scrolls)
+    ImGuiID buttonId = 0;
     bool steal = false;  // the GUI takes the active id while the button is down (a widget that wants a long press)
     ImGuiID stealId = 0;
     int clicks = 0;
@@ -53,6 +55,7 @@ struct Bench
         }
         if (ImGui::Button("Button"))
             clicks++;
+        buttonId = ImGui::GetItemID();
         buttonRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
         ImGui::SliderFloat("Slider", &slider, 0.f, 1.f);
         sliderRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
@@ -68,7 +71,7 @@ struct Bench
         ImGui::EndChild();
         wideRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
         ImVec2 linesPos = ImGui::GetCursorScreenPos();
-        for (int i = 0; i < 100; ++i)
+        for (int i = 0; i < (shortContent ? 2 : 100); ++i)
             ImGui::Text("Line %d", i);
         linesRect = ImRect(linesPos, ImVec2(linesPos.x + 300.f, 290.f));
         ImGui::End();
@@ -262,7 +265,6 @@ TEST_CASE("Touch pinch: a widget that holds the press keeps it, unless the pinch
     Bench b;
     b.Frames(3);
     ImGui::GetStyle().FontScaleMain = 1.f;
-    b.pinchInterrupts = false;
     b.Press(b.sliderRect.GetCenter());
     b.Frames(20);  // the hold: the slider got the press
     HelloImGui::SetTouchPointers(2, 1.5f);
@@ -286,6 +288,30 @@ TEST_CASE("Touch pinch: a widget that holds the press keeps it, unless the pinch
     HelloImGui::SetTouchPointers(0, 1.f);
     b.Release();
     ImGui::GetStyle().FontScaleMain = 1.f;
+}
+
+TEST_CASE("Touch scroll: a press is not held back when nothing can scroll, nor a drag along an axis nothing scrolls")
+{
+    {
+        Bench b;
+        b.shortContent = true;
+        b.Frames(3);
+        b.Press(b.buttonRect.GetCenter());  // the window fits: the button gets the press at once
+        CHECK(ImGui::GetCurrentContext()->ActiveId == b.buttonId);
+        b.Release();
+        CHECK(b.clicks == 1);
+        b.Press(b.childRect.GetCenter());  // the child scrolls: a swipe there still works
+        b.Drag(ImVec2(0.f, -30.f), 3);
+        b.ReleaseStill();
+        CHECK(Near(b.childScrollY, 30.f));
+    }  // one ImGui context at a time
+    Bench c;
+    c.Frames(3);
+    c.Press(c.sliderRect.GetCenter());  // the window scrolls vertically only: a horizontal drag goes to the slider
+    c.Drag(ImVec2(60.f, 0.f), 5);       // at once, no hold
+    c.ReleaseStill();
+    CHECK(c.slider > 0.6f);
+    CHECK(c.scrollY == 0.f);
 }
 
 TEST_CASE("Touch scroll: a widget that takes the active id after the press ends the swipe")

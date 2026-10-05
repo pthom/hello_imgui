@@ -250,12 +250,13 @@ enum class TouchScrollMode
 
 // ::code TouchPinchMode
 
-// TouchPinchMode: what two fingers that pinch do (in the browser; a desktop touch screen reports no second finger).
-// See RunnerParams::touchPinchMode.
+// TouchPinchMode: what two fingers do (in the browser; a desktop touch screen reports no second finger).
+// Two fingers that spread or close are a pinch; two fingers that move together are a right drag (the pan of a node
+// editor, the box of a plot). See RunnerParams::touchPinchMode.
 enum class TouchPinchMode
 {
-    FontScale,  // the pinch scales the font (ImGui's style.FontScaleMain), as on a phone
-    Disabled
+    FontScale,  // the pinch scales the font (ImGui's style.FontScaleMain), as on a phone; the two-finger drag is a right drag
+    Disabled    // neither
 };
 // ::endcode
 
@@ -405,7 +406,8 @@ struct RunnerParams
     bool touchLongPressIsRightClick = true;
 
     // `touchPinchMode`: _TouchPinchMode, default = TouchPinchMode::FontScale_.
-    // Two fingers that pinch scale the font (ImGui's style.FontScaleMain) while they stay on the screen.
+    // Two fingers that pinch scale the font (ImGui's style.FontScaleMain) while they stay on the screen; two fingers
+    // that move together are a right drag.
     TouchPinchMode touchPinchMode = TouchPinchMode::FontScale;
 
     // `touchPinchInterruptsWidgets`: _bool, default = false_.

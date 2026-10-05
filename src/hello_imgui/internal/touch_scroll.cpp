@@ -372,4 +372,26 @@ bool TouchScrollLetGo(bool evenAWidget)
     return true;
 }
 
+bool TouchScrollRelease(bool evenAWidget)
+{
+    ImGuiContext& g = *GImGui;
+    State& s = gState;
+    const ImGuiID id = SentinelId();
+    s.inertia = ImVec2(0.f, 0.f);
+    s.watchingLongPress = false;
+    if (s.owning)
+    {
+        if (g.ActiveId == id)
+            ImGui::ClearActiveID();
+        EndPress(s);
+        return true;
+    }
+    if (g.ActiveId == 0)
+        return true;
+    if (!evenAWidget)
+        return false;
+    ImGui::ClearActiveID();
+    return true;
+}
+
 }  // namespace HelloImGui

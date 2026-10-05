@@ -49,7 +49,7 @@ namespace HelloImGui
 
     void RunnerSdlEmscripten::Impl_PollEvents()
     {
-        SetTouchPointers(EmscriptenFingerCount(), EmscriptenPinchScale());
+        SetTouchPointers(EmscriptenFingerCount(), EmscriptenPinchScale(), EmscriptenTwoFingerMove());
         EmscriptenPushTapZone(ImGui::GetIO().DisplaySize.x);
         UpdateEmscriptenKeyboard();
         RunnerSdl2::Impl_PollEvents();

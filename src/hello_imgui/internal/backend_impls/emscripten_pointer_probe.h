@@ -19,6 +19,7 @@ namespace HelloImGui
     void EmscriptenRequestTapZone(ImVec2 rectMin, ImVec2 rectMax, const std::string& url);  // for this frame
     void EmscriptenPushTapZone(float displayWidth);  // before each poll: the frame's request, or no zone
     float EmscriptenPinchScale();                    // the distance between the first two fingers, over the one when the second landed
+    ImVec2 EmscriptenTwoFingerMove();                // how far the two fingers' middle moved since the second landed (ImGui's units)
     bool EmscriptenHasTouchScreen();                 // navigator.maxTouchPoints > 0: a hint for the whole session
 }
 #endif

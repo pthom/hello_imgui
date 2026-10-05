@@ -29,6 +29,7 @@ struct Bench
     TouchScrollMode mode = TouchScrollMode::Always;
     bool longPressIsRightClick = true;
     bool itemPopupOpen = false, windowPopupOpen = false;  // the context menus (right clicks) of the button and the window
+    bool rightDown = false;  // io.MouseDown[1], as of the last frame
     HelloImGui::TouchPinchMode pinchMode = HelloImGui::TouchPinchMode::FontScale;
     bool pinchInterrupts = false;
     bool shortContent = false;  // the window's lines fit: nothing to scroll (the child still scrolls)
@@ -49,6 +50,7 @@ struct Bench
         ImGui::SetNextWindowSize(ImVec2(400.f, 300.f), ImGuiCond_Always);
         ImGui::Begin("Bench", nullptr, ImGuiWindowFlags_NoTitleBar);
         scrollY = ImGui::GetScrollY();
+        rightDown = ImGui::GetIO().MouseDown[1];
         if (steal && ImGui::IsMouseDown(0))
         {
             stealId = ImGui::GetID("steal");
@@ -287,6 +289,28 @@ TEST_CASE("Touch pinch: two fingers scale the font, and take the press from the 
     CHECK(Near(b.scrollY, 30.f));
     CHECK(b.clicks == 0);
     ImGui::GetStyle().FontScaleMain = 1.f;
+}
+
+TEST_CASE("Touch pinch: two fingers that move together are a right drag, the left press is released")
+{
+    Bench b;
+    b.Frames(3);
+    ImGui::GetStyle().FontScaleMain = 1.f;
+    b.Press(b.linesRect.GetCenter());
+    HelloImGui::SetTouchPointers(2, 1.f, ImVec2(0.f, 0.f));  // the second finger lands
+    b.Frames(2);
+    CHECK(!b.rightDown);
+    HelloImGui::SetTouchPointers(2, 1.02f, ImVec2(0.f, -30.f));  // the two move together
+    b.Frames(4);
+    CHECK(b.rightDown);
+    CHECK(!ImGui::GetIO().MouseDown[0]);
+    CHECK(ImGui::GetStyle().FontScaleMain == 1.f);
+    b.Drag(ImVec2(0.f, -30.f), 3);  // the first finger moves: no scroll (it is a right drag now)
+    CHECK(b.scrollY == 0.f);
+    HelloImGui::SetTouchPointers(0, 1.f, ImVec2(0.f, 0.f));
+    b.Release();
+    CHECK(!b.rightDown);
+    CHECK(b.clicks == 0);
 }
 
 TEST_CASE("Touch pinch: a widget that holds the press keeps it, unless the pinch interrupts widgets")

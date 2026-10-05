@@ -18,14 +18,15 @@ namespace HelloImGui
             "    window.helloImGuiPointerType = (e.pointerType === 'touch') ? 1 : (e.pointerType === 'pen') ? 2 : 0; };"
             "  const options = {capture: true, passive: true};"
             "  const fingers = {};"
-            "  window.helloImGuiPinch = {count: 0, startDist: 0, dist: 0};"
+            "  window.helloImGuiPinch = {count: 0, startDist: 0, dist: 0, moveX: 0, moveY: 0, startCx: 0, startCy: 0};"
             "  const updatePinch = () => {"
             "    const pts = Object.values(fingers), p = window.helloImGuiPinch, wasTwo = p.count >= 2;"
             "    p.count = pts.length;"
             "    if (pts.length >= 2) {"
             "      const d = Math.hypot(pts[0][0] - pts[1][0], pts[0][1] - pts[1][1]);"
-            "      if (!wasTwo) p.startDist = d;"
-            "      p.dist = d; } };"
+            "      const cx = (pts[0][0] + pts[1][0]) / 2, cy = (pts[0][1] + pts[1][1]) / 2;"
+            "      if (!wasTwo) { p.startDist = d; p.startCx = cx; p.startCy = cy; }"
+            "      p.dist = d; p.moveX = cx - p.startCx; p.moveY = cy - p.startCy; } };"
             "  const fingerDown = (e) => { if (e.pointerType === 'touch') { fingers[e.pointerId] = [e.clientX, e.clientY]; updatePinch(); } };"
             "  const fingerMove = (e) => { if (e.pointerId in fingers) { fingers[e.pointerId] = [e.clientX, e.clientY]; updatePinch(); } };"
             "  const fingerUp = (e) => { delete fingers[e.pointerId]; updatePinch(); };"
@@ -55,6 +56,16 @@ namespace HelloImGui
     bool EmscriptenPointerIsDown()
     {
         return emscripten_run_script_int("window.helloImGuiPointerDown | 0") != 0;
+    }
+
+    ImVec2 EmscriptenTwoFingerMove()
+    {
+        // CSS px, scaled to ImGui's units (the canvas's CSS width against ImGui's display width)
+        int moveX = emscripten_run_script_int("window.helloImGuiPinch ? Math.round(window.helloImGuiPinch.moveX) : 0");
+        int moveY = emscripten_run_script_int("window.helloImGuiPinch ? Math.round(window.helloImGuiPinch.moveY) : 0");
+        int cssWidth = emscripten_run_script_int("(() => { const c = document.getElementById('canvas'); return c ? Math.round(c.getBoundingClientRect().width) : 0; })()");
+        float scale = (cssWidth > 0) ? ImGui::GetIO().DisplaySize.x / (float)cssWidth : 1.f;
+        return ImVec2((float)moveX * scale, (float)moveY * scale);
     }
 
     int EmscriptenFingerCount()

@@ -12,4 +12,8 @@ namespace HelloImGui
     // widgets out of it until the fingers lift. When a widget holds the press (a hold happened), it is interrupted
     // only if asked. Returns false when a widget keeps its press.
     bool TouchScrollLetGo(bool evenAWidget);
+
+    // Two fingers that drag together (a right drag): the layer releases its press for good, nothing parked, so that
+    // the widgets see the mouse. Returns false when a widget holds the press and must keep it.
+    bool TouchScrollRelease(bool evenAWidget);
 }

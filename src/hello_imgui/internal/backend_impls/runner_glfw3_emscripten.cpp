@@ -25,7 +25,6 @@ namespace HelloImGui
         #endif
 
         gRunnerGlfw3Emscripten = this;
-        InstallEmscriptenPointerProbe();
         gRunnerGlfw3Emscripten->Setup();
 
         emscripten_cancel_main_loop();
@@ -38,6 +37,12 @@ namespace HelloImGui
         // int fps = 0; // 0 <=> let the browser decide. This is the recommended way, see
         // https://emscripten.org/docs/api_reference/emscripten.h.html#browser-execution-environment
         emscripten_set_main_loop_arg(emscripten_imgui_main_loop_glfw3, NULL, params.emscripten_fps, true);
+    }
+
+    void RunnerGlfw3Emscripten::Impl_InitPlatformBackend()
+    {
+        RunnerGlfw3::Impl_InitPlatformBackend();
+        InstallEmscriptenPointerProbe();  // here rather than in Run(): ManualRender does not go through Run()
     }
 
     void RunnerGlfw3Emscripten::Impl_PollEvents()

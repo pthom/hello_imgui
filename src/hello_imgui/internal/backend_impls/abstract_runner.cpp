@@ -2,6 +2,7 @@
 #include "hello_imgui/hello_imgui_theme.h"
 #include "hello_imgui/internal/borderless_movable.h"
 #include "hello_imgui/internal/touch_scroll.h"
+#include "hello_imgui/internal/wheel_session.h"
 #include "hello_imgui/internal/touch_pinch.h"
 #ifdef __EMSCRIPTEN__
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
@@ -1465,6 +1466,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     // so that it can *NOT* be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
     ImGui::NewFrame();
 
+    UpdateWheelSession();  // before any widget: a wheel that started on the page keeps scrolling it over a plot
     UpdateTouchScroll(params.touchScrollMode, params.touchLongPressIsRightClick);  // before any widget: a touch press is claimed, then replayed or handed over
     UpdateTouchPinch(params.touchPinchMode, params.touchPinchInterruptsWidgets);
 

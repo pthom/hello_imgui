@@ -9,6 +9,8 @@
 * In the browser, the virtual keyboard of a phone: a text widget that is active shows a keyboard button next to it; a tap on it, or on the widget again, opens the keyboard, and what is typed goes to the widget (the browser shows a keyboard only for a text field focused inside a touch handler, which a frame cannot do).
 * In the browser, two fingers that pinch scale the font (`style.FontScaleMain`): `RunnerParams::touchPinchMode` (`FontScale`, `Disabled`), and `touchPinchInterruptsWidgets` (whether the second finger takes the press from a widget that holds it). ImGui also learns whether the pointer is a mouse, a finger or a pen (with GLFW, which has no API for it), and keeps no pointer between two touches.
 
+**Mouse wheel:** a wheel that started on the content of a window keeps scrolling it when the mouse travels over a plot or an image that zooms with the wheel: the item sees no wheel until the session ends (0.7 s without an event, ImGui's own lock of the scrolled window, applied to items). A wheel that starts on the item is the item's.
+
 **Idling:** a mouse button (or a finger) held down keeps the app awake, even still: a button that repeats, a drag that pauses.
 
 **plutosvg / plutovg:**

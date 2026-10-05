@@ -53,12 +53,22 @@ if (!window.helloImGuiKeyboard) {
   const log = (m) => { if (logEl) logEl.innerText = new Date().toISOString().slice(14, 23) + ' ' + m + '\n' + logEl.innerText; };
   const canvasRect = () => { const c = document.getElementById('canvas'); return c ? c.getBoundingClientRect() : {left: 0, top: 0, width: 0}; };
   const scale = (r) => (K.displayW > 0 && r.width > 0) ? r.width / K.displayW : 1;
+  // The field's place: ImGui gives the caret's position, which moves as the caret moves. While the field has the
+  // focus, it stays where it was (the keyboard's trackpad hit-tests the finger against the field: a field that
+  // moves with the caret moved the caret back and forth)
+  // A multiline text: the field holds all its lines (the trackpad reaches the lines above the caret), its top
+  // so that the caret's line is at ImGui's caret
+  K.frozen = null;
   const place = () => {
-    const r = canvasRect(), s = scale(r), x = r.left + K.x * s, y = r.top + K.y * s, h = K.h * s;
+    const r = canvasRect(), s = scale(r), h = Math.max(20, K.h * s);
+    const lines = K.mirror.split('\n').length, caretLine = K.mirror.slice(0, K.mirrorCaret).split('\n').length - 1;
+    let x = r.left + K.x * s, y = r.top + K.y * s - caretLine * h;
+    if (document.activeElement === input && K.frozen) { x = K.frozen.x; y = K.frozen.y; }
+    else K.frozen = {x: x, y: y};
     input.style.left = x + 'px'; input.style.top = y + 'px';
     input.style.width = Math.max(120, r.left + r.width - x - 8) + 'px';
-    input.style.height = Math.max(20, h) + 'px';
-    input.style.lineHeight = Math.max(20, h) + 'px';
+    input.style.height = (lines * h) + 'px';
+    input.style.lineHeight = h + 'px';
     input.style.fontSize = Math.max(16, h * 0.75) + 'px';
     button.style.left = x + 'px'; button.style.top = (y + h + 8) + 'px'; };
   const refresh = () => {
@@ -76,7 +86,8 @@ if (!window.helloImGuiKeyboard) {
     if (input.value !== text) input.value = text;
     if (input.selectionStart !== caret || input.selectionEnd !== caret) { try { input.setSelectionRange(caret, caret); } catch (e) {} }
     K.mirror = text; K.mirrorCaret = caret;
-    K.syncing = false; };
+    K.syncing = false;
+    place(); };
   const focusNow = (e) => { e.preventDefault(); input.focus(); refresh(); };
   button.addEventListener('touchend', focusNow);
   button.addEventListener('mouseup', focusNow);

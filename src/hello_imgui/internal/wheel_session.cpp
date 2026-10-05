@@ -23,22 +23,24 @@ namespace
         int frameCount = -1;              // (a new context may reuse the address of a destroyed one: its frames restart)
         bool active = false;
         bool startedOnItem = false;     // the item under the mouse owned the wheel at the first event: the item's session
+        ImGuiID itemId = 0;             // that item
         ImGuiWindow* window = nullptr;  // the window the session scrolls
-        double lastEventTime = -1e9;
+        float timer = 0.f;              // s: the session ends when it runs out; each event adds its amount's worth (ImGui's rule:
+                                        // a trackpad's small momentum events extend it by little)
     };
     State gState;
 
-    // Whether an item (not a window) owns the wheel, as of the previous frame
-    bool WheelOwnedByItem(const ImGuiContext& g)
+    // The item (not a window) that owns the wheel, as of the previous frame; 0 when none
+    ImGuiID WheelOwnerItem(const ImGuiContext& g)
     {
         ImGuiID owner = ImGui::GetKeyOwnerData(GImGui, ImGuiKey_MouseWheelY)->OwnerCurr;
         if (owner == ImGuiKeyOwner_NoOwner || owner == ImGuiKeyOwner_Any)
-            return false;
+            return 0;
         if (g.HoveredWindow != nullptr && owner == g.HoveredWindow->ID)
-            return false;
+            return 0;
         if (g.WheelingWindow != nullptr && owner == g.WheelingWindow->ID)
-            return false;
-        return true;
+            return 0;
+        return owner;
     }
 
     // ImGui's scroll of a wheel notch (UpdateMouseWheel)
@@ -62,24 +64,37 @@ void UpdateWheelSession()
     }
     s.frameCount = g.FrameCount;
 
-    if (io.MouseWheel == 0.f)
+    if (s.active)
     {
-        if (g.Time - s.lastEventTime > kSessionSeconds)
+        s.timer -= io.DeltaTime;
+        if (s.timer <= 0.f)
             s.active = false;
-        return;
     }
-    s.lastEventTime = g.Time;
+    if (io.MouseWheel == 0.f)
+        return;
     if (!s.active)
     {
         s.active = true;
-        s.startedOnItem = WheelOwnedByItem(g);
+        s.itemId = WheelOwnerItem(g);
+        s.startedOnItem = (s.itemId != 0);
         s.window = g.WheelingWindow ? g.WheelingWindow : g.HoveredWindow;  // ImGui locked the one it scrolled
     }
-    if (s.startedOnItem || s.window == nullptr)
+    s.timer = ImMin(s.timer + ImAbs(io.MouseWheel) * kSessionSeconds, kSessionSeconds);
+    if (s.window == nullptr)
         return;
+    const bool scrolledByImGui = (g.WheelingWindowScrolledFrame == g.FrameCount);
+    if (s.startedOnItem)
+    {
+        // The item's session: the wheel is its own. ImGui scrolls when the item's ownership lapses for a frame (the
+        // owner is set for the next frame, from a hovered item): that scroll is cancelled while the mouse is on the
+        // item. Once the mouse left it, the page scrolls as usual
+        if (scrolledByImGui && g.HoveredIdPreviousFrame == s.itemId)
+            ImGui::SetScrollY(s.window, s.window->Scroll.y);
+        return;
+    }
     // The page's session: ImGui scrolled unless an item took the wheel over; then the page scrolls here. Either way
     // the widgets see no wheel
-    if (g.WheelingWindowScrolledFrame != g.FrameCount)
+    if (!scrolledByImGui)
         ScrollByWheel(s.window, io.MouseWheel);
     io.MouseWheel = 0.f;
 }

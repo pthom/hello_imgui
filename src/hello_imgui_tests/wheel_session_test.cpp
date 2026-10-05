@@ -25,6 +25,7 @@ struct Bench
 
     float scrollY = 0.f;   // as of the last frame's Begin()
     int zooms = 0;         // the wheel notches the zooming item saw
+    bool ownerLapse = false;  // the item does not claim the wheel this frame (as a widget whose hover flickers)
     ImRect zoomRect, linesRect;
 
     void Frame()
@@ -42,7 +43,8 @@ struct Bench
         zoomRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
         if (ImGui::IsItemHovered())
         {
-            ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY);
+            if (!ownerLapse)
+                ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY);
             if (ImGui::GetIO().MouseWheel != 0.f)
                 zooms++;
         }
@@ -111,4 +113,36 @@ TEST_CASE("Wheel session: a session ends after a pause, and the item takes the n
     b.Wheel(-1.f);
     CHECK(b.zooms == 1);
     CHECK(b.scrollY == scroll);
+}
+
+TEST_CASE("Wheel session: during the item's session, a frame where its ownership lapsed does not scroll the page")
+{
+    Bench b;
+    b.Frames(3);
+    b.MoveTo(b.zoomRect.GetCenter());
+    b.Frames(2);
+    b.Wheel(-1.f);
+    b.ownerLapse = true;  // the next frame's owner is nobody
+    b.Frame();
+    b.ownerLapse = false;
+    b.Wheel(-1.f);  // ImGui would scroll: the owner lapsed; the session cancels it
+    b.Frames(2);
+    CHECK(b.zooms == 2);
+    CHECK(b.scrollY == 0.f);
+}
+
+TEST_CASE("Wheel session: a trackpad's small momentum events extend a session by little")
+{
+    Bench b;
+    b.Frames(3);
+    b.MoveTo(ImVec2(100.f, 20.f));
+    b.Wheel(-1.f);
+    b.MoveTo(b.zoomRect.GetCenter());
+    for (int i = 0; i < 60; ++i)  // a second of a dying tail: 0.01 notch per frame (each adds 7 ms, a frame takes 17)
+        b.Wheel(-0.01f);
+    CHECK(b.zooms == 0);  // the session held while it lived
+    b.MoveTo(b.zoomRect.GetCenter());  // the tail scrolled the page: the item moved, the mouse follows it
+    b.Frames(12);
+    b.Wheel(-1.f);  // the session ended with the tail (ImGui's timer): the item takes the wheel
+    CHECK(b.zooms == 1);
 }

@@ -196,6 +196,37 @@ TEST_CASE("Touch scroll: a hold hands the press to the widget under the finger")
     CHECK(b.clicks == 1);
 }
 
+TEST_CASE("Touch scroll: on a touch screen, a lift leaves no pointer, so nothing is hovered while the content coasts")
+{
+    Bench b;
+    b.mode = TouchScrollMode::Auto;
+    b.Frames(3);
+    b.Press(b.buttonRect.GetCenter());  // a mouse: the pointer stays, the button is hovered after the click
+    b.Release();
+    CHECK(b.clicks == 1);
+    CHECK(ImGui::IsMousePosValid());
+    CHECK(ImGui::GetCurrentContext()->HoveredId != 0);
+
+    b.Source(ImGuiMouseSource_TouchScreen);
+    b.Press(b.buttonRect.GetCenter());  // a finger: the tap clicks, then no pointer, nothing hovered
+    b.Release();
+    CHECK(b.clicks == 2);
+    CHECK(!ImGui::IsMousePosValid());
+    CHECK(ImGui::GetCurrentContext()->HoveredId == 0);
+
+    b.Press(b.linesRect.GetCenter());  // a flick: nothing hovered while the content coasts
+    b.Drag(ImVec2(0.f, -50.f), 5);
+    b.Release();
+    b.Frames(10);
+    CHECK(b.scrollY > 50.f);
+    CHECK(!ImGui::IsMousePosValid());
+    CHECK(ImGui::GetCurrentContext()->HoveredId == 0);
+
+    b.MoveTo(b.buttonRect.GetCenter());  // the next touch brings a position back
+    b.Frame();
+    CHECK(ImGui::IsMousePosValid());
+}
+
 TEST_CASE("Touch scroll: a widget that takes the active id after the press ends the swipe")
 {
     Bench b;

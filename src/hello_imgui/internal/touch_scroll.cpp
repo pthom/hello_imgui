@@ -19,6 +19,8 @@
 // - the finger stays still past a hold delay: the press is handed over, by replaying a release and a press while the
 //   finger is down. The widget under it activates, and the real finger drives its drag (a slider, a text selection).
 // A widget that takes the active id itself ends the swipe (the layer steps aside).
+// On a touch screen, there is no pointer between two touches: when a finger lifts, the mouse position becomes
+// invalid (as when a mouse leaves the window), so that nothing is hovered while the content coasts, nor after a tap.
 namespace HelloImGui
 {
 namespace
@@ -39,6 +41,8 @@ namespace
 
     struct State
     {
+        ImGuiContext* context = nullptr;  // the state belongs to one context (its windows): a new one starts afresh
+        int frameCount = -1;              // (a new context may reuse the address of a destroyed one: its frames restart)
         bool owning = false;            // the sentinel holds the active id: a press, not released nor handed over yet
         bool swiping = false;           // the finger moved past the slop
         ImGuiWindow* window = nullptr;  // the pressed window, then the one that scrolls
@@ -150,6 +154,12 @@ void UpdateTouchScroll(TouchScrollMode mode)
     ImGuiContext& g = *GImGui;
     ImGuiIO& io = g.IO;
     State& s = gState;
+    if (s.context != &g || g.FrameCount < s.frameCount)
+    {
+        s = State{};
+        s.context = &g;
+    }
+    s.frameCount = g.FrameCount;
     const ImGuiID id = SentinelId();
 
     bool enabled = (mode == TouchScrollMode::Always)
@@ -201,6 +211,11 @@ void UpdateTouchScroll(TouchScrollMode mode)
         s.inertia = flick ? speed : ImVec2(0.f, 0.f);
         EndPress(s);
     }
+
+    // A finger that lifted (ours or a widget's): no pointer until the next touch. Queued after a replayed tap, whose
+    // press and release need the position (the queue keeps the order).
+    if (io.MouseSource == ImGuiMouseSource_TouchScreen && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+        io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
 
     if (s.owning)
     {

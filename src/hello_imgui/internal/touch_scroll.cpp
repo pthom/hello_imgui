@@ -92,9 +92,9 @@ namespace
         float t = (float)(g.Time - s.rippleTime) / kHoldRippleSeconds;
         if (t < 0.f || t > 1.f || !ImGui::IsMousePosValid(&s.ripplePos))
             return;
-        float radius = g.FontSize * (0.8f + 1.2f * t);
-        ImU32 col = ImGui::GetColorU32(ImGuiCol_ButtonActive, 0.8f * (1.f - t));
-        ImGui::GetForegroundDrawList()->AddCircle(s.ripplePos, radius, col, 0, g.FontSize * 0.15f);
+        float radius = g.FontSize * (1.f + 1.5f * t);
+        ImU32 col = ImGui::GetColorU32(ImGuiCol_Text, 0.9f * (1.f - t));
+        ImGui::GetForegroundDrawList()->AddCircle(s.ripplePos, radius, col, 0, g.FontSize * 0.25f);
     }
 
     // The axis of a swipe: the dominant direction of the finger (a swipe scrolls one axis, like the wheel)

@@ -61,7 +61,20 @@ WindowSize=971,691
 )");
 
     auto joined = HelloImGui::HelloImGuiIniSettings::JoinIniParts(iniParts);
-    CHECK(joined == s + "\n");
+    CHECK(joined == s);
+}
+
+
+// A user pref comes back as saved, after the file was read and written again (at exit, the other settings do it)
+TEST_CASE("testing HelloImGuiIniSettings: a user pref round trip")
+{
+    std::string filename = (std::filesystem::temp_directory_path() / "hello_imgui_test_user_pref.ini").string();
+    std::remove(filename.c_str());
+    HelloImGui::HelloImGuiIniSettings::SaveUserPref(filename, "voter", "6f9fa5cf");  // the last part of the file
+    HelloImGui::HelloImGuiIniSettings::SaveUserPref(filename, "other", "content");   // the file read and written again
+    CHECK(HelloImGui::HelloImGuiIniSettings::LoadUserPref(filename, "voter") == "6f9fa5cf");
+    CHECK(HelloImGui::HelloImGuiIniSettings::LoadUserPref(filename, "other") == "content");
+    std::remove(filename.c_str());
 }
 
 

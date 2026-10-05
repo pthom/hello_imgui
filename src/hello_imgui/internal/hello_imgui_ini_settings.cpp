@@ -103,6 +103,10 @@ namespace HelloImGui
             std::optional<IniParts::IniPart> currentPart;
 
             auto lines = FunctionalUtils::split_lines(s);
+            // A text that ends with "\n" (as the file does) gives an empty last line: it is not a line of the last part
+            // (else each read and write of the file would add a "\n" to that part)
+            if (!lines.empty() && lines.back().empty())
+                lines.pop_back();
             for (const std::string& line: lines)
             {
                 if (_IsIniPartName(line))

@@ -1070,7 +1070,10 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         // If the app started recently, do not idle
         bool startedRecently = mIdxFrame < 12;
 
-        bool preventIdling = isIdlingDisabledByParams || hasRecentEvent || isTestEngineRunning || ShouldRemoteDisplay() || startedRecently;
+        // A mouse button (or a finger) held down is an activity, even still: a button that repeats, a drag that pauses
+        bool mouseDown = ImGui::GetCurrentContext() != nullptr && ImGui::IsAnyMouseDown();
+
+        bool preventIdling = isIdlingDisabledByParams || hasRecentEvent || isTestEngineRunning || ShouldRemoteDisplay() || startedRecently || mouseDown;
         return ! preventIdling;
     };
 

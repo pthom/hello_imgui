@@ -9,6 +9,8 @@
 * In the browser, the virtual keyboard of a phone: a text widget that is active shows a keyboard button next to it; a tap on it, or on the widget again, opens the keyboard, and what is typed goes to the widget (the browser shows a keyboard only for a text field focused inside a touch handler, which a frame cannot do).
 * In the browser, two fingers that pinch scale the font (`style.FontScaleMain`): `RunnerParams::touchPinchMode` (`FontScale`, `Disabled`), and `touchPinchInterruptsWidgets` (whether the second finger takes the press from a widget that holds it). ImGui also learns whether the pointer is a mouse, a finger or a pen (with GLFW, which has no API for it), and keeps no pointer between two touches.
 
+**Idling:** a mouse button (or a finger) held down keeps the app awake, even still: a button that repeats, a drag that pauses.
+
 **plutosvg / plutovg:**
 * Now git submodules (`external/plutosvg`, with plutovg as its own submodule), updated to plutosvg v0.0.8 and plutovg v1.3.3. They are no longer downloaded at configure time, which also makes the release source archives complete. Both are compiled into a single static library `plutosvg`, part of the install.
 * New option `HELLOIMGUI_USE_SYSTEM_PLUTOSVG`: link an installed plutosvg (found via `find_package(plutosvg CONFIG)` or pkg-config; it must be built with freetype support) instead of compiling the submodule. Defaults to ON when `IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS` is set. Packagers (conda, vcpkg, distributions) should use this.

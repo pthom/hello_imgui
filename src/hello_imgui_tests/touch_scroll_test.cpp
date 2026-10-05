@@ -221,6 +221,16 @@ TEST_CASE("Touch scroll: two taps are a double click, a tap after a pause is not
     b.Release();
     CHECK(b.clicks == 3);
     CHECK(b.doubleClicks == 1);
+    // A finger's two taps land apart: 12 px (ImGui's 6 px suit a mouse), and may take 0.35 s
+    b.Frames(30);
+    b.Source(ImGuiMouseSource_TouchScreen);
+    b.Press(b.buttonRect.GetCenter());
+    b.Release();
+    b.Frames(14);  // about 0.35 s from the first tap's press to the second's
+    b.Press(b.buttonRect.GetCenter() + ImVec2(12.f, 0.f));
+    b.Release();
+    CHECK(b.clicks == 5);
+    CHECK(b.doubleClicks == 2);
 }
 
 TEST_CASE("Touch scroll: a hold hands the press to the widget under the finger")

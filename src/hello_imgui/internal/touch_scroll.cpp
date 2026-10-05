@@ -35,6 +35,8 @@ namespace
     constexpr float kSlopFontSizes = 0.5f;      // a press that moved less than this is a tap, not a swipe (a mouse)
     constexpr float kSlopFontSizesTouch = 1.f;  // the same for a finger, which jitters more, and is a finger wide
     constexpr float kHoldRippleSeconds = 0.35f; // the ring drawn around the finger when the hold hands it the press
+    constexpr float kDoubleTapSeconds = 0.4f;   // two taps closer than this in time, and than kDoubleTapFontSizes...
+    constexpr float kDoubleTapFontSizes = 1.5f; // ...in distance, are a double click (ImGui's 0.3 s and 6 px suit a mouse)
     constexpr float kHoldSeconds = 0.15f;       // a finger still for this long hands the press to the widget under it (iOS: 150 ms)
     constexpr float kLongPressSeconds = 0.5f;   // a finger still for this long is a right click (iOS: about 500 ms)
     constexpr float kInertiaDecay = 2.f;        // speed *= exp(-decay * dt) after the release (iOS: 0.998 per ms)
@@ -237,14 +239,17 @@ namespace
     {
         // ImGui counted the finger's press as a click when it happened: the replayed press would be the second
         // click of a double click (a tap on a word of a text input selected the word). It pairs with the previous
-        // replayed press instead, so that two taps are a double click, as two clicks are (ImGui's rule, as of its
-        // processing of the previous one).
+        // replayed press instead, so that two taps are a double click, as two clicks are. The rule is the layer's,
+        // with a finger's time and distance (two taps land farther apart than two clicks); ImGui's own check at the
+        // replayed press is made to agree: the previous click is set at the finger, now, or long ago.
         ImGuiContext& g = *GImGui;
         const ImVec2 pos = io.MousePos;
-        bool repeated = (g.Time - s.lastReplayTime) < io.MouseDoubleClickTime
-                        && ImLengthSqr(pos - s.lastReplayPos) < io.MouseDoubleClickMaxDist * io.MouseDoubleClickMaxDist;
-        io.MouseClickedTime[ImGuiMouseButton_Left] = s.lastReplayTime;
-        io.MouseClickedPos[ImGuiMouseButton_Left] = s.lastReplayPos;
+        const bool touch = (io.MouseSource == ImGuiMouseSource_TouchScreen);
+        const float maxDist = touch ? g.FontSize * kDoubleTapFontSizes : io.MouseDoubleClickMaxDist;
+        const double maxTime = touch ? kDoubleTapSeconds : io.MouseDoubleClickTime;
+        bool repeated = (g.Time - s.lastReplayTime) < maxTime && ImLengthSqr(pos - s.lastReplayPos) < maxDist * maxDist;
+        io.MouseClickedTime[ImGuiMouseButton_Left] = repeated ? g.Time : -1e9;
+        io.MouseClickedPos[ImGuiMouseButton_Left] = pos;
         io.MouseClickedLastCount[ImGuiMouseButton_Left] = (ImU16)s.lastReplayCount;
         s.lastReplayTime = g.Time;
         s.lastReplayPos = pos;

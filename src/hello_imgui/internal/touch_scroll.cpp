@@ -86,15 +86,26 @@ namespace
         s.swiping = false;
     }
 
+    // A replayed button event. The test engine erases, each frame, the queued events it did not add itself (the
+    // backend's): these ones are ImGui's own, not the backend's, so they are marked as the engine marks its own.
+    void AddReplayedButtonEvent(ImGuiIO& io, bool down)
+    {
+        ImGuiContext& g = *GImGui;
+        int sizeBefore = g.InputEventsQueue.Size;
+        io.AddMouseButtonEvent(ImGuiMouseButton_Left, down);
+        if (g.InputEventsQueue.Size > sizeBefore)
+            g.InputEventsQueue.back().AddedByTestEngine = true;
+    }
+
     // The press goes to the widget under the finger: a release then a press, through the queue (two frames, with the
     // trickling rules), which the layer must not claim again
     void ReplayPress(ImGuiIO& io, State& s, bool fingerDown)
     {
         if (fingerDown)
-            io.AddMouseButtonEvent(ImGuiMouseButton_Left, false);
-        io.AddMouseButtonEvent(ImGuiMouseButton_Left, true);
+            AddReplayedButtonEvent(io, false);
+        AddReplayedButtonEvent(io, true);
         if (!fingerDown)
-            io.AddMouseButtonEvent(ImGuiMouseButton_Left, false);
+            AddReplayedButtonEvent(io, false);
         s.replayedPresses++;
     }
 }  // namespace

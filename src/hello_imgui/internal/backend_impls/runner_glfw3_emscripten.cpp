@@ -59,6 +59,17 @@ namespace HelloImGui
         RunnerGlfw3::Impl_PollEvents();
     }
 
+    void RunnerGlfw3Emscripten::Impl_NewFrame_PlatformBackend()
+    {
+        // The imgui GLFW backend's NewFrame re-adds the cursor position every frame while it believes the mouse is
+        // outside the window (a finger triggers no mouseenter): on a touch screen, the last position would keep
+        // hovering whatever passes under it (the headers lit up one after the other while the content coasted).
+        // There is no pointer between two touches: the position is invalid, as when a mouse leaves the window.
+        RunnerGlfw3::Impl_NewFrame_PlatformBackend();
+        if (LastEmscriptenPointerSource() == ImGuiMouseSource_TouchScreen && !EmscriptenPointerIsDown())
+            ImGui::GetIO().AddMousePosEvent(-FLT_MAX, -FLT_MAX);
+    }
+
     void RunnerGlfw3Emscripten::Impl_Select_Gl_Version()
     {
         // SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);

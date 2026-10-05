@@ -10,6 +10,7 @@ namespace HelloImGui
 {
     void InstallEmscriptenPointerProbe();          // once, after the page is loaded (a second call does nothing)
     ImGuiMouseSource LastEmscriptenPointerSource();  // the type of the last pointer event (Mouse before any)
+    bool EmscriptenPointerIsDown();                  // a finger or a button is down (pointerdown, no pointerup yet)
     bool EmscriptenHasTouchScreen();                 // navigator.maxTouchPoints > 0: a hint for the whole session
 }
 #endif

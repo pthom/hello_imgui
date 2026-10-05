@@ -398,6 +398,11 @@ struct RunnerParams
     // Always: also with the mouse (left button), e.g. to try the phone behaviour on a desktop; Disabled: never.
     TouchScrollMode touchScrollMode = TouchScrollMode::Auto;
 
+    // `touchLongPressIsRightClick`: _bool, default = true_.
+    // A finger still for half a second is a right click (the context menus), as on a phone. The widget under it
+    // loses the press it got at the hold (a release outside it), so that a long press on a button is not a click.
+    bool touchLongPressIsRightClick = true;
+
     // `touchPinchMode`: _TouchPinchMode, default = TouchPinchMode::FontScale_.
     // Two fingers that pinch scale the font (ImGui's style.FontScaleMain) while they stay on the screen.
     TouchPinchMode touchPinchMode = TouchPinchMode::FontScale;

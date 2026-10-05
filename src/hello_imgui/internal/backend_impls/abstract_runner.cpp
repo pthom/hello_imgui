@@ -1461,7 +1461,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     // so that it can *NOT* be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
     ImGui::NewFrame();
 
-    UpdateTouchScroll(params.touchScrollMode);  // before any widget: a touch press is claimed, then replayed or handed over
+    UpdateTouchScroll(params.touchScrollMode, params.touchLongPressIsRightClick);  // before any widget: a touch press is claimed, then replayed or handed over
     UpdateTouchPinch(params.touchPinchMode, params.touchPinchInterruptsWidgets);
 
     if ((params.callbacks.PostNewFrame) && !insideReentrantCall)

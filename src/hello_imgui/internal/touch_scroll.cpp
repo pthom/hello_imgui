@@ -21,6 +21,8 @@
 // A widget that takes the active id itself ends the swipe (the layer steps aside).
 // On a touch screen, there is no pointer between two touches: when a finger lifts, the mouse position becomes
 // invalid (as when a mouse leaves the window), so that nothing is hovered while the content coasts, nor after a tap.
+// A finger still for half a second is a long press: a right click (the context menus), as on a phone. The widget
+// under it holds the left press by then (the hold): it is taken away first, by a release at an invalid position.
 namespace HelloImGui
 {
 namespace
@@ -28,6 +30,7 @@ namespace
     // Tunables. The slop is in font sizes, so that it follows the DPI and the font scale.
     constexpr float kSlopFontSizes = 0.5f;      // a press that moved less than this is a tap, not a swipe
     constexpr float kHoldSeconds = 0.15f;       // a finger still for this long hands the press to the widget under it (iOS: 150 ms)
+    constexpr float kLongPressSeconds = 0.5f;   // a finger still for this long is a right click (iOS: about 500 ms)
     constexpr float kInertiaDecay = 2.f;        // speed *= exp(-decay * dt) after the release (iOS: 0.998 per ms)
     constexpr float kInertiaMinSpeedEm = 3.f;   // font sizes per second: below this, a release starts no inertia, and the inertia ends
     constexpr float kFlickWindow = 0.05f;       // s: the lift speed is the finger's motion over this long before the lift
@@ -53,6 +56,8 @@ namespace
         int nbSamples = 0, nextSample = 0;
         ImVec2 inertia;                 // px/s, after the release
         int replayedPresses = 0;        // presses queued by the layer, which it must not claim
+        bool watchingLongPress = false; // a touch press, still so far: a long press when it stays
+        float pressTime = 0.f;
     };
     State gState;
 
@@ -140,15 +145,36 @@ namespace
         s.parked = false;
     }
 
-    // A replayed button event. The test engine erases, each frame, the queued events it did not add itself (the
-    // backend's): these ones are ImGui's own, not the backend's, so they are marked as the engine marks its own.
-    void AddReplayedButtonEvent(ImGuiIO& io, bool down)
+    // A replayed event. The test engine erases, each frame, the queued events it did not add itself (the backend's):
+    // these ones are ImGui's own, not the backend's, so they are marked as the engine marks its own.
+    void MarkReplayed(int sizeBefore)
     {
         ImGuiContext& g = *GImGui;
-        int sizeBefore = g.InputEventsQueue.Size;
-        io.AddMouseButtonEvent(ImGuiMouseButton_Left, down);
         if (g.InputEventsQueue.Size > sizeBefore)
             g.InputEventsQueue.back().AddedByTestEngine = true;
+    }
+    void AddReplayedButtonEvent(ImGuiIO& io, bool down, ImGuiMouseButton button = ImGuiMouseButton_Left)
+    {
+        int sizeBefore = GImGui->InputEventsQueue.Size;
+        io.AddMouseButtonEvent(button, down);
+        MarkReplayed(sizeBefore);
+    }
+    void AddReplayedPosEvent(ImGuiIO& io, ImVec2 pos)
+    {
+        int sizeBefore = GImGui->InputEventsQueue.Size;
+        io.AddMousePosEvent(pos.x, pos.y);
+        MarkReplayed(sizeBefore);
+    }
+
+    // The long press: the left press, held by the widget under the finger, is taken away by a release at an
+    // invalid position (not a click: the release is outside), then the right button clicks where the finger is
+    void RightClick(ImGuiIO& io, ImVec2 pos)
+    {
+        AddReplayedPosEvent(io, ImVec2(-FLT_MAX, -FLT_MAX));
+        AddReplayedButtonEvent(io, false, ImGuiMouseButton_Left);
+        AddReplayedPosEvent(io, pos);
+        AddReplayedButtonEvent(io, true, ImGuiMouseButton_Right);
+        AddReplayedButtonEvent(io, false, ImGuiMouseButton_Right);
     }
 
     // The press goes to the widget under the finger: a release then a press, through the queue (two frames, with the
@@ -166,7 +192,7 @@ namespace
     }
 }  // namespace
 
-void UpdateTouchScroll(TouchScrollMode mode)
+void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
 {
     ImGuiContext& g = *GImGui;
     ImGuiIO& io = g.IO;
@@ -200,6 +226,9 @@ void UpdateTouchScroll(TouchScrollMode mode)
         else
         {
             s.inertia = ImVec2(0.f, 0.f);
+            s.watchingLongPress = longPressIsRightClick && ImGui::IsMousePosValid();
+            s.pressTime = (float)g.Time;
+            s.pressPos = io.MousePos;
             ImGuiWindow* w = g.HoveredWindow;
             if (w != nullptr && !w->Collapsed && ImGui::IsMousePosValid() && w->InnerRect.Contains(io.MousePos)
                 && CanScrollSomewhere(w))
@@ -229,6 +258,23 @@ void UpdateTouchScroll(TouchScrollMode mode)
             ReplayPress(io, s, false);
         s.inertia = flick ? speed : ImVec2(0.f, 0.f);
         EndPress(s);
+        s.watchingLongPress = false;
+    }
+
+    // The long press: a finger still since its press (the layer let the widget have it at the hold), for half a
+    // second. The release of a replayed handover is not a lift (replayedPresses tells).
+    if (s.watchingLongPress)
+    {
+        bool lifted = !io.MouseDown[ImGuiMouseButton_Left] && s.replayedPresses == 0;
+        float slop = g.FontSize * kSlopFontSizes;
+        bool moved = ImGui::IsMousePosValid() && ImLengthSqr(io.MousePos - s.pressPos) > slop * slop;
+        if (lifted || moved || s.owning && s.swiping || s.parked)
+            s.watchingLongPress = false;
+        else if (!s.owning && (float)g.Time - s.pressTime >= kLongPressSeconds)
+        {
+            s.watchingLongPress = false;
+            RightClick(io, s.pressPos);
+        }
     }
 
     // A finger that lifted (ours or a widget's): no pointer until the next touch. Queued after a replayed tap, whose

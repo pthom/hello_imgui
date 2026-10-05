@@ -27,6 +27,8 @@ struct Bench
     }
 
     TouchScrollMode mode = TouchScrollMode::Always;
+    bool longPressIsRightClick = true;
+    bool itemPopupOpen = false, windowPopupOpen = false;  // the context menus (right clicks) of the button and the window
     HelloImGui::TouchPinchMode pinchMode = HelloImGui::TouchPinchMode::FontScale;
     bool pinchInterrupts = false;
     bool shortContent = false;  // the window's lines fit: nothing to scroll (the child still scrolls)
@@ -57,6 +59,12 @@ struct Bench
             clicks++;
         buttonId = ImGui::GetItemID();
         buttonRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+        itemPopupOpen = false;
+        if (ImGui::BeginPopupContextItem("button_menu"))
+        {
+            itemPopupOpen = true;
+            ImGui::EndPopup();
+        }
         ImGui::SliderFloat("Slider", &slider, 0.f, 1.f);
         sliderRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
         ImGui::BeginChild("Child", ImVec2(0.f, 80.f), ImGuiChildFlags_Borders);
@@ -74,8 +82,14 @@ struct Bench
         for (int i = 0; i < (shortContent ? 2 : 100); ++i)
             ImGui::Text("Line %d", i);
         linesRect = ImRect(linesPos, ImVec2(linesPos.x + 300.f, 290.f));
+        windowPopupOpen = false;
+        if (ImGui::BeginPopupContextWindow("window_menu", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
+        {
+            windowPopupOpen = true;
+            ImGui::EndPopup();
+        }
         ImGui::End();
-        HelloImGui::UpdateTouchScroll(mode);
+        HelloImGui::UpdateTouchScroll(mode, longPressIsRightClick);
         HelloImGui::UpdateTouchPinch(pinchMode, pinchInterrupts);
         ImGui::Render();
         ImGui_ImplNullRender_RenderDrawData(ImGui::GetDrawData());
@@ -312,6 +326,50 @@ TEST_CASE("Touch scroll: a press is not held back when nothing can scroll, nor a
     c.ReleaseStill();
     CHECK(c.slider > 0.6f);
     CHECK(c.scrollY == 0.f);
+}
+
+TEST_CASE("Touch scroll: a long press is a right click, a shorter one or a moving one is not")
+{
+    Bench b;
+    b.Frames(3);
+    b.Press(b.buttonRect.GetCenter());
+    b.Frames(40);  // 0.66 s still: the hold gave the button the press, the long press takes it away and right clicks
+    CHECK(b.itemPopupOpen);
+    CHECK(b.clicks == 0);
+    CHECK(!ImGui::GetIO().MouseDown[0]);
+    b.Release();
+    CHECK(b.clicks == 0);  // the real lift: nothing more
+    b.Press(b.linesRect.GetCenter());  // away from the menu: it closes
+    b.Release();
+    CHECK(!b.itemPopupOpen);
+
+    b.Press(b.linesRect.GetCenter());  // on the void
+    b.Frames(40);
+    CHECK(b.windowPopupOpen);
+    b.Release();
+    b.Press(ImVec2(b.linesRect.Min.x + 10.f, b.linesRect.Min.y + 10.f));  // away from the menu: it closes
+    b.Release();
+    CHECK(!b.windowPopupOpen);
+
+    b.Press(b.buttonRect.GetCenter());  // a shorter hold: a click when the finger lifts
+    b.Frames(15);
+    b.Release();
+    CHECK(b.clicks == 1);
+    CHECK(!b.itemPopupOpen);
+
+    b.Press(b.linesRect.GetCenter());  // a finger that moves before the delay: a swipe, no menu
+    b.Frames(10);
+    b.Drag(ImVec2(0.f, -50.f), 5);
+    b.Frames(40);
+    CHECK(!b.windowPopupOpen);
+    b.ReleaseStill();
+
+    b.longPressIsRightClick = false;
+    b.Press(b.buttonRect.GetCenter());
+    b.Frames(40);
+    CHECK(!b.itemPopupOpen);
+    b.Release();
+    CHECK(b.clicks == 2);
 }
 
 TEST_CASE("Touch scroll: a widget that takes the active id after the press ends the swipe")

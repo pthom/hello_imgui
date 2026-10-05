@@ -75,7 +75,11 @@ int main(int, char*[])
             static float v = 1.0;
             ImGui::VSliderFloat("##v", HelloImGui::EmToVec2(1.5f, 12.f), &v, 0.0f, 1.0f);
             ImGui::SameLine();
-            ImGui::Button("Click me##v", HelloImGui::EmToVec2(12.f, 12.f));
+            static int bigClicks = 0;
+            char bigLabel[48];
+            snprintf(bigLabel, sizeof(bigLabel), "Click me\n(clicked %d times)##v", bigClicks);
+            if (ImGui::Button(bigLabel, HelloImGui::EmToVec2(12.f, 12.f)))
+                ++bigClicks;
         }
 
         // Paragraphs to swipe on, with widgets and child windows between them

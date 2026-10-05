@@ -399,8 +399,9 @@ struct RunnerParams
     TouchScrollMode touchScrollMode = TouchScrollMode::Auto;
 
     // `touchLongPressIsRightClick`: _bool, default = true_.
-    // A finger still for half a second is a right click (the context menus), as on a phone. The widget under it
-    // loses the press it got at the hold (a release outside it), so that a long press on a button is not a click.
+    // On a touch screen (never with a mouse): a finger still for half a second is a right click (the context
+    // menus), as on a phone. The widget under it loses the press it got at the hold (a release outside it), so
+    // that a long press on a button is not a click.
     bool touchLongPressIsRightClick = true;
 
     // `touchPinchMode`: _TouchPinchMode, default = TouchPinchMode::FontScale_.

@@ -182,6 +182,9 @@ namespace
     // queued an invalid one already (a finger lifted), and the replayed press must land where the finger was.
     void ReplayPress(ImGuiIO& io, State& s, bool fingerDown)
     {
+        // ImGui counted the finger's press as a click when it happened: the replayed press would be the second
+        // click of a double click (a tap on a word of a text input selected the word)
+        io.MouseClickedTime[ImGuiMouseButton_Left] = -1e9;
         io.AddMousePosEvent(io.MousePos.x, io.MousePos.y);
         if (fingerDown)
             AddReplayedButtonEvent(io, false);

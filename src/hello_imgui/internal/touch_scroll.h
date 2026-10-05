@@ -3,7 +3,8 @@
 
 namespace HelloImGui
 {
-    // Scrolls the window under a finger that drags its content (the swipe), with inertia after the release.
-    // Called by the runner at the end of each frame, after the user's GUI and before ImGui::Render().
+    // The swipe of a touch screen: a finger that drags the content of a window scrolls it, with inertia; a tap still
+    // clicks, a short hold then a drag goes to the widget. Called by the runner right after ImGui::NewFrame(),
+    // before any widget.
     void UpdateTouchScroll(TouchScrollMode mode);
 }

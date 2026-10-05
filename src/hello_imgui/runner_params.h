@@ -380,9 +380,10 @@ struct RunnerParams
     int emscripten_fps = 0;
 
     // `touchScrollMode`: _TouchScrollMode, default = TouchScrollMode::Auto_.
-    // Scroll a window by dragging its content with a finger (a swipe, with inertia), as on a phone.
-    // Auto: only when the input is a touch screen (io.MouseSource); Always: also with the mouse (left button);
-    // Disabled: never. A widget that is active under the finger (a slider, a text selection) keeps the drag.
+    // Scroll a window by dragging its content with a finger (a swipe, with inertia), as on a phone, even from a
+    // button: a tap still clicks it (when the finger lifts), and a short hold then a drag goes to the widget
+    // (a slider, a text selection). Auto: only when the input is a touch screen (io.MouseSource);
+    // Always: also with the mouse (left button), e.g. to try the phone behaviour on a desktop; Disabled: never.
     TouchScrollMode touchScrollMode = TouchScrollMode::Auto;
 
     #ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY

@@ -1454,6 +1454,8 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     // so that it can *NOT* be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
     ImGui::NewFrame();
 
+    UpdateTouchScroll(params.touchScrollMode);  // before any widget: a touch press is claimed, then replayed or handed over
+
     if ((params.callbacks.PostNewFrame) && !insideReentrantCall)
         params.callbacks.PostNewFrame();
 
@@ -1475,8 +1477,6 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
     if (params.callbacks.BeforeImGuiRender)
         params.callbacks.BeforeImGuiRender();
-
-    UpdateTouchScroll(params.touchScrollMode);  // after all the GUI: a widget that took the press keeps it
 
     {
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;

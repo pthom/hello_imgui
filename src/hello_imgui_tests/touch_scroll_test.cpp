@@ -102,7 +102,7 @@ struct Bench
     void Release()
     {
         ImGui::GetIO().AddMouseButtonEvent(0, false);
-        Frames(3);  // the last wheel event, then the scroll target, then a frame to read
+        Frames(4);  // the replayed press and release, the scroll target, a frame to read
     }
     void Source(ImGuiMouseSource source) { ImGui::GetIO().AddMouseSourceEvent(source); }
 };
@@ -120,7 +120,6 @@ TEST_CASE("Touch scroll: a swipe on the lines scrolls the window, a tap does not
     b.ReleaseStill();
     CHECK(Near(b.scrollY, 50.f));
     CHECK(ImGui::GetCurrentContext()->ActiveId == 0);
-    CHECK(ImGui::GetIO().ConfigInputTrickleEventQueue == true);
 
     float before = b.scrollY;
     b.Press(b.linesRect.GetCenter());
@@ -138,6 +137,10 @@ TEST_CASE("Touch scroll: Auto acts with a touch source only, Disabled never")
     b.Drag(ImVec2(0.f, -50.f), 5);
     b.ReleaseStill();
     CHECK(b.scrollY == 0.f);
+    b.Press(b.buttonRect.GetCenter());
+    CHECK(ImGui::GetCurrentContext()->ActiveId != 0);  // the button, at once
+    b.Release();
+    CHECK(b.clicks == 1);
 
     b.Source(ImGuiMouseSource_TouchScreen);
     b.Press(b.linesRect.GetCenter());
@@ -152,21 +155,45 @@ TEST_CASE("Touch scroll: Auto acts with a touch source only, Disabled never")
     CHECK(Near(b.scrollY, 50.f));
 }
 
-TEST_CASE("Touch scroll: a press on a widget stays with the widget")
+TEST_CASE("Touch scroll: a tap on a button clicks it when the finger lifts, a swipe from it scrolls")
 {
     Bench b;
     b.Frames(3);
     b.Press(b.buttonRect.GetCenter());
+    b.Frames(2);
+    CHECK(b.clicks == 0);  // nothing yet: the press is held back
+    b.Release();
+    CHECK(b.clicks == 1);  // replayed
+    CHECK(b.scrollY == 0.f);
+
+    b.Press(b.buttonRect.GetCenter());
     b.Drag(ImVec2(0.f, -50.f), 5);
     b.ReleaseStill();
-    CHECK(b.scrollY == 0.f);
-    CHECK(b.clicks == 0);  // released away from the button
+    CHECK(Near(b.scrollY, 50.f));
+    CHECK(b.clicks == 1);
+}
 
+TEST_CASE("Touch scroll: a hold hands the press to the widget under the finger")
+{
+    Bench b;
+    b.Frames(3);
     b.Press(b.sliderRect.GetCenter());
+    b.Frames(20);  // past the hold delay, the slider got the press
     b.Drag(ImVec2(60.f, 0.f), 5);
     b.ReleaseStill();
-    CHECK(b.scrollY == 0.f);
     CHECK(b.slider > 0.6f);
+    CHECK(b.scrollY == 0.f);
+
+    b.Press(b.linesRect.GetCenter());  // a hold on the void: nothing
+    b.Frames(20);
+    b.Release();
+    CHECK(b.scrollY == 0.f);
+    CHECK(b.clicks == 0);
+
+    b.Press(b.buttonRect.GetCenter());  // a long tap still clicks
+    b.Frames(20);
+    b.Release();
+    CHECK(b.clicks == 1);
 }
 
 TEST_CASE("Touch scroll: a widget that takes the active id after the press ends the swipe")

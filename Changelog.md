@@ -3,7 +3,7 @@
 # Changes in upcoming release
 
 **Touch screens: scroll with a swipe**
-* A finger that drags the content of a window scrolls it, with inertia after the release, as on a phone. `RunnerParams::touchScrollMode` (`Auto`: when the input is a touch screen; `Always`: also with the mouse, to test on a desktop; `Disabled`). A widget that is active under the finger (a slider, a text selection) keeps the drag. Demo: `hello_touch_scroll`.
+* A finger that drags the content of a window scrolls it, with inertia after the release, as on a phone, even when the drag starts on a button: a tap still clicks it (when the finger lifts), and a short hold then a drag goes to the widget (a slider, a text selection). `RunnerParams::touchScrollMode` (`Auto`: when the input is a touch screen; `Always`: also with the mouse, to try it on a desktop; `Disabled`). Demo: `hello_touch_scroll`.
 
 **plutosvg / plutovg:**
 * Now git submodules (`external/plutosvg`, with plutovg as its own submodule), updated to plutosvg v0.0.8 and plutovg v1.3.3. They are no longer downloaded at configure time, which also makes the release source archives complete. Both are compiled into a single static library `plutosvg`, part of the install.

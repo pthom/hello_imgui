@@ -2,6 +2,7 @@
 #include "hello_imgui/hello_imgui_theme.h"
 #include "hello_imgui/internal/borderless_movable.h"
 #include "hello_imgui/internal/touch_scroll.h"
+#include "hello_imgui/internal/touch_pinch.h"
 #ifdef __EMSCRIPTEN__
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
 #endif
@@ -1461,6 +1462,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     ImGui::NewFrame();
 
     UpdateTouchScroll(params.touchScrollMode);  // before any widget: a touch press is claimed, then replayed or handed over
+    UpdateTouchPinch(params.touchPinchMode, params.touchPinchInterruptsWidgets);
 
     if ((params.callbacks.PostNewFrame) && !insideReentrantCall)
         params.callbacks.PostNewFrame();

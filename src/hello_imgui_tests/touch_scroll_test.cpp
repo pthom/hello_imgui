@@ -6,6 +6,7 @@
 #include "imgui_internal.h"
 #include "imgui_impl_null.h"
 #include "hello_imgui/internal/touch_scroll.h"
+#include "hello_imgui/internal/touch_pinch.h"
 
 namespace
 {
@@ -26,6 +27,8 @@ struct Bench
     }
 
     TouchScrollMode mode = TouchScrollMode::Always;
+    HelloImGui::TouchPinchMode pinchMode = HelloImGui::TouchPinchMode::FontScale;
+    bool pinchInterrupts = true;
     bool steal = false;  // the GUI takes the active id while the button is down (a widget that wants a long press)
     ImGuiID stealId = 0;
     int clicks = 0;
@@ -70,6 +73,7 @@ struct Bench
         linesRect = ImRect(linesPos, ImVec2(linesPos.x + 300.f, 290.f));
         ImGui::End();
         HelloImGui::UpdateTouchScroll(mode);
+        HelloImGui::UpdateTouchPinch(pinchMode, pinchInterrupts);
         ImGui::Render();
         ImGui_ImplNullRender_RenderDrawData(ImGui::GetDrawData());
     }
@@ -225,6 +229,63 @@ TEST_CASE("Touch scroll: on a touch screen, a lift leaves no pointer, so nothing
     b.MoveTo(b.buttonRect.GetCenter());  // the next touch brings a position back
     b.Frame();
     CHECK(ImGui::IsMousePosValid());
+}
+
+TEST_CASE("Touch pinch: two fingers scale the font, and take the press from the swipe layer")
+{
+    Bench b;
+    b.Frames(3);
+    ImGui::GetStyle().FontScaleMain = 1.f;
+    b.Press(b.linesRect.GetCenter());
+    b.Drag(ImVec2(0.f, -30.f), 3);
+    HelloImGui::SetTouchPointers(2, 1.f);  // the second finger lands
+    b.Frame();
+    HelloImGui::SetTouchPointers(2, 1.5f);  // the fingers spread
+    b.Frames(2);
+    CHECK(ImGui::GetStyle().FontScaleMain == 1.5f);
+    b.Drag(ImVec2(0.f, -30.f), 3);  // the first finger's motion scrolls no more
+    CHECK(Near(b.scrollY, 30.f));
+    HelloImGui::SetTouchPointers(2, 6.f);  // clamped
+    b.Frame();
+    CHECK(ImGui::GetStyle().FontScaleMain == 5.f);
+    HelloImGui::SetTouchPointers(0, 1.f);  // the fingers lift: the scale stays, no tap, no inertia
+    b.Release();
+    b.Frames(10);
+    CHECK(ImGui::GetStyle().FontScaleMain == 5.f);
+    CHECK(Near(b.scrollY, 30.f));
+    CHECK(b.clicks == 0);
+    ImGui::GetStyle().FontScaleMain = 1.f;
+}
+
+TEST_CASE("Touch pinch: a widget that holds the press keeps it, unless the pinch interrupts widgets")
+{
+    Bench b;
+    b.Frames(3);
+    ImGui::GetStyle().FontScaleMain = 1.f;
+    b.pinchInterrupts = false;
+    b.Press(b.sliderRect.GetCenter());
+    b.Frames(20);  // the hold: the slider got the press
+    HelloImGui::SetTouchPointers(2, 1.5f);
+    b.Frames(2);
+    CHECK(ImGui::GetStyle().FontScaleMain == 1.f);  // the slider keeps its drag
+    b.Drag(ImVec2(60.f, 0.f), 5);
+    CHECK(b.slider > 0.6f);
+    HelloImGui::SetTouchPointers(0, 1.f);
+    b.Release();
+
+    b.pinchInterrupts = true;
+    b.slider = 0.5f;
+    b.Press(b.sliderRect.GetCenter());
+    b.Frames(20);
+    float held = b.slider;  // the press moved the grab to the finger
+    HelloImGui::SetTouchPointers(2, 1.5f);
+    b.Frames(2);
+    CHECK(ImGui::GetStyle().FontScaleMain == 1.5f);  // the pinch took over
+    b.Drag(ImVec2(60.f, 0.f), 5);
+    CHECK(b.slider == held);  // the slider lost the drag
+    HelloImGui::SetTouchPointers(0, 1.f);
+    b.Release();
+    ImGui::GetStyle().FontScaleMain = 1.f;
 }
 
 TEST_CASE("Touch scroll: a widget that takes the active id after the press ends the swipe")

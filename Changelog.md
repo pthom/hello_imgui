@@ -4,6 +4,7 @@
 
 **Touch screens: scroll with a swipe**
 * A finger that drags the content of a window scrolls it, with inertia after the release, as on a phone, even when the drag starts on a button: a tap still clicks it (when the finger lifts), and a short hold then a drag goes to the widget (a slider, a text selection). `RunnerParams::touchScrollMode` (`Auto`: when the input is a touch screen; `Always`: also with the mouse, to try it on a desktop; `Disabled`). Demo: `hello_touch_scroll`.
+* In the browser, two fingers that pinch scale the font (`style.FontScaleMain`): `RunnerParams::touchPinchMode` (`FontScale`, `Disabled`), and `touchPinchInterruptsWidgets` (whether the second finger takes the press from a widget that holds it). ImGui also learns whether the pointer is a mouse, a finger or a pen (with GLFW, which has no API for it), and keeps no pointer between two touches.
 
 **plutosvg / plutovg:**
 * Now git submodules (`external/plutosvg`, with plutovg as its own submodule), updated to plutosvg v0.0.8 and plutovg v1.3.3. They are no longer downloaded at configure time, which also makes the release source archives complete. Both are compiled into a single static library `plutosvg`, part of the install.

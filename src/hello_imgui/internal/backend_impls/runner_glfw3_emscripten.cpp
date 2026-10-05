@@ -1,6 +1,7 @@
 #include "runner_glfw3_emscripten.h"
 #if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_GLFW3)
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
+#include "hello_imgui/internal/touch_pinch.h"
 #include "imgui_internal.h"  // ImGuiInputEvent
 #include <iostream>
 
@@ -56,6 +57,7 @@ namespace HelloImGui
                 e.MouseWheel.MouseSource = source;
         }
         ImGui::GetIO().AddMouseSourceEvent(source);
+        SetTouchPointers(EmscriptenFingerCount(), EmscriptenPinchScale());
         RunnerGlfw3::Impl_PollEvents();
     }
 

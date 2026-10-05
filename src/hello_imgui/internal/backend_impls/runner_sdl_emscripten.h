@@ -13,6 +13,7 @@ namespace HelloImGui
         void Run() override;
 
        protected:
+        void Impl_PollEvents() override;  // reports the fingers on the screen (the pinch), then polls
         void Impl_Select_Gl_Version() override;
         std::string Impl_GlslVersion() const override;
         void Impl_InitGlLoader() override;

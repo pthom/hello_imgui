@@ -1,5 +1,7 @@
 #include "runner_sdl_emscripten.h"
 #if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_SDL2)
+#include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
+#include "hello_imgui/internal/touch_pinch.h"
 #include <iostream>
 
 #include <emscripten.h>
@@ -22,6 +24,7 @@ namespace HelloImGui
         #endif
 
         gRunnerEmscripten = this;
+        InstallEmscriptenPointerProbe();  // SDL labels its own events (a finger or a mouse); the probe sees the second finger
         gRunnerEmscripten->Setup();
 
         emscripten_cancel_main_loop();
@@ -33,6 +36,12 @@ namespace HelloImGui
         // int fps = 0; // 0 <=> let the browser decide. This is the recommended way, see
         // https://emscripten.org/docs/api_reference/emscripten.h.html#browser-execution-environment
         emscripten_set_main_loop_arg(emscripten_imgui_main_loop, NULL, params.emscripten_fps, true);
+    }
+
+    void RunnerSdlEmscripten::Impl_PollEvents()
+    {
+        SetTouchPointers(EmscriptenFingerCount(), EmscriptenPinchScale());
+        RunnerSdl2::Impl_PollEvents();
     }
 
     void RunnerSdlEmscripten::Impl_Select_Gl_Version()

@@ -45,6 +45,7 @@ namespace
         int frameCount = -1;              // (a new context may reuse the address of a destroyed one: its frames restart)
         bool owning = false;            // the sentinel holds the active id: a press, not released nor handed over yet
         bool swiping = false;           // the finger moved past the slop
+        bool parked = false;            // the sentinel holds the active id for a pinch: nothing until the fingers lift
         ImGuiWindow* window = nullptr;  // the pressed window, then the one that scrolls
         ImGuiAxis axis = ImGuiAxis_None;
         ImVec2 pressPos;
@@ -123,6 +124,7 @@ namespace
     {
         s.owning = false;
         s.swiping = false;
+        s.parked = false;
     }
 
     // A replayed button event. The test engine erases, each frame, the queued events it did not add itself (the
@@ -208,7 +210,7 @@ void UpdateTouchScroll(TouchScrollMode mode)
         ImGui::ClearActiveID();
         ImVec2 speed = LiftSpeed(s, (float)g.Time, io.MousePos);
         bool flick = s.swiping && ImLengthSqr(speed) > kInertiaMinSpeed * kInertiaMinSpeed;
-        if (!s.swiping)
+        if (!s.swiping && !s.parked)
             ReplayPress(io, s, false);
         s.inertia = flick ? speed : ImVec2(0.f, 0.f);
         EndPress(s);
@@ -219,7 +221,9 @@ void UpdateTouchScroll(TouchScrollMode mode)
     if (io.MouseSource == ImGuiMouseSource_TouchScreen && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
         io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
 
-    if (s.owning)
+    if (s.owning && s.parked)
+        ImGui::KeepAliveID(id);
+    else if (s.owning)
     {
         ImGui::KeepAliveID(id);
         AddSample(s, (float)g.Time, io.MousePos);
@@ -258,6 +262,28 @@ void UpdateTouchScroll(TouchScrollMode mode)
         if (!moving || ImLengthSqr(s.inertia) < kInertiaMinSpeed * kInertiaMinSpeed)
             s.inertia = ImVec2(0.f, 0.f);
     }
+}
+
+bool TouchScrollLetGo(bool evenAWidget)
+{
+    ImGuiContext& g = *GImGui;
+    State& s = gState;
+    const ImGuiID id = SentinelId();
+    s.inertia = ImVec2(0.f, 0.f);
+    if (s.owning)
+    {
+        s.swiping = false;
+        s.parked = true;
+        return true;
+    }
+    if (g.ActiveId == 0 || g.ActiveIdWindow == nullptr)
+        return true;
+    if (!evenAWidget)
+        return false;
+    ImGui::SetActiveID(id, g.ActiveIdWindow);  // over the widget's id: it sees it lost the press
+    s.owning = true;
+    s.parked = true;
+    return true;
 }
 
 }  // namespace HelloImGui

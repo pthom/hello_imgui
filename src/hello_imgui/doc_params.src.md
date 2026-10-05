@@ -28,9 +28,11 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 ![[runner_params.h#PlatformBackendType]]
 
-### Touch scroll
+### Touch screens
 
 ![[runner_params.h#TouchScrollMode]]
+
+![[runner_params.h#TouchPinchMode]]
 
 
 # Runner callbacks

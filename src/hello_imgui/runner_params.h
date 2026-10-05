@@ -248,6 +248,18 @@ enum class TouchScrollMode
 // ::endcode
 
 
+// ::code TouchPinchMode
+
+// TouchPinchMode: what two fingers that pinch do (in the browser; a desktop touch screen reports no second finger).
+// See RunnerParams::touchPinchMode.
+enum class TouchPinchMode
+{
+    FontScale,  // the pinch scales the font (ImGui's style.FontScaleMain), as on a phone
+    Disabled
+};
+// ::endcode
+
+
 // ::code RunnerParams
 
 // RunnerParams contains the settings and callbacks needed to run an application.
@@ -385,6 +397,15 @@ struct RunnerParams
     // (a slider, a text selection). Auto: only when the input is a touch screen (io.MouseSource);
     // Always: also with the mouse (left button), e.g. to try the phone behaviour on a desktop; Disabled: never.
     TouchScrollMode touchScrollMode = TouchScrollMode::Auto;
+
+    // `touchPinchMode`: _TouchPinchMode, default = TouchPinchMode::FontScale_.
+    // Two fingers that pinch scale the font (ImGui's style.FontScaleMain) while they stay on the screen.
+    TouchPinchMode touchPinchMode = TouchPinchMode::FontScale;
+
+    // `touchPinchInterruptsWidgets`: _bool, default = true_.
+    // When the second finger lands while a widget holds the first one (a slider dragged after a hold, a text
+    // selection): the pinch takes over (true), or the widget keeps its drag and the pinch is ignored (false).
+    bool touchPinchInterruptsWidgets = true;
 
     #ifdef HELLOIMGUI_WITH_REMOTE_DISPLAY
     RemoteParams remoteParams; // Parameters for Remote display (experimental, unsupported)

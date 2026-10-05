@@ -55,6 +55,12 @@ int main(int, char*[])
         int mode = (int)params.touchScrollMode;
         ImGui::Combo("touchScrollMode", &mode, "Auto\0Always\0Disabled\0");
         params.touchScrollMode = (HelloImGui::TouchScrollMode)mode;
+        int pinchMode = (int)params.touchPinchMode;
+        ImGui::Combo("touchPinchMode", &pinchMode, "FontScale\0Disabled\0");
+        params.touchPinchMode = (HelloImGui::TouchPinchMode)pinchMode;
+        ImGui::Checkbox("touchPinchInterruptsWidgets", &params.touchPinchInterruptsWidgets);
+        ImGui::SameLine();
+        ImGui::Text("FontScaleMain: %.2f", ImGui::GetStyle().FontScaleMain);
         ImGui::Separator();
         ImGui::Text("Clicks: %d   Slider: %.2f", nbClicks, slider);
         ImGui::Separator();

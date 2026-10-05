@@ -137,9 +137,11 @@ namespace
     }
 
     // The press goes to the widget under the finger: a release then a press, through the queue (two frames, with the
-    // trickling rules), which the layer must not claim again
+    // trickling rules), which the layer must not claim again. The finger's position comes first: a backend may have
+    // queued an invalid one already (a finger lifted), and the replayed press must land where the finger was.
     void ReplayPress(ImGuiIO& io, State& s, bool fingerDown)
     {
+        io.AddMousePosEvent(io.MousePos.x, io.MousePos.y);
         if (fingerDown)
             AddReplayedButtonEvent(io, false);
         AddReplayedButtonEvent(io, true);

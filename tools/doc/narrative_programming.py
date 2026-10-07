@@ -185,6 +185,8 @@ class _Parser:
         self.prose_section = -1  # a section whose prose (in line comments) is open
         self.prose: List[str] = []  # its lines, comment tokens removed
         self.redundant_endmd = -1  # a section closed by the ::endcode just above: an ::endmd may follow
+        self.prose_fence = _FenceTracker()  # the fenced code blocks of that prose: their lines are never directives
+        self.prose_fence_line = 0  # the line of the fence that opened the current one
 
     def fail(self, line: int, message: str) -> None:
         raise _AnnotationError(f"{self.file}:{line + 1}: {message}")
@@ -201,6 +203,9 @@ class _Parser:
 
     def set_prose(self, section: _MdSection, lines: List[str]) -> None:
         section.prose = _trim_blank_lines(_dedent(lines))
+
+    def unclosed_fence(self, fence_line: int, name: str) -> None:
+        self.fail(fence_line, f"::md {name}: this fenced code block of its prose is not closed")
 
     def open_region(self, line: int, name: str, section: int, begin: int) -> None:
         """`line` is the line of the ::code; the region starts at `begin`"""
@@ -236,24 +241,34 @@ class _Parser:
         section = len(self.r.sections) - 1
         lines: List[str] = []
         code_line = -1
+        fence = _FenceTracker()  # a line inside a fenced code block of the prose is never a directive
+        fence_line = 0
         j = i + 1
         while j < len(self.r.lines):
             c = self.r.lines[j].find(closer)
             content = self.r.lines[j] if c < 0 else self.r.lines[j][:c]
-            if code_line < 0:
-                directive, directive_name = _parse_directive(content)
-                if directive == "::code" and not directive_name:
-                    code_line = j
-                    self.r.directive_only[j] = True
-                elif directive is not None:
-                    self.fail(j, f"only an unnamed ::code may appear in the prose of ::md {name}")
-                elif c < 0 or not _is_blank(content):
+            if code_line < 0 and (c < 0 or not _is_blank(content)):
+                was_open = bool(fence.fence_char)
+                if fence.update(content):
+                    if not was_open:
+                        fence_line = j
                     lines.append(content)
+                else:
+                    directive, directive_name = _parse_directive(content)
+                    if directive == "::code" and not directive_name:
+                        code_line = j
+                        self.r.directive_only[j] = True
+                    elif directive is not None:
+                        self.fail(j, f"only an unnamed ::code may appear in the prose of ::md {name}")
+                    else:
+                        lines.append(content)
             if c >= 0:
                 break
             j += 1
         if j == len(self.r.lines):
             self.fail(i, f"::md {name}: its string or block comment is not closed")
+        if fence.fence_char:
+            self.unclosed_fence(fence_line, name)
         self.set_prose(self.r.sections[section], lines)
         if code_line >= 0:
             self.open_region(code_line, "", section, j + 1)
@@ -267,7 +282,15 @@ class _Parser:
             return
         text = _line_comment_text(self.r.lines[i], self.syntax)
         if text is None:
+            if self.prose_fence.fence_char:
+                self.unclosed_fence(self.prose_fence_line, name)
             self.fail(i, f"::md {name}: its prose is interrupted by source code (missing ::endmd or ::code?)")
+            return
+        was_open = bool(self.prose_fence.fence_char)
+        if self.prose_fence.update(text):  # a line inside a fenced code block of the prose is never a directive
+            if not was_open:
+                self.prose_fence_line = i
+            self.prose.append(text)
             return
         directive, directive_name = _parse_directive(text)
         if directive is None:
@@ -307,6 +330,7 @@ class _Parser:
                 self.new_section(i, name)
                 self.prose_section = len(self.r.sections) - 1
                 self.prose = []
+                self.prose_fence = _FenceTracker()
             elif directive == "::code":
                 self.open_region(i, name, -1, i + 1)
             elif directive == "::endcode":
@@ -334,6 +358,8 @@ class _Parser:
             i = self.line(i) + 1
         if self.prose_section >= 0:
             s = self.r.sections[self.prose_section]
+            if self.prose_fence.fence_char:
+                self.unclosed_fence(self.prose_fence_line, s.name)
             self.fail(s.line, f"::md {s.name} is not closed (missing ::endmd)")
         if self.open_regions:
             region = self.r.regions[self.open_regions[-1]]

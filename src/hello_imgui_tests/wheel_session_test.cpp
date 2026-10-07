@@ -29,6 +29,7 @@ struct Bench
     bool shortContent = false;  // the window's lines fit: nothing scrolls (a node editor's window)
     bool itemOwnsWheel = true;  // false: the item reads the wheel without owning it (a node editor's zoom)
     int wheelsSeen = 0;  // the wheel notches a non-owning item saw
+    bool sessionEnabled = true;  // RunnerParams::wheelSession
     ImRect zoomRect, linesRect;
 
     void Frame()
@@ -36,7 +37,7 @@ struct Bench
         ImGui_ImplNull_NewFrame();
         HelloImGui::WheelSessionBeforeNewFrame();
         ImGui::NewFrame();
-        HelloImGui::UpdateWheelSession();
+        HelloImGui::UpdateWheelSession(sessionEnabled);
         ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(400.f, 300.f), ImGuiCond_Always);
         ImGui::Begin("Bench", nullptr, ImGuiWindowFlags_NoTitleBar);
@@ -104,6 +105,17 @@ TEST_CASE("Wheel session: the mouse still, the page scrolls the zooming item und
         scroll = b.scrollY;
     }
     CHECK(b.zooms == 0);
+}
+
+TEST_CASE("Wheel session: disabled, the item that arrives under the still mouse takes the wheel (Dear ImGui's behavior)")
+{
+    Bench b;
+    b.sessionEnabled = false;
+    b.Frames(3);
+    b.MoveTo(ImVec2(100.f, b.zoomRect.Min.y - 10.f));  // on the line just above the item
+    for (int i = 0; i < 6; ++i)
+        b.Wheel(-1.f);
+    CHECK(b.zooms > 0);
 }
 
 TEST_CASE("Wheel session: a wheel that started on the zooming item zooms, and does not scroll")

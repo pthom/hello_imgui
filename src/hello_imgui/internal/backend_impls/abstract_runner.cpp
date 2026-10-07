@@ -1467,7 +1467,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     WheelSessionBeforeNewFrame();  // the item that claimed the wheel, before NewFrame() gives it back to a window
     ImGui::NewFrame();
 
-    UpdateWheelSession();  // before any widget: a wheel that started on the page keeps scrolling it over a plot
+    UpdateWheelSession(params.wheelSession);  // before any widget: a wheel that started on the page keeps scrolling it over a plot
     UpdateTouchScroll(params.touchScrollMode, params.touchLongPressIsRightClick);  // before any widget: a touch press is claimed, then replayed or handed over
     UpdateTouchPinch(params.touchPinchMode, params.touchPinchInterruptsWidgets);
 

@@ -71,7 +71,7 @@ void WheelSessionBeforeNewFrame()
     gState.ownerFrame = g->FrameCount;
 }
 
-void UpdateWheelSession()
+void UpdateWheelSession(bool enabled)
 {
     ImGuiContext& g = *GImGui;
     ImGuiIO& io = g.IO;
@@ -82,6 +82,11 @@ void UpdateWheelSession()
         s.context = &g;
     }
     s.frameCount = g.FrameCount;
+    if (!enabled)
+    {
+        s.active = false;
+        return;
+    }
 
     if (s.active)
     {

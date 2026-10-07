@@ -5,6 +5,7 @@
 #include "imgui_internal.h"
 
 #include <cmath>
+#include <vector>
 
 // The swipe, and the delayed press of the mobile toolkits, as a layer above the backends and below the widgets.
 // It runs right after ImGui::NewFrame(), before any widget:
@@ -18,7 +19,9 @@
 //   widget under the finger gets a normal click, two frames later.
 // - the finger stays still past a hold delay: the press is handed over, by replaying a release and a press while the
 //   finger is down. The widget under it activates, and the real finger drives its drag (a slider, a text selection).
-// A widget that takes the active id itself ends the swipe (the layer steps aside).
+// A widget that takes the active id itself ends the swipe (the layer steps aside). A widget that called
+// SetItemTakesTouchDrags() at the last frame gets a press on it at once: on a touch screen nothing is hovered before
+// a press, so the layer reads the rectangles that the widgets noted at the last frame.
 // On a touch screen, there is no pointer between two touches: when a finger lifts, the mouse position becomes
 // invalid (as when a mouse leaves the window), so that nothing is hovered while the content coasts, nor after a tap.
 // A finger still for half a second is a long press: a right click (the context menus), as on a phone. The widget
@@ -76,6 +79,12 @@ namespace
         ImVec2 lastReplayPos;
         int lastReplayCount = 0;
         float pressTime = 0.f;
+        struct DragTaker
+        {
+            ImGuiID window;  // the widget's window
+            ImRect rect;     // its visible part, on the screen
+        };
+        std::vector<DragTaker> takers, previousTakers;  // SetItemTakesTouchDrags(): this frame's, the last frame's
     };
     State gState;
 
@@ -117,6 +126,21 @@ namespace
                 break;
         }
         return w;
+    }
+
+    // A widget under the press asked for the drags at the last frame (SetItemTakesTouchDrags): in the pressed window,
+    // or in a window that holds it as a child (a plot drawn in a child window of its own)
+    bool TakesTouchDrags(const State& s, const ImGuiWindow* w, ImVec2 pos)
+    {
+        for (const State::DragTaker& t : s.previousTakers)
+        {
+            if (!t.rect.Contains(pos))
+                continue;
+            for (const ImGuiWindow* x = w; x; x = (x->Flags & ImGuiWindowFlags_ChildWindow) ? x->ParentWindow : nullptr)
+                if (x->ID == t.window)
+                    return true;
+        }
+        return false;
     }
 
     // Whether the window, or a parent, can scroll at all: when nothing can, a press has nothing to pre-empt
@@ -276,6 +300,8 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
     }
     s.frameCount = g.FrameCount;
     const ImGuiID id = SentinelId();
+    s.previousTakers.swap(s.takers);
+    s.takers.clear();
 
     bool enabled = (mode == TouchScrollMode::Always)
                    || (mode == TouchScrollMode::Auto && io.MouseSource == ImGuiMouseSource_TouchScreen);
@@ -305,7 +331,7 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
             s.pressPos = io.MousePos;
             ImGuiWindow* w = g.HoveredWindow;
             if (w != nullptr && !w->Collapsed && ImGui::IsMousePosValid() && w->InnerRect.Contains(io.MousePos)
-                && CanScrollSomewhere(w))
+                && CanScrollSomewhere(w) && !TakesTouchDrags(s, w, io.MousePos))
             {
                 // A widget active from before (a text input being edited) loses the id, as with a press elsewhere
                 ImGui::SetActiveID(id, w);
@@ -554,6 +580,17 @@ bool TouchScrollRelease(bool evenAWidget)
         return false;
     ImGui::ClearActiveID();
     return true;
+}
+
+// The widget just drawn: its visible part, noted for the press of the next frame
+void SetItemTakesTouchDrags()
+{
+    ImGuiContext& g = *GImGui;
+    ImGuiWindow* window = g.CurrentWindow;
+    ImRect rect = g.LastItemData.Rect;
+    rect.ClipWith(window->ClipRect);
+    if (rect.GetWidth() > 0.f && rect.GetHeight() > 0.f)
+        gState.takers.push_back({window->ID, rect});
 }
 
 }  // namespace HelloImGui

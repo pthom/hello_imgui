@@ -7,6 +7,7 @@
 #include "imgui_impl_null.h"
 #include "hello_imgui/internal/touch_scroll.h"
 #include "hello_imgui/internal/touch_pinch.h"
+#include "hello_imgui/hello_imgui.h"  // SetItemTakesTouchDrags
 
 namespace
 {
@@ -33,6 +34,10 @@ struct Bench
     HelloImGui::TouchPinchMode pinchMode = HelloImGui::TouchPinchMode::FontScale;
     bool pinchInterrupts = false;
     bool shortContent = false;  // the window's lines fit: nothing to scroll (the child still scrolls)
+    bool canvas = false;        // a canvas below the wide child: an item that sums its drags
+    bool canvasTakesDrags = false;  // it calls SetItemTakesTouchDrags()
+    ImGuiID canvasId = 0;
+    ImVec2 canvasDrag;
     ImGuiID buttonId = 0;
     bool steal = false;  // the GUI takes the active id while the button is down (a widget that wants a long press)
     ImGuiID stealId = 0;
@@ -43,7 +48,7 @@ struct Bench
     float scrollY = 0.f, childScrollY = 0.f, wideScrollX = 0.f;  // as of the last frame's Begin()
     float scrollMaxY = 0.f;
     float lastVtxY = 0.f;  // the y of the window's last drawn vertex (its last visible line): the overscroll moves it
-    ImRect buttonRect, sliderRect, repeatRect, childRect, wideRect, linesRect;  // screen coordinates, as of the last frame
+    ImRect buttonRect, sliderRect, repeatRect, childRect, wideRect, canvasRect, linesRect;  // screen coordinates, as of the last frame
     ImVec2 mouse;
 
     void Frame()
@@ -90,6 +95,16 @@ struct Bench
         ImGui::Text("A wide line, wider than the window, so that this child scrolls sideways and not vertically");
         ImGui::EndChild();
         wideRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+        if (canvas)
+        {
+            ImGui::InvisibleButton("Canvas", ImVec2(300.f, 50.f));
+            canvasId = ImGui::GetItemID();
+            canvasRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+            if (ImGui::IsItemActive())
+                canvasDrag += ImGui::GetIO().MouseDelta;
+            if (canvasTakesDrags)
+                HelloImGui::SetItemTakesTouchDrags();
+        }
         ImVec2 linesPos = ImGui::GetCursorScreenPos();
         for (int i = 0; i < (shortContent ? 2 : 100); ++i)
             ImGui::Text("Line %d", i);
@@ -408,6 +423,34 @@ TEST_CASE("Touch scroll: a press is not held back when nothing can scroll, nor a
     c.ReleaseStill();
     CHECK(c.slider > 0.6f);
     CHECK(c.scrollY == 0.f);
+}
+
+TEST_CASE("Touch scroll: a widget that takes the drags gets the press at once, also along the axis the window scrolls")
+{
+    {
+        Bench b;
+        b.canvas = true;
+        b.Frames(3);
+        b.Press(b.canvasRect.GetCenter());  // a plain item: the press is held back, a vertical drag scrolls the window
+        CHECK(ImGui::GetCurrentContext()->ActiveId != b.canvasId);
+        b.Drag(ImVec2(0.f, -40.f), 4);
+        b.ReleaseStill();
+        CHECK(b.scrollY > 0.f);
+        CHECK(b.canvasDrag.y == 0.f);
+    }  // one ImGui context at a time
+    Bench c;
+    c.canvas = c.canvasTakesDrags = true;
+    c.Frames(3);
+    c.Press(c.canvasRect.GetCenter());  // SetItemTakesTouchDrags(): the canvas has the press at once, and the drag
+    CHECK(ImGui::GetCurrentContext()->ActiveId == c.canvasId);
+    c.Drag(ImVec2(0.f, -40.f), 4);
+    c.ReleaseStill();
+    CHECK(c.scrollY == 0.f);
+    CHECK(Near(c.canvasDrag.y, -40.f));
+    c.Press(c.linesRect.GetCenter());  // elsewhere, the window still scrolls
+    c.Drag(ImVec2(0.f, -40.f), 4);
+    c.ReleaseStill();
+    CHECK(c.scrollY > 0.f);
 }
 
 TEST_CASE("Touch scroll: a long press is a right click, a shorter one or a moving one is not")

@@ -13,6 +13,8 @@
 * A widget of your own that reads the wheel claims it while hovered, as ImPlot and ImmVision do: `if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY)) zoom *= powf(1.1f, ImGui::GetIO().MouseWheel);`. Without the claim, in a page that scrolls, the widget never sees the wheel.
 * `RunnerParams::wheelSession` (default true): false gives Dear ImGui's own behavior.
 
+**Reduced motion:** `HelloImGui::PrefersReducedMotion()` tells whether the system asks for less motion: "Reduce motion" on macOS and iOS, "Show animations in Windows" turned off, a browser's `prefers-reduced-motion`. An application can then skip its animations. False where the system has no such setting (Linux, Android).
+
 **Idling:** a mouse button (or a finger) held down keeps the app awake, even still: a button that repeats, a drag that pauses.
 
 **Ini settings:** `LoadUserPref` gives back the value as saved by `SaveUserPref`. It came back with a trailing newline from the second run on: each read and write of the ini file added a `\n` to its last part.

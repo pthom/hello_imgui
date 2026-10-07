@@ -6,6 +6,9 @@ std::string getAppleBundleResourcePath(const std::string & filename);
 
 std::string GetBundlePath();
 
+// The system's "Reduce motion" (macOS and iOS accessibility settings)
+bool ApplePrefersReducedMotion();
+
 namespace AppleIniFolderLocations
 {
     std::string GetTempPath();

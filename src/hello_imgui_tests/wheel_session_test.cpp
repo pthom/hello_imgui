@@ -34,6 +34,7 @@ struct Bench
     void Frame()
     {
         ImGui_ImplNull_NewFrame();
+        HelloImGui::WheelSessionBeforeNewFrame();
         ImGui::NewFrame();
         HelloImGui::UpdateWheelSession();
         ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Always);
@@ -85,6 +86,23 @@ TEST_CASE("Wheel session: a wheel that started on the lines keeps scrolling over
     b.Wheel(-1.f);
     b.Wheel(-1.f);
     CHECK(b.scrollY > afterFirst);
+    CHECK(b.zooms == 0);
+}
+
+TEST_CASE("Wheel session: the mouse still, the page scrolls the zooming item under it, and keeps scrolling")
+{
+    // A wheel or a trackpad: the hand does not move the mouse. ImGui's lock keeps the wheel on the page, and gives
+    // its ownership back to the page at each NewFrame(): the item's claim is gone when the session looks
+    Bench b;
+    b.Frames(3);
+    b.MoveTo(ImVec2(100.f, b.zoomRect.Min.y - 10.f));  // on the line just above the item
+    float scroll = b.scrollY;
+    for (int i = 0; i < 6; ++i)
+    {
+        b.Wheel(-1.f);
+        CHECK(b.scrollY > scroll);  // each notch scrolls the page, also while the item is under the mouse
+        scroll = b.scrollY;
+    }
     CHECK(b.zooms == 0);
 }
 

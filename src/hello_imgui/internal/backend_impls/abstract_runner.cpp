@@ -1464,6 +1464,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
     // ImGui::NewFrame may call ImGuiTestEngine_PostNewFrame, which in turn handles the GIL in its own way,
     // so that it can *NOT* be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
+    WheelSessionBeforeNewFrame();  // the item that claimed the wheel, before NewFrame() gives it back to a window
     ImGui::NewFrame();
 
     UpdateWheelSession();  // before any widget: a wheel that started on the page keeps scrolling it over a plot

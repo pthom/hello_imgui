@@ -9,7 +9,9 @@
 * In the browser, the virtual keyboard of a phone: a text widget that is active shows a keyboard button next to it; a tap on it, or on the widget again, opens the keyboard, and what is typed goes to the widget (the browser shows a keyboard only for a text field focused inside a touch handler, which a frame cannot do).
 * In the browser, two fingers that pinch scale the font (`style.FontScaleMain`): `RunnerParams::touchPinchMode` (`FontScale`, `Disabled`), and `touchPinchInterruptsWidgets` (whether the second finger takes the press from a widget that holds it). ImGui also learns whether the pointer is a mouse, a finger or a pen (with GLFW, which has no API for it), and keeps no pointer between two touches.
 
-**Mouse wheel:** a wheel that started on the content of a window keeps scrolling it when the mouse travels over a plot or an image that zooms with the wheel: the item sees no wheel until the session ends (0.7 s without an event, ImGui's own lock of the scrolled window, applied to items). A wheel that starts on the item is the item's.
+**Mouse wheel:** the wheel stays with the window it scrolls, as in a browser. A page scrolled with the wheel keeps scrolling when a plot or an image passes under the mouse, and the plot does not zoom; a wheel that starts on the plot zooms it. The page lets go of the wheel when the mouse moves, or 0.7 s after the last wheel event.
+* A widget of your own that reads the wheel claims it while hovered, as ImPlot and ImmVision do: `if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY)) zoom *= powf(1.1f, ImGui::GetIO().MouseWheel);`. Without the claim, in a page that scrolls, the widget never sees the wheel.
+* `RunnerParams::wheelSession` (default true): false gives Dear ImGui's own behavior.
 
 **Idling:** a mouse button (or a finger) held down keeps the app awake, even still: a button that repeats, a drag that pauses.
 

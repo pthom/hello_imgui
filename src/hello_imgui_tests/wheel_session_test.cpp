@@ -73,8 +73,9 @@ struct Bench
 };
 }  // namespace
 
-TEST_CASE("Wheel session: a wheel that started on the lines keeps scrolling over the zooming item, which sees none")
+TEST_CASE("Wheel session: a wheel on the lines, then the mouse moves onto the zooming item: the item takes the wheel")
 {
+    // A move ends the session, as it ends ImGui's lock of the scrolled window
     Bench b;
     b.Frames(3);
     b.MoveTo(ImVec2(100.f, 20.f));  // on the lines
@@ -83,11 +84,11 @@ TEST_CASE("Wheel session: a wheel that started on the lines keeps scrolling over
     CHECK(afterFirst > 0.f);
     b.MoveTo(b.zoomRect.GetCenter());  // over the item (its rectangle is on the screen, as of the last frame)
     b.Frames(2);
-    CHECK(b.zoomRect.Contains(ImGui::GetIO().MousePos));  // the item is under the mouse: without the session it would zoom
+    CHECK(b.zoomRect.Contains(ImGui::GetIO().MousePos));
     b.Wheel(-1.f);
     b.Wheel(-1.f);
-    CHECK(b.scrollY > afterFirst);
-    CHECK(b.zooms == 0);
+    CHECK(b.scrollY == afterFirst);
+    CHECK(b.zooms == 2);
 }
 
 TEST_CASE("Wheel session: the mouse still, the page scrolls the zooming item under it, and keeps scrolling")
@@ -168,14 +169,13 @@ TEST_CASE("Wheel session: a trackpad's small momentum events extend a session by
 {
     Bench b;
     b.Frames(3);
-    b.MoveTo(ImVec2(100.f, 20.f));
+    b.MoveTo(ImVec2(100.f, b.zoomRect.Min.y - 30.f));  // the mouse still above the item: the first notch brings it under
     b.Wheel(-1.f);
-    b.MoveTo(b.zoomRect.GetCenter());
     for (int i = 0; i < 60; ++i)  // a second of a dying tail: 0.01 notch per frame (each adds 7 ms, a frame takes 17)
         b.Wheel(-0.01f);
     CHECK(b.zooms == 0);  // the session held while it lived
-    b.MoveTo(b.zoomRect.GetCenter());  // the tail scrolled the page: the item moved, the mouse follows it
     b.Frames(12);
+    CHECK(b.zoomRect.Contains(ImGui::GetIO().MousePos));
     b.Wheel(-1.f);  // the session ended with the tail (ImGui's timer): the item takes the wheel
     CHECK(b.zooms == 1);
 }

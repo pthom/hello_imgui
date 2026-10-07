@@ -31,6 +31,7 @@ namespace
         bool scrolled = false;          // the page scrolled during the session (by ImGui, or by the session)
         float timer = 0.f;              // s: the session ends when it runs out; each event adds its amount's worth (ImGui's rule:
                                         // a trackpad's small momentum events extend it by little)
+        ImVec2 refMousePos;             // the mouse at the last wheel event: a move past ImGui's drag threshold ends the session
         ImGuiID ownerBeforeNewFrame = 0;  // the wheel's owner as the widgets of the frame ownerFrame left it
         int ownerFrame = -1;
     };
@@ -91,7 +92,11 @@ void UpdateWheelSession(bool enabled)
     if (s.active)
     {
         s.timer -= io.DeltaTime;
-        if (s.timer <= 0.f)
+        // A mouse that moves ends the session, as it ends ImGui's lock of the scrolled window: the wheel goes to what
+        // is under the mouse from then on
+        const float dx = io.MousePos.x - s.refMousePos.x, dy = io.MousePos.y - s.refMousePos.y;
+        const bool moved = ImGui::IsMousePosValid() && dx * dx + dy * dy > io.MouseDragThreshold * io.MouseDragThreshold;
+        if (s.timer <= 0.f || moved)
             s.active = false;
     }
     if (io.MouseWheel == 0.f)
@@ -105,6 +110,7 @@ void UpdateWheelSession(bool enabled)
         s.window = g.WheelingWindow ? g.WheelingWindow : g.HoveredWindow;  // ImGui locked the one it scrolled
     }
     s.timer = ImMin(s.timer + ImAbs(io.MouseWheel) * kSessionSeconds, kSessionSeconds);
+    s.refMousePos = io.MousePos;
     if (s.window == nullptr)
         return;
     const bool scrolledByImGui = (g.WheelingWindowScrolledFrame == g.FrameCount);

@@ -26,8 +26,8 @@ namespace
     // outside the canvas). The field counts in UTF-16 units, ImGui's caret in bytes: converted here.
     const char* kScript = R"JS(
 if (!window.helloImGuiKeyboard) {
-  const K = window.helloImGuiKeyboard = {want: 0, x: 0, y: 0, h: 0, displayW: 0, mirror: '', mirrorCaret: 0,
-                                         edits: [], caret: -1, keys: []};
+  const K = window.helloImGuiKeyboard = {want: 0, id: 0, dismissed: 0, x: 0, y: 0, h: 0, displayW: 0, mirror: '',
+                                         mirrorCaret: 0, edits: [], caret: -1, keys: []};
   const input = document.createElement('textarea');
   input.id = 'helloImGuiTextInput'; input.autocapitalize = 'off'; input.autocomplete = 'off';
   input.setAttribute('autocorrect', 'on'); input.spellcheck = false; input.rows = 1;
@@ -75,9 +75,14 @@ if (!window.helloImGuiKeyboard) {
     const focused = document.activeElement === input;
     input.style.pointerEvents = focused ? 'auto' : 'none';
     place();
-    button.style.display = (K.want && !focused && window.helloImGuiPointerType === 1) ? 'block' : 'none';
+    // No button for a widget whose keyboard the user hid: a tap on its line still opens the keyboard
+    const showButton = K.want && !focused && K.id !== K.dismissed && window.helloImGuiPointerType === 1;
+    button.style.display = showButton ? 'block' : 'none';
     if (!K.want && focused) input.blur(); };
-  K.set = (want, x, y, h, displayW) => { K.want = want; K.x = x; K.y = y; K.h = h; K.displayW = displayW; refresh(); };
+  K.set = (want, id, x, y, h, displayW) => {
+    K.want = want; K.id = id; K.x = x; K.y = y; K.h = h; K.displayW = displayW;
+    if (!want) K.dismissed = 0;
+    refresh(); };
   // The mirror of ImGui's text and caret (UTF-16 units): the field follows, without events of its own
   K.syncing = false;
   K.mirrorTo = (text, caret) => {
@@ -149,7 +154,9 @@ if (!window.helloImGuiKeyboard) {
   input.addEventListener('keyup', (e) => e.stopPropagation());
   input.addEventListener('keypress', (e) => e.stopPropagation());
   input.addEventListener('focus', refresh);
-  input.addEventListener('blur', refresh);
+  // A blur while ImGui still wants text is the user's (the keyboard hidden, a touch elsewhere): the field blurs itself
+  // only once ImGui stopped wanting text
+  input.addEventListener('blur', () => { if (K.want) K.dismissed = K.id; refresh(); });
   // The frame drains: the edits as "at|removed|inserted" lines, the caret, the keys
   K.drainEdits = () => { const e = K.edits.map(x => x.at + '|' + x.removed + '|' + x.inserted).join('\n'); K.edits = []; return e; };
   K.drainCaret = () => { const c = K.caret; K.caret = -1; if (c >= 0) log('caret -> ImGui: ' + c); return c; };
@@ -211,6 +218,7 @@ if (!window.helloImGuiKeyboard) {
     struct State
     {
         bool want = false;
+        ImGuiID id = 0;  // the active widget
         ImVec2 pos;
         float lineHeight = 0.f;
         float displayW = 0.f;
@@ -218,6 +226,12 @@ if (!window.helloImGuiKeyboard) {
         int mirrorCaret = -1;
     };
     State gLast;
+
+    // A field that the application activates again (Enter, then SetKeyboardFocusHere: a find bar, a console) leaves
+    // ImGui without a text widget for a frame or two: the page hears of it after these frames, so that its field keeps
+    // the focus, and the keyboard stays open
+    constexpr int kWantGraceFrames = 5;
+    int gFramesWithoutWant = 0;
 
     void SendKey(ImGuiIO& io, ImGuiKey key)
     {
@@ -239,19 +253,30 @@ void UpdateEmscriptenKeyboard()
     // What ImGui wants, when it changed (the last complete frame's IME data: the cursor's line)
     const ImGuiPlatformImeData& ime = g.PlatformImeDataPrev;
     State now = gLast;
-    now.want = io.WantTextInput;
-    now.pos = ime.InputPos;
-    now.lineHeight = ime.InputLineHeight;
+    if (io.WantTextInput)
+    {
+        gFramesWithoutWant = 0;
+        now.want = true;
+        now.id = g.InputTextState.ID;  // not ActiveId: WantTextInput is a frame late, ActiveId may have moved on
+        now.pos = ime.InputPos;
+        now.lineHeight = ime.InputLineHeight;
+    }
+    else if (gFramesWithoutWant < kWantGraceFrames)
+        ++gFramesWithoutWant;
+    else
+        now.want = false;
     now.displayW = io.DisplaySize.x;
-    if (now.want != gLast.want || now.pos.x != gLast.pos.x || now.pos.y != gLast.pos.y
+    if (now.want != gLast.want || now.id != gLast.id || now.pos.x != gLast.pos.x || now.pos.y != gLast.pos.y
         || now.lineHeight != gLast.lineHeight || now.displayW != gLast.displayW)
     {
         char script[256];
-        snprintf(script, sizeof(script), "window.helloImGuiKeyboard && window.helloImGuiKeyboard.set(%d, %.1f, %.1f, %.1f, %.1f)",
-                 now.want ? 1 : 0, now.pos.x, now.pos.y, now.lineHeight, now.displayW);
+        snprintf(script, sizeof(script),
+                 "window.helloImGuiKeyboard && window.helloImGuiKeyboard.set(%d, %u, %.1f, %.1f, %.1f, %.1f)",
+                 now.want ? 1 : 0, now.id, now.pos.x, now.pos.y, now.lineHeight, now.displayW);
         emscripten_run_script(script);
     }
-    gLast.want = now.want; gLast.pos = now.pos; gLast.lineHeight = now.lineHeight; gLast.displayW = now.displayW;
+    gLast.want = now.want; gLast.id = now.id; gLast.pos = now.pos; gLast.lineHeight = now.lineHeight;
+    gLast.displayW = now.displayW;
     if (!now.want)
     {
         gLast.mirrorText.clear();

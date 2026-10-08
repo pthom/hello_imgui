@@ -53,8 +53,10 @@ struct Bench
     float scrollMaxY = 0.f;
     float lastVtxY = 0.f;  // the y of the window's last drawn vertex (its last visible line): the overscroll moves it
     ImRect buttonRect, sliderRect, repeatRect, childRect, wideRect, canvasRect, linesRect;  // screen coordinates, as of the last frame
+    ImRect heldBarRect;  // what DrawTouchScrollbarGrab() drew in the last frame: an inverted rect when nothing
     ImGuiWindow* benchWindow = nullptr;  // their scroll bars: ImGui::GetWindowScrollbarRect()
     ImGuiWindow* wideWindow = nullptr;
+    ImGuiWindow* childWindow = nullptr;
     ImVec2 mouse;
 
     void Frame()
@@ -100,6 +102,7 @@ struct Bench
         repeatRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
         ImGui::BeginChild("Child", ImVec2(0.f, 80.f), ImGuiChildFlags_Borders);
         childScrollY = ImGui::GetScrollY();
+        childWindow = ImGui::GetCurrentWindow();
         for (int i = 0; i < 30; ++i)
             ImGui::Text("Child line %d", i);
         ImGui::EndChild();
@@ -131,6 +134,12 @@ struct Bench
             ImGui::EndPopup();
         }
         ImGui::End();
+        ImDrawList* foreground = ImGui::GetForegroundDrawList();
+        const int vtxBefore = foreground->VtxBuffer.Size;
+        HelloImGui::DrawTouchScrollbarGrab();  // as in the runner, right before Render()
+        heldBarRect = ImRect(ImVec2(FLT_MAX, FLT_MAX), ImVec2(-FLT_MAX, -FLT_MAX));
+        for (int i = vtxBefore; i < foreground->VtxBuffer.Size; ++i)
+            heldBarRect.Add(foreground->VtxBuffer[i].pos);
         ImGui::Render();
         HelloImGui::ApplyTouchOverscroll();
         lastVtxY = ImGui::FindWindowByName("Bench")->DrawList->VtxBuffer.back().pos.y;
@@ -632,6 +641,27 @@ TEST_CASE("Touch scroll: thin scroll bars on a touch screen, when asked")
     b.Frames(2);
     CHECK(ImGui::GetStyle().ScrollbarSize < themeSize);
     CHECK(ImGui::GetStyle().ScrollbarSize >= 1.f);
+}
+
+TEST_CASE("Touch scroll: a thin scroll bar held by a finger widens over the content")
+{
+    Bench b;
+    b.thinScrollbars = true;
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
+    b.Frames(3);
+    b.Source(ImGuiMouseSource_TouchScreen);
+    // The child's bar: the bench window's is under its resize border, which would take the hold
+    const ImRect bar = ImGui::GetWindowScrollbarRect(b.childWindow, ImGuiAxis_Y);
+    b.Press(bar.GetCenter());
+    CHECK(b.heldBarRect.Min.x > b.heldBarRect.Max.x);  // a swipe so far: nothing drawn
+    b.Frames(20);  // past the hold delay, the bar got the press
+    CHECK(ImGui::GetActiveID() == ImGui::GetWindowScrollbarID(b.childWindow, ImGuiAxis_Y));
+    CHECK(b.heldBarRect.Min.x < bar.Min.x - 3.f);  // its thumb, wider, over the content
+    CHECK(b.heldBarRect.Max.x <= bar.Max.x + 1.f);  // along the window's edge
+    CHECK(b.heldBarRect.Min.y >= bar.Min.y - 1.f);
+    CHECK(b.heldBarRect.Max.y <= bar.Max.y + 1.f);
+    b.Release();
+    CHECK(b.heldBarRect.Min.x > b.heldBarRect.Max.x);
 }
 
 TEST_CASE("Touch scroll: a widget that takes the active id after the press ends the swipe")

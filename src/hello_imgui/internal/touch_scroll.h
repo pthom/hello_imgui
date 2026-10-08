@@ -8,6 +8,10 @@ namespace HelloImGui
     // Called by the runner right after ImGui::NewFrame(), before any widget.
     void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick, bool thinScrollbars);
 
+    // A thin scroll bar held by a finger widens over the content (iOS): called by the runner after the GUI, right
+    // before ImGui::Render(), when this frame's scroll is final.
+    void DrawTouchScrollbarGrab();
+
     // The content dragged or flung past its end (the rubber band, the bounce) is drawn there: called by the runner
     // right after ImGui::Render(), before the draw data is rendered.
     void ApplyTouchOverscroll();

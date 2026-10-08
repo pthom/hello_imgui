@@ -51,6 +51,8 @@ namespace
     constexpr int kFlickSamples = 16;           // enough for the window at 240 fps
     constexpr float kRubberBandResistance = 0.55f;  // iOS: a drag of d past the end moves the content by (1 - 1 / (d * c / size + 1)) * size
     constexpr float kThinScrollbarFontSizes = 0.3f;  // the scroll bars' width on a touch screen (iOS: about 3 pt)
+    constexpr float kHeldScrollbarFontSizes = 0.8f;  // a bar held by a finger widens to this, over the content (iOS too)
+    constexpr float kHeldScrollbarGrowSeconds = 0.15f;
     constexpr float kBounceOmega = 12.f;        // 1/s: the content past its end springs back as a critically damped spring (settled in about 0.4 s)
 
     struct Sample
@@ -78,6 +80,9 @@ namespace
         int replayedPresses = 0;        // presses queued by the layer, which it must not claim
         bool watchingLongPress = false; // a touch press, still so far: a long press when it stays
         bool longPressArmed = false;    // it stayed: a right click when it lifts, unless it moves (a ring shows it)
+        bool thinScrollbars = false;    // this frame: thin bars on a touch screen
+        ImGuiID heldBar = 0;            // the scroll bar held by a finger, since heldBarTime: it widens
+        float heldBarTime = 0.f;
         double lastReplayTime = -1e9;   // the previous replayed press: the next one pairs with it (a double tap)
         double rippleTime = -1e9;       // when the hold handed the press over: a ring around the finger, briefly
         ImVec2 ripplePos;
@@ -324,7 +329,8 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick, bool th
 
     // Thin bars on a touch screen: indicators, not controls. At each frame, before any window: a theme applied later,
     // or a pinch (the font size), would change them
-    if (thinScrollbars && (io.ConfigFlags & ImGuiConfigFlags_IsTouchScreen))
+    s.thinScrollbars = thinScrollbars && (io.ConfigFlags & ImGuiConfigFlags_IsTouchScreen);
+    if (s.thinScrollbars)
     {
         g.Style.ScrollbarSize = ImMax(1.f, ImFloor(g.FontSize * kThinScrollbarFontSizes));
         g.Style.ScrollbarRounding = g.Style.ScrollbarSize;  // round ends
@@ -624,6 +630,68 @@ bool TouchScrollRelease(bool evenAWidget)
         return false;
     ImGui::ClearActiveID();
     return true;
+}
+
+// A thin scroll bar held by a finger (the hold handed it the press) widens over the content, as on iOS: its thumb is
+// drawn again, wider, where ImGui::ScrollbarEx() placed it. The bar itself keeps its width: ImGui reserves it in the
+// window's layout, and the content would reflow under the finger.
+void DrawTouchScrollbarGrab()
+{
+    ImGuiContext& g = *GImGui;
+    State& s = gState;
+    ImGuiWindow* w = g.ActiveIdWindow;
+    ImGuiAxis axis = ImGuiAxis_None;
+    if (s.thinScrollbars && w != nullptr && g.ActiveId != 0)
+    {
+        if (w->ScrollbarY && g.ActiveId == ImGui::GetWindowScrollbarID(w, ImGuiAxis_Y))
+            axis = ImGuiAxis_Y;
+        else if (w->ScrollbarX && g.ActiveId == ImGui::GetWindowScrollbarID(w, ImGuiAxis_X))
+            axis = ImGuiAxis_X;
+    }
+    if (axis == ImGuiAxis_None)
+    {
+        s.heldBar = 0;
+        return;
+    }
+    if (s.heldBar != g.ActiveId)
+    {
+        s.heldBar = g.ActiveId;
+        s.heldBarTime = (float)g.Time;
+    }
+
+    // The thumb, as ScrollbarEx() places it (the sizes and the scroll truncated, as Scrollbar() passes them)
+    const ImGuiStyle& style = g.Style;
+    ImRect bb = ImGui::GetWindowScrollbarRect(w, axis);
+    bb.Expand(-IM_TRUNC(ImMin(style.ScrollbarPadding, ImMin(bb.GetWidth(), bb.GetHeight()) * 0.5f)));
+    const float barLength = (axis == ImGuiAxis_Y) ? bb.GetHeight() : bb.GetWidth();
+    const float visible = IM_TRUNC(w->InnerRect.Max[axis] - w->InnerRect.Min[axis]);
+    const float contents = IM_TRUNC(w->ContentSize[axis] + w->WindowPadding[axis] * 2.f);
+    const float total = ImMax(ImMax(contents, visible), 1.f);
+    const float thumbLength =
+        (float)(int)ImClamp(barLength * visible / total, ImMin(barLength, style.GrabMinSize), barLength);
+    const float scrollRatio = ImSaturate(IM_TRUNC(w->Scroll[axis]) / ImMax(1.f, contents - visible));
+    const float thumbStart = bb.Min[axis] + scrollRatio * (barLength - thumbLength);
+
+    // Wider, toward the content, growing for a moment. A few widths long at least (the thumb of a long list is short:
+    // it would be a dot), around ImGui's thumb
+    const float t = ImSaturate(((float)g.Time - s.heldBarTime) / kHeldScrollbarGrowSeconds);
+    const float thin = (axis == ImGuiAxis_Y) ? bb.GetWidth() : bb.GetHeight();
+    const float width = ImLerp(thin, g.FontSize * kHeldScrollbarFontSizes, t * (2.f - t));  // eased out
+    const float length = ImMin(ImMax(thumbLength, width * 2.5f), barLength);
+    const float start = ImClamp(thumbStart + (thumbLength - length) * 0.5f, bb.Min[axis], bb.Max[axis] - length);
+    ImRect thumb = (axis == ImGuiAxis_Y) ? ImRect(bb.Max.x - width, start, bb.Max.x, start + length)
+                                         : ImRect(start, bb.Max.y - width, start + length, bb.Max.y);
+
+    // Opaque (the theme's color over the window's background): the content and the thin thumb do not show through
+    ImVec4 color = ImLerp(style.Colors[ImGuiCol_WindowBg], style.Colors[ImGuiCol_ScrollbarGrabActive],
+                          style.Colors[ImGuiCol_ScrollbarGrabActive].w);
+    color.w = 1.f;
+    ImDrawList* drawList = ImGui::GetForegroundDrawList(w->Viewport);
+    drawList->PushClipRect(w->Rect().Min, w->Rect().Max);
+    drawList->AddRectFilled(thumb.Min, thumb.Max, ImGui::GetColorU32(color), width * 0.5f);
+    drawList->PopClipRect();
+    if (t < 1.f)
+        RequestRefresh();
 }
 
 // The widget just drawn: its visible part, noted for the press of the next frame. Nothing when the layer did not run

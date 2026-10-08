@@ -1219,6 +1219,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     //  outside of any SCOPED_RELEASE_GIL_ON_MAIN_THREAD block)
     auto fnRender = [this]()
     {
+        DrawTouchScrollbarGrab();  // after the GUI: this frame's scroll is final
         ImGui::Render();
         ApplyTouchOverscroll();
         mRenderingBackendCallbacks->Impl_RenderDrawData_To_3D();

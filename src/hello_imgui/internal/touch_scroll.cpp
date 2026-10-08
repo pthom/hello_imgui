@@ -607,10 +607,13 @@ bool TouchScrollRelease(bool evenAWidget)
     return true;
 }
 
-// The widget just drawn: its visible part, noted for the press of the next frame
+// The widget just drawn: its visible part, noted for the press of the next frame. Nothing when the layer did not run
+// this frame (an app with its own loop, without HelloImGui's runner): the notes would pile up, never read.
 void SetItemTakesTouchDrags(bool longPressIsRightClick)
 {
     ImGuiContext& g = *GImGui;
+    if (gState.context != &g || gState.frameCount != g.FrameCount)
+        return;
     ImGuiWindow* window = g.CurrentWindow;
     ImRect rect = g.LastItemData.Rect;
     rect.ClipWith(window->ClipRect);

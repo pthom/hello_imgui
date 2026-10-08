@@ -1385,7 +1385,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     ImGui::NewFrame();
 
     UpdateWheelSession(params.wheelSession);  // before any widget: a wheel that started on the page keeps scrolling it over a plot
-    UpdateTouchScroll(params.touchScrollMode, params.touchLongPressIsRightClick);  // before any widget: a touch press is claimed, then replayed or handed over
+    UpdateTouchScroll(params.touchScrollMode, params.touchLongPressIsRightClick, params.touchThinScrollbars);  // before any widget: a touch press is claimed, then replayed or handed over
     UpdateTouchPinch(params.touchPinchMode, params.touchPinchInterruptsWidgets);
 
     if ((params.callbacks.PostNewFrame) && !insideReentrantCall)

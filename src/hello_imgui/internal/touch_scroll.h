@@ -4,9 +4,9 @@
 namespace HelloImGui
 {
     // The swipe of a touch screen: a finger that drags the content of a window scrolls it, with inertia; a tap still
-    // clicks, a short hold then a drag goes to the widget. Called by the runner right after ImGui::NewFrame(),
-    // before any widget.
-    void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick);
+    // clicks, a short hold then a drag goes to the widget. On a touch screen, thinScrollbars makes the bars thin.
+    // Called by the runner right after ImGui::NewFrame(), before any widget.
+    void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick, bool thinScrollbars);
 
     // The content dragged or flung past its end (the rubber band, the bounce) is drawn there: called by the runner
     // right after ImGui::Render(), before the draw data is rendered.

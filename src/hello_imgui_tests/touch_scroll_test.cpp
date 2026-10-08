@@ -30,6 +30,7 @@ struct Bench
 
     TouchScrollMode mode = TouchScrollMode::Always;
     bool longPressIsRightClick = true;
+    bool thinScrollbars = false;
     bool itemPopupOpen = false, windowPopupOpen = false;  // the context menus (right clicks) of the button and the window
     bool rightDown = false;  // io.MouseDown[1], as of the last frame
     int rightClicks = 0;     // the right clicks seen by the widgets
@@ -52,6 +53,8 @@ struct Bench
     float scrollMaxY = 0.f;
     float lastVtxY = 0.f;  // the y of the window's last drawn vertex (its last visible line): the overscroll moves it
     ImRect buttonRect, sliderRect, repeatRect, childRect, wideRect, canvasRect, linesRect;  // screen coordinates, as of the last frame
+    ImGuiWindow* benchWindow = nullptr;  // their scroll bars: ImGui::GetWindowScrollbarRect()
+    ImGuiWindow* wideWindow = nullptr;
     ImVec2 mouse;
 
     void Frame()
@@ -59,13 +62,14 @@ struct Bench
         ImGui_ImplNull_NewFrame();
         ImGui::NewFrame();
         // As in the runner: the layer runs before any widget (it acts on the frame's input before the widgets see it)
-        HelloImGui::UpdateTouchScroll(mode, longPressIsRightClick);
+        HelloImGui::UpdateTouchScroll(mode, longPressIsRightClick, thinScrollbars);
         HelloImGui::UpdateTouchPinch(pinchMode, pinchInterrupts);
         if (ImGui::GetIO().MouseClickedCount[ImGuiMouseButton_Left] == 2)
             doubleClicks++;
         ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(400.f, 300.f), ImGuiCond_Always);
         ImGui::Begin("Bench", nullptr, ImGuiWindowFlags_NoTitleBar);
+        benchWindow = ImGui::GetCurrentWindow();
         scrollY = ImGui::GetScrollY();
         scrollMaxY = ImGui::GetScrollMaxY();
         rightDown = ImGui::GetIO().MouseDown[1];
@@ -102,6 +106,7 @@ struct Bench
         childRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
         ImGui::BeginChild("Wide", ImVec2(0.f, 60.f), ImGuiChildFlags_Borders, ImGuiWindowFlags_HorizontalScrollbar);  // tall enough: one line plus its scrollbar, no vertical scroll
         wideScrollX = ImGui::GetScrollX();
+        wideWindow = ImGui::GetCurrentWindow();
         ImGui::Text("A wide line, wider than the window, so that this child scrolls sideways and not vertically");
         ImGui::EndChild();
         wideRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
@@ -580,6 +585,53 @@ TEST_CASE("Touch scroll: after a long press, a move keeps the widget's drag, and
     CHECK(b.rightClicks == 0);
     CHECK(!b.itemPopupOpen);
     CHECK(!b.windowPopupOpen);
+}
+
+TEST_CASE("Touch scroll: with a finger, a swipe on a scroll bar scrolls the content with the finger")
+{
+    {
+        Bench b;
+        b.Frames(3);
+        b.Source(ImGuiMouseSource_TouchScreen);
+        b.Press(b.linesRect.GetCenter());  // some scroll first
+        b.Drag(ImVec2(0.f, -100.f), 5);
+        b.ReleaseStill();
+        float before = b.scrollY;
+        REQUIRE(before > 50.f);
+        b.Press(ImGui::GetWindowScrollbarRect(b.benchWindow, ImGuiAxis_Y).GetCenter());
+        b.Drag(ImVec2(0.f, 40.f), 4);  // down, on the vertical bar
+        b.ReleaseStill();
+        CHECK(Near(b.scrollY, before - 40.f));  // the content followed the finger, as on the content
+
+        b.Press(ImGui::GetWindowScrollbarRect(b.wideWindow, ImGuiAxis_X).GetCenter());
+        b.Drag(ImVec2(-40.f, 0.f), 4);  // left, on the horizontal bar of the wide child
+        b.ReleaseStill();
+        CHECK(Near(b.wideScrollX, 40.f));
+    }  // one ImGui context at a time
+    Bench c;  // with the mouse, the bar is a control: the same drag moves the content forward (its thumb, a page)
+    c.Frames(3);
+    c.Press(c.linesRect.GetCenter());
+    c.Drag(ImVec2(0.f, -100.f), 5);
+    c.ReleaseStill();
+    float before = c.scrollY;
+    c.Press(ImGui::GetWindowScrollbarRect(c.benchWindow, ImGuiAxis_Y).GetCenter());
+    c.Drag(ImVec2(0.f, 40.f), 4);
+    c.ReleaseStill();
+    CHECK(c.scrollY > before);
+}
+
+TEST_CASE("Touch scroll: thin scroll bars on a touch screen, when asked")
+{
+    Bench b;
+    b.Frames(2);
+    const float themeSize = ImGui::GetStyle().ScrollbarSize;
+    b.thinScrollbars = true;
+    b.Frames(2);
+    CHECK(ImGui::GetStyle().ScrollbarSize == themeSize);  // not a touch screen
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
+    b.Frames(2);
+    CHECK(ImGui::GetStyle().ScrollbarSize < themeSize);
+    CHECK(ImGui::GetStyle().ScrollbarSize >= 1.f);
 }
 
 TEST_CASE("Touch scroll: a widget that takes the active id after the press ends the swipe")

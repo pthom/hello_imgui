@@ -50,6 +50,7 @@ namespace
     constexpr float kFlickWindow = 0.05f;       // s: the lift speed is the finger's motion over this long before the lift
     constexpr int kFlickSamples = 16;           // enough for the window at 240 fps
     constexpr float kRubberBandResistance = 0.55f;  // iOS: a drag of d past the end moves the content by (1 - 1 / (d * c / size + 1)) * size
+    constexpr float kThinScrollbarFontSizes = 0.3f;  // the scroll bars' width on a touch screen (iOS: about 3 pt)
     constexpr float kBounceOmega = 12.f;        // 1/s: the content past its end springs back as a critically damped spring (settled in about 0.4 s)
 
     struct Sample
@@ -156,6 +157,14 @@ namespace
                     return &t;
         }
         return nullptr;
+    }
+
+    // With a finger, a window's scroll bars are indicators: a press on one is a swipe, as on the content (dragging
+    // the thumb moved the content against the finger, and faster than it). A hold still hands it the thumb.
+    bool OnScrollbar(ImGuiWindow* w, ImVec2 pos)
+    {
+        return (w->ScrollbarY && ImGui::GetWindowScrollbarRect(w, ImGuiAxis_Y).Contains(pos))
+            || (w->ScrollbarX && ImGui::GetWindowScrollbarRect(w, ImGuiAxis_X).Contains(pos));
     }
 
     // Whether the window, or a parent, can scroll at all: when nothing can, a press has nothing to pre-empt
@@ -298,7 +307,7 @@ namespace
     }
 }  // namespace
 
-void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
+void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick, bool thinScrollbars)
 {
     ImGuiContext& g = *GImGui;
     ImGuiIO& io = g.IO;
@@ -312,6 +321,14 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
     const ImGuiID id = SentinelId();
     s.previousTakers.swap(s.takers);
     s.takers.clear();
+
+    // Thin bars on a touch screen: indicators, not controls. At each frame, before any window: a theme applied later,
+    // or a pinch (the font size), would change them
+    if (thinScrollbars && (io.ConfigFlags & ImGuiConfigFlags_IsTouchScreen))
+    {
+        g.Style.ScrollbarSize = ImMax(1.f, ImFloor(g.FontSize * kThinScrollbarFontSizes));
+        g.Style.ScrollbarRounding = g.Style.ScrollbarSize;  // round ends
+    }
 
     bool enabled = (mode == TouchScrollMode::Always)
                    || (mode == TouchScrollMode::Auto && io.MouseSource == ImGuiMouseSource_TouchScreen);
@@ -327,7 +344,7 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
     const float dt = (io.DeltaTime > 0.f) ? io.DeltaTime : 1.f / 60.f;
 
     // A press: one replayed by the layer goes to the widgets; a real one stops the inertia and is claimed when it
-    // lands on the content of a window (not its title bar, its scrollbars, its borders)
+    // lands on the content of a window, or on its scroll bars with a finger (not its title bar, nor its borders)
     if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
     {
         if (s.replayedPresses > 0)
@@ -343,7 +360,9 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
                 (w != nullptr && ImGui::IsMousePosValid()) ? FindDragTaker(s, w, io.MousePos) : nullptr;
             s.watchingLongPress = longPressIsRightClick && ImGui::IsMousePosValid()
                                   && (taker == nullptr || taker->longPressIsRightClick);
-            if (w != nullptr && !w->Collapsed && ImGui::IsMousePosValid() && w->InnerRect.Contains(io.MousePos)
+            bool touch = (io.MouseSource == ImGuiMouseSource_TouchScreen);
+            if (w != nullptr && !w->Collapsed && ImGui::IsMousePosValid()
+                && (w->InnerRect.Contains(io.MousePos) || touch && OnScrollbar(w, io.MousePos))
                 && CanScrollSomewhere(w) && taker == nullptr)
             {
                 // A widget active from before (a text input being edited) loses the id, as with a press elsewhere

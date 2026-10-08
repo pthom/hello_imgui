@@ -37,6 +37,7 @@ struct Bench
     bool shortContent = false;  // the window's lines fit: nothing to scroll (the child still scrolls)
     bool canvas = false;        // a canvas below the wide child: an item that sums its drags
     bool canvasTakesDrags = false;  // it calls SetItemTakesTouchDrags()
+    bool canvasLongPressIsRightClick = true;  // its argument
     ImGuiID canvasId = 0;
     ImVec2 canvasDrag;
     ImGuiID buttonId = 0;
@@ -104,7 +105,7 @@ struct Bench
             if (ImGui::IsItemActive())
                 canvasDrag += ImGui::GetIO().MouseDelta;
             if (canvasTakesDrags)
-                HelloImGui::SetItemTakesTouchDrags();
+                HelloImGui::SetItemTakesTouchDrags(canvasLongPressIsRightClick);
         }
         ImVec2 linesPos = ImGui::GetCursorScreenPos();
         for (int i = 0; i < (shortContent ? 2 : 100); ++i)
@@ -496,6 +497,30 @@ TEST_CASE("Touch scroll: a long press is a right click, a shorter one or a movin
     CHECK(!b.itemPopupOpen);
     b.Release();
     CHECK(b.clicks == 2);
+}
+
+TEST_CASE("Touch scroll: a widget that takes the drags may keep a still finger past the long press")
+{
+    {
+        Bench b;
+        b.canvas = b.canvasTakesDrags = true;
+        b.Frames(3);
+        b.Press(b.canvasRect.GetCenter());
+        b.Frames(40);  // 0.66 s still: the long press takes the press away, and right clicks
+        CHECK(ImGui::GetCurrentContext()->ActiveId != b.canvasId);
+        CHECK(!ImGui::GetIO().MouseDown[0]);
+        b.Release();
+    }  // one ImGui context at a time
+    Bench c;
+    c.canvas = c.canvasTakesDrags = true;
+    c.canvasLongPressIsRightClick = false;  // a piano key: held as long as the finger stays
+    c.Frames(3);
+    c.Press(c.canvasRect.GetCenter());
+    c.Frames(40);
+    CHECK(ImGui::GetCurrentContext()->ActiveId == c.canvasId);
+    CHECK(ImGui::GetIO().MouseDown[0]);
+    CHECK(!c.rightDown);
+    c.Release();
 }
 
 TEST_CASE("Touch scroll: a button that repeats keeps the finger past the long press, and repeats")

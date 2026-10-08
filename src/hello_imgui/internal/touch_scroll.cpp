@@ -84,6 +84,7 @@ namespace
         {
             ImGuiID window;  // the widget's window
             ImRect rect;     // its visible part, on the screen
+            bool longPressIsRightClick;
         };
         std::vector<DragTaker> takers, previousTakers;  // SetItemTakesTouchDrags(): this frame's, the last frame's
     };
@@ -129,9 +130,9 @@ namespace
         return w;
     }
 
-    // A widget under the press asked for the drags at the last frame (SetItemTakesTouchDrags): in the pressed window,
-    // or in a window that holds it as a child (a plot drawn in a child window of its own)
-    bool TakesTouchDrags(const State& s, const ImGuiWindow* w, ImVec2 pos)
+    // The widget under the press that asked for the drags at the last frame (SetItemTakesTouchDrags), if any: in the
+    // pressed window, or in a window that holds it as a child (a plot drawn in a child window of its own)
+    const State::DragTaker* FindDragTaker(const State& s, const ImGuiWindow* w, ImVec2 pos)
     {
         for (const State::DragTaker& t : s.previousTakers)
         {
@@ -139,9 +140,9 @@ namespace
                 continue;
             for (const ImGuiWindow* x = w; x; x = (x->Flags & ImGuiWindowFlags_ChildWindow) ? x->ParentWindow : nullptr)
                 if (x->ID == t.window)
-                    return true;
+                    return &t;
         }
-        return false;
+        return nullptr;
     }
 
     // Whether the window, or a parent, can scroll at all: when nothing can, a press has nothing to pre-empt
@@ -327,12 +328,15 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
         {
             s.inertia = ImVec2(0.f, 0.f);
             s.overscroll = s.overscrollSpeed = 0.f;  // a bounce ends at once: the widgets are where they are drawn
-            s.watchingLongPress = longPressIsRightClick && ImGui::IsMousePosValid();
             s.pressTime = (float)g.Time;
             s.pressPos = io.MousePos;
             ImGuiWindow* w = g.HoveredWindow;
+            const State::DragTaker* taker =
+                (w != nullptr && ImGui::IsMousePosValid()) ? FindDragTaker(s, w, io.MousePos) : nullptr;
+            s.watchingLongPress = longPressIsRightClick && ImGui::IsMousePosValid()
+                                  && (taker == nullptr || taker->longPressIsRightClick);
             if (w != nullptr && !w->Collapsed && ImGui::IsMousePosValid() && w->InnerRect.Contains(io.MousePos)
-                && CanScrollSomewhere(w) && !TakesTouchDrags(s, w, io.MousePos))
+                && CanScrollSomewhere(w) && taker == nullptr)
             {
                 // A widget active from before (a text input being edited) loses the id, as with a press elsewhere
                 ImGui::SetActiveID(id, w);
@@ -589,14 +593,14 @@ bool TouchScrollRelease(bool evenAWidget)
 }
 
 // The widget just drawn: its visible part, noted for the press of the next frame
-void SetItemTakesTouchDrags()
+void SetItemTakesTouchDrags(bool longPressIsRightClick)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
     ImRect rect = g.LastItemData.Rect;
     rect.ClipWith(window->ClipRect);
     if (rect.GetWidth() > 0.f && rect.GetHeight() > 0.f)
-        gState.takers.push_back({window->ID, rect});
+        gState.takers.push_back({window->ID, rect, longPressIsRightClick});
 }
 
 }  // namespace HelloImGui

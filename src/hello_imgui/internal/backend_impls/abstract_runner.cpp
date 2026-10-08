@@ -4,6 +4,7 @@
 #include "hello_imgui/internal/touch_scroll.h"
 #include "hello_imgui/internal/wheel_session.h"
 #include "hello_imgui/internal/touch_pinch.h"
+#include "hello_imgui/internal/refresh_request.h"
 #ifdef __EMSCRIPTEN__
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
 #endif
@@ -30,10 +31,12 @@
 #define SCOPED_RELEASE_GIL_ON_MAIN_THREAD
 #endif
 
+#include <atomic>
 #include <chrono>
 #include <cassert>
 #include <filesystem>
 #include <cstdio>
+#include <mutex>
 #include <optional>
 #include <thread>
 #include <chrono>
@@ -119,6 +122,36 @@ struct AbstractRunnerStatics
 static AbstractRunnerStatics gStatics;
 
 static void ResetAbstractRunnerStatics() { gStatics = AbstractRunnerStatics(); }
+
+// RequestRefresh() and SetItemIsLive(): set from any thread, read and cleared by the idling at each frame. Apart from
+// gStatics: an atomic cannot be copied by its reset.
+static std::atomic<bool> gRefreshRequested{false};
+// The window helper whose wait for events RequestRefresh() ends. The mutex keeps a call from another thread off a
+// helper that the runner is shutting down.
+static std::mutex gRefreshWakeUpMutex;
+static BackendApi::IBackendWindowHelper* gRefreshWakeUpHelper = nullptr;
+
+bool ConsumeRefreshRequest() { return gRefreshRequested.exchange(false); }
+
+void SetRefreshWakeUp(BackendApi::IBackendWindowHelper* windowHelper)
+{
+    std::lock_guard<std::mutex> lock(gRefreshWakeUpMutex);
+    gRefreshWakeUpHelper = windowHelper;
+}
+
+void RequestRefresh()
+{
+    gRefreshRequested = true;
+    std::lock_guard<std::mutex> lock(gRefreshWakeUpMutex);
+    if (gRefreshWakeUpHelper != nullptr)
+        gRefreshWakeUpHelper->PostEmptyEvent();
+}
+
+void SetItemIsLive(bool live)
+{
+    if (live && ImGui::IsItemVisible())
+        gRefreshRequested = true;  // on the main thread, during a frame: the runner is not waiting
+}
 
 namespace Internal
 {
@@ -641,6 +674,9 @@ void AbstractRunner::Setup()
 
     // Init platform backend (SDL, Glfw)
     Impl_InitPlatformBackend();
+#ifndef __EMSCRIPTEN__  // the browser calls each frame: the runner never waits for events there
+    SetRefreshWakeUp(mBackendWindowHelper.get());
+#endif
 
     #ifdef HELLOIMGUI_HAS_OPENGL
         if (params.rendererBackendType == RendererBackendType::OpenGL3)
@@ -1074,7 +1110,10 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         // A mouse button (or a finger) held down is an activity, even still: a button that repeats, a drag that pauses
         bool mouseDown = ImGui::GetCurrentContext() != nullptr && ImGui::IsAnyMouseDown();
 
-        bool preventIdling = isIdlingDisabledByParams || hasRecentEvent || isTestEngineRunning || ShouldRemoteDisplay() || startedRecently || mouseDown;
+        // Content that changes on its own asked for this frame (RequestRefresh(), SetItemIsLive())
+        bool refreshRequested = ConsumeRefreshRequest();
+
+        bool preventIdling = isIdlingDisabledByParams || hasRecentEvent || isTestEngineRunning || ShouldRemoteDisplay() || startedRecently || mouseDown || refreshRequested;
         return ! preventIdling;
     };
 
@@ -1584,6 +1623,7 @@ void AbstractRunner::TearDown(bool gotException)
     #endif
 
     mRenderingBackendCallbacks->Impl_Shutdown_3D();
+    SetRefreshWakeUp(nullptr);
     Impl_Cleanup();
 
 

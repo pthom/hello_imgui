@@ -68,6 +68,8 @@ namespace HelloImGui { namespace BackendApi
         virtual void SetWindowBounds(WindowPointer window, ScreenBounds windowBounds) = 0;
 
         virtual void WaitForEventTimeout(double timeout_seconds) = 0;
+        // Ends a WaitForEventTimeout() at once: callable from any thread
+        virtual void PostEmptyEvent() = 0;
 
         // (ImGui backends handle this by themselves)
         //virtual ImVec2 GetDisplayFramebufferScale(WindowPointer window) = 0;

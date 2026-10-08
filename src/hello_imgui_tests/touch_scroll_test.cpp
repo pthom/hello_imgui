@@ -7,6 +7,7 @@
 #include "imgui_impl_null.h"
 #include "hello_imgui/internal/touch_scroll.h"
 #include "hello_imgui/internal/touch_pinch.h"
+#include "hello_imgui/internal/refresh_request.h"
 #include "hello_imgui/hello_imgui.h"  // SetItemTakesTouchDrags
 
 namespace
@@ -580,6 +581,23 @@ TEST_CASE("Touch scroll: a flick keeps scrolling, then stops")
     float stopped = b.scrollY;
     b.Frames(10);
     CHECK(b.scrollY == stopped);
+}
+
+TEST_CASE("Touch scroll: while the content coasts, the app does not idle; once it stops, it may")
+{
+    // The inertia moves without input events: it asks for a refresh at each frame, as an animation would
+    Bench b;
+    b.Frames(3);
+    b.Press(b.linesRect.GetCenter());
+    b.Drag(ImVec2(0.f, -50.f), 5);
+    b.Release();
+    HelloImGui::ConsumeRefreshRequest();
+    b.Frame();
+    CHECK(HelloImGui::ConsumeRefreshRequest());
+    b.Frames(120);
+    HelloImGui::ConsumeRefreshRequest();
+    b.Frame();
+    CHECK(!HelloImGui::ConsumeRefreshRequest());
 }
 
 TEST_CASE("Touch scroll: a drag past the start pulls the content, which springs back at the lift")

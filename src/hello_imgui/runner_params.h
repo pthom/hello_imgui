@@ -154,8 +154,9 @@ struct FpsIdling
     // When the application is idling (no user interaction detected), its FPS
     // will be reduced to this value in order to save CPU and GPU resources.
     //
-    // For animated or real-time widgets (e.g., live video), you may need a
-    // higher idle refresh rate, or even disable idling entirely.
+    // Content that changes on its own (an animation, a live image, a plot of
+    // varying data) keeps the full speed while it changes: call
+    // HelloImGui::SetItemIsLive() after its widget, or HelloImGui::RequestRefresh().
     //
     // Set fpsIdle = 0.f for maximum refresh speed during idling.
     float fpsIdle = 9.f;

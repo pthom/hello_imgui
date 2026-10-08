@@ -39,6 +39,8 @@ namespace HelloImGui { namespace BackendApi
         void WaitForEventTimeout(double timeout_seconds) override {
             std::this_thread::sleep_for(std::chrono::milliseconds((int)(timeout_seconds * 1000)));
         }
+        // The wait above is a sleep: a request from another thread waits for its end (at most 1 / fpsIdle)
+        void PostEmptyEvent() override {}
 
         float GetWindowSizeDpiScaleFactor(WindowPointer window) override { return NullConfig::GetWindowSizeDpiScaleFactor(); }
 

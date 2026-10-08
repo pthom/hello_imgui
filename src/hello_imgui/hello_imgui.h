@@ -203,6 +203,16 @@ namespace ManualRender
 //  the widget's content, in any direction (a swipe that starts on it does not scroll the window).
     void SetItemTakesTouchDrags();
 
+// `SetItemIsLive(live = true)`: call it right after a widget whose content changes on its own (an animation, a live
+//  image, a plot of varying data), at each frame: while it is live and visible, the app does not idle (see
+//  RunnerParams.fpsIdling).
+    void SetItemIsLive(bool live = true);
+
+// `RequestRefresh()`: the next frame comes at full speed, even without user input: the app does not idle. Callable
+//  from any thread: call it when new data arrives (a camera, a socket), or at each frame while something that is no
+//  widget moves (a background, a drawing).
+    void RequestRefresh();
+
 // `PrefersReducedMotion()`: true when the system asks for less motion: "Reduce motion" on macOS and iOS, "Show
 //  animations in Windows" turned off, a browser's prefers-reduced-motion. An application can then skip its animations
 //  (a scroll, a transition). False where the system has no such setting (Linux, Android).

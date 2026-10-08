@@ -30,6 +30,7 @@ namespace HelloImGui { namespace BackendApi
         void SetWindowBounds(WindowPointer window, ScreenBounds windowBounds) override;
 
         void WaitForEventTimeout(double timeout_seconds) override;
+        void PostEmptyEvent() override;
 
         float GetWindowSizeDpiScaleFactor(WindowPointer window) override;
 

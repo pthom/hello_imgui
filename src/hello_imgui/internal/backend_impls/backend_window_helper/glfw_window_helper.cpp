@@ -265,6 +265,11 @@ namespace HelloImGui { namespace BackendApi
         glfwWaitEventsTimeout(timeout_seconds);
     }
 
+    void GlfwWindowHelper::PostEmptyEvent()
+    {
+        glfwPostEmptyEvent();
+    }
+
     ImVec2 _GetWindowContentScale(HelloImGui::BackendApi::WindowPointer window)
     {
         float x_scale, y_scale;

@@ -237,6 +237,13 @@ namespace HelloImGui { namespace BackendApi
         SDL_WaitEventTimeout(NULL, timeout_ms);
     }
 
+    void SdlWindowHelper::PostEmptyEvent()
+    {
+        SDL_Event event{};
+        event.type = SDL_USEREVENT;  // ignored by the event loop: it only ends the wait
+        SDL_PushEvent(&event);
+    }
+
     float SdlWindowHelper::GetWindowSizeDpiScaleFactor(WindowPointer window)
     {
         #if TARGET_OS_MAC // is true for any software platform that's derived from macOS, which includes iOS, watchOS, and tvOS

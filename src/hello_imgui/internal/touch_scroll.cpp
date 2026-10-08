@@ -1,5 +1,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS  // before any include of imgui.h (runner_params.h includes it)
 #include "hello_imgui/internal/touch_scroll.h"
+#include "hello_imgui/hello_imgui.h"  // RequestRefresh()
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -474,6 +475,11 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
         if (ImFabs(s.overscroll) < 0.5f && ImFabs(s.overscrollSpeed) < kBounceOmega)
             s.overscroll = s.overscrollSpeed = 0.f;
     }
+
+    // The inertia, the bounce and the ripple move without input events: the app does not idle meanwhile
+    bool rippling = g.Time - s.rippleTime < kHoldRippleSeconds;
+    if (s.inertia.x != 0.f || s.inertia.y != 0.f || s.overscroll != 0.f || s.overscrollSpeed != 0.f || rippling)
+        RequestRefresh();
 }
 
 namespace

@@ -18,6 +18,8 @@
 
 **Idling:** a mouse button (or a finger) held down keeps the app awake, even still: a button that repeats, a drag that pauses.
 
+**Themes:** the grab of a held slider stands out from its frame. In Darcula, DarculaDarker, MaterialFlat, Cherry, LightRounded, the three SoDark themes and BlackIsBlack, it had nearly the color of the held frame, and vanished while dragged; its contrast with the frame is now 3:1 at least (WCAG's minimum for the state of a control). Dear ImGui's own three styles are unchanged.
+
 **Ini settings:** `LoadUserPref` gives back the value as saved by `SaveUserPref`. It came back with a trailing newline from the second run on: each read and write of the ini file added a `\n` to its last part.
 
 **plutosvg / plutovg:**

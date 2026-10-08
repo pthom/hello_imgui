@@ -67,7 +67,7 @@ namespace HelloImGui
         }
         ImGui::GetIO().AddMouseSourceEvent(source);
         SetTouchPointers(EmscriptenFingerCount(), EmscriptenPinchScale(), EmscriptenTwoFingerMove());
-        EmscriptenPushTapZone(ImGui::GetIO().DisplaySize.x);
+        EmscriptenPushTapZones(ImGui::GetIO().DisplaySize.x);
         UpdateEmscriptenKeyboard();
         RunnerGlfw3::Impl_PollEvents();
     }

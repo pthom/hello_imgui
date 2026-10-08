@@ -3,6 +3,7 @@
 
 #include <emscripten.h>
 #include <cstdio>
+#include <vector>
 
 // emscripten_run_script rather than EM_JS or EM_ASM: it also works in a side module, as in Pyodide (where the SDL
 // backend labels its events itself: the probe is then only the touch screen hint)
@@ -30,15 +31,22 @@ namespace HelloImGui
             "  const fingerDown = (e) => { if (e.pointerType === 'touch') { fingers[e.pointerId] = [e.clientX, e.clientY]; updatePinch(); } };"
             "  const fingerMove = (e) => { if (e.pointerId in fingers) { fingers[e.pointerId] = [e.clientX, e.clientY]; updatePinch(); } };"
             "  const fingerUp = (e) => { delete fingers[e.pointerId]; updatePinch(); };"
-            "  window.helloImGuiTapZone = null;"
+            "  window.helloImGuiTapZones = []; window.helloImGuiTapDisplayW = 0;"
+            "  let tap = null;"  // the finger that may tap: it lands alone; where, when (ImGui's units)
+            "  const toImGui = (t) => {"
+            "    const c = document.getElementById('canvas'); if (!c) return null;"
+            "    const r = c.getBoundingClientRect(), w = window.helloImGuiTapDisplayW, s = (w > 0 && r.width > 0) ? r.width / w : 1;"
+            "    return [(t.clientX - r.left) / s, (t.clientY - r.top) / s]; };"
+            "  const inZone = (p, z) => p[0] >= z.x0 && p[0] <= z.x1 && p[1] >= z.y0 && p[1] <= z.y1;"
+            "  const zoneAt = (p) => window.helloImGuiTapZones.find((z) => inZone(p, z));"
+            "  document.addEventListener('touchstart', (e) => {"
+            "    const t = e.changedTouches[0], p = toImGui(t);"
+            "    tap = (e.touches.length === 1 && p) ? {id: t.identifier, zone: zoneAt(p), time: performance.now()} : null; }, options);"
             "  document.addEventListener('touchend', (e) => {"
-            "    const z = window.helloImGuiTapZone;"
-            "    if (!z || !e.changedTouches.length) return;"
-            "    const c = document.getElementById('canvas'); if (!c) return;"
-            "    const r = c.getBoundingClientRect(), s = (z.displayW > 0 && r.width > 0) ? r.width / z.displayW : 1;"
-            "    const x = e.changedTouches[0].clientX, y = e.changedTouches[0].clientY;"
-            "    if (x >= r.left + z.x0 * s && x <= r.left + z.x1 * s && y >= r.top + z.y0 * s && y <= r.top + z.y1 * s)"
-            "      window.open(z.url, '_blank'); }, options);"
+            "    const t = e.changedTouches[0], p = t && toImGui(t), start = tap;"
+            "    tap = null;"
+            "    if (!start || !start.zone || !p || t.identifier !== start.id || performance.now() - start.time > 500) return;"
+            "    if (inZone(p, start.zone)) window.open(start.zone.url, '_blank'); }, options);"
             "  document.addEventListener('pointerdown', (e) => { onPointer(e); window.helloImGuiPointerDown = 1; fingerDown(e); }, options);"
             "  document.addEventListener('pointermove', (e) => { onPointer(e); fingerMove(e); }, options);"
             "  document.addEventListener('pointerup', (e) => { window.helloImGuiPointerDown = 0; fingerUp(e); }, options);"
@@ -81,48 +89,40 @@ namespace HelloImGui
         return (float)permille / 1000.f;
     }
 
-    void EmscriptenSetTapOpensUrl(ImVec2 rectMin, ImVec2 rectMax, const std::string& url, float displayWidth)
+    namespace
+    {
+        struct TapZone { ImVec2 rectMin, rectMax; std::string url; };
+        std::vector<TapZone> gTapZoneRequests;  // this frame's
+    }
+
+    void EmscriptenRequestTapZone(ImVec2 rectMin, ImVec2 rectMax, const std::string& url)
+    {
+        gTapZoneRequests.push_back({rectMin, rectMax, url});
+    }
+
+    void EmscriptenPushTapZones(float displayWidth)
     {
         static std::string lastScript;
-        std::string script;
-        if (url.empty())
-            script = "window.helloImGuiTapZone = null";
-        else
+        std::string script = "window.helloImGuiTapZones = [";
+        char buffer[160];
+        for (const TapZone& z : gTapZoneRequests)
         {
             std::string safeUrl;
-            for (char c : url)  // a quote in a url: never valid there, dropped
+            for (char c : z.url)  // a quote in a url: never valid there, dropped
                 if (c != '\'' && c != '\\' && c != '\n')
                     safeUrl += c;
-            char buffer[512];
-            snprintf(buffer, sizeof(buffer), "window.helloImGuiTapZone = {x0: %.1f, y0: %.1f, x1: %.1f, y1: %.1f, displayW: %.1f, url: '",
-                     rectMin.x, rectMin.y, rectMax.x, rectMax.y, displayWidth);
-            script = std::string(buffer) + safeUrl + "'}";
+            snprintf(buffer, sizeof(buffer), "{x0: %.1f, y0: %.1f, x1: %.1f, y1: %.1f, url: '",
+                     z.rectMin.x, z.rectMin.y, z.rectMax.x, z.rectMax.y);
+            script += std::string(buffer) + safeUrl + "'},";
         }
+        snprintf(buffer, sizeof(buffer), "]; window.helloImGuiTapDisplayW = %.1f", displayWidth);
+        script += buffer;
+        gTapZoneRequests.clear();
         if (script != lastScript)
         {
             lastScript = script;
             emscripten_run_script(script.c_str());
         }
-    }
-
-    namespace
-    {
-        struct TapZoneRequest { bool set = false; ImVec2 rectMin, rectMax; std::string url; };
-        TapZoneRequest gTapZoneRequest;
-    }
-
-    void EmscriptenRequestTapZone(ImVec2 rectMin, ImVec2 rectMax, const std::string& url)
-    {
-        gTapZoneRequest = {true, rectMin, rectMax, url};
-    }
-
-    void EmscriptenPushTapZone(float displayWidth)
-    {
-        if (gTapZoneRequest.set)
-            EmscriptenSetTapOpensUrl(gTapZoneRequest.rectMin, gTapZoneRequest.rectMax, gTapZoneRequest.url, displayWidth);
-        else
-            EmscriptenSetTapOpensUrl(ImVec2(), ImVec2(), "", displayWidth);
-        gTapZoneRequest.set = false;
     }
 
     bool EmscriptenHasTouchScreen()

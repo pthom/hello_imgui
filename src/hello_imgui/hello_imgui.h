@@ -191,8 +191,9 @@ namespace ManualRender
 //  normally create — they are not usable outside `Run()`.
     bool InitGlLoader();
 
-// `SetTapOpensUrl(rectMin, rectMax, url)`: in the browser, on a touch screen, a tap that ends inside this rectangle
-//  (screen coordinates) opens the url in a new tab. Call it each frame while the button or the link is shown.
+// `SetTapOpensUrl(rectMin, rectMax, url)`: in the browser, on a touch screen, a tap on this rectangle (screen
+//  coordinates) opens the url in a new tab. Call it each frame while the button or the link is shown (several
+//  rectangles per frame: the links of a text).
 //  A browser allows a new tab only from inside its touch handler, where ImGui has not seen the tap yet (it comes
 //  two frames later): the page opens the tab itself. The tap then reaches the widget too, which should do nothing
 //  more on a touch screen (io.MouseSource == ImGuiMouseSource_TouchScreen). Does nothing outside the browser.

@@ -11,6 +11,7 @@
 #include "hello_imgui/internal/clock_seconds.h"
 #include "hello_imgui/internal/docking_details.h"
 #include "hello_imgui/internal/idle_frame_wait_for_python_async_io.h"
+#include "hello_imgui/internal/idling.h"
 #include "hello_imgui/internal/hello_imgui_ini_settings.h"
 #include "hello_imgui/internal/hello_imgui_ini_any_parent_folder.h"
 #include "hello_imgui/internal/menu_statusbar.h"
@@ -115,9 +116,8 @@ struct AbstractRunnerStatics
     bool lastHiddenState = false;
     bool lastTopMostState = false;
     double timeLastEvent = -1.;
-    double lastRefreshTime = 0.;
+    IdlingState idling;
     float idleFrameWaitForAsync = 0.f;
-    double lastIdlingCallTime = 0.;  // the last call of the idling (a frame drawn or skipped)
 };
 
 static AbstractRunnerStatics gStatics;
@@ -1075,175 +1075,43 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     };
 
 
-    //
-    // Idling
-    // We handle two forms of idling:
-    //    - Inactive idling: when no recent event was received (prefix "fnInactiveIdling_")
-    //    - Max fps idling: to limit the maximum fps (prefix "fnMaxFpsIdling_")
-
-
-    // Returns true if we can idle on this frame, i.e.:
-    //  - idling is enabled
-    // - no recent event was received, and the app is not in the first frames
-    // - no test running
-    // - not in remote display mode
-    auto fnInactiveIdling_IsInactive = [this](double now) -> bool
+    // Idling: the decision is in internal/idling.cpp; the runner gathers what it needs, and applies it. Returns true
+    // when this frame is skipped.
+    auto fnHandleIdling = [this]() -> bool
     {
-        assert(params.fpsIdling.fpsIdle >= 0.f && "fpsIdle must be >= 0");
+        IdlingInputs inputs;
+        inputs.now = Internal::ClockSeconds();
+        inputs.timeLastEvent = gStatics.timeLastEvent;
+        bool earlyReturn = (params.fpsIdling.fpsIdlingMode == FpsIdlingMode::EarlyReturn);
+#ifdef __EMSCRIPTEN__
+        // Under emscripten the runner cannot wait (a sleep is a busy wait): it skips the frames that come too early
+        if (params.fpsIdling.fpsIdlingMode == FpsIdlingMode::Auto)
+            earlyReturn = true;
+#endif
+        inputs.earlyReturn = earlyReturn;
 
-        // If the last event is recent, do not idle
-        bool hasRecentEvent = (now - gStatics.timeLastEvent) < (double)params.fpsIdling.timeActiveAfterLastEvent;
-        // If idling is disabled by params, do not idle
-        bool isIdlingDisabledByParams = (! params.fpsIdling.enableIdling || (params.fpsIdling.fpsIdle <= 0.f) );
-
-        // If the test engine is running, do not idle
         bool isTestEngineRunning = false;
-        #ifdef HELLOIMGUI_WITH_TEST_ENGINE
-        {
-            if (params.useImGuiTestEngine && TestEngineCallbacks::IsRunningTest())
-                isTestEngineRunning = true;
-        }
-        #endif
-
-        // If the app started recently, do not idle
+#ifdef HELLOIMGUI_WITH_TEST_ENGINE
+        if (params.useImGuiTestEngine && TestEngineCallbacks::IsRunningTest())
+            isTestEngineRunning = true;
+#endif
         bool startedRecently = mIdxFrame < 12;
-
         // A mouse button (or a finger) held down is an activity, even still: a button that repeats, a drag that pauses
         bool mouseDown = ImGui::GetCurrentContext() != nullptr && ImGui::IsAnyMouseDown();
-
-        // Content that changes on its own asked for this frame (RequestRefresh(), SetItemIsLive())
+        // Content that changes on its own asked for this frame (RequestRefresh(), SetItemIsLive()): read at each frame
         bool refreshRequested = ConsumeRefreshRequest();
+        inputs.busy = isTestEngineRunning || ShouldRemoteDisplay() || startedRecently || mouseDown || refreshRequested;
 
-        bool preventIdling = isIdlingDisabledByParams || hasRecentEvent || isTestEngineRunning || ShouldRemoteDisplay() || startedRecently || mouseDown || refreshRequested;
-        return ! preventIdling;
-    };
-
-
-    // Handle idling by sleeping (all platforms except emscripten)
-    auto fnInactiveIdling_Sleep = [this](double now)
-    {
-        // Idling for non emscripten, where HelloImGui is responsible for the main loop.
-        // This form of idling will call WaitForEventTimeout(), which may call sleep().
-        // The wait counts from the start of the last frame: the frame's own time and its wait for vsync are part of
-        // the idle period (otherwise, the frame rate falls short of fpsIdle).
-        double waitTimeout = 1. / (double) params.fpsIdling.fpsIdle - (now - gStatics.lastRefreshTime);
-        if (waitTimeout > 0.)
-            mBackendWindowHelper->WaitForEventTimeout(waitTimeout);
-    };
-
-    // The caller (the browser) calls at the display's rate: a frame is drawn at the call nearest to the idle period,
-    // half a call early at most. Otherwise the frame rate rounds down, or alternates: on a 60 Hz display, 30 would
-    // give 20 or 30 at random, 27 would give 20.
-    auto fnInactiveIdling_WasLastFrameRenderedInTimeForDesiredFps = [this](double now, double callInterval) -> bool
-    {
-        double idlePeriod = 1. / params.fpsIdling.fpsIdle;
-        bool wasLastFrameRenderedInTimeForDesiredFps = (now - gStatics.lastRefreshTime) < idlePeriod - callInterval * 0.5;
-        return wasLastFrameRenderedInTimeForDesiredFps;
-    };
-
-    auto fnMaxFpsIdling_SleepDurationNeeded = [this](double now) -> double
-    {
-        float fpsMax = params.fpsIdling.fpsMax;
-        if (fpsMax <= 0.f)
-            return 0.;  // no max fps, always refresh
-
-        double dt = now - gStatics.lastRefreshTime;
-        double min_dt = 1.0 / fpsMax;
-        double sleepDurationNeeded = (dt >= min_dt) ? 0. : (min_dt - dt);
-        // printf("idxFrame=%d, now=%f, lastRefresh=%f, dt=%f, min_dt=%f, sleepDurationNeeded=%f, FrameRate=%f, DeltaTime=%f\n",
-        //        mIdxFrame, now, gStatics.lastRefreshTime, dt, min_dt, sleepDurationNeeded, ImGui::GetIO().Framerate, ImGui::GetIO().DeltaTime);
-
-        if (sleepDurationNeeded <= 0.0005) // 0.5 ms: don't bother sleeping for very small durations
-            sleepDurationNeeded = 0.;
-
-        return sleepDurationNeeded;
-    };
-
-    // Handles idling, and returns true if we should skip rendering this frame
-    // (Idling is handled by sleeping or by early return, depending on params)
-    // We handle two forms of idling:
-    //    - Inactive idling: when no recent event was received (prefix "fnInactiveIdling_")
-    //    - Max fps idling: to limit the maximum fps (prefix "fnMaxFpsIdling_")
-    auto fnHandleIdling = [this,
-        fnInactiveIdling_IsInactive, fnInactiveIdling_Sleep,
-        fnInactiveIdling_WasLastFrameRenderedInTimeForDesiredFps,
-        fnMaxFpsIdling_SleepDurationNeeded]() -> bool
-    {
-        bool shallSkipRenderingThisFrame = false;  // will be the return value
-        double now = Internal::ClockSeconds();
-        double callInterval = now - gStatics.lastIdlingCallTime;  // the pace of the calls (the display's, in a browser)
-        gStatics.lastIdlingCallTime = now;
-        // Reset the async wait hint; will be filled in if EarlyReturn decides
-        // the caller should pace itself before the next Render() call.
-        gStatics.idleFrameWaitForAsync = 0.f;
-
-        // Which strategy shall we apply
-        bool idleByEarlyReturn = false;
-        {
-            if (params.fpsIdling.fpsIdlingMode == FpsIdlingMode::EarlyReturn)
-                idleByEarlyReturn = true;
-
-            if (params.fpsIdling.fpsIdlingMode == FpsIdlingMode::Auto)
-            {
-                // Under emscripten, the idling implementation is different:
-                // we cannot sleep (which would lead to a busy wait), so we skip rendering
-                // if the last frame was rendered in time for the desired FPS
-#ifdef __EMSCRIPTEN__
-                idleByEarlyReturn = true;
-#endif
-            }
-        }
-
-        //
-        // InactiveIdling: Handle idling when no recent event was received
-        //
-        bool shallIdleDuringInactivity = fnInactiveIdling_IsInactive(now);
-        params.fpsIdling.isIdling = shallIdleDuringInactivity;
-        if (shallIdleDuringInactivity)
-        {
-            if (idleByEarlyReturn)
-            {
-                if (fnInactiveIdling_WasLastFrameRenderedInTimeForDesiredFps(now, callInterval))
-                {
-                    shallSkipRenderingThisFrame = true;
-                    if (params.fpsIdling.fpsIdle > 0.f)
-                    {
-                        double idleWait = 1. / (double)params.fpsIdling.fpsIdle - (now - gStatics.lastRefreshTime);
-                        if (idleWait > 0.)
-                            gStatics.idleFrameWaitForAsync = (float)idleWait;
-                    }
-                }
-            }
-            else
-            {
-                // Handle idling by sleeping (all platforms except emscripten)
-                fnInactiveIdling_Sleep(now);
-            }
-        }
-
-        //
-        // MaxFps Idling
-        //
-        double maxFps_SleepDurationNeeded = fnMaxFpsIdling_SleepDurationNeeded(now);
-        if (maxFps_SleepDurationNeeded > 0.)
-        {
-            if (idleByEarlyReturn)
-            {
-                shallSkipRenderingThisFrame = true;
-                if ((float)maxFps_SleepDurationNeeded > gStatics.idleFrameWaitForAsync)
-                    gStatics.idleFrameWaitForAsync = (float)maxFps_SleepDurationNeeded;
-            }
-            else
-                std::this_thread::sleep_for(std::chrono::duration<double>(maxFps_SleepDurationNeeded));
-        }
-
-        if ( !shallSkipRenderingThisFrame)
-        {
-            now = Internal::ClockSeconds();
-            gStatics.lastRefreshTime = now;
-        }
-
-        return shallSkipRenderingThisFrame;
+        IdlingDecision decision = DecideIdling(params.fpsIdling, inputs, gStatics.idling);
+        params.fpsIdling.isIdling = decision.isIdling;
+        gStatics.idleFrameWaitForAsync = (float)decision.asyncWaitSeconds;
+        if (decision.waitForEventsSeconds > 0.)
+            mBackendWindowHelper->WaitForEventTimeout(decision.waitForEventsSeconds);
+        if (decision.sleepSeconds > 0.)
+            std::this_thread::sleep_for(std::chrono::duration<double>(decision.sleepSeconds));
+        if (!decision.skipFrame)
+            gStatics.idling.lastFrameTime = Internal::ClockSeconds();  // the frame starts now, after the waits
+        return decision.skipFrame;
     };
 
     // Handle poll events

@@ -25,8 +25,10 @@
 // a press, so the layer reads the rectangles that the widgets noted at the last frame.
 // On a touch screen, there is no pointer between two touches: when a finger lifts, the mouse position becomes
 // invalid (as when a mouse leaves the window), so that nothing is hovered while the content coasts, nor after a tap.
-// A finger still for half a second is a long press: a right click (the context menus), as on a phone. The widget
-// under it holds the left press by then (the hold): it is taken away first, by a release at an invalid position.
+// A finger still for half a second arms a long press, shown by a steady ring around it: when the finger lifts, it is a
+// right click (the context menus), as Windows' press-and-hold. Its release reaches no widget (no pointer on that
+// frame): a long press on a button is not a click. A move after the ring cancels it: the widget under the finger keeps
+// the press it got at the hold (a slider that drags after a pause, a text selection that grows).
 // Past the end of the scroll, the content follows the finger with a growing resistance (the rubber band), and an
 // inertia that reaches the end overshoots; both spring back. ImGui clamps the scroll at each Begin(), so the content
 // past its end is drawn by moving its vertices after ImGui::Render() (ApplyTouchOverscroll), inside the window's
@@ -42,7 +44,7 @@ namespace
     constexpr float kDoubleTapSeconds = 0.4f;   // two taps closer than this in time, and than kDoubleTapFontSizes...
     constexpr float kDoubleTapFontSizes = 1.5f; // ...in distance, are a double click (ImGui's 0.3 s and 6 px suit a mouse)
     constexpr float kHoldSeconds = 0.15f;       // a finger still for this long hands the press to the widget under it (iOS: 150 ms)
-    constexpr float kLongPressSeconds = 0.5f;   // a finger still for this long is a right click (iOS: about 500 ms)
+    constexpr float kLongPressSeconds = 0.5f;   // a finger still for this long arms a right click, at the lift (iOS: about 500 ms)
     constexpr float kInertiaDecay = 2.f;        // speed *= exp(-decay * dt) after the release (iOS: 0.998 per ms)
     constexpr float kInertiaMinSpeedEm = 3.f;   // font sizes per second: below this, a release starts no inertia, and the inertia ends
     constexpr float kFlickWindow = 0.05f;       // s: the lift speed is the finger's motion over this long before the lift
@@ -74,6 +76,7 @@ namespace
         float overscrollSpeed = 0.f;    // px/s, while it springs back
         int replayedPresses = 0;        // presses queued by the layer, which it must not claim
         bool watchingLongPress = false; // a touch press, still so far: a long press when it stays
+        bool longPressArmed = false;    // it stayed: a right click when it lifts, unless it moves (a ring shows it)
         double lastReplayTime = -1e9;   // the previous replayed press: the next one pairs with it (a double tap)
         double rippleTime = -1e9;       // when the hold handed the press over: a ring around the finger, briefly
         ImVec2 ripplePos;
@@ -108,6 +111,16 @@ namespace
         float radius = g.FontSize * (1.f + 1.5f * t);
         ImU32 col = ImGui::GetColorU32(ImGuiCol_Text, 0.9f * (1.f - t));
         ImGui::GetForegroundDrawList()->AddCircle(s.ripplePos, radius, col, 0, g.FontSize * 0.25f);
+    }
+
+    // The long press is armed: a steady ring around the finger, until it lifts (a right click) or moves (cancelled)
+    void DrawLongPressRing(const State& s)
+    {
+        ImGuiContext& g = *GImGui;
+        if (!s.longPressArmed || !ImGui::IsMousePosValid())
+            return;
+        ImU32 col = ImGui::GetColorU32(ImGuiCol_Text, 0.6f);
+        ImGui::GetForegroundDrawList()->AddCircle(g.IO.MousePos, g.FontSize * 1.8f, col, 0, g.FontSize * 0.2f);
     }
 
     // The axis of a swipe: the dominant direction of the finger (a swipe scrolls one axis, like the wheel)
@@ -241,17 +254,12 @@ namespace
         MarkReplayed(sizeBefore);
     }
 
-    // The long press: the left press, held by the widget under the finger, is taken away by a release at an
-    // invalid position (not a click: the release is outside), then the right button clicks where the finger is.
-    // The events carry the mouse source: with the touch source, ImGui's trickling delivers a position and the
-    // button event that follows it in separate frames, and the widget would see a frame with the button down at no
-    // position (a selection jumped to the start of its text, a slider to its minimum).
+    // The right click of a long press, where the finger was. The events carry the mouse source: with the touch source,
+    // ImGui's trickling would deliver the position and each button event in separate frames.
     void RightClick(ImGuiIO& io, ImVec2 pos)
     {
         ImGuiMouseSource source = io.MouseSource;
         io.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
-        AddReplayedPosEvent(io, ImVec2(-FLT_MAX, -FLT_MAX));
-        AddReplayedButtonEvent(io, false, ImGuiMouseButton_Left);
         AddReplayedPosEvent(io, pos);
         AddReplayedButtonEvent(io, true, ImGuiMouseButton_Right);
         AddReplayedButtonEvent(io, false, ImGuiMouseButton_Right);
@@ -364,26 +372,32 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
             ReplayPress(io, s, false);
         s.inertia = flick ? speed : ImVec2(0.f, 0.f);
         EndPress(s);
-        s.watchingLongPress = false;
+        s.watchingLongPress = s.longPressArmed = false;
     }
 
     // The long press: a finger still since its press (the layer let the widget have it at the hold), for half a
-    // second. The release of a replayed handover is not a lift (replayedPresses tells).
+    // second, arms a right click, fired when it lifts. The release of a replayed handover is not a lift
+    // (replayedPresses tells).
     if (s.watchingLongPress)
     {
         bool lifted = !io.MouseDown[ImGuiMouseButton_Left] && s.replayedPresses == 0;
         float slop = Slop(g);
         bool moved = ImGui::IsMousePosValid() && ImLengthSqr(io.MousePos - s.pressPos) > slop * slop;
         // A widget that acted on the press already (a button that repeats while held, a press-on-click button) keeps
-        // it: a right click would take it away in the middle of its action
+        // it: its action was the press
         bool widgetActed = (g.ActiveId != 0 && g.ActiveId != id && g.ActiveIdHasBeenPressedBefore);
-        if (lifted || moved || s.owning && s.swiping || s.parked || widgetActed)
-            s.watchingLongPress = false;
-        else if (!s.owning && (float)g.Time - s.pressTime >= kLongPressSeconds)
+        if (lifted && s.longPressArmed)
         {
-            s.watchingLongPress = false;
+            // The widgets see the release at no position, outside them: a button does not click, a text input stays
+            // active (the release came this frame, before them)
+            io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
             RightClick(io, s.pressPos);
+            s.watchingLongPress = s.longPressArmed = false;
         }
+        else if (lifted || moved || s.owning && s.swiping || s.parked || widgetActed)
+            s.watchingLongPress = s.longPressArmed = false;  // the widget under the finger keeps its press
+        else if (!s.owning && (float)g.Time - s.pressTime >= kLongPressSeconds)
+            s.longPressArmed = true;
     }
 
     // A finger that lifted (ours or a widget's): no pointer until the next touch. Queued after a replayed tap, whose
@@ -468,6 +482,7 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick)
     }
 
     DrawHoldRipple(s);
+    DrawLongPressRing(s);
 
     // The content past its end springs back, unless a finger holds it there. The step is bounded: a long frame
     // would make the integration overshoot
@@ -576,7 +591,7 @@ bool TouchScrollRelease(bool evenAWidget)
     State& s = gState;
     const ImGuiID id = SentinelId();
     s.inertia = ImVec2(0.f, 0.f);
-    s.watchingLongPress = false;
+    s.watchingLongPress = s.longPressArmed = false;
     if (s.owning)
     {
         if (g.ActiveId == id)

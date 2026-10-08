@@ -32,6 +32,7 @@ struct Bench
     bool longPressIsRightClick = true;
     bool itemPopupOpen = false, windowPopupOpen = false;  // the context menus (right clicks) of the button and the window
     bool rightDown = false;  // io.MouseDown[1], as of the last frame
+    int rightClicks = 0;     // the right clicks seen by the widgets
     HelloImGui::TouchPinchMode pinchMode = HelloImGui::TouchPinchMode::FontScale;
     bool pinchInterrupts = false;
     bool shortContent = false;  // the window's lines fit: nothing to scroll (the child still scrolls)
@@ -57,12 +58,19 @@ struct Bench
     {
         ImGui_ImplNull_NewFrame();
         ImGui::NewFrame();
+        // As in the runner: the layer runs before any widget (it acts on the frame's input before the widgets see it)
+        HelloImGui::UpdateTouchScroll(mode, longPressIsRightClick);
+        HelloImGui::UpdateTouchPinch(pinchMode, pinchInterrupts);
+        if (ImGui::GetIO().MouseClickedCount[ImGuiMouseButton_Left] == 2)
+            doubleClicks++;
         ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(400.f, 300.f), ImGuiCond_Always);
         ImGui::Begin("Bench", nullptr, ImGuiWindowFlags_NoTitleBar);
         scrollY = ImGui::GetScrollY();
         scrollMaxY = ImGui::GetScrollMaxY();
         rightDown = ImGui::GetIO().MouseDown[1];
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+            rightClicks++;
         if (steal && ImGui::IsMouseDown(0))
         {
             stealId = ImGui::GetID("steal");
@@ -118,10 +126,6 @@ struct Bench
             ImGui::EndPopup();
         }
         ImGui::End();
-        HelloImGui::UpdateTouchScroll(mode, longPressIsRightClick);
-        HelloImGui::UpdateTouchPinch(pinchMode, pinchInterrupts);
-        if (ImGui::GetIO().MouseClickedCount[ImGuiMouseButton_Left] == 2)  // the layer runs before the widgets in the runner
-            doubleClicks++;
         ImGui::Render();
         HelloImGui::ApplyTouchOverscroll();
         lastVtxY = ImGui::FindWindowByName("Bench")->DrawList->VtxBuffer.back().pos.y;
@@ -455,25 +459,28 @@ TEST_CASE("Touch scroll: a widget that takes the drags gets the press at once, a
     CHECK(c.scrollY > 0.f);
 }
 
-TEST_CASE("Touch scroll: a long press is a right click, a shorter one or a moving one is not")
+TEST_CASE("Touch scroll: a long press is a right click when the finger lifts, a shorter one or a moving one is not")
 {
     Bench b;
     b.Frames(3);
     b.Press(b.buttonRect.GetCenter());
-    b.Frames(40);  // 0.66 s still: the hold gave the button the press, the long press takes it away and right clicks
+    b.Frames(40);  // 0.66 s still: the hold gave the button the press, the long press is armed, nothing happens yet
+    CHECK(!b.itemPopupOpen);
+    CHECK(ImGui::GetIO().MouseDown[0]);
+    CHECK(ImGui::GetCurrentContext()->ActiveId == b.buttonId);
+    b.Release();  // the lift: a right click, and the button does not click
     CHECK(b.itemPopupOpen);
     CHECK(b.clicks == 0);
-    CHECK(!ImGui::GetIO().MouseDown[0]);
-    b.Release();
-    CHECK(b.clicks == 0);  // the real lift: nothing more
+    CHECK(b.rightClicks == 1);
     b.Press(b.linesRect.GetCenter());  // away from the menu: it closes
     b.Release();
     CHECK(!b.itemPopupOpen);
 
     b.Press(b.linesRect.GetCenter());  // on the void
     b.Frames(40);
-    CHECK(b.windowPopupOpen);
+    CHECK(!b.windowPopupOpen);
     b.Release();
+    CHECK(b.windowPopupOpen);
     b.Press(ImVec2(b.linesRect.Min.x + 10.f, b.linesRect.Min.y + 10.f));  // away from the menu: it closes
     b.Release();
     CHECK(!b.windowPopupOpen);
@@ -494,8 +501,8 @@ TEST_CASE("Touch scroll: a long press is a right click, a shorter one or a movin
     b.longPressIsRightClick = false;
     b.Press(b.buttonRect.GetCenter());
     b.Frames(40);
-    CHECK(!b.itemPopupOpen);
     b.Release();
+    CHECK(!b.itemPopupOpen);
     CHECK(b.clicks == 2);
 }
 
@@ -506,21 +513,21 @@ TEST_CASE("Touch scroll: a widget that takes the drags may keep a still finger p
         b.canvas = b.canvasTakesDrags = true;
         b.Frames(3);
         b.Press(b.canvasRect.GetCenter());
-        b.Frames(40);  // 0.66 s still: the long press takes the press away, and right clicks
-        CHECK(ImGui::GetCurrentContext()->ActiveId != b.canvasId);
-        CHECK(!ImGui::GetIO().MouseDown[0]);
+        b.Frames(40);  // 0.66 s still: the canvas keeps the press; the lift will be a right click
+        CHECK(ImGui::GetCurrentContext()->ActiveId == b.canvasId);
         b.Release();
+        CHECK(b.rightClicks == 1);
     }  // one ImGui context at a time
     Bench c;
     c.canvas = c.canvasTakesDrags = true;
-    c.canvasLongPressIsRightClick = false;  // a piano key: held as long as the finger stays
+    c.canvasLongPressIsRightClick = false;  // a piano key: held as long as the finger stays, and no right click
     c.Frames(3);
     c.Press(c.canvasRect.GetCenter());
     c.Frames(40);
     CHECK(ImGui::GetCurrentContext()->ActiveId == c.canvasId);
     CHECK(ImGui::GetIO().MouseDown[0]);
-    CHECK(!c.rightDown);
     c.Release();
+    CHECK(c.rightClicks == 0);
 }
 
 TEST_CASE("Touch scroll: a button that repeats keeps the finger past the long press, and repeats")
@@ -549,11 +556,30 @@ TEST_CASE("Touch scroll: a long press on a slider, with a touch source, does not
     b.Frames(15);  // the hold gave the slider the press, at the finger
     float held = b.slider;
     CHECK(held > 0.3f);
-    b.Frames(30);  // the long press takes it away: no frame with the button down at no position
+    b.Frames(30);  // the long press is armed: the slider keeps the press
     CHECK(b.slider == held);
-    CHECK(!ImGui::GetIO().MouseDown[0]);
+    CHECK(ImGui::GetIO().MouseDown[0]);
+    b.Release();  // a right click, at no position for the slider: it stays
+    CHECK(b.slider == held);
+    CHECK(b.rightClicks == 1);
+}
+
+TEST_CASE("Touch scroll: after a long press, a move keeps the widget's drag, and cancels the right click")
+{
+    Bench b;
+    b.mode = TouchScrollMode::Auto;
+    b.Frames(3);
+    b.Source(ImGuiMouseSource_TouchScreen);
+    b.Press(b.sliderRect.GetCenter());
+    b.Frames(45);  // the hold gave the slider the press, the long press is armed
+    float held = b.slider;
+    b.Drag(ImVec2(60.f, 0.f), 6);  // the drag after a pause, as on a phone
+    CHECK(b.slider > held);
+    CHECK(ImGui::GetCurrentContext()->ActiveId != 0);
     b.Release();
-    CHECK(b.slider == held);
+    CHECK(b.rightClicks == 0);
+    CHECK(!b.itemPopupOpen);
+    CHECK(!b.windowPopupOpen);
 }
 
 TEST_CASE("Touch scroll: a widget that takes the active id after the press ends the swipe")

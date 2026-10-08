@@ -404,9 +404,10 @@ struct RunnerParams
     TouchScrollMode touchScrollMode = TouchScrollMode::Auto;
 
     // `touchLongPressIsRightClick`: _bool, default = true_.
-    // On a touch screen (never with a mouse): a finger still for half a second is a right click (the context
-    // menus), as on a phone. The widget under it loses the press it got at the hold (a release outside it), so
-    // that a long press on a button is not a click.
+    // On a touch screen (never with a mouse): a finger still for half a second, then lifted, is a right click (the
+    // context menus), as Windows' press-and-hold; a ring around the finger shows when the lift will right click. The
+    // release reaches no widget, so that a long press on a button is not a click. A move after the ring cancels it:
+    // the widget under the finger keeps its press (a slider dragged after a pause, a text selection that grows).
     bool touchLongPressIsRightClick = true;
 
     // `touchPinchMode`: _TouchPinchMode, default = TouchPinchMode::FontScale_.

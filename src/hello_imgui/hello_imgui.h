@@ -202,8 +202,8 @@ namespace ManualRender
 // `SetItemTakesTouchDrags(longPressIsRightClick = true)`: call it right after a widget that is dragged (a plot, a node
 //  editor, a canvas). On a touch screen, a press on it goes to the widget at once, without the hold, even in a window
 //  that scrolls: its drags move the widget's content, in any direction (a swipe that starts on it does not scroll the
-//  window). A finger still on it for half a second becomes a right click (its context menu), unless
-//  longPressIsRightClick is false: the widget then keeps the finger as long as it stays (a piano key, a fire button).
+//  window). A finger still on it for half a second, then lifted, is a right click (its context menu), unless
+//  longPressIsRightClick is false (a piano key, a fire button: a finger held still then lifted is no right click).
     void SetItemTakesTouchDrags(bool longPressIsRightClick = true);
 
 // `SetItemIsLive(live = true)`: call it right after a widget whose content changes on its own (an animation, a live

@@ -117,6 +117,7 @@ struct AbstractRunnerStatics
     double timeLastEvent = -1.;
     double lastRefreshTime = 0.;
     float idleFrameWaitForAsync = 0.f;
+    double lastIdlingCallTime = 0.;  // the last call of the idling (a frame drawn or skipped)
 };
 
 static AbstractRunnerStatics gStatics;
@@ -1119,17 +1120,24 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
 
     // Handle idling by sleeping (all platforms except emscripten)
-    auto fnInactiveIdling_Sleep = [this]()
+    auto fnInactiveIdling_Sleep = [this](double now)
     {
         // Idling for non emscripten, where HelloImGui is responsible for the main loop.
-        // This form of idling will call WaitForEventTimeout(), which may call sleep():
-        double waitTimeout = 1. / (double) params.fpsIdling.fpsIdle;
-        mBackendWindowHelper->WaitForEventTimeout(waitTimeout);
+        // This form of idling will call WaitForEventTimeout(), which may call sleep().
+        // The wait counts from the start of the last frame: the frame's own time and its wait for vsync are part of
+        // the idle period (otherwise, the frame rate falls short of fpsIdle).
+        double waitTimeout = 1. / (double) params.fpsIdling.fpsIdle - (now - gStatics.lastRefreshTime);
+        if (waitTimeout > 0.)
+            mBackendWindowHelper->WaitForEventTimeout(waitTimeout);
     };
 
-    auto fnInactiveIdling_WasLastFrameRenderedInTimeForDesiredFps = [this](double now) -> bool
+    // The caller (the browser) calls at the display's rate: a frame is drawn at the call nearest to the idle period,
+    // half a call early at most. Otherwise the frame rate rounds down, or alternates: on a 60 Hz display, 30 would
+    // give 20 or 30 at random, 27 would give 20.
+    auto fnInactiveIdling_WasLastFrameRenderedInTimeForDesiredFps = [this](double now, double callInterval) -> bool
     {
-        bool wasLastFrameRenderedInTimeForDesiredFps = ((now - gStatics.lastRefreshTime) < 1. / params.fpsIdling.fpsIdle);
+        double idlePeriod = 1. / params.fpsIdling.fpsIdle;
+        bool wasLastFrameRenderedInTimeForDesiredFps = (now - gStatics.lastRefreshTime) < idlePeriod - callInterval * 0.5;
         return wasLastFrameRenderedInTimeForDesiredFps;
     };
 
@@ -1163,6 +1171,8 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     {
         bool shallSkipRenderingThisFrame = false;  // will be the return value
         double now = Internal::ClockSeconds();
+        double callInterval = now - gStatics.lastIdlingCallTime;  // the pace of the calls (the display's, in a browser)
+        gStatics.lastIdlingCallTime = now;
         // Reset the async wait hint; will be filled in if EarlyReturn decides
         // the caller should pace itself before the next Render() call.
         gStatics.idleFrameWaitForAsync = 0.f;
@@ -1193,7 +1203,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         {
             if (idleByEarlyReturn)
             {
-                if (fnInactiveIdling_WasLastFrameRenderedInTimeForDesiredFps(now))
+                if (fnInactiveIdling_WasLastFrameRenderedInTimeForDesiredFps(now, callInterval))
                 {
                     shallSkipRenderingThisFrame = true;
                     if (params.fpsIdling.fpsIdle > 0.f)
@@ -1207,7 +1217,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
             else
             {
                 // Handle idling by sleeping (all platforms except emscripten)
-                fnInactiveIdling_Sleep();
+                fnInactiveIdling_Sleep(now);
             }
         }
 

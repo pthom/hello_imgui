@@ -44,6 +44,7 @@ namespace HelloImGui
         // SDL labels its own events (a finger or a mouse); the probe sees the second finger, for the pinch.
         RunnerSdl2::Impl_InitPlatformBackend();
         InstallEmscriptenPointerProbe();
+        InstallEmscriptenViewportResizeRelay();
         InstallEmscriptenKeyboard();
     }
 

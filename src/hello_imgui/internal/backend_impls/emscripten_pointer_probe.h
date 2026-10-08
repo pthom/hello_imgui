@@ -10,6 +10,7 @@
 namespace HelloImGui
 {
     void InstallEmscriptenPointerProbe();          // once, after the page is loaded (a second call does nothing)
+    void InstallEmscriptenViewportResizeRelay();   // the window's resize fired again when a page zoom changes the size
     ImGuiMouseSource LastEmscriptenPointerSource();  // the type of the last pointer event (Mouse before any)
     bool EmscriptenPointerIsDown();                  // a finger or a button is down (pointerdown, no pointerup yet)
     int EmscriptenFingerCount();                     // the fingers on the screen

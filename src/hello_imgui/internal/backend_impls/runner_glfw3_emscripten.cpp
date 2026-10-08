@@ -44,6 +44,7 @@ namespace HelloImGui
     {
         RunnerGlfw3::Impl_InitPlatformBackend();
         InstallEmscriptenPointerProbe();
+        InstallEmscriptenViewportResizeRelay();
         InstallEmscriptenKeyboard();  // here rather than in Run(): ManualRender does not go through Run()
     }
 

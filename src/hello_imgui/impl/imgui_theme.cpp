@@ -181,28 +181,28 @@ namespace ImGuiTheme
     {
         ImGuiStyle ImGui_StyleColorsClassic()
         {
-            auto & style = ImGui::GetStyle();
+            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
             ImGui::StyleColorsClassic(&style);
             return style;
         }
 
         ImGuiStyle ImGui_StyleColorsDark()
         {
-            auto & style = ImGui::GetStyle();
+            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
             ImGui::StyleColorsDark(&style);
             return style;
         }
 
         ImGuiStyle ImGui_StyleColorsLight()
         {
-            auto & style = ImGui::GetStyle();
+            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
             ImGui::StyleColorsLight(&style);
             return style;
         }
 
         ImGuiStyle SoDark(float hue)
         {
-            auto & style = ImGui::GetStyle();
+            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
             ImVec4* colors = style.Colors;
             colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
             colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
@@ -291,7 +291,7 @@ namespace ImGuiTheme
 
         ImGuiStyle MaterialFlat()
         {
-            auto & style = ImGui::GetStyle();
+            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
             // Material Flat style by ImJC1C from ImThemes
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.5f;
@@ -390,7 +390,7 @@ namespace ImGuiTheme
         ImGuiStyle PhotoshopStyle()
         {
             // Photoshop style by Derydoca from ImThemes
-            auto & style = ImGui::GetStyle();
+            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.6000000238418579f;
@@ -489,7 +489,7 @@ namespace ImGuiTheme
 
         ImGuiStyle ShadesOfGray(float rounding=0.f, float value_multiplier_front=1.f, float value_multiplier_bg=1.f)
         {
-            auto & style = ImGui::GetStyle();
+            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.6000000238418579f;
@@ -605,7 +605,7 @@ namespace ImGuiTheme
         ImGuiStyle Cherry()
         {
             // Cherry style by r-lyeh from ImThemes
-            auto & style = ImGui::GetStyle();
+            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.6000000238418579f;
@@ -716,7 +716,7 @@ namespace ImGuiTheme
             )
         {
             // Darcula style by ice1000 from ImThemes
-            auto & style = ImGui::GetStyle();
+            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
 
             style.Colors[ImGuiCol_Text] = ImVec4(0.7333333492279053f, 0.7333333492279053f, 0.7333333492279053f, 1.0f);
             style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.3450980484485626f, 0.3450980484485626f, 0.3450980484485626f, 1.0f);
@@ -815,7 +815,7 @@ namespace ImGuiTheme
         ImGuiStyle LightRounded()
         {
             // Fork of Light style from ImThemes
-            auto & style = ImGui::GetStyle();
+            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
 
             ThemeTweakImpl::ApplyRounding(style, 3.f, 3.f);
 

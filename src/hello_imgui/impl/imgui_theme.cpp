@@ -1062,7 +1062,9 @@ namespace ImGuiTheme
     bool _ShowThemeSelector(ImGuiTheme_* theme)
     {
         bool changed = false;
-        ImVec2 listboxSize =  ImVec2(15.f * ImGui::GetFontSize(), ImGuiTheme_Count * (ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.y) );
+        // Tall enough for all the themes: a line each, and the frame's padding
+        ImVec2 listboxSize = ImVec2(15.f * ImGui::GetFontSize(),
+                                    ImGuiTheme_Count * ImGui::GetTextLineHeightWithSpacing() + ImGui::GetStyle().FramePadding.y * 2.f);
         ImGui::Text("Available Themes");
         if (ImGui::BeginListBox("##Available_themes", listboxSize))
         {
@@ -1231,8 +1233,10 @@ namespace ImGuiTheme
     {
         bool changed = false;
 
+        // Not on a narrow screen (a phone), where the demo window would float over everything
         static bool showDemoWindow = false;
-        ImGui::Checkbox("Test on ImGui Demo Window", &showDemoWindow);
+        if (ImGui::GetIO().DisplaySize.x >= ImGui::GetFontSize() * 40.f)
+            ImGui::Checkbox("Test on ImGui Demo Window", &showDemoWindow);
         if (showDemoWindow)
             ImGui::ShowDemoWindow(&showDemoWindow);
 

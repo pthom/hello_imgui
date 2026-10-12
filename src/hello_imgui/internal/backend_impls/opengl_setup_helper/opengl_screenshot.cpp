@@ -35,7 +35,7 @@ namespace HelloImGui
             r.bufferRgb.data());
 
         // Invert rows, since OpenGL (0,0) is at the bottomLeft
-        for(std::size_t y = 0; y <= r.height / 2; ++y)
+        for(std::size_t y = 0; y < r.height / 2; ++y)
         {
             int yd = (int)r.height - 1 - (int)y;
             for(std::size_t x = 0; x < r.width * depth; ++x)

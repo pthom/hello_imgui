@@ -9,5 +9,14 @@ namespace HelloImGui
 {
     void InstallEmscriptenKeyboard();  // once, after the pointer probe (a second call does nothing)
     void UpdateEmscriptenKeyboard();   // before each poll: tells the page what ImGui wants, feeds ImGui what was typed
+
+    // The parts of the canvas hidden while the keyboard is shown (in ImGui units): the full-screen window and the
+    // status bar keep out of them, as out of the edge insets
+    struct EmscriptenKeyboardInsets
+    {
+        float top = 0.f;
+        float bottom = 0.f;
+    };
+    EmscriptenKeyboardInsets GetEmscriptenKeyboardInsets();
 }
 #endif

@@ -1,6 +1,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/internal/docking_details.h"
+#include "hello_imgui/internal/backend_impls/emscripten_keyboard.h"
 
 #include "imgui.h"
 #include "hello_imgui/internal/imgui_global_context.h" // must be included before imgui_internal.h
@@ -87,6 +88,10 @@ void ShowStatusBar(RunnerParams & params)
         EdgeInsets edgeInsets;
         if (params.appWindowParams.handleEdgeInsets)
             edgeInsets = params.appWindowParams.edgeInsets;
+        #ifdef __EMSCRIPTEN__
+        // In a browser, the phone's keyboard hides a part of the canvas
+        edgeInsets.bottom += GetEmscriptenKeyboardInsets().bottom;
+        #endif
         statusBarSize = ImVec2(viewport->Size.x - (float)edgeInsets.left - (float)edgeInsets.right, statusWindowHeight);
         statusBarPos = viewport->Pos + ImVec2((float)edgeInsets.left, viewport->Size.y - (float)edgeInsets.bottom - statusBarSize.y);
     }

@@ -360,11 +360,20 @@ if (!window.helloImGuiKeyboard) {
   // A blur while ImGui still wants text is the user's (the keyboard hidden, a touch elsewhere): the field blurs itself
   // only once ImGui stopped wanting text
   // Keys mode: the next keyboard session starts with blanks (the widget's caret may move meanwhile)
-  input.addEventListener('blur', () => { if (K.want) K.dismissed = K.id; if (K.keysMode) K.pad(); refresh(); });
+  // Keys mode: a blur during a touch on the page is a touch elsewhere, not a hidden keyboard (iPadOS's key that hides
+  // the keyboard, and Android's back key, leave the field focused: the next touch blurs it): the button comes back at
+  // the widget's next caret (reset after refresh(), which would show it at the old one)
+  K.touchedAt = -1e9;
+  input.addEventListener('blur', () => {
+    if (K.want) K.dismissed = K.id;
+    if (K.keysMode) K.pad();
+    refresh();
+    if (K.keysMode && performance.now() - K.touchedAt < 500) K.dismissed = 0; });
   // Keys mode: a touch elsewhere on the page (the widget's caret placed by a tap) makes what the field holds obsolete;
   // without the keyboard, it brings the button back (the widget is still the same, but the user chose another place)
   document.addEventListener('touchstart', (e) => {
     if (!K.keysMode || e.target === input || e.target === button) return;
+    K.touchedAt = performance.now();
     if (document.activeElement === input) K.pad();
     else K.dismissed = 0;
   }, {capture: true, passive: true});

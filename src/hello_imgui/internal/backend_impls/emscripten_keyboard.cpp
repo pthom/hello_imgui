@@ -357,6 +357,22 @@ if (!window.helloImGuiKeyboard) {
   input.addEventListener('blur', updateVisibleArea);
   // For C++: "top,bottom" of the visible area, while the keyboard is shown; '' otherwise
   K.visibleArea = () => visibleArea();
+  // While the keyboard is open, a tap on the canvas leaves the focus to the field, so that the keyboard stays open as in
+  // a native app: the GLFW port (emscripten-glfw) focuses the canvas on each press, which closed the keyboard. The press
+  // still reaches ImGui; after a tap outside the text widget, the field blurs itself once ImGui stops wanting text.
+  // The keyboard counts as open when it hides a fifth of the window: not iPadOS's bar once its keyboard is hidden. After
+  // iPadOS's hide key or Android's back key, the field keeps the focus without a keyboard: the next touch takes it
+  // (the touchstart handler below).
+  const keyboardOpen = () => !!vv && vv.height < 0.8 * window.innerHeight;
+  const canvasEl = document.getElementById('canvas');
+  if (canvasEl) {
+    const focusCanvas = canvasEl.focus;
+    canvasEl.focus = function(options) {
+      if (K.want && document.activeElement === input && keyboardOpen()) {
+        log('canvas focus skipped: the keyboard is open');
+        return; }
+      focusCanvas.call(this, options); };
+  }
   // A blur while ImGui still wants text is the user's (the keyboard hidden, a touch elsewhere): the field blurs itself
   // only once ImGui stopped wanting text
   // Keys mode: the next keyboard session starts with blanks (the widget's caret may move meanwhile)
@@ -369,11 +385,16 @@ if (!window.helloImGuiKeyboard) {
     if (K.keysMode) K.pad();
     refresh();
     if (K.keysMode && performance.now() - K.touchedAt < 500) K.dismissed = 0; });
+  // A touch on the page while the field has the focus without a keyboard (hidden by iPadOS's key or Android's back key)
+  // takes the focus from the field, as the canvas did: the GLFW port no longer focuses the canvas once a focus was
+  // skipped above (it counts its window as focused from then on).
   // Keys mode: a touch elsewhere on the page (the widget's caret placed by a tap) makes what the field holds obsolete;
   // without the keyboard, it brings the button back (the widget is still the same, but the user chose another place)
   document.addEventListener('touchstart', (e) => {
-    if (!K.keysMode || e.target === input || e.target === button) return;
+    if (e.target === input || e.target === button) return;
     K.touchedAt = performance.now();
+    if (document.activeElement === input && !keyboardOpen()) input.blur();
+    if (!K.keysMode) return;
     if (document.activeElement === input) K.pad();
     else K.dismissed = 0;
   }, {capture: true, passive: true});

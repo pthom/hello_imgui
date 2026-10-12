@@ -291,7 +291,9 @@ namespace
         // with a finger's time and distance (two taps land farther apart than two clicks); ImGui's own check at the
         // replayed press is made to agree: the previous click is set at the finger, now, or long ago.
         ImGuiContext& g = *GImGui;
-        const ImVec2 pos = io.MousePos;
+        // Where the press was, if the backend has no position anymore (in a browser, the focus went to another element
+        // just before the release, as the phone keyboard's field: the canvas reported that the pointer left)
+        const ImVec2 pos = ImGui::IsMousePosValid(&io.MousePos) ? io.MousePos : s.pressPos;
         const bool touch = (io.MouseSource == ImGuiMouseSource_TouchScreen);
         const float maxDist = touch ? g.FontSize * kDoubleTapFontSizes : io.MouseDoubleClickMaxDist;
         const double maxTime = touch ? kDoubleTapSeconds : io.MouseDoubleClickTime;

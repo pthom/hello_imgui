@@ -500,6 +500,17 @@ namespace ImGuiTheme
             return style;
         }
 
+        // The gray light themes take their accents (links, selection, navigation, selected tab) from Dear ImGui's Light theme:
+        // desaturated and brightened with the rest, they would vanish on white.
+        void SetLightAccents(ImGuiStyle& style)
+        {
+            ImGuiStyle light;
+            ImGui::StyleColorsLight(&light);
+            for (ImGuiCol col : {ImGuiCol_TextLink, ImGuiCol_TextSelectedBg, ImGuiCol_DragDropTarget, ImGuiCol_NavCursor,
+                                 ImGuiCol_TabSelected, ImGuiCol_TabSelectedOverline, ImGuiCol_TabDimmedSelected})
+                style.Colors[col] = light.Colors[col];
+        }
+
         ImGuiStyle ShadesOfGray(float rounding=0.f, float value_multiplier_front=1.f, float value_multiplier_bg=1.f)
         {
             ImGuiStyle style = BaseStyle(/*light=*/true);
@@ -575,6 +586,7 @@ namespace ImGuiTheme
             ThemeTweakImpl::ApplyValueMultiplierBg(style, value_multiplier_bg, style);
             ThemeTweakImpl::ApplyValueMultiplierFront(style, value_multiplier_front, style);
             ThemeTweakImpl::ApplyRounding(style, rounding, 4.f);
+            SetLightAccents(style);
             return style;
         }
 
@@ -925,6 +937,7 @@ namespace ImGuiTheme
             ThemeTweakImpl::ApplyValueMultiplierBg(style, 7.f, style);
             ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, 0.91f, style);
             style.Colors[ImGuiCol_FrameBg] = ThemeTweakImpl::_ColorSetValue(style.Colors[ImGuiCol_FrameBg], 0.99f);
+            SetLightAccents(style);  // again: the tweaks above wash them out
             style.FrameBorderSize = 1.f;
             style.FrameRounding = 3.f;
             return style;

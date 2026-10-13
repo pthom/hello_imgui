@@ -200,9 +200,22 @@ namespace ImGuiTheme
             return style;
         }
 
-        ImGuiStyle SoDark(float hue)
+        // A theme starts from the current sizes and from Dear ImGui's own dark or light colors. It sets the colors it chooses;
+        // the others (e.g. those added to Dear ImGui after the theme was written: the text cursor, the links...) then match
+        // the theme's kind, whatever the current style is.
+        ImGuiStyle BaseStyle(bool light)
         {
             ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
+            if (light)
+                ImGui::StyleColorsLight(&style);
+            else
+                ImGui::StyleColorsDark(&style);
+            return style;
+        }
+
+        ImGuiStyle SoDark(float hue)
+        {
+            ImGuiStyle style = BaseStyle(/*light=*/false);
             ImVec4* colors = style.Colors;
             colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
             colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
@@ -291,7 +304,7 @@ namespace ImGuiTheme
 
         ImGuiStyle MaterialFlat()
         {
-            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
+            ImGuiStyle style = BaseStyle(/*light=*/false);
             // Material Flat style by ImJC1C from ImThemes
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.5f;
@@ -390,7 +403,7 @@ namespace ImGuiTheme
         ImGuiStyle PhotoshopStyle()
         {
             // Photoshop style by Derydoca from ImThemes
-            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
+            ImGuiStyle style = BaseStyle(/*light=*/false);
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.6000000238418579f;
@@ -489,7 +502,7 @@ namespace ImGuiTheme
 
         ImGuiStyle ShadesOfGray(float rounding=0.f, float value_multiplier_front=1.f, float value_multiplier_bg=1.f)
         {
-            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
+            ImGuiStyle style = BaseStyle(/*light=*/true);
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.6000000238418579f;
@@ -605,7 +618,7 @@ namespace ImGuiTheme
         ImGuiStyle Cherry()
         {
             // Cherry style by r-lyeh from ImThemes
-            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
+            ImGuiStyle style = BaseStyle(/*light=*/false);
 
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.6000000238418579f;
@@ -716,7 +729,7 @@ namespace ImGuiTheme
             )
         {
             // Darcula style by ice1000 from ImThemes
-            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
+            ImGuiStyle style = BaseStyle(/*light=*/false);
 
             style.Colors[ImGuiCol_Text] = ImVec4(0.7333333492279053f, 0.7333333492279053f, 0.7333333492279053f, 1.0f);
             style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.3450980484485626f, 0.3450980484485626f, 0.3450980484485626f, 1.0f);
@@ -815,7 +828,7 @@ namespace ImGuiTheme
         ImGuiStyle LightRounded()
         {
             // Fork of Light style from ImThemes
-            ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
+            ImGuiStyle style = BaseStyle(/*light=*/true);
 
             ThemeTweakImpl::ApplyRounding(style, 3.f, 3.f);
 

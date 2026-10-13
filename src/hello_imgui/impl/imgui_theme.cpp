@@ -9,6 +9,7 @@
 #include <string>
 #include <stack>
 #include <functional>
+#include <initializer_list>
 
 #include "hello_imgui/hello_imgui.h"
 
@@ -1006,13 +1007,103 @@ namespace ImGuiTheme
     }
 
 
+    // Adjustments measured on the final colors of some themes, so that the table borders, separators, window borders,
+    // buttons and headers, scrollbar grabs and the selected tab stand out from their background (the floors are in
+    // imgui_theme_test.cpp). Each is the theme's own color, more opaque, or brighter or darker: no new hue.
+    static void ApplyReadabilityAdjustments(ImGuiTheme_ theme, ImGuiStyle& style)
+    {
+        struct ColorValue { ImGuiCol Col; ImVec4 Value; };
+        auto apply = [&style](std::initializer_list<ColorValue> values) {
+            for (const ColorValue& v : values)
+                style.Colors[v.Col] = v.Value;
+        };
+        switch (theme)
+        {
+            case ImGuiTheme_PhotoshopStyle:
+                apply({
+                    {ImGuiCol_TableBorderStrong, ImVec4(0.354f, 0.354f, 0.399f, 1.000f)},
+                    {ImGuiCol_TableBorderLight, ImVec4(0.264f, 0.264f, 0.287f, 1.000f)},
+                    {ImGuiCol_Separator, ImVec4(0.303f, 0.303f, 0.303f, 1.000f)},
+                    {ImGuiCol_Border, ImVec4(0.363f, 0.363f, 0.363f, 0.660f)},
+                    {ImGuiCol_Button, ImVec4(1.000f, 1.000f, 1.000f, 0.138f)},
+                    {ImGuiCol_ScrollbarGrab, ImVec4(0.345f, 0.345f, 0.345f, 1.000f)},
+                    {ImGuiCol_TabSelected, ImVec4(0.222f, 0.222f, 0.222f, 1.000f)},
+                });
+                break;
+            case ImGuiTheme_MaterialFlat:
+                apply({
+                    {ImGuiCol_TableBorderStrong, ImVec4(0.327f, 0.371f, 0.452f, 1.000f)},
+                    {ImGuiCol_TableBorderLight, ImVec4(0.247f, 0.281f, 0.342f, 1.000f)},
+                    {ImGuiCol_Header, ImVec4(0.251f, 0.283f, 0.348f, 1.000f)},
+                    {ImGuiCol_TabSelected, ImVec4(0.220f, 0.443f, 0.663f, 1.000f)},
+                });
+                break;
+            case ImGuiTheme_GrayVariations_Darker:
+                apply({
+                    {ImGuiCol_Separator, ImVec4(0.549f, 0.549f, 0.566f, 0.640f)},
+                    {ImGuiCol_Border, ImVec4(0.642f, 0.642f, 0.642f, 1.000f)},
+                    {ImGuiCol_Button, ImVec4(0.996f, 0.996f, 0.996f, 1.000f)},
+                    {ImGuiCol_ScrollbarGrab, ImVec4(0.700f, 0.700f, 0.700f, 1.000f)},
+                });
+                break;
+            case ImGuiTheme_Cherry:
+                apply({
+                    {ImGuiCol_TableBorderStrong, ImVec4(0.349f, 0.310f, 0.344f, 1.000f)},
+                    {ImGuiCol_TableBorderLight, ImVec4(0.250f, 0.230f, 0.248f, 1.000f)},
+                    {ImGuiCol_Border, ImVec4(0.522f, 0.248f, 0.489f, 0.622f)},
+                    {ImGuiCol_Button, ImVec4(0.803f, 0.453f, 0.762f, 0.280f)},
+                    {ImGuiCol_ScrollbarGrab, ImVec4(0.552f, 0.304f, 0.523f, 1.000f)},
+                    {ImGuiCol_TabSelected, ImVec4(0.629f, 0.182f, 0.576f, 1.000f)},
+                });
+                break;
+            case ImGuiTheme_Darcula:
+                apply({
+                    {ImGuiCol_TableBorderStrong, ImVec4(0.407f, 0.407f, 0.459f, 1.000f)},
+                    {ImGuiCol_TableBorderLight, ImVec4(0.135f, 0.135f, 0.147f, 1.000f)},
+                    {ImGuiCol_Separator, ImVec4(0.354f, 0.354f, 0.354f, 1.000f)},
+                    {ImGuiCol_Button, ImVec4(0.333f, 0.353f, 0.361f, 0.870f)},
+                    {ImGuiCol_Header, ImVec4(0.333f, 0.353f, 0.361f, 0.710f)},
+                    {ImGuiCol_ScrollbarGrab, ImVec4(0.444f, 0.433f, 0.550f, 1.000f)},
+                    {ImGuiCol_TabSelected, ImVec4(0.173f, 0.360f, 0.598f, 1.000f)},
+                });
+                break;
+            case ImGuiTheme_SoDark_AccentBlue:
+            case ImGuiTheme_SoDark_AccentYellow:
+            case ImGuiTheme_SoDark_AccentRed:
+                apply({
+                    {ImGuiCol_TableBorderStrong, ImVec4(0.300f, 0.300f, 0.300f, 1.000f)},
+                    {ImGuiCol_TableBorderLight, ImVec4(0.280f, 0.280f, 0.280f, 0.590f)},
+                    {ImGuiCol_Separator, ImVec4(0.280f, 0.280f, 0.280f, 0.770f)},
+                    {ImGuiCol_Button, ImVec4(0.300f, 0.300f, 0.300f, 0.620f)},
+                    {ImGuiCol_Header, ImVec4(0.210f, 0.210f, 0.210f, 1.000f)},
+                    {ImGuiCol_ScrollbarGrab, ImVec4(0.340f, 0.340f, 0.340f, 0.780f)},
+                    {ImGuiCol_TabSelected, ImVec4(0.200f, 0.200f, 0.200f, 0.960f)},
+                });
+                break;
+            case ImGuiTheme_BlackIsBlack:
+                apply({
+                    {ImGuiCol_TableBorderStrong, ImVec4(0.250f, 0.250f, 0.250f, 1.000f)},
+                    {ImGuiCol_TableBorderLight, ImVec4(0.380f, 0.380f, 0.380f, 0.410f)},
+                    {ImGuiCol_Separator, ImVec4(0.380f, 0.380f, 0.380f, 0.510f)},
+                    {ImGuiCol_TabSelected, ImVec4(0.271f, 0.271f, 0.271f, 0.640f)},
+                });
+                break;
+            default:
+                break;
+        }
+    }
+
     ImGuiStyle ThemeToStyle(ImGuiTheme_ theme)
     {
         IM_ASSERT((theme >= 0) && (theme < ImGuiTheme_Count));
         for (size_t i = 0; i < IM_ARRAYSIZE(gThemeInfos); ++i)
         {
             if (gThemeInfos[i].Theme == theme)
-                return gThemeInfos[i].GetStyleFn();
+            {
+                ImGuiStyle style = gThemeInfos[i].GetStyleFn();
+                ApplyReadabilityAdjustments(theme, style);
+                return style;
+            }
         }
         return ImGuiStyle();
     }

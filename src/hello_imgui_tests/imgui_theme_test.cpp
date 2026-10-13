@@ -51,7 +51,7 @@ TEST_CASE("ImGuiTheme::ApplyTheme works without HelloImGui::Run()")
 
 // Regression test: in the light themes, the text cursor was white on white, and the links near white
 // (the colors added to Dear ImGui after a theme was written came from the current style).
-TEST_CASE("Every theme is readable: the caret, the links, the slider grab, the selection")
+TEST_CASE("Every theme is readable: the caret, links, selection, slider grab, borders, tabs...")
 {
     ImGuiContext* ctx = ImGui::CreateContext();
     for (int i = 0; i < ImGuiTheme::ImGuiTheme_Count; ++i)
@@ -75,6 +75,27 @@ TEST_CASE("Every theme is readable: the caret, the links, the slider grab, the s
             CHECK(Contrast(Over(colors[ImGuiCol_TextSelectedBg], frame), frame) > 1.35f);  // Dark: 1.7, Light: 1.4
             CHECK(Contrast(Over(colors[ImGuiCol_TextDisabled], window), window) > 2.2f);   // Light: 2.5
             CHECK(Contrast(Over(colors[ImGuiCol_PlotHistogram], frame), frame) > 1.5f);    // Light: 1.95
+
+            // The structure and the widgets (they faded into the window in SoDark, BlackIsBlack, MaterialFlat, Cherry,
+            // Darcula, PhotoshopStyle, GrayVariations_Darker)
+            auto on_window = [&](ImGuiCol col) { return Contrast(Over(colors[col], window), window); };
+            CHECK(on_window(ImGuiCol_TableBorderStrong) > 1.8f);  // Dear ImGui's Dark: 2.4
+            CHECK(on_window(ImGuiCol_TableBorderLight) > 1.3f);
+            CHECK(on_window(ImGuiCol_Separator) > 1.5f);          // Dark: 1.8
+            CHECK(on_window(ImGuiCol_Border) > 1.5f);
+            CHECK(on_window(ImGuiCol_Button) > 1.2f);             // Dark: 2.0, Light: 1.45
+            CHECK(on_window(ImGuiCol_Header) > 1.2f);
+            ImVec4 scrollbar = Over(colors[ImGuiCol_ScrollbarBg], window);
+            CHECK(Contrast(Over(colors[ImGuiCol_ScrollbarGrab], scrollbar), scrollbar) > 1.45f);  // Dark: 2.4
+            ImVec4 tab_selected = Over(colors[ImGuiCol_TabSelected], window);
+            CHECK(Contrast(Over(colors[ImGuiCol_Text], tab_selected), tab_selected) > 3.3f);     // the tab's label
+            float h, s_selected, s_tab, v;
+            ImGui::ColorConvertRGBtoHSV(colors[ImGuiCol_TabSelected].x, colors[ImGuiCol_TabSelected].y,
+                                        colors[ImGuiCol_TabSelected].z, h, s_selected, v);
+            ImGui::ColorConvertRGBtoHSV(colors[ImGuiCol_Tab].x, colors[ImGuiCol_Tab].y, colors[ImGuiCol_Tab].z,
+                                        h, s_tab, v);
+            if (s_selected < 0.2f && s_tab < 0.2f)  // gray tabs: the selected one must differ by its brightness
+                CHECK(Contrast(tab_selected, Over(colors[ImGuiCol_Tab], window)) > 1.4f);
         }
     }
     ImGui::DestroyContext(ctx);

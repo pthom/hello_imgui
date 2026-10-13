@@ -214,6 +214,14 @@ namespace ImGuiTheme
             return style;
         }
 
+        // The dims cover the whole screen behind a modal or the window switcher: Dear ImGui Dark's neutral grays,
+        // not a theme's accent (a yellow or red screen otherwise)
+        void SetNeutralDarkDims(ImGuiStyle& style)
+        {
+            style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+            style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+        }
+
         ImGuiStyle SoDark(float hue)
         {
             ImGuiStyle style = BaseStyle(/*light=*/false);
@@ -299,6 +307,7 @@ namespace ImGuiTheme
             style.TabRounding                       = 4;
 
             ThemeTweakImpl::ApplyHue(style, hue);
+            SetNeutralDarkDims(style);
 
             return style;
         }
@@ -954,6 +963,17 @@ namespace ImGuiTheme
             ThemeTweakImpl::ApplyValueMultiplierFrameBg(style, 1.12f, style);
             style.Colors[ImGuiCol_FrameBg] = ImVec4(27.f / 255.f, 27.f / 255.f, 27.f / 255.f, 231.f / 255.f);
             style.Colors[ImGuiCol_Header] = ImVec4(0.25f, 0.25f, 0.25f, 1.f);
+            // The accents (plots, check marks, links...), brightened above with the rest, were a flashy cyan on black:
+            // less saturated and darker. The grays keep their values.
+            auto clamp01 = [](float x) { return x < 0.f ? 0.f : (x > 1.f ? 1.f : x); };
+            for (ImVec4& col : style.Colors)
+            {
+                float h, s, v;
+                ImGui::ColorConvertRGBtoHSV(clamp01(col.x), clamp01(col.y), clamp01(col.z), h, s, v);
+                if (s > 0.2f)
+                    ImGui::ColorConvertHSVtoRGB(h, s * 0.25f, v * 0.65f, col.x, col.y, col.z);
+            }
+            SetNeutralDarkDims(style);  // the tweaks above brightened them
             return style;
         }
     } // namespace ThemesImpl

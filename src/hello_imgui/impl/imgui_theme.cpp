@@ -200,9 +200,9 @@ namespace ImGuiTheme
             return style;
         }
 
-        // A theme starts from the current sizes and from Dear ImGui's own dark or light colors. It sets the colors it chooses;
-        // the others (e.g. those added to Dear ImGui after the theme was written: the text cursor, the links...) then match
-        // the theme's kind, whatever the current style is.
+        // A theme starts from the current sizes and from Dear ImGui's own dark or light colors. It sets the colors
+        // it chooses; the others (e.g. those added to Dear ImGui after the theme was written: the text cursor, the
+        // links...) then match the theme's kind, whatever the current style is.
         ImGuiStyle BaseStyle(bool light)
         {
             ImGuiStyle style = ImGui::GetStyle();  // a copy: ThemeToStyle() leaves the current style alone
@@ -236,7 +236,7 @@ namespace ImGuiTheme
             colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.40f, 0.40f, 0.40f, 0.54f);
             colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
             colors[ImGuiCol_CheckMark]              = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
-            colors[ImGuiCol_SliderGrab]             = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
+            colors[ImGuiCol_SliderGrab]             = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
             // the accent: stands out from the held frame
             colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
             colors[ImGuiCol_Button]                 = ImVec4(0.30f, 0.30f, 0.30f, 0.54f);
@@ -267,7 +267,7 @@ namespace ImGuiTheme
             colors[ImGuiCol_TableBorderLight]       = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
             colors[ImGuiCol_TableRowBg]             = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
             colors[ImGuiCol_TableRowBgAlt]          = ImVec4(1.00f, 1.00f, 1.00f, 0.06f);
-            colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
+            colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.33f, 0.67f, 0.86f, 0.35f);
             colors[ImGuiCol_DragDropTarget]         = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
             colors[ImGuiCol_NavCursor]           = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
             colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 0.00f, 0.00f, 0.70f);
@@ -390,7 +390,7 @@ namespace ImGuiTheme
             style.Colors[ImGuiCol_TableBorderLight] = ImVec4(0.2039215713739395f, 0.2313725501298904f, 0.2823529541492462f, 0.5021458864212036f);
             style.Colors[ImGuiCol_TableRowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
             style.Colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.0f, 1.0f, 1.0f, 0.03862661123275757f);
-            style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.2039215713739395f, 0.2313725501298904f, 0.2823529541492462f, 1.0f);
+            style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.239215686917305f, 0.5215686559677124f, 0.8784313797950745f, 0.45f);
             style.Colors[ImGuiCol_DragDropTarget] = ImVec4(1.0f, 1.0f, 0.0f, 0.8999999761581421f);
             style.Colors[ImGuiCol_NavCursor] = ImVec4(0.2588235437870026f, 0.5882353186607361f, 0.9764705896377563f, 1.0f);
             style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.2039215713739395f, 0.2313725501298904f, 0.2823529541492462f, 0.7529411911964417f);
@@ -500,14 +500,16 @@ namespace ImGuiTheme
             return style;
         }
 
-        // The gray light themes take their accents (links, selection, navigation, selected tab) from Dear ImGui's Light theme:
-        // desaturated and brightened with the rest, they would vanish on white.
+        // The gray light themes take their accents (links, selection, navigation, selected tab, plots) from
+        // Dear ImGui's Light theme: desaturated and brightened with the rest, they would vanish on white.
         void SetLightAccents(ImGuiStyle& style)
         {
             ImGuiStyle light;
             ImGui::StyleColorsLight(&light);
-            for (ImGuiCol col : {ImGuiCol_TextLink, ImGuiCol_TextSelectedBg, ImGuiCol_DragDropTarget, ImGuiCol_NavCursor,
-                                 ImGuiCol_TabSelected, ImGuiCol_TabSelectedOverline, ImGuiCol_TabDimmedSelected})
+            for (ImGuiCol col : {ImGuiCol_TextLink, ImGuiCol_TextSelectedBg, ImGuiCol_DragDropTarget,
+                                 ImGuiCol_NavCursor, ImGuiCol_TabSelected, ImGuiCol_TabSelectedOverline,
+                                 ImGuiCol_TabDimmedSelected, ImGuiCol_PlotLines, ImGuiCol_PlotLinesHovered,
+                                 ImGuiCol_PlotHistogram, ImGuiCol_PlotHistogramHovered})
                 style.Colors[col] = light.Colors[col];
         }
 
@@ -668,7 +670,7 @@ namespace ImGuiTheme
             style.SelectableTextAlign = ImVec2(0.0f, 0.0f);
 
             style.Colors[ImGuiCol_Text] = ImVec4(0.8588235378265381f, 0.929411768913269f, 0.886274516582489f, 0.8799999952316284f);
-            style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.8588235378265381f, 0.929411768913269f, 0.886274516582489f, 0.2800000011920929f);
+            style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.8588235378265381f, 0.929411768913269f, 0.886274516582489f, 0.50f);
             style.Colors[ImGuiCol_WindowBg] = ImVec4(0.1294117718935013f, 0.1372549086809158f, 0.168627455830574f, 1.0f);
             style.Colors[ImGuiCol_ChildBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
             style.Colors[ImGuiCol_PopupBg] = ImVec4(0.2000000029802322f, 0.2196078449487686f, 0.2666666805744171f, 0.8999999761581421f);
@@ -686,7 +688,7 @@ namespace ImGuiTheme
             style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.4549019634723663f, 0.196078434586525f, 0.2980392277240753f, 0.7799999713897705f);
             style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.4549019634723663f, 0.196078434586525f, 0.2980392277240753f, 1.0f);
             style.Colors[ImGuiCol_CheckMark] = ImVec4(0.7098039388656616f, 0.2196078449487686f, 0.2666666805744171f, 1.0f);
-            style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.4666666686534882f, 0.7686274647712708f, 0.8274509906768799f, 0.1400000005960464f);
+            style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.4666666686534882f, 0.7686274647712708f, 0.8274509906768799f, 0.78f);
             // light: stands out from the held frame
             style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.95f, 0.55f, 0.65f, 1.0f);
             style.Colors[ImGuiCol_Button] = ImVec4(0.4666666686534882f, 0.7686274647712708f, 0.8274509906768799f, 0.1400000005960464f);
@@ -715,7 +717,7 @@ namespace ImGuiTheme
             style.Colors[ImGuiCol_TableBorderLight] = ImVec4(0.2274509817361832f, 0.2274509817361832f, 0.2470588237047195f, 1.0f);
             style.Colors[ImGuiCol_TableRowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
             style.Colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.0f, 1.0f, 1.0f, 0.05999999865889549f);
-            style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.4549019634723663f, 0.196078434586525f, 0.2980392277240753f, 0.4300000071525574f);
+            style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.95f, 0.55f, 0.65f, 0.35f);
             style.Colors[ImGuiCol_DragDropTarget] = ImVec4(1.0f, 1.0f, 0.0f, 0.8999999761581421f);
             style.Colors[ImGuiCol_NavCursor] = ImVec4(0.2588235437870026f, 0.5882353186607361f, 0.9764705896377563f, 1.0f);
             style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.0f, 1.0f, 1.0f, 0.699999988079071f);
@@ -744,7 +746,7 @@ namespace ImGuiTheme
             ImGuiStyle style = BaseStyle(/*light=*/false);
 
             style.Colors[ImGuiCol_Text] = ImVec4(0.7333333492279053f, 0.7333333492279053f, 0.7333333492279053f, 1.0f);
-            style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.3450980484485626f, 0.3450980484485626f, 0.3450980484485626f, 1.0f);
+            style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.53f, 0.53f, 0.53f, 1.0f);
             style.Colors[ImGuiCol_WindowBg] = ImVec4(0.2352941185235977f, 0.2470588237047195f, 0.2549019753932953f, 0.9399999976158142f);
             style.Colors[ImGuiCol_ChildBg] = ImVec4(0.2352941185235977f, 0.2470588237047195f, 0.2549019753932953f, 0.0f);
             style.Colors[ImGuiCol_PopupBg] = ImVec4(0.2352941185235977f, 0.2470588237047195f, 0.2549019753932953f, 0.9399999976158142f);

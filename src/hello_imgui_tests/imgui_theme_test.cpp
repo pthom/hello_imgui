@@ -51,7 +51,7 @@ TEST_CASE("ImGuiTheme::ApplyTheme works without HelloImGui::Run()")
 
 // Regression test: in the light themes, the text cursor was white on white, and the links near white
 // (the colors added to Dear ImGui after a theme was written came from the current style).
-TEST_CASE("In every theme, the text cursor and the links are readable")
+TEST_CASE("Every theme is readable: the caret, the links, the slider grab, the selection")
 {
     ImGuiContext* ctx = ImGui::CreateContext();
     for (int i = 0; i < ImGuiTheme::ImGuiTheme_Count; ++i)
@@ -66,6 +66,16 @@ TEST_CASE("In every theme, the text cursor and the links are readable")
         ImVec4 frame = Over(colors[ImGuiCol_FrameBg], window);
         CHECK(Contrast(Over(colors[ImGuiCol_InputTextCursor], frame), frame) > 3.f);
         CHECK(Contrast(Over(colors[ImGuiCol_TextLink], window), window) > 1.8f);  // Dear ImGui's Light: 2.6
+
+        // Hello ImGui's own themes (Dear ImGui's Classic has a selection at 1.0). The slider grab was invisible in
+        // SoDark, BlackIsBlack and Cherry; the disabled text in Darcula; the selection in Cherry, SoDark, MaterialFlat
+        if (theme > ImGuiTheme::ImGuiTheme_ImGuiColorsLight)
+        {
+            CHECK(Contrast(Over(colors[ImGuiCol_SliderGrab], frame), frame) > 1.5f);       // Dear ImGui's Dark: 3.6
+            CHECK(Contrast(Over(colors[ImGuiCol_TextSelectedBg], frame), frame) > 1.35f);  // Dark: 1.7, Light: 1.4
+            CHECK(Contrast(Over(colors[ImGuiCol_TextDisabled], window), window) > 2.2f);   // Light: 2.5
+            CHECK(Contrast(Over(colors[ImGuiCol_PlotHistogram], frame), frame) > 1.5f);    // Light: 1.95
+        }
     }
     ImGui::DestroyContext(ctx);
 }

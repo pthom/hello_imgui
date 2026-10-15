@@ -24,6 +24,9 @@ include(${CMAKE_CURRENT_LIST_DIR}/hello_imgui_installed_options.cmake OPTIONAL)
 #     * It will perform additional customization (app icon and name on mobile platforms, etc)
 #     * With MSVC, it reads the sources as UTF-8 (/utf-8), as GCC, Clang and Emscripten do by default
 #
+# Emscripten: the variable HELLO_IMGUI_SHELL_HEAD, set before the call, adds lines to the web page's <head> (e.g. the
+# Open Graph tags of a link preview), in the default shell file and in shells that keep its @HELLO_IMGUI_SHELL_HEAD@
+#
 function(hello_imgui_add_app)
     #############################################################################
     # CMake argument parsing shenanigans...

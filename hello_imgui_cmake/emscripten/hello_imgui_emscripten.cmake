@@ -65,10 +65,12 @@ function(_hello_imgui_emscripten_set_shell_file app_name assets_location)
     )
 
     target_link_options(
-        ${app_name} 
+        ${app_name}
         PRIVATE
         "SHELL:--shell-file ${shell_file_configured}"
     )
+    # A link option is not a dependency: without this, a changed shell does not relink the page
+    set_property(TARGET ${app_name} APPEND PROPERTY LINK_DEPENDS ${shell_file_configured})
 
     set_target_properties(
         ${app_name} 

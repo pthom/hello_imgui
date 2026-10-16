@@ -77,6 +77,13 @@ See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_i
 
 ----
 
+## Store user settings that survive a reset of the settings
+See [hello_imgui.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/hello_imgui.h).
+
+![[hello_imgui.h#HelloImGui::LastingPref]]
+
+----
+
 # Customize Hello ImGui Menus
 
 ![[hello_imgui.h#MenuIntro]]

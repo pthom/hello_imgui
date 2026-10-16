@@ -2,6 +2,14 @@
 #include "hello_imgui/internal/inicpp.h"
 #include "hello_imgui/internal/functional_utils.h"
 #include "imgui_internal.h"
+#include <map>
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <cstdio>
+#else
+#include <filesystem>
+#endif
 
 
 namespace HelloImGui
@@ -535,6 +543,80 @@ namespace HelloImGui
             }
             else
                 return "";
+        }
+
+
+        // The lasting prefs. On the desktop: the ini parts format, in "<ini name>_lasting.ini". On the web: the
+        // browser's localStorage, with the keys "<ini name>/<pref name>". emscripten_run_script rather than EM_JS: it
+        // also works in a side module, as in Pyodide. localStorage throws when the site's storage is blocked.
+#ifdef __EMSCRIPTEN__
+        static std::string JsStringLiteral(const std::string& s)
+        {
+            std::string r = "\"";
+            for (unsigned char c : s)
+            {
+                if (c == '"' || c == '\\')
+                {
+                    r += '\\';
+                    r += static_cast<char>(c);
+                }
+                else if (c < 0x20)
+                {
+                    char escaped[8];
+                    snprintf(escaped, sizeof(escaped), "\\u%04x", c);
+                    r += escaped;
+                }
+                else
+                    r += static_cast<char>(c);
+            }
+            return r + "\"";
+        }
+#else
+        static std::string LastingPrefsFilename(const std::string& iniPartsFilename)
+        {
+            std::filesystem::path path(iniPartsFilename);  // "folder/App.ini" -> "folder/App_lasting.ini"
+            path.replace_filename(path.stem().string() + "_lasting.ini");
+            return path.string();
+        }
+#endif
+
+        // Read once from their store, then from this cache: an app may read them at each frame
+        static std::map<std::string, std::string> gLastingPrefsCache;  // key: "<ini name>/<pref name>"
+
+        void SaveLastingPref(const std::optional<std::string>& iniPartsFilename,
+                             const std::string& prefName, const std::string& prefContent)
+        {
+            if (!iniPartsFilename.has_value())
+                return;
+            std::string key = iniPartsFilename.value() + "/" + prefName;
+            gLastingPrefsCache[key] = prefContent;
+#ifdef __EMSCRIPTEN__
+            std::string script = "try { localStorage.setItem(" + JsStringLiteral(key) + ", "
+                                 + JsStringLiteral(prefContent) + "); } catch (e) {}";
+            emscripten_run_script(script.c_str());
+#else
+            SaveUserPref(LastingPrefsFilename(iniPartsFilename.value()), prefName, prefContent);
+#endif
+        }
+
+        std::string LoadLastingPref(const std::optional<std::string>& iniPartsFilename, const std::string& prefName)
+        {
+            if (!iniPartsFilename.has_value())
+                return "";
+            std::string key = iniPartsFilename.value() + "/" + prefName;
+            auto cached = gLastingPrefsCache.find(key);
+            if (cached != gLastingPrefsCache.end())
+                return cached->second;
+#ifdef __EMSCRIPTEN__
+            std::string script = "(function () { try { return localStorage.getItem(" + JsStringLiteral(key)
+                                 + ") || ''; } catch (e) { return ''; } })()";
+            const char* value = emscripten_run_script_string(script.c_str());
+            std::string prefContent = value ? value : "";
+#else
+            std::string prefContent = LoadUserPref(LastingPrefsFilename(iniPartsFilename.value()), prefName);
+#endif
+            gLastingPrefsCache[key] = prefContent;
+            return prefContent;
         }
 
 

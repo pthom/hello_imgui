@@ -2,6 +2,7 @@
 #include "hello_imgui/internal/backend_impls/runner_factory.h"
 #include "hello_imgui/internal/menu_statusbar.h"
 #include "hello_imgui/internal/docking_details.h"
+#include "hello_imgui/internal/hello_imgui_ini_settings.h"
 #ifdef __EMSCRIPTEN__
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
 #endif
@@ -501,6 +502,16 @@ void SaveUserPref(const std::string& userPrefName, const std::string& userPrefCo
 std::string LoadUserPref(const std::string& userPrefName)
 {
     return gLastRunner->LoadUserPref(userPrefName);
+}
+
+void SaveLastingPref(const std::string& prefName, const std::string& prefContent)
+{
+    HelloImGuiIniSettings::SaveLastingPref(IniSettingsLocation(*GetRunnerParams()), prefName, prefContent);
+}
+
+std::string LoadLastingPref(const std::string& prefName)
+{
+    return HelloImGuiIniSettings::LoadLastingPref(IniSettingsLocation(*GetRunnerParams()), prefName);
 }
 
 

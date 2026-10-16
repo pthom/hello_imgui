@@ -81,5 +81,12 @@ namespace HelloImGui
         void        SaveUserPref(const std::optional<std::string>& iniPartsFilename, const std::string& userPrefName, const std::string& userPrefContent);
         std::string LoadUserPref(const std::optional<std::string>& iniPartsFilename, const std::string& userPrefName);
 
+        //
+        // Lasting prefs (see hello_imgui.h): apart from the ini file, so that a reset of the settings keeps them
+        //
+        void        SaveLastingPref(const std::optional<std::string>& iniPartsFilename,
+                                    const std::string& prefName, const std::string& prefContent);
+        std::string LoadLastingPref(const std::optional<std::string>& iniPartsFilename, const std::string& prefName);
+
     }
 }

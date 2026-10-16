@@ -202,13 +202,13 @@ TLDR: Fonts may be rendered at any size. Glyphs are loaded and rasterized dynami
 * Added optional [hello_imgui.ini](https://github.com/pthom/hello_imgui/blob/master/hello_imgui_example.ini) file, 
   as a way to do advanced configuration for Dpi and OpenGL rendering options
 * Add PushTweakedTheme / PopTweakedTheme (different ImGui windows can use a different theme. See demo docking)
-* Add DpiAwareParams: see [doc](https://pthom.github.io/hello_imgui/book/doc_params.html#dpi-aware-params)
-* Add HelloImGui::ImageAndSizeFromAsset see [doc](https://pthom.github.io/hello_imgui/book/doc_api.html#display-images-from-assets)
+* Add DpiAwareParams: see [doc](https://pthom.github.io/hello_imgui/book/doc-params/#dpi-aware-params)
+* Add HelloImGui::ImageAndSizeFromAsset see [doc](https://pthom.github.io/hello_imgui/book/doc-api/#display-images-from-assets)
 * callbacks.LoadAdditionalFonts can be modified and reused during execution
-* add null backend (see https://pthom.github.io/hello_imgui/book/doc_params.html#backend-selection)
+* add null backend (see https://pthom.github.io/hello_imgui/book/doc-params/#backend-selection)
 * Add [optional OpenGlOptions](https://github.com/pthom/hello_imgui/blob/98f241df2b43bb2b3191ab150c2b1a21b30c7031/src/hello_imgui/renderer_backend_options.h#L9-L56) 
-* Add widgets InputTextResizable + WidgetWithResizeHandle: see [doc](https://pthom.github.io/hello_imgui/book/doc_api.html#additional-widgets)
-* Add HelloImGui::LoadDpiResponsiveFont: see [doc](https://pthom.github.io/hello_imgui/book/doc_api.html#load-fonts)
+* Add widgets InputTextResizable + WidgetWithResizeHandle: see [doc](https://pthom.github.io/hello_imgui/book/doc-api/#additional-widgets)
+* Add HelloImGui::LoadDpiResponsiveFont: see [doc](https://pthom.github.io/hello_imgui/book/doc-api/#load-fonts)
 
 #### Add FontAwesome options with support for FontAwesome 4 and FontAwesome 6:
 
@@ -283,8 +283,8 @@ Notes:
 ## New Features
 
 * Added EdgeToolbars: see [definition](https://github.com/pthom/hello_imgui/blob/3a279ce7459b04a4c2e7460b844cbf354833964e/src/hello_imgui/runner_callbacks.h#L72-L102), [callbacks](https://github.com/pthom/hello_imgui/blob/3a279ce7459b04a4c2e7460b844cbf354833964e/src/hello_imgui/runner_callbacks.h#L140-L147), [example usage](https://github.com/pthom/hello_imgui/blob/3a279ce7459b04a4c2e7460b844cbf354833964e/src/hello_imgui_demos/hello_imgui_demodocking/hello_imgui_demodocking.main.cpp#L694-L714), and [demo](https://imgui-bundle.pages.dev/explorer/demo_docking.html)
-* Callbacks: add [EnqueuePostInit, EnqueueBeforeExit, PostInit_AddPlatformBackendCallbacks](https://pthom.github.io/hello_imgui/book/doc_params.html#runnercallbacks)
-* Add [renderer_backend_options](https://pthom.github.io/hello_imgui/book/doc_params.html#renderer-backend-options)
+* Callbacks: add [EnqueuePostInit, EnqueueBeforeExit, PostInit_AddPlatformBackendCallbacks](https://pthom.github.io/hello_imgui/book/doc-params/#runnercallbacks)
+* Add [renderer_backend_options](https://pthom.github.io/hello_imgui/book/doc-params/#renderer-backend-options)
 * Add support for Extended Dynamic Range (EDR) on macOS : see [PR](https://github.com/pthom/hello_imgui/pull/89). Added [demo / EDR](https://github.com/pthom/hello_imgui/tree/master/src/hello_imgui_demos/hello_edr) - Only works with Metal
 * Test Engine: can re-call params.callbacks.RegisterTests
 * rememberEnableIdling default=false (true is too surprising)
@@ -296,7 +296,7 @@ Notes:
 * Uses [Freetype for font rendering](https://github.com/pthom/hello_imgui/blob/549c205dd3ca98f18fcf541a2ebbfc5abdd10410/CMakeLists.txt#L96-L106)
 * Improved [Font Loading utility](https://github.com/pthom/hello_imgui/blob/549c205dd3ca98f18fcf541a2ebbfc5abdd10410/src/hello_imgui/hello_imgui_font.h#L13-L62)
 * Added support for Colored font and Emoji fonts ([Demo](https://imgui-bundle.pages.dev/explorer/demo_docking.html))
-* Can [fully customize the menu bar](https://pthom.github.io/hello_imgui/book/doc_api.html#customize-hello-imgui-menus)
+* Can [fully customize the menu bar](https://pthom.github.io/hello_imgui/book/doc-api/#customize-hello-imgui-menus)
 * Added support for macOS application bundles
 * Added option to specify where settings are saved: `RunnerParams.iniFolderType` can be set to: `CurrentFolder`, `AppUserConfigFolder`, `DocumentsFolder`, `HomeFolder`, `TempFolder`, `AppExecutableFolder`.
 * Support for Application Icon: the file `assets/app_settings/icon.png` will be used to generate the window icon (C++, Python), and app icon (C++ only) for any platform. See assets structure below:

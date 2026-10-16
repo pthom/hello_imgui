@@ -105,7 +105,7 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 # Dpi Aware Params
 
-Optionally, DPI parameters can be fine-tuned. For detailed info, see [handling screens with high dpi](https://pthom.github.io/hello_imgui/book/doc_api.html#handling-screens-with-high-dpi)
+Optionally, DPI parameters can be fine-tuned. For detailed info, see [handling screens with high dpi](https://pthom.github.io/hello_imgui/book/doc-api/#handling-screens-with-high-dpi)
 
 Source: [dpi_aware.h](https://github.com/pthom/hello_imgui/blob/master/src/hello_imgui/dpi_aware.h)
 ![[dpi_aware.h#DpiAwareParams]]

@@ -251,7 +251,10 @@ namespace HelloImGui { namespace BackendApi
             return 1.f;
         #elif defined(_WIN32) || defined(__ANDROID__)|| defined(__linux__)
             float ddpi, hdpi, vdpi;
-            if (SDL_GetDisplayDPI(0, &ddpi, &hdpi, &vdpi) != 0)
+            int displayIndex = SDL_GetWindowDisplayIndex((SDL_Window *) window);  // the display that holds the window
+            if (displayIndex < 0)
+                displayIndex = 0;
+            if (SDL_GetDisplayDPI(displayIndex, &ddpi, &hdpi, &vdpi) != 0)
             {
                 std::cerr << "GetWindowSizeDpiScaleFactor: Failed to get DPI: " << SDL_GetError() << std::endl;
                 return 1.f;

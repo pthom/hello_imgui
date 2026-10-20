@@ -662,6 +662,9 @@ void AbstractRunner::InitRenderBackendCallbacks()
 void AbstractRunner::Setup()
 {
     auto& self = *this;
+    // The params may come from a previous run, which ended with appShallExit
+    params.appShallExit = false;
+    mLoadAdditionalFontsAtSetup = params.callbacks.LoadAdditionalFonts;
     InitRenderBackendCallbacks();
 
     InitImGuiContext();
@@ -1475,6 +1478,8 @@ void AbstractRunner::TearDown(bool gotException)
 {
     IM_ASSERT(!mWasTearedDown && "TearDown() called twice!");
     mWasTearedDown = true;
+    // Emptied once the fonts were loaded (a non-empty one reloads them during the run): the same params can run again
+    params.callbacks.LoadAdditionalFonts = mLoadAdditionalFontsAtSetup;
     if (! gotException)
     {
         // Store screenshot before exiting

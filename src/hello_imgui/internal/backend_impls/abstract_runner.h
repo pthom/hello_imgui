@@ -118,6 +118,7 @@ private:
     int mIdxFrame = 0;
     bool mWasWindowAutoResizedOnPreviousFrame = false;
     bool mWasTearedDown = false;
+    VoidFunction mLoadAdditionalFontsAtSetup;  // Setup empties params.callbacks.LoadAdditionalFonts, TearDown restores it
 
     // Differentiate between cases where the window was resized by code
     // and cases where the window was resized by the user

@@ -156,7 +156,7 @@ struct RunnerCallbacks
     //  Also, remember to call ImGui::SameLine() between items.
     VoidFunction ShowStatus = EmptyVoidFunction();
 
-    // `EdgesToolbars`:
+    // `edgesToolbars`:
     // A dict that contains toolbars that can be placed on the edges of the App window
     std::map<EdgeToolbarType, EdgeToolbar> edgesToolbars;
 

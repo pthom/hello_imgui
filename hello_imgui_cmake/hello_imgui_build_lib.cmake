@@ -1186,16 +1186,17 @@ function(_him_fetch_glfw_if_needed)
         # Set(FETCHCONTENT_QUIET FALSE)
         FetchContent_Declare(glfw
             GIT_REPOSITORY    https://github.com/glfw/glfw.git
-            GIT_TAG           3.3.8
+            GIT_TAG           3.5.1
             GIT_PROGRESS TRUE
         )
 
         set(GLFW_BUILD_EXAMPLES OFF)
         set(GLFW_BUILD_TESTS OFF)
         set(GLFW_BUILD_DOCS OFF)
+        set(GLFW_BUILD_WAYLAND OFF) # X11 only on Linux: Wayland would need its development packages
         set(GLFW_INSTALL ON)
         FetchContent_MakeAvailable(glfw)
-        set(HELLOIMGUI_GLFW_SELECTED_INFO "Downloaded 3.3.8" CACHE INTERNAL "" FORCE)
+        set(HELLOIMGUI_GLFW_SELECTED_INFO "Downloaded 3.5.1" CACHE INTERNAL "" FORCE)
     else()
         set(HELLOIMGUI_GLFW_SELECTED_INFO "Use system Library" CACHE INTERNAL "" FORCE)
     endif()

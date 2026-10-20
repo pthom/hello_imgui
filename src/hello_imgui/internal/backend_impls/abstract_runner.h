@@ -119,6 +119,7 @@ private:
     bool mWasWindowAutoResizedOnPreviousFrame = false;
     bool mWasTearedDown = false;
     VoidFunction mLoadAdditionalFontsAtSetup;  // Setup empties params.callbacks.LoadAdditionalFonts, TearDown restores it
+    float mDpiWindowSizeFactorAtSetup = 0.f;   // 0: Setup measures it, TearDown restores it (the next run measures again)
 
     // Differentiate between cases where the window was resized by code
     // and cases where the window was resized by the user

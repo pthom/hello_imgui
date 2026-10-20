@@ -665,6 +665,7 @@ void AbstractRunner::Setup()
     // The params may come from a previous run, which ended with appShallExit
     params.appShallExit = false;
     mLoadAdditionalFontsAtSetup = params.callbacks.LoadAdditionalFonts;
+    mDpiWindowSizeFactorAtSetup = params.dpiAwareParams.dpiWindowSizeFactor;
     InitRenderBackendCallbacks();
 
     InitImGuiContext();
@@ -1519,6 +1520,10 @@ void AbstractRunner::TearDown(bool gotException)
     #endif
 
     mRemoteDisplayHandler.Shutdown();
+
+    // Last: the ini settings saved the factor above. A measured factor is measured again at the next run with the same
+    // params, which may open on a screen with another scale
+    params.dpiAwareParams.dpiWindowSizeFactor = mDpiWindowSizeFactorAtSetup;
 }
 
 

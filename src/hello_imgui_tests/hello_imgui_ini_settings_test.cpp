@@ -78,6 +78,30 @@ TEST_CASE("testing HelloImGuiIniSettings: a user pref round trip")
 }
 
 
+// A user pref can hold any text, even lines that look like the file's markers: it comes back intact, and adds no part
+TEST_CASE("testing HelloImGuiIniSettings: a user pref with marker lines")
+{
+    namespace HIS = HelloImGui::HelloImGuiIniSettings;
+    std::string filename = (std::filesystem::temp_directory_path() / "hello_imgui_test_pref_markers.ini").string();
+    std::remove(filename.c_str());
+
+    std::string value = "line 1\n;;;<<<AppWindow>>>;;;\n[AppWindow]\nDpiWindowSizeFactor=abc\n;;;\\x\n;;;<<<>>>;;;\nline 7";
+    HIS::SaveUserPref(filename, "notes", value);
+    HIS::SaveUserPref(filename, "other", "content");
+    CHECK(HIS::LoadUserPref(filename, "notes") == value);
+    CHECK(HIS::LoadUserPref(filename, "other") == "content");
+    CHECK(!HIS::IniParts::LoadFromFile(filename).HasIniPart("AppWindow"));
+
+    SUBCASE("an empty name is refused")
+    {
+        HIS::SaveUserPref(filename, "", "x");
+        CHECK(HIS::LoadUserPref(filename, "notes") == value);
+        CHECK(HIS::LoadUserPref(filename, "other") == "content");
+    }
+    std::remove(filename.c_str());
+}
+
+
 // cf https://github.com/pthom/hello_imgui/issues/168
 TEST_CASE("testing HelloImGuiIniSettings::LoadLastRunWindowBounds")
 {

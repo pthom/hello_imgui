@@ -3,6 +3,7 @@
 #include "hello_imgui/internal/functional_utils.h"
 #include "imgui_internal.h"
 #include <map>
+#include <cstdio>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -544,12 +545,50 @@ namespace HelloImGui
         }
 
 
+        // A user pref is stored as an ini part, line by line: a line of its content that looks like a part's marker
+        // (";;;<<<name>>>;;;") would end the part. Such a line is stored with a backslash after ";;;", and so is a
+        // line that already starts with ";;;\": loading removes one, and gives back the content as it was saved.
+        std::string _TransformLines(const std::string& s, void (*fn)(std::string& line))
+        {
+            std::string r;
+            size_t lineStart = 0;
+            while (lineStart <= s.size())
+            {
+                size_t lineEnd = s.find('\n', lineStart);
+                if (lineEnd == std::string::npos)
+                    lineEnd = s.size();
+                std::string line = s.substr(lineStart, lineEnd - lineStart);
+                fn(line);
+                r += line;
+                if (lineEnd < s.size())
+                    r += '\n';
+                lineStart = lineEnd + 1;
+            }
+            return r;
+        }
+        void _EscapeUserPrefLine(std::string& line)
+        {
+            if (line.rfind(";;;<<<", 0) == 0 || line.rfind(";;;\\", 0) == 0)
+                line.insert(3, "\\");
+        }
+        void _UnescapeUserPrefLine(std::string& line)
+        {
+            if (line.rfind(";;;\\", 0) == 0)
+                line.erase(3, 1);
+        }
+
         void  SaveUserPref(const std::optional<std::string>& iniPartsFilename, const std::string& userPrefName, const std::string& userPrefContent)
         {
             if (!iniPartsFilename.has_value())
                 return;
+            // The name goes into the part's marker line
+            if (userPrefName.empty() || userPrefName.find_first_of("\r\n") != std::string::npos)
+            {
+                fprintf(stderr, "SaveUserPref: invalid name \"%s\" (empty, or with a line break): not saved\n", userPrefName.c_str());
+                return;
+            }
             IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename.value());
-            iniParts.SetIniPart(userPrefName, userPrefContent + "\n");
+            iniParts.SetIniPart(userPrefName, _TransformLines(userPrefContent, _EscapeUserPrefLine) + "\n");
             iniParts.WriteToFile(iniPartsFilename.value());
         }
 
@@ -561,7 +600,7 @@ namespace HelloImGui
             if (iniParts.HasIniPart(userPrefName))
             {
                 std::string contentWithNewLine = iniParts.GetIniPart(userPrefName);
-                return contentWithNewLine.substr(0, contentWithNewLine.size() - 1);
+                return _TransformLines(contentWithNewLine.substr(0, contentWithNewLine.size() - 1), _UnescapeUserPrefLine);
             }
             else
                 return "";

@@ -88,9 +88,25 @@ namespace HelloImGui
 
         // Test if a line looks like an IniPart intro, e.g.:
         //      ;;;<<<imgui>>>;;;
+        // (";;;<<<>>>;;;", with no name, is not one)
         bool _IsIniPartName(const std::string& line)
         {
-            return (line.find(";;;<<<")) == 0 && (line.rfind(">>>;;;") == line.size() - 6);
+            return line.size() > 12 && (line.find(";;;<<<")) == 0 && (line.rfind(">>>;;;") == line.size() - 6);
+        }
+
+        // Decodes an ini part; false for a malformed one (a hand edit, a save cut short), which the loaders ignore:
+        // the app then starts as if nothing was saved, instead of failing at each start
+        bool _TryDecode(ini::IniFile& iniFile, const std::string& iniPartContent)
+        {
+            try
+            {
+                iniFile.decode(iniPartContent);
+                return true;
+            }
+            catch (const std::exception&)
+            {
+                return false;
+            }
         }
 
         // Reads an IniPart intro name, e.g.:
@@ -299,8 +315,15 @@ namespace HelloImGui
 
             if (appWindowSection.find("DpiWindowSizeFactor") != appWindowSection.end())
             {
-                float dpiWindowSizeFactor_WhenSaved =
-                    iniFile["AppWindow"]["DpiWindowSizeFactor"].as<float>();
+                float dpiWindowSizeFactor_WhenSaved;
+                try
+                {
+                    dpiWindowSizeFactor_WhenSaved = iniFile["AppWindow"]["DpiWindowSizeFactor"].as<float>();
+                }
+                catch (const std::exception&)  // not a number
+                {
+                    return std::nullopt;
+                }
                 bool isDpiSane = (dpiWindowSizeFactor_WhenSaved >= 0.1f) &&
                                  (dpiWindowSizeFactor_WhenSaved <= 10.f);
                 if (isDpiSane)
@@ -404,7 +427,8 @@ namespace HelloImGui
                 return;
 
             ini::IniFile iniFile;
-            iniFile.decode(iniParts.GetIniPart(iniPartName));
+            if (!_TryDecode(iniFile, iniParts.GetIniPart(iniPartName)))
+                return;
             for (auto& dockableWindow: inOutDockingParams->dockableWindows)
             {
                 if (dockableWindow.rememberIsVisible)
@@ -445,11 +469,9 @@ namespace HelloImGui
             std::string themeName = "";
             {
                 IniParts iniParts = IniParts::LoadFromFile(iniPartsFilename.value());
-                if (iniParts.HasIniPart(iniPartName))
+                ini::IniFile iniFile;
+                if (iniParts.HasIniPart(iniPartName) && _TryDecode(iniFile, iniParts.GetIniPart(iniPartName)))
                 {
-                    ini::IniFile iniFile;
-                    iniFile.decode(iniParts.GetIniPart(iniPartName));
-
                     if (inOutRunnerParams->rememberSelectedAlternativeLayout)
                         layoutName = iniFile["Layout"]["Name"].as<std::string>();
                     if (inOutRunnerParams->imGuiWindowParams.rememberTheme)

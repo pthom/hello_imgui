@@ -113,3 +113,43 @@ TEST_CASE("testing HelloImGuiIniSettings::LoadLastRunWindowBounds")
         std::remove(filename.c_str());
     }
 }
+
+
+// A malformed ini file (a hand edit, a save cut short) is ignored: the app starts as if nothing was saved
+TEST_CASE("testing HelloImGuiIniSettings: a malformed ini file")
+{
+    std::string filename = (std::filesystem::temp_directory_path() / "hello_imgui_test_malformed.ini").string();
+    auto writeFile = [&filename](const std::string& content) { std::ofstream(filename) << content; };
+
+    SUBCASE("a line with an empty part name is not a part")
+    {
+        auto iniParts = HelloImGui::HelloImGuiIniSettings::SplitIniParts(";;;<<<>>>;;;\n;;;<<<a>>>;;;\nx\n");
+        REQUIRE(iniParts.Parts.size() == 1);
+        CHECK(iniParts.Parts[0].Name == "a");
+        CHECK(iniParts.Parts[0].Content == "x\n");
+    }
+    SUBCASE("a dpi factor that is not a number is ignored")
+    {
+        writeFile(";;;<<<AppWindow>>>;;;\n[AppWindow]\nDpiWindowSizeFactor=abc\n");
+        CHECK(!HelloImGui::HelloImGuiIniSettings::LoadLastRunDpiWindowSizeFactor(filename).has_value());
+    }
+    SUBCASE("the windows' visibility, with a section not closed, is ignored")
+    {
+        HelloImGui::DockingParams dockingParams;
+        HelloImGui::DockableWindow window;
+        window.label = "Logs";
+        dockingParams.dockableWindows.push_back(window);
+        std::remove(filename.c_str());
+        HelloImGui::HelloImGuiIniSettings::SaveDockableWindowsVisibility(filename, dockingParams);
+        std::ifstream ifs(filename);
+        std::string content((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+        ifs.close();
+        auto pos = content.find("[Visibility]");
+        REQUIRE(pos != std::string::npos);
+        writeFile(content.replace(pos, 12, "[Visibility"));
+
+        CHECK_NOTHROW(HelloImGui::HelloImGuiIniSettings::LoadDockableWindowsVisibility(filename, &dockingParams));
+        CHECK(dockingParams.dockableWindows[0].isVisible);
+    }
+    std::remove(filename.c_str());
+}

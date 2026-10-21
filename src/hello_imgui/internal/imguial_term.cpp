@@ -351,6 +351,14 @@ namespace AutomatiColors
         }
     }
 
+    // Dark text on a light button, white text on a dark one (the red button, and most of them in a light theme)
+    ImVec4 textColorOnButton(ImU32 buttonColor)
+    {
+        ImVec4 c = ImGui::ColorConvertU32ToFloat4(buttonColor);
+        float luminance = 0.299f * c.x + 0.587f * c.y + 0.114f * c.z;
+        return luminance > 0.5f ? ImVec4(0.2f, 0.2f, 0.2f, 1.f) : ImVec4(1.f, 1.f, 1.f, 1.f);
+    }
+
     ImU32 makeColor(LogColorClass logColorClass, LogColorState logColorState, float windowBgHsv_Value)
     {
         float wantedHue = logColorClassHue(logColorClass, logColorState);
@@ -418,13 +426,12 @@ int ImGuiAl::Log::draw(ImVec2 const& size)
 
     if ((_filterHeaderLabel != nullptr && ImGui::CollapsingHeader(_filterHeaderLabel)) || _showFilters) {
 
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 0.2f, 0.2f, 1.f));
-
+        ImGui::PushStyleColor(ImGuiCol_Text, AutomatiColors::textColorOnButton(_debugButtonColor));
         ImGui::PushStyleColor(ImGuiCol_Button, _debugButtonColor);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, _debugButtonHoveredColor);
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, _debugTextColor);
         bool ok = ImGui::Button(_debugLabel);
-        ImGui::PopStyleColor(3);
+        ImGui::PopStyleColor(4);
 
         if (ok) {
             _level = Level::Debug;
@@ -433,11 +440,12 @@ int ImGuiAl::Log::draw(ImVec2 const& size)
 
         ImGui::SameLine();
 
+        ImGui::PushStyleColor(ImGuiCol_Text, AutomatiColors::textColorOnButton(_infoButtonColor));
         ImGui::PushStyleColor(ImGuiCol_Button, _infoButtonColor);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, _infoButtonHoveredColor);
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, _infoTextColor);
         ok = ImGui::Button(_infoLabel);
-        ImGui::PopStyleColor(3);
+        ImGui::PopStyleColor(4);
 
         if (ok) {
             _level = Level::Info;
@@ -446,11 +454,12 @@ int ImGuiAl::Log::draw(ImVec2 const& size)
 
         ImGui::SameLine();
 
+        ImGui::PushStyleColor(ImGuiCol_Text, AutomatiColors::textColorOnButton(_warningButtonColor));
         ImGui::PushStyleColor(ImGuiCol_Button, _warningButtonColor);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, _warningButtonHoveredColor);
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, _warningTextColor);
         ok = ImGui::Button(_warningLabel);
-        ImGui::PopStyleColor(3);
+        ImGui::PopStyleColor(4);
 
         if (ok) {
             _level = Level::Warning;
@@ -459,17 +468,17 @@ int ImGuiAl::Log::draw(ImVec2 const& size)
 
         ImGui::SameLine();
 
+        ImGui::PushStyleColor(ImGuiCol_Text, AutomatiColors::textColorOnButton(_errorButtonColor));
         ImGui::PushStyleColor(ImGuiCol_Button, _errorButtonColor);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, _errorButtonHoveredColor);
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, _errorTextColor);
         ok = ImGui::Button(_errorLabel);
-        ImGui::PopStyleColor(3);
+        ImGui::PopStyleColor(4);
 
         if (ok) {
             _level = Level::Error;
             scrollToBottom();
         }
-        ImGui::PopStyleColor();
 
         ImGui::SameLine();
         ImGui::Checkbox(_cumulativeLabel, &_cumulative);

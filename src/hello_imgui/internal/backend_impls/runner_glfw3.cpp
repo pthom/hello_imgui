@@ -337,8 +337,34 @@ namespace HelloImGui
 //    }
 #endif
 
+    // A press gets its own position first: GLFW sends no cursor move that does not move (a second tap on the same
+    // spot, in the browser), and the position is cleared between touches, so the press would come without one.
+    // Installed before the imgui backend's callbacks, which call it first.
+    static GLFWmousebuttonfun gMouseButtonCallbackBefore = nullptr;
+    static void MouseButtonCallback_PositionFirst(GLFWwindow* window, int button, int action, int mods)
+    {
+        if (action == GLFW_PRESS && ImGui::GetCurrentContext() != nullptr)
+        {
+            double x, y;
+            glfwGetCursorPos(window, &x, &y);
+            if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)  // as the backend's cursor callback
+            {
+                int window_x, window_y;
+                glfwGetWindowPos(window, &window_x, &window_y);
+                x += window_x;
+                y += window_y;
+            }
+            ImGui::GetIO().AddMousePosEvent((float)x, (float)y);
+        }
+        if (gMouseButtonCallbackBefore != nullptr)
+            gMouseButtonCallbackBefore(window, button, action, mods);
+    }
+
     void RunnerGlfw3::Impl_LinkPlatformAndRenderBackends()
     {
+        GLFWmousebuttonfun before = glfwSetMouseButtonCallback((GLFWwindow *)mWindow, MouseButtonCallback_PositionFirst);
+        if (before != MouseButtonCallback_PositionFirst)  // a second run in the same page finds ours
+            gMouseButtonCallbackBefore = before;
         auto& self = *this;
         if (params.rendererBackendType == RendererBackendType::OpenGL3)
         {

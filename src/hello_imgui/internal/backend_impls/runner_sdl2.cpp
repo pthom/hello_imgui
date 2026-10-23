@@ -144,6 +144,18 @@ namespace HelloImGui
                 if (params.callbacks.AnyBackendEventCallback(&event))
                     continue;
             }
+            // A press gets its own position first: SDL drops a motion that does not move (a second tap on the same
+            // spot), and the touch layer clears the position at each lift, so the press would come without one
+            if (event.type == SDL_MOUSEBUTTONDOWN)
+            {
+                SDL_Event motion{};
+                motion.type = SDL_MOUSEMOTION;
+                motion.motion.windowID = event.button.windowID;
+                motion.motion.which = event.button.which;
+                motion.motion.x = event.button.x;
+                motion.motion.y = event.button.y;
+                ImGui_ImplSDL2_ProcessEvent(&motion);
+            }
             ImGui_ImplSDL2_ProcessEvent(&event);
             bool closeRequested =
                 (event.type == SDL_QUIT)

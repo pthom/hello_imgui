@@ -46,7 +46,7 @@ namespace HelloImGui
             "    const t = e.changedTouches[0], p = t && toImGui(t), start = tap;"
             "    tap = null;"
             "    if (!start || !start.zone || !p || t.identifier !== start.id || performance.now() - start.time > 500) return;"
-            "    if (inZone(p, start.zone)) window.open(start.zone.url, '_blank'); }, options);"
+            "    if (inZone(p, start.zone)) { const w = window.open(start.zone.url, '_blank'); if (w) w.opener = null; } }, options);"
             "  document.addEventListener('pointerdown', (e) => { onPointer(e); window.helloImGuiPointerDown = 1; fingerDown(e); }, options);"
             "  document.addEventListener('pointermove', (e) => { onPointer(e); fingerMove(e); }, options);"
             "  document.addEventListener('pointerup', (e) => { window.helloImGuiPointerDown = 0; fingerUp(e); }, options);"
@@ -117,6 +117,12 @@ namespace HelloImGui
 
     void EmscriptenRequestTapZone(ImVec2 rectMin, ImVec2 rectMax, const std::string& url)
     {
+        // Web addresses only: a javascript: url would run script in the page
+        std::string lower = url;
+        for (char& c : lower)
+            c = (char)tolower((unsigned char)c);
+        if (lower.rfind("http://", 0) != 0 && lower.rfind("https://", 0) != 0 && lower.rfind("mailto:", 0) != 0)
+            return;
         gTapZoneRequests.push_back({rectMin, rectMax, url});
     }
 

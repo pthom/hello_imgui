@@ -439,7 +439,7 @@ function(_him_add_freetype_to_imgui)
             FetchContent_Declare(
                 freetype
                 GIT_REPOSITORY https://github.com/freetype/freetype.git
-                GIT_TAG        VER-2-13-3
+                GIT_TAG        42608f77f20749dd6ddc9e0536788eaad70ea4b5  # VER-2-13-3
                 GIT_PROGRESS TRUE
                 ${_him_fetch_extra_args}
             )

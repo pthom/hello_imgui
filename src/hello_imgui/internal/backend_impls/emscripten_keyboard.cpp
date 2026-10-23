@@ -48,7 +48,11 @@ if (!window.helloImGuiKeyboard) {
   button.id = 'helloImGuiKeyboardButton'; button.textContent = '⌨'; button.title = 'Keyboard';
   button.style.cssText = 'position:fixed;display:none;z-index:1001;font-size:24px;line-height:1;padding:6px 12px;border-radius:10px;border:1px solid #999;background:#333;color:#eee;';
   document.body.appendChild(input); document.body.appendChild(button);
-  // A debug overlay on the page (the url with 'kbddebug'): the field's events, to see what a phone sends
+  // A debug overlay on the page (the url with 'kbddebug'): the field's events, to see what a phone sends. Only in a
+  // build with HELLOIMGUI_EMSCRIPTEN_KEYBOARD_DEBUG: the log holds what is typed, and a link could turn it on.
+)JS"
+#ifdef HELLOIMGUI_EMSCRIPTEN_KEYBOARD_DEBUG
+R"JS(
   const debug = location.search.includes('kbddebug') || location.hash.includes('kbddebug');
   let logEl = null;
   if (debug) {
@@ -60,6 +64,13 @@ if (!window.helloImGuiKeyboard) {
   // The log also in the page's server output, as 404 requests "/kbdlog?<line>" (the url with 'kbddebug', or 'kbdlog'
   // without the overlay): to follow a phone from the computer that serves the page
   const serverLog = debug || location.search.includes('kbdlog');
+)JS"
+#else
+R"JS(
+  const debug = false, serverLog = false;
+)JS"
+#endif
+R"JS(
   const log = (m) => {
     if (!logEl && !serverLog) return;
     m = new Date().toISOString().slice(14, 23) + ' ' + m;
@@ -635,7 +646,10 @@ void UpdateEmscriptenKeyboard()
     // Keys mode reads the last frame's IME data, not yet reset by NewFrame().
     const bool inputTextWants = io.WantTextInput && g.ActiveIdPreviousFrame != 0
                                 && g.ActiveIdPreviousFrame == g.InputTextState.ID;
-    const bool keysMode = g.PlatformImeData.WantTextInput && !(g.ActiveId != 0 && g.ActiveId == g.InputTextState.ID);
+    // A password field too: its text never goes to the page's field (the keyboard's suggestions, the page's scripts)
+    const bool password = (g.InputTextState.Flags & ImGuiInputTextFlags_Password) != 0;
+    const bool keysMode = (g.PlatformImeData.WantTextInput && !(g.ActiveId != 0 && g.ActiveId == g.InputTextState.ID))
+                          || (inputTextWants && password);
     State now = gLast;
     if (inputTextWants || keysMode)
     {

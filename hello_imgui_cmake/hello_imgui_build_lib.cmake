@@ -535,8 +535,9 @@ function(_him_compile_plutosvg_from_submodule)
     target_link_libraries(plutosvg PUBLIC ${HIM_FREETYPE_LINKED_LIBRARY})
 
     # plutovg's system dependencies (libm, threads)
+    # MSVC: the math functions are in the CRT. A libm.lib found elsewhere (e.g. Intel oneAPI's) would make it link m.lib.
     find_library(MATH_LIBRARY m)
-    if(MATH_LIBRARY)
+    if(MATH_LIBRARY AND NOT MSVC)
         target_link_libraries(plutosvg PRIVATE m)
     endif()
     include(CheckIncludeFile)

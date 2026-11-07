@@ -137,7 +137,7 @@ R"JS(
     input.style.pointerEvents = focused ? 'auto' : 'none';
     place();
     // No button for a widget whose keyboard the user hid: a tap on its line still opens the keyboard
-    const showButton = K.want && !focused && K.id !== K.dismissed && window.helloImGuiPointerType === 1;
+    const showButton = K.want && !focused && K.id !== K.dismissed && window.imguiKitPointerType === 1;
     button.style.display = showButton ? 'block' : 'none';
     if (!K.want && focused) input.blur(); };
   K.set = (want, id, x, y, h, displayW, keysMode) => {

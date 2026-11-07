@@ -7,7 +7,7 @@
 // on the widget itself. What is typed in the field goes to ImGui each frame (characters, and the special keys).
 namespace HelloImGui
 {
-    void InstallEmscriptenKeyboard();  // once, after the pointer probe (a second call does nothing)
+    void InstallEmscriptenKeyboard();  // once, after ImGuiTouch::SetupEmscripten() (a second call does nothing)
     void UpdateEmscriptenKeyboard();   // before each poll: tells the page what ImGui wants, feeds ImGui what was typed
 
     // The parts of the canvas hidden while the keyboard is shown (in ImGui units): the full-screen window and the

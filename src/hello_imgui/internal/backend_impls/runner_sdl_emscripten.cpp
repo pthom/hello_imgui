@@ -2,6 +2,7 @@
 #if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_SDL2)
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
 #include "hello_imgui/internal/backend_impls/emscripten_keyboard.h"
+#include "imgui_kit/imgui_kit.h"  // ImGuiTouch::SetupEmscripten
 #include <iostream>
 
 #include <emscripten.h>
@@ -40,16 +41,15 @@ namespace HelloImGui
     void RunnerSdlEmscripten::Impl_InitPlatformBackend()
     {
         // Here rather than in Run(): Pyodide drives the frames itself (ManualRender), without Run().
-        // SDL labels its own events (a finger or a mouse); the probe sees the second finger, for the pinch.
         RunnerSdl2::Impl_InitPlatformBackend();
-        InstallEmscriptenPointerProbe();
+        ImGuiTouch::SetupEmscripten();  // which pointer is a finger, the fingers (the pinch)
+        InstallEmscriptenTapZones();
         InstallEmscriptenViewportResizeRelay();
         InstallEmscriptenKeyboard();
     }
 
     void RunnerSdlEmscripten::Impl_PollEvents()
     {
-        RelayEmscriptenFingers();  // to ImGuiTouch::AddFingerEvent(): the pinch
         EmscriptenPushTapZones(ImGui::GetIO().DisplaySize.x);
         UpdateEmscriptenKeyboard();
         RunnerSdl2::Impl_PollEvents();

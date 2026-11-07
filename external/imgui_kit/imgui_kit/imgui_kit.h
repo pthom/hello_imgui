@@ -247,7 +247,7 @@ IMGUI_API void   SetupWheelSession(bool enabled = true);
 //
 // The touch input: io.AddMouseSourceEvent(ImGuiMouseSource_TouchScreen) tells a finger from a mouse (the Auto mode),
 // and io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen gives thin scroll bars. The pinch needs the fingers, from
-// the platform: ImGuiTouch::AddFingerEvent().
+// the platform: ImGuiTouch::AddFingerEvent(). In a browser, ImGuiTouch::SetupEmscripten() does all of it.
 
 enum ImGuiTouchScrollMode_
 {
@@ -292,6 +292,13 @@ IMGUI_API void   SetItemTakesDrags(bool long_press_is_right_click = true);
 // With two fingers down: they spread or close, a pinch (the font scales); they move together, a right drag.
 // A desktop app with a mouse never calls it.
 IMGUI_API void   AddFingerEvent(int id, const ImVec2& pos, bool down);
+
+#ifdef __EMSCRIPTEN__
+// In a browser, with any of Dear ImGui's Emscripten backends: tells Dear ImGui which pointer is a finger (the
+// browser's pointer events), relays the fingers to AddFingerEvent() (the pinch), and sets ImGuiConfigFlags_IsTouchScreen
+// on a touch screen. Call once, after the backend's init. The canvas must have the id "canvas".
+IMGUI_API void   SetupEmscripten();
+#endif
 } // namespace ImGuiTouch
 
 // The symbols of IconButton()

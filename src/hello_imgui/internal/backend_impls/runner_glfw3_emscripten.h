@@ -14,9 +14,8 @@ namespace HelloImGui
         void Run() override;
 
        protected:
-        void Impl_InitPlatformBackend() override;  // installs the pointer probe
-        void Impl_PollEvents() override;  // tells ImGui whether the pointer is a mouse, a finger or a pen, then polls
-        void Impl_NewFrame_PlatformBackend() override;  // then, on a touch screen, no pointer between two touches
+        void Impl_InitPlatformBackend() override;  // sets up the touch input (ImGuiTouch::SetupEmscripten), the tap zones
+        void Impl_PollEvents() override;  // pushes the tap zones, updates the keyboard, then polls
         void Impl_Select_Gl_Version() override;
         std::string Impl_GlslVersion() const override;
         void Impl_InitGlLoader() override;

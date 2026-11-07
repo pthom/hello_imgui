@@ -1,6 +1,7 @@
-#define IMGUI_DEFINE_MATH_OPERATORS  // before any include of imgui.h (runner_params.h includes it)
-#include "hello_imgui/internal/touch_scroll.h"
-#include "hello_imgui/hello_imgui.h"  // RequestRefresh()
+// imgui_kit: the swipe of a touch screen (ImGuiTouch)
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui_kit.h"
+#include "imgui_kit_internal.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -21,7 +22,7 @@
 // - the finger stays still past a hold delay: the press is handed over, by replaying a release and a press while the
 //   finger is down. The widget under it activates, and the real finger drives its drag (a slider, a text selection).
 // A widget that takes the active id itself ends the swipe (the layer steps aside). A widget that called
-// SetItemTakesTouchDrags() at the last frame gets a press on it at once: on a touch screen nothing is hovered before
+// SetItemTakesDrags() at the last frame gets a press on it at once: on a touch screen nothing is hovered before
 // a press, so the layer reads the rectangles that the widgets noted at the last frame.
 // On a touch screen, there is no pointer between two touches: when a finger lifts, the mouse position becomes
 // invalid (as when a mouse leaves the window), so that nothing is hovered while the content coasts, nor after a tap.
@@ -33,7 +34,7 @@
 // inertia that reaches the end overshoots; both spring back. ImGui clamps the scroll at each Begin(), so the content
 // past its end is drawn by moving its vertices after ImGui::Render() (ApplyTouchOverscroll), inside the window's
 // clip rect: its background, border and scrollbars stay.
-namespace HelloImGui
+namespace ImGuiTouch
 {
 namespace
 {
@@ -95,11 +96,11 @@ namespace
             ImRect rect;     // its visible part, on the screen
             bool longPressIsRightClick;
         };
-        std::vector<DragTaker> takers, previousTakers;  // SetItemTakesTouchDrags(): this frame's, the last frame's
+        std::vector<DragTaker> takers, previousTakers;  // SetItemTakesDrags(): this frame's, the last frame's
     };
     State gState;
 
-    ImGuiID SentinelId() { return ImHashStr("##HelloImGui_TouchScroll"); }
+    ImGuiID SentinelId() { return ImHashStr("##ImGuiTouch_Scroll"); }
 
     float Slop(const ImGuiContext& g)
     {
@@ -149,7 +150,7 @@ namespace
         return w;
     }
 
-    // The widget under the press that asked for the drags at the last frame (SetItemTakesTouchDrags), if any: in the
+    // The widget under the press that asked for the drags at the last frame (SetItemTakesDrags), if any: in the
     // pressed window, or in a window that holds it as a child (a plot drawn in a child window of its own)
     const State::DragTaker* FindDragTaker(const State& s, const ImGuiWindow* w, ImVec2 pos)
     {
@@ -314,7 +315,7 @@ namespace
     }
 }  // namespace
 
-void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick, bool thinScrollbars)
+void UpdateTouchScroll(ImGuiTouchScrollMode mode, bool longPressIsRightClick, bool thinScrollbars)
 {
     ImGuiContext& g = *GImGui;
     ImGuiIO& io = g.IO;
@@ -338,8 +339,8 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick, bool th
         g.Style.ScrollbarRounding = g.Style.ScrollbarSize;  // round ends
     }
 
-    bool enabled = (mode == TouchScrollMode::Always)
-                   || (mode == TouchScrollMode::Auto && io.MouseSource == ImGuiMouseSource_TouchScreen);
+    bool enabled = (mode == ImGuiTouchScrollMode_Always)
+                   || (mode == ImGuiTouchScrollMode_Auto && io.MouseSource == ImGuiMouseSource_TouchScreen);
     if (!enabled)
     {
         if (s.owning && g.ActiveId == id)
@@ -525,7 +526,7 @@ void UpdateTouchScroll(TouchScrollMode mode, bool longPressIsRightClick, bool th
     // The inertia, the bounce and the ripple move without input events: the app does not idle meanwhile
     bool rippling = g.Time - s.rippleTime < kHoldRippleSeconds;
     if (s.inertia.x != 0.f || s.inertia.y != 0.f || s.overscroll != 0.f || s.overscrollSpeed != 0.f || rippling)
-        RequestRefresh();
+        Internal::RequestAnimation();
 }
 
 namespace
@@ -693,12 +694,12 @@ void DrawTouchScrollbarGrab()
     drawList->AddRectFilled(thumb.Min, thumb.Max, ImGui::GetColorU32(color), width * 0.5f);
     drawList->PopClipRect();
     if (t < 1.f)
-        RequestRefresh();
+        Internal::RequestAnimation();
 }
 
 // The widget just drawn: its visible part, noted for the press of the next frame. Nothing when the layer did not run
-// this frame (an app with its own loop, without HelloImGui's runner): the notes would pile up, never read.
-void SetItemTakesTouchDrags(bool longPressIsRightClick)
+// this frame (ImGuiTouch::Setup() not called): the notes would pile up, never read.
+void SetItemTakesDrags(bool longPressIsRightClick)
 {
     ImGuiContext& g = *GImGui;
     if (gState.context != &g || gState.frameCount != g.FrameCount)
@@ -710,4 +711,4 @@ void SetItemTakesTouchDrags(bool longPressIsRightClick)
         gState.takers.push_back({window->ID, rect, longPressIsRightClick});
 }
 
-}  // namespace HelloImGui
+}  // namespace ImGuiTouch

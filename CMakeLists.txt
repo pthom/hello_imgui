@@ -326,6 +326,10 @@ mark_as_advanced(HELLO_IMGUI_IMGUI_SHARED)
 #
 option(HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE "Use imgui from cmake package (provided by vcpkg for example) * Must be on docking branch*" OFF)
 
+# imgui_kit (the touch layer, the wheel session): hello_imgui builds its vendored copy (external/imgui_kit), unless a
+# target imgui_kit exists, or the parent project declares it (later in its configuration) with this option
+option(HELLOIMGUI_USE_EXTERNAL_IMGUI_KIT "The parent project provides the target imgui_kit" OFF)
+
 #------------------------------------------------------------------------------
 # Options / Remoting
 # (Unsupported, and highly experimental. Requires specific forks of the remote rendering libraries)

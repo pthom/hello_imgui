@@ -2,7 +2,6 @@
 #if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_SDL2)
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
 #include "hello_imgui/internal/backend_impls/emscripten_keyboard.h"
-#include "hello_imgui/internal/touch_pinch.h"
 #include <iostream>
 
 #include <emscripten.h>
@@ -50,7 +49,7 @@ namespace HelloImGui
 
     void RunnerSdlEmscripten::Impl_PollEvents()
     {
-        SetTouchPointers(EmscriptenFingerCount(), EmscriptenPinchScale(), EmscriptenTwoFingerMove());
+        RelayEmscriptenFingers();  // to ImGuiTouch::AddFingerEvent(): the pinch
         EmscriptenPushTapZones(ImGui::GetIO().DisplaySize.x);
         UpdateEmscriptenKeyboard();
         RunnerSdl2::Impl_PollEvents();

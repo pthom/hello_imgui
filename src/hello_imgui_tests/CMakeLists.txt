@@ -1,5 +1,5 @@
 add_executable(hello_imgui_tests
-    hello_imgui_ini_settings_test.cpp imgui_theme_test.cpp touch_scroll_test.cpp wheel_session_test.cpp
+    hello_imgui_ini_settings_test.cpp imgui_theme_test.cpp
     refresh_request_test.cpp idling_test.cpp
     hello_imgui_tests_main.cpp
     # the null backend, for the tests that run frames without a window

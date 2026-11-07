@@ -2,7 +2,6 @@
 #if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_GLFW3)
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
 #include "hello_imgui/internal/backend_impls/emscripten_keyboard.h"
-#include "hello_imgui/internal/touch_pinch.h"
 #include "imgui_internal.h"  // ImGuiInputEvent
 #include <iostream>
 
@@ -67,7 +66,7 @@ namespace HelloImGui
                 e.MouseWheel.MouseSource = source;
         }
         ImGui::GetIO().AddMouseSourceEvent(source);
-        SetTouchPointers(EmscriptenFingerCount(), EmscriptenPinchScale(), EmscriptenTwoFingerMove());
+        RelayEmscriptenFingers();  // to ImGuiTouch::AddFingerEvent(): the pinch
         EmscriptenPushTapZones(ImGui::GetIO().DisplaySize.x);
         UpdateEmscriptenKeyboard();
         RunnerGlfw3::Impl_PollEvents();

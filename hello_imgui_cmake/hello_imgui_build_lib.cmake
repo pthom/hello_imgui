@@ -249,6 +249,7 @@ function(him_add_hello_imgui)
     else()
         target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui)
     endif()
+    target_link_libraries(${HELLOIMGUI_TARGET} PUBLIC imgui_kit)
 
     add_library(hello_imgui::hello_imgui ALIAS hello_imgui)
     add_library(hello-imgui::hello_imgui ALIAS hello_imgui)  # deprecated former namespace
@@ -286,6 +287,36 @@ function(him_build_imgui)
                 _him_add_freetype_plutosvg_to_imgui()
             endif()
         endif()
+    endif()
+endfunction()
+
+###################################################################################################
+# Build imgui_kit: API = him_build_imgui_kit (after imgui) + him_install_imgui_kit
+###################################################################################################
+# The rule: provide the target, never hide it. A project that has a target imgui_kit, or declares one later
+# (HELLOIMGUI_USE_EXTERNAL_IMGUI_KIT), keeps it, and hello_imgui links to it: one copy in the program.
+function(him_build_imgui_kit)
+    if (TARGET imgui_kit OR HELLOIMGUI_USE_EXTERNAL_IMGUI_KIT)
+        return()
+    endif()
+    set(kit_dir ${HELLOIMGUI_BASEPATH}/external/imgui_kit)
+    file(GLOB kit_sources ${kit_dir}/imgui_kit/*.cpp ${kit_dir}/imgui_kit/*.h)
+    add_library(imgui_kit STATIC ${kit_sources})
+    target_include_directories(imgui_kit PUBLIC $<BUILD_INTERFACE:${kit_dir}> $<INSTALL_INTERFACE:include>)
+    if (HELLOIMGUI_USE_IMGUI_CMAKE_PACKAGE)
+        target_link_libraries(imgui_kit PUBLIC imgui::imgui)
+    else()
+        target_link_libraries(imgui_kit PUBLIC imgui)
+    endif()
+    him_add_installable_dependency(imgui_kit)
+    set(HELLOIMGUI_BUILT_IMGUI_KIT ON CACHE INTERNAL "" FORCE)
+endfunction()
+
+function(him_install_imgui_kit)
+    if (HELLOIMGUI_INSTALL AND HELLOIMGUI_BUILT_IMGUI_KIT)
+        install(TARGETS imgui_kit DESTINATION lib)
+        file(GLOB kit_headers ${HELLOIMGUI_BASEPATH}/external/imgui_kit/imgui_kit/imgui_kit.h)
+        install(FILES ${kit_headers} DESTINATION include/imgui_kit)
     endif()
 endfunction()
 
@@ -1411,6 +1442,7 @@ function(him_main_add_hello_imgui_library)
     him_sanity_checks()
     him_add_stb_image()
     him_build_imgui()
+    him_build_imgui_kit()
     him_add_hello_imgui()
     him_add_nlohmann_json()
 
@@ -1457,4 +1489,5 @@ function(him_main_add_hello_imgui_library)
     him_add_misc_options()
     him_install()
     him_install_imgui()
+    him_install_imgui_kit()
 endfunction()

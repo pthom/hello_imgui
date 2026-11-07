@@ -2,7 +2,11 @@
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
 
 #include <emscripten.h>
+#include "imgui_kit/imgui_kit.h"  // ImGuiTouch::AddFingerEvent
+#include <algorithm>
 #include <cstdio>
+#include <sstream>
+#include <string>
 #include <vector>
 
 // emscripten_run_script rather than EM_JS or EM_ASM: it also works in a side module, as in Pyodide (where the SDL
@@ -18,19 +22,11 @@ namespace HelloImGui
             "  const onPointer = (e) => {"
             "    window.helloImGuiPointerType = (e.pointerType === 'touch') ? 1 : (e.pointerType === 'pen') ? 2 : 0; };"
             "  const options = {capture: true, passive: true};"
-            "  const fingers = {};"
-            "  window.helloImGuiPinch = {count: 0, startDist: 0, dist: 0, moveX: 0, moveY: 0, startCx: 0, startCy: 0};"
-            "  const updatePinch = () => {"
-            "    const pts = Object.values(fingers), p = window.helloImGuiPinch, wasTwo = p.count >= 2;"
-            "    p.count = pts.length;"
-            "    if (pts.length >= 2) {"
-            "      const d = Math.hypot(pts[0][0] - pts[1][0], pts[0][1] - pts[1][1]);"
-            "      const cx = (pts[0][0] + pts[1][0]) / 2, cy = (pts[0][1] + pts[1][1]) / 2;"
-            "      if (!wasTwo) { p.startDist = d; p.startCx = cx; p.startCy = cy; }"
-            "      p.dist = d; p.moveX = cx - p.startCx; p.moveY = cy - p.startCy; } };"
-            "  const fingerDown = (e) => { if (e.pointerType === 'touch') { fingers[e.pointerId] = [e.clientX, e.clientY]; updatePinch(); } };"
-            "  const fingerMove = (e) => { if (e.pointerId in fingers) { fingers[e.pointerId] = [e.clientX, e.clientY]; updatePinch(); } };"
-            "  const fingerUp = (e) => { delete fingers[e.pointerId]; updatePinch(); };"
+            "  const fingers = {};"  // the fingers down: their pointer id -> [clientX, clientY] (read at each frame)
+            "  window.helloImGuiFingers = fingers;"
+            "  const fingerDown = (e) => { if (e.pointerType === 'touch') fingers[e.pointerId] = [e.clientX, e.clientY]; };"
+            "  const fingerMove = (e) => { if (e.pointerId in fingers) fingers[e.pointerId] = [e.clientX, e.clientY]; };"
+            "  const fingerUp = (e) => { delete fingers[e.pointerId]; };"
             "  window.helloImGuiTapZones = []; window.helloImGuiTapDisplayW = 0;"
             "  let tap = null;"  // the finger that may tap: it lands alone; where, when (ImGui's units)
             "  const toImGui = (t) => {"
@@ -86,27 +82,36 @@ namespace HelloImGui
         return emscripten_run_script_int("window.helloImGuiPointerDown | 0") != 0;
     }
 
-    ImVec2 EmscriptenTwoFingerMove()
+    void RelayEmscriptenFingers()
     {
-        // CSS px, scaled to ImGui's units (the canvas's CSS width against ImGui's display width)
-        int moveX = emscripten_run_script_int("window.helloImGuiPinch ? Math.round(window.helloImGuiPinch.moveX) : 0");
-        int moveY = emscripten_run_script_int("window.helloImGuiPinch ? Math.round(window.helloImGuiPinch.moveY) : 0");
-        int cssWidth = emscripten_run_script_int("(() => { const c = document.getElementById('canvas'); return c ? Math.round(c.getBoundingClientRect().width) : 0; })()");
+        // "id x y;..." in CSS px from the canvas's corner, then scaled to ImGui's units (the canvas's CSS width
+        // against ImGui's display width)
+        std::string list = emscripten_run_script_string(
+            "(() => { const c = document.getElementById('canvas'); if (!c) return '';"
+            " const r = c.getBoundingClientRect(); window.helloImGuiCanvasCssWidth = r.width;"
+            " return Object.entries(window.helloImGuiFingers || {})"
+            "   .map(([id, p]) => id + ' ' + (p[0] - r.left) + ' ' + (p[1] - r.top)).join(';'); })()");
+        int cssWidth = emscripten_run_script_int("Math.round(window.helloImGuiCanvasCssWidth || 0)");
         float scale = (cssWidth > 0) ? ImGui::GetIO().DisplaySize.x / (float)cssWidth : 1.f;
-        return ImVec2((float)moveX * scale, (float)moveY * scale);
-    }
 
-    int EmscriptenFingerCount()
-    {
-        return emscripten_run_script_int("window.helloImGuiPinch ? window.helloImGuiPinch.count : 0");
-    }
-
-    float EmscriptenPinchScale()
-    {
-        int permille = emscripten_run_script_int(
-            "(window.helloImGuiPinch && window.helloImGuiPinch.startDist > 0)"
-            " ? Math.round(window.helloImGuiPinch.dist / window.helloImGuiPinch.startDist * 1000) : 1000");
-        return (float)permille / 1000.f;
+        static std::vector<int> sDown;  // the fingers down at the last frame
+        std::vector<int> down;
+        std::istringstream entries(list);
+        std::string entry;
+        while (std::getline(entries, entry, ';'))
+        {
+            std::istringstream fields(entry);
+            int id = 0;
+            float x = 0.f, y = 0.f;
+            if (!(fields >> id >> x >> y))
+                continue;
+            ImGuiTouch::AddFingerEvent(id, ImVec2(x * scale, y * scale), true);
+            down.push_back(id);
+        }
+        for (int id : sDown)
+            if (std::find(down.begin(), down.end(), id) == down.end())
+                ImGuiTouch::AddFingerEvent(id, ImVec2(0.f, 0.f), false);
+        sDown = down;
     }
 
     namespace

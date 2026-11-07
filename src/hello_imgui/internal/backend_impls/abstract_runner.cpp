@@ -1,9 +1,7 @@
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
 #include "hello_imgui/hello_imgui_theme.h"
 #include "hello_imgui/internal/borderless_movable.h"
-#include "hello_imgui/internal/touch_scroll.h"
-#include "hello_imgui/internal/wheel_session.h"
-#include "hello_imgui/internal/touch_pinch.h"
+#include "imgui_kit/imgui_kit.h"  // ImGuiTouch, ImGuiKit::SetupWheelSession
 #include "hello_imgui/internal/refresh_request.h"
 #ifdef __EMSCRIPTEN__
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
@@ -139,6 +137,9 @@ void SetRefreshWakeUp(BackendApi::IBackendWindowHelper* windowHelper)
     std::lock_guard<std::mutex> lock(gRefreshWakeUpMutex);
     gRefreshWakeUpHelper = windowHelper;
 }
+
+// The touch layer lives in imgui_kit: this keeps hello_imgui's API
+void SetItemTakesTouchDrags(bool longPressIsRightClick) { ImGuiTouch::SetItemTakesDrags(longPressIsRightClick); }
 
 void RequestRefresh()
 {
@@ -501,6 +502,21 @@ void AbstractRunner::LayoutSettings_Save()
     HelloImGuiIniSettings::SaveDockableWindowsVisibility(IniSettingsLocation(params), params.dockingParams);
 }
 
+// The touch layer's settings, from the runner's params (read before each frame: they may change at runtime)
+static ImGuiTouchConfig TouchConfigFromParams(const RunnerParams& params)
+{
+    ImGuiTouchConfig config;
+    config.ScrollMode = (params.touchScrollMode == TouchScrollMode::Always)     ? ImGuiTouchScrollMode_Always
+                        : (params.touchScrollMode == TouchScrollMode::Disabled) ? ImGuiTouchScrollMode_Disabled
+                                                                                : ImGuiTouchScrollMode_Auto;
+    config.LongPressIsRightClick = params.touchLongPressIsRightClick;
+    config.ThinScrollbars = params.touchThinScrollbars;
+    config.PinchMode = (params.touchPinchMode == TouchPinchMode::Disabled) ? ImGuiTouchPinchMode_Disabled
+                                                                           : ImGuiTouchPinchMode_FontScale;
+    config.PinchInterruptsWidgets = params.touchPinchInterruptsWidgets;
+    return config;
+}
+
 void AbstractRunner::InitImGuiContext()
 {
     IMGUI_CHECKVERSION();
@@ -512,6 +528,9 @@ void AbstractRunner::InitImGuiContext()
 #else
     ImGui::CreateContext();
 #endif
+    // The wheel session, then the touch layer: they run in that order at each frame (Dear ImGui's context hooks)
+    ImGuiKit::SetupWheelSession(params.wheelSession);
+    ImGuiTouch::Setup(TouchConfigFromParams(params));
 }
 
 void AbstractRunner::CheckPrefs()
@@ -1103,7 +1122,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         // A mouse button (or a finger) held down is an activity, even still: a button that repeats, a drag that pauses
         bool mouseDown = ImGui::GetCurrentContext() != nullptr && ImGui::IsAnyMouseDown();
         // Content that changes on its own asked for this frame (RequestRefresh(), SetItemIsLive()): read at each frame
-        bool refreshRequested = ConsumeRefreshRequest();
+        bool refreshRequested = ConsumeRefreshRequest() || ImGuiTouch::IsAnimating();  // (the inertia, the bounce)
         inputs.busy = isTestEngineRunning || ShouldRemoteDisplay() || startedRecently || mouseDown || refreshRequested;
 
         IdlingDecision decision = DecideIdling(params.fpsIdling, inputs, gStatics.idling);
@@ -1223,9 +1242,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     //  outside of any SCOPED_RELEASE_GIL_ON_MAIN_THREAD block)
     auto fnRender = [this]()
     {
-        DrawTouchScrollbarGrab();  // after the GUI: this frame's scroll is final
         ImGui::Render();
-        ApplyTouchOverscroll();
         mRenderingBackendCallbacks->Impl_RenderDrawData_To_3D();
     };
 
@@ -1386,12 +1403,10 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
     // ImGui::NewFrame may call ImGuiTestEngine_PostNewFrame, which in turn handles the GIL in its own way,
     // so that it can *NOT* be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
-    WheelSessionBeforeNewFrame();  // the item that claimed the wheel, before NewFrame() gives it back to a window
+    // The touch layer and the wheel session run in NewFrame() (imgui_kit's hooks), with the params of this frame
+    ImGuiTouch::GetConfig() = TouchConfigFromParams(params);
+    ImGuiKit::SetupWheelSession(params.wheelSession);
     ImGui::NewFrame();
-
-    UpdateWheelSession(params.wheelSession);  // before any widget: a wheel that started on the page keeps scrolling it over a plot
-    UpdateTouchScroll(params.touchScrollMode, params.touchLongPressIsRightClick, params.touchThinScrollbars);  // before any widget: a touch press is claimed, then replayed or handed over
-    UpdateTouchPinch(params.touchPinchMode, params.touchPinchInterruptsWidgets);
 
     if ((params.callbacks.PostNewFrame) && !insideReentrantCall)
         params.callbacks.PostNewFrame();

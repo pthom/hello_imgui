@@ -67,7 +67,7 @@ R"JS(
 )JS"
 #else
 R"JS(
-  const debug = false, serverLog = false;
+  const debug = false, serverLog = false, logEl = null;
 )JS"
 #endif
 R"JS(

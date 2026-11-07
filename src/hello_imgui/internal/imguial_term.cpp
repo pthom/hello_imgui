@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #if defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"

@@ -38,7 +38,10 @@ namespace
             "    onPointer(e); if (e.pointerId in fingers) fingers[e.pointerId] = [e.clientX, e.clientY]; }, options);"
             "  document.addEventListener('pointerup', onUp, options);"
             "  document.addEventListener('pointercancel', onUp, options);"
-            "}";
+            "}"
+            // iOS's own long press on the canvas (text selection, the callout menu) would pause the page's events
+            "{ const c = document.getElementById('canvas');"
+            "  if (c) { c.style.webkitTouchCallout = 'none'; c.style.webkitUserSelect = 'none'; c.style.userSelect = 'none'; } }";
         emscripten_run_script(script);
     }
 

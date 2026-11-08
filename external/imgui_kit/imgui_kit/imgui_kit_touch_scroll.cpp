@@ -117,7 +117,7 @@ namespace
         float t = (float)(g.Time - s.rippleTime) / kHoldRippleSeconds;
         if (t < 0.f || t > 1.f || !ImGui::IsMousePosValid(&s.ripplePos))
             return;
-        float radius = g.FontSize * (1.f + 1.5f * t);
+        float radius = g.FontSize * (2.f + 1.5f * t);  // from past a fingertip
         ImU32 col = ImGui::GetColorU32(ImGuiCol_Text, 0.9f * (1.f - t));
         ImGui::GetForegroundDrawList()->AddCircle(s.ripplePos, radius, col, 0, g.FontSize * 0.25f);
     }
@@ -134,17 +134,17 @@ namespace
         float thickness = g.FontSize * 0.3f;
         if (s.longPressArmed)
         {
-            draw_list->AddCircle(g.IO.MousePos, radius, ImGui::GetColorU32(ImGuiCol_Text, 0.45f), 0, thickness);
+            draw_list->AddCircle(g.IO.MousePos, radius, ImGui::GetColorU32(ImGuiCol_Text, 0.3f), 0, thickness);
             return;
         }
         // The arc shows after a short delay: a tap does not flash it
         float t = ((float)g.Time - s.pressTime - kLongPressArcDelay) / (kLongPressSeconds - kLongPressArcDelay);
         if (t <= 0.f)
             return;
-        draw_list->AddCircle(g.IO.MousePos, radius, ImGui::GetColorU32(ImGuiCol_Text, 0.12f), 0, thickness);
+        draw_list->AddCircle(g.IO.MousePos, radius, ImGui::GetColorU32(ImGuiCol_Text, 0.08f), 0, thickness);
         float a0 = -IM_PI * 0.5f;
         draw_list->PathArcTo(g.IO.MousePos, radius, a0, a0 + 2.f * IM_PI * ImMin(t, 1.f));
-        draw_list->PathStroke(ImGui::GetColorU32(ImGuiCol_Text, 0.45f), thickness);
+        draw_list->PathStroke(ImGui::GetColorU32(ImGuiCol_Text, 0.3f), thickness);
     }
 
     // The axis of a swipe: the dominant direction of the finger (a swipe scrolls one axis, like the wheel)

@@ -118,6 +118,8 @@ private:
     int mIdxFrame = 0;
     bool mWasWindowAutoResizedOnPreviousFrame = false;
     bool mWasTearedDown = false;
+    ImGuiTouchConfig mAppliedTouchConfig;  // the params' touch layer and wheel session, as last applied to imgui_kit
+    bool mAppliedWheelSession = true;
     VoidFunction mLoadAdditionalFontsAtSetup;  // Setup empties params.callbacks.LoadAdditionalFonts, TearDown restores it
     float mDpiWindowSizeFactorAtSetup = 0.f;   // 0: Setup measures it, TearDown restores it (the next run measures again)
 

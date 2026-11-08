@@ -499,19 +499,11 @@ void AbstractRunner::LayoutSettings_Save()
     HelloImGuiIniSettings::SaveDockableWindowsVisibility(IniSettingsLocation(params), params.dockingParams);
 }
 
-// The touch layer's settings, from the runner's params (read before each frame: they may change at runtime)
-static ImGuiTouchConfig TouchConfigFromParams(const RunnerParams& params)
+static bool SameTouchConfig(const ImGuiTouchConfig& a, const ImGuiTouchConfig& b)
 {
-    ImGuiTouchConfig config;
-    config.ScrollMode = (params.touchScrollMode == TouchScrollMode::Always)     ? ImGuiTouchScrollMode_Always
-                        : (params.touchScrollMode == TouchScrollMode::Disabled) ? ImGuiTouchScrollMode_Disabled
-                                                                                : ImGuiTouchScrollMode_Auto;
-    config.LongPressIsRightClick = params.touchLongPressIsRightClick;
-    config.ThinScrollbars = params.touchThinScrollbars;
-    config.PinchMode = (params.touchPinchMode == TouchPinchMode::Disabled) ? ImGuiTouchPinchMode_Disabled
-                                                                           : ImGuiTouchPinchMode_FontScale;
-    config.PinchInterruptsWidgets = params.touchPinchInterruptsWidgets;
-    return config;
+    return a.ScrollMode == b.ScrollMode && a.LongPressIsRightClick == b.LongPressIsRightClick
+        && a.ThinScrollbars == b.ThinScrollbars && a.PinchMode == b.PinchMode
+        && a.PinchInterruptsWidgets == b.PinchInterruptsWidgets;
 }
 
 void AbstractRunner::InitImGuiContext()
@@ -527,7 +519,9 @@ void AbstractRunner::InitImGuiContext()
 #endif
     // The wheel session, then the touch layer: they run in that order at each frame (Dear ImGui's context hooks)
     ImGuiKit::SetupWheelSession(params.wheelSession);
-    ImGuiTouch::Setup(TouchConfigFromParams(params));
+    ImGuiTouch::Setup(params.touchConfig);
+    mAppliedTouchConfig = params.touchConfig;
+    mAppliedWheelSession = params.wheelSession;
 }
 
 void AbstractRunner::CheckPrefs()
@@ -1397,9 +1391,18 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
     // ImGui::NewFrame may call ImGuiTestEngine_PostNewFrame, which in turn handles the GIL in its own way,
     // so that it can *NOT* be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
-    // The touch layer and the wheel session run in NewFrame() (imgui_kit's hooks), with the params of this frame
-    ImGuiTouch::GetConfig() = TouchConfigFromParams(params);
-    ImGuiKit::SetupWheelSession(params.wheelSession);
+    // The touch layer and the wheel session run in NewFrame() (imgui_kit's hooks). The params are applied when they
+    // change: a change made through the kit (ImGuiTouch::GetConfig()) stays until then.
+    if (!SameTouchConfig(params.touchConfig, mAppliedTouchConfig))
+    {
+        ImGuiTouch::GetConfig() = params.touchConfig;
+        mAppliedTouchConfig = params.touchConfig;
+    }
+    if (params.wheelSession != mAppliedWheelSession)
+    {
+        ImGuiKit::SetupWheelSession(params.wheelSession);
+        mAppliedWheelSession = params.wheelSession;
+    }
     ImGui::NewFrame();
 
     if ((params.callbacks.PostNewFrame) && !insideReentrantCall)

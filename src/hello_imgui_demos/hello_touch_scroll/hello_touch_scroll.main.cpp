@@ -1,4 +1,4 @@
-// A test bench for the swipe (RunnerParams::touchScrollMode): a long window with widgets, a child window, a wide
+// A test bench for the swipe (RunnerParams::touchConfig.ScrollMode): a long window with widgets, a child window, a wide
 // child, and, for a desktop without a touch screen, a checkbox that makes ImGui believe the mouse is a finger.
 #include "hello_imgui/hello_imgui.h"
 
@@ -52,13 +52,9 @@ int main(int, char*[])
             io.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
         const char* sourceNames[] = {"Mouse", "TouchScreen", "Pen"};
         ImGui::Text("io.MouseSource: %s", sourceNames[io.MouseSource]);
-        int mode = (int)params.touchScrollMode;
-        ImGui::Combo("touchScrollMode", &mode, "Auto\0Always\0Disabled\0");
-        params.touchScrollMode = (HelloImGui::TouchScrollMode)mode;
-        int pinchMode = (int)params.touchPinchMode;
-        ImGui::Combo("touchPinchMode", &pinchMode, "FontScale\0Disabled\0");
-        params.touchPinchMode = (HelloImGui::TouchPinchMode)pinchMode;
-        ImGui::Checkbox("touchPinchInterruptsWidgets", &params.touchPinchInterruptsWidgets);
+        ImGui::Combo("ScrollMode", &params.touchConfig.ScrollMode, "Auto\0Always\0Disabled\0");
+        ImGui::Combo("PinchMode", &params.touchConfig.PinchMode, "FontScale\0Disabled\0");
+        ImGui::Checkbox("PinchInterruptsWidgets", &params.touchConfig.PinchInterruptsWidgets);
         ImGui::SameLine();
         ImGui::Text("FontScaleMain: %.2f", ImGui::GetStyle().FontScaleMain);
         ImGui::Separator();

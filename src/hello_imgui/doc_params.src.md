@@ -30,9 +30,7 @@ See [runner_params.h](https://github.com/pthom/hello_imgui/blob/master/src/hello
 
 ### Touch screens
 
-![[runner_params.h#TouchScrollMode]]
-
-![[runner_params.h#TouchPinchMode]]
+`RunnerParams::touchConfig` is an `ImGuiTouchConfig`, from [imgui_kit](https://github.com/pthom/imgui_kit) (`imgui_kit.h`): the swipe's mode, the long press, the thin scroll bars, the pinch.
 
 
 # Runner callbacks

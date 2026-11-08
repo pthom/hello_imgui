@@ -4,7 +4,7 @@
 // from its keyboard's notifications.
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_kit.h"
-#include "imgui_kit_internal.h"
+#include "imgui_kit_touch_internal.h"
 #include "imgui_internal.h"
 
 namespace ImGuiTouch
@@ -16,27 +16,27 @@ namespace
     // the windows that hold it scroll. Only when the caret moves in its content, or the display changes: the user may
     // scroll elsewhere meanwhile.
 
-    void KeepCaretInView(ImGuiContext& g, bool keyboardShown, float visibleTop, float visibleBottom)
+    void KeepCaretInView(ImGuiContext& g, ImGuiTouchCaretView& view, bool keyboardShown, float visibleTop,
+                         float visibleBottom)
     {
         const ImGuiPlatformImeData& ime = g.PlatformImeData;  // the last complete frame's
         ImGuiWindow* window = g.NavWindow;
         if (!keyboardShown || !ime.WantTextInput || window == nullptr)
         {
-            GetCurrentContext().CaretView = ImGuiTouchCaretView();
+            view = ImGuiTouchCaretView();
             return;
         }
         ImVec2 inContent(ime.InputPos.x + window->Scroll.x, ime.InputPos.y + window->Scroll.y);
-        bool changed = window->ID != GetCurrentContext().CaretView.window || inContent.x != GetCurrentContext().CaretView.inContent.x
-                       || inContent.y != GetCurrentContext().CaretView.inContent.y || visibleTop != GetCurrentContext().CaretView.visible.x
-                       || visibleBottom != GetCurrentContext().CaretView.visible.y;
+        bool changed = window->ID != view.window || inContent.x != view.inContent.x || inContent.y != view.inContent.y
+                       || visibleTop != view.visible.x || visibleBottom != view.visible.y;
         if (changed)
-            GetCurrentContext().CaretView.framesLeft = 3;  // the layout takes a frame or two to follow a new visible area
-        GetCurrentContext().CaretView.window = window->ID;
-        GetCurrentContext().CaretView.inContent = inContent;
-        GetCurrentContext().CaretView.visible = ImVec2(visibleTop, visibleBottom);
-        if (GetCurrentContext().CaretView.framesLeft == 0)
+            view.framesLeft = 3;  // the layout takes a frame or two to follow a new visible area
+        view.window = window->ID;
+        view.inContent = inContent;
+        view.visible = ImVec2(visibleTop, visibleBottom);
+        if (view.framesLeft == 0)
             return;
-        --GetCurrentContext().CaretView.framesLeft;
+        --view.framesLeft;
         float margin = ime.InputLineHeight * 0.5f;
         float top = ime.InputPos.y - margin, bottom = ime.InputPos.y + ime.InputLineHeight + margin;
         for (ImGuiWindow* w = window; w != nullptr; w = w->ParentWindow)
@@ -89,8 +89,10 @@ void SetupKeepCaretInView(ImGuiContext* ctx)
     hook.Type = ImGuiContextHookType_NewFramePre;
     hook.Owner = owner;
     hook.Callback = [](ImGuiContext* g, ImGuiContextHook*) {
-        bool shown = GetCurrentContext().KeyboardInsets.Top > 0.f || GetCurrentContext().KeyboardInsets.Bottom > 0.f;
-        KeepCaretInView(*g, shown, GetCurrentContext().KeyboardInsets.Top, g->IO.DisplaySize.y - GetCurrentContext().KeyboardInsets.Bottom);
+        ImGuiTouchContext& tc = GetCurrentContext();
+        const ImGuiTouchKeyboardInsets& insets = tc.KeyboardInsets;
+        bool shown = insets.Top > 0.f || insets.Bottom > 0.f;
+        KeepCaretInView(*g, tc.CaretView, shown, insets.Top, g->IO.DisplaySize.y - insets.Bottom);
     };
     ImGui::AddContextHook(ctx, &hook);
 }

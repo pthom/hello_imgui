@@ -2,7 +2,7 @@
 // https://github.com/pthom/imgui_kit (MIT license)
 #ifdef __EMSCRIPTEN__
 #include "imgui_kit.h"
-#include "imgui_kit_internal.h"
+#include "imgui_kit_touch_internal.h"
 #include "imgui_internal.h"  // AddContextHook, g.InputEventsQueue
 
 #include <emscripten.h>
@@ -76,7 +76,7 @@ namespace
 
     // The fingers of the frame's state ("...;id x y;id x y"), to ImGuiTouch::AddFingerEvent(), scaled to Dear ImGui's
     // units (the canvas's CSS width against the display width); then the fingers that lifted since the last frame
-    void RelayFingers(ImGuiIO& io, ImGuiKitBrowserState& b, const char* list, float cssWidth)
+    void RelayFingers(ImGuiIO& io, ImGuiTouchBrowserState& b, const char* list, float cssWidth)
     {
         float scale = (cssWidth > 0.f) ? io.DisplaySize.x / cssWidth : 1.f;
         b.FingersNow.resize(0);
@@ -103,21 +103,21 @@ namespace
     {
         if (ImStrnicmp(url, "http://", 7) != 0 && ImStrnicmp(url, "https://", 8) != 0 && ImStrnicmp(url, "mailto:", 7) != 0)
             return false;
-        ImVector<char>& script = ImGuiKit::GetCurrentContext().Browser.Script;
+        ImVector<char>& script = ImGuiTouch::GetCurrentContext().Browser.Script;
         script.resize(0);
-        ImGuiKitScriptAppend(script, "(u => { if (window.imguiKitPointerType === 1) window.location.assign(u);"
+        ImGuiTouchScriptAppend(script, "(u => { if (window.imguiKitPointerType === 1) window.location.assign(u);"
                                      " else { const w = window.open(u); if (w) w.opener = null;"
                                      " else window.location.assign(u); } })(");
-        ImGuiKitScriptAppendString(script, url, (int)strlen(url));
-        ImGuiKitScriptAppend(script, ")");
-        emscripten_run_script(ImGuiKitScriptEnd(script));
+        ImGuiTouchScriptAppendString(script, url, (int)strlen(url));
+        ImGuiTouchScriptAppend(script, ")");
+        emscripten_run_script(ImGuiTouchScriptEnd(script));
         return true;
     }
 
     void BeforeNewFrame(ImGuiContext* ctx, ImGuiContextHook*)
     {
         ImGuiContext& g = *ctx;
-        ImGuiKitBrowserState& b = ImGuiKit::GetCurrentContext().Browser;
+        ImGuiTouchBrowserState& b = ImGuiTouch::GetCurrentContext().Browser;
         // The frame's state: "type down cssWidth;id x y;..."
         const char* frame = emscripten_run_script_string("window.imguiKitFrame ? window.imguiKitFrame() : ''");
         if (frame == nullptr)
@@ -140,7 +140,7 @@ namespace
     }
 }
 
-void ImGuiKitScriptAppend(ImVector<char>& script, const char* text)
+void ImGuiTouchScriptAppend(ImVector<char>& script, const char* text)
 {
     if (!script.empty() && script.back() == '\0')
         script.pop_back();
@@ -149,7 +149,7 @@ void ImGuiKitScriptAppend(ImVector<char>& script, const char* text)
     memcpy(script.Data + size, text, (size_t)len);
 }
 
-void ImGuiKitScriptAppendString(ImVector<char>& script, const char* text, int len)
+void ImGuiTouchScriptAppendString(ImVector<char>& script, const char* text, int len)
 {
     if (!script.empty() && script.back() == '\0')
         script.pop_back();
@@ -175,7 +175,7 @@ void ImGuiKitScriptAppendString(ImVector<char>& script, const char* text, int le
     script.push_back('\'');
 }
 
-const char* ImGuiKitScriptEnd(ImVector<char>& script)
+const char* ImGuiTouchScriptEnd(ImVector<char>& script)
 {
     if (script.empty() || script.back() != '\0')
         script.push_back('\0');
@@ -188,6 +188,7 @@ void SetupEmscripten()
 {
     ImGuiContext* ctx = ImGui::GetCurrentContext();
     IM_ASSERT(ctx != nullptr && "ImGuiTouch::SetupEmscripten() needs a context: call ImGui::CreateContext() first");
+    CreateCurrentContextIfNeeded();  // the page's state (ImGuiTouchContext::Browser)
     InstallProbe();
     ImGui::GetPlatformIO().Platform_OpenInShellFn = OpenUrl;
     if (emscripten_run_script_int("(navigator.maxTouchPoints > 0) ? 1 : 0") != 0)

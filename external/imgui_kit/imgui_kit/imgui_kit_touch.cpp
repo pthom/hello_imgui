@@ -1,4 +1,5 @@
-// imgui_kit: the setup of the touch layer (ImGuiTouch) and of the wheel session, through Dear ImGui's context hooks
+// imgui_kit: the setup of the input layer (ImGuiTouch: the touch layer, the wheel session), through Dear ImGui's
+// context hooks
 // https://github.com/pthom/imgui_kit (MIT license)
 #include "imgui_kit.h"
 #include "imgui_kit_internal.h"
@@ -14,7 +15,7 @@
 namespace
 {
     const ImGuiID kTouchHooksOwner = ImHashStr("ImGuiTouch");
-    const ImGuiID kWheelHooksOwner = ImHashStr("ImGuiKit_WheelSession");
+    const ImGuiID kWheelHooksOwner = ImHashStr("ImGuiTouch_WheelSession");
 
     ImGuiTouchContext& Ctx() { return ImGuiTouch::GetCurrentContext(); }
 
@@ -62,7 +63,7 @@ namespace
 
 namespace ImGuiTouch
 {
-// The touch state is a part of the kit's (ImGuiKitContext), in use once a touch setup was called
+// The input state is a part of the kit's (ImGuiKitContext), in use once a setup was called: the only place that knows
 ImGuiTouchContext* FindCurrentContext()
 {
     if (GImGui == nullptr)
@@ -74,7 +75,7 @@ ImGuiTouchContext* FindCurrentContext()
 ImGuiTouchContext& GetCurrentContext()
 {
     ImGuiTouchContext* state = FindCurrentContext();
-    IM_ASSERT(state != nullptr && "imgui_kit's touch layer: call ImGuiTouch::Setup() first (or ImGuiKit::SetupWheelSession())");
+    IM_ASSERT(state != nullptr && "imgui_kit's touch layer: call ImGuiTouch::Setup() first (or another ImGuiTouch setup)");
     return *state;
 }
 
@@ -133,15 +134,12 @@ bool ConsumeAnimationRequest()
     tc.Animating = false;
     return asked;
 }
-} // namespace ImGuiTouch
 
-namespace ImGuiKit
-{
 void SetupWheelSession(bool enabled)
 {
-    ImGuiTouch::CreateCurrentContextIfNeeded().WheelSessionEnabled = enabled;
+    CreateCurrentContextIfNeeded().WheelSessionEnabled = enabled;
     ImGuiContext* ctx = ImGui::GetCurrentContext();
-    IM_ASSERT(ctx != nullptr && "ImGuiKit::SetupWheelSession() needs a context: call ImGui::CreateContext() first");
+    IM_ASSERT(ctx != nullptr && "ImGuiTouch::SetupWheelSession() needs a context: call ImGui::CreateContext() first");
     if (HasHooks(ctx, kWheelHooksOwner))
         return;
     AddHook(ctx, kWheelHooksOwner, ImGuiContextHookType_NewFramePre,
@@ -149,4 +147,4 @@ void SetupWheelSession(bool enabled)
     AddHook(ctx, kWheelHooksOwner, ImGuiContextHookType_NewFramePost,
             [](ImGuiContext*, ImGuiContextHook*) { UpdateWheelSession(Ctx().WheelSessionEnabled); });
 }
-} // namespace ImGuiKit
+} // namespace ImGuiTouch

@@ -1,7 +1,7 @@
 // imgui_kit: the swipe of a touch screen (ImGuiTouch)
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_kit.h"
-#include "imgui_kit_internal.h"
+#include "imgui_kit_touch_internal.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"

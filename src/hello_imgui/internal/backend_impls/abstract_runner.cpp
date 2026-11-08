@@ -1,7 +1,7 @@
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
 #include "hello_imgui/hello_imgui_theme.h"
 #include "hello_imgui/internal/borderless_movable.h"
-#include "imgui_kit/imgui_kit.h"  // ImGuiTouch, ImGuiKit::SetupWheelSession
+#include "imgui_kit/imgui_kit.h"  // ImGuiTouch
 #include "hello_imgui/internal/refresh_request.h"
 #include "hello_imgui/internal/clock_seconds.h"
 #include "hello_imgui/internal/docking_details.h"
@@ -519,7 +519,7 @@ void AbstractRunner::InitImGuiContext()
     ImGui::CreateContext();
 #endif
     // The wheel session, then the touch layer: they run in that order at each frame (Dear ImGui's context hooks)
-    ImGuiKit::SetupWheelSession(params.wheelSession);
+    ImGuiTouch::SetupWheelSession(params.wheelSession);
     ImGuiTouch::Setup(params.touchConfig);
     mAppliedTouchConfig = params.touchConfig;
     mAppliedWheelSession = params.wheelSession;
@@ -1401,7 +1401,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     }
     if (params.wheelSession != mAppliedWheelSession)
     {
-        ImGuiKit::SetupWheelSession(params.wheelSession);
+        ImGuiTouch::SetupWheelSession(params.wheelSession);
         mAppliedWheelSession = params.wheelSession;
     }
     ImGui::NewFrame();

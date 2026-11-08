@@ -2,7 +2,7 @@
 // https://github.com/pthom/imgui_kit (MIT license)
 #ifdef __EMSCRIPTEN__
 #include "imgui_kit.h"
-#include "imgui_kit_internal.h"
+#include "imgui_kit_touch_internal.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"  // g.PlatformImeDataPrev, ImGui::GetInputTextState
@@ -546,7 +546,7 @@ static void UpdateKeyboard()
 {
     ImGuiContext& g = *GImGui;
     ImGuiIO& io = g.IO;
-    ImGuiKitBrowserState& b = ImGuiKit::GetCurrentContext().Browser;
+    ImGuiTouchBrowserState& b = ImGuiTouch::GetCurrentContext().Browser;
 
     // The page's state: the visible area while the keyboard is shown (the full-screen window shrinks to it, the clicks
     // under the keyboard are dropped, the caret stays in view), the tap's clicks to drop, and whether input waits
@@ -724,10 +724,10 @@ static void UpdateKeyboard()
             char caretText[32];
             snprintf(caretText, sizeof(caretText), ", %d)", caretUnits);
             b.Script.resize(0);
-            ImGuiKitScriptAppend(b.Script, "window.imguiKitKeyboard && window.imguiKitKeyboard.mirrorTo(");
-            ImGuiKitScriptAppendString(b.Script, state->GetText(), state->TextLen);
-            ImGuiKitScriptAppend(b.Script, caretText);
-            emscripten_run_script(ImGuiKitScriptEnd(b.Script));
+            ImGuiTouchScriptAppend(b.Script, "window.imguiKitKeyboard && window.imguiKitKeyboard.mirrorTo(");
+            ImGuiTouchScriptAppendString(b.Script, state->GetText(), state->TextLen);
+            ImGuiTouchScriptAppend(b.Script, caretText);
+            emscripten_run_script(ImGuiTouchScriptEnd(b.Script));
         }
     }
 }
@@ -736,6 +736,7 @@ void SetupEmscriptenKeyboard()
 {
     ImGuiContext* ctx = ImGui::GetCurrentContext();
     IM_ASSERT(ctx != nullptr && "ImGuiTouch::SetupEmscriptenKeyboard() needs a context: call ImGui::CreateContext() first");
+    CreateCurrentContextIfNeeded();  // the page's state (ImGuiTouchContext::Browser)
     emscripten_run_script(kScript);
     const ImGuiID owner = ImHashStr("ImGuiTouch_EmscriptenKeyboard");
     for (const ImGuiContextHook& hook : ctx->Hooks)

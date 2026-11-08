@@ -1,6 +1,6 @@
-// imgui_kit: the wheel session (ImGuiKit::SetupWheelSession)
+// imgui_kit: the wheel session (ImGuiTouch::SetupWheelSession)
 #include "imgui_kit.h"
-#include "imgui_kit_internal.h"
+#include "imgui_kit_touch_internal.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -16,13 +16,13 @@
 // While ImGui keeps scrolling a window (g.WheelingWindow), NewFrame() gives the wheel's ownership back to that window,
 // which erases an item's claim: with the mouse still, the page scrolls a plot under it, and the session would see no
 // item. The owner the widgets left is thus read before NewFrame() (WheelSessionBeforeNewFrame).
-namespace ImGuiKit
+namespace ImGuiTouch
 {
 namespace
 {
     constexpr float kSessionSeconds = 0.7f;  // ImGui's WINDOWS_MOUSE_WHEEL_SCROLL_LOCK_TIMER
 
-    using State = ImGuiKitWheelSessionState;
+    using State = ImGuiTouchWheelSessionState;
 
     // The item (not a window) that owns the wheel, as of the previous frame; 0 when none
     ImGuiID WheelOwnerItem(const ImGuiContext& g, const State& s)
@@ -55,15 +55,16 @@ void WheelSessionBeforeNewFrame()
     ImGuiContext* g = GImGui;
     if (g == nullptr)
         return;
-    ImGuiTouch::GetCurrentContext().WheelSession.ownerBeforeNewFrame = ImGui::GetKeyOwnerData(g, ImGuiKey_MouseWheelY)->OwnerNext;
-    ImGuiTouch::GetCurrentContext().WheelSession.ownerFrame = g->FrameCount;
+    State& s = GetCurrentContext().WheelSession;
+    s.ownerBeforeNewFrame = ImGui::GetKeyOwnerData(g, ImGuiKey_MouseWheelY)->OwnerNext;
+    s.ownerFrame = g->FrameCount;
 }
 
 void UpdateWheelSession(bool enabled)
 {
     ImGuiContext& g = *GImGui;
     ImGuiIO& io = g.IO;
-    State& s = ImGuiTouch::GetCurrentContext().WheelSession;
+    State& s = GetCurrentContext().WheelSession;
     if (s.context != &g || g.FrameCount < s.frameCount)
     {
         s = State{};
@@ -133,4 +134,4 @@ void UpdateWheelSession(bool enabled)
     }
     io.MouseWheel = 0.f;
 }
-}  // namespace ImGuiKit
+}  // namespace ImGuiTouch

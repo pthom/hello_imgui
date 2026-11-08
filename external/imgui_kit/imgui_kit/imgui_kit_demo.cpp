@@ -11,6 +11,7 @@ Index of this file:
 // [SECTION] Em units
 // [SECTION] Layout
 // [SECTION] Widgets
+// [SECTION] Touch
 // [SECTION] Demo window
 
 */
@@ -422,6 +423,71 @@ void DemoWidgets()
     DemoResizeHandle();
 }
 
+//-----------------------------------------------------------------------------
+// [SECTION] Touch
+//-----------------------------------------------------------------------------
+
+// The settings change the application's touch layer, live: "Always" lets a mouse try the swipe on a desktop
+void DemoTouch()
+{
+    IMGUI_DEMO_MARKER("Touch");
+    if (!ImGui::CollapsingHeader("Touch"))
+        return;
+    ImGui::TextWrapped("The gestures of a phone: a finger drags the content (with inertia, and a bounce at the end), "
+                       "a long press is a right click, two fingers pinch the font. The application installs the "
+                       "layer once: ImGuiTouch::Setup() (Hello ImGui does it).");
+
+    ImGuiTouchConfig& config = ImGuiTouch::GetConfig();
+    ImGuiKit::BeginLabelColumn("touch_settings");
+    ImGuiKit::Label("Swipe");
+    const char* scroll_modes[] = { "Touch screens", "Always", "Off" };
+    ImGuiKit::SegmentedSwitch("##scroll_mode", &config.ScrollMode, scroll_modes, IM_ARRAYSIZE(scroll_modes));
+    ImGui::SameLine();
+    ImGuiKit::HelpMarker("Always: the mouse's left button drags the content too. Try the phone's behavior on a "
+                         "desktop, in the zone below.");
+    ImGuiKit::Label("Pinch");
+    const char* pinch_modes[] = { "Font scale", "Off" };
+    ImGuiKit::SegmentedSwitch("##pinch_mode", &config.PinchMode, pinch_modes, IM_ARRAYSIZE(pinch_modes));
+    ImGuiKit::Label("Long press");
+    ImGui::Checkbox("is a right click", &config.LongPressIsRightClick);
+    ImGuiKit::Label("Scroll bars");
+    ImGui::Checkbox("thin on a touch screen", &config.ThinScrollbars);
+    ImGuiKit::EndLabelColumn();
+
+    ImGui::BeginChild("##touch_zone", ImVec2(0.0f, ImGuiKit::EmSize(14.f)), ImGuiChildFlags_Borders);
+    ImGui::TextWrapped("Drag this zone with a finger (or with the mouse, in \"Always\" mode): it scrolls, and keeps "
+                       "going after a quick throw.");
+    static float value = 0.5f;
+    ImGui::SetNextItemWidth(ImGuiKit::EmSize(12.f));
+    ImGui::SliderFloat("a short hold, then a drag", &value, 0.0f, 1.0f);
+
+    ImGui::TextWrapped("The pad takes a finger's drag at once (ImGuiTouch::SetItemTakesDrags()): the zone stays.");
+    static ImVec2 dot(0.5f, 0.5f);  // in the pad, from 0 to 1
+    ImVec2 pad_min = ImGui::GetCursorScreenPos();
+    ImVec2 pad_size = ImGuiKit::EmToVec2(12.f, 6.f);
+    ImGui::InvisibleButton("##pad", pad_size);
+    ImGuiTouch::SetItemTakesDrags();
+    if (ImGui::IsItemActive())
+    {
+        ImVec2 mouse = ImGui::GetIO().MousePos;
+        dot = ImVec2(ImClamp((mouse.x - pad_min.x) / pad_size.x, 0.0f, 1.0f),
+                     ImClamp((mouse.y - pad_min.y) / pad_size.y, 0.0f, 1.0f));
+    }
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    ImVec2 pad_max(pad_min.x + pad_size.x, pad_min.y + pad_size.y);
+    float rounding = ImGui::GetStyle().FrameRounding;
+    draw_list->AddRectFilled(pad_min, pad_max, ImGui::GetColorU32(ImGuiCol_FrameBg), rounding);
+    draw_list->AddRect(pad_min, pad_max, ImGui::GetColorU32(ImGuiCol_Border), rounding);
+    ImVec2 center(pad_min.x + dot.x * pad_size.x, pad_min.y + dot.y * pad_size.y);
+    draw_list->AddCircleFilled(center, ImGuiKit::EmSize(0.5f), ImGui::GetColorU32(ImGuiCol_SliderGrabActive));
+
+    for (int i = 1; i <= 20; i++)
+        ImGui::Text("Line %d: more content, to scroll", i);
+    ImGui::EndChild();
+    // IsAnimating(): an application that sleeps when nothing happens keeps drawing frames meanwhile
+    ImGui::Text("Moving on its own: %s", ImGuiTouch::IsAnimating() ? "yes" : "no");
+}
+
 } // namespace
 
 //-----------------------------------------------------------------------------
@@ -452,6 +518,7 @@ void ImGuiKit::ShowDemoContents()
     DemoEmUnits();
     DemoLayout();
     DemoWidgets();
+    DemoTouch();
     ImGui::PopFont();
 }
 

@@ -314,6 +314,8 @@ IMGUI_API void   AddFingerEvent(int id, const ImVec2& pos, bool down);
 // In a browser, with any of Dear ImGui's Emscripten backends: tells Dear ImGui which pointer is a finger (the
 // browser's pointer events), relays the fingers to AddFingerEvent() (the pinch), and sets ImGuiConfigFlags_IsTouchScreen
 // on a touch screen. Call once, after the backend's init. The canvas must have the id "canvas".
+// Also: Dear ImGui's links (TextLinkOpenURL) open on a phone (in the same tab: a phone's browser refuses new tabs
+// there), and the phone's own long press (text selection, its menu) is turned off on the canvas.
 IMGUI_API void   SetupEmscripten();
 #endif
 } // namespace ImGuiTouch

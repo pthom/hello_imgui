@@ -7,6 +7,8 @@
 #include <emscripten.h>
 #include <float.h>
 #include <algorithm>
+#include <cctype>
+#include <cstdio>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -103,6 +105,48 @@ namespace
         sDown = down;
     }
 
+    // A JS string literal: quotes and backslashes escaped, control characters as \u00XX
+    std::string JsStringLiteral(const char* s)
+    {
+        std::string r = "\"";
+        for (const char* p = s; *p; ++p)
+        {
+            unsigned char c = (unsigned char)*p;
+            if (c == '"' || c == '\\')
+            {
+                r += '\\';
+                r += (char)c;
+            }
+            else if (c < 0x20)
+            {
+                char escaped[8];
+                snprintf(escaped, sizeof(escaped), "\\u%04x", c);
+                r += escaped;
+            }
+            else
+                r += (char)c;
+        }
+        return r + "\"";
+    }
+
+    // Dear ImGui's links (TextLinkOpenURL): a new tab with a mouse. On a touch screen, the page itself goes there: a
+    // popup blocker refuses a new tab outside the touch's own handler, and Dear ImGui learns of a tap frames later.
+    // The browser's back button returns. Web addresses only: a javascript: url would run script in the page.
+    bool OpenUrl(ImGuiContext*, const char* url)
+    {
+        std::string lower(url);
+        for (char& c : lower)
+            c = (char)tolower((unsigned char)c);
+        if (lower.rfind("http://", 0) != 0 && lower.rfind("https://", 0) != 0 && lower.rfind("mailto:", 0) != 0)
+            return false;
+        std::string u = JsStringLiteral(url);
+        std::string script = "if (window.imguiKitPointerType === 1) window.location.assign(" + u + ");"
+                             " else { const w = window.open(" + u + "); if (w) w.opener = null;"
+                             " else window.location.assign(" + u + "); }";
+        emscripten_run_script(script.c_str());
+        return true;
+    }
+
     void BeforeNewFrame(ImGuiContext* ctx, ImGuiContextHook*)
     {
         ImGuiContext& g = *ctx;
@@ -127,6 +171,7 @@ void SetupEmscripten()
     ImGuiContext* ctx = ImGui::GetCurrentContext();
     IM_ASSERT(ctx != nullptr && "ImGuiTouch::SetupEmscripten() needs a context: call ImGui::CreateContext() first");
     InstallProbe();
+    ImGui::GetPlatformIO().Platform_OpenInShellFn = OpenUrl;
     if (emscripten_run_script_int("(navigator.maxTouchPoints > 0) ? 1 : 0") != 0)
         ctx->IO.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
     for (const ImGuiContextHook& hook : ctx->Hooks)

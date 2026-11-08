@@ -432,8 +432,8 @@ void DemoWidgets()
 
 // A canvas that zooms with the wheel and pans with a drag, as a plot or an image viewer does. It claims the wheel while
 // hovered (ImGui::SetItemKeyOwner), takes a finger's drag at once (ImGuiTouch::SetItemTakesDrags), and a pinch
-// (ImGuiTouch::SetItemTakesPinch: as wheel notches of 10%, its own zoom per notch; two fingers pan it, with the left
-// button)
+// (ImGuiTouch::SetItemTakesPinch: its zoom per notch is 10%, and it uses the wheel's exact value; two fingers pan it,
+// with the left button)
 void ZoomableCanvas(const char* str_id, ImVec2 size)
 {
     static float zoom = 1.0f;
@@ -443,7 +443,7 @@ void ZoomableCanvas(const char* str_id, ImVec2 size)
     ImVec2 p1(p0.x + size.x, p0.y + size.y);
     ImGui::InvisibleButton(str_id, size);
     ImGuiTouch::SetItemTakesDrags();
-    ImGuiTouch::SetItemTakesPinch(0.1f, ImGuiMouseButton_Left);
+    ImGuiTouch::SetItemTakesPinch(0.1f, ImGuiMouseButton_Left, ImGuiTouchPinchDelivery_WheelContinuous);
     if (ImGui::IsItemActive())
     {
         offset.x += io.MouseDelta.x;

@@ -37,6 +37,7 @@ Index of this file:
 typedef int ImGuiKitIcon;           // -> enum ImGuiKitIcon_
 typedef int ImGuiTouchScrollMode;   // -> enum ImGuiTouchScrollMode_
 typedef int ImGuiTouchPinchMode;    // -> enum ImGuiTouchPinchMode_
+typedef int ImGuiTouchPinchDelivery;  // -> enum ImGuiTouchPinchDelivery_
 
 namespace ImGuiKit
 {
@@ -263,6 +264,13 @@ enum ImGuiTouchPinchMode_
     ImGuiTouchPinchMode_Disabled,
 };
 
+// How a pinch reaches a widget that takes it (ImGuiTouch::SetItemTakesPinch)
+enum ImGuiTouchPinchDelivery_
+{
+    ImGuiTouchPinchDelivery_WheelNotches,     // whole notches (+1, -1): a widget that reads only the wheel's sign (ImPlot)
+    ImGuiTouchPinchDelivery_WheelContinuous,  // the exact amount at each frame: a widget that zooms by the wheel's value
+};
+
 // The parts of the screen hidden by a phone's keyboard: see ImGuiTouch::GetKeyboardInsets()
 struct ImGuiTouchKeyboardInsets
 {
@@ -317,13 +325,16 @@ IMGUI_API bool   IsAnimating();
 IMGUI_API void   SetItemTakesDrags(bool long_press_is_right_click = true);
 
 // Right after a widget that zooms with the wheel (a plot, an image): two fingers that pinch on it zoom it, instead of
-// scaling the font. The pinch reaches it as wheel events, one notch each time the fingers' spread changed by
-// zoom_per_notch (the widget's own zoom per notch: ImPlot's is 0.1), at the fingers' center. Two fingers that
-// move together on it drag it with pan_button (a plot pans with the left button). Nothing without the touch layer.
-IMGUI_API void   SetItemTakesPinch(float zoom_per_notch = 0.1f, ImGuiMouseButton pan_button = ImGuiMouseButton_Right);
+// scaling the font. The pinch reaches it as wheel events at the fingers' center: zoom_per_notch is the widget's own
+// zoom per notch (ImPlot's is 0.1), delivery says whether it reads whole notches or the wheel's exact value. Two
+// fingers that move together on it drag it with pan_button (a plot pans with the left button). Nothing without the
+// touch layer.
+IMGUI_API void   SetItemTakesPinch(float zoom_per_notch = 0.1f, ImGuiMouseButton pan_button = ImGuiMouseButton_Right,
+                                   ImGuiTouchPinchDelivery delivery = ImGuiTouchPinchDelivery_WheelNotches);
 // The same, for a rectangle in screen coordinates: a widget that is not one item (an ImPlot plot)
 IMGUI_API void   SetRectTakesPinch(const ImVec2& min, const ImVec2& max, float zoom_per_notch = 0.1f,
-                                   ImGuiMouseButton pan_button = ImGuiMouseButton_Right);
+                                   ImGuiMouseButton pan_button = ImGuiMouseButton_Right,
+                                   ImGuiTouchPinchDelivery delivery = ImGuiTouchPinchDelivery_WheelNotches);
 
 // A finger on a touch screen, as the platform reports it (a browser's touch or pointer events, SDL's finger events):
 // its id (any number the platform gives, stable while the finger is down), its position (in the mouse's coordinates),

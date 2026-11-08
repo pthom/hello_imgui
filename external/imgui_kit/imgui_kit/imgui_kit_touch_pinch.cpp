@@ -68,7 +68,7 @@ namespace
         return found;
     }
 
-    void AddTaker(const ImRect& rect, float zoomPerNotch, ImGuiMouseButton panButton)
+    void AddTaker(const ImRect& rect, float zoomPerNotch, ImGuiMouseButton panButton, ImGuiTouchPinchDelivery delivery)
     {
         ImGuiContext& g = *GImGui;
         ImGuiTouchContext* touch = FindCurrentContext();  // none without the touch layer: the widget just draws
@@ -78,19 +78,20 @@ namespace
         visible.ClipWith(g.CurrentWindow->ClipRect);
         if (visible.GetWidth() <= 0.f || visible.GetHeight() <= 0.f || zoomPerNotch <= 0.f)
             return;
-        Taker taker = {visible, zoomPerNotch, panButton};
+        Taker taker = {visible, zoomPerNotch, panButton, delivery};
         touch->Pinch.takers.push_back(taker);
     }
 }  // namespace
 
-void SetItemTakesPinch(float zoomPerNotch, ImGuiMouseButton panButton)
+void SetItemTakesPinch(float zoomPerNotch, ImGuiMouseButton panButton, ImGuiTouchPinchDelivery delivery)
 {
-    AddTaker(GImGui->LastItemData.Rect, zoomPerNotch, panButton);
+    AddTaker(GImGui->LastItemData.Rect, zoomPerNotch, panButton, delivery);
 }
 
-void SetRectTakesPinch(const ImVec2& min, const ImVec2& max, float zoomPerNotch, ImGuiMouseButton panButton)
+void SetRectTakesPinch(const ImVec2& min, const ImVec2& max, float zoomPerNotch, ImGuiMouseButton panButton,
+                       ImGuiTouchPinchDelivery delivery)
 {
-    AddTaker(ImRect(min, max), zoomPerNotch, panButton);
+    AddTaker(ImRect(min, max), zoomPerNotch, panButton, delivery);
 }
 
 void AddFingerEvent(int id, const ImVec2& pos, bool down)
@@ -118,9 +119,11 @@ void AddFingerEvent(int id, const ImVec2& pos, bool down)
     }
 }
 
-// While a widget's pinch lasts (or its pan), the mouse is the fingers' center, so that the widget zooms around it: the
-// platform's moves (its mouse is the first finger) are rewritten there before Dear ImGui reads them, and a move is added
-// when the center moved without them. Events marked as the layer's or the Test Engine's are left as they are.
+// While a widget's pinch lasts (or its pan), the mouse is the fingers' center, so that the widget zooms around it. The
+// platform's moves (its mouse is the first finger) are replaced: the mouse goes to the center when it is half a line
+// away from it, and stays still otherwise. A move holds the next wheel event back a frame (Dear ImGui reads a wheel
+// event queued after a move at the next frame): a mouse that followed each small move would halve the zoom's pace.
+// Events marked as the layer's or the Test Engine's are left as they are.
 void PinchBeforeNewFrame(ImGuiContext& g)
 {
     ImGuiTouchContext* touch = FindCurrentContext();
@@ -130,15 +133,25 @@ void PinchBeforeNewFrame(ImGuiContext& g)
     if (!s.hasTaker || s.gesture == Gesture::None || s.fingers.Size < 2)
         return;
     const ImVec2 center = Center(s.fingers[0], s.fingers[1]);
+    const float tolerance = g.FontSize * 0.5f;
+    const bool far = ImLengthSqr(g.IO.MousePos - center) > tolerance * tolerance;
     bool moved = false;
-    for (ImGuiInputEvent& e : g.InputEventsQueue)
-        if (e.Type == ImGuiInputEventType_MousePos && !e.AddedByTestEngine)
+    for (int i = 0; i < g.InputEventsQueue.Size;)
+    {
+        ImGuiInputEvent& e = g.InputEventsQueue[i];
+        if (e.Type != ImGuiInputEventType_MousePos || e.AddedByTestEngine)
+            ++i;
+        else if (far && !moved)
         {
             e.MousePos.PosX = center.x;
             e.MousePos.PosY = center.y;
             moved = true;
+            ++i;
         }
-    if (!moved && ImLengthSqr(g.IO.MousePos - center) > 0.25f)
+        else
+            g.InputEventsQueue.erase(g.InputEventsQueue.Data + i);
+    }
+    if (far && !moved)
         PosEvent(g.IO, center);
 }
 
@@ -169,7 +182,7 @@ void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets)
             // A widget takes the pinch: the swipe layer lets go for good, and the first finger's press is released,
             // so that the widget is hovered (it reads the wheel then), and is not dragged by it
             s.taker = *taker;
-            s.notchesSent = 0;
+            s.notchesSent = 0.f;
             if (!TouchScrollRelease(interruptsWidgets))
             {
                 s.hasTaker = false;
@@ -190,6 +203,9 @@ void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets)
         {
             s.gesture = Gesture::Pinch;
             s.baseScale = ImGui::GetStyle().FontScaleMain;
+            // A widget that reads the wheel's value zooms from here, without catching up the threshold at once
+            if (s.hasTaker && s.taker.delivery == ImGuiTouchPinchDelivery_WheelContinuous)
+                s.notchesSent = ImLog(pinchScale) / ImLog(1.f + s.taker.zoomPerNotch);
         }
         else if (ImLengthSqr(move) > slop * slop)
         {
@@ -214,21 +230,33 @@ void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets)
     }
     if (s.gesture == Gesture::Pinch && twoFingers && s.hasTaker)
     {
-        // The taker zooms by wheel notches: one each time the spread changed by its zoom per notch. One at a time: a
-        // notch queued while another waits would be read with it, in the same frame (Dear ImGui reads a wheel event
-        // queued after a move at the next frame, and the fingers' moves keep coming), and their sum zooms a plot
-        // once: ImPlot reads only the wheel's sign
-        bool notchWaiting = false;
-        for (const ImGuiInputEvent& e : g.InputEventsQueue)
-            if (e.Type == ImGuiInputEventType_MouseWheel)
-                notchWaiting = true;
+        // The taker zooms by the wheel: the notches its zoom per notch gives for the fingers' spread
         const float target = ImLog(pinchScale) / ImLog(1.f + s.taker.zoomPerNotch);
-        const float missing = target - (float)s.notchesSent;
-        const int notch = notchWaiting ? 0 : (missing >= 1.f) ? 1 : (missing <= -1.f) ? -1 : 0;
-        if (notch != 0)
+        const float missing = target - s.notchesSent;
+        if (s.taker.delivery == ImGuiTouchPinchDelivery_WheelContinuous)
         {
-            WheelEvent(g.IO, (float)notch);
-            s.notchesSent += notch;
+            // The exact amount at each frame: the zoom follows the fingers (amounts queued together add up exactly)
+            if (ImFabs(missing) > 0.001f)
+            {
+                WheelEvent(g.IO, missing);
+                s.notchesSent += missing;
+            }
+        }
+        else
+        {
+            // Whole notches, one at a time: a notch queued while another waits would be read with it, in the same
+            // frame (Dear ImGui reads a wheel event queued after a move at the next frame, and the fingers' moves keep
+            // coming), and their sum zooms a plot once: ImPlot reads only the wheel's sign
+            bool notchWaiting = false;
+            for (const ImGuiInputEvent& e : g.InputEventsQueue)
+                if (e.Type == ImGuiInputEventType_MouseWheel)
+                    notchWaiting = true;
+            const float notch = notchWaiting ? 0.f : (missing >= 1.f) ? 1.f : (missing <= -1.f) ? -1.f : 0.f;
+            if (notch != 0.f)
+            {
+                WheelEvent(g.IO, notch);
+                s.notchesSent += notch;
+            }
         }
     }
     else if (s.gesture == Gesture::Pinch && twoFingers && mode == ImGuiTouchPinchMode_FontScale)

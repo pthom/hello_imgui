@@ -14,6 +14,7 @@ Index of this file:
 // [SECTION] Layout
 // [SECTION] Widgets
 // [SECTION] Wheel session
+// [SECTION] Enums
 // [SECTION] Touch (ImGuiTouch)
 
 */
@@ -233,6 +234,21 @@ IMGUI_API void   SetupWheelSession(bool enabled = true);
 } // namespace ImGuiKit
 
 //-----------------------------------------------------------------------------
+// [SECTION] Enums
+//-----------------------------------------------------------------------------
+
+// The symbols of IconButton()
+enum ImGuiKitIcon_
+{
+    ImGuiKitIcon_Minus,
+    ImGuiKitIcon_Plus,
+    ImGuiKitIcon_ZoomIn,
+    ImGuiKitIcon_ZoomOut,
+    ImGuiKitIcon_ZoomOneToOne,
+    ImGuiKitIcon_ZoomFit,
+};
+
+//-----------------------------------------------------------------------------
 // [SECTION] Touch (ImGuiTouch)
 //-----------------------------------------------------------------------------
 // A touch screen, as on a phone:
@@ -365,14 +381,3 @@ IMGUI_API void   SetupEmscripten();
 IMGUI_API void   SetupEmscriptenKeyboard();
 #endif
 } // namespace ImGuiTouch
-
-// The symbols of IconButton()
-enum ImGuiKitIcon_
-{
-    ImGuiKitIcon_Minus,
-    ImGuiKitIcon_Plus,
-    ImGuiKitIcon_ZoomIn,
-    ImGuiKitIcon_ZoomOut,
-    ImGuiKitIcon_ZoomOneToOne,
-    ImGuiKitIcon_ZoomFit,
-};

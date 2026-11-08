@@ -27,6 +27,14 @@ Index of this file:
 namespace
 {
 
+// After a label, a widget too wide for the rest of the line goes under it: a narrow window (a phone) keeps its rows
+// on screen
+void NextLineIfTooWide(float widget_width)
+{
+    if (widget_width > ImGui::GetContentRegionAvail().x)
+        ImGui::NewLine();
+}
+
 //-----------------------------------------------------------------------------
 // [SECTION] Toolbar: theme, font size, frame rounding
 //-----------------------------------------------------------------------------
@@ -51,6 +59,7 @@ void DemoToolbar(float* font_size)
     ImGuiKit::Label("Theme");
     static int theme = 0;
     const char* themes[] = { "App", "Dark", "Light", "Classic" };
+    NextLineIfTooWide(ImGuiKit::SegmentedSwitchWidth(themes, IM_ARRAYSIZE(themes)));
     if (ImGuiKit::SegmentedSwitch("##theme", &theme, themes, IM_ARRAYSIZE(themes)))
     {
         if (theme == 0)
@@ -64,14 +73,16 @@ void DemoToolbar(float* font_size)
             ImGui::StyleColorsClassic();
     }
 
+    // The sliders fill their rows (fill rows): the rows fit a phone's width
     ImGuiKit::Label("Font size");
-    ImGui::SetNextItemWidth(ImGuiKit::EmSize(8.f));
+    ImGuiKit::BeginFillRow("font_size");
     ImGui::SliderFloat("##font_size", font_size, 8.0f, 40.0f, "%.0f px");
+    ImGuiKit::EndFillRow();
 
     ImGuiKit::Label("Frame rounding");
-    ImGui::SetNextItemWidth(ImGuiKit::EmSize(8.f));
+    ImGuiKit::BeginFillRow("rounding");
     ImGui::SliderFloat("##rounding", &style.FrameRounding, 0.0f, 12.0f, "%.0f px");
-    ImGui::SameLine();
+    ImGuiKit::FillRowTail();
     ImGuiKit::HelpMarker("The style's FrameRounding: ImGui::GetStyle().FrameRounding. Buttons, sliders, input "
                          "fields and the segmented switch round their corners with it. 0 gives square frames; half "
                          "the frame's height gives a pill.");
@@ -81,6 +92,7 @@ void DemoToolbar(float* font_size)
         *font_size = style.FontSizeBase;
         style.FrameRounding = app_rounding;
     }
+    ImGuiKit::EndFillRow();
     ImGuiKit::EndLabelColumn();
 }
 
@@ -537,13 +549,15 @@ void DemoTouch()
                              "right click).");
     }
     ImGuiKit::Label("Swipe");
-    const char* scroll_modes[] = { "Touch screens", "Always", "Off" };
+    const char* scroll_modes[] = { "Touch", "Always", "Off" };
+    NextLineIfTooWide(ImGuiKit::SegmentedSwitchWidth(scroll_modes, IM_ARRAYSIZE(scroll_modes)));
     ImGuiKit::SegmentedSwitch("##scroll_mode", &config.ScrollMode, scroll_modes, IM_ARRAYSIZE(scroll_modes));
     ImGui::SameLine();
-    ImGuiKit::HelpMarker("Touch screens: the swipe follows a finger only. Always: the mouse's left button drags the "
+    ImGuiKit::HelpMarker("Touch: the swipe follows a finger only. Always: the mouse's left button drags the "
                          "content too, while the mouse stays a mouse.");
     ImGuiKit::Label("Pinch");
     const char* pinch_modes[] = { "Font scale", "Off" };
+    NextLineIfTooWide(ImGuiKit::SegmentedSwitchWidth(pinch_modes, IM_ARRAYSIZE(pinch_modes)));
     ImGuiKit::SegmentedSwitch("##pinch_mode", &config.PinchMode, pinch_modes, IM_ARRAYSIZE(pinch_modes));
     ImGuiKit::Label("Long press");
     ImGui::Checkbox("is a right click", &config.LongPressIsRightClick);
@@ -658,7 +672,7 @@ void ImGuiKit::ShowDemoWindow(bool* p_open)
 
 void ImGuiKit::ShowDemoContents()
 {
-    ImGui::Text("ImGuiKit %s: small, standalone additions to Dear ImGui", IMGUI_KIT_VERSION);
+    ImGui::TextWrapped("ImGuiKit %s: small, standalone additions to Dear ImGui", IMGUI_KIT_VERSION);
     static float font_size = 0.0f;  // 0: the application's size, read at the first frame
     if (font_size == 0.0f)
         font_size = ImGui::GetStyle().FontSizeBase;

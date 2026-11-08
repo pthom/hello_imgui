@@ -281,16 +281,21 @@ bool IconButton(const char* str_id, ImGuiKitIcon icon, const ImVec2& size)
 // [SECTION] Segmented switch
 //-----------------------------------------------------------------------------
 
-bool SegmentedSwitch(const char* str_id, int* current, const char* const labels[], int labels_count)
+float SegmentedSwitchWidth(const char* const labels[], int labels_count)
 {
-    IM_ASSERT(labels_count > 0);
-    const ImGuiStyle& style = ImGui::GetStyle();
     // Equal segments, each wide enough for the longest label
     float label_width = 0.0f;
     for (int i = 0; i < labels_count; i++)
         label_width = ImMax(label_width, ImGui::CalcTextSize(labels[i], nullptr, true).x);
-    float segment_width = label_width + style.FramePadding.x * 4.0f;
-    ImVec2 size(segment_width * (float)labels_count, ImGui::GetFrameHeight());
+    return (label_width + ImGui::GetStyle().FramePadding.x * 4.0f) * (float)labels_count;
+}
+
+bool SegmentedSwitch(const char* str_id, int* current, const char* const labels[], int labels_count)
+{
+    IM_ASSERT(labels_count > 0);
+    const ImGuiStyle& style = ImGui::GetStyle();
+    ImVec2 size(SegmentedSwitchWidth(labels, labels_count), ImGui::GetFrameHeight());
+    float segment_width = size.x / (float)labels_count;
     ImVec2 p0 = ImGui::GetCursorScreenPos();
 
     // As a framed widget: the text that follows on its line is aligned with its labels

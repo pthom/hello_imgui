@@ -198,6 +198,8 @@ IMGUI_API bool   IconButton(const char* str_id, ImGuiKitIcon icon, const ImVec2&
 //
 // It reacts at the press, not the release, which suits touch screens. Returns true when *current changed.
 IMGUI_API bool   SegmentedSwitch(const char* str_id, int* current, const char* const labels[], int labels_count);
+// The width a segmented switch takes, to place it: e.g. on the next line when the current one is too short
+IMGUI_API float  SegmentedSwitchWidth(const char* const labels[], int labels_count);
 #ifdef IMGUI_KIT_USE_STL
 IMGUI_API bool   SegmentedSwitch(const char* str_id, int* current, const std::vector<std::string>& labels);
 #endif

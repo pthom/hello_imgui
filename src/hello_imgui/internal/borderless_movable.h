@@ -5,10 +5,11 @@
 namespace HelloImGui
 {
     // This function is called by the backend to handle borderless movable windows
-    // it returns true if the window should be closed
+    // it returns true if the window should be closed. A full-screen window gets no resize handle.
     bool HandleBorderlessMovable(
         std::function<ScreenBounds()> fnGetWindowBounds,
         std::function<void(ScreenBounds)> fnSetWindowBounds,
-        const HelloImGui::RunnerParams& runnerParams
+        const HelloImGui::RunnerParams& runnerParams,
+        bool isWindowFullScreen
     );
 }

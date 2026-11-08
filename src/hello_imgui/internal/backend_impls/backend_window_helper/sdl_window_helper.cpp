@@ -199,6 +199,12 @@ namespace HelloImGui { namespace BackendApi
         return window_is_hidden;
     }
 
+    bool SdlWindowHelper::IsWindowFullScreen(WindowPointer window)
+    {
+        // SDL_WINDOW_FULLSCREEN_DESKTOP includes this flag
+        return (SDL_GetWindowFlags((SDL_Window *)(window)) & SDL_WINDOW_FULLSCREEN) != 0;
+    }
+
     void SdlWindowHelper::RaiseWindow(WindowPointer window)
     {
         // Despite those efforts, the app does not come to the front under MacOS

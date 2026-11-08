@@ -24,6 +24,7 @@ namespace HelloImGui { namespace BackendApi
         std::vector<ScreenBounds> GetMonitorsWorkAreas() override;
 
         bool IsWindowIconified(WindowPointer window) override;
+        bool IsWindowFullScreen(WindowPointer window) override;
         void RaiseWindow(WindowPointer window) override;
 
         ScreenBounds GetWindowBounds(WindowPointer window) override;

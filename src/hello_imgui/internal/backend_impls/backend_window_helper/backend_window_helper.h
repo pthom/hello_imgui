@@ -61,6 +61,8 @@ namespace HelloImGui { namespace BackendApi
 
         virtual bool IsWindowIconified(WindowPointer window) = 0;
 
+        virtual bool IsWindowFullScreen(WindowPointer window) = 0;
+
         virtual void RaiseWindow(WindowPointer window) = 0;
 
         virtual ScreenBounds GetWindowBounds(WindowPointer window) = 0;

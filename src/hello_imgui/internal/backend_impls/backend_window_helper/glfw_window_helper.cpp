@@ -234,6 +234,11 @@ namespace HelloImGui { namespace BackendApi
         return (iconified || hidden);
     }
 
+    bool GlfwWindowHelper::IsWindowFullScreen(WindowPointer window)
+    {
+        return glfwGetWindowMonitor((GLFWwindow *)(window)) != nullptr;
+    }
+
     void GlfwWindowHelper::RaiseWindow(WindowPointer window)
     {
         auto glfwWindow = (GLFWwindow *)(window);

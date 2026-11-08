@@ -9,7 +9,8 @@ namespace HelloImGui
     bool HandleBorderlessMovable(
         std::function<ScreenBounds()> fnGetWindowBounds,
         std::function<void(ScreenBounds)> fnSetWindowBounds,
-        const HelloImGui::RunnerParams& runnerParams
+        const HelloImGui::RunnerParams& runnerParams,
+        bool isWindowFullScreen
         )
     {
         // - If using viewports, the mouse position is absolute, and we can confidently move the window
@@ -22,7 +23,8 @@ namespace HelloImGui
         bool shouldClose = false;
 
         bool borderlessMovable = runnerParams.appWindowParams.borderlessMovable;
-        bool borderlessResizable = runnerParams.appWindowParams.borderlessResizable;
+        // Resizing a full-screen window would change the monitor's video mode (GLFW)
+        bool borderlessResizable = runnerParams.appWindowParams.borderlessResizable && !isWindowFullScreen;
         bool borderlessClosable = runnerParams.appWindowParams.borderlessClosable;
         ImVec4 borderlessHighlightColor = runnerParams.appWindowParams.borderlessHighlightColor;
 

@@ -29,6 +29,8 @@
 
 **Borderless windows:** on Windows, a full-screen window with `borderlessResizable` keeps its size when it is minimized and restored, or after an Alt-Tab. It came back at 640x480: Windows reports a minimized window as 0x0, and the resize handle's minimum size became the window's video mode ([#171](https://github.com/pthom/hello_imgui/issues/171)).
 
+**Borderless windows in full screen:** a full-screen window has no resize handle. A drag on the handle changed the monitor's video mode.
+
 **Command line on Windows:** `main()` gets the application's arguments in an app made with `hello_imgui_add_app`. The `WinMain` it adds called `main(0, NULL)`.
 
 **plutosvg / plutovg:**

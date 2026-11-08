@@ -27,6 +27,8 @@
 
 **Ini settings:** `LoadUserPref` gives back the value as saved by `SaveUserPref`. It came back with a trailing newline from the second run on: each read and write of the ini file added a `\n` to its last part.
 
+**Borderless windows:** on Windows, a full-screen window with `borderlessResizable` keeps its size when it is minimized and restored, or after an Alt-Tab. It came back at 640x480: Windows reports a minimized window as 0x0, and the resize handle's minimum size became the window's video mode ([#171](https://github.com/pthom/hello_imgui/issues/171)).
+
 **plutosvg / plutovg:**
 * Now git submodules (`external/plutosvg`, with plutovg as its own submodule), updated to plutosvg v0.0.8 and plutovg v1.3.3. They are no longer downloaded at configure time, which also makes the release source archives complete. Both are compiled into a single static library `plutosvg`, part of the install.
 * New option `HELLOIMGUI_USE_SYSTEM_PLUTOSVG`: link an installed plutosvg (found via `find_package(plutosvg CONFIG)` or pkg-config; it must be built with freetype support) instead of compiling the submodule. Defaults to ON when `IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS` is set. Packagers (conda, vcpkg, distributions) should use this.

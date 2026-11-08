@@ -869,7 +869,10 @@ void AbstractRunner::RenderGui()
             setWasWindowResizedByCodeDuringThisFrame();
             mBackendWindowHelper->SetWindowBounds(mWindow, bounds);
         };
-        bool shouldClose = HandleBorderlessMovable(fnGetWindowBounds, fnSetWindowBounds, params);
+        // A minimized window is neither moved nor resized: Windows reports its size as 0x0
+        bool shouldClose = false;
+        if (!mBackendWindowHelper->IsWindowIconified(mWindow))
+            shouldClose = HandleBorderlessMovable(fnGetWindowBounds, fnSetWindowBounds, params);
         if (shouldClose)
             params.appShallExit = true;
 #endif

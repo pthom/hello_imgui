@@ -680,36 +680,34 @@ void DrawTouchScrollbarGrab()
 
 // The widget just drawn: its visible part, noted for the press of the next frame. Nothing when the layer did not run
 // this frame (ImGuiTouch::Setup() not called): the notes would pile up, never read.
-namespace
+void AddDragTaker(const ImRect& itemRect, bool longPressIsRightClick, ImGuiAxis axis)
 {
-    void AddDragTaker(bool longPressIsRightClick, ImGuiAxis axis)
+    ImGuiContext& g = *GImGui;
+    ImGuiTouchContext* touch = FindCurrentContext();  // none without the touch layer: the widget just draws
+    if (touch == nullptr)
+        return;
+    State& s = touch->Scroll;
+    if (s.context != &g || s.frameCount != g.FrameCount)
+        return;
+    ImGuiWindow* window = g.CurrentWindow;
+    ImRect rect = itemRect;
+    rect.ClipWith(window->ClipRect);
+    if (rect.GetWidth() > 0.f && rect.GetHeight() > 0.f)
     {
-        ImGuiContext& g = *GImGui;
-        ImGuiTouchContext* touch = FindCurrentContext();  // none without the touch layer: the widget just draws
-        if (touch == nullptr)
-            return;
-        State& s = touch->Scroll;
-        if (s.context != &g || s.frameCount != g.FrameCount)
-            return;
-        ImGuiWindow* window = g.CurrentWindow;
-        ImRect rect = g.LastItemData.Rect;
-        rect.ClipWith(window->ClipRect);
-        if (rect.GetWidth() > 0.f && rect.GetHeight() > 0.f)
-        {
-            State::DragTaker taker = {window->ID, rect, longPressIsRightClick, axis};
-            s.takers.push_back(taker);
-        }
+        State::DragTaker taker = {window->ID, rect, longPressIsRightClick, axis};
+        s.takers.push_back(taker);
     }
-}  // namespace
+}
 
 void SetItemTakesDrags(bool longPressIsRightClick)
 {
-    AddDragTaker(longPressIsRightClick, ImGuiAxis_None);
+    AddDragTaker(GImGui->LastItemData.Rect, longPressIsRightClick, ImGuiAxis_None);
 }
 
 void SetItemTakesDragsAlong(ImGuiTouchAxis axis, bool longPressIsRightClick)
 {
-    AddDragTaker(longPressIsRightClick, (axis == ImGuiTouchAxis_Y) ? ImGuiAxis_Y : ImGuiAxis_X);
+    const ImGuiAxis along = (axis == ImGuiTouchAxis_Y) ? ImGuiAxis_Y : ImGuiAxis_X;
+    AddDragTaker(GImGui->LastItemData.Rect, longPressIsRightClick, along);
 }
 
 }  // namespace ImGuiTouch

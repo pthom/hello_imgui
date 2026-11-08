@@ -180,6 +180,9 @@ namespace ImGuiTouch
     ImGuiTouchContext& GetCurrentContext();
     ImGuiTouchContext* FindCurrentContext();
     ImGuiTouchContext& CreateCurrentContextIfNeeded();
+    // A widget that takes a finger's drags (SetItemTakesDrags, SetItemTakesDragsAlong, or Dear ImGui's draggable widgets
+    // through ImGuiItemDragAxisCallback when the build has it); ImGuiAxis_None: all, at once
+    void AddDragTaker(const ImRect& itemRect, bool longPressIsRightClick, ImGuiAxis axis);
     // The content moves on its own this frame (the inertia, the bounce, an animation): IsAnimating() is true
     void RequestAnimation();
     void SetupKeepCaretInView(ImGuiContext* ctx);  // the caret kept above the keyboard (imgui_kit_touch_keyboard.cpp)

@@ -92,6 +92,13 @@ void Setup(const ImGuiTouchConfig& config)
     CreateCurrentContextIfNeeded().Config = config;
     ImGuiContext* ctx = ImGui::GetCurrentContext();
     IM_ASSERT(ctx != nullptr && "ImGuiTouch::Setup() needs a context: call ImGui::CreateContext() first");
+#ifdef IMGUI_HAS_ITEM_DRAG_AXIS_CALLBACK
+    // A Dear ImGui that tells its draggable widgets (sliders, drags, the color picker): they take a finger's drag along
+    // their axis, as with SetItemTakesDragsAlong()
+    ctx->ItemDragAxisCallback = [](ImGuiContext*, ImGuiID, const ImRect& bb, ImGuiAxis axis) {
+        AddDragTaker(bb, true, axis);
+    };
+#endif
     if (HasHooks(ctx, kTouchHooksOwner))
         return;
     AddHook(ctx, kTouchHooksOwner, ImGuiContextHookType_NewFramePre,

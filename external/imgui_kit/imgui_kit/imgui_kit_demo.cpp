@@ -562,7 +562,7 @@ void DemoTouch()
     ImGuiKit::Label("Long press");
     ImGui::Checkbox("is a right click", &config.LongPressIsRightClick);
     ImGuiKit::Label("Scroll bars");
-    ImGui::Checkbox("thin on a touch screen", &config.ThinScrollbars);
+    ImGui::Checkbox("thin", &config.ThinScrollbars);
     ImGuiKit::EndLabelColumn();
 
     ImGui::BeginChild("##touch_zone", ImVec2(0.0f, ImGuiKit::EmSize(16.f)), ImGuiChildFlags_Borders);
@@ -571,19 +571,19 @@ void DemoTouch()
     ImGui::Bullet();
     ImGui::TextWrapped("Tap: a click, when the finger lifts.");
     ImGui::Bullet();
-    ImGui::TextWrapped("Hold, then drag: the widget under the finger takes it (the slider below).");
+    ImGui::TextWrapped("Hold, then drag: the widget under the finger takes it (the text below: it selects).");
     ImGui::Bullet();
     ImGui::TextWrapped("Long press, then lift: a right click (this zone's context menu).");
     ImGui::Bullet();
     ImGui::TextWrapped("Two fingers: a pinch scales the font (on the canvas, it zooms the canvas); moved together, a "
                        "right drag.");
-    static float value = 0.5f;
-    ImGui::SetNextItemWidth(ImGuiKit::EmSize(12.f));
-    ImGui::SliderFloat("a short hold, then a drag", &value, 0.0f, 1.0f);
-    ImGui::SameLine();
-    ImGuiKit::HelpMarker("This slider does not call ImGuiTouch::SetItemTakesDrags(): to drag it with a finger, hold "
-                         "it a moment first (a ring shows when the hold took effect). A drag that starts at once "
-                         "scrolls the zone. The canvas below reacts at once.");
+    // A text to select: a drag that starts on it scrolls the zone; a short hold, then a drag, selects (as on a
+    // phone). A ring shows when the hold took effect.
+    static char text[] = "Napoleon's army crossed the Niemen in June 1812, with more than four hundred thousand men. "
+                         "Six months later, fewer than ten thousand came back.";
+    ImGui::TextWrapped("Select a few words: a short hold, then a drag.");
+    ImGui::InputTextMultiline("##select", text, IM_ARRAYSIZE(text), ImVec2(-FLT_MIN, ImGuiKit::EmSize(4.f)),
+                              ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_WordWrap);
 
     ZoomableCanvas("##canvas", ImGuiKit::EmToVec2(16.f, 8.f));
     ImGui::SameLine();

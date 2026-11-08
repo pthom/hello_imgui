@@ -601,16 +601,16 @@ void DemoTouchKeyboard()
                        "(ImGuiTouch::GetKeyboardInsets()). The application calls ImGuiTouch::SetupEmscriptenKeyboard() "
                        "once.");
     static char line[128] = "";
-    ImGui::InputTextWithHint("a text field", "type here", line, IM_ARRAYSIZE(line));
+    ImGui::InputTextWithHint("text", "type here", line, IM_ARRAYSIZE(line));
     static char lines[1024] = "Several lines:\nmove the caret from the keyboard's space bar.";
-    ImGui::InputTextMultiline("a multiline field", lines, IM_ARRAYSIZE(lines), ImVec2(0.0f, ImGuiKit::EmSize(5.f)));
+    ImGui::InputTextMultiline("lines", lines, IM_ARRAYSIZE(lines), ImVec2(0.0f, ImGuiKit::EmSize(5.f)));
 
-    ImGui::TextUnformatted("A field in a child that scrolls: it stays above the keyboard.");
+    ImGui::TextWrapped("A field in a child that scrolls: it stays above the keyboard.");
     ImGui::BeginChild("##keyboard_child", ImVec2(0.0f, ImGuiKit::EmSize(10.f)), ImGuiChildFlags_Borders);
     for (int i = 1; i <= 12; i++)
         ImGui::Text("Content above the field (%d)", i);
     static char deep[128] = "";
-    ImGui::InputTextWithHint("a field down there", "type here", deep, IM_ARRAYSIZE(deep));
+    ImGui::InputTextWithHint("field", "type here", deep, IM_ARRAYSIZE(deep));
     for (int i = 1; i <= 12; i++)
         ImGui::Text("Content below the field (%d)", i);
     ImGui::EndChild();

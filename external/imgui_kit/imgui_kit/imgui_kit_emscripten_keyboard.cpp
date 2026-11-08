@@ -109,6 +109,8 @@ R"JS(
   // trackpad's moves, the box stays put (a field that moves under the finger moves the caret); after typing, it
   // follows the widget's caret.
   K.moving = false;  // keys mode: the caret moved in the field since the last typing (the trackpad, maybe still on)
+  // The keyboard button: under the field's line, or above it when the screen ends there
+  const buttonTop = (lineTop, h) => (lineTop + h + 8 + 48 > window.innerHeight) ? lineTop - 48 : lineTop + h + 8;
   const placeKeysMode = (r, s, h, fontPx, col) => {
     const focused = document.activeElement === input;
     if (!(focused && K.frozen && K.moving)) {
@@ -118,7 +120,7 @@ R"JS(
       input.style.width = r.width + 'px'; input.style.height = h + 'px';
       input.style.lineHeight = h + 'px'; input.style.fontSize = fontPx + 'px'; input.style.fontFamily = 'monospace';
       input.scrollLeft = col * charWidth(fontPx) - K.x * s; }
-    button.style.left = (r.left + K.x * s) + 'px'; button.style.top = (r.top + K.y * s + h + 8) + 'px'; };
+    button.style.left = (r.left + K.x * s) + 'px'; button.style.top = buttonTop(r.top + K.y * s, h) + 'px'; };
   const place = () => {
     const r = canvasRect(), s = scale(r), h = Math.max(20, K.h * s), fontPx = Math.max(16, h * 0.75);
     const before = K.mirror.slice(0, K.mirrorCaret), caretLine = before.split('\n').length - 1;
@@ -137,7 +139,7 @@ R"JS(
     input.style.lineHeight = h + 'px';
     input.style.fontSize = fontPx + 'px';
     input.style.fontFamily = 'sans-serif';
-    button.style.left = x + 'px'; button.style.top = (y + h + 8) + 'px'; };
+    button.style.left = x + 'px'; button.style.top = buttonTop(y, h) + 'px'; };
   const refresh = () => {
     const focused = document.activeElement === input;
     input.style.pointerEvents = focused ? 'auto' : 'none';
@@ -604,7 +606,15 @@ R"JS(
             clip.Min.y = ImMax(clip.Min.y, visibleTop);
             clip.Max.y = ImMin(clip.Max.y, visibleBottom);
             float delta = (bottom > clip.Max.y) ? bottom - clip.Max.y : (top < clip.Min.y) ? top - clip.Min.y : 0.f;
-            float target = ImClamp(w->Scroll.y + delta, 0.f, w->ScrollMax.y);
+            // A window moves the field at most to its own top (a child whose top is under the keyboard cannot show
+            // it): its parents scroll for the rest. A field out of its window's view is not drawn, and Dear ImGui then
+            // wants no text: the keyboard would close.
+            if (delta > 0.f)
+                delta = ImMin(delta, ImMax(0.f, top - w->InnerClipRect.Min.y));
+            // A top-level window that reaches below the keyboard shrinks above it (the app's full-screen window), and
+            // can then scroll that much further than the previous frame's ScrollMax
+            float growth = (w->Flags & ImGuiWindowFlags_ChildWindow) ? 0.f : ImMax(0.f, w->InnerClipRect.Max.y - visibleBottom);
+            float target = ImClamp(w->Scroll.y + delta, 0.f, w->ScrollMax.y + growth);
             float moved = target - w->Scroll.y;
             if (moved == 0.f)
                 continue;

@@ -328,18 +328,20 @@ bool SegmentedSwitch(const char* str_id, int* current, const char* const labels[
     ImVec4 track = ImLerp(window_bg, frame, frame.w);
     track.w = 1.0f;
     ImVec4 text = style.Colors[ImGuiCol_Text];
-    auto fill_segment = [&](int i, float text_amount)
+    // A segment's fill, at a position in segments (between two while it slides)
+    auto fill_segment = [&](float pos, float text_amount)
     {
         ImVec4 col = ImLerp(track, text, text_amount);
         col.w = 1.0f;
         ImDrawFlags flags = ImDrawFlags_RoundNone;  // round only at the switch's ends
-        if (labels_count == 1)
+        bool at_left = pos < 0.01f, at_right = pos > (float)(labels_count - 1) - 0.01f;
+        if (at_left && at_right)
             flags = ImDrawFlags_RoundAll;
-        else if (i == 0)
+        else if (at_left)
             flags = ImDrawFlags_RoundLeft;
-        else if (i == labels_count - 1)
+        else if (at_right)
             flags = ImDrawFlags_RoundRight;
-        float x0 = p0.x + segment_width * (float)i;
+        float x0 = p0.x + segment_width * pos;
         draw_list->AddRectFilled(ImVec2(x0, p0.y), ImVec2(x0 + segment_width, p1.y), ImGui::GetColorU32(col), rounding,
                                  flags);
     };
@@ -348,10 +350,22 @@ bool SegmentedSwitch(const char* str_id, int* current, const char* const labels[
     {
         int over = ImClamp((int)((ImGui::GetIO().MousePos.x - p0.x) / segment_width), 0, labels_count - 1);
         if (over != *current)
-            fill_segment(over, 0.08f);
+            fill_segment((float)over, 0.08f);
     }
+    // The fill slides to the current segment, in about a tenth of a second
     if (*current >= 0 && *current < labels_count)
-        fill_segment(*current, 0.22f);
+    {
+        ImGuiStorage* storage = ImGui::GetStateStorage();
+        const ImGuiID pos_id = ImHashStr("##fill_pos", 0, id);
+        float target = (float)*current;
+        float pos = storage->GetFloat(pos_id, target);
+        float step = ImMin(1.0f, ImGui::GetIO().DeltaTime * 18.0f);
+        pos = (ImFabs(target - pos) < 0.01f) ? target : pos + (target - pos) * step;
+        if (pos != target)
+            ImGuiTouch::Internal::RequestAnimation();  // an app that idles keeps drawing meanwhile (IsAnimating())
+        storage->SetFloat(pos_id, pos);
+        fill_segment(pos, 0.22f);
+    }
     for (int i = 1; i < labels_count; i++)
     {
         float x = p0.x + segment_width * (float)i;

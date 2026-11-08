@@ -5,7 +5,6 @@
 #include "hello_imgui/hello_imgui_theme.h"
 #include "hello_imgui/hello_imgui.h"
 #include "hello_imgui/internal/functional_utils.h"
-#include "hello_imgui/internal/backend_impls/emscripten_keyboard.h"
 #include "imgui_internal.h"
 #include "nlohmann/json.hpp"
 #include <map>
@@ -344,12 +343,10 @@ ImRect FullScreenRect_MinusInsets(const RunnerParams& runnerParams)
         EdgeInsets edgeInsets;
         if (runnerParams.appWindowParams.handleEdgeInsets)
             edgeInsets = runnerParams.appWindowParams.edgeInsets;
-        #ifdef __EMSCRIPTEN__
-        // In a browser, the phone's keyboard hides a part of the canvas
-        EmscriptenKeyboardInsets keyboardInsets = GetEmscriptenKeyboardInsets();
-        edgeInsets.top += keyboardInsets.top;
-        edgeInsets.bottom += keyboardInsets.bottom;
-        #endif
+        // In a browser, the phone's keyboard hides a part of the canvas (imgui_kit: zero elsewhere)
+        ImGuiTouchKeyboardInsets keyboardInsets = ImGuiTouch::GetKeyboardInsets();
+        edgeInsets.top += keyboardInsets.Top;
+        edgeInsets.bottom += keyboardInsets.Bottom;
         fullScreenPos = viewport->Pos;
         fullScreenPos.x += (float)edgeInsets.left;
         fullScreenPos.y += (float)edgeInsets.top;

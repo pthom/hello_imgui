@@ -264,6 +264,13 @@ enum ImGuiTouchPinchMode_
     ImGuiTouchPinchMode_Disabled,
 };
 
+// The parts of the screen hidden by a phone's keyboard: see ImGuiTouch::GetKeyboardInsets()
+struct ImGuiTouchKeyboardInsets
+{
+    float Top = 0.0f;
+    float Bottom = 0.0f;
+};
+
 // The settings, read at each frame: change them through ImGuiTouch::GetConfig()
 struct ImGuiTouchConfig
 {
@@ -310,6 +317,10 @@ IMGUI_API void   SetItemTakesDrags(bool long_press_is_right_click = true);
 // A desktop app with a mouse never calls it.
 IMGUI_API void   AddFingerEvent(int id, const ImVec2& pos, bool down);
 
+// The parts of the screen hidden by a phone's keyboard (in Dear ImGui's coordinates): a full-screen window keeps out
+// of them. Zero when no keyboard shows, and outside a browser (SetupEmscriptenKeyboard).
+IMGUI_API ImGuiTouchKeyboardInsets GetKeyboardInsets();
+
 #ifdef __EMSCRIPTEN__
 // In a browser, with any of Dear ImGui's Emscripten backends: tells Dear ImGui which pointer is a finger (the
 // browser's pointer events), relays the fingers to AddFingerEvent() (the pinch), and sets ImGuiConfigFlags_IsTouchScreen
@@ -317,6 +328,11 @@ IMGUI_API void   AddFingerEvent(int id, const ImVec2& pos, bool down);
 // Also: Dear ImGui's links (TextLinkOpenURL) open on a phone (in the same tab: a phone's browser refuses new tabs
 // there), and the phone's own long press (text selection, its menu) is turned off on the canvas.
 IMGUI_API void   SetupEmscripten();
+// The phone's keyboard, for Dear ImGui's text widgets (and any widget that wants text: io.WantTextInput). A phone's
+// browser shows its keyboard only for a field focused inside a touch handler: a small keyboard button shows next to
+// the active text widget, and a tap on it (or on the widget again) opens the keyboard. Call once, after
+// SetupEmscripten(). Without it, the app has its own text input.
+IMGUI_API void   SetupEmscriptenKeyboard();
 #endif
 } // namespace ImGuiTouch
 

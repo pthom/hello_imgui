@@ -590,6 +590,32 @@ void DemoTouch()
     ImGui::Text("Moving on its own: %s", ImGuiTouch::IsAnimating() ? "yes" : "no");
 }
 
+// The phone's keyboard, in a browser: the fields of all kinds, one of them in a child that scrolls
+void DemoTouchKeyboard()
+{
+    IMGUI_DEMO_MARKER("Touch keyboard");
+    if (!ImGui::CollapsingHeader("Touch keyboard"))
+        return;
+    ImGui::TextWrapped("In a browser on a phone: tap a field, then the keyboard button that shows next to it (or the "
+                       "field again). The phone's keyboard opens, and a full-screen window keeps out of it "
+                       "(ImGuiTouch::GetKeyboardInsets()). The application calls ImGuiTouch::SetupEmscriptenKeyboard() "
+                       "once.");
+    static char line[128] = "";
+    ImGui::InputTextWithHint("a text field", "type here", line, IM_ARRAYSIZE(line));
+    static char lines[1024] = "Several lines:\nmove the caret from the keyboard's space bar.";
+    ImGui::InputTextMultiline("a multiline field", lines, IM_ARRAYSIZE(lines), ImVec2(0.0f, ImGuiKit::EmSize(5.f)));
+
+    ImGui::TextUnformatted("A field in a child that scrolls: it stays above the keyboard.");
+    ImGui::BeginChild("##keyboard_child", ImVec2(0.0f, ImGuiKit::EmSize(10.f)), ImGuiChildFlags_Borders);
+    for (int i = 1; i <= 12; i++)
+        ImGui::Text("Content above the field (%d)", i);
+    static char deep[128] = "";
+    ImGui::InputTextWithHint("a field down there", "type here", deep, IM_ARRAYSIZE(deep));
+    for (int i = 1; i <= 12; i++)
+        ImGui::Text("Content below the field (%d)", i);
+    ImGui::EndChild();
+}
+
 } // namespace
 
 //-----------------------------------------------------------------------------
@@ -621,6 +647,7 @@ void ImGuiKit::ShowDemoContents()
     DemoLayout();
     DemoWidgets();
     DemoTouch();
+    DemoTouchKeyboard();
     ImGui::PopFont();
 }
 

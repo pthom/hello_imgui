@@ -1,7 +1,6 @@
 #include "runner_sdl_emscripten.h"
 #if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_SDL2)
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
-#include "hello_imgui/internal/backend_impls/emscripten_keyboard.h"
 #include "imgui_kit/imgui_kit.h"  // ImGuiTouch::SetupEmscripten
 #include <iostream>
 
@@ -45,13 +44,12 @@ namespace HelloImGui
         ImGuiTouch::SetupEmscripten();  // which pointer is a finger, the fingers (the pinch)
         InstallEmscriptenTapZones();
         InstallEmscriptenViewportResizeRelay();
-        InstallEmscriptenKeyboard();
+        ImGuiTouch::SetupEmscriptenKeyboard();
     }
 
     void RunnerSdlEmscripten::Impl_PollEvents()
     {
         EmscriptenPushTapZones(ImGui::GetIO().DisplaySize.x);
-        UpdateEmscriptenKeyboard();
         RunnerSdl2::Impl_PollEvents();
     }
 

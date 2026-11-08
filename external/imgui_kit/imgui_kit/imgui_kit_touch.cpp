@@ -119,3 +119,8 @@ void SetupWheelSession(bool enabled)
             [](ImGuiContext*, ImGuiContextHook*) { UpdateWheelSession(gWheelSessionEnabled); });
 }
 } // namespace ImGuiKit
+
+#ifndef __EMSCRIPTEN__
+// No phone keyboard outside a browser (imgui_kit_emscripten_keyboard.cpp)
+ImGuiTouchKeyboardInsets ImGuiTouch::GetKeyboardInsets() { return ImGuiTouchKeyboardInsets(); }
+#endif

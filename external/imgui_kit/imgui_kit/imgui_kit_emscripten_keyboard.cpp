@@ -1,5 +1,7 @@
+// imgui_kit: the phone's virtual keyboard in a browser (ImGuiTouch::SetupEmscriptenKeyboard)
+// https://github.com/pthom/imgui_kit (MIT license)
 #ifdef __EMSCRIPTEN__
-#include "hello_imgui/internal/backend_impls/emscripten_keyboard.h"
+#include "imgui_kit.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"  // g.PlatformImeDataPrev, ImGui::GetInputTextState
@@ -9,7 +11,11 @@
 #include <cstring>
 #include <string>
 
-namespace HelloImGui
+// The virtual keyboard of a phone, for ImGui's text widgets. The browser shows it only for a text field focused
+// inside a touch handler, and ImGui learns of a tap two frames after the finger lifted: so the page keeps a hidden
+// text field, and focuses it on the second tap: on a small keyboard button shown next to the active text widget, or
+// on the widget itself. What is typed in the field goes to ImGui each frame (characters, and the special keys).
+namespace ImGuiTouch
 {
 namespace
 {
@@ -31,12 +37,12 @@ namespace
     // shows no keyboard on iOS). The field's keys never reach the backends (stopPropagation at the field, which is
     // outside the canvas). The field counts in UTF-16 units, ImGui's caret in bytes: converted here.
     const char* kScript = R"JS(
-if (!window.helloImGuiKeyboard) {
-  const K = window.helloImGuiKeyboard = {want: 0, id: 0, dismissed: 0, x: 0, y: 0, h: 0, displayW: 0, mirror: '',
+if (!window.imguiKitKeyboard) {
+  const K = window.imguiKitKeyboard = {want: 0, id: 0, dismissed: 0, x: 0, y: 0, h: 0, displayW: 0, mirror: '',
                                          mirrorCaret: 0, edits: [], caret: -1, keys: [],
                                          keysMode: false, actions: [], lastMove: null};
   const input = document.createElement('textarea');
-  input.id = 'helloImGuiTextInput'; input.autocapitalize = 'off'; input.autocomplete = 'off';
+  input.id = 'imguiKitTextInput'; input.autocapitalize = 'off'; input.autocomplete = 'off';
   input.setAttribute('autocorrect', 'on'); input.spellcheck = false; input.rows = 1;
   // Invisible, but laid out like the text ImGui draws (the widget's width, its line height): the caret moved by the
   // keyboard's trackpad travels pixels, in this layout; a 2 px wide field wrapped one character per line
@@ -45,7 +51,7 @@ if (!window.helloImGuiKeyboard) {
   // Without the focus, the field takes no pointer events: the touches on the widget's line are ImGui's.
   input.style.cssText = 'position:fixed;left:0;top:0;width:200px;height:20px;opacity:1;color:transparent;background:transparent;caret-color:transparent;outline:none;border:0;padding:0;margin:0;font-size:16px;line-height:20px;z-index:1000;resize:none;white-space:pre;overflow:hidden;font-family:sans-serif;pointer-events:none;-webkit-text-fill-color:transparent;';
   const button = document.createElement('button');
-  button.id = 'helloImGuiKeyboardButton'; button.textContent = '⌨'; button.title = 'Keyboard';
+  button.id = 'imguiKitKeyboardButton'; button.textContent = '⌨'; button.title = 'Keyboard';
   button.style.cssText = 'position:fixed;display:none;z-index:1001;font-size:24px;line-height:1;padding:6px 12px;border-radius:10px;border:1px solid #999;background:#333;color:#eee;';
   document.body.appendChild(input); document.body.appendChild(button);
   // A debug overlay on the page (the url with 'kbddebug'): the field's events, to see what a phone sends. Only in a
@@ -494,7 +500,7 @@ R"JS(
     constexpr int kWantGraceFrames = 5;
     int gFramesWithoutWant = 0;
 
-    EmscriptenKeyboardInsets gInsets;
+    ImGuiTouchKeyboardInsets gInsets;
 
     void SendKey(ImGuiIO& io, ImGuiKey key)
     {
@@ -511,7 +517,7 @@ R"JS(
             if (e.Type == ImGuiInputEventType_Key)
                 return;
         const char* action =
-            emscripten_run_script_string("window.helloImGuiKeyboard ? window.helloImGuiKeyboard.drainAction() : ''");
+            emscripten_run_script_string("window.imguiKitKeyboard ? window.imguiKitKeyboard.drainAction() : ''");
         std::string line = action ? action : "";
         if (line.rfind("K:", 0) == 0 || line.rfind("M:", 0) == 0)
         {
@@ -609,17 +615,8 @@ R"JS(
     }
 }  // namespace
 
-void InstallEmscriptenKeyboard()
-{
-    emscripten_run_script(kScript);
-}
-
-EmscriptenKeyboardInsets GetEmscriptenKeyboardInsets()
-{
-    return gInsets;
-}
-
-void UpdateEmscriptenKeyboard()
+// Before each frame (a NewFramePre hook): tells the page what Dear ImGui wants, feeds Dear ImGui what was typed
+static void UpdateKeyboard()
 {
     ImGuiContext& g = *GImGui;
     ImGuiIO& io = g.IO;
@@ -627,13 +624,13 @@ void UpdateEmscriptenKeyboard()
     // The visible area while the keyboard is shown: the full-screen window shrinks to it, the clicks under the keyboard
     // are dropped, the caret stays in view
     const char* visible =
-        emscripten_run_script_string("window.helloImGuiKeyboard ? window.helloImGuiKeyboard.visibleArea() : ''");
+        emscripten_run_script_string("window.imguiKitKeyboard ? window.imguiKitKeyboard.visibleArea() : ''");
     int visibleTop = 0, visibleBottom = 0;
     bool keyboardShown = visible != nullptr && sscanf(visible, "%d,%d", &visibleTop, &visibleBottom) == 2;
-    gInsets = keyboardShown ? EmscriptenKeyboardInsets{ImMax(0.f, (float)visibleTop),
+    gInsets = keyboardShown ? ImGuiTouchKeyboardInsets{ImMax(0.f, (float)visibleTop),
                                                        ImMax(0.f, io.DisplaySize.y - (float)visibleBottom)}
-                            : EmscriptenKeyboardInsets{};
-    if (emscripten_run_script_int("window.helloImGuiKeyboard ? window.helloImGuiKeyboard.dropTapClicks() : 0"))
+                            : ImGuiTouchKeyboardInsets{};
+    if (emscripten_run_script_int("window.imguiKitKeyboard ? window.imguiKitKeyboard.dropTapClicks() : 0"))
         DropClicks(g, true, 0.f);
     else if (keyboardShown)
         DropClicks(g, false, (float)visibleBottom);
@@ -680,7 +677,7 @@ void UpdateEmscriptenKeyboard()
     {
         char script[256];
         snprintf(script, sizeof(script),
-                 "window.helloImGuiKeyboard && window.helloImGuiKeyboard.set(%d, %u, %.1f, %.1f, %.1f, %.1f, %d)",
+                 "window.imguiKitKeyboard && window.imguiKitKeyboard.set(%d, %u, %.1f, %.1f, %.1f, %.1f, %d)",
                  now.want ? 1 : 0, now.id, now.pos.x, now.pos.y, now.lineHeight, now.displayW, now.keysMode ? 1 : 0);
         emscripten_run_script(script);
     }
@@ -702,7 +699,7 @@ void UpdateEmscriptenKeyboard()
         return;
 
     // The edits typed in the field: the caret to the end of the removal, Backspace keys, then the text
-    const char* edits = emscripten_run_script_string("window.helloImGuiKeyboard ? window.helloImGuiKeyboard.drainEdits() : ''");
+    const char* edits = emscripten_run_script_string("window.imguiKitKeyboard ? window.imguiKitKeyboard.drainEdits() : ''");
     std::string lines = edits ? edits : "";
     bool edited = false;
     size_t start = 0;
@@ -736,7 +733,7 @@ void UpdateEmscriptenKeyboard()
         edited = true;
     }
     // The caret moved in the field
-    int caret = emscripten_run_script_int("window.helloImGuiKeyboard ? window.helloImGuiKeyboard.drainCaret() : -1");
+    int caret = emscripten_run_script_int("window.imguiKitKeyboard ? window.imguiKitKeyboard.drainCaret() : -1");
     if (caret >= 0 && !edited)
     {
         int cursorBytes = BytesOfUtf16Units(state->GetText(), state->TextLen, caret);
@@ -748,7 +745,7 @@ void UpdateEmscriptenKeyboard()
         gLast.mirrorCaret = Utf16Units(state->GetText(), state->GetCursorPos());
     }
     // The keys
-    const char* keys = emscripten_run_script_string("window.helloImGuiKeyboard ? window.helloImGuiKeyboard.drainKeys() : ''");
+    const char* keys = emscripten_run_script_string("window.imguiKitKeyboard ? window.imguiKitKeyboard.drainKeys() : ''");
     std::string names = keys ? keys : "";
     start = 0;
     while (start < names.size())
@@ -772,12 +769,33 @@ void UpdateEmscriptenKeyboard()
         {
             gLast.mirrorText = text;
             gLast.mirrorCaret = caretUnits;
-            std::string script = "window.helloImGuiKeyboard && window.helloImGuiKeyboard.mirrorTo(" + JsString(text.c_str(), (int)text.size())
+            std::string script = "window.imguiKitKeyboard && window.imguiKitKeyboard.mirrorTo(" + JsString(text.c_str(), (int)text.size())
                                  + ", " + std::to_string(caretUnits) + ")";
             emscripten_run_script(script.c_str());
         }
     }
 }
 
-}  // namespace HelloImGui
+void SetupEmscriptenKeyboard()
+{
+    ImGuiContext* ctx = ImGui::GetCurrentContext();
+    IM_ASSERT(ctx != nullptr && "ImGuiTouch::SetupEmscriptenKeyboard() needs a context: call ImGui::CreateContext() first");
+    emscripten_run_script(kScript);
+    const ImGuiID owner = ImHashStr("ImGuiTouch_EmscriptenKeyboard");
+    for (const ImGuiContextHook& hook : ctx->Hooks)
+        if (hook.Owner == owner && hook.Type != ImGuiContextHookType_PendingRemoval_)
+            return;
+    ImGuiContextHook hook;
+    hook.Type = ImGuiContextHookType_NewFramePre;
+    hook.Owner = owner;
+    hook.Callback = [](ImGuiContext*, ImGuiContextHook*) { UpdateKeyboard(); };
+    ImGui::AddContextHook(ctx, &hook);
+}
+
+ImGuiTouchKeyboardInsets GetKeyboardInsets()
+{
+    return gInsets;
+}
+
+}  // namespace ImGuiTouch
 #endif

@@ -565,6 +565,22 @@ void DemoTouch()
         ImGui::TextUnformatted("The zone's context menu: a right click, or a long press");
         ImGui::EndPopup();
     }
+
+    // A child that scrolls sideways: a swipe inside scrolls it, not the zone. Its buttons count their taps.
+    ImGui::TextUnformatted("A sideways swipe scrolls this row; a tap clicks a button:");
+    ImGui::BeginChild("##sideways", ImVec2(0.0f, ImGuiKit::EmSize(5.f)), ImGuiChildFlags_Borders,
+                      ImGuiWindowFlags_HorizontalScrollbar);
+    static int taps[8] = {};
+    for (int i = 0; i < IM_ARRAYSIZE(taps); i++)
+    {
+        if (i > 0)
+            ImGui::SameLine();
+        char label[32];
+        ImFormatString(label, IM_ARRAYSIZE(label), "Card %d\n%d taps###card%d", i + 1, taps[i], i);
+        if (ImGui::Button(label, ImGuiKit::EmToVec2(6.f, 3.f)))
+            taps[i]++;
+    }
+    ImGui::EndChild();
     for (int i = 1; i <= 8; i++)
         ImGui::Text("More content, to scroll (%d)", i);
     ImGui::EndChild();

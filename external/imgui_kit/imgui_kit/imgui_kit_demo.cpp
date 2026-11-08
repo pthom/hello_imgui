@@ -443,8 +443,12 @@ void DemoTouch()
     const char* scroll_modes[] = { "Touch screens", "Always", "Off" };
     ImGuiKit::SegmentedSwitch("##scroll_mode", &config.ScrollMode, scroll_modes, IM_ARRAYSIZE(scroll_modes));
     ImGui::SameLine();
-    ImGuiKit::HelpMarker("Always: the mouse's left button drags the content too. Try the phone's behavior on a "
-                         "desktop, in the zone below.");
+    ImGuiKit::HelpMarker("By default, the swipe works only on touch screens. Select \"Always\" to emulate it on a "
+                         "desktop, with the mouse's left button. Then, in the zone below, as on a phone:\n\n"
+                         "- Drag up or down to scroll the content. Start moving as soon as you press, as with a "
+                         "finger.\n"
+                         "- Press and hold, then release: a long press, which opens the zone's context menu (a right "
+                         "click).");
     ImGuiKit::Label("Pinch");
     const char* pinch_modes[] = { "Font scale", "Off" };
     ImGuiKit::SegmentedSwitch("##pinch_mode", &config.PinchMode, pinch_modes, IM_ARRAYSIZE(pinch_modes));
@@ -460,6 +464,10 @@ void DemoTouch()
     static float value = 0.5f;
     ImGui::SetNextItemWidth(ImGuiKit::EmSize(12.f));
     ImGui::SliderFloat("a short hold, then a drag", &value, 0.0f, 1.0f);
+    ImGui::SameLine();
+    ImGuiKit::HelpMarker("This slider does not call ImGuiTouch::SetItemTakesDrags(): to drag it with a finger, hold "
+                         "it a moment first (a ring shows when the hold took effect). A drag that starts at once "
+                         "scrolls the zone. The pad below reacts at once.");
 
     ImGui::TextWrapped("The pad takes a finger's drag at once (ImGuiTouch::SetItemTakesDrags()): the zone stays.");
     static ImVec2 dot(0.5f, 0.5f);  // in the pad, from 0 to 1
@@ -480,9 +488,17 @@ void DemoTouch()
     draw_list->AddRect(pad_min, pad_max, ImGui::GetColorU32(ImGuiCol_Border), rounding);
     ImVec2 center(pad_min.x + dot.x * pad_size.x, pad_min.y + dot.y * pad_size.y);
     draw_list->AddCircleFilled(center, ImGuiKit::EmSize(0.5f), ImGui::GetColorU32(ImGuiCol_SliderGrabActive));
+    ImGui::SameLine();
+    ImGuiKit::HelpMarker("This pad calls ImGuiTouch::SetItemTakesDrags() right after it: a drag that starts on it "
+                         "moves the dot at once. So the zone cannot be scrolled from inside the pad.");
 
     for (int i = 1; i <= 20; i++)
         ImGui::Text("Line %d: more content, to scroll", i);
+    if (ImGui::BeginPopupContextWindow("##zone_menu"))
+    {
+        ImGui::TextUnformatted("The zone's context menu: a right click, or a long press");
+        ImGui::EndPopup();
+    }
     ImGui::EndChild();
     // IsAnimating(): an application that sleeps when nothing happens keeps drawing frames meanwhile
     ImGui::Text("Moving on its own: %s", ImGuiTouch::IsAnimating() ? "yes" : "no");

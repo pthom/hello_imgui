@@ -1,1 +1,1 @@
-imgui_kit f6c844a (https://github.com/pthom/imgui_kit), vendored by tools/update_imgui_kit.sh
+imgui_kit 565f210 (https://github.com/pthom/imgui_kit), vendored by tools/update_imgui_kit.sh

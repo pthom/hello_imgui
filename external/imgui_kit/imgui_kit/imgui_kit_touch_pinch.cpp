@@ -38,6 +38,13 @@ namespace
         MarkLastEvent(g, before);
         io.AddMouseSourceEvent(source);
     }
+    void PosEvent(ImGuiIO& io, ImVec2 pos)
+    {
+        ImGuiContext& g = *GImGui;
+        int before = g.InputEventsQueue.Size;
+        io.AddMousePosEvent(pos.x, pos.y);
+        MarkLastEvent(g, before);
+    }
     void WheelEvent(ImGuiIO& io, float notches)
     {
         ImGuiContext& g = *GImGui;
@@ -111,6 +118,30 @@ void AddFingerEvent(int id, const ImVec2& pos, bool down)
     }
 }
 
+// While a widget's pinch lasts (or its pan), the mouse is the fingers' center, so that the widget zooms around it: the
+// platform's moves (its mouse is the first finger) are rewritten there before Dear ImGui reads them, and a move is added
+// when the center moved without them. Events marked as the layer's or the Test Engine's are left as they are.
+void PinchBeforeNewFrame(ImGuiContext& g)
+{
+    ImGuiTouchContext* touch = FindCurrentContext();
+    if (touch == nullptr)
+        return;
+    State& s = touch->Pinch;
+    if (!s.hasTaker || s.gesture == Gesture::None || s.fingers.Size < 2)
+        return;
+    const ImVec2 center = Center(s.fingers[0], s.fingers[1]);
+    bool moved = false;
+    for (ImGuiInputEvent& e : g.InputEventsQueue)
+        if (e.Type == ImGuiInputEventType_MousePos && !e.AddedByTestEngine)
+        {
+            e.MousePos.PosX = center.x;
+            e.MousePos.PosY = center.y;
+            moved = true;
+        }
+    if (!moved && ImLengthSqr(g.IO.MousePos - center) > 0.25f)
+        PosEvent(g.IO, center);
+}
+
 void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets)
 {
     ImGuiContext& g = *GImGui;
@@ -140,8 +171,12 @@ void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets)
             s.taker = *taker;
             s.notchesSent = 0;
             if (!TouchScrollRelease(interruptsWidgets))
+            {
+                s.hasTaker = false;
                 return;  // a widget keeps its drag
+            }
             ButtonEvent(g.IO, ImGuiMouseButton_Left, false);
+            PosEvent(g.IO, Center(s.fingers[0], s.fingers[1]));  // the mouse goes to the fingers' center
         }
         // The first finger was a press for the swipe layer, or for a widget: the two fingers take it
         else if (!TouchScrollLetGo(interruptsWidgets))

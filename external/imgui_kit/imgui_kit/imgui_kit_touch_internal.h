@@ -169,6 +169,9 @@ namespace ImGuiTouch
     // when the second finger lands.
     void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets);
 
+    // While a widget's pinch lasts, the mouse is the fingers' center: right before ImGui::NewFrame()
+    void PinchBeforeNewFrame(ImGuiContext& g);
+
     // The current Dear ImGui context's touch state (see this file's top): created by the setups, freed with the Dear
     // ImGui context. GetCurrentContext() asserts that a setup was called; FindCurrentContext() returns nullptr.
     ImGuiTouchContext& GetCurrentContext();

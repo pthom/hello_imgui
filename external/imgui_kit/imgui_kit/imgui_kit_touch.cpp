@@ -5,7 +5,7 @@
 #include "imgui_internal.h"  // AddContextHook
 
 // Each step runs at a moment Dear ImGui names:
-//   NewFramePre:  SimulateTouch retags the mouse's events
+//   NewFramePre:  SimulateTouch retags the mouse's events; during a widget's pinch, the mouse goes to the fingers' center
 //   NewFramePost: before any widget, the swipe, then the pinch
 //   EndFramePre:  after the GUI, the widened scrollbar thumb (the frame's scroll is final)
 //   RenderPost:   the draw data exists: the overscroll moves the content past its end
@@ -95,7 +95,10 @@ void Setup(const ImGuiTouchConfig& config)
     if (HasHooks(ctx, kTouchHooksOwner))
         return;
     AddHook(ctx, kTouchHooksOwner, ImGuiContextHookType_NewFramePre,
-            [](ImGuiContext* g, ImGuiContextHook*) { ApplySimulatedTouch(*g, Ctx()); });
+            [](ImGuiContext* g, ImGuiContextHook*) {
+                ApplySimulatedTouch(*g, Ctx());
+                PinchBeforeNewFrame(*g);
+            });
     AddHook(ctx, kTouchHooksOwner, ImGuiContextHookType_NewFramePost, [](ImGuiContext*, ImGuiContextHook*) {
         ImGuiTouchContext& tc = Ctx();
         tc.WasAnimating = tc.Animating;

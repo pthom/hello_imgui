@@ -214,11 +214,17 @@ void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets)
     }
     if (s.gesture == Gesture::Pinch && twoFingers && s.hasTaker)
     {
-        // The taker zooms by wheel notches: one each time the spread changed by its zoom per notch, at most one per
-        // frame (the notches of one frame add up in io.MouseWheel, and a plot zooms once per frame)
+        // The taker zooms by wheel notches: one each time the spread changed by its zoom per notch. One at a time: a
+        // notch queued while another waits would be read with it, in the same frame (Dear ImGui reads a wheel event
+        // queued after a move at the next frame, and the fingers' moves keep coming), and their sum zooms a plot
+        // once: ImPlot reads only the wheel's sign
+        bool notchWaiting = false;
+        for (const ImGuiInputEvent& e : g.InputEventsQueue)
+            if (e.Type == ImGuiInputEventType_MouseWheel)
+                notchWaiting = true;
         const float target = ImLog(pinchScale) / ImLog(1.f + s.taker.zoomPerNotch);
         const float missing = target - (float)s.notchesSent;
-        const int notch = (missing >= 1.f) ? 1 : (missing <= -1.f) ? -1 : 0;
+        const int notch = notchWaiting ? 0 : (missing >= 1.f) ? 1 : (missing <= -1.f) ? -1 : 0;
         if (notch != 0)
         {
             WheelEvent(g.IO, (float)notch);

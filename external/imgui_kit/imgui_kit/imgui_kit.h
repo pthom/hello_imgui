@@ -284,6 +284,9 @@ struct ImGuiTouchConfig
     // When the second finger lands while a widget holds the first one (a slider dragged after a hold, a text
     // selection): the widget keeps its drag and the pinch is ignored (false), or the pinch takes over (true)
     bool PinchInterruptsWidgets = false;
+    // The mouse plays a finger, to try the phone's behavior on a desktop: the layer tags the mouse's events as a
+    // touch screen's (io.MouseSource), with any backend, before Dear ImGui reads them
+    bool SimulateTouch = false;
 };
 
 namespace ImGuiTouch

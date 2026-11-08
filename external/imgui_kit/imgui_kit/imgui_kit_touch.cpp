@@ -20,6 +20,31 @@ namespace
     bool gAnimating = false;      // asked during the current frame
     bool gWasAnimating = false;   // asked during the last complete frame: what IsAnimating() tells
     bool gWheelSessionEnabled = true;
+    bool gSimulatedTouch = false;  // SimulateTouch, as applied at the last frame
+
+    // SimulateTouch: the frame's mouse events (queued by the backend, which may tag each of them as a mouse's) become a
+    // touch screen's, and so does the source of what follows. When it is turned off, the source goes back to the mouse.
+    void ApplySimulatedTouch(ImGuiContext& g)
+    {
+        if (gTouchConfig.SimulateTouch)
+        {
+            for (ImGuiInputEvent& e : g.InputEventsQueue)
+            {
+                if (e.AddedByTestEngine)  // the touch layer's own events (replayed, with the source they need)
+                    continue;
+                if (e.Type == ImGuiInputEventType_MousePos)
+                    e.MousePos.MouseSource = ImGuiMouseSource_TouchScreen;
+                else if (e.Type == ImGuiInputEventType_MouseButton)
+                    e.MouseButton.MouseSource = ImGuiMouseSource_TouchScreen;
+                else if (e.Type == ImGuiInputEventType_MouseWheel)
+                    e.MouseWheel.MouseSource = ImGuiMouseSource_TouchScreen;
+            }
+            g.IO.AddMouseSourceEvent(ImGuiMouseSource_TouchScreen);
+        }
+        else if (gSimulatedTouch)
+            g.IO.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
+        gSimulatedTouch = gTouchConfig.SimulateTouch;
+    }
 
     bool HasHooks(ImGuiContext* ctx, ImGuiID owner)
     {
@@ -48,6 +73,8 @@ void Setup(const ImGuiTouchConfig& config)
     IM_ASSERT(ctx != nullptr && "ImGuiTouch::Setup() needs a context: call ImGui::CreateContext() first");
     if (HasHooks(ctx, kTouchHooksOwner))
         return;
+    AddHook(ctx, kTouchHooksOwner, ImGuiContextHookType_NewFramePre,
+            [](ImGuiContext* g, ImGuiContextHook*) { ApplySimulatedTouch(*g); });
     AddHook(ctx, kTouchHooksOwner, ImGuiContextHookType_NewFramePost, [](ImGuiContext*, ImGuiContextHook*) {
         gWasAnimating = gAnimating;
         gAnimating = false;

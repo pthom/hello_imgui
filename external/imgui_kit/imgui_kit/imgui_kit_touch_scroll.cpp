@@ -46,6 +46,8 @@ namespace
     constexpr float kDoubleTapFontSizes = 1.5f; // ...in distance, are a double click (ImGui's 0.3 s and 6 px suit a mouse)
     constexpr float kHoldSeconds = 0.15f;       // a finger still for this long hands the press to the widget under it (iOS: 150 ms)
     constexpr float kLongPressSeconds = 0.5f;   // a finger still for this long arms a right click, at the lift (iOS: about 500 ms)
+    constexpr float kLongPressArcDelay = 0.15f; // s: the long press's arc shows after this, so that a tap does not flash it
+    constexpr float kLongPressRingRadius = 3.f; // font sizes: the long press's ring, past a fingertip
     constexpr float kInertiaDecay = 2.f;        // speed *= exp(-decay * dt) after the release (iOS: 0.998 per ms)
     constexpr float kInertiaMinSpeedEm = 3.f;   // font sizes per second: below this, a release starts no inertia, and the inertia ends
     constexpr float kFlickWindow = 0.05f;       // s: the lift speed is the finger's motion over this long before the lift
@@ -120,14 +122,29 @@ namespace
         ImGui::GetForegroundDrawList()->AddCircle(s.ripplePos, radius, col, 0, g.FontSize * 0.25f);
     }
 
-    // The long press is armed: a steady ring around the finger, until it lifts (a right click) or moves (cancelled)
+    // The long press: while the finger stays still, an arc fills around it (from the top, clockwise); once armed, a
+    // steady ring, until the finger lifts (a right click) or moves (cancelled). Its radius goes past a fingertip.
     void DrawLongPressRing(const State& s)
     {
         ImGuiContext& g = *GImGui;
-        if (!s.longPressArmed || !ImGui::IsMousePosValid())
+        if (!s.watchingLongPress || !ImGui::IsMousePosValid())
             return;
-        ImU32 col = ImGui::GetColorU32(ImGuiCol_Text, 0.6f);
-        ImGui::GetForegroundDrawList()->AddCircle(g.IO.MousePos, g.FontSize * 1.8f, col, 0, g.FontSize * 0.2f);
+        ImDrawList* draw_list = ImGui::GetForegroundDrawList();
+        float radius = g.FontSize * kLongPressRingRadius;
+        float thickness = g.FontSize * 0.3f;
+        if (s.longPressArmed)
+        {
+            draw_list->AddCircle(g.IO.MousePos, radius, ImGui::GetColorU32(ImGuiCol_Text, 0.45f), 0, thickness);
+            return;
+        }
+        // The arc shows after a short delay: a tap does not flash it
+        float t = ((float)g.Time - s.pressTime - kLongPressArcDelay) / (kLongPressSeconds - kLongPressArcDelay);
+        if (t <= 0.f)
+            return;
+        draw_list->AddCircle(g.IO.MousePos, radius, ImGui::GetColorU32(ImGuiCol_Text, 0.12f), 0, thickness);
+        float a0 = -IM_PI * 0.5f;
+        draw_list->PathArcTo(g.IO.MousePos, radius, a0, a0 + 2.f * IM_PI * ImMin(t, 1.f));
+        draw_list->PathStroke(ImGui::GetColorU32(ImGuiCol_Text, 0.45f), thickness);
     }
 
     // The axis of a swipe: the dominant direction of the finger (a swipe scrolls one axis, like the wheel)
@@ -525,7 +542,9 @@ void UpdateTouchScroll(ImGuiTouchScrollMode mode, bool longPressIsRightClick, bo
 
     // The inertia, the bounce and the ripple move without input events: the app does not idle meanwhile
     bool rippling = g.Time - s.rippleTime < kHoldRippleSeconds;
-    if (s.inertia.x != 0.f || s.inertia.y != 0.f || s.overscroll != 0.f || s.overscrollSpeed != 0.f || rippling)
+    // The long press's arc fills while the finger stays still, with no input event either
+    if (s.inertia.x != 0.f || s.inertia.y != 0.f || s.overscroll != 0.f || s.overscrollSpeed != 0.f || rippling
+        || s.watchingLongPress && !s.longPressArmed)
         Internal::RequestAnimation();
 }
 

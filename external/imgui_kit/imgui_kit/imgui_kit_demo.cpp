@@ -503,21 +503,15 @@ void DemoTouch()
         ImGui::TreePop();
     }
 
-    // The mouse plays a finger: the source applies to the events that follow
-    static bool simulate_touch = false;
-    if (simulate_touch)
-        io.AddMouseSourceEvent(ImGuiMouseSource_TouchScreen);
-
     ImGuiTouchConfig& config = ImGuiTouch::GetConfig();
     ImGuiKit::BeginLabelColumn("touch_settings");
     if (!(io.ConfigFlags & ImGuiConfigFlags_IsTouchScreen))
     {
         ImGuiKit::Label("On a desktop");
-        if (ImGui::Checkbox("Simulate a touch source", &simulate_touch) && !simulate_touch)
-            io.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
+        ImGui::Checkbox("Simulate a touch source", &config.SimulateTouch);
         ImGui::SameLine();
-        ImGuiKit::HelpMarker("The mouse plays a finger (io.AddMouseSourceEvent(ImGuiMouseSource_TouchScreen)): every "
-                             "gesture works in the zone below, as on a phone:\n\n"
+        ImGuiKit::HelpMarker("The mouse plays a finger (ImGuiTouchConfig::SimulateTouch): every gesture works in the "
+                             "zone below, as on a phone:\n\n"
                              "- Drag up or down to scroll the content. Start moving as soon as you press, as with a "
                              "finger.\n"
                              "- Press and hold, then release: a long press, which opens the zone's context menu (a "

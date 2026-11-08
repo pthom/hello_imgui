@@ -49,8 +49,9 @@ namespace
     }
 
     // The backend's callbacks run inside the browser's event handlers, between two frames, and tagged their events
-    // with the source known then: the probe now knows the source of those events (the same gestures), so they are
-    // retagged, and the source is set for what follows.
+    // with the source known then: when the probe's pointer type changed, the events of those gestures are retagged,
+    // and the source is set for what follows. Only on a change: between changes, the source is the app's to set (a
+    // demo that simulates a finger with the mouse).
     void SetMouseSource(ImGuiContext& g, ImGuiMouseSource source)
     {
         for (ImGuiInputEvent& e : g.InputEventsQueue)
@@ -102,8 +103,11 @@ namespace
     void BeforeNewFrame(ImGuiContext* ctx, ImGuiContextHook*)
     {
         ImGuiContext& g = *ctx;
+        static ImGuiMouseSource sLastSource = ImGuiMouseSource_Mouse;  // the probe's, at the last frame
         ImGuiMouseSource source = LastPointerSource();
-        SetMouseSource(g, source);
+        if (source != sLastSource && !ImGuiTouch::GetConfig().SimulateTouch)
+            SetMouseSource(g, source);
+        sLastSource = source;
         // There is no pointer between two touches: the position is invalid, as when a mouse leaves the window.
         // Otherwise the last touch keeps hovering what passes under it (the content that coasts after a fling), and
         // the GLFW backend re-adds that position at each frame (a finger triggers no mouseenter).

@@ -31,6 +31,8 @@
 
 **Borderless windows in full screen:** a full-screen window has no resize handle. A drag on the handle changed the monitor's video mode.
 
+**Borderless windows, slow drags:** the resize handle, and the move zone with viewports, follow a slow drag. They moved only in the frames where the mouse moved more than Dear ImGui's drag threshold (6 px).
+
 **Command line on Windows:** `main()` gets the application's arguments in an app made with `hello_imgui_add_app`. The `WinMain` it adds called `main(0, NULL)`.
 
 **plutosvg / plutovg:**

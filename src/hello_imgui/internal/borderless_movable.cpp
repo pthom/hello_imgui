@@ -68,7 +68,8 @@ namespace HelloImGui
                 ImVec2 dragDelta;
                 if (isMousePositionAbsolute)
                 {
-                    dragDelta = ImGui::GetMouseDragDelta(0);
+                    // No drag threshold: the delta is reset every frame, so a slow drag would never pass it
+                    dragDelta = ImGui::GetMouseDragDelta(0, 0.0f);
                     ImGui::ResetMouseDragDelta(0);
                     ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
                 }
@@ -181,7 +182,8 @@ namespace HelloImGui
             int minAcceptableWindowSize = 60;
             if (isDragging)
             {
-                ImVec2 dragDelta = ImGui::GetMouseDragDelta(0);
+                // No drag threshold: the delta is reset every frame, so a slow drag would never pass it
+                ImVec2 dragDelta = ImGui::GetMouseDragDelta(0, 0.0f);
                 ImGui::ResetMouseDragDelta(0);
                 auto windowBounds = fnGetWindowBounds();
                 windowBounds.size[0] += (int)dragDelta.x;

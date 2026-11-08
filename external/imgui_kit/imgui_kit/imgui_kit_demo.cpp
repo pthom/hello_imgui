@@ -431,7 +431,9 @@ void DemoWidgets()
 //-----------------------------------------------------------------------------
 
 // A canvas that zooms with the wheel and pans with a drag, as a plot or an image viewer does. It claims the wheel while
-// hovered (ImGui::SetItemKeyOwner), and takes a finger's drag at once (ImGuiTouch::SetItemTakesDrags)
+// hovered (ImGui::SetItemKeyOwner), takes a finger's drag at once (ImGuiTouch::SetItemTakesDrags), and a pinch
+// (ImGuiTouch::SetItemTakesPinch: as wheel notches of 10%, its own zoom per notch; two fingers pan it, with the left
+// button)
 void ZoomableCanvas(const char* str_id, ImVec2 size)
 {
     static float zoom = 1.0f;
@@ -441,6 +443,7 @@ void ZoomableCanvas(const char* str_id, ImVec2 size)
     ImVec2 p1(p0.x + size.x, p0.y + size.y);
     ImGui::InvisibleButton(str_id, size);
     ImGuiTouch::SetItemTakesDrags();
+    ImGuiTouch::SetItemTakesPinch(0.1f, ImGuiMouseButton_Left);
     if (ImGui::IsItemActive())
     {
         offset.x += io.MouseDelta.x;
@@ -488,6 +491,7 @@ ImGuiTouch::SetupEmscripten();  // in a browser: which pointer is a finger, the 
 // The render loop: nothing to add, the kit runs inside ImGui::NewFrame() and ImGui::Render().
 // - An app that sleeps when idle keeps drawing while ImGuiTouch::IsAnimating().
 // - A widget that a finger drags: ImGuiTouch::SetItemTakesDrags() right after it.
+// - A widget that zooms with the wheel: ImGuiTouch::SetItemTakesPinch() right after it.
 // - A widget that reads the wheel claims it: if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY)) ...
 // Hello ImGui does the setup itself (RunnerParams::touchConfig).)";
 
@@ -557,7 +561,8 @@ void DemoTouch()
     ImGui::Bullet();
     ImGui::TextWrapped("Long press, then lift: a right click (this zone's context menu).");
     ImGui::Bullet();
-    ImGui::TextWrapped("Two fingers: a pinch scales the font; moved together, a right drag.");
+    ImGui::TextWrapped("Two fingers: a pinch scales the font (on the canvas, it zooms the canvas); moved together, a "
+                       "right drag.");
     static float value = 0.5f;
     ImGui::SetNextItemWidth(ImGuiKit::EmSize(12.f));
     ImGui::SliderFloat("a short hold, then a drag", &value, 0.0f, 1.0f);
@@ -573,7 +578,9 @@ void DemoTouch()
                          "at once. So the zone cannot be scrolled from inside the canvas.\n"
                          "- It claims the wheel while hovered: if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY)). With "
                          "the wheel session, a wheel that scrolls the zone keeps scrolling it when the canvas passes "
-                         "under the mouse; a wheel that starts on the canvas zooms it.");
+                         "under the mouse; a wheel that starts on the canvas zooms it.\n"
+                         "- It calls ImGuiTouch::SetItemTakesPinch(): a pinch on it zooms it, instead of the font, and "
+                         "two fingers moved together pan it.");
     if (ImGui::BeginPopupContextWindow("##zone_menu"))
     {
         ImGui::TextUnformatted("The zone's context menu: a right click, or a long press");

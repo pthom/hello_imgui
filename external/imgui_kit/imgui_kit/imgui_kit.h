@@ -303,7 +303,8 @@ namespace ImGuiTouch
 {
 // Installs the touch layer in the current Dear ImGui context, once (a second call only changes the config); it creates
 // the layer's state, freed with the context. Call it first: the other ImGuiTouch functions assert without it, except
-// IsAnimating(), SetItemTakesDrags() and GetKeyboardInsets(), which do nothing (or return zero) then.
+// IsAnimating(), SetItemTakesDrags(), SetItemTakesPinch(), SetRectTakesPinch() and GetKeyboardInsets(), which do
+// nothing (or return zero) then.
 IMGUI_API void   Setup(const ImGuiTouchConfig& config = ImGuiTouchConfig());
 IMGUI_API ImGuiTouchConfig& GetConfig();
 
@@ -314,6 +315,15 @@ IMGUI_API bool   IsAnimating();
 // Right after a widget that a finger drags (a plot, a knob, a node editor's canvas): a drag that starts on it goes to
 // it, not to the swipe. long_press_is_right_click: a long press on it is still a right click.
 IMGUI_API void   SetItemTakesDrags(bool long_press_is_right_click = true);
+
+// Right after a widget that zooms with the wheel (a plot, an image): two fingers that pinch on it zoom it, instead of
+// scaling the font. The pinch reaches it as wheel events, one notch each time the fingers' spread changed by
+// zoom_per_notch (the widget's own zoom per notch: ImPlot's is 0.1), at the first finger's position. Two fingers that
+// move together on it drag it with pan_button (a plot pans with the left button). Nothing without the touch layer.
+IMGUI_API void   SetItemTakesPinch(float zoom_per_notch = 0.1f, ImGuiMouseButton pan_button = ImGuiMouseButton_Right);
+// The same, for a rectangle in screen coordinates: a widget that is not one item (an ImPlot plot)
+IMGUI_API void   SetRectTakesPinch(const ImVec2& min, const ImVec2& max, float zoom_per_notch = 0.1f,
+                                   ImGuiMouseButton pan_button = ImGuiMouseButton_Right);
 
 // A finger on a touch screen, as the platform reports it (a browser's touch or pointer events, SDL's finger events):
 // its id (any number the platform gives, stable while the finger is down), its position (in the mouse's coordinates),

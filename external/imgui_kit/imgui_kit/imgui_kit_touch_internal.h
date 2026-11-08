@@ -74,6 +74,17 @@ struct ImGuiTouchPinchState
     ImVec2 startCenter;         // their middle, then
     ImGuiTouchPinchGesture gesture = ImGuiTouchPinchGesture::None;
     float baseScale = 1.f;  // style.FontScaleMain when the pinch began
+    struct PinchTaker
+    {
+        ImRect rect;         // the widget, on the screen
+        float zoomPerNotch;  // how much the widget zooms per wheel notch (0.1: 10%)
+        ImGuiMouseButton panButton;
+    };
+    ImVector<PinchTaker> takers, previousTakers;  // SetItemTakesPinch(): this frame's, the last frame's
+    int frameCount = -1;                          // the frame UpdateTouchPinch() ran: the takers are noted then only
+    bool hasTaker = false;                        // the two fingers landed on a taker: the gesture is its
+    PinchTaker taker;
+    int notchesSent = 0;                          // the wheel notches sent to the taker during this pinch
 };
 
 // While the keyboard is shown: where the caret was, so that its windows scroll only when it moves

@@ -601,16 +601,20 @@ void DemoTouch()
         ImGui::EndPopup();
     }
 
-    // A child that scrolls sideways: a swipe inside scrolls it, not the zone. Its buttons count their taps.
-    ImGui::TextUnformatted("A sideways swipe scrolls this row; a tap clicks a button:");
+    // A child that scrolls sideways: a swipe inside scrolls it, not the zone. Its buttons count their taps. Its slider
+    // takes the sideways drags (ImGuiTouch::SetItemTakesDragsAlong): a sideways drag on it moves it at once
+    ImGui::TextWrapped("A sideways swipe scrolls this row; a tap clicks a button; a sideways drag moves the slider:");
     ImGui::BeginChild("##sideways", ImVec2(0.0f, ImGuiKit::EmSize(5.f)), ImGuiChildFlags_Borders,
                       ImGuiWindowFlags_HorizontalScrollbar);
     static int taps[8] = {};
     float card_width = ImMax(ImGuiKit::EmSize(6.f), ImGui::GetContentRegionAvail().x * 0.3f);  // 3 per screen: it scrolls
+    static float row_value = 0.5f;
+    ImGui::SetNextItemWidth(card_width);
+    ImGui::SliderFloat("##row_slider", &row_value, 0.0f, 1.0f);
+    ImGuiTouch::SetItemTakesDragsAlong(ImGuiTouchAxis_X);
     for (int i = 0; i < IM_ARRAYSIZE(taps); i++)
     {
-        if (i > 0)
-            ImGui::SameLine();
+        ImGui::SameLine();
         char label[32];
         ImFormatString(label, IM_ARRAYSIZE(label), "Card %d\n%d taps###card%d", i + 1, taps[i], i);
         if (ImGui::Button(label, ImVec2(card_width, ImGuiKit::EmSize(3.f))))

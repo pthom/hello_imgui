@@ -344,10 +344,14 @@ void UpdateTouchScroll(ImGuiTouchScrollMode mode, bool longPressIsRightClick, bo
             s.watchingLongPress = longPressIsRightClick && ImGui::IsMousePosValid()
                                   && (taker == nullptr || taker->longPressIsRightClick);
             bool touch = (io.MouseSource == ImGuiMouseSource_TouchScreen);
+            // A widget that takes all the drags gets the press at once; one that takes them along an axis gets it
+            // once the finger moved that way (below)
+            bool takesAll = (taker != nullptr && taker->axis == ImGuiAxis_None);
             if (w != nullptr && !w->Collapsed && ImGui::IsMousePosValid()
                 && (w->InnerRect.Contains(io.MousePos) || (touch && OnScrollbar(w, io.MousePos)))
-                && CanScrollSomewhere(w) && taker == nullptr)
+                && CanScrollSomewhere(w) && !takesAll)
             {
+                s.takerAxis = (taker != nullptr) ? taker->axis : ImGuiAxis_None;
                 // A widget active from before (a text input being edited) loses the id, as with a press elsewhere
                 ImGui::SetActiveID(id, w);
                 ImGui::FocusWindow(w);  // what the press would have done
@@ -425,7 +429,7 @@ void UpdateTouchScroll(ImGuiTouchScrollMode mode, bool longPressIsRightClick, bo
                 s.axis = SwipeAxis(fromPress);
                 ImGuiWindow* target = ScrollTarget(s.window, s.axis);
                 bool canScroll = (s.axis == ImGuiAxis_X) ? (target->ScrollMax.x != 0.f) : (target->ScrollMax.y != 0.f);
-                if (canScroll)
+                if (canScroll && s.axis != s.takerAxis)
                 {
                     s.swiping = true;
                     s.window = target;
@@ -433,8 +437,9 @@ void UpdateTouchScroll(ImGuiTouchScrollMode mode, bool longPressIsRightClick, bo
                 }
                 else
                 {
-                    // Nothing scrolls that way (a horizontal drag on a page that scrolls vertically): the widget
-                    // under the finger gets the press, and the drag from now on, without the hold
+                    // Nothing scrolls that way (a horizontal drag on a page that scrolls vertically), or the widget
+                    // under the finger takes the drags along it (a slider): it gets the press, and the drag from now
+                    // on, without the hold
                     ImGui::ClearActiveID();
                     ReplayPress(io, s, true);
                     EndPress(s);
@@ -675,23 +680,36 @@ void DrawTouchScrollbarGrab()
 
 // The widget just drawn: its visible part, noted for the press of the next frame. Nothing when the layer did not run
 // this frame (ImGuiTouch::Setup() not called): the notes would pile up, never read.
+namespace
+{
+    void AddDragTaker(bool longPressIsRightClick, ImGuiAxis axis)
+    {
+        ImGuiContext& g = *GImGui;
+        ImGuiTouchContext* touch = FindCurrentContext();  // none without the touch layer: the widget just draws
+        if (touch == nullptr)
+            return;
+        State& s = touch->Scroll;
+        if (s.context != &g || s.frameCount != g.FrameCount)
+            return;
+        ImGuiWindow* window = g.CurrentWindow;
+        ImRect rect = g.LastItemData.Rect;
+        rect.ClipWith(window->ClipRect);
+        if (rect.GetWidth() > 0.f && rect.GetHeight() > 0.f)
+        {
+            State::DragTaker taker = {window->ID, rect, longPressIsRightClick, axis};
+            s.takers.push_back(taker);
+        }
+    }
+}  // namespace
+
 void SetItemTakesDrags(bool longPressIsRightClick)
 {
-    ImGuiContext& g = *GImGui;
-    ImGuiTouchContext* touch = FindCurrentContext();  // none without the touch layer: the widget just draws
-    if (touch == nullptr)
-        return;
-    State& s = touch->Scroll;
-    if (s.context != &g || s.frameCount != g.FrameCount)
-        return;
-    ImGuiWindow* window = g.CurrentWindow;
-    ImRect rect = g.LastItemData.Rect;
-    rect.ClipWith(window->ClipRect);
-    if (rect.GetWidth() > 0.f && rect.GetHeight() > 0.f)
-    {
-        State::DragTaker taker = {window->ID, rect, longPressIsRightClick};
-        s.takers.push_back(taker);
-    }
+    AddDragTaker(longPressIsRightClick, ImGuiAxis_None);
+}
+
+void SetItemTakesDragsAlong(ImGuiTouchAxis axis, bool longPressIsRightClick)
+{
+    AddDragTaker(longPressIsRightClick, (axis == ImGuiTouchAxis_Y) ? ImGuiAxis_Y : ImGuiAxis_X);
 }
 
 }  // namespace ImGuiTouch

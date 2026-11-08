@@ -55,8 +55,10 @@ struct ImGuiTouchScrollState
         ImGuiID window;  // the widget's window
         ImRect rect;     // its visible part, on the screen
         bool longPressIsRightClick;
+        ImGuiAxis axis;  // SetItemTakesDragsAlong(): the drags along it only; ImGuiAxis_None: all, at once
     };
     ImVector<DragTaker> takers, previousTakers;  // SetItemTakesDrags(): this frame's, the last frame's
+    ImGuiAxis takerAxis = ImGuiAxis_None;  // the press landed on a widget that takes the drags along this axis
 };
 
 enum class ImGuiTouchPinchGesture { None, Undecided, Pinch, DragStarting, Drag };

@@ -155,7 +155,9 @@ void BeginAlignedGroup(const char* str_id, float align_x)
         group.hidden.Begin();
     else
     {
-        float offset = (room - width) * align_x;
+        // A whole pixel: content that snaps to whole pixels (a child window, an image) would change the measured
+        // width with the offset's fraction, and the group would move at each frame
+        float offset = ImTrunc((room - width) * align_x);
         if (offset > 0.0f)
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
     }

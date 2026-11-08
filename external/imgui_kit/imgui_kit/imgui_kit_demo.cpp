@@ -427,28 +427,108 @@ void DemoWidgets()
 // [SECTION] Touch
 //-----------------------------------------------------------------------------
 
-// The settings change the application's touch layer, live: "Always" lets a mouse try the swipe on a desktop
+// A canvas that zooms with the wheel and pans with a drag, as a plot or an image viewer does. It claims the wheel while
+// hovered (ImGui::SetItemKeyOwner), and takes a finger's drag at once (ImGuiTouch::SetItemTakesDrags)
+void ZoomableCanvas(const char* str_id, ImVec2 size)
+{
+    static float zoom = 1.0f;
+    static ImVec2 offset(0.0f, 0.0f);  // where the content's origin is, from the canvas's corner, in pixels
+    ImGuiIO& io = ImGui::GetIO();
+    ImVec2 p0 = ImGui::GetCursorScreenPos();
+    ImVec2 p1(p0.x + size.x, p0.y + size.y);
+    ImGui::InvisibleButton(str_id, size);
+    ImGuiTouch::SetItemTakesDrags();
+    if (ImGui::IsItemActive())
+    {
+        offset.x += io.MouseDelta.x;
+        offset.y += io.MouseDelta.y;
+    }
+    if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY) && io.MouseWheel != 0.0f)
+    {
+        // Zoom around the mouse: the point under it stays there
+        float new_zoom = ImClamp(zoom * ImPow(1.1f, io.MouseWheel), 0.25f, 8.0f);
+        float mx = io.MousePos.x - p0.x, my = io.MousePos.y - p0.y;
+        offset.x = mx - (mx - offset.x) * new_zoom / zoom;
+        offset.y = my - (my - offset.y) * new_zoom / zoom;
+        zoom = new_zoom;
+    }
+
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    float rounding = ImGui::GetStyle().FrameRounding;
+    draw_list->AddRectFilled(p0, p1, ImGui::GetColorU32(ImGuiCol_FrameBg), rounding);
+    draw_list->PushClipRect(p0, p1, true);
+    float step = ImGuiKit::EmSize() * zoom;  // a grid of 1 em at zoom 1
+    ImU32 grid_color = ImGui::GetColorU32(ImGuiCol_Border);
+    for (float x = p0.x + ImFmod(offset.x, step); x < p1.x; x += step)
+        draw_list->AddLine(ImVec2(x, p0.y), ImVec2(x, p1.y), grid_color);
+    for (float y = p0.y + ImFmod(offset.y, step); y < p1.y; y += step)
+        draw_list->AddLine(ImVec2(p0.x, y), ImVec2(p1.x, y), grid_color);
+    ImVec2 center(p0.x + offset.x + 4.0f * step, p0.y + offset.y + 3.0f * step);
+    draw_list->AddCircleFilled(center, 1.5f * step, ImGui::GetColorU32(ImGuiCol_SliderGrabActive));
+    draw_list->AddRectFilled(ImVec2(center.x + 3.0f * step, center.y - step), ImVec2(center.x + 6.0f * step, center.y + step),
+                             ImGui::GetColorU32(ImGuiCol_ButtonActive));
+    draw_list->PopClipRect();
+    draw_list->AddRect(p0, p1, ImGui::GetColorU32(ImGuiCol_Border), rounding);
+    char label[32];
+    ImFormatString(label, IM_ARRAYSIZE(label), "zoom x%.2f", zoom);
+    draw_list->AddText(ImVec2(p0.x + ImGui::GetStyle().FramePadding.x, p1.y - ImGui::GetTextLineHeightWithSpacing()),
+                       ImGui::GetColorU32(ImGuiCol_Text), label);
+}
+
+const char* TOUCH_SETUP_CODE = R"(ImGui::CreateContext();
+ImGuiTouch::Setup();            // the touch layer: swipe, long press, pinch
+ImGuiKit::SetupWheelSession();  // the wheel stays with the window it scrolls
+#ifdef __EMSCRIPTEN__
+ImGuiTouch::SetupEmscripten();  // in a browser: which pointer is a finger, the fingers
+#endif
+
+// The render loop: nothing to add, the kit runs inside ImGui::NewFrame() and ImGui::Render().
+// - An app that sleeps when idle keeps drawing while ImGuiTouch::IsAnimating().
+// - A widget that a finger drags: ImGuiTouch::SetItemTakesDrags() right after it.
+// - A widget that reads the wheel claims it: if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY)) ...
+// Hello ImGui does the setup itself (RunnerParams::touchConfig).)";
+
+// The settings change the application's touch layer, live. "Simulate a touch source" lets the mouse play a finger.
 void DemoTouch()
 {
     IMGUI_DEMO_MARKER("Touch");
     if (!ImGui::CollapsingHeader("Touch"))
         return;
+    ImGuiIO& io = ImGui::GetIO();
     ImGui::TextWrapped("The gestures of a phone: a finger drags the content (with inertia, and a bounce at the end), "
-                       "a long press is a right click, two fingers pinch the font. The application installs the "
-                       "layer once: ImGuiTouch::Setup() (Hello ImGui does it).");
+                       "a long press is a right click, two fingers pinch the font.");
+    if (ImGui::TreeNode("The setup code"))
+    {
+        ImGui::TextUnformatted(TOUCH_SETUP_CODE);
+        ImGui::TreePop();
+    }
+
+    // The mouse plays a finger: the source applies to the events that follow
+    static bool simulate_touch = false;
+    if (simulate_touch)
+        io.AddMouseSourceEvent(ImGuiMouseSource_TouchScreen);
 
     ImGuiTouchConfig& config = ImGuiTouch::GetConfig();
     ImGuiKit::BeginLabelColumn("touch_settings");
+    if (!(io.ConfigFlags & ImGuiConfigFlags_IsTouchScreen))
+    {
+        ImGuiKit::Label("On a desktop");
+        if (ImGui::Checkbox("Simulate a touch source", &simulate_touch) && !simulate_touch)
+            io.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
+        ImGui::SameLine();
+        ImGuiKit::HelpMarker("The mouse plays a finger (io.AddMouseSourceEvent(ImGuiMouseSource_TouchScreen)): every "
+                             "gesture works in the zone below, as on a phone:\n\n"
+                             "- Drag up or down to scroll the content. Start moving as soon as you press, as with a "
+                             "finger.\n"
+                             "- Press and hold, then release: a long press, which opens the zone's context menu (a "
+                             "right click).");
+    }
     ImGuiKit::Label("Swipe");
     const char* scroll_modes[] = { "Touch screens", "Always", "Off" };
     ImGuiKit::SegmentedSwitch("##scroll_mode", &config.ScrollMode, scroll_modes, IM_ARRAYSIZE(scroll_modes));
     ImGui::SameLine();
-    ImGuiKit::HelpMarker("By default, the swipe works only on touch screens. Select \"Always\" to emulate it on a "
-                         "desktop, with the mouse's left button. Then, in the zone below, as on a phone:\n\n"
-                         "- Drag up or down to scroll the content. Start moving as soon as you press, as with a "
-                         "finger.\n"
-                         "- Press and hold, then release: a long press, which opens the zone's context menu (a right "
-                         "click).");
+    ImGuiKit::HelpMarker("Touch screens: the swipe follows a finger only. Always: the mouse's left button drags the "
+                         "content too, while the mouse stays a mouse.");
     ImGuiKit::Label("Pinch");
     const char* pinch_modes[] = { "Font scale", "Off" };
     ImGuiKit::SegmentedSwitch("##pinch_mode", &config.PinchMode, pinch_modes, IM_ARRAYSIZE(pinch_modes));
@@ -458,47 +538,35 @@ void DemoTouch()
     ImGui::Checkbox("thin on a touch screen", &config.ThinScrollbars);
     ImGuiKit::EndLabelColumn();
 
-    ImGui::BeginChild("##touch_zone", ImVec2(0.0f, ImGuiKit::EmSize(14.f)), ImGuiChildFlags_Borders);
-    ImGui::TextWrapped("Drag this zone with a finger (or with the mouse, in \"Always\" mode): it scrolls, and keeps "
-                       "going after a quick throw.");
+    ImGui::BeginChild("##touch_zone", ImVec2(0.0f, ImGuiKit::EmSize(16.f)), ImGuiChildFlags_Borders);
+    ImGui::BulletText("Swipe: a finger that drags this zone scrolls it, with inertia, and a bounce at the end.");
+    ImGui::BulletText("Tap: a click, when the finger lifts.");
+    ImGui::BulletText("Hold, then drag: the widget under the finger takes it (the slider below).");
+    ImGui::BulletText("Long press, then lift: a right click (this zone's context menu).");
+    ImGui::BulletText("Two fingers: a pinch scales the font; moved together, a right drag.");
     static float value = 0.5f;
     ImGui::SetNextItemWidth(ImGuiKit::EmSize(12.f));
     ImGui::SliderFloat("a short hold, then a drag", &value, 0.0f, 1.0f);
     ImGui::SameLine();
     ImGuiKit::HelpMarker("This slider does not call ImGuiTouch::SetItemTakesDrags(): to drag it with a finger, hold "
                          "it a moment first (a ring shows when the hold took effect). A drag that starts at once "
-                         "scrolls the zone. The pad below reacts at once.");
+                         "scrolls the zone. The canvas below reacts at once.");
 
-    ImGui::TextWrapped("The pad takes a finger's drag at once (ImGuiTouch::SetItemTakesDrags()): the zone stays.");
-    static ImVec2 dot(0.5f, 0.5f);  // in the pad, from 0 to 1
-    ImVec2 pad_min = ImGui::GetCursorScreenPos();
-    ImVec2 pad_size = ImGuiKit::EmToVec2(12.f, 6.f);
-    ImGui::InvisibleButton("##pad", pad_size);
-    ImGuiTouch::SetItemTakesDrags();
-    if (ImGui::IsItemActive())
-    {
-        ImVec2 mouse = ImGui::GetIO().MousePos;
-        dot = ImVec2(ImClamp((mouse.x - pad_min.x) / pad_size.x, 0.0f, 1.0f),
-                     ImClamp((mouse.y - pad_min.y) / pad_size.y, 0.0f, 1.0f));
-    }
-    ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    ImVec2 pad_max(pad_min.x + pad_size.x, pad_min.y + pad_size.y);
-    float rounding = ImGui::GetStyle().FrameRounding;
-    draw_list->AddRectFilled(pad_min, pad_max, ImGui::GetColorU32(ImGuiCol_FrameBg), rounding);
-    draw_list->AddRect(pad_min, pad_max, ImGui::GetColorU32(ImGuiCol_Border), rounding);
-    ImVec2 center(pad_min.x + dot.x * pad_size.x, pad_min.y + dot.y * pad_size.y);
-    draw_list->AddCircleFilled(center, ImGuiKit::EmSize(0.5f), ImGui::GetColorU32(ImGuiCol_SliderGrabActive));
+    ZoomableCanvas("##canvas", ImGuiKit::EmToVec2(16.f, 8.f));
     ImGui::SameLine();
-    ImGuiKit::HelpMarker("This pad calls ImGuiTouch::SetItemTakesDrags() right after it: a drag that starts on it "
-                         "moves the dot at once. So the zone cannot be scrolled from inside the pad.");
-
-    for (int i = 1; i <= 20; i++)
-        ImGui::Text("Line %d: more content, to scroll", i);
+    ImGuiKit::HelpMarker("A canvas that zooms and pans, as a plot or an image viewer does:\n\n"
+                         "- It calls ImGuiTouch::SetItemTakesDrags() right after it: a drag that starts on it pans it "
+                         "at once. So the zone cannot be scrolled from inside the canvas.\n"
+                         "- It claims the wheel while hovered: if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY)). With "
+                         "the wheel session, a wheel that scrolls the zone keeps scrolling it when the canvas passes "
+                         "under the mouse; a wheel that starts on the canvas zooms it.");
     if (ImGui::BeginPopupContextWindow("##zone_menu"))
     {
         ImGui::TextUnformatted("The zone's context menu: a right click, or a long press");
         ImGui::EndPopup();
     }
+    for (int i = 1; i <= 8; i++)
+        ImGui::Text("More content, to scroll (%d)", i);
     ImGui::EndChild();
     // IsAnimating(): an application that sleeps when nothing happens keeps drawing frames meanwhile
     ImGui::Text("Moving on its own: %s", ImGuiTouch::IsAnimating() ? "yes" : "no");

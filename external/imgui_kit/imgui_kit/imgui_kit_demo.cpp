@@ -479,10 +479,10 @@ void ZoomableCanvas(const char* str_id, ImVec2 size)
 }
 
 const char* TOUCH_SETUP_CODE = R"(ImGui::CreateContext();
-ImGuiTouch::Setup();              // the touch layer: swipe, long press, pinch
-ImGuiTouch::SetupWheelSession();  // the wheel stays with the window it scrolls
+ImGuiTouch::Setup();            // the touch layer: swipe, long press, pinch
+ImGuiKit::SetupWheelSession();  // the wheel stays with the window it scrolls
 #ifdef __EMSCRIPTEN__
-ImGuiTouch::SetupEmscripten();    // in a browser: which pointer is a finger, the fingers
+ImGuiTouch::SetupEmscripten();  // in a browser: which pointer is a finger, the fingers
 #endif
 
 // The render loop: nothing to add, the kit runs inside ImGui::NewFrame() and ImGui::Render().

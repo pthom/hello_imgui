@@ -4,12 +4,12 @@
 // As Dear ImGui's imgui_internal.h: no guarantee of forward compatibility here. Code that includes it may need changes
 // at a new version of the kit.
 //
-// The kit's state, ImGuiKitContext: the layout helpers' Begin/End stacks, the help markers', FitText's buffer, and the
-// input layer's state (imgui_kit_touch_internal.h). Dear ImGui has no slot for an extension's state, so the kit stores
+// The kit's state, ImGuiKitContext: the layout helpers' Begin/End stacks, the help markers', FitText's buffer, the
+// wheel session's state, and the touch layer's (imgui_kit_touch_internal.h). Dear ImGui has no slot for an extension's state, so the kit stores
 // it in the UserData of a context hook it adds (ImGui::AddContextHook, of type Shutdown), as the Test Engine stores its
 // own. The hooks are per context: each Dear ImGui context has its own state, found again through its hooks (no global:
 // GImGui may be thread-local). ImGui::DestroyContext() calls that hook, which frees the state.
-// It is created at its first use: the widgets need no setup. The input layer's part is in use once a setup was called.
+// It is created at its first use: the widgets need no setup. The touch layer's part is in use once a touch setup was called.
 #pragma once
 #include "imgui_kit.h"
 #include "imgui_kit_touch_internal.h"
@@ -27,6 +27,35 @@ namespace ImGuiKit
     // The current Dear ImGui context's kit state (see this file's top), created at its first use: the widgets need no
     // setup. Freed with the Dear ImGui context.
     ImGuiKitContext& GetCurrentContext();
+}
+
+//-----------------------------------------------------------------------------
+// The wheel session (imgui_kit_wheel_session.cpp)
+//-----------------------------------------------------------------------------
+
+struct ImGuiKitWheelSessionState
+{
+    ImGuiContext* context = nullptr;  // the state belongs to one context: a new one starts afresh
+    int frameCount = -1;              // (a new context may reuse the address of a destroyed one: its frames restart)
+    bool active = false;
+    bool startedOnItem = false;     // the item under the mouse owned the wheel at the first event: the item's session
+    ImGuiID itemId = 0;             // that item
+    ImGuiWindow* window = nullptr;  // the window the session scrolls
+    bool scrolled = false;          // the page scrolled during the session (by ImGui, or by the session)
+    float timer = 0.f;              // s: the session ends when it runs out; each event adds its amount's worth (ImGui's rule:
+                                    // a trackpad's small momentum events extend it by little)
+    ImVec2 refMousePos;             // the mouse at the last wheel event: a move past ImGui's drag threshold ends the session
+    ImGuiID ownerBeforeNewFrame = 0;  // the wheel's owner as the widgets of the frame ownerFrame left it
+    int ownerFrame = -1;
+};
+
+namespace ImGuiKit
+{
+    // The wheel session's two steps, which SetupWheelSession() calls through Dear ImGui's context hooks (the tests call
+    // them directly): right before ImGui::NewFrame() (the item that claimed the wheel in the last frame, before
+    // NewFrame() gives it back to a window), and right after it, before any widget
+    void WheelSessionBeforeNewFrame();
+    void UpdateWheelSession(bool enabled);
 }
 
 //-----------------------------------------------------------------------------
@@ -124,6 +153,8 @@ struct ImGuiKitContext
     ImVector<ImGuiKitFlow> Flows;
     ImVector<ImGuiKitHelpMarkerOpen> HelpMarkersShown;  // what each open BeginHelpMarker() shows, for EndHelpMarker()
     ImVector<char> FitTextBuffer;                       // FitText()'s result, when the text was cut
+    bool WheelSessionEnabled = true;                    // SetupWheelSession(enabled)
+    ImGuiKitWheelSessionState WheelSession;
     bool TouchSetUp = false;                            // an input setup was called: Touch is in use
     ImGuiTouchContext Touch;
 };

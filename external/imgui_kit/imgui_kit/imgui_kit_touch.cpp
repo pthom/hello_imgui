@@ -1,13 +1,12 @@
-// imgui_kit: the setup of the input layer (ImGuiTouch: the touch layer, the wheel session), through Dear ImGui's
-// context hooks
+// imgui_kit: the setup of the touch layer (ImGuiTouch), through Dear ImGui's context hooks
 // https://github.com/pthom/imgui_kit (MIT license)
 #include "imgui_kit.h"
 #include "imgui_kit_internal.h"
 #include "imgui_internal.h"  // AddContextHook
 
 // Each step runs at a moment Dear ImGui names:
-//   NewFramePre:  the wheel session notes the item that claimed the wheel (NewFrame() gives it back to a window)
-//   NewFramePost: before any widget, the swipe, then the pinch; the wheel session's step, in the order of the setups
+//   NewFramePre:  SimulateTouch retags the mouse's events
+//   NewFramePost: before any widget, the swipe, then the pinch
 //   EndFramePre:  after the GUI, the widened scrollbar thumb (the frame's scroll is final)
 //   RenderPost:   the draw data exists: the overscroll moves the content past its end
 // A hook belongs to its context: Setup() installs the hooks of the current context, once (their owner tells).
@@ -15,7 +14,6 @@
 namespace
 {
     const ImGuiID kTouchHooksOwner = ImHashStr("ImGuiTouch");
-    const ImGuiID kWheelHooksOwner = ImHashStr("ImGuiTouch_WheelSession");
 
     ImGuiTouchContext& Ctx() { return ImGuiTouch::GetCurrentContext(); }
 
@@ -63,7 +61,7 @@ namespace
 
 namespace ImGuiTouch
 {
-// The input state is a part of the kit's (ImGuiKitContext), in use once a setup was called: the only place that knows
+// The touch state is a part of the kit's (ImGuiKitContext), in use once a setup was called: the only place that knows
 ImGuiTouchContext* FindCurrentContext()
 {
     if (GImGui == nullptr)
@@ -133,18 +131,5 @@ bool ConsumeAnimationRequest()
     bool asked = tc.Animating;
     tc.Animating = false;
     return asked;
-}
-
-void SetupWheelSession(bool enabled)
-{
-    CreateCurrentContextIfNeeded().WheelSessionEnabled = enabled;
-    ImGuiContext* ctx = ImGui::GetCurrentContext();
-    IM_ASSERT(ctx != nullptr && "ImGuiTouch::SetupWheelSession() needs a context: call ImGui::CreateContext() first");
-    if (HasHooks(ctx, kWheelHooksOwner))
-        return;
-    AddHook(ctx, kWheelHooksOwner, ImGuiContextHookType_NewFramePre,
-            [](ImGuiContext*, ImGuiContextHook*) { WheelSessionBeforeNewFrame(); });
-    AddHook(ctx, kWheelHooksOwner, ImGuiContextHookType_NewFramePost,
-            [](ImGuiContext*, ImGuiContextHook*) { UpdateWheelSession(Ctx().WheelSessionEnabled); });
 }
 } // namespace ImGuiTouch

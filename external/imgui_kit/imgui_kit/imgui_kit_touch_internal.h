@@ -1,5 +1,6 @@
-// imgui_kit: the input layer's internals (ImGuiTouch: touch, pinch, wheel session, the keyboard, the browser)
+// imgui_kit: the touch layer's internals (ImGuiTouch: the swipe, the pinch, the keyboard, the browser)
 // https://github.com/pthom/imgui_kit (MIT license)
+// How this could fit in Dear ImGui: docs/dear_imgui_integration.md
 //
 // As Dear ImGui's imgui_internal.h: no guarantee of forward compatibility here. Code that includes it may need changes
 // at a new version of the kit.
@@ -7,8 +8,8 @@
 // The layer's state, ImGuiTouchContext: one per Dear ImGui context, as Dear ImGui's own state is in ImGuiContext. Dear
 // ImGui has no slot for an extension's state: the kit keeps it in its own per-context state (ImGuiKitContext, see
 // imgui_kit_internal.h). Only imgui_kit_touch.cpp knows that: the layer's other sources reach the state through
-// ImGuiTouch::GetCurrentContext(). The setups (ImGuiTouch::Setup(), SetupWheelSession(), SetKeyboardInsets(),
-// SetupEmscripten(), SetupEmscriptenKeyboard()) create it; the other ImGuiTouch functions assert that a setup was called.
+// ImGuiTouch::GetCurrentContext(). The setups (ImGuiTouch::Setup(), SetKeyboardInsets(), SetupEmscripten(),
+// SetupEmscriptenKeyboard()) create it; the other ImGuiTouch functions assert that a setup was called.
 #pragma once
 #include "imgui_kit.h"
 #include "imgui_internal.h"  // ImRect, ImGuiWindow, ImGuiAxis
@@ -75,22 +76,6 @@ struct ImGuiTouchPinchState
     float baseScale = 1.f;  // style.FontScaleMain when the pinch began
 };
 
-struct ImGuiTouchWheelSessionState
-{
-    ImGuiContext* context = nullptr;  // the state belongs to one context: a new one starts afresh
-    int frameCount = -1;              // (a new context may reuse the address of a destroyed one: its frames restart)
-    bool active = false;
-    bool startedOnItem = false;     // the item under the mouse owned the wheel at the first event: the item's session
-    ImGuiID itemId = 0;             // that item
-    ImGuiWindow* window = nullptr;  // the window the session scrolls
-    bool scrolled = false;          // the page scrolled during the session (by ImGui, or by the session)
-    float timer = 0.f;              // s: the session ends when it runs out; each event adds its amount's worth (ImGui's rule:
-                                    // a trackpad's small momentum events extend it by little)
-    ImVec2 refMousePos;             // the mouse at the last wheel event: a move past ImGui's drag threshold ends the session
-    ImGuiID ownerBeforeNewFrame = 0;  // the wheel's owner as the widgets of the frame ownerFrame left it
-    int ownerFrame = -1;
-};
-
 // While the keyboard is shown: where the caret was, so that its windows scroll only when it moves
 struct ImGuiTouchCaretView
 {
@@ -135,17 +120,15 @@ struct ImGuiTouchContext
     ImGuiTouchConfig Config;
     bool Animating = false;       // asked during the current frame
     bool WasAnimating = false;    // asked during the last complete frame: what IsAnimating() tells
-    bool WheelSessionEnabled = true;
     bool SimulatedTouch = false;  // SimulateTouch, as applied at the last frame
     ImGuiTouchKeyboardInsets KeyboardInsets;
     ImGuiTouchCaretView CaretView;
     ImGuiTouchScrollState Scroll;
     ImGuiTouchPinchState Pinch;
-    ImGuiTouchWheelSessionState WheelSession;
     ImGuiTouchBrowserState Browser;  // SetupEmscripten(), SetupEmscriptenKeyboard()
 };
 
-// The input layer's steps, which the setups call through Dear ImGui's context hooks (the tests call them
+// The touch layer's steps, which the setups call through Dear ImGui's context hooks (the tests call them
 // directly, frame by frame)
 namespace ImGuiTouch
 {
@@ -175,7 +158,7 @@ namespace ImGuiTouch
     // when the second finger lands.
     void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets);
 
-    // The current Dear ImGui context's input state (see this file's top): created by the setups, freed with the Dear
+    // The current Dear ImGui context's touch state (see this file's top): created by the setups, freed with the Dear
     // ImGui context. GetCurrentContext() asserts that a setup was called; FindCurrentContext() returns nullptr.
     ImGuiTouchContext& GetCurrentContext();
     ImGuiTouchContext* FindCurrentContext();
@@ -185,9 +168,4 @@ namespace ImGuiTouch
     void SetupKeepCaretInView(ImGuiContext* ctx);  // the caret kept above the keyboard (imgui_kit_touch_keyboard.cpp)
     // For the tests, which call the steps without the hooks: whether an animation was asked since the last call
     bool ConsumeAnimationRequest();
-
-    // The wheel session's two steps: right before ImGui::NewFrame() (the item that claimed the wheel in the last frame,
-    // before NewFrame() gives it back to a window), and right after it, before any widget
-    void WheelSessionBeforeNewFrame();
-    void UpdateWheelSession(bool enabled);
 }

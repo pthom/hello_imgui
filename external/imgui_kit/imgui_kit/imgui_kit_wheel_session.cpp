@@ -1,6 +1,8 @@
-// imgui_kit: the wheel session (ImGuiTouch::SetupWheelSession)
+// imgui_kit: the wheel session (ImGuiKit::SetupWheelSession)
+// https://github.com/pthom/imgui_kit (MIT license)
+// How this could fit in Dear ImGui: docs/dear_imgui_integration.md
 #include "imgui_kit.h"
-#include "imgui_kit_touch_internal.h"
+#include "imgui_kit_internal.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -16,13 +18,13 @@
 // While ImGui keeps scrolling a window (g.WheelingWindow), NewFrame() gives the wheel's ownership back to that window,
 // which erases an item's claim: with the mouse still, the page scrolls a plot under it, and the session would see no
 // item. The owner the widgets left is thus read before NewFrame() (WheelSessionBeforeNewFrame).
-namespace ImGuiTouch
+namespace ImGuiKit
 {
 namespace
 {
     constexpr float kSessionSeconds = 0.7f;  // ImGui's WINDOWS_MOUSE_WHEEL_SCROLL_LOCK_TIMER
 
-    using State = ImGuiTouchWheelSessionState;
+    using State = ImGuiKitWheelSessionState;
 
     // The item (not a window) that owns the wheel, as of the previous frame; 0 when none
     ImGuiID WheelOwnerItem(const ImGuiContext& g, const State& s)
@@ -134,4 +136,25 @@ void UpdateWheelSession(bool enabled)
     }
     io.MouseWheel = 0.f;
 }
-}  // namespace ImGuiTouch
+
+// Installs the two steps once, in the current context (their owner tells); a later call changes `enabled`
+void SetupWheelSession(bool enabled)
+{
+    ImGuiContext* ctx = ImGui::GetCurrentContext();
+    IM_ASSERT(ctx != nullptr && "ImGuiKit::SetupWheelSession() needs a context: call ImGui::CreateContext() first");
+    GetCurrentContext().WheelSessionEnabled = enabled;
+    const ImGuiID owner = ImHashStr("ImGuiKit_WheelSession");
+    for (const ImGuiContextHook& hook : ctx->Hooks)
+        if (hook.Owner == owner && hook.Type != ImGuiContextHookType_PendingRemoval_)
+            return;
+    ImGuiContextHook hook;
+    hook.Owner = owner;
+    hook.Type = ImGuiContextHookType_NewFramePre;
+    hook.Callback = [](ImGuiContext*, ImGuiContextHook*) { WheelSessionBeforeNewFrame(); };
+    ImGui::AddContextHook(ctx, &hook);
+    hook.Type = ImGuiContextHookType_NewFramePost;
+    hook.Callback = [](ImGuiContext*, ImGuiContextHook*) { UpdateWheelSession(GetCurrentContext().WheelSessionEnabled); };
+    ImGui::AddContextHook(ctx, &hook);
+}
+
+}  // namespace ImGuiKit

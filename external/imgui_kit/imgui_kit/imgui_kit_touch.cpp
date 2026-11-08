@@ -16,17 +16,13 @@ namespace
     const ImGuiID kTouchHooksOwner = ImHashStr("ImGuiTouch");
     const ImGuiID kWheelHooksOwner = ImHashStr("ImGuiKit_WheelSession");
 
-    ImGuiTouchConfig gTouchConfig;
-    bool gAnimating = false;      // asked during the current frame
-    bool gWasAnimating = false;   // asked during the last complete frame: what IsAnimating() tells
-    bool gWheelSessionEnabled = true;
-    bool gSimulatedTouch = false;  // SimulateTouch, as applied at the last frame
+    ImGuiTouchContext& Ctx() { return ImGuiTouch::GetCurrentContext(); }
 
     // SimulateTouch: the frame's mouse events (queued by the backend, which may tag each of them as a mouse's) become a
     // touch screen's, and so does the source of what follows. When it is turned off, the source goes back to the mouse.
-    void ApplySimulatedTouch(ImGuiContext& g)
+    void ApplySimulatedTouch(ImGuiContext& g, ImGuiTouchContext& tc)
     {
-        if (gTouchConfig.SimulateTouch)
+        if (tc.Config.SimulateTouch)
         {
             for (ImGuiInputEvent& e : g.InputEventsQueue)
             {
@@ -41,9 +37,9 @@ namespace
             }
             g.IO.AddMouseSourceEvent(ImGuiMouseSource_TouchScreen);
         }
-        else if (gSimulatedTouch)
+        else if (tc.SimulatedTouch)
             g.IO.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
-        gSimulatedTouch = gTouchConfig.SimulateTouch;
+        tc.SimulatedTouch = tc.Config.SimulateTouch;
     }
 
     bool HasHooks(ImGuiContext* ctx, ImGuiID owner)
@@ -66,20 +62,47 @@ namespace
 
 namespace ImGuiTouch
 {
+// The touch state is a part of the kit's (ImGuiKitContext), in use once a touch setup was called
+ImGuiTouchContext* FindCurrentContext()
+{
+    if (GImGui == nullptr)
+        return nullptr;
+    ImGuiKitContext& kit = ImGuiKit::GetCurrentContext();
+    return kit.TouchSetUp ? &kit.Touch : nullptr;
+}
+
+ImGuiTouchContext& GetCurrentContext()
+{
+    ImGuiTouchContext* state = FindCurrentContext();
+    IM_ASSERT(state != nullptr && "imgui_kit's touch layer: call ImGuiTouch::Setup() first (or ImGuiKit::SetupWheelSession())");
+    return *state;
+}
+
+ImGuiTouchContext& CreateCurrentContextIfNeeded()
+{
+    ImGuiKitContext& kit = ImGuiKit::GetCurrentContext();
+    kit.TouchSetUp = true;
+    return kit.Touch;
+}
+} // namespace ImGuiTouch
+
+namespace ImGuiTouch
+{
 void Setup(const ImGuiTouchConfig& config)
 {
-    gTouchConfig = config;
+    CreateCurrentContextIfNeeded().Config = config;
     ImGuiContext* ctx = ImGui::GetCurrentContext();
     IM_ASSERT(ctx != nullptr && "ImGuiTouch::Setup() needs a context: call ImGui::CreateContext() first");
     if (HasHooks(ctx, kTouchHooksOwner))
         return;
     AddHook(ctx, kTouchHooksOwner, ImGuiContextHookType_NewFramePre,
-            [](ImGuiContext* g, ImGuiContextHook*) { ApplySimulatedTouch(*g); });
+            [](ImGuiContext* g, ImGuiContextHook*) { ApplySimulatedTouch(*g, Ctx()); });
     AddHook(ctx, kTouchHooksOwner, ImGuiContextHookType_NewFramePost, [](ImGuiContext*, ImGuiContextHook*) {
-        gWasAnimating = gAnimating;
-        gAnimating = false;
-        UpdateTouchScroll(gTouchConfig.ScrollMode, gTouchConfig.LongPressIsRightClick, gTouchConfig.ThinScrollbars);
-        UpdateTouchPinch(gTouchConfig.PinchMode, gTouchConfig.PinchInterruptsWidgets);
+        ImGuiTouchContext& tc = Ctx();
+        tc.WasAnimating = tc.Animating;
+        tc.Animating = false;
+        UpdateTouchScroll(tc.Config.ScrollMode, tc.Config.LongPressIsRightClick, tc.Config.ThinScrollbars);
+        UpdateTouchPinch(tc.Config.PinchMode, tc.Config.PinchInterruptsWidgets);
     });
     AddHook(ctx, kTouchHooksOwner, ImGuiContextHookType_EndFramePre,
             [](ImGuiContext*, ImGuiContextHook*) { DrawTouchScrollbarGrab(); });
@@ -87,20 +110,28 @@ void Setup(const ImGuiTouchConfig& config)
             [](ImGuiContext*, ImGuiContextHook*) { ApplyTouchOverscroll(); });
 }
 
-ImGuiTouchConfig& GetConfig() { return gTouchConfig; }
+ImGuiTouchConfig& GetConfig() { return Ctx().Config; }
 
-bool IsAnimating() { return gAnimating || gWasAnimating; }
-
-namespace Internal
+// Without the touch layer, nothing records the animations: the kit's widgets animate all the same (an app that draws
+// every frame), and IsAnimating() says false
+bool IsAnimating()
 {
-void RequestAnimation() { gAnimating = true; }
+    ImGuiTouchContext* state = FindCurrentContext();
+    return state != nullptr && (state->Animating || state->WasAnimating);
+}
+
+void RequestAnimation()
+{
+    if (ImGuiTouchContext* state = FindCurrentContext())
+        state->Animating = true;
+}
 
 bool ConsumeAnimationRequest()
 {
-    bool asked = gAnimating;
-    gAnimating = false;
+    ImGuiTouchContext& tc = Ctx();
+    bool asked = tc.Animating;
+    tc.Animating = false;
     return asked;
-}
 }
 } // namespace ImGuiTouch
 
@@ -108,7 +139,7 @@ namespace ImGuiKit
 {
 void SetupWheelSession(bool enabled)
 {
-    gWheelSessionEnabled = enabled;
+    ImGuiTouch::CreateCurrentContextIfNeeded().WheelSessionEnabled = enabled;
     ImGuiContext* ctx = ImGui::GetCurrentContext();
     IM_ASSERT(ctx != nullptr && "ImGuiKit::SetupWheelSession() needs a context: call ImGui::CreateContext() first");
     if (HasHooks(ctx, kWheelHooksOwner))
@@ -116,11 +147,6 @@ void SetupWheelSession(bool enabled)
     AddHook(ctx, kWheelHooksOwner, ImGuiContextHookType_NewFramePre,
             [](ImGuiContext*, ImGuiContextHook*) { WheelSessionBeforeNewFrame(); });
     AddHook(ctx, kWheelHooksOwner, ImGuiContextHookType_NewFramePost,
-            [](ImGuiContext*, ImGuiContextHook*) { UpdateWheelSession(gWheelSessionEnabled); });
+            [](ImGuiContext*, ImGuiContextHook*) { UpdateWheelSession(Ctx().WheelSessionEnabled); });
 }
 } // namespace ImGuiKit
-
-#ifndef __EMSCRIPTEN__
-// No phone keyboard outside a browser (imgui_kit_emscripten_keyboard.cpp)
-ImGuiTouchKeyboardInsets ImGuiTouch::GetKeyboardInsets() { return ImGuiTouchKeyboardInsets(); }
-#endif

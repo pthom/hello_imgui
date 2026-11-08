@@ -22,22 +22,7 @@ namespace
 {
     constexpr float kSessionSeconds = 0.7f;  // ImGui's WINDOWS_MOUSE_WHEEL_SCROLL_LOCK_TIMER
 
-    struct State
-    {
-        ImGuiContext* context = nullptr;  // the state belongs to one context: a new one starts afresh
-        int frameCount = -1;              // (a new context may reuse the address of a destroyed one: its frames restart)
-        bool active = false;
-        bool startedOnItem = false;     // the item under the mouse owned the wheel at the first event: the item's session
-        ImGuiID itemId = 0;             // that item
-        ImGuiWindow* window = nullptr;  // the window the session scrolls
-        bool scrolled = false;          // the page scrolled during the session (by ImGui, or by the session)
-        float timer = 0.f;              // s: the session ends when it runs out; each event adds its amount's worth (ImGui's rule:
-                                        // a trackpad's small momentum events extend it by little)
-        ImVec2 refMousePos;             // the mouse at the last wheel event: a move past ImGui's drag threshold ends the session
-        ImGuiID ownerBeforeNewFrame = 0;  // the wheel's owner as the widgets of the frame ownerFrame left it
-        int ownerFrame = -1;
-    };
-    State gState;
+    using State = ImGuiKitWheelSessionState;
 
     // The item (not a window) that owns the wheel, as of the previous frame; 0 when none
     ImGuiID WheelOwnerItem(const ImGuiContext& g, const State& s)
@@ -70,15 +55,15 @@ void WheelSessionBeforeNewFrame()
     ImGuiContext* g = GImGui;
     if (g == nullptr)
         return;
-    gState.ownerBeforeNewFrame = ImGui::GetKeyOwnerData(g, ImGuiKey_MouseWheelY)->OwnerNext;
-    gState.ownerFrame = g->FrameCount;
+    ImGuiTouch::GetCurrentContext().WheelSession.ownerBeforeNewFrame = ImGui::GetKeyOwnerData(g, ImGuiKey_MouseWheelY)->OwnerNext;
+    ImGuiTouch::GetCurrentContext().WheelSession.ownerFrame = g->FrameCount;
 }
 
 void UpdateWheelSession(bool enabled)
 {
     ImGuiContext& g = *GImGui;
     ImGuiIO& io = g.IO;
-    State& s = gState;
+    State& s = ImGuiTouch::GetCurrentContext().WheelSession;
     if (s.context != &g || g.FrameCount < s.frameCount)
     {
         s = State{};

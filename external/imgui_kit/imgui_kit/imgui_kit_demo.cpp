@@ -18,6 +18,7 @@ Index of this file:
 
 #include "imgui_kit.h"
 #include "imgui_internal.h"     // ImGui::DemoMarker()
+#include "imgui_kit_internal.h"  // ImGuiTouch::FindCurrentContext()
 
 #ifndef IMGUI_KIT_DISABLE_DEMO
 
@@ -491,10 +492,22 @@ ImGuiTouch::SetupEmscripten();  // in a browser: which pointer is a finger, the 
 // Hello ImGui does the setup itself (RunnerParams::touchConfig).)";
 
 // The settings change the application's touch layer, live. "Simulate a touch source" lets the mouse play a finger.
+// Without the touch layer (an app that shows this demo without ImGuiTouch::Setup()), a note instead of the section
+bool HasTouchLayer()
+{
+    if (ImGuiTouch::FindCurrentContext() != nullptr)
+        return true;
+    ImGui::TextWrapped("This application did not set up the touch layer: ImGuiTouch::Setup(), once after "
+                       "ImGui::CreateContext() (Hello ImGui does it).");
+    return false;
+}
+
 void DemoTouch()
 {
     IMGUI_DEMO_MARKER("Touch");
     if (!ImGui::CollapsingHeader("Touch"))
+        return;
+    if (!HasTouchLayer())
         return;
     ImGuiIO& io = ImGui::GetIO();
     ImGui::TextWrapped("The gestures of a phone: a finger drags the content (with inertia, and a bounce at the end), "
@@ -595,6 +608,8 @@ void DemoTouchKeyboard()
 {
     IMGUI_DEMO_MARKER("Touch keyboard");
     if (!ImGui::CollapsingHeader("Touch keyboard"))
+        return;
+    if (!HasTouchLayer())
         return;
     ImGui::TextWrapped("In a browser on a phone: tap a field, then the keyboard button that shows next to it (or the "
                        "field again). The phone's keyboard opens, and a full-screen window keeps out of it "

@@ -9,6 +9,7 @@ Index of this file:
 */
 
 #include "imgui_kit.h"
+#include "imgui_kit_internal.h"
 
 namespace ImGuiKit
 {
@@ -50,4 +51,34 @@ float PixelSizeToEm(float pixel_size)
     return pixel_size / EmSize();
 }
 
+} // namespace ImGuiKit
+
+//-----------------------------------------------------------------------------
+// The kit's state, one per Dear ImGui context
+//-----------------------------------------------------------------------------
+// It hangs on a Shutdown hook of the Dear ImGui context (its UserData), as the Test Engine's: the hook frees it with the
+// context (see imgui_kit_internal.h's top). The hooks are per context: no global (GImGui may be thread-local).
+
+namespace ImGuiKit
+{
+ImGuiKitContext& GetCurrentContext()
+{
+    ImGuiContext* ctx = GImGui;
+    IM_ASSERT(ctx != nullptr && "imgui_kit needs a Dear ImGui context: call ImGui::CreateContext() first");
+    const ImGuiID owner = 0x4B49544B;  // "KITK": the owner of the kit's hook (any ID no one else uses)
+    for (ImGuiContextHook& hook : ctx->Hooks)
+        if (hook.Owner == owner && hook.Type == ImGuiContextHookType_Shutdown)
+            return *(ImGuiKitContext*)hook.UserData;
+    ImGuiKitContext* state = IM_NEW(ImGuiKitContext)();
+    ImGuiContextHook hook;
+    hook.Type = ImGuiContextHookType_Shutdown;
+    hook.Owner = owner;
+    hook.UserData = state;
+    hook.Callback = [](ImGuiContext*, ImGuiContextHook* h) {
+        IM_DELETE((ImGuiKitContext*)h->UserData);
+        h->UserData = nullptr;
+    };
+    ImGui::AddContextHook(ctx, &hook);
+    return *state;
+}
 } // namespace ImGuiKit

@@ -267,8 +267,9 @@ enum ImGuiTouchPinchMode_
 // The parts of the screen hidden by a phone's keyboard: see ImGuiTouch::GetKeyboardInsets()
 struct ImGuiTouchKeyboardInsets
 {
-    float Top = 0.0f;
-    float Bottom = 0.0f;
+    float Top;
+    float Bottom;
+    ImGuiTouchKeyboardInsets(float top = 0.0f, float bottom = 0.0f) : Top(top), Bottom(bottom) {}
 };
 
 // The settings, read at each frame: change them through ImGuiTouch::GetConfig()
@@ -288,6 +289,9 @@ struct ImGuiTouchConfig
     // Two fingers that pinch scale the font while they stay on the screen; two fingers that move together are a
     // right drag (the pan of a node editor, the box of a plot)
     ImGuiTouchPinchMode PinchMode = ImGuiTouchPinchMode_FontScale;
+    // The pinch's range of style.FontScaleMain
+    float PinchFontScaleMin = 0.5f;
+    float PinchFontScaleMax = 5.0f;
     // When the second finger lands while a widget holds the first one (a slider dragged after a hold, a text
     // selection): the widget keeps its drag and the pinch is ignored (false), or the pinch takes over (true)
     bool PinchInterruptsWidgets = false;
@@ -298,7 +302,9 @@ struct ImGuiTouchConfig
 
 namespace ImGuiTouch
 {
-// Installs the touch layer in the current context, once (a second call only changes the config)
+// Installs the touch layer in the current Dear ImGui context, once (a second call only changes the config); it creates
+// the layer's state, freed with the context. Call it first: the other ImGuiTouch functions assert without it, except
+// IsAnimating(), SetItemTakesDrags() and GetKeyboardInsets(), which do nothing (or return zero) then.
 IMGUI_API void   Setup(const ImGuiTouchConfig& config = ImGuiTouchConfig());
 IMGUI_API ImGuiTouchConfig& GetConfig();
 
@@ -318,13 +324,17 @@ IMGUI_API void   SetItemTakesDrags(bool long_press_is_right_click = true);
 IMGUI_API void   AddFingerEvent(int id, const ImVec2& pos, bool down);
 
 // The parts of the screen hidden by a phone's keyboard (in Dear ImGui's coordinates): a full-screen window keeps out
-// of them. Zero when no keyboard shows, and outside a browser (SetupEmscriptenKeyboard).
+// of them. Zero when no keyboard shows.
 IMGUI_API ImGuiTouchKeyboardInsets GetKeyboardInsets();
+// A native app tells where its keyboard is (iOS: UIKeyboardWillChangeFrameNotification), and zero when it hides.
+// While a keyboard shows, the windows that hold the text field scroll its caret into view, above the keyboard.
+// In a browser, SetupEmscriptenKeyboard() sets them.
+IMGUI_API void   SetKeyboardInsets(const ImGuiTouchKeyboardInsets& insets);
 
 #ifdef __EMSCRIPTEN__
 // In a browser, with any of Dear ImGui's Emscripten backends: tells Dear ImGui which pointer is a finger (the
 // browser's pointer events), relays the fingers to AddFingerEvent() (the pinch), and sets ImGuiConfigFlags_IsTouchScreen
-// on a touch screen. Call once, after the backend's init. The canvas must have the id "canvas".
+// on a touch screen. Call once, after the backend's init and ImGuiTouch::Setup(). The canvas must have the id "canvas".
 // Also: Dear ImGui's links (TextLinkOpenURL) open on a phone (in the same tab: a phone's browser refuses new tabs
 // there), and the phone's own long press (text selection, its menu) is turned off on the canvas.
 IMGUI_API void   SetupEmscripten();

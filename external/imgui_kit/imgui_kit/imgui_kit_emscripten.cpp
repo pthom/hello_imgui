@@ -2,21 +2,21 @@
 // https://github.com/pthom/imgui_kit (MIT license)
 #ifdef __EMSCRIPTEN__
 #include "imgui_kit.h"
+#include "imgui_kit_internal.h"
 #include "imgui_internal.h"  // AddContextHook, g.InputEventsQueue
 
 #include <emscripten.h>
+#include <ctype.h>
 #include <float.h>
-#include <algorithm>
-#include <cctype>
-#include <cstdio>
-#include <sstream>
-#include <string>
-#include <vector>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 // The browser knows whether a pointer is a mouse, a finger or a pen (the pointerType of its pointer events), and
 // where each finger is; Dear ImGui's GLFW backend knows neither. A probe on the document keeps them, and a hook reads
 // them at the start of each frame (NewFramePre: after the backend's NewFrame, before Dear ImGui reads the inputs).
-// emscripten_run_script rather than EM_JS or EM_ASM: it also works in a side module, as in Pyodide.
+// emscripten_run_script rather than EM_JS or EM_ASM: it also works in a side module, as in Pyodide. Each call evaluates
+// a script: the hook makes one per frame (imguiKitFrame(), installed by the probe), and allocates nothing.
 namespace
 {
     const ImGuiID kEmscriptenHooksOwner = ImHashStr("ImGuiTouch_Emscripten");
@@ -40,17 +40,18 @@ namespace
             "    onPointer(e); if (e.pointerId in fingers) fingers[e.pointerId] = [e.clientX, e.clientY]; }, options);"
             "  document.addEventListener('pointerup', onUp, options);"
             "  document.addEventListener('pointercancel', onUp, options);"
+            // The frame's state in one string: "type down cssWidth" then ";id x y" for each finger (CSS px from the
+            // canvas's corner)
+            "  window.imguiKitFrame = () => {"
+            "    const c = document.getElementById('canvas'), r = c ? c.getBoundingClientRect() : {left: 0, top: 0, width: 0};"
+            "    let s = window.imguiKitPointerType + ' ' + window.imguiKitPointerDown + ' ' + r.width;"
+            "    for (const id in fingers) s += ';' + id + ' ' + (fingers[id][0] - r.left) + ' ' + (fingers[id][1] - r.top);"
+            "    return s; };"
             "}"
             // iOS's own long press on the canvas (text selection, the callout menu) would pause the page's events
             "{ const c = document.getElementById('canvas');"
             "  if (c) { c.style.webkitTouchCallout = 'none'; c.style.webkitUserSelect = 'none'; c.style.userSelect = 'none'; } }";
         emscripten_run_script(script);
-    }
-
-    ImGuiMouseSource LastPointerSource()
-    {
-        int type = emscripten_run_script_int("window.imguiKitPointerType | 0");
-        return (type == 1) ? ImGuiMouseSource_TouchScreen : (type == 2) ? ImGuiMouseSource_Pen : ImGuiMouseSource_Mouse;
     }
 
     // The backend's callbacks run inside the browser's event handlers, between two frames, and tagged their events
@@ -73,60 +74,26 @@ namespace
         g.IO.AddMouseSourceEvent(source);
     }
 
-    // The fingers down, to ImGuiTouch::AddFingerEvent(): "id x y;..." in CSS pixels from the canvas's corner, scaled
-    // to Dear ImGui's units (the canvas's CSS width against the display width)
-    void RelayFingers(ImGuiIO& io)
+    // The fingers of the frame's state ("...;id x y;id x y"), to ImGuiTouch::AddFingerEvent(), scaled to Dear ImGui's
+    // units (the canvas's CSS width against the display width); then the fingers that lifted since the last frame
+    void RelayFingers(ImGuiIO& io, ImGuiKitBrowserState& b, const char* list, float cssWidth)
     {
-        std::string list = emscripten_run_script_string(
-            "(() => { const c = document.getElementById('canvas'); if (!c) return '';"
-            " const r = c.getBoundingClientRect(); window.imguiKitCanvasCssWidth = r.width;"
-            " return Object.entries(window.imguiKitFingers || {})"
-            "   .map(([id, p]) => id + ' ' + (p[0] - r.left) + ' ' + (p[1] - r.top)).join(';'); })()");
-        int cssWidth = emscripten_run_script_int("Math.round(window.imguiKitCanvasCssWidth || 0)");
-        float scale = (cssWidth > 0) ? io.DisplaySize.x / (float)cssWidth : 1.f;
-
-        static std::vector<int> sDown;  // the fingers down at the last frame
-        std::vector<int> down;
-        std::istringstream entries(list);
-        std::string entry;
-        while (std::getline(entries, entry, ';'))
+        float scale = (cssWidth > 0.f) ? io.DisplaySize.x / cssWidth : 1.f;
+        b.FingersNow.resize(0);
+        for (const char* p = list; p != nullptr && *p == ';'; p = strchr(p + 1, ';'))
         {
-            std::istringstream fields(entry);
-            int id = 0;
-            float x = 0.f, y = 0.f;
-            if (!(fields >> id >> x >> y))
-                continue;
+            char* end = nullptr;
+            int id = (int)strtol(p + 1, &end, 10);
+            float x = strtof(end, &end), y = strtof(end, &end);
+            if (end == p + 1)
+                break;
             ImGuiTouch::AddFingerEvent(id, ImVec2(x * scale, y * scale), true);
-            down.push_back(id);
+            b.FingersNow.push_back(id);
         }
-        for (int id : sDown)
-            if (std::find(down.begin(), down.end(), id) == down.end())
+        for (int id : b.FingersDown)
+            if (!b.FingersNow.contains(id))
                 ImGuiTouch::AddFingerEvent(id, ImVec2(0.f, 0.f), false);
-        sDown = down;
-    }
-
-    // A JS string literal: quotes and backslashes escaped, control characters as \u00XX
-    std::string JsStringLiteral(const char* s)
-    {
-        std::string r = "\"";
-        for (const char* p = s; *p; ++p)
-        {
-            unsigned char c = (unsigned char)*p;
-            if (c == '"' || c == '\\')
-            {
-                r += '\\';
-                r += (char)c;
-            }
-            else if (c < 0x20)
-            {
-                char escaped[8];
-                snprintf(escaped, sizeof(escaped), "\\u%04x", c);
-                r += escaped;
-            }
-            else
-                r += (char)c;
-        }
-        return r + "\"";
+        b.FingersDown.swap(b.FingersNow);
     }
 
     // Dear ImGui's links (TextLinkOpenURL): a new tab with a mouse. On a touch screen, the page itself goes there: a
@@ -134,34 +101,85 @@ namespace
     // The browser's back button returns. Web addresses only: a javascript: url would run script in the page.
     bool OpenUrl(ImGuiContext*, const char* url)
     {
-        std::string lower(url);
-        for (char& c : lower)
-            c = (char)tolower((unsigned char)c);
-        if (lower.rfind("http://", 0) != 0 && lower.rfind("https://", 0) != 0 && lower.rfind("mailto:", 0) != 0)
+        if (ImStrnicmp(url, "http://", 7) != 0 && ImStrnicmp(url, "https://", 8) != 0 && ImStrnicmp(url, "mailto:", 7) != 0)
             return false;
-        std::string u = JsStringLiteral(url);
-        std::string script = "if (window.imguiKitPointerType === 1) window.location.assign(" + u + ");"
-                             " else { const w = window.open(" + u + "); if (w) w.opener = null;"
-                             " else window.location.assign(" + u + "); }";
-        emscripten_run_script(script.c_str());
+        ImVector<char>& script = ImGuiKit::GetCurrentContext().Browser.Script;
+        script.resize(0);
+        ImGuiKitScriptAppend(script, "(u => { if (window.imguiKitPointerType === 1) window.location.assign(u);"
+                                     " else { const w = window.open(u); if (w) w.opener = null;"
+                                     " else window.location.assign(u); } })(");
+        ImGuiKitScriptAppendString(script, url, (int)strlen(url));
+        ImGuiKitScriptAppend(script, ")");
+        emscripten_run_script(ImGuiKitScriptEnd(script));
         return true;
     }
 
     void BeforeNewFrame(ImGuiContext* ctx, ImGuiContextHook*)
     {
         ImGuiContext& g = *ctx;
-        static ImGuiMouseSource sLastSource = ImGuiMouseSource_Mouse;  // the probe's, at the last frame
-        ImGuiMouseSource source = LastPointerSource();
-        if (source != sLastSource && !ImGuiTouch::GetConfig().SimulateTouch)
+        ImGuiKitBrowserState& b = ImGuiKit::GetCurrentContext().Browser;
+        // The frame's state: "type down cssWidth;id x y;..."
+        const char* frame = emscripten_run_script_string("window.imguiKitFrame ? window.imguiKitFrame() : ''");
+        if (frame == nullptr)
+            frame = "";
+        char* p = nullptr;
+        int type = (int)strtol(frame, &p, 10);
+        bool pointerDown = strtol(p, &p, 10) != 0;
+        float cssWidth = strtof(p, &p);
+        ImGuiMouseSource source = (type == 1) ? ImGuiMouseSource_TouchScreen : (type == 2) ? ImGuiMouseSource_Pen
+                                                                              : ImGuiMouseSource_Mouse;
+        if (source != b.LastPointerSource && !ImGuiTouch::GetConfig().SimulateTouch)
             SetMouseSource(g, source);
-        sLastSource = source;
+        b.LastPointerSource = source;
         // There is no pointer between two touches: the position is invalid, as when a mouse leaves the window.
         // Otherwise the last touch keeps hovering what passes under it (the content that coasts after a fling), and
         // the GLFW backend re-adds that position at each frame (a finger triggers no mouseenter).
-        if (source == ImGuiMouseSource_TouchScreen && emscripten_run_script_int("window.imguiKitPointerDown | 0") == 0)
+        if (source == ImGuiMouseSource_TouchScreen && !pointerDown)
             g.IO.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
-        RelayFingers(g.IO);
+        RelayFingers(g.IO, b, p, cssWidth);
     }
+}
+
+void ImGuiKitScriptAppend(ImVector<char>& script, const char* text)
+{
+    if (!script.empty() && script.back() == '\0')
+        script.pop_back();
+    int len = (int)strlen(text), size = script.Size;
+    script.resize(size + len);
+    memcpy(script.Data + size, text, (size_t)len);
+}
+
+void ImGuiKitScriptAppendString(ImVector<char>& script, const char* text, int len)
+{
+    if (!script.empty() && script.back() == '\0')
+        script.pop_back();
+    script.push_back('\'');
+    for (int i = 0; i < len; ++i)
+    {
+        unsigned char c = (unsigned char)text[i];
+        if (c == '\'' || c == '"' || c == '\\')
+        {
+            script.push_back('\\');
+            script.push_back((char)c);
+        }
+        else if (c < 0x20)
+        {
+            char escaped[8];
+            snprintf(escaped, sizeof(escaped), "\\u%04x", c);
+            for (int k = 0; escaped[k] != '\0'; ++k)
+                script.push_back(escaped[k]);
+        }
+        else
+            script.push_back((char)c);
+    }
+    script.push_back('\'');
+}
+
+const char* ImGuiKitScriptEnd(ImVector<char>& script)
+{
+    if (script.empty() || script.back() != '\0')
+        script.push_back('\0');
+    return script.Data;
 }
 
 namespace ImGuiTouch

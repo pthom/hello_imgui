@@ -10,27 +10,14 @@ namespace ImGuiTouch
 {
 namespace
 {
-    constexpr float kFontScaleMin = 0.5f, kFontScaleMax = 5.f;  // the range of the explorer's "Font scale" slider
     constexpr float kPinchThreshold = 0.12f;  // the distance between the fingers changed by this much: a pinch
     constexpr float kDragSlopFontSizes = 0.6f;  // the fingers' middle moved this far: a drag (the two apart)
 
-    enum class Gesture { None, Undecided, Pinch, DragStarting, Drag };
 
-    struct Finger
-    {
-        int id;
-        ImVec2 pos;
-    };
 
-    struct State
-    {
-        ImVector<Finger> fingers;  // the fingers down, in the order they landed
-        float startDistance = 0.f;  // between the first two fingers, when the second one landed
-        ImVec2 startCenter;         // their middle, then
-        Gesture gesture = Gesture::None;
-        float baseScale = 1.f;  // style.FontScaleMain when the pinch began
-    };
-    State gState;
+    using Gesture = ImGuiTouchPinchGesture;
+    using Finger = ImGuiTouchFinger;
+    using State = ImGuiTouchPinchState;
 
     float Distance(const Finger& a, const Finger& b) { return ImSqrt(ImLengthSqr(b.pos - a.pos)); }
     ImVec2 Center(const Finger& a, const Finger& b) { return (a.pos + b.pos) * 0.5f; }
@@ -52,7 +39,7 @@ namespace
 
 void AddFingerEvent(int id, const ImVec2& pos, bool down)
 {
-    State& s = gState;
+    State& s = GetCurrentContext().Pinch;
     bool wasTwo = s.fingers.Size >= 2;
     int index = -1;
     for (int i = 0; i < s.fingers.Size; i++)
@@ -78,7 +65,7 @@ void AddFingerEvent(int id, const ImVec2& pos, bool down)
 void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets)
 {
     ImGuiContext& g = *GImGui;
-    State& s = gState;
+    State& s = GetCurrentContext().Pinch;
     bool twoFingers = (mode != ImGuiTouchPinchMode_Disabled) && s.fingers.Size >= 2;
     // The pinch's scale (their distance over their distance at the start), the move of their middle since the start
     float pinchScale = 1.f;
@@ -121,7 +108,10 @@ void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets)
         ButtonEvent(g.IO, ImGuiMouseButton_Right, true);
     }
     if (s.gesture == Gesture::Pinch && twoFingers && mode == ImGuiTouchPinchMode_FontScale)
-        ImGui::GetStyle().FontScaleMain = ImClamp(s.baseScale * pinchScale, kFontScaleMin, kFontScaleMax);
+    {
+        const ImGuiTouchConfig& config = GetCurrentContext().Config;
+        ImGui::GetStyle().FontScaleMain = ImClamp(s.baseScale * pinchScale, config.PinchFontScaleMin, config.PinchFontScaleMax);
+    }
     if (s.gesture != Gesture::None && !twoFingers)
     {
         if (s.gesture == Gesture::Drag)

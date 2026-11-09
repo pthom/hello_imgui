@@ -64,7 +64,8 @@ namespace ImGuiKit
 
 constexpr float ImGuiKitUnknown = -1.0f;  // a layout value never measured (the helper draws hidden on that frame)
 
-// Hides what follows until EndHidden(), and forgets how far it reached (its overflow adds no scrollbar)
+// Hides what follows until End(): invisible, and taking no input (a hidden button is not clicked, a hidden marker
+// shows no tooltip); it forgets how far they reached (their overflow adds no scrollbar)
 struct ImGuiKitHidden
 {
     bool active = false;
@@ -75,11 +76,13 @@ struct ImGuiKitHidden
         active = true;
         cursorMaxPos = ImGui::GetCurrentWindow()->DC.CursorMaxPos;
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.0f);
+        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
     }
     void End()
     {
         if (!active)
             return;
+        ImGui::PopItemFlag();
         ImGui::PopStyleVar();
         ImGuiWindow* window = ImGui::GetCurrentWindow();
         // The hidden items still take their height: keep the vertical extent, drop the horizontal one

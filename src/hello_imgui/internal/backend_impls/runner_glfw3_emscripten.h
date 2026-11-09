@@ -14,8 +14,8 @@ namespace HelloImGui
         void Run() override;
 
        protected:
-        void Impl_InitPlatformBackend() override;  // sets up the touch input (ImGuiTouch::SetupEmscripten), the tap zones
-        void Impl_PollEvents() override;  // pushes the tap zones, updates the keyboard, then polls
+        void Impl_InitPlatformBackend() override;  // sets up the touch input (ImGuiTouch::SetupEmscripten)
+        void Impl_PollEvents() override;  // updates the keyboard, then polls
         void Impl_Select_Gl_Version() override;
         std::string Impl_GlslVersion() const override;
         void Impl_InitGlLoader() override;

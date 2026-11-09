@@ -274,13 +274,9 @@ void Run(
 
 // ============================== Utility functions ===============================
 
-void SetTapOpensUrl(ImVec2 rectMin, ImVec2 rectMax, const std::string& url)
+bool SetTapOpensUrl(ImVec2 rectMin, ImVec2 rectMax, const std::string& url)
 {
-#ifdef __EMSCRIPTEN__
-    EmscriptenRequestTapZone(rectMin, rectMax, url);
-#else
-    (void)rectMin; (void)rectMax; (void)url;
-#endif
+    return ImGuiTouch::SetRectOpensUrl(rectMin, rectMax, url.c_str());
 }
 
 RunnerParams* GetRunnerParams()

@@ -42,14 +42,12 @@ namespace HelloImGui
         // Here rather than in Run(): Pyodide drives the frames itself (ManualRender), without Run().
         RunnerSdl2::Impl_InitPlatformBackend();
         ImGuiTouch::SetupEmscripten();  // which pointer is a finger, the fingers (the pinch)
-        InstallEmscriptenTapZones();
         InstallEmscriptenViewportResizeRelay();
         ImGuiTouch::SetupEmscriptenKeyboard();
     }
 
     void RunnerSdlEmscripten::Impl_PollEvents()
     {
-        EmscriptenPushTapZones(ImGui::GetIO().DisplaySize.x);
         RunnerSdl2::Impl_PollEvents();
     }
 

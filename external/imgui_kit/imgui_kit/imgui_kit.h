@@ -72,7 +72,7 @@ IMGUI_API float  PixelSizeToEm(float pixel_size);
 // Dear ImGui sizes an item when it is called, before the items that follow it exist. Most helpers below measure
 // what they need on the previous frame (kept in the window's state storage, under their str_id: keep it stable), so
 // a row can know the width of its end, or a group its own width, before drawing them. Each helper says what its
-// first frame does.
+// first frame does; what is hidden then takes no input either.
 
 // Fill row: the next item takes the line's width, minus the items after FillRowTail().
 //
@@ -149,7 +149,8 @@ IMGUI_API void   EndLabelColumn();
 //     | Size: 640 x 480       |
 //     +-----------------------+
 //
-// No measurement: it draws its frame around its content in the same frame.
+// No measurement: it draws its frame around its content in the same frame. The label is an ID scope: two panels may
+// hold items with the same labels.
 IMGUI_API void   BeginGroupPanel(const char* label, const ImVec2& size = ImVec2(0, 0));
 IMGUI_API void   EndGroupPanel();
 
@@ -482,12 +483,26 @@ IMGUI_API ImGuiTouchKeyboardInsets GetKeyboardInsets();
 // Setup() too: a native app may report its keyboard first.
 IMGUI_API void   SetKeyboardInsets(const ImGuiTouchKeyboardInsets& insets);
 
+// A link that opens in a new tab, in a browser, whatever the browser and the pointer. Right after the link's item, at
+// each frame. The page opens the url from inside the tap's or the click's own handler, where every browser allows a
+// new tab (WebKit allows none from the frame loop, where Dear ImGui sees the click). A finger: a tap (lifted within
+// half a second, not moved); a mouse: a press and its release on the link.
+// Returns true when the page takes the link: the caller then does nothing on the click. False outside a browser,
+// without SetupEmscripten(), or for a scheme other than http, https and mailto: the caller opens the url itself.
+//     ImGui::TextLink("Read the docs");
+//     if (!ImGuiTouch::SetItemOpensUrl(url) && ImGui::IsItemClicked())
+//         OpenInBrowser(url);
+// The same, for a rectangle in screen coordinates (a link that is not one item).
+IMGUI_API bool   SetItemOpensUrl(const char* url);
+IMGUI_API bool   SetRectOpensUrl(const ImVec2& min, const ImVec2& max, const char* url);
+
 #ifdef __EMSCRIPTEN__
 // In a browser, with any of Dear ImGui's Emscripten backends: tells Dear ImGui which pointer is a finger (the
 // browser's pointer events), relays the fingers to AddFingerEvent() (the pinch), and sets ImGuiConfigFlags_IsTouchScreen
 // on a touch screen. Call once, after the backend's init and ImGuiTouch::Setup(). The canvas must have the id "canvas".
-// Also: Dear ImGui's links (TextLinkOpenURL) open on a phone (in the same tab: a phone's browser refuses new tabs
-// there), and the phone's own long press (text selection, its menu) is turned off on the canvas.
+// Also: the url zones (SetItemOpensUrl); Dear ImGui's own links (TextLinkOpenURL) open in a new tab where the browser
+// allows it from the frame loop (Chrome, Firefox), else in the same tab (WebKit: Safari, every browser on iOS); and
+// the phone's own long press (text selection, its menu) is turned off on the canvas.
 IMGUI_API void   SetupEmscripten();
 // The phone's keyboard, for Dear ImGui's text widgets (and any widget that wants text: io.WantTextInput). A phone's
 // browser shows its keyboard only for a field focused inside a touch handler: a small keyboard button shows next to

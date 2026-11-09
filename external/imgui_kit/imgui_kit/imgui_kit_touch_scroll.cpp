@@ -198,6 +198,8 @@ namespace
     // lift gives zero.
     ImVec2 LiftSpeed(const State& s, float now, ImVec2 pos)
     {
+        if (!ImGui::IsMousePosValid(&pos))  // a backend that lost the pointer before the release: no fling from it
+            return ImVec2(0.f, 0.f);
         const Sample* oldest = nullptr;
         for (int i = 0; i < s.nbSamples; ++i)
         {
@@ -342,6 +344,7 @@ void UpdateTouchScroll(ImGuiTouchScrollMode mode, bool longPressIsRightClick, bo
         EndPress(s);
         s.inertia = ImVec2(0.f, 0.f);
         s.overscroll = s.overscrollSpeed = 0.f;
+        s.watchingLongPress = s.longPressArmed = false;
         return;
     }
     const float dt = (io.DeltaTime > 0.f) ? io.DeltaTime : 1.f / 60.f;
@@ -438,7 +441,8 @@ void UpdateTouchScroll(ImGuiTouchScrollMode mode, bool longPressIsRightClick, bo
     else if (s.owning)
     {
         ImGui::KeepAliveID(id);
-        AddSample(s, (float)g.Time, io.MousePos);
+        if (ImGui::IsMousePosValid())  // a pointer lost for a frame leaves no sample: the lift speed stays finite
+            AddSample(s, (float)g.Time, io.MousePos);
         ImVec2 delta = io.MouseDelta;
         if (!s.swiping)
         {

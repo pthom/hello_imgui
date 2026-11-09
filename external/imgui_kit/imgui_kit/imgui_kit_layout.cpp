@@ -37,21 +37,28 @@ using Flow = ImGuiKitFlow;
 //-----------------------------------------------------------------------------
 // [SECTION] Helpers
 //-----------------------------------------------------------------------------
-// The layout helpers keep what they measured in the window's state storage, under the ID of their str_id.
-// A value never measured reads as kUnknown: the helper then draws hidden on that frame (Alpha = 0) and keeps its
-// overflow out of the window's content size, so that a first frame neither flashes nor adds a scrollbar.
+// The layout helpers keep what they measured in the window's state storage, under a key made of their str_id's ID
+// and the helper's name: the bare ID would be Dear ImGui's own key for an item with that label (a tree node's open
+// state), and two helpers with one str_id would share a value.
+// A value never measured reads as kUnknown: the helper then draws hidden on that frame (Alpha = 0, no input) and
+// keeps its overflow out of the window's content size, so that a first frame neither flashes nor adds a scrollbar.
 // Their Begin/End stacks are in ImGuiKitContext, one per Dear ImGui context (imgui_kit_internal.h).
 
 constexpr float kUnknown = ImGuiKitUnknown;
 
-float StoredFloat(ImGuiID id)
+ImGuiID StorageKey(const char* str_id, const char* helper)
 {
-    return ImGui::GetStateStorage()->GetFloat(id, kUnknown);
+    return ImHashStr(helper, 0, ImGui::GetID(str_id));
 }
 
-void StoreFloat(ImGuiID id, float v)
+float StoredFloat(ImGuiID key)
 {
-    ImGui::GetStateStorage()->SetFloat(id, v);
+    return ImGui::GetStateStorage()->GetFloat(key, kUnknown);
+}
+
+void StoreFloat(ImGuiID key, float v)
+{
+    ImGui::GetStateStorage()->SetFloat(key, v);
 }
 
 
@@ -104,7 +111,7 @@ bool IsInFillRowTail()
 float BeginFillRow(const char* str_id)
 {
     FillRow row;
-    row.id = ImGui::GetID(str_id);
+    row.id = StorageKey(str_id, "##kit_fill_row");
     float tail = StoredFloat(row.id);
     float width = ImMax(1.0f, ImGui::GetContentRegionAvail().x - (tail == kUnknown ? 0.0f : tail));
     ImGui::SetNextItemWidth(width);
@@ -142,7 +149,7 @@ void EndFillRow()
 void BeginAlignedGroup(const char* str_id, float align_x)
 {
     AlignedGroup group;
-    group.id = ImGui::GetID(str_id);
+    group.id = StorageKey(str_id, "##kit_aligned_group");
     float width = StoredFloat(group.id);
     // The room to align in: up to the innermost column's right edge, else up to the line's end
     float room = ImGui::GetContentRegionAvail().x;
@@ -182,7 +189,7 @@ void EndAlignedGroup()
 void BeginColumn(const char* str_id)
 {
     Column column;
-    column.id = ImGui::GetID(str_id);
+    column.id = StorageKey(str_id, "##kit_column");
     column.left = ImGui::GetCursorScreenPos().x;
     column.width = StoredFloat(column.id);
     GetCurrentContext().Columns.push_back(column);
@@ -204,7 +211,7 @@ void EndColumn()
 void BeginLabelColumn(const char* str_id, float labels_align_x)
 {
     LabelColumn lc;
-    lc.id = ImGui::GetID(str_id);
+    lc.id = StorageKey(str_id, "##kit_label_column");
     lc.left = ImGui::GetCursorScreenPos().x;
     lc.alignX = labels_align_x;
     lc.column = StoredFloat(lc.id);
@@ -220,7 +227,8 @@ void Label(const char* text)
     const char* text_end = ImGui::FindRenderedTextEnd(text);
     float width = ImGui::CalcTextSize(text, text_end).x;
     lc.widest = ImMax(lc.widest, width);
-    float column = (lc.column == kUnknown) ? width : lc.column;
+    // A label wider than the last frame's widest (a text that grew) takes its own width this frame
+    float column = (lc.column == kUnknown) ? width : ImMax(lc.column, width);
 
     ImGui::AlignTextToFramePadding();
     float y = ImGui::GetCursorScreenPos().y;
@@ -243,13 +251,15 @@ void EndLabelColumn()
 // [SECTION] Group panel
 //-----------------------------------------------------------------------------
 
-// The frame is drawn at the end, around the content's group: no clip rects or item spacing to push during the content
+// The frame is drawn at the end, around the content's group: no clip rects or item spacing to push during the content.
+// The label is pushed as an ID: two panels may hold items with the same labels.
 void BeginGroupPanel(const char* label, const ImVec2& size)
 {
     const ImGuiStyle& style = ImGui::GetStyle();
     GroupPanel panel;
     panel.topLeft = ImGui::GetCursorScreenPos();
     panel.minSize = size;
+    ImGui::PushID(label);
     ImGui::BeginGroup();  // the whole panel
 
     // The label, in the frame's top border
@@ -281,6 +291,7 @@ void EndGroupPanel()
     ImGui::SetCursorScreenPos(panel.topLeft);
     ImGui::Dummy(ImVec2(right - panel.topLeft.x, bottom - panel.topLeft.y));  // the panel's whole size
     ImGui::EndGroup();
+    ImGui::PopID();
 
     // The frame, from the middle of the label's line, with a gap for the label: drawn three times, clipped
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -306,7 +317,7 @@ void EndGroupPanel()
 void BeginFlow(const char* str_id)
 {
     Flow flow;
-    flow.id = ImGui::GetID(str_id);
+    flow.id = StorageKey(str_id, "##kit_flow");
     flow.rightEdge = ImGui::GetCursorScreenPos().x + ImGui::GetContentRegionAvail().x;
     if (StoredFloat(flow.id) == kUnknown)  // never drawn: no widths yet
         flow.hidden.Begin();
@@ -321,11 +332,10 @@ void FlowNext()
     {
         // The previous item is drawn: keep its width, and decide where the next one goes
         StoreFloat(FlowItemKey(flow, flow.index - 1), ImGui::GetItemRectSize().x);
+        // An item never measured (new since the last frame) starts a line: for one frame, rather than overflow
         float nextWidth = StoredFloat(FlowItemKey(flow, flow.index));
-        if (nextWidth == kUnknown)
-            nextWidth = 0.0f;
         float nextLeft = ImGui::GetItemRectMax().x + ImGui::GetStyle().ItemSpacing.x;
-        if (nextLeft + nextWidth <= flow.rightEdge)
+        if (nextWidth != kUnknown && nextLeft + nextWidth <= flow.rightEdge)
             ImGui::SameLine();
     }
     ++flow.index;

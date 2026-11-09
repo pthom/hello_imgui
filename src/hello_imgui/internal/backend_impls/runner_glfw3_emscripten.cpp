@@ -42,14 +42,12 @@ namespace HelloImGui
     {
         RunnerGlfw3::Impl_InitPlatformBackend();
         ImGuiTouch::SetupEmscripten();  // which pointer is a finger, the fingers (the pinch)
-        InstallEmscriptenTapZones();
         InstallEmscriptenViewportResizeRelay();
         ImGuiTouch::SetupEmscriptenKeyboard();  // here rather than in Run(): ManualRender does not go through Run()
     }
 
     void RunnerGlfw3Emscripten::Impl_PollEvents()
     {
-        EmscriptenPushTapZones(ImGui::GetIO().DisplaySize.x);
         RunnerGlfw3::Impl_PollEvents();
     }
 

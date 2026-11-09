@@ -207,8 +207,22 @@ void AddFingerEvent(int id, const ImVec2& pos, ImGuiTouchPhase phase)
             index = i;
     if (!down)
     {
-        if (index >= 0)
-            s.fingers.erase(s.fingers.Data + index);
+        if (index < 0)
+            return;
+        // One of the two fingers of the gesture lifts while a third is down: the third takes its place, and the
+        // scale goes on from where it was (no jump), measured from the new pair
+        const bool pairChanges = (index < 2 && s.fingers.Size >= 3);
+        const float scaleBefore = (pairChanges && s.startDistance > 0.f)
+            ? s.scaleBase * Distance(s.fingers[0], s.fingers[1]) / s.startDistance : 1.f;
+        s.fingers.erase(s.fingers.Data + index);
+        if (pairChanges)
+        {
+            s.scaleBase = scaleBefore;
+            s.startDistance = Distance(s.fingers[0], s.fingers[1]);
+            s.startCenter = Center(s.fingers[0], s.fingers[1]);
+            s.lastDistance = s.startDistance;
+            s.lastCenter = s.startCenter;
+        }
         return;
     }
     if (index >= 0)
@@ -217,6 +231,7 @@ void AddFingerEvent(int id, const ImVec2& pos, ImGuiTouchPhase phase)
         s.fingers.push_back({id, pos});
     if (!wasTwo && s.fingers.Size >= 2)  // the second finger landed: the pinch and the drag measure from here
     {
+        s.scaleBase = 1.f;
         s.startDistance = Distance(s.fingers[0], s.fingers[1]);
         s.startCenter = Center(s.fingers[0], s.fingers[1]);
     }
@@ -287,7 +302,7 @@ void UpdateTouchPinch(bool scalesFont)
         distance = Distance(s.fingers[0], s.fingers[1]);
         center = Center(s.fingers[0], s.fingers[1]);
         if (s.startDistance > 0.f)
-            pinchScale = distance / s.startDistance;
+            pinchScale = s.scaleBase * distance / s.startDistance;
         move = center - s.startCenter;
     }
 

@@ -328,7 +328,24 @@ namespace HelloImGui
         HelloImGui::FreeAssetFileData(&imageAsset);
     }
 
-    void RunnerSdl2::Impl_NewFrame_PlatformBackend() { ImGui_ImplSDL2_NewFrame(); }
+    void RunnerSdl2::Impl_NewFrame_PlatformBackend()
+    {
+#ifdef HELLOIMGUI_IOS
+        // The on-screen keyboard: SDL shows it while its text input is started. Dear ImGui's SDL2 backend starts it
+        // on Android only (its IME handler); iOS needs the same, when a widget wants text.
+        static bool textInputStarted = false;
+        bool wantTextInput = ImGui::GetIO().WantTextInput;
+        if (wantTextInput != textInputStarted)
+        {
+            if (wantTextInput)
+                SDL_StartTextInput();
+            else
+                SDL_StopTextInput();
+            textInputStarted = wantTextInput;
+        }
+#endif
+        ImGui_ImplSDL2_NewFrame();
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //

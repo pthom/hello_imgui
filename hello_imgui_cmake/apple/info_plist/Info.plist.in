@@ -28,5 +28,10 @@
 
     <key>NSBluetoothAlwaysUsageDescription</key>
     <string>Bluetooth is used (by the SDL Library) when using Bluetooth joysticks</string>
+
+    <!-- iOS: a launch screen (empty: the system's), so that the app fills the screen; without one, iOS letterboxes
+         the app to an old phone's size. Ignored on macOS. -->
+    <key>UILaunchScreen</key>
+    <dict/>
 </dict>
 </plist>

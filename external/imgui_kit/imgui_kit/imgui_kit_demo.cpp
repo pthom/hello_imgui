@@ -24,12 +24,9 @@ Index of this file:
 
 #define IMGUI_DEMO_MARKER(section)  do { ImGui::DemoMarker("imgui_kit_demo.cpp", __LINE__, section); } while (0)
 
-namespace
-{
-
 // After a label, a widget too wide for the rest of the line goes under it: a narrow window (a phone) keeps its rows
 // on screen
-void NextLineIfTooWide(float widget_width)
+static void NextLineIfTooWide(float widget_width)
 {
     if (widget_width > ImGui::GetContentRegionAvail().x)
         ImGui::NewLine();
@@ -41,7 +38,7 @@ void NextLineIfTooWide(float widget_width)
 
 // The theme and the frame rounding apply to the whole application; "App" restores the colors it had.
 // The font size applies to the demo.
-void DemoToolbar(float* font_size)
+static void DemoToolbar(float* font_size)
 {
     IMGUI_DEMO_MARKER("Toolbar");
     static ImVec4 app_colors[ImGuiCol_COUNT];
@@ -100,7 +97,7 @@ void DemoToolbar(float* font_size)
 // [SECTION] Em units
 //-----------------------------------------------------------------------------
 
-void DemoEmUnits()
+static void DemoEmUnits()
 {
     IMGUI_DEMO_MARKER("Em units");
     if (!ImGui::CollapsingHeader("Em units"))
@@ -108,11 +105,11 @@ void DemoEmUnits()
     ImGui::TextWrapped("Sizes in em follow the font: the first button is 8 em wide and 2 em high, on any screen. "
                        "Change the font size at the top: it grows with the text, as a standard button does. "
                        "The last button keeps its size in pixels: at a large font, its label gets cut.");
-    ImGui::Button("8 x 2 em", ImGuiKit::EmToVec2(8.f, 2.f));
+    ImGui::Button("8 x 2 em", ImGuiKit::EmToVec2(8.0f, 2.0f));
     ImGui::SameLine();
     ImGui::Button("A standard button");
     ImGui::SameLine();
-    ImGui::Button("100 x 30 px", ImVec2(100.f, 30.f));
+    ImGui::Button("100 x 30 px", ImVec2(100.0f, 30.0f));
     ImGui::SameLine();
     ImGuiKit::HelpMarker("EmToVec2(8, 2) gives the size in pixels, from the current font size.");
     ImGui::Text("1 em = %.1f px", ImGuiKit::EmSize());
@@ -122,7 +119,7 @@ void DemoEmUnits()
 // [SECTION] Layout
 //-----------------------------------------------------------------------------
 
-void DemoFillRow()
+static void DemoFillRow()
 {
     IMGUI_DEMO_MARKER("Layout/Fill row");
     if (!ImGui::TreeNode("Fill row"))
@@ -150,7 +147,7 @@ void DemoFillRow()
     ImGui::TreePop();
 }
 
-void DemoAlignedGroup()
+static void DemoAlignedGroup()
 {
     IMGUI_DEMO_MARKER("Layout/Aligned group");
     if (!ImGui::TreeNode("Aligned group"))
@@ -174,7 +171,7 @@ void DemoAlignedGroup()
     ImGui::TreePop();
 }
 
-void DemoColumn()
+static void DemoColumn()
 {
     IMGUI_DEMO_MARKER("Layout/Column");
     if (!ImGui::TreeNode("Column"))
@@ -190,7 +187,7 @@ void DemoColumn()
         ImGuiKit::BeginColumn("column");
         ImGui::Text("%s", labels[i]);
         ImGuiKit::BeginAlignedGroup("slider", 0.5f);
-        ImGui::VSliderFloat("##v", ImGuiKit::EmToVec2(1.6f, 6.f), &values[i], 0.0f, 1.0f, "");
+        ImGui::VSliderFloat("##v", ImGuiKit::EmToVec2(1.6f, 6.0f), &values[i], 0.0f, 1.0f, "");
         ImGuiKit::EndAlignedGroup();
         ImGuiKit::BeginAlignedGroup("help", 0.5f);
         ImGuiKit::HelpMarker(helps[i]);
@@ -203,7 +200,7 @@ void DemoColumn()
     ImGui::TreePop();
 }
 
-void DemoLabelColumn()
+static void DemoLabelColumn()
 {
     IMGUI_DEMO_MARKER("Layout/Label column");
     if (!ImGui::TreeNode("Label column"))
@@ -230,7 +227,7 @@ void DemoLabelColumn()
     ImGui::TreePop();
 }
 
-void DemoGroupPanel()
+static void DemoGroupPanel()
 {
     IMGUI_DEMO_MARKER("Layout/Group panel");
     if (!ImGui::TreeNode("Group panel"))
@@ -248,7 +245,7 @@ void DemoGroupPanel()
     ImGuiKit::BeginGroupPanel("Display");
     ImGuiKit::BeginLabelColumn("display");
     ImGuiKit::Label("Gamma");
-    ImGui::SetNextItemWidth(ImGuiKit::EmSize(8.f));
+    ImGui::SetNextItemWidth(ImGuiKit::EmSize(8.0f));
     ImGui::SliderFloat("##gamma", &gamma, 0.2f, 3.0f);
     ImGuiKit::Label("Flip");
     ImGui::Checkbox("##flip", &flip);
@@ -257,7 +254,7 @@ void DemoGroupPanel()
     ImGui::TreePop();
 }
 
-void DemoFlow()
+static void DemoFlow()
 {
     IMGUI_DEMO_MARKER("Layout/Flow");
     if (!ImGui::TreeNode("Flow"))
@@ -284,7 +281,7 @@ void DemoFlow()
     ImGui::TreePop();
 }
 
-void DemoLayout()
+static void DemoLayout()
 {
     IMGUI_DEMO_MARKER("Layout");
     if (!ImGui::CollapsingHeader("Layout"))
@@ -302,7 +299,7 @@ void DemoLayout()
 // [SECTION] Widgets
 //-----------------------------------------------------------------------------
 
-void DemoHelpMarker()
+static void DemoHelpMarker()
 {
     IMGUI_DEMO_MARKER("Widgets/Help marker");
     if (!ImGui::TreeNode("Help marker"))
@@ -327,7 +324,7 @@ void DemoHelpMarker()
     ImGui::TreePop();
 }
 
-void DemoIconButton()
+static void DemoIconButton()
 {
     IMGUI_DEMO_MARKER("Widgets/Icon button");
     if (!ImGui::TreeNode("Icon button"))
@@ -351,7 +348,7 @@ void DemoIconButton()
     ImGui::TreePop();
 }
 
-void DemoSegmentedSwitch()
+static void DemoSegmentedSwitch()
 {
     IMGUI_DEMO_MARKER("Widgets/Segmented switch");
     if (!ImGui::TreeNode("Segmented switch"))
@@ -375,7 +372,7 @@ void DemoSegmentedSwitch()
     ImGui::TreePop();
 }
 
-void DemoFitText()
+static void DemoFitText()
 {
     IMGUI_DEMO_MARKER("Widgets/Fit text");
     if (!ImGui::TreeNode("Fit text"))
@@ -385,10 +382,10 @@ void DemoFitText()
     static int max_lines = 2;
     ImGuiKit::BeginLabelColumn("fit_text");
     ImGuiKit::Label("Width");
-    ImGui::SetNextItemWidth(ImGuiKit::EmSize(10.f));
+    ImGui::SetNextItemWidth(ImGuiKit::EmSize(10.0f));
     ImGui::SliderFloat("##width", &width_em, 4.0f, 40.0f, "%.0f em");
     ImGuiKit::Label("Lines");
-    ImGui::SetNextItemWidth(ImGuiKit::EmSize(10.f));
+    ImGui::SetNextItemWidth(ImGuiKit::EmSize(10.0f));
     ImGui::SliderInt("##lines", &max_lines, 1, 5);
     ImGuiKit::EndLabelColumn();
 
@@ -406,7 +403,7 @@ void DemoFitText()
     ImGui::TreePop();
 }
 
-void DemoResizeHandle()
+static void DemoResizeHandle()
 {
     IMGUI_DEMO_MARKER("Widgets/Resize handle");
     if (!ImGui::TreeNode("Resize handle"))
@@ -414,19 +411,19 @@ void DemoResizeHandle()
     ImGui::TextWrapped("Drag the grip at the bottom-right corner: the widget before it takes the new size. "
                        "Any widget that takes a size: a text field, a child window, a plot.");
     static char text[512] = "A text field that the reader can make larger.\nDrag its corner.";
-    static ImVec2 text_size = ImGuiKit::EmToVec2(20.f, 4.f);
+    static ImVec2 text_size = ImGuiKit::EmToVec2(20.0f, 4.0f);
     ImGui::InputTextMultiline("##text", text, IM_ARRAYSIZE(text), text_size);
-    ImGuiKit::ResizeHandle("##text_size", &text_size, ImGuiKit::EmToVec2(6.f, 2.f));
+    ImGuiKit::ResizeHandle("##text_size", &text_size, ImGuiKit::EmToVec2(6.0f, 2.0f));
 
-    static ImVec2 child_size = ImGuiKit::EmToVec2(20.f, 6.f);
+    static ImVec2 child_size = ImGuiKit::EmToVec2(20.0f, 6.0f);
     ImGui::BeginChild("##child", child_size, ImGuiChildFlags_Borders);
     ImGui::Text("A child window, %.0f x %.0f px", child_size.x, child_size.y);
     ImGui::EndChild();
-    ImGuiKit::ResizeHandle("##child_size", &child_size, ImGuiKit::EmToVec2(10.f, 3.f));
+    ImGuiKit::ResizeHandle("##child_size", &child_size, ImGuiKit::EmToVec2(10.0f, 3.0f));
     ImGui::TreePop();
 }
 
-void DemoWidgets()
+static void DemoWidgets()
 {
     IMGUI_DEMO_MARKER("Widgets");
     if (!ImGui::CollapsingHeader("Widgets"))
@@ -445,28 +442,37 @@ void DemoWidgets()
 // A canvas that zooms and pans, as a map or an image viewer does. With a mouse: the wheel zooms (it claims the wheel
 // while hovered: ImGui::SetItemKeyOwner), a drag pans. With fingers: one finger pans at once
 // (ImGuiTouch::SetItemTakesDrags), two fingers zoom and pan at once (ImGuiTouch::ItemPinch: the gesture's data)
-void ZoomableCanvas(const char* str_id, ImVec2 size)
+// The canvas's view: its zoom, and where the content's origin is, from the canvas's corner, in pixels
+struct CanvasView
 {
-    static float zoom = 1.0f;
-    static ImVec2 offset(0.0f, 0.0f);  // where the content's origin is, from the canvas's corner, in pixels
+    float zoom = 1.0f;
+    ImVec2 offset = ImVec2(0.0f, 0.0f);
+};
+
+// Zoom by `factor` around a point of the screen (relative to the canvas's corner): the content under it stays there
+static void ZoomCanvasAround(CanvasView* view, ImVec2 point, float factor)
+{
+    float new_zoom = ImClamp(view->zoom * factor, 0.25f, 8.0f);
+    view->offset.x = point.x - (point.x - view->offset.x) * new_zoom / view->zoom;
+    view->offset.y = point.y - (point.y - view->offset.y) * new_zoom / view->zoom;
+    view->zoom = new_zoom;
+}
+
+static void ZoomableCanvas(const char* str_id, ImVec2 size)
+{
+    static CanvasView view;
+    float& zoom = view.zoom;
+    ImVec2& offset = view.offset;
     ImGuiIO& io = ImGui::GetIO();
     ImVec2 p0 = ImGui::GetCursorScreenPos();
     ImVec2 p1(p0.x + size.x, p0.y + size.y);
-    // Zoom by `factor` around a point of the screen: the content under it stays there
-    auto zoom_around = [&](ImVec2 point, float factor) {
-        float new_zoom = ImClamp(zoom * factor, 0.25f, 8.0f);
-        float px = point.x - p0.x, py = point.y - p0.y;
-        offset.x = px - (px - offset.x) * new_zoom / zoom;
-        offset.y = py - (py - offset.y) * new_zoom / zoom;
-        zoom = new_zoom;
-    };
 
     ImGui::InvisibleButton(str_id, size);
     ImGuiTouch::SetItemTakesDrags();
     ImGuiTouchPinch pinch = ImGuiTouch::ItemPinch();
     if (pinch.Active)
     {
-        zoom_around(pinch.Center, pinch.ScaleDelta);
+        ZoomCanvasAround(&view, ImVec2(pinch.Center.x - p0.x, pinch.Center.y - p0.y), pinch.ScaleDelta);
         offset.x += pinch.CenterDelta.x;
         offset.y += pinch.CenterDelta.y;
     }
@@ -476,7 +482,7 @@ void ZoomableCanvas(const char* str_id, ImVec2 size)
         offset.y += io.MouseDelta.y;
     }
     if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY) && io.MouseWheel != 0.0f)
-        zoom_around(io.MousePos, ImPow(1.1f, io.MouseWheel));
+        ZoomCanvasAround(&view, ImVec2(io.MousePos.x - p0.x, io.MousePos.y - p0.y), ImPow(1.1f, io.MouseWheel));
 
     // The gesture, as the canvas sees it: a dot under one finger (or the mouse); for two fingers, a ring at their
     // middle that follows their spread, and the layer's decision (pinch or pan). It fades once they lift.
@@ -556,11 +562,11 @@ ImGuiTouch::SetupEmscripten();  // in a browser: which pointer is a finger, the 
 // - A widget that a finger drags: ImGuiTouch::SetItemTakesDrags() right after it.
 // - A widget that zooms: ImGuiTouch::ItemPinch() right after it (SetItemPinchAsWheel() if it zooms by the wheel).
 // - A widget that reads the wheel claims it: if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY)) ...
-// Hello ImGui does the setup itself (RunnerParams::touchConfig).)";
+// Hello ImGui does the setup itself (RunnerParams::touch_config).)";
 
 // The settings change the application's touch layer, live. "Simulate a touch source" lets the mouse play a finger.
 // Without the touch layer (an app that shows this demo without ImGuiTouch::Setup()), a note instead of the section
-bool HasTouchLayer()
+static bool HasTouchLayer()
 {
     if (ImGuiTouch::IsInstalled())
         return true;
@@ -569,7 +575,7 @@ bool HasTouchLayer()
     return false;
 }
 
-void DemoTouch()
+static void DemoTouch()
 {
     IMGUI_DEMO_MARKER("Touch");
     if (!ImGui::CollapsingHeader("Touch"))
@@ -609,21 +615,21 @@ void DemoTouch()
     ImGuiKit::Label("Pinch");
     ImGui::Checkbox("scales the font", &config.PinchScalesFont);
     ImGuiKit::Label("Hold");
-    ImGui::SetNextItemWidth(ImGuiKit::EmSize(8.f));
-    ImGui::SliderFloat("##hold", &config.HoldSeconds, 0.f, 1.f, "%.2f s");
+    ImGui::SetNextItemWidth(ImGuiKit::EmSize(8.0f));
+    ImGui::SliderFloat("##hold", &config.HoldSeconds, 0.0f, 1.0f, "%.2f s");
     ImGui::SameLine();
     ImGuiKit::HelpMarker("A finger still for this long hands its press to the widget under it, which then gets the "
                          "drag (a slider, a text selection). At zero, the widgets get every press at once.");
     ImGuiKit::Label("Long press");
     ImGui::Checkbox("is a right click", &config.LongPressIsRightClick);
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(ImGuiKit::EmSize(8.f));
-    ImGui::SliderFloat("##long_press", &config.LongPressSeconds, 0.3f, 2.f, "%.2f s");
+    ImGui::SetNextItemWidth(ImGuiKit::EmSize(8.0f));
+    ImGui::SliderFloat("##long_press", &config.LongPressSeconds, 0.3f, 2.0f, "%.2f s");
     ImGuiKit::Label("Scroll bars");
     ImGui::Checkbox("thin", &config.ThinScrollbars);
     ImGuiKit::EndLabelColumn();
 
-    ImGui::BeginChild("##touch_zone", ImVec2(0.0f, ImGuiKit::EmSize(16.f)), ImGuiChildFlags_Borders);
+    ImGui::BeginChild("##touch_zone", ImVec2(0.0f, ImGuiKit::EmSize(16.0f)), ImGuiChildFlags_Borders);
     ImGui::Bullet();
     ImGui::TextWrapped("Swipe: a finger that drags this zone scrolls it, with inertia, and a bounce at the end.");
     ImGui::Bullet();
@@ -640,10 +646,10 @@ void DemoTouch()
     static char text[] = "Napoleon's army crossed the Niemen in June 1812, with more than four hundred thousand men. "
                          "Six months later, fewer than ten thousand came back.";
     ImGui::TextWrapped("Select a few words: a short hold, then a drag.");
-    ImGui::InputTextMultiline("##select", text, IM_ARRAYSIZE(text), ImVec2(-FLT_MIN, ImGuiKit::EmSize(4.f)),
+    ImGui::InputTextMultiline("##select", text, IM_ARRAYSIZE(text), ImVec2(-FLT_MIN, ImGuiKit::EmSize(4.0f)),
                               ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_WordWrap);
 
-    ZoomableCanvas("##canvas", ImGuiKit::EmToVec2(16.f, 8.f));
+    ZoomableCanvas("##canvas", ImGuiKit::EmToVec2(16.0f, 8.0f));
     ImGui::SameLine();
     ImGuiKit::HelpMarker("A canvas that zooms and pans, as a plot or an image viewer does:\n\n"
                          "- It calls ImGuiTouch::SetItemTakesDrags() right after it: a drag that starts on it pans it "
@@ -663,11 +669,11 @@ void DemoTouch()
     // takes the sideways drags (ImGuiTouch::SetItemTakesDrags(ImGuiTouchAxis_X)): a sideways drag on it moves it at
     // once
     ImGui::TextWrapped("A sideways swipe scrolls this row; a tap clicks a button; a sideways drag moves the slider:");
-    ImGui::BeginChild("##sideways", ImVec2(0.0f, ImGuiKit::EmSize(5.f)), ImGuiChildFlags_Borders,
+    ImGui::BeginChild("##sideways", ImVec2(0.0f, ImGuiKit::EmSize(5.0f)), ImGuiChildFlags_Borders,
                       ImGuiWindowFlags_HorizontalScrollbar);
     static int taps[8] = {};
     // Three per screen: the row scrolls
-    float card_width = ImMax(ImGuiKit::EmSize(6.f), ImGui::GetContentRegionAvail().x * 0.3f);
+    float card_width = ImMax(ImGuiKit::EmSize(6.0f), ImGui::GetContentRegionAvail().x * 0.3f);
     static float row_value = 0.5f;
     ImGui::SetNextItemWidth(card_width);
     ImGui::SliderFloat("##row_slider", &row_value, 0.0f, 1.0f);
@@ -677,7 +683,7 @@ void DemoTouch()
         ImGui::SameLine();
         char label[32];
         ImFormatString(label, IM_ARRAYSIZE(label), "Card %d\n%d taps###card%d", i + 1, taps[i], i);
-        if (ImGui::Button(label, ImVec2(card_width, ImGuiKit::EmSize(3.f))))
+        if (ImGui::Button(label, ImVec2(card_width, ImGuiKit::EmSize(3.0f))))
             taps[i]++;
     }
     ImGui::EndChild();
@@ -695,7 +701,7 @@ void DemoTouch()
 //-----------------------------------------------------------------------------
 
 // The phone's keyboard, in a browser: the fields of all kinds, one of them in a child that scrolls
-void DemoTouchKeyboard()
+static void DemoTouchKeyboard()
 {
     IMGUI_DEMO_MARKER("Touch keyboard");
     if (!ImGui::CollapsingHeader("Touch keyboard"))
@@ -709,10 +715,10 @@ void DemoTouchKeyboard()
     static char line[128] = "";
     ImGui::InputTextWithHint("text", "type here", line, IM_ARRAYSIZE(line));
     static char lines[1024] = "Several lines:\nmove the caret from the keyboard's space bar.";
-    ImGui::InputTextMultiline("lines", lines, IM_ARRAYSIZE(lines), ImVec2(0.0f, ImGuiKit::EmSize(5.f)));
+    ImGui::InputTextMultiline("lines", lines, IM_ARRAYSIZE(lines), ImVec2(0.0f, ImGuiKit::EmSize(5.0f)));
 
     ImGui::TextWrapped("A field in a child that scrolls: it stays above the keyboard.");
-    ImGui::BeginChild("##keyboard_child", ImVec2(0.0f, ImGuiKit::EmSize(10.f)), ImGuiChildFlags_Borders);
+    ImGui::BeginChild("##keyboard_child", ImVec2(0.0f, ImGuiKit::EmSize(10.0f)), ImGuiChildFlags_Borders);
     for (int i = 1; i <= 12; i++)
         ImGui::Text("Content above the field (%d)", i);
     static char deep[128] = "";
@@ -722,15 +728,13 @@ void DemoTouchKeyboard()
     ImGui::EndChild();
 }
 
-} // namespace
-
 //-----------------------------------------------------------------------------
 // [SECTION] Demo window
 //-----------------------------------------------------------------------------
 
 void ImGuiKit::ShowDemoWindow(bool* p_open)
 {
-    ImGui::SetNextWindowSize(ImGuiKit::EmToVec2(36.f, 30.f), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImGuiKit::EmToVec2(36.0f, 30.0f), ImGuiCond_FirstUseEver);
     if (!ImGui::Begin("ImGuiKit Demo", p_open))
     {
         ImGui::End();

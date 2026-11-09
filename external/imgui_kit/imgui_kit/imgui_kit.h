@@ -13,7 +13,7 @@ Index of this file:
 // [SECTION] Widgets
 // [SECTION] Wheel session
 // [SECTION] Idling
-// [SECTION] Enums
+// [SECTION] Enums (ImGuiKit)
 // [SECTION] Touch (ImGuiTouch)
 
 */
@@ -34,9 +34,9 @@ Index of this file:
 #include <vector>
 #endif
 
-typedef int ImGuiKitIcon;           // -> enum ImGuiKitIcon_
-typedef int ImGuiTouchScrollMode;   // -> enum ImGuiTouchScrollMode_
-typedef int ImGuiTouchPinchDelivery;  // -> enum ImGuiTouchPinchDelivery_
+typedef int ImGuiKitIcon;            // -> enum ImGuiKitIcon_
+typedef int ImGuiTouchScrollMode;    // -> enum ImGuiTouchScrollMode_
+typedef int ImGuiTouchPinchDelivery; // -> enum ImGuiTouchPinchDelivery_
 typedef int ImGuiTouchAxis;          // -> enum ImGuiTouchAxis_
 typedef int ImGuiTouchPhase;         // -> enum ImGuiTouchPhase_
 typedef int ImGuiTouchPinchKind;     // -> enum ImGuiTouchPinchKind_
@@ -58,9 +58,13 @@ IMGUI_API void ShowDemoContents();
 //-----------------------------------------------------------------------------
 // Sizes in multiples of the current font size, as the em unit of CSS: they follow the font,
 // so they stay right on high-DPI screens and when the user zooms the text.
-
+// Size your widgets in em rather than in bare pixels (whose size in millimeters varies with the DPI):
+//     ImGui::Button("Click", ImVec2(130, 39));                 // 130 x 39 pixels: small on a high-DPI screen
+//     ImGui::Button("Click", ImGuiKit::EmToVec2(10, 3));       // 10 em x 3 em (the same at the default font size of
+//                                                              // 13 px): the same size on every screen, it follows
+//                                                              // the font
 IMGUI_API float  EmSize();                          // The current font size, in pixels
-IMGUI_API float  EmSize(float nb_lines);            // The height of nb_lines lines of text, in pixels
+IMGUI_API float  EmSize(float lines);               // The height of this many lines of text, in pixels
 IMGUI_API ImVec2 EmToVec2(float x, float y);        // A size or a position in em, in pixels
 IMGUI_API ImVec2 EmToVec2(ImVec2 v);
 IMGUI_API ImVec2 PixelsToEm(ImVec2 pixels);         // Pixels, in em
@@ -222,15 +226,15 @@ IMGUI_API bool   SegmentedSwitch(const char* str_id, int* current, const std::ve
 #endif
 
 // Fit text: the text, cut at a word and ended with an ellipsis, so that it takes at most max_lines once wrapped at
-// wrap_width (in the current font). Returns the text itself when it fits; else a buffer of the kit, valid until the
-// next call (copy it to keep two results).
+// wrap_width (in the current font). Returns the text itself when it fits; else a buffer of the kit, valid for this
+// frame (a small cache: the cut is computed once per text and width, not at each frame; copy it to keep it).
 //
 //     ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + width);
 //     ImGui::TextUnformatted(ImGuiKit::FitText(summary, width, 2));   // two lines at most, then "..."
 //     ImGui::PopTextWrapPos();
 IMGUI_API const char* FitText(const char* text, float wrap_width, int max_lines);
 
-// Resize handle: a grip at the bottom-right corner of the last item, which resizes it. Call it right after the item,
+// Resize handle: a grip in the bottom-right corner of the last item, which resizes it. Call it right after the item,
 // which takes *size; dragging the grip changes *size (at least min_size). Returns true when *size changed.
 // The grip lies over the item's corner: an item that acts on a bare press (a button) also sees the press that starts
 // a resize, unless ImGui::SetNextItemAllowOverlap() is called before it. Plots, fields and child windows need nothing.
@@ -252,14 +256,10 @@ IMGUI_API bool   ResizeHandle(const char* str_id, ImVec2* size, const ImVec2& mi
 // Call it once, after ImGui::CreateContext(); a later call changes `enabled` (false: Dear ImGui's own behavior).
 IMGUI_API void   SetupWheelSession(bool enabled = true);
 
-} // namespace ImGuiKit
-
 //-----------------------------------------------------------------------------
 // [SECTION] Idling
 //-----------------------------------------------------------------------------
 
-namespace ImGuiKit
-{
 // True while something of the kit moves on its own: a widget's animation (a segmented switch that slides), or the
 // touch layer's (ImGuiTouch::IsAnimating(): a fling, a bounce, a long press's ring). An app that sleeps when nothing
 // happens keeps drawing frames meanwhile; one that draws every frame can ignore it. With or without the touch layer.
@@ -269,7 +269,7 @@ IMGUI_API void   RequestAnimation();
 } // namespace ImGuiKit
 
 //-----------------------------------------------------------------------------
-// [SECTION] Enums
+// [SECTION] Enums (ImGuiKit)
 //-----------------------------------------------------------------------------
 
 // The symbols of IconButton()

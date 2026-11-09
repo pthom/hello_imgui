@@ -12,53 +12,72 @@
 //   RenderPost:   the draw data exists: the overscroll moves the content past its end
 // A hook belongs to its context: Setup() installs the hooks of the current context, once (their owner tells).
 
-namespace
+static const ImGuiID TOUCH_HOOKS_OWNER = ImHashStr("ImGuiTouch");
+
+// SimulateTouch: the frame's mouse events (queued by the backend, which may tag each of them as a mouse's) become a
+// touch screen's, and so does the source of what follows. When it is turned off, the source goes back to the mouse.
+static void ApplySimulatedTouch(ImGuiContext& g, ImGuiTouchContext& tc)
 {
-    const ImGuiID kTouchHooksOwner = ImHashStr("ImGuiTouch");
-
-    ImGuiTouchContext& Ctx() { return ImGuiTouch::GetTouchContext(); }
-
-    // SimulateTouch: the frame's mouse events (queued by the backend, which may tag each of them as a mouse's) become a
-    // touch screen's, and so does the source of what follows. When it is turned off, the source goes back to the mouse.
-    void ApplySimulatedTouch(ImGuiContext& g, ImGuiTouchContext& tc)
+    if (tc.Config.SimulateTouch)
     {
-        if (tc.Config.SimulateTouch)
+        for (ImGuiInputEvent& e : g.InputEventsQueue)
         {
-            for (ImGuiInputEvent& e : g.InputEventsQueue)
-            {
-                if (e.AddedByTestEngine)  // the touch layer's own events (replayed, with the source they need)
-                    continue;
-                if (e.Type == ImGuiInputEventType_MousePos)
-                    e.MousePos.MouseSource = ImGuiMouseSource_TouchScreen;
-                else if (e.Type == ImGuiInputEventType_MouseButton)
-                    e.MouseButton.MouseSource = ImGuiMouseSource_TouchScreen;
-                else if (e.Type == ImGuiInputEventType_MouseWheel)
-                    e.MouseWheel.MouseSource = ImGuiMouseSource_TouchScreen;
-            }
-            g.IO.AddMouseSourceEvent(ImGuiMouseSource_TouchScreen);
+            if (e.AddedByTestEngine)  // the touch layer's own events (replayed, with the source they need)
+                continue;
+            if (e.Type == ImGuiInputEventType_MousePos)
+                e.MousePos.MouseSource = ImGuiMouseSource_TouchScreen;
+            else if (e.Type == ImGuiInputEventType_MouseButton)
+                e.MouseButton.MouseSource = ImGuiMouseSource_TouchScreen;
+            else if (e.Type == ImGuiInputEventType_MouseWheel)
+                e.MouseWheel.MouseSource = ImGuiMouseSource_TouchScreen;
         }
-        else if (tc.SimulatedTouch)
-            g.IO.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
-        tc.SimulatedTouch = tc.Config.SimulateTouch;
+        g.IO.AddMouseSourceEvent(ImGuiMouseSource_TouchScreen);
     }
-
-    bool HasHooks(ImGuiContext* ctx, ImGuiID owner)
-    {
-        for (const ImGuiContextHook& hook : ctx->Hooks)
-            if (hook.Owner == owner && hook.Type != ImGuiContextHookType_PendingRemoval_)
-                return true;
-        return false;
-    }
-
-    void AddHook(ImGuiContext* ctx, ImGuiID owner, ImGuiContextHookType type, ImGuiContextHookCallback callback)
-    {
-        ImGuiContextHook hook;
-        hook.Type = type;
-        hook.Owner = owner;
-        hook.Callback = callback;
-        ImGui::AddContextHook(ctx, &hook);
-    }
+    else if (tc.SimulatedTouch)
+        g.IO.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
+    tc.SimulatedTouch = tc.Config.SimulateTouch;
 }
+
+static bool HasHooks(ImGuiContext* ctx, ImGuiID owner)
+{
+    for (const ImGuiContextHook& hook : ctx->Hooks)
+        if (hook.Owner == owner && hook.Type != ImGuiContextHookType_PendingRemoval_)
+            return true;
+    return false;
+}
+
+static void AddHook(ImGuiContext* ctx, ImGuiID owner, ImGuiContextHookType type, ImGuiContextHookCallback callback)
+{
+    ImGuiContextHook hook;
+    hook.Type = type;
+    hook.Owner = owner;
+    hook.Callback = callback;
+    ImGui::AddContextHook(ctx, &hook);
+}
+
+// The steps, at the moments Dear ImGui names (see the top of this file)
+static void NewFramePreHook(ImGuiContext* g, ImGuiContextHook*)
+{
+    ApplySimulatedTouch(*g, ImGuiTouch::GetTouchContext());
+    ImGuiTouch::PinchBeforeNewFrame();
+}
+static void NewFramePostHook(ImGuiContext*, ImGuiContextHook*)
+{
+    ImGuiTouchContext& tc = ImGuiTouch::GetTouchContext();
+    tc.WasAnimating = tc.Animating;
+    tc.Animating = false;
+    ImGuiTouch::ApplyFingerCancel();
+    ImGuiTouch::UpdateTouchScroll(tc.Config.ScrollMode, tc.Config.LongPressIsRightClick, tc.Config.ThinScrollbars);
+    ImGuiTouch::UpdateTouchPinch(tc.Config.PinchScalesFont);
+}
+static void EndFramePreHook(ImGuiContext*, ImGuiContextHook*) { ImGuiTouch::DrawTouchScrollbarGrab(); }
+static void RenderPostHook(ImGuiContext*, ImGuiContextHook*) { ImGuiTouch::ApplyTouchOverscroll(); }
+#ifdef IMGUI_HAS_ITEM_DRAG_AXIS_CALLBACK
+static void ItemDragAxisCallback(ImGuiContext*, ImGuiID, const ImRect& bb, ImGuiAxis axis)
+{
+    ImGuiTouch::AddDragTaker(bb, true, axis);
+}
+#endif
 
 namespace ImGuiTouch
 {
@@ -97,33 +116,18 @@ void Setup(const ImGuiTouchConfig& config)
 #ifdef IMGUI_HAS_ITEM_DRAG_AXIS_CALLBACK
     // A Dear ImGui that tells its draggable widgets (sliders, drags, the color picker): they take a finger's drag along
     // their axis, as with SetItemTakesDrags(ImGuiTouchAxis_X or _Y)
-    ctx->ItemDragAxisCallback = [](ImGuiContext*, ImGuiID, const ImRect& bb, ImGuiAxis axis) {
-        AddDragTaker(bb, true, axis);
-    };
+    ctx->ItemDragAxisCallback = ItemDragAxisCallback;
 #endif
-    if (HasHooks(ctx, kTouchHooksOwner))
+    if (HasHooks(ctx, TOUCH_HOOKS_OWNER))
         return;
-    AddHook(ctx, kTouchHooksOwner, ImGuiContextHookType_NewFramePre,
-            [](ImGuiContext* g, ImGuiContextHook*) {
-                ApplySimulatedTouch(*g, Ctx());
-                PinchBeforeNewFrame(*g);
-            });
-    AddHook(ctx, kTouchHooksOwner, ImGuiContextHookType_NewFramePost, [](ImGuiContext*, ImGuiContextHook*) {
-        ImGuiTouchContext& tc = Ctx();
-        tc.WasAnimating = tc.Animating;
-        tc.Animating = false;
-        ApplyFingerCancel();
-        UpdateTouchScroll(tc.Config.ScrollMode, tc.Config.LongPressIsRightClick, tc.Config.ThinScrollbars);
-        UpdateTouchPinch(tc.Config.PinchScalesFont);
-    });
-    AddHook(ctx, kTouchHooksOwner, ImGuiContextHookType_EndFramePre,
-            [](ImGuiContext*, ImGuiContextHook*) { DrawTouchScrollbarGrab(); });
-    AddHook(ctx, kTouchHooksOwner, ImGuiContextHookType_RenderPost,
-            [](ImGuiContext*, ImGuiContextHook*) { ApplyTouchOverscroll(); });
+    AddHook(ctx, TOUCH_HOOKS_OWNER, ImGuiContextHookType_NewFramePre, NewFramePreHook);
+    AddHook(ctx, TOUCH_HOOKS_OWNER, ImGuiContextHookType_NewFramePost, NewFramePostHook);
+    AddHook(ctx, TOUCH_HOOKS_OWNER, ImGuiContextHookType_EndFramePre, EndFramePreHook);
+    AddHook(ctx, TOUCH_HOOKS_OWNER, ImGuiContextHookType_RenderPost, RenderPostHook);
 }
 
 bool IsInstalled() { return FindTouchContext() != nullptr; }
-ImGuiTouchConfig& GetConfig() { return Ctx().Config; }
+ImGuiTouchConfig& GetConfig() { return GetTouchContext().Config; }
 
 // Without the touch layer, nothing records the animations: the kit's widgets animate all the same (an app that draws
 // every frame), and IsAnimating() says false
@@ -141,7 +145,7 @@ void RequestAnimation()
 
 bool ConsumeAnimationRequest()
 {
-    ImGuiTouchContext& tc = Ctx();
+    ImGuiTouchContext& tc = GetTouchContext();
     bool asked = tc.Animating;
     tc.Animating = false;
     return asked;

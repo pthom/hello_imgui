@@ -155,6 +155,7 @@ struct ImGuiKitContext
     ImVector<char> FitTextBuffer;                       // FitText()'s result, when the text was cut
     bool WheelSessionEnabled = true;                    // SetupWheelSession(enabled)
     ImGuiKitWheelSessionState WheelSession;
+    int AnimationFrame = -1;                            // the last frame a widget asked to animate (RequestAnimation)
     bool TouchSetUp = false;                            // an input setup was called: Touch is in use
     ImGuiTouchContext Touch;
 };

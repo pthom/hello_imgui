@@ -361,7 +361,7 @@ bool SegmentedSwitch(const char* str_id, int* current, const char* const labels[
         float step = ImMin(1.0f, ImGui::GetIO().DeltaTime * 18.0f);
         pos = (ImFabs(target - pos) < 0.01f) ? target : pos + (target - pos) * step;
         if (pos != target)
-            ImGuiTouch::RequestAnimation();  // an app that idles keeps drawing meanwhile (IsAnimating())
+            ImGuiKit::RequestAnimation();  // an app that idles keeps drawing meanwhile (IsAnimating())
         storage->SetFloat(pos_id, pos);
         fill_segment(pos, 0.22f);
     }

@@ -12,6 +12,7 @@ Index of this file:
 // [SECTION] Layout
 // [SECTION] Widgets
 // [SECTION] Wheel session
+// [SECTION] Idling
 // [SECTION] Enums
 // [SECTION] Touch (ImGuiTouch)
 
@@ -249,6 +250,20 @@ IMGUI_API void   SetupWheelSession(bool enabled = true);
 } // namespace ImGuiKit
 
 //-----------------------------------------------------------------------------
+// [SECTION] Idling
+//-----------------------------------------------------------------------------
+
+namespace ImGuiKit
+{
+// True while something of the kit moves on its own: a widget's animation (a segmented switch that slides), or the
+// touch layer's (ImGuiTouch::IsAnimating(): a fling, a bounce, a long press's ring). An app that sleeps when nothing
+// happens keeps drawing frames meanwhile; one that draws every frame can ignore it. With or without the touch layer.
+IMGUI_API bool   IsAnimating();
+// A widget that animates calls it at each frame of its animation, so that IsAnimating() is true
+IMGUI_API void   RequestAnimation();
+} // namespace ImGuiKit
+
+//-----------------------------------------------------------------------------
 // [SECTION] Enums
 //-----------------------------------------------------------------------------
 
@@ -410,9 +425,9 @@ namespace ImGuiTouch
 IMGUI_API void   Setup(const ImGuiTouchConfig& config = ImGuiTouchConfig());
 IMGUI_API ImGuiTouchConfig& GetConfig();
 
-// True while the content moves on its own (a fling's inertia, the bounce, an animation): an app that sleeps when
-// nothing happens keeps drawing frames meanwhile. An app that draws every frame can ignore it. False without the
-// touch layer.
+// True while the touch layer moves something on its own (a fling's inertia, the bounce, a long press's ring): an app
+// that sleeps when nothing happens keeps drawing frames meanwhile. False without the touch layer. An app uses
+// ImGuiKit::IsAnimating() instead, which adds the kit's widgets.
 IMGUI_API bool   IsAnimating();
 
 // Right after a widget that a finger drags: a drag that starts on it goes to it, not to the swipe.

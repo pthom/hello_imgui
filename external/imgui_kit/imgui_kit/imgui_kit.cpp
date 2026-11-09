@@ -81,4 +81,14 @@ ImGuiKitContext& GetCurrentContext()
     ImGui::AddContextHook(ctx, &hook);
     return *state;
 }
+
+// A request at this frame or the last one: an app asks after rendering, and one more frame lets the animation land
+bool IsAnimating()
+{
+    const ImGuiKitContext& kit = GetCurrentContext();
+    const bool widgets = kit.AnimationFrame >= 0 && GImGui->FrameCount - kit.AnimationFrame <= 1;
+    return widgets || ImGuiTouch::IsAnimating();
+}
+
+void RequestAnimation() { GetCurrentContext().AnimationFrame = GImGui->FrameCount; }
 } // namespace ImGuiKit

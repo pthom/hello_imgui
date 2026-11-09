@@ -1115,7 +1115,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         // A mouse button (or a finger) held down is an activity, even still: a button that repeats, a drag that pauses
         bool mouseDown = ImGui::GetCurrentContext() != nullptr && ImGui::IsAnyMouseDown();
         // Content that changes on its own asked for this frame (RequestRefresh(), SetItemIsLive()): read at each frame
-        bool refreshRequested = ConsumeRefreshRequest() || ImGuiTouch::IsAnimating();  // (the inertia, the bounce)
+        bool refreshRequested = ConsumeRefreshRequest() || ImGuiKit::IsAnimating();  // the inertia, a switch that slides
         inputs.busy = isTestEngineRunning || ShouldRemoteDisplay() || startedRecently || mouseDown || refreshRequested;
 
         IdlingDecision decision = DecideIdling(params.fpsIdling, inputs, gStatics.idling);

@@ -478,6 +478,33 @@ void ZoomableCanvas(const char* str_id, ImVec2 size)
     if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY) && io.MouseWheel != 0.0f)
         zoom_around(io.MousePos, ImPow(1.1f, io.MouseWheel));
 
+    // The gesture, as the canvas sees it: a dot under one finger (or the mouse); for two fingers, a ring at their
+    // middle that follows their spread, and the layer's decision (pinch or pan). It fades once they lift.
+    static float gesture_alpha = 0.0f;
+    static bool gesture_two = false;
+    static ImVec2 gesture_pos;
+    static float gesture_scale = 1.0f;
+    static ImGuiTouchPinchKind gesture_kind = ImGuiTouchPinchKind_Undecided;
+    if (pinch.Active)
+    {
+        gesture_two = true;
+        gesture_pos = pinch.Center;
+        gesture_scale = pinch.Scale;
+        gesture_kind = pinch.Kind;
+        gesture_alpha = 1.0f;
+    }
+    else if (ImGui::IsItemActive())
+    {
+        gesture_two = false;
+        gesture_pos = io.MousePos;
+        gesture_alpha = 1.0f;
+    }
+    else if (gesture_alpha > 0.0f)
+    {
+        gesture_alpha = ImMax(0.0f, gesture_alpha - io.DeltaTime * 3.0f);
+        ImGuiKit::RequestAnimation();  // an app that idles still draws the fade
+    }
+
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     float rounding = ImGui::GetStyle().FrameRounding;
     draw_list->AddRectFilled(p0, p1, ImGui::GetColorU32(ImGuiCol_FrameBg), rounding);
@@ -492,6 +519,22 @@ void ZoomableCanvas(const char* str_id, ImVec2 size)
     draw_list->AddCircleFilled(center, 1.5f * step, ImGui::GetColorU32(ImGuiCol_SliderGrabActive));
     draw_list->AddRectFilled(ImVec2(center.x + 3.0f * step, center.y - step), ImVec2(center.x + 6.0f * step, center.y + step),
                              ImGui::GetColorU32(ImGuiCol_ButtonActive));
+    if (gesture_alpha > 0.0f)
+    {
+        ImU32 color = ImGui::GetColorU32(ImGuiCol_Text, gesture_alpha);
+        float em = ImGuiKit::EmSize();
+        if (!gesture_two)
+            draw_list->AddCircleFilled(gesture_pos, 0.4f * em, color);
+        else
+        {
+            float radius = 1.5f * em * gesture_scale;
+            draw_list->AddCircle(gesture_pos, radius, color, 0, 2.0f);
+            draw_list->AddCircleFilled(gesture_pos, 0.15f * em, color);
+            const char* kind = (gesture_kind == ImGuiTouchPinchKind_Pinch) ? "pinch"
+                             : (gesture_kind == ImGuiTouchPinchKind_Pan) ? "pan" : "two fingers";
+            draw_list->AddText(ImVec2(gesture_pos.x + radius + 0.3f * em, gesture_pos.y - 0.5f * em), color, kind);
+        }
+    }
     draw_list->PopClipRect();
     draw_list->AddRect(p0, p1, ImGui::GetColorU32(ImGuiCol_Border), rounding);
     char label[32];
@@ -508,7 +551,7 @@ ImGuiTouch::SetupEmscripten();  // in a browser: which pointer is a finger, the 
 #endif
 
 // The render loop: nothing to add, the kit runs inside ImGui::NewFrame() and ImGui::Render().
-// - An app that sleeps when idle keeps drawing while ImGuiTouch::IsAnimating().
+// - An app that sleeps when idle keeps drawing while ImGuiKit::IsAnimating().
 // - A widget that a finger drags: ImGuiTouch::SetItemTakesDrags() right after it.
 // - A widget that zooms: ImGuiTouch::ItemPinch() right after it (SetItemPinchAsWheel() if it zooms by the wheel).
 // - A widget that reads the wheel claims it: if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY)) ...
@@ -629,8 +672,10 @@ void DemoTouch()
     for (int i = 1; i <= 8; i++)
         ImGui::Text("More content, to scroll (%d)", i);
     ImGui::EndChild();
-    // IsAnimating(): an application that sleeps when nothing happens keeps drawing frames meanwhile
-    ImGui::Text("Moving on its own: %s", ImGuiTouch::IsAnimating() ? "yes" : "no");
+    // IsAnimating(): an application that sleeps when nothing happens keeps drawing frames meanwhile.
+    // ImGuiKit::IsAnimating() adds the kit's widgets (a segmented switch that slides) to the touch layer's.
+    ImGui::Text("Moving on its own: touch %s, kit %s", ImGuiTouch::IsAnimating() ? "yes" : "no",
+                ImGuiKit::IsAnimating() ? "yes" : "no");
 }
 
 // The phone's keyboard, in a browser: the fields of all kinds, one of them in a child that scrolls

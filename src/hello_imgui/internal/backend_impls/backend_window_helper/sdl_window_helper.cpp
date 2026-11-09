@@ -1,6 +1,7 @@
 #ifdef HELLOIMGUI_USE_SDL2
 
 #include "sdl_window_helper.h"
+#include <string>
 #include "window_geometry_helper.h"
 #include "hello_imgui/internal/backend_impls/backend_window_helper/win32_dpi_awareness.h"
 #include "SDL.h"
@@ -158,7 +159,7 @@ namespace HelloImGui { namespace BackendApi
                                        windowSize[0], windowSize[1],
                                        window_flags);
         if (!window)
-            BACKEND_THROW("BackendSdl::CreateWindow : SDL_CreateWindow returned NULL");
+            BACKEND_THROW(std::string("BackendSdl::CreateWindow : SDL_CreateWindow returned NULL: ") + SDL_GetError());
 
         SDL_GetWindowPosition(window, &windowPosition[0], &windowPosition[1]);
         SDL_GetWindowSize(window, &windowSize[0], &windowSize[1]);

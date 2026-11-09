@@ -6,6 +6,7 @@
 #include "hello_imgui/internal/backend_impls/backend_window_helper/backend_window_helper.h"
 
 #include "SDL.h"
+#include <cstdio>
 
 
 namespace HelloImGui { namespace BackendApi
@@ -50,6 +51,16 @@ namespace HelloImGui { namespace BackendApi
         return maxSamples;
     }
 
+    static bool CanCreateWindowWithCurrentGlAttributes()
+    {
+        SDL_Window* probeWindow = SDL_CreateWindow("Probe", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 64, 32,
+                                                   SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+        if (!probeWindow)
+            return false;
+        SDL_DestroyWindow(probeWindow);
+        return true;
+    }
+
     static void ApplyAntiAliasingSamples(const OpenGlOptionsFilled_& openGlOptions)
     {
         int userQuerySamples = openGlOptions.AntiAliasingSamples;
@@ -73,6 +84,17 @@ namespace HelloImGui { namespace BackendApi
         {
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, effectiveSamples);
+            // GL_MAX_SAMPLES speaks of renderbuffers: the display may still have no multisampled window surface
+            // (the Android emulator's EGL has none). Probe with a hidden window, and fall back to no multisampling.
+            if (! CanCreateWindowWithCurrentGlAttributes())
+            {
+                fprintf(stderr, "HelloImGui: no multisampled window surface (%s). Running without anti-aliasing.\n",
+                        SDL_GetError());
+                effectiveSamples = 0;
+            }
+        }
+        if (effectiveSamples > 0)
+        {
             #if ! defined(__EMSCRIPTEN__) && ! defined(HELLOIMGUI_USE_GLES3)  && ! defined(HELLOIMGUI_USE_GLES2)
             glEnable(GL_MULTISAMPLE); // multisampling is automatically enabled if the framebuffer supports it for OpenGL ES
             #endif

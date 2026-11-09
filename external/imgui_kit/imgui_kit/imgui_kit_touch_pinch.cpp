@@ -94,9 +94,12 @@ void SetRectTakesPinch(const ImVec2& min, const ImVec2& max, float zoomPerNotch,
     AddTaker(ImRect(min, max), zoomPerNotch, panButton, delivery);
 }
 
-void AddFingerEvent(int id, const ImVec2& pos, bool down)
+void AddFingerEvent(int id, const ImVec2& pos, ImGuiTouchPhase phase)
 {
     State& s = GetCurrentContext().Pinch;
+    const bool down = (phase == ImGuiTouchPhase_Began || phase == ImGuiTouchPhase_Moved);
+    if (phase == ImGuiTouchPhase_Cancelled)
+        s.cancelled = true;
     bool wasTwo = s.fingers.Size >= 2;
     int index = -1;
     for (int i = 0; i < s.fingers.Size; i++)
@@ -117,6 +120,20 @@ void AddFingerEvent(int id, const ImVec2& pos, bool down)
         s.startDistance = Distance(s.fingers[0], s.fingers[1]);
         s.startCenter = Center(s.fingers[0], s.fingers[1]);
     }
+}
+
+void ApplyFingerCancel()
+{
+    ImGuiContext& g = *GImGui;
+    State& s = GetCurrentContext().Pinch;
+    if (!s.cancelled)
+        return;
+    s.cancelled = false;
+    if (s.gesture == Gesture::Drag)
+        ButtonEvent(g.IO, s.hasTaker ? s.taker.panButton : ImGuiMouseButton_Right, false);
+    s.gesture = Gesture::None;
+    s.hasTaker = false;
+    TouchScrollRelease(true);  // the swipe's press, or the widget's: neither clicks when the mouse lifts
 }
 
 // While a widget's pinch lasts (or its pan), the mouse is the fingers' center, so that the widget zooms around it. The
@@ -155,14 +172,14 @@ void PinchBeforeNewFrame(ImGuiContext& g)
         PosEvent(g.IO, center);
 }
 
-void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets)
+void UpdateTouchPinch(bool scalesFont)
 {
     ImGuiContext& g = *GImGui;
     State& s = GetCurrentContext().Pinch;
     s.previousTakers.swap(s.takers);
     s.takers.resize(0);
     s.frameCount = g.FrameCount;
-    bool twoFingers = (mode != ImGuiTouchPinchMode_Disabled) && s.fingers.Size >= 2;
+    bool twoFingers = s.fingers.Size >= 2;
     // The pinch's scale (their distance over their distance at the start), the move of their middle since the start
     float pinchScale = 1.f;
     ImVec2 move;
@@ -183,7 +200,7 @@ void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets)
             // so that the widget is hovered (it reads the wheel then), and is not dragged by it
             s.taker = *taker;
             s.notchesSent = 0.f;
-            if (!TouchScrollRelease(interruptsWidgets))
+            if (!TouchScrollRelease(false))
             {
                 s.hasTaker = false;
                 return;  // a widget keeps its drag
@@ -192,7 +209,7 @@ void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets)
             PosEvent(g.IO, Center(s.fingers[0], s.fingers[1]));  // the mouse goes to the fingers' center
         }
         // The first finger was a press for the swipe layer, or for a widget: the two fingers take it
-        else if (!TouchScrollLetGo(interruptsWidgets))
+        else if (!TouchScrollLetGo(false))
             return;  // a widget keeps its drag: nothing with two fingers this time
         s.gesture = Gesture::Undecided;
     }
@@ -259,7 +276,7 @@ void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets)
             }
         }
     }
-    else if (s.gesture == Gesture::Pinch && twoFingers && mode == ImGuiTouchPinchMode_FontScale)
+    else if (s.gesture == Gesture::Pinch && twoFingers && scalesFont)
     {
         const ImGuiTouchConfig& config = GetCurrentContext().Config;
         ImGui::GetStyle().FontScaleMain = ImClamp(s.baseScale * pinchScale, config.PinchFontScaleMin, config.PinchFontScaleMax);

@@ -42,6 +42,10 @@ struct ImGuiTouchScrollState
     bool watchingLongPress = false; // a touch press, still so far: a long press when it stays
     bool longPressArmed = false;    // it stayed: a right click when it lifts, unless it moves (a ring shows it)
     bool thinScrollbars = false;    // this frame: thin bars on a touch screen
+    // While the bars are thin: the style's own values, put back when they stop, and the values written last
+    bool barsWritten = false;
+    float themeBarSize = 0.f, themeBarRounding = 0.f;
+    float writtenBarSize = 0.f, writtenBarRounding = 0.f;
     ImGuiID heldBar = 0;            // the scroll bar held by a finger, since heldBarTime: it widens
     float heldBarTime = 0.f;
     double lastReplayTime = -1e9;   // the previous replayed press: the next one pairs with it (a double tap)
@@ -55,7 +59,7 @@ struct ImGuiTouchScrollState
         ImGuiID window;  // the widget's window
         ImRect rect;     // its visible part, on the screen
         bool longPressIsRightClick;
-        ImGuiAxis axis;  // SetItemTakesDragsAlong(): the drags along it only; ImGuiAxis_None: all, at once
+        ImGuiAxis axis;  // SetItemTakesDrags(X or Y): the drags along it only; ImGuiAxis_None: all, at once
     };
     ImVector<DragTaker> takers, previousTakers;  // SetItemTakesDrags(): this frame's, the last frame's
     ImGuiAxis takerAxis = ImGuiAxis_None;  // the press landed on a widget that takes the drags along this axis
@@ -72,6 +76,7 @@ struct ImGuiTouchFinger
 struct ImGuiTouchPinchState
 {
     ImVector<ImGuiTouchFinger> fingers;  // the fingers down, in the order they landed
+    bool cancelled = false;     // a finger was cancelled since the last frame: its press ends with no click
     float startDistance = 0.f;  // between the first two fingers, when the second one landed
     ImVec2 startCenter;         // their middle, then
     ImGuiTouchPinchGesture gesture = ImGuiTouchPinchGesture::None;
@@ -105,6 +110,7 @@ struct ImGuiTouchBrowserState
 {
     ImGuiMouseSource LastPointerSource = ImGuiMouseSource_Mouse;
     ImVector<int> FingersDown, FingersNow;  // the fingers' ids at the last frame, at this one
+    ImVector<int> FingersCancelled;         // the fingers the browser cancelled since the last frame
     // The keyboard: what the page was last told
     bool KeyboardWant = false;
     bool KeyboardKeysMode = false;  // the widget is not an InputText
@@ -170,7 +176,10 @@ namespace ImGuiTouch
     // The pinch, right after ImGui::NewFrame(): two fingers that spread or close scale the font (style.FontScaleMain)
     // while they stay on the screen; two fingers that move together are a right drag. The swipe lets go of its press
     // when the second finger lands.
-    void UpdateTouchPinch(ImGuiTouchPinchMode mode, bool interruptsWidgets);
+    void UpdateTouchPinch(bool scalesFont);
+    // A finger cancelled since the last frame (ImGuiTouchPhase_Cancelled), right after ImGui::NewFrame() and before the
+    // swipe: the gesture ends, and the press ends with no click (the widget's and the swipe's).
+    void ApplyFingerCancel();
 
     // While a widget's pinch lasts, the mouse is the fingers' center: right before ImGui::NewFrame()
     void PinchBeforeNewFrame(ImGuiContext& g);
@@ -180,7 +189,7 @@ namespace ImGuiTouch
     ImGuiTouchContext& GetCurrentContext();
     ImGuiTouchContext* FindCurrentContext();
     ImGuiTouchContext& CreateCurrentContextIfNeeded();
-    // A widget that takes a finger's drags (SetItemTakesDrags, SetItemTakesDragsAlong, or Dear ImGui's draggable widgets
+    // A widget that takes a finger's drags (SetItemTakesDrags, or Dear ImGui's draggable widgets
     // through ImGuiItemDragAxisCallback when the build has it); ImGuiAxis_None: all, at once
     void AddDragTaker(const ImRect& itemRect, bool longPressIsRightClick, ImGuiAxis axis);
     // The content moves on its own this frame (the inertia, the bounce, an animation): IsAnimating() is true

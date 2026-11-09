@@ -53,8 +53,7 @@ int main(int, char*[])
         const char* sourceNames[] = {"Mouse", "TouchScreen", "Pen"};
         ImGui::Text("io.MouseSource: %s", sourceNames[io.MouseSource]);
         ImGui::Combo("ScrollMode", &params.touchConfig.ScrollMode, "Auto\0Always\0Disabled\0");
-        ImGui::Combo("PinchMode", &params.touchConfig.PinchMode, "FontScale\0Disabled\0");
-        ImGui::Checkbox("PinchInterruptsWidgets", &params.touchConfig.PinchInterruptsWidgets);
+        ImGui::Checkbox("PinchScalesFont", &params.touchConfig.PinchScalesFont);
         ImGui::SameLine();
         ImGui::Text("FontScaleMain: %.2f", ImGui::GetStyle().FontScaleMain);
         ImGui::Separator();

@@ -305,12 +305,32 @@ void UpdateTouchScroll(ImGuiTouchScrollMode mode, bool longPressIsRightClick, bo
     s.takers.resize(0);
 
     // Thin bars on a touch screen: indicators, not controls. At each frame, before any window: a theme applied later,
-    // or a pinch (the font size), would change them
+    // or a pinch (the font size), would change them. The style's own values are kept, and put back when the bars
+    // stop being thin; values that differ from the ones written last come from the app (a theme): they are its own.
     s.thinScrollbars = thinScrollbars && (io.ConfigFlags & ImGuiConfigFlags_IsTouchScreen);
+    const bool styleChanged = s.barsWritten && (g.Style.ScrollbarSize != s.writtenBarSize
+                                                || g.Style.ScrollbarRounding != s.writtenBarRounding);
     if (s.thinScrollbars)
     {
+        if (!s.barsWritten || styleChanged)
+        {
+            s.themeBarSize = g.Style.ScrollbarSize;
+            s.themeBarRounding = g.Style.ScrollbarRounding;
+        }
         g.Style.ScrollbarSize = ImMax(1.f, ImFloor(g.FontSize * kThinScrollbarFontSizes));
         g.Style.ScrollbarRounding = g.Style.ScrollbarSize;  // round ends
+        s.writtenBarSize = g.Style.ScrollbarSize;
+        s.writtenBarRounding = g.Style.ScrollbarRounding;
+        s.barsWritten = true;
+    }
+    else if (s.barsWritten)
+    {
+        if (!styleChanged)
+        {
+            g.Style.ScrollbarSize = s.themeBarSize;
+            g.Style.ScrollbarRounding = s.themeBarRounding;
+        }
+        s.barsWritten = false;
     }
 
     bool enabled = (mode == ImGuiTouchScrollMode_Always)
@@ -699,14 +719,9 @@ void AddDragTaker(const ImRect& itemRect, bool longPressIsRightClick, ImGuiAxis 
     }
 }
 
-void SetItemTakesDrags(bool longPressIsRightClick)
+void SetItemTakesDrags(ImGuiTouchAxis axis, bool longPressIsRightClick)
 {
-    AddDragTaker(GImGui->LastItemData.Rect, longPressIsRightClick, ImGuiAxis_None);
-}
-
-void SetItemTakesDragsAlong(ImGuiTouchAxis axis, bool longPressIsRightClick)
-{
-    const ImGuiAxis along = (axis == ImGuiTouchAxis_Y) ? ImGuiAxis_Y : ImGuiAxis_X;
+    const ImGuiAxis along = (axis == ImGuiTouchAxis_X) ? ImGuiAxis_X : (axis == ImGuiTouchAxis_Y) ? ImGuiAxis_Y : ImGuiAxis_None;
     AddDragTaker(GImGui->LastItemData.Rect, longPressIsRightClick, along);
 }
 

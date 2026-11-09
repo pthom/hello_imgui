@@ -28,6 +28,7 @@ namespace
             "  window.imguiKitPointerType = 0;"
             "  window.imguiKitPointerDown = 0;"
             "  const fingers = {};"  // the fingers down: their pointer id -> [clientX, clientY]
+            "  const cancelled = [];"  // the fingers the browser took over since the last frame (pointercancel)
             "  window.imguiKitFingers = fingers;"
             "  const options = {capture: true, passive: true};"
             "  const onPointer = (e) => {"
@@ -39,13 +40,15 @@ namespace
             "  document.addEventListener('pointermove', (e) => {"
             "    onPointer(e); if (e.pointerId in fingers) fingers[e.pointerId] = [e.clientX, e.clientY]; }, options);"
             "  document.addEventListener('pointerup', onUp, options);"
-            "  document.addEventListener('pointercancel', onUp, options);"
+            "  document.addEventListener('pointercancel', (e) => {"
+            "    if (e.pointerId in fingers) cancelled.push(e.pointerId); onUp(e); }, options);"
             // The frame's state in one string: "type down cssWidth" then ";id x y" for each finger (CSS px from the
-            // canvas's corner)
+            // canvas's corner), then "|id id" for the fingers cancelled since the last frame
             "  window.imguiKitFrame = () => {"
             "    const c = document.getElementById('canvas'), r = c ? c.getBoundingClientRect() : {left: 0, top: 0, width: 0};"
             "    let s = window.imguiKitPointerType + ' ' + window.imguiKitPointerDown + ' ' + r.width;"
             "    for (const id in fingers) s += ';' + id + ' ' + (fingers[id][0] - r.left) + ' ' + (fingers[id][1] - r.top);"
+            "    if (cancelled.length > 0) { s += '|' + cancelled.join(' '); cancelled.length = 0; }"
             "    return s; };"
             "}"
             // iOS's own long press on the canvas (text selection, the callout menu) would pause the page's events
@@ -75,7 +78,8 @@ namespace
     }
 
     // The fingers of the frame's state ("...;id x y;id x y"), to ImGuiTouch::AddFingerEvent(), scaled to Dear ImGui's
-    // units (the canvas's CSS width against the display width); then the fingers that lifted since the last frame
+    // units (the canvas's CSS width against the display width); then the fingers that lifted since the last frame: as
+    // cancelled when the browser took them over (a system gesture: their press must not click), else as ended
     void RelayFingers(ImGuiIO& io, ImGuiTouchBrowserState& b, const char* list, float cssWidth)
     {
         float scale = (cssWidth > 0.f) ? io.DisplaySize.x / cssWidth : 1.f;
@@ -87,12 +91,27 @@ namespace
             float x = strtof(end, &end), y = strtof(end, &end);
             if (end == p + 1)
                 break;
-            ImGuiTouch::AddFingerEvent(id, ImVec2(x * scale, y * scale), true);
+            const ImGuiTouchPhase phase = b.FingersDown.contains(id) ? ImGuiTouchPhase_Moved : ImGuiTouchPhase_Began;
+            ImGuiTouch::AddFingerEvent(id, ImVec2(x * scale, y * scale), phase);
             b.FingersNow.push_back(id);
         }
+        b.FingersCancelled.resize(0);
+        for (const char* c = (list != nullptr) ? strchr(list, '|') : nullptr; c != nullptr && *c != '\0';)
+        {
+            char* end = nullptr;
+            int id = (int)strtol(c + 1, &end, 10);
+            if (end == c + 1)
+                break;
+            b.FingersCancelled.push_back(id);
+            c = end;
+        }
         for (int id : b.FingersDown)
-            if (!b.FingersNow.contains(id))
-                ImGuiTouch::AddFingerEvent(id, ImVec2(0.f, 0.f), false);
+        {
+            if (b.FingersNow.contains(id))
+                continue;
+            const bool cancelled = b.FingersCancelled.contains(id);
+            ImGuiTouch::AddFingerEvent(id, ImVec2(0.f, 0.f), cancelled ? ImGuiTouchPhase_Cancelled : ImGuiTouchPhase_Ended);
+        }
         b.FingersDown.swap(b.FingersNow);
     }
 
@@ -118,7 +137,7 @@ namespace
     {
         ImGuiContext& g = *ctx;
         ImGuiTouchBrowserState& b = ImGuiTouch::GetCurrentContext().Browser;
-        // The frame's state: "type down cssWidth;id x y;..."
+        // The frame's state: "type down cssWidth;id x y;...|cancelled ids"
         const char* frame = emscripten_run_script_string("window.imguiKitFrame ? window.imguiKitFrame() : ''");
         if (frame == nullptr)
             frame = "";

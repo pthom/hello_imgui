@@ -556,9 +556,7 @@ void DemoTouch()
     ImGuiKit::HelpMarker("Touch: the swipe follows a finger only. Always: the mouse's left button drags the "
                          "content too, while the mouse stays a mouse.");
     ImGuiKit::Label("Pinch");
-    const char* pinch_modes[] = { "Font scale", "Off" };
-    NextLineIfTooWide(ImGuiKit::SegmentedSwitchWidth(pinch_modes, IM_ARRAYSIZE(pinch_modes)));
-    ImGuiKit::SegmentedSwitch("##pinch_mode", &config.PinchMode, pinch_modes, IM_ARRAYSIZE(pinch_modes));
+    ImGui::Checkbox("scales the font", &config.PinchScalesFont);
     ImGuiKit::Label("Long press");
     ImGui::Checkbox("is a right click", &config.LongPressIsRightClick);
     ImGuiKit::Label("Scroll bars");
@@ -602,7 +600,7 @@ void DemoTouch()
     }
 
     // A child that scrolls sideways: a swipe inside scrolls it, not the zone. Its buttons count their taps. Its slider
-    // takes the sideways drags (ImGuiTouch::SetItemTakesDragsAlong): a sideways drag on it moves it at once
+    // takes the sideways drags (ImGuiTouch::SetItemTakesDrags(ImGuiTouchAxis_X)): a sideways drag on it moves it at once
     ImGui::TextWrapped("A sideways swipe scrolls this row; a tap clicks a button; a sideways drag moves the slider:");
     ImGui::BeginChild("##sideways", ImVec2(0.0f, ImGuiKit::EmSize(5.f)), ImGuiChildFlags_Borders,
                       ImGuiWindowFlags_HorizontalScrollbar);
@@ -611,7 +609,7 @@ void DemoTouch()
     static float row_value = 0.5f;
     ImGui::SetNextItemWidth(card_width);
     ImGui::SliderFloat("##row_slider", &row_value, 0.0f, 1.0f);
-    ImGuiTouch::SetItemTakesDragsAlong(ImGuiTouchAxis_X);
+    ImGuiTouch::SetItemTakesDrags(ImGuiTouchAxis_X);
     for (int i = 0; i < IM_ARRAYSIZE(taps); i++)
     {
         ImGui::SameLine();

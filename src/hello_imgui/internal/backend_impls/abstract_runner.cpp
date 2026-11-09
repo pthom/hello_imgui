@@ -502,8 +502,8 @@ void AbstractRunner::LayoutSettings_Save()
 static bool SameTouchConfig(const ImGuiTouchConfig& a, const ImGuiTouchConfig& b)
 {
     return a.ScrollMode == b.ScrollMode && a.LongPressIsRightClick == b.LongPressIsRightClick
-        && a.ThinScrollbars == b.ThinScrollbars && a.PinchMode == b.PinchMode
-        && a.PinchInterruptsWidgets == b.PinchInterruptsWidgets && a.SimulateTouch == b.SimulateTouch
+        && a.ThinScrollbars == b.ThinScrollbars && a.PinchScalesFont == b.PinchScalesFont
+        && a.SimulateTouch == b.SimulateTouch
         && a.PinchFontScaleMin == b.PinchFontScaleMin && a.PinchFontScaleMax == b.PinchFontScaleMax;
 }
 

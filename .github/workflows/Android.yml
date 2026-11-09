@@ -1,11 +1,3 @@
-# Temporarily disabled because google once again changed the build process and broke builds that worked previously
-#
-# Will be fixed later...
-
-#org.gradle.process.internal.ExecException: A problem occurred starting process
-#  'command '/usr/local/lib/android/sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android-strip''
-
-
 name: Android
 
 on:

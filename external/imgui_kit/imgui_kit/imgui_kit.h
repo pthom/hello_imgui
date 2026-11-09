@@ -24,7 +24,7 @@ Index of this file:
 // [SECTION] Header mess
 //-----------------------------------------------------------------------------
 
-#define IMGUI_KIT_VERSION       "0.5.0"
+#define IMGUI_KIT_VERSION       "0.5.1"
 #define IMGUI_KIT_VERSION_NUM   500     // major * 10000 + minor * 100 + patch
 
 #include "imgui.h"

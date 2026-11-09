@@ -442,10 +442,9 @@ void DemoWidgets()
 // [SECTION] Touch
 //-----------------------------------------------------------------------------
 
-// A canvas that zooms with the wheel and pans with a drag, as a plot or an image viewer does. It claims the wheel while
-// hovered (ImGui::SetItemKeyOwner), takes a finger's drag at once (ImGuiTouch::SetItemTakesDrags), and a pinch
-// (ImGuiTouch::SetItemTakesPinch: its zoom per notch is 10%, and it uses the wheel's exact value; two fingers pan it,
-// with the left button)
+// A canvas that zooms and pans, as a map or an image viewer does. With a mouse: the wheel zooms (it claims the wheel
+// while hovered: ImGui::SetItemKeyOwner), a drag pans. With fingers: one finger pans at once
+// (ImGuiTouch::SetItemTakesDrags), two fingers zoom and pan at once (ImGuiTouch::ItemPinch: the gesture's data)
 void ZoomableCanvas(const char* str_id, ImVec2 size)
 {
     static float zoom = 1.0f;
@@ -453,23 +452,31 @@ void ZoomableCanvas(const char* str_id, ImVec2 size)
     ImGuiIO& io = ImGui::GetIO();
     ImVec2 p0 = ImGui::GetCursorScreenPos();
     ImVec2 p1(p0.x + size.x, p0.y + size.y);
+    // Zoom by `factor` around a point of the screen: the content under it stays there
+    auto zoom_around = [&](ImVec2 point, float factor) {
+        float new_zoom = ImClamp(zoom * factor, 0.25f, 8.0f);
+        float px = point.x - p0.x, py = point.y - p0.y;
+        offset.x = px - (px - offset.x) * new_zoom / zoom;
+        offset.y = py - (py - offset.y) * new_zoom / zoom;
+        zoom = new_zoom;
+    };
+
     ImGui::InvisibleButton(str_id, size);
     ImGuiTouch::SetItemTakesDrags();
-    ImGuiTouch::SetItemTakesPinch(0.1f, ImGuiMouseButton_Left, ImGuiTouchPinchDelivery_WheelContinuous);
-    if (ImGui::IsItemActive())
+    ImGuiTouchPinch pinch = ImGuiTouch::ItemPinch();
+    if (pinch.Active)
+    {
+        zoom_around(pinch.Center, pinch.ScaleDelta);
+        offset.x += pinch.CenterDelta.x;
+        offset.y += pinch.CenterDelta.y;
+    }
+    else if (ImGui::IsItemActive())
     {
         offset.x += io.MouseDelta.x;
         offset.y += io.MouseDelta.y;
     }
     if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY) && io.MouseWheel != 0.0f)
-    {
-        // Zoom around the mouse: the point under it stays there
-        float new_zoom = ImClamp(zoom * ImPow(1.1f, io.MouseWheel), 0.25f, 8.0f);
-        float mx = io.MousePos.x - p0.x, my = io.MousePos.y - p0.y;
-        offset.x = mx - (mx - offset.x) * new_zoom / zoom;
-        offset.y = my - (my - offset.y) * new_zoom / zoom;
-        zoom = new_zoom;
-    }
+        zoom_around(io.MousePos, ImPow(1.1f, io.MouseWheel));
 
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     float rounding = ImGui::GetStyle().FrameRounding;
@@ -503,7 +510,7 @@ ImGuiTouch::SetupEmscripten();  // in a browser: which pointer is a finger, the 
 // The render loop: nothing to add, the kit runs inside ImGui::NewFrame() and ImGui::Render().
 // - An app that sleeps when idle keeps drawing while ImGuiTouch::IsAnimating().
 // - A widget that a finger drags: ImGuiTouch::SetItemTakesDrags() right after it.
-// - A widget that zooms with the wheel: ImGuiTouch::SetItemTakesPinch() right after it.
+// - A widget that zooms: ImGuiTouch::ItemPinch() right after it (SetItemPinchAsWheel() if it zooms by the wheel).
 // - A widget that reads the wheel claims it: if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY)) ...
 // Hello ImGui does the setup itself (RunnerParams::touchConfig).)";
 
@@ -591,8 +598,8 @@ void DemoTouch()
                          "- It claims the wheel while hovered: if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY)). With "
                          "the wheel session, a wheel that scrolls the zone keeps scrolling it when the canvas passes "
                          "under the mouse; a wheel that starts on the canvas zooms it.\n"
-                         "- It calls ImGuiTouch::SetItemTakesPinch(): a pinch on it zooms it, instead of the font, and "
-                         "two fingers moved together pan it.");
+                         "- It reads two fingers' gesture with ImGuiTouch::ItemPinch(): their spread zooms it and their "
+                         "move pans it, both at once, as on a map. The font keeps its size.");
     if (ImGui::BeginPopupContextWindow("##zone_menu"))
     {
         ImGui::TextUnformatted("The zone's context menu: a right click, or a long press");

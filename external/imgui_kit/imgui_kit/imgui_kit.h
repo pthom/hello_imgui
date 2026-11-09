@@ -38,6 +38,7 @@ typedef int ImGuiTouchScrollMode;   // -> enum ImGuiTouchScrollMode_
 typedef int ImGuiTouchPinchDelivery;  // -> enum ImGuiTouchPinchDelivery_
 typedef int ImGuiTouchAxis;          // -> enum ImGuiTouchAxis_
 typedef int ImGuiTouchPhase;         // -> enum ImGuiTouchPhase_
+typedef int ImGuiTouchPinchKind;     // -> enum ImGuiTouchPinchKind_
 
 namespace ImGuiKit
 {
@@ -296,11 +297,43 @@ enum ImGuiTouchAxis_
     ImGuiTouchAxis_Y = 1,     // a vertical slider
 };
 
-// How a pinch reaches a widget that takes it (ImGuiTouch::SetItemTakesPinch)
+// How a pinch reaches a widget as wheel events (ImGuiTouch::SetItemPinchAsWheel)
 enum ImGuiTouchPinchDelivery_
 {
-    ImGuiTouchPinchDelivery_WheelNotches,     // whole notches (+1, -1): a widget that reads only the wheel's sign (ImPlot)
     ImGuiTouchPinchDelivery_WheelContinuous,  // the exact amount at each frame: a widget that zooms by the wheel's value
+    ImGuiTouchPinchDelivery_WheelNotches,     // whole notches (+1, -1): a widget that reads only the wheel's sign (ImPlot)
+};
+
+// What two fingers do, as the layer decides it once per gesture (ImGuiTouchPinch::Kind)
+enum ImGuiTouchPinchKind_
+{
+    ImGuiTouchPinchKind_Undecided,  // until their distance changed by 12%, or their middle moved by 0.6 em
+    ImGuiTouchPinchKind_Pinch,      // they spread or close
+    ImGuiTouchPinchKind_Pan,        // they move together
+};
+
+// Two fingers on a widget, at this frame (ImGuiTouch::ItemPinch). A widget applies both the zoom and the pan at each
+// frame: the content stays under the fingers, as on a map.
+//     ImGuiTouchPinch p = ImGuiTouch::ItemPinch();
+//     if (p.Active)
+//     {
+//         offset = p.Center - (p.Center - offset) * p.ScaleDelta;  // zoom around the fingers
+//         zoom *= p.ScaleDelta;
+//         offset += p.CenterDelta;                                 // follow their middle
+//     }
+struct ImGuiTouchPinch
+{
+    bool   Active;       // two fingers are on this widget's gesture (false: the deltas are neutral)
+    bool   Started;      // the gesture's first frame
+    bool   Ended;        // the fingers lifted (or were cancelled) since the last frame: Active is false then
+    ImVec2 Center;       // the fingers' middle, in screen coordinates
+    ImVec2 CenterDelta;  // its move since the last frame: the pan
+    float  ScaleDelta;   // the fingers' distance over the last frame's: 1 when unchanged
+    float  Scale;        // their distance over the distance at the start: 1 at the start
+    ImGuiTouchPinchKind Kind;  // pinch or pan, for a widget that wants one at a time
+
+    ImGuiTouchPinch() : Active(false), Started(false), Ended(false), ScaleDelta(1.0f), Scale(1.0f),
+                        Kind(ImGuiTouchPinchKind_Undecided) {}
 };
 
 // The phase of a finger, as the platforms report it (ImGuiTouch::AddFingerEvent)
@@ -347,7 +380,7 @@ struct ImGuiTouchConfig
     // Two fingers: the pinch, and a drag with two fingers
     //
 
-    // Two fingers that pinch outside the widgets that take the pinch (ImGuiTouch::SetItemTakesPinch) scale the font
+    // Two fingers that pinch outside the widgets that claim them (ImGuiTouch::ItemPinch and its kin) scale the font
     // (style.FontScaleMain) while they stay on the screen. False: such a pinch does nothing, and the font keeps its
     // size. Either way, a widget that takes the pinch zooms, and two fingers that move together are a right drag (the
     // pan of a node editor, the box of a plot). A second finger that lands while a widget holds the first one (a slider
@@ -390,18 +423,30 @@ IMGUI_API bool   IsAnimating();
 // Dear ImGui's own sliders and drags call it themselves when the build has IMGUI_HAS_ITEM_DRAG_AXIS_CALLBACK.
 IMGUI_API void   SetItemTakesDrags(ImGuiTouchAxis axis = ImGuiTouchAxis_Any, bool long_press_is_right_click = true);
 
-// Right after a widget that zooms with the wheel (a plot, an image): two fingers that pinch on it zoom it, instead of
-// scaling the font. The pinch reaches it as wheel events at the fingers' center: zoom_per_notch is the widget's own
-// zoom per notch (ImPlot's is 0.1), delivery says whether it reads whole notches or the wheel's exact value. Two
-// fingers that move together on it drag it with pan_button (a plot pans with the left button). Nothing without the
-// touch layer.
-IMGUI_API void   SetItemTakesPinch(float zoom_per_notch = 0.1f, ImGuiMouseButton pan_button = ImGuiMouseButton_Right,
-                                   ImGuiTouchPinchDelivery delivery = ImGuiTouchPinchDelivery_WheelNotches);
-// The same, for a rectangle in screen coordinates: a widget that is not one item (an ImPlot plot). Nothing without the
-// touch layer.
-IMGUI_API void   SetRectTakesPinch(const ImVec2& min, const ImVec2& max, float zoom_per_notch = 0.1f,
-                                   ImGuiMouseButton pan_button = ImGuiMouseButton_Right,
-                                   ImGuiTouchPinchDelivery delivery = ImGuiTouchPinchDelivery_WheelNotches);
+// Two fingers on a widget: by default they scale the font (a pinch) or are a right drag (moved together). A widget
+// changes that with one of these calls, right after it, at each frame (the claims of the last frame decide where the
+// fingers land). When claims nest, the smallest holding both fingers wins; the gesture stays with it until they lift.
+// Nothing without the touch layer.
+//
+// 1. The gesture itself (a canvas, a map): returns its data at this frame. The widget gets nothing else: no font
+//    scale, no wheel, no mouse drag. The item needs an id (an InvisibleButton, not an Image). Not with 2 or 3.
+IMGUI_API ImGuiTouchPinch ItemPinch();
+// The same, for a rectangle in screen coordinates and an id of the caller's: a widget that is not one item
+IMGUI_API ImGuiTouchPinch RectPinch(ImGuiID id, const ImVec2& min, const ImVec2& max);
+//
+// 2. A widget that zooms with the wheel (a plot, an image): a pinch on it becomes wheel events, at the fingers' center.
+//    wheel_zoom_factor: the widget's zoom for one wheel unit (1.1: +10%). delivery: WheelNotches for a widget that
+//    reads only the wheel's sign (ImPlot).
+IMGUI_API void   SetItemPinchAsWheel(float wheel_zoom_factor,
+                                     ImGuiTouchPinchDelivery delivery = ImGuiTouchPinchDelivery_WheelContinuous);
+IMGUI_API void   SetRectPinchAsWheel(const ImVec2& min, const ImVec2& max, float wheel_zoom_factor,
+                                     ImGuiTouchPinchDelivery delivery = ImGuiTouchPinchDelivery_WheelContinuous);
+//
+// 3. A widget that pans with a mouse button (a plot: left; a node editor: right): two fingers moved together on it
+//    become a drag with that button. Combines with 2. Alone, a pinch on the widget does nothing (the font keeps its
+//    size); with 2 alone, two fingers moved together are a right drag.
+IMGUI_API void   SetItemTwoFingerPanAsMouseDrag(ImGuiMouseButton button);
+IMGUI_API void   SetRectTwoFingerPanAsMouseDrag(const ImVec2& min, const ImVec2& max, ImGuiMouseButton button);
 
 // A finger on a touch screen, as the platform reports it: its id (any number the platform gives, stable while the
 // finger is down), its position (in the mouse's coordinates), and its phase. Report every finger, the first one

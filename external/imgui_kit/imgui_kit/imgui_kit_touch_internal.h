@@ -81,18 +81,29 @@ struct ImGuiTouchPinchState
     ImVec2 startCenter;         // their middle, then
     ImGuiTouchPinchGesture gesture = ImGuiTouchPinchGesture::None;
     float baseScale = 1.f;  // style.FontScaleMain when the pinch began
+    // A widget that claims two fingers (ItemPinch, the adapters): the claims of one item, or of one rectangle, merge
     struct PinchTaker
     {
-        ImRect rect;         // the widget, on the screen
-        float zoomPerNotch;  // how much the widget zooms per wheel notch (0.1: 10%)
-        ImGuiMouseButton panButton;
-        ImGuiTouchPinchDelivery delivery;
+        ImGuiID id = 0;                // the item's (ItemPinch, RectPinch); 0 for the adapters on a rectangle
+        ImRect rect;                   // its visible part, on the screen
+        bool data = false;             // ItemPinch(): the widget reads the gesture
+        bool wheel = false;            // SetItemPinchAsWheel()
+        float wheelZoomFactor = 1.1f;  // the widget's zoom for one wheel unit
+        ImGuiTouchPinchDelivery delivery = ImGuiTouchPinchDelivery_WheelContinuous;
+        bool pan = false;              // SetItemTwoFingerPanAsMouseDrag()
+        ImGuiMouseButton panButton = ImGuiMouseButton_Right;
     };
-    ImVector<PinchTaker> takers, previousTakers;  // SetItemTakesPinch(): this frame's, the last frame's
+    ImVector<PinchTaker> takers, previousTakers;  // the claims: this frame's, the last frame's
     int frameCount = -1;                          // the frame UpdateTouchPinch() ran: the takers are noted then only
     bool hasTaker = false;                        // the two fingers landed on a taker: the gesture is its
     PinchTaker taker;
     float notchesSent = 0.f;                      // the wheel notches sent to the taker during this pinch
+    // The gesture's data for its taker (ItemPinch), at this frame; ended: the taker's id, for the frame after the lift
+    ImGuiTouchPinch data;
+    float lastDistance = 0.f;
+    ImVec2 lastCenter;
+    ImGuiID endedId = 0;
+    int endedFrame = -1;
 };
 
 // While the keyboard is shown: where the caret was, so that its windows scroll only when it moves

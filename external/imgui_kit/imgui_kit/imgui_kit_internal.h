@@ -5,11 +5,13 @@
 // at a new version of the kit.
 //
 // The kit's state, ImGuiKitContext: the layout helpers' Begin/End stacks, the help markers', FitText's buffer, the
-// wheel session's state, and the touch layer's (imgui_kit_touch_internal.h). Dear ImGui has no slot for an extension's state, so the kit stores
-// it in the UserData of a context hook it adds (ImGui::AddContextHook, of type Shutdown), as the Test Engine stores its
-// own. The hooks are per context: each Dear ImGui context has its own state, found again through its hooks (no global:
-// GImGui may be thread-local). ImGui::DestroyContext() calls that hook, which frees the state.
-// It is created at its first use: the widgets need no setup. The touch layer's part is in use once a touch setup was called.
+// wheel session's state, and the touch layer's (imgui_kit_touch_internal.h). Dear ImGui has no slot for an extension's
+// state, so the kit stores it in the UserData of a context hook it adds (ImGui::AddContextHook, of type Shutdown), as
+// the Test Engine stores its own. The hooks are per context: each Dear ImGui context has its own state, found again
+// through its hooks (no global: GImGui may be thread-local). ImGui::DestroyContext() calls that hook, which frees the
+// state.
+// It is created at its first use: the widgets need no setup. The touch layer's part is in use once a touch setup was
+// called.
 #pragma once
 #include "imgui_kit.h"
 #include "imgui_kit_touch_internal.h"
@@ -42,9 +44,10 @@ struct ImGuiKitWheelSessionState
     ImGuiID itemId = 0;             // that item
     ImGuiWindow* window = nullptr;  // the window the session scrolls
     bool scrolled = false;          // the page scrolled during the session (by ImGui, or by the session)
-    float timer = 0.f;              // s: the session ends when it runs out; each event adds its amount's worth (ImGui's rule:
-                                    // a trackpad's small momentum events extend it by little)
-    ImVec2 refMousePos;             // the mouse at the last wheel event: a move past ImGui's drag threshold ends the session
+    float timer = 0.f;              // s: the session ends when it runs out; each event adds its amount's worth
+                                    // (ImGui's rule: a trackpad's small momentum events extend it by little)
+    ImVec2 refMousePos;             // the mouse at the last wheel event: a move past ImGui's drag threshold ends the
+                                    // session
     ImGuiID ownerBeforeNewFrame = 0;  // the wheel's owner as the widgets of the frame ownerFrame left it
     int ownerFrame = -1;
 };
@@ -159,6 +162,7 @@ struct ImGuiKitContext
     bool WheelSessionEnabled = true;                    // SetupWheelSession(enabled)
     ImGuiKitWheelSessionState WheelSession;
     int AnimationFrame = -1;                            // the last frame a widget asked to animate (RequestAnimation)
+    ImGuiKit::HelpMarkerTextRenderer HelpMarkerRenderer = nullptr;  // SetHelpMarkerTextRenderer(); null: plain text
     bool TouchSetUp = false;                            // an input setup was called: Touch is in use
     ImGuiTouchContext Touch;
 };

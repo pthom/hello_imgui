@@ -24,8 +24,8 @@ Index of this file:
 // [SECTION] Header mess
 //-----------------------------------------------------------------------------
 
-#define IMGUI_KIT_VERSION       "0.1.0"
-#define IMGUI_KIT_VERSION_NUM   100     // major * 10000 + minor * 100 + patch
+#define IMGUI_KIT_VERSION       "0.5.0"
+#define IMGUI_KIT_VERSION_NUM   500     // major * 10000 + minor * 100 + patch
 
 #include "imgui.h"
 
@@ -198,7 +198,8 @@ IMGUI_API void   EndHelpMarker();
 // The width a help marker takes at the end of a line, with the spacing before it
 IMGUI_API float  HelpMarkerWidth();
 // How HelpMarker() draws its text. By default: wrapped plain text. An app can install a richer renderer
-// (Dear ImGui Bundle installs one that renders Markdown). nullptr restores the default.
+// (Dear ImGui Bundle installs one that renders Markdown). nullptr restores the default. Per Dear ImGui context (as
+// its PlatformIO callbacks): call it after ImGui::CreateContext().
 typedef void (*HelpMarkerTextRenderer)(const char* text);
 IMGUI_API void   SetHelpMarkerTextRenderer(HelpMarkerTextRenderer renderer);
 
@@ -211,7 +212,8 @@ IMGUI_API bool   IconButton(const char* str_id, ImGuiKitIcon icon, const ImVec2&
 //
 //     ( Demo | Code )        <- current = 1: "Code" is filled
 //
-// It reacts at the press, not the release, which suits touch screens. Returns true when *current changed.
+// It reacts at the press, not the release, which suits touch screens. With the keyboard or a gamepad: activated
+// (Space, Enter), Left and Right move the choice, and the same key leaves it. Returns true when *current changed.
 IMGUI_API bool   SegmentedSwitch(const char* str_id, int* current, const char* const labels[], int labels_count);
 // The width a segmented switch takes, to place it: e.g. on the next line when the current one is too short
 IMGUI_API float  SegmentedSwitchWidth(const char* const labels[], int labels_count);
@@ -230,6 +232,8 @@ IMGUI_API const char* FitText(const char* text, float wrap_width, int max_lines)
 
 // Resize handle: a grip at the bottom-right corner of the last item, which resizes it. Call it right after the item,
 // which takes *size; dragging the grip changes *size (at least min_size). Returns true when *size changed.
+// The grip lies over the item's corner: an item that acts on a bare press (a button) also sees the press that starts
+// a resize, unless ImGui::SetNextItemAllowOverlap() is called before it. Plots, fields and child windows need nothing.
 //
 //     static ImVec2 size = ImGuiKit::EmToVec2(24, 12);
 //     if (ImPlot::BeginPlot("Plot", size)) { ...; ImPlot::EndPlot(); }
@@ -316,14 +320,16 @@ enum ImGuiTouchAxis_
 // How a pinch reaches a widget as wheel events (ImGuiTouch::SetItemPinchAsWheel)
 enum ImGuiTouchPinchDelivery_
 {
-    ImGuiTouchPinchDelivery_WheelContinuous,  // the exact amount at each frame: a widget that zooms by the wheel's value
-    ImGuiTouchPinchDelivery_WheelNotches,     // whole notches (+1, -1): a widget that reads only the wheel's sign (ImPlot)
+    ImGuiTouchPinchDelivery_WheelContinuous,  // the exact amount at each frame: a widget that zooms by the wheel's
+                                              // value
+    ImGuiTouchPinchDelivery_WheelNotches,     // whole notches (+1, -1): a widget that reads only the wheel's sign
+                                              // (ImPlot)
 };
 
 // What two fingers do, as the layer decides it once per gesture (ImGuiTouchPinch::Kind)
 enum ImGuiTouchPinchKind_
 {
-    ImGuiTouchPinchKind_Undecided,  // until their distance changed by 12%, or their middle moved by 0.6 em
+    ImGuiTouchPinchKind_Undecided,  // until their distance changed a little, or their middle moved a little
     ImGuiTouchPinchKind_Pinch,      // they spread or close
     ImGuiTouchPinchKind_Pan,        // they move together
 };
@@ -382,14 +388,20 @@ struct ImGuiTouchConfig
     // The swipe: a finger that drags a window's content scrolls it, with inertia, even from a button: a tap still
     // clicks it (when the finger lifts), and a short hold then a drag goes to the widget (a slider, a text selection).
     ImGuiTouchScrollMode ScrollMode = ImGuiTouchScrollMode_Auto;
-    // On a touch screen (never with a mouse): a finger still for half a second, then lifted, is a right click (the
+    // A finger still for this long hands its press to the widget under it, which then gets the drag (iOS: 150 ms).
+    // Zero: the widget gets the press at once, and a swipe scrolls only from where no widget is.
+    float HoldSeconds = 0.15f;
+    // On a touch screen (never with a mouse): a finger still for LongPressSeconds, then lifted, is a right click (the
     // context menus); a ring around the finger shows when the lift will right click. The release reaches no widget:
     // a long press on a button is not a click. A move after the ring cancels it: the widget keeps its press.
     bool LongPressIsRightClick = true;
+    float LongPressSeconds = 0.5f;  // iOS: about 500 ms
     // On a touch screen (ImGuiConfigFlags_IsTouchScreen): thin scroll bars (0.3 em, rounded), indicators rather than
     // controls, since a swipe scrolls anywhere. Applied at each frame (after a theme, a pinch). A hold on a bar hands
-    // its thumb over, drawn wider while held (as on iOS). False keeps the theme's bars: turned off (or when the input
-    // stops being a touch screen), the layer puts back the style's ScrollbarSize and ScrollbarRounding.
+    // its thumb over, drawn wider while held (as on iOS). While the pointer in use is a mouse (io.MouseSource: a touch
+    // laptop driven by its mouse), the theme's bars; thin again at the next finger. False keeps the theme's bars:
+    // turned off (or when the input stops being a touch screen), the layer puts back the style's ScrollbarSize and
+    // ScrollbarRounding.
     bool ThinScrollbars = true;
 
     //
@@ -424,6 +436,7 @@ namespace ImGuiTouch
 // replaces the config. Its state is freed with the context. The functions a reusable widget calls (they say so) do
 // nothing without it; the others assert.
 IMGUI_API void   Setup(const ImGuiTouchConfig& config = ImGuiTouchConfig());
+IMGUI_API bool   IsInstalled();  // true once a setup was called in the current context
 IMGUI_API ImGuiTouchConfig& GetConfig();
 
 // True while the touch layer moves something on its own (a fling's inertia, the bounce, a long press's ring): an app
@@ -498,8 +511,9 @@ IMGUI_API bool   SetRectOpensUrl(const ImVec2& min, const ImVec2& max, const cha
 
 #ifdef __EMSCRIPTEN__
 // In a browser, with any of Dear ImGui's Emscripten backends: tells Dear ImGui which pointer is a finger (the
-// browser's pointer events), relays the fingers to AddFingerEvent() (the pinch), and sets ImGuiConfigFlags_IsTouchScreen
-// on a touch screen. Call once, after the backend's init and ImGuiTouch::Setup(). The canvas must have the id "canvas".
+// browser's pointer events), relays the fingers to AddFingerEvent() (the pinch), and sets
+// ImGuiConfigFlags_IsTouchScreen on a touch screen. Call once, after the backend's init and ImGuiTouch::Setup(). The
+// canvas must have the id "canvas".
 // Also: the url zones (SetItemOpensUrl); Dear ImGui's own links (TextLinkOpenURL) open in a new tab where the browser
 // allows it from the frame loop (Chrome, Firefox), else in the same tab (WebKit: Safari, every browser on iOS); and
 // the phone's own long press (text selection, its menu) is turned off on the canvas.

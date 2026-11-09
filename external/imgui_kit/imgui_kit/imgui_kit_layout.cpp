@@ -235,7 +235,8 @@ void Label(const char* text)
     ImGui::SetCursorScreenPos(ImVec2(lc.left + (column - width) * lc.alignX, y));
     ImGui::TextUnformatted(text, text_end);
     ImGui::SameLine();
-    ImGui::SetCursorScreenPos(ImVec2(lc.left + column + ImGui::GetStyle().ItemSpacing.x, ImGui::GetCursorScreenPos().y));
+    ImGui::SetCursorScreenPos(ImVec2(lc.left + column + ImGui::GetStyle().ItemSpacing.x,
+                                     ImGui::GetCursorScreenPos().y));
 }
 
 void EndLabelColumn()

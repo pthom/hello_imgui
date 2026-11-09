@@ -50,8 +50,6 @@ void DefaultHelpMarkerTextRenderer(const char* text)
 {
     ImGui::TextUnformatted(text);   // wrapped by the PushTextWrapPos() of BeginHelpMarker()
 }
-// A setting, not state: process-wide as Dear ImGui's allocator functions (an app may set it before CreateContext())
-HelpMarkerTextRenderer gHelpMarkerTextRenderer = DefaultHelpMarkerTextRenderer;
 
 // As high as the line it is on: a text's height on a line of text, a frame's after a framed widget
 ImVec2 HelpMarkerSize()
@@ -69,7 +67,8 @@ void DrawHelpIcon(ImDrawList* draw_list, const ImRect& bb, ImU32 color)
     draw_list->AddCircle(c, r, color, 0, thickness);
     draw_list->AddCircleFilled(ImVec2(c.x, c.y - r * 0.45f), r * 0.13f, color);
     float half_w = r * 0.11f;
-    draw_list->AddRectFilled(ImVec2(c.x - half_w, c.y - r * 0.12f), ImVec2(c.x + half_w, c.y + r * 0.55f), color, half_w);
+    draw_list->AddRectFilled(ImVec2(c.x - half_w, c.y - r * 0.12f), ImVec2(c.x + half_w, c.y + r * 0.55f), color,
+                             half_w);
 }
 
 //-----------------------------------------------------------------------------
@@ -87,15 +86,19 @@ void DrawMagnifier(ImDrawList* draw_list, ImVec2 center, float size, ImU32 color
                        ImVec2(glass.x - r * 1.85f * d, glass.y + r * 1.85f * d), color, size * 0.1f);
     float half = r * 0.5f, t = size * 0.05f;
     if (icon == ImGuiKitIcon_ZoomIn || icon == ImGuiKitIcon_ZoomOut)
-        draw_list->AddRectFilled(ImVec2(glass.x - half, glass.y - t * 0.5f), ImVec2(glass.x + half, glass.y + t * 0.5f), color);
+        draw_list->AddRectFilled(ImVec2(glass.x - half, glass.y - t * 0.5f), ImVec2(glass.x + half, glass.y + t * 0.5f),
+                                 color);
     if (icon == ImGuiKitIcon_ZoomIn)
-        draw_list->AddRectFilled(ImVec2(glass.x - t * 0.5f, glass.y - half), ImVec2(glass.x + t * 0.5f, glass.y + half), color);
+        draw_list->AddRectFilled(ImVec2(glass.x - t * 0.5f, glass.y - half), ImVec2(glass.x + t * 0.5f, glass.y + half),
+                                 color);
     if (icon == ImGuiKitIcon_ZoomOneToOne)
     {
         // A "1": a stroke and its serif
         float h = r * 0.45f;
-        draw_list->AddRectFilled(ImVec2(glass.x - t * 0.5f, glass.y - h), ImVec2(glass.x + t * 0.5f, glass.y + h), color);
-        draw_list->AddLine(ImVec2(glass.x, glass.y - h), ImVec2(glass.x - r * 0.18f, glass.y - h + r * 0.18f), color, t);
+        draw_list->AddRectFilled(ImVec2(glass.x - t * 0.5f, glass.y - h), ImVec2(glass.x + t * 0.5f, glass.y + h),
+                                 color);
+        draw_list->AddLine(ImVec2(glass.x, glass.y - h), ImVec2(glass.x - r * 0.18f, glass.y - h + r * 0.18f), color,
+                           t);
     }
 }
 
@@ -163,7 +166,8 @@ static float SetNextHelpWindowSize(float width, float text_width)
         w = ImMin(text_width + ImGui::GetStyle().WindowPadding.x * 2.0f, em * kHelpWidthEm);
     if (w > 0.0f)
         w = ImMin(w, viewport->WorkSize.x - em * 2.0f);
-    ImGui::SetNextWindowSizeConstraints(ImVec2(w, 0.0f), ImVec2(w > 0.0f ? w : FLT_MAX, viewport->WorkSize.y * kHelpMaxHeight));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(w, 0.0f),
+                                        ImVec2(w > 0.0f ? w : FLT_MAX, viewport->WorkSize.y * kHelpMaxHeight));
     return w;
 }
 
@@ -202,7 +206,8 @@ static bool BeginHelpMarkerEx(const char* str_id, float width, float text_width)
     {
         // A tooltip cannot scroll (the mouse cannot reach it): no scrollbar, and when its text was cut on the
         // previous frame, its first line says how to read the rest
-        HelpMarkerOpen open{ImGuiKitHelpMarkerShown_Tooltip, ImGui::GetStateStorage(), ImGui::GetID("##help_tooltip_cut")};
+        HelpMarkerOpen open{ImGuiKitHelpMarkerShown_Tooltip, ImGui::GetStateStorage(),
+                            ImGui::GetID("##help_tooltip_cut")};
         bool was_cut = open.storage->GetBool(open.cut_key, false);
         float window_width = SetNextHelpWindowSize(width, text_width);
         if (ImGui::BeginTooltipEx(ImGuiTooltipFlags_None, ImGuiWindowFlags_NoScrollbar))
@@ -228,7 +233,8 @@ bool BeginHelpMarker(const char* str_id, float width_em)
 
 void EndHelpMarker()
 {
-    IM_ASSERT(!GetCurrentContext().HelpMarkersShown.empty() && "EndHelpMarker() without a BeginHelpMarker() that returned true");
+    IM_ASSERT(!GetCurrentContext().HelpMarkersShown.empty()
+              && "EndHelpMarker() without a BeginHelpMarker() that returned true");
     ImGui::PopTextWrapPos();
     const HelpMarkerOpen& open = GetCurrentContext().HelpMarkersShown.back();
     if (open.shown == ImGuiKitHelpMarkerShown_Popup)
@@ -246,7 +252,8 @@ void HelpMarker(const char* text, float width_em)
 {
     if (BeginHelpMarkerEx(text, width_em * ImGui::GetFontSize(), ImGui::CalcTextSize(text).x))
     {
-        gHelpMarkerTextRenderer(text);
+        HelpMarkerTextRenderer renderer = GetCurrentContext().HelpMarkerRenderer;
+        (renderer ? renderer : DefaultHelpMarkerTextRenderer)(text);
         EndHelpMarker();
     }
 }
@@ -258,7 +265,7 @@ float HelpMarkerWidth()
 
 void SetHelpMarkerTextRenderer(HelpMarkerTextRenderer renderer)
 {
-    gHelpMarkerTextRenderer = renderer ? renderer : DefaultHelpMarkerTextRenderer;
+    GetCurrentContext().HelpMarkerRenderer = renderer;
 }
 
 //-----------------------------------------------------------------------------
@@ -307,16 +314,42 @@ bool SegmentedSwitch(const char* str_id, int* current, const char* const labels[
     ImGui::ItemSize(size, style.FramePadding.y);
     if (!ImGui::ItemAdd(bb, id))
         return false;
-    // The press, rather than the release: a touch screen may not report the latter where it started
-    bool hovered_unused, held_unused;
-    bool pressed = ImGui::ButtonBehavior(bb, id, &hovered_unused, &held_unused, ImGuiButtonFlags_PressedOnClick);
-    bool changed = false;
-    if (pressed)
+    // The press, rather than the release: a touch screen may not report the latter where it started. A nav activation
+    // (Space, Enter, a gamepad's button) makes it active, as a slider: Left and Right then move the choice, and the
+    // same key leaves it.
+    ImGuiContext& g = *GImGui;
+    const bool hovered = ImGui::ItemHoverable(bb, id, g.LastItemData.ItemFlags);
+    const bool clicked = hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left, ImGuiInputFlags_None, id);
+    if (clicked || g.NavActivateId == id)
     {
-        int clicked = ImClamp((int)((ImGui::GetIO().MouseClickedPos[0].x - p0.x) / segment_width), 0, labels_count - 1);
-        changed = (clicked != *current);
-        *current = clicked;
+        if (clicked)
+            ImGui::SetKeyOwner(ImGuiKey_MouseLeft, id);
+        ImGui::SetActiveID(id, window);
+        ImGui::SetFocusID(id, window);
+        ImGui::FocusWindow(window);
+        g.ActiveIdUsingNavDirMask |= (1 << ImGuiDir_Left) | (1 << ImGuiDir_Right);
     }
+    int picked = *current;
+    if (clicked)
+        picked = ImClamp((int)((ImGui::GetIO().MouseClickedPos[0].x - p0.x) / segment_width), 0, labels_count - 1);
+    if (g.ActiveId == id)
+    {
+        if (g.ActiveIdSource == ImGuiInputSource_Mouse)
+        {
+            if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+                ImGui::ClearActiveID();
+        }
+        else
+        {
+            const float tweak = ImGui::GetNavTweakPressedAmount(ImGuiAxis_X);
+            if (tweak != 0.0f)
+                picked = ImClamp(*current + ((tweak > 0.0f) ? 1 : -1), 0, labels_count - 1);
+            if (g.NavActivatePressedId == id && !g.ActiveIdIsJustActivated)
+                ImGui::ClearActiveID();
+        }
+    }
+    const bool changed = (picked != *current);
+    *current = picked;
 
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     ImVec2 p1 = p0 + size;
@@ -344,6 +377,7 @@ bool SegmentedSwitch(const char* str_id, int* current, const char* const labels[
         draw_list->AddRectFilled(ImVec2(x0, p0.y), ImVec2(x0 + segment_width, p1.y), ImGui::GetColorU32(col), rounding,
                                  flags);
     };
+    ImGui::RenderNavCursor(bb, id);
     draw_list->AddRectFilled(p0, p1, ImGui::GetColorU32(ImGuiCol_FrameBg), rounding);
     if (ImGui::IsItemHovered())
     {
@@ -376,7 +410,8 @@ bool SegmentedSwitch(const char* str_id, int* current, const char* const labels[
         ImVec2 text_size = ImGui::CalcTextSize(labels[i], nullptr, true);
         ImVec2 text_pos(p0.x + segment_width * (float)i + (segment_width - text_size.x) * 0.5f,
                         p0.y + (size.y - text_size.y) * 0.5f);
-        draw_list->AddText(text_pos, ImGui::GetColorU32(ImGuiCol_Text), labels[i], ImGui::FindRenderedTextEnd(labels[i]));
+        draw_list->AddText(text_pos, ImGui::GetColorU32(ImGuiCol_Text), labels[i],
+                           ImGui::FindRenderedTextEnd(labels[i]));
     }
     return changed;
 }
@@ -405,14 +440,20 @@ const char* FitText(const char* text, float wrap_width, int max_lines)
     const char* ellipsis = "\xE2\x80\xA6";  // U+2026, 3 bytes
     const int len = (int)strlen(text);
     buffer.resize(len + 4);
-    // Words leave from the end, until the rest and the ellipsis fit
+    // Words leave from the end, until the rest and the ellipsis fit; a word that is alone and too long (a URL, a
+    // path) loses characters instead
     int end = len;
     while (true)
     {
-        while (end > 0 && text[end - 1] != ' ')  // back to the start of the last word
-            end--;
-        while (end > 0 && text[end - 1] == ' ')  // and before the spaces that precede it
-            end--;
+        int word_start = end;
+        while (word_start > 0 && text[word_start - 1] != ' ')  // back to the start of the last word
+            word_start--;
+        while (word_start > 0 && text[word_start - 1] == ' ')  // and before the spaces that precede it
+            word_start--;
+        if (word_start > 0)
+            end = word_start;
+        else
+            for (end--; end > 0 && (text[end] & 0xC0) == 0x80; end--) {}  // one character: back to its lead byte
         memcpy(buffer.Data, text, (size_t)end);
         memcpy(buffer.Data + end, ellipsis, 4);  // with its terminating zero
         if (end == 0 || ImGui::CalcTextSize(buffer.Data, nullptr, false, wrap_width).y <= max_height)
@@ -441,7 +482,8 @@ bool ResizeHandle(const char* str_id, ImVec2* size, const ImVec2& min_size)
     ImGuiStorage* storage = ImGui::GetStateStorage();
     const ImGuiID offset_x_key = ImHashStr("offset_x", 0, id), offset_y_key = ImHashStr("offset_y", 0, id);
     // The item may be a child window (a multiline text field, a child): it, not this window, is then the hovered one
-    const ImGuiHoveredFlags hover_flags = ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_ChildWindows;
+    const ImGuiHoveredFlags hover_flags =
+        ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_ChildWindows;
     const bool hovered = ImGui::IsWindowHovered(hover_flags) && ImGui::IsMouseHoveringRect(grip_bb.Min, grip_bb.Max);
     if (hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
     {

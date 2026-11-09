@@ -85,7 +85,8 @@ void UpdateWheelSession(bool enabled)
         // A mouse that moves ends the session, as it ends ImGui's lock of the scrolled window: the wheel goes to what
         // is under the mouse from then on
         const float dx = io.MousePos.x - s.refMousePos.x, dy = io.MousePos.y - s.refMousePos.y;
-        const bool moved = ImGui::IsMousePosValid() && dx * dx + dy * dy > io.MouseDragThreshold * io.MouseDragThreshold;
+        const bool moved = ImGui::IsMousePosValid()
+                           && dx * dx + dy * dy > io.MouseDragThreshold * io.MouseDragThreshold;
         if (s.timer <= 0.f || moved)
             s.active = false;
     }
@@ -153,7 +154,9 @@ void SetupWheelSession(bool enabled)
     hook.Callback = [](ImGuiContext*, ImGuiContextHook*) { WheelSessionBeforeNewFrame(); };
     ImGui::AddContextHook(ctx, &hook);
     hook.Type = ImGuiContextHookType_NewFramePost;
-    hook.Callback = [](ImGuiContext*, ImGuiContextHook*) { UpdateWheelSession(GetCurrentContext().WheelSessionEnabled); };
+    hook.Callback = [](ImGuiContext*, ImGuiContextHook*) {
+        UpdateWheelSession(GetCurrentContext().WheelSessionEnabled);
+    };
     ImGui::AddContextHook(ctx, &hook);
 }
 

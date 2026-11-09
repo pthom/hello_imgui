@@ -36,7 +36,8 @@ namespace
             "  window.imguiKitUrlZones = []; window.imguiKitUrlZonesDisplayW = 0; window.imguiKitUrlOpened = null;"
             "  let press = null;"
             "  const toImGui = (e) => { const c = document.getElementById('canvas'); if (!c) return null;"
-            "    const r = c.getBoundingClientRect(), w = window.imguiKitUrlZonesDisplayW, s = (w > 0 && r.width > 0) ? r.width / w : 1;"
+            "    const r = c.getBoundingClientRect(), w = window.imguiKitUrlZonesDisplayW;"
+            "    const s = (w > 0 && r.width > 0) ? r.width / w : 1;"
             "    return [(e.clientX - r.left) / s, (e.clientY - r.top) / s]; };"
             "  const inZone = (p, z) => p[0] >= z.x0 && p[0] <= z.x1 && p[1] >= z.y0 && p[1] <= z.y1;"
             "  const options = {capture: true, passive: true};"
@@ -47,8 +48,9 @@ namespace
             "    onPointer(e); window.imguiKitPointerDown = 1;"
             "    if (e.pointerType === 'touch') fingers[e.pointerId] = [e.clientX, e.clientY];"
             "    const p = toImGui(e);"
-            "    press = (e.isPrimary && e.button === 0 && p) ? {id: e.pointerId, zone: window.imguiKitUrlZones.find((z) => inZone(p, z)),"
-            "      at: performance.now(), x: e.clientX, y: e.clientY, touch: e.pointerType === 'touch'} : null; }, options);"
+            "    press = (e.isPrimary && e.button === 0 && p) ? {id: e.pointerId,"
+            "      zone: window.imguiKitUrlZones.find((z) => inZone(p, z)), at: performance.now(),"
+            "      x: e.clientX, y: e.clientY, touch: e.pointerType === 'touch'} : null; }, options);"
             "  document.addEventListener('pointermove', (e) => {"
             "    onPointer(e); if (e.pointerId in fingers) fingers[e.pointerId] = [e.clientX, e.clientY]; }, options);"
             "  document.addEventListener('pointerup', (e) => {"
@@ -57,21 +59,25 @@ namespace
             "    if (Math.hypot(e.clientX - s.x, e.clientY - s.y) > 8) return;"
             "    const p = toImGui(e); if (!p || !inZone(p, s.zone)) return;"
             "    const w = window.open(s.zone.url, '_blank');"
-            "    if (w) { w.opener = null; window.imguiKitUrlOpened = {url: s.zone.url, at: performance.now()}; } }, options);"
+            "    if (w) { w.opener = null; window.imguiKitUrlOpened = {url: s.zone.url, at: performance.now()}; }"
+            "  }, options);"
             "  document.addEventListener('pointercancel', (e) => {"
             "    press = null; if (e.pointerId in fingers) cancelled.push(e.pointerId); onUp(e); }, options);"
             // The frame's state in one string: "type down cssWidth" then ";id x y" for each finger (CSS px from the
             // canvas's corner), then "|id id" for the fingers cancelled since the last frame
             "  window.imguiKitFrame = () => {"
-            "    const c = document.getElementById('canvas'), r = c ? c.getBoundingClientRect() : {left: 0, top: 0, width: 0};"
+            "    const c = document.getElementById('canvas');"
+            "    const r = c ? c.getBoundingClientRect() : {left: 0, top: 0, width: 0};"
             "    let s = window.imguiKitPointerType + ' ' + window.imguiKitPointerDown + ' ' + r.width;"
-            "    for (const id in fingers) s += ';' + id + ' ' + (fingers[id][0] - r.left) + ' ' + (fingers[id][1] - r.top);"
+            "    for (const id in fingers)"
+            "      s += ';' + id + ' ' + (fingers[id][0] - r.left) + ' ' + (fingers[id][1] - r.top);"
             "    if (cancelled.length > 0) { s += '|' + cancelled.join(' '); cancelled.length = 0; }"
             "    return s; };"
             "}"
             // iOS's own long press on the canvas (text selection, the callout menu) would pause the page's events
             "{ const c = document.getElementById('canvas');"
-            "  if (c) { c.style.webkitTouchCallout = 'none'; c.style.webkitUserSelect = 'none'; c.style.userSelect = 'none'; } }";
+            "  if (c) { c.style.webkitTouchCallout = 'none'; c.style.webkitUserSelect = 'none';"
+            "    c.style.userSelect = 'none'; } }";
         emscripten_run_script(script);
     }
 
@@ -128,7 +134,8 @@ namespace
             if (b.FingersNow.contains(id))
                 continue;
             const bool cancelled = b.FingersCancelled.contains(id);
-            ImGuiTouch::AddFingerEvent(id, ImVec2(0.f, 0.f), cancelled ? ImGuiTouchPhase_Cancelled : ImGuiTouchPhase_Ended);
+            ImGuiTouch::AddFingerEvent(id, ImVec2(0.f, 0.f),
+                                       cancelled ? ImGuiTouchPhase_Cancelled : ImGuiTouchPhase_Ended);
         }
         b.FingersDown.swap(b.FingersNow);
     }
@@ -141,14 +148,16 @@ namespace
     // Web addresses only: a javascript: url would run script in the page.
     bool OpenUrl(ImGuiContext*, const char* url)
     {
-        if (ImStrnicmp(url, "http://", 7) != 0 && ImStrnicmp(url, "https://", 8) != 0 && ImStrnicmp(url, "mailto:", 7) != 0)
+        if (ImStrnicmp(url, "http://", 7) != 0 && ImStrnicmp(url, "https://", 8) != 0
+            && ImStrnicmp(url, "mailto:", 7) != 0)
             return false;
-        ImVector<char>& script = ImGuiTouch::GetCurrentContext().Browser.Script;
+        ImVector<char>& script = ImGuiTouch::GetTouchContext().Browser.Script;
         script.resize(0);
         ImGuiTouchScriptAppend(script, "(u => {"
             " const o = window.imguiKitUrlOpened; if (o && o.url === u && performance.now() - o.at < 1500) return;"
             " const ua = navigator.userAgent;"
-            " const webkit = /iPhone|iPad|iPod/.test(ua) || (/AppleWebKit/.test(ua) && !/Chrome|Chromium|Edg|OPR|Firefox/.test(ua));"
+            " const webkit = /iPhone|iPad|iPod/.test(ua)"
+            "   || (/AppleWebKit/.test(ua) && !/Chrome|Chromium|Edg|OPR|Firefox/.test(ua));"
             " if (webkit) { window.location.assign(u); return; }"
             " const w = window.open(u); if (w) w.opener = null; else window.location.assign(u); })(");
         ImGuiTouchScriptAppendString(script, url, (int)strlen(url));
@@ -189,7 +198,7 @@ namespace
     void BeforeNewFrame(ImGuiContext* ctx, ImGuiContextHook*)
     {
         ImGuiContext& g = *ctx;
-        ImGuiTouchBrowserState& b = ImGuiTouch::GetCurrentContext().Browser;
+        ImGuiTouchBrowserState& b = ImGuiTouch::GetTouchContext().Browser;
         PushUrlZones(g.IO, b);
         // The frame's state: "type down cssWidth;id x y;...|cancelled ids"
         const char* frame = emscripten_run_script_string("window.imguiKitFrame ? window.imguiKitFrame() : ''");
@@ -259,7 +268,7 @@ namespace ImGuiTouch
 {
 bool SetRectOpensUrl(const ImVec2& min, const ImVec2& max, const char* url)
 {
-    ImGuiTouchContext* touch = FindCurrentContext();
+    ImGuiTouchContext* touch = FindTouchContext();
     if (touch == nullptr || !touch->Browser.Installed)
         return false;
     if (ImStrnicmp(url, "http://", 7) != 0 && ImStrnicmp(url, "https://", 8) != 0 && ImStrnicmp(url, "mailto:", 7) != 0)

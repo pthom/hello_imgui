@@ -8,7 +8,7 @@
 // The layer's state, ImGuiTouchContext: one per Dear ImGui context, as Dear ImGui's own state is in ImGuiContext. Dear
 // ImGui has no slot for an extension's state: the kit keeps it in its own per-context state (ImGuiKitContext, see
 // imgui_kit_internal.h). Only imgui_kit_touch.cpp knows that: the layer's other sources reach the state through
-// ImGuiTouch::GetCurrentContext(). The setups (ImGuiTouch::Setup(), SetKeyboardInsets(), SetupEmscripten(),
+// ImGuiTouch::GetTouchContext(). The setups (ImGuiTouch::Setup(), SetKeyboardInsets(), SetupEmscripten(),
 // SetupEmscriptenKeyboard()) create it; the other ImGuiTouch functions assert that a setup was called.
 #pragma once
 #include "imgui_kit.h"
@@ -32,16 +32,20 @@ struct ImGuiTouchScrollState
     ImGuiWindow* window = nullptr;  // the pressed window, then the one that scrolls
     ImGuiAxis axis = ImGuiAxis_None;
     ImVec2 pressPos;
-    ImGuiTouchScrollSample samples[ImGuiTouchFlickSamples];  // the finger's recent positions, a ring: the lift speed comes from them
+    ImGuiTouchScrollSample samples[ImGuiTouchFlickSamples];  // the finger's recent positions, a ring: the lift speed
+                                                             // comes from them
     int nbSamples = 0, nextSample = 0;
     ImVec2 inertia;                 // px/s, after the release
     float pull = 0.f;               // px: how far the finger dragged past the end of the scroll (the rubber band)
-    float overscroll = 0.f;         // px: the content is drawn this far past its end, along the axis (positive: toward the start)
+    float overscroll = 0.f;         // px: the content is drawn this far past its end, along the axis (positive:
+                                    // toward the start)
     float overscrollSpeed = 0.f;    // px/s, while it springs back
     int replayedPresses = 0;        // presses queued by the layer, which it must not claim
     bool watchingLongPress = false; // a touch press, still so far: a long press when it stays
     bool longPressArmed = false;    // it stayed: a right click when it lifts, unless it moves (a ring shows it)
     bool thinScrollbars = false;    // this frame: thin bars on a touch screen
+    bool mouseInUse = false;        // the last pointer that moved or pressed was a mouse (a touch laptop's): the
+                                    // theme's bars
     // While the bars are thin: the style's own values, put back when they stop, and the values written last
     bool barsWritten = false;
     float themeBarSize = 0.f, themeBarRounding = 0.f;
@@ -79,7 +83,8 @@ struct ImGuiTouchPinchState
     bool cancelled = false;     // a finger was cancelled since the last frame: its press ends with no click
     float startDistance = 0.f;  // between the first two fingers, when the second one landed (or the pair changed)
     ImVec2 startCenter;         // their middle, then
-    float scaleBase = 1.f;      // the scale reached when the pair last changed: the scale is scaleBase * distance / startDistance
+    float scaleBase = 1.f;      // the scale reached when the pair last changed: the scale is
+                                // scaleBase * distance / startDistance
     ImGuiTouchPinchGesture gesture = ImGuiTouchPinchGesture::None;
     float baseScale = 1.f;  // style.FontScaleMain when the pinch began
     // A widget that claims two fingers (ItemPinch, the adapters): the claims of one item, or of one rectangle, merge
@@ -181,7 +186,8 @@ namespace ImGuiTouch
     // Right after ImGui::NewFrame(), before any widget.
     void UpdateTouchScroll(ImGuiTouchScrollMode mode, bool longPressIsRightClick, bool thinScrollbars);
 
-    // A thin scroll bar held by a finger widens over the content (iOS): after the GUI, when this frame's scroll is final
+    // A thin scroll bar held by a finger widens over the content (iOS): after the GUI, when this frame's scroll is
+    // final
     void DrawTouchScrollbarGrab();
 
     // The content dragged or flung past its end (the rubber band, the bounce): right after ImGui::Render(), before the
@@ -189,12 +195,13 @@ namespace ImGuiTouch
     void ApplyTouchOverscroll();
 
     // A second finger landed (a pinch): the layer lets go of its press (no swipe, no tap, no inertia) and keeps the
-    // widgets out of it until the fingers lift. When a widget holds the press (a hold happened), it is interrupted
-    // only if asked. Returns false when a widget keeps its press.
+    // widgets out of it until the fingers lift. evenAWidget: a widget that holds the press (after a hold) loses it
+    // too; else it keeps it, and this returns false.
     bool TouchScrollLetGo(bool evenAWidget);
 
-    // Two fingers that drag together (a right drag): the layer releases its press for good, nothing parked, so that
-    // the widgets see the mouse. Returns false when a widget holds the press and must keep it.
+    // Two fingers that drag together, or a cancel: the layer releases its press for good, nothing parked, so that
+    // the widgets see the mouse. evenAWidget: as above (the layer's own gestures take a widget's press; a widget that
+    // reads the pinch's data keeps its own). Returns false when a widget keeps its press.
     bool TouchScrollRelease(bool evenAWidget);
 
     // The pinch, right after ImGui::NewFrame(): two fingers that spread or close scale the font (style.FontScaleMain)
@@ -209,9 +216,9 @@ namespace ImGuiTouch
     void PinchBeforeNewFrame(ImGuiContext& g);
 
     // The current Dear ImGui context's touch state (see this file's top): created by the setups, freed with the Dear
-    // ImGui context. GetCurrentContext() asserts that a setup was called; FindCurrentContext() returns nullptr.
-    ImGuiTouchContext& GetCurrentContext();
-    ImGuiTouchContext* FindCurrentContext();
+    // ImGui context. GetTouchContext() asserts that a setup was called; FindTouchContext() returns nullptr.
+    ImGuiTouchContext& GetTouchContext();
+    ImGuiTouchContext* FindTouchContext();
     ImGuiTouchContext& CreateCurrentContextIfNeeded();
     // A widget that takes a finger's drags (SetItemTakesDrags, or Dear ImGui's draggable widgets
     // through ImGuiItemDragAxisCallback when the build has it); ImGuiAxis_None: all, at once

@@ -56,8 +56,8 @@ float PixelSizeToEm(float pixel_size)
 //-----------------------------------------------------------------------------
 // The kit's state, one per Dear ImGui context
 //-----------------------------------------------------------------------------
-// It hangs on a Shutdown hook of the Dear ImGui context (its UserData), as the Test Engine's: the hook frees it with the
-// context (see imgui_kit_internal.h's top). The hooks are per context: no global (GImGui may be thread-local).
+// It hangs on a Shutdown hook of the Dear ImGui context (its UserData), as the Test Engine's: the hook frees it with
+// the context (see imgui_kit_internal.h's top). The hooks are per context: no global (GImGui may be thread-local).
 
 namespace ImGuiKit
 {

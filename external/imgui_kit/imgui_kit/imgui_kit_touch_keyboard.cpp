@@ -2,7 +2,9 @@
 // https://github.com/pthom/imgui_kit (MIT license)
 // Any platform: the browser's keyboard code sets the insets (imgui_kit_emscripten_keyboard.cpp), a native app sets them
 // from its keyboard's notifications.
+#ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
+#endif
 #include "imgui_kit.h"
 #include "imgui_kit_touch_internal.h"
 #include "imgui_internal.h"
@@ -52,7 +54,8 @@ namespace
                 delta = ImMin(delta, ImMax(0.f, top - w->InnerClipRect.Min.y));
             // A top-level window that reaches below the keyboard shrinks above it (the app's full-screen window), and
             // can then scroll that much further than the previous frame's ScrollMax
-            float growth = (w->Flags & ImGuiWindowFlags_ChildWindow) ? 0.f : ImMax(0.f, w->InnerClipRect.Max.y - visibleBottom);
+            float growth = (w->Flags & ImGuiWindowFlags_ChildWindow)
+                           ? 0.f : ImMax(0.f, w->InnerClipRect.Max.y - visibleBottom);
             float target = ImClamp(w->Scroll.y + delta, 0.f, w->ScrollMax.y + growth);
             float moved = target - w->Scroll.y;
             if (moved == 0.f)
@@ -74,7 +77,7 @@ void SetKeyboardInsets(const ImGuiTouchKeyboardInsets& insets)
 ImGuiTouchKeyboardInsets GetKeyboardInsets()
 {
     ImGuiTouchKeyboardInsets none;  // no keyboard reported yet: an app reads its insets at each frame
-    ImGuiTouchContext* state = FindCurrentContext();
+    ImGuiTouchContext* state = FindTouchContext();
     return state ? state->KeyboardInsets : none;
 }
 
@@ -89,7 +92,7 @@ void SetupKeepCaretInView(ImGuiContext* ctx)
     hook.Type = ImGuiContextHookType_NewFramePre;
     hook.Owner = owner;
     hook.Callback = [](ImGuiContext* g, ImGuiContextHook*) {
-        ImGuiTouchContext& tc = GetCurrentContext();
+        ImGuiTouchContext& tc = GetTouchContext();
         const ImGuiTouchKeyboardInsets& insets = tc.KeyboardInsets;
         bool shown = insets.Top > 0.f || insets.Bottom > 0.f;
         KeepCaretInView(*g, tc.CaretView, shown, insets.Top, g->IO.DisplaySize.y - insets.Bottom);

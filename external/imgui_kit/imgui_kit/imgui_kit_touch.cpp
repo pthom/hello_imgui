@@ -5,7 +5,8 @@
 #include "imgui_internal.h"  // AddContextHook
 
 // Each step runs at a moment Dear ImGui names:
-//   NewFramePre:  SimulateTouch retags the mouse's events; during a widget's pinch, the mouse goes to the fingers' center
+//   NewFramePre:  SimulateTouch retags the mouse's events; during a widget's pinch, the mouse goes to the fingers'
+//                 center
 //   NewFramePost: before any widget, the swipe, then the pinch
 //   EndFramePre:  after the GUI, the widened scrollbar thumb (the frame's scroll is final)
 //   RenderPost:   the draw data exists: the overscroll moves the content past its end
@@ -15,7 +16,7 @@ namespace
 {
     const ImGuiID kTouchHooksOwner = ImHashStr("ImGuiTouch");
 
-    ImGuiTouchContext& Ctx() { return ImGuiTouch::GetCurrentContext(); }
+    ImGuiTouchContext& Ctx() { return ImGuiTouch::GetTouchContext(); }
 
     // SimulateTouch: the frame's mouse events (queued by the backend, which may tag each of them as a mouse's) become a
     // touch screen's, and so does the source of what follows. When it is turned off, the source goes back to the mouse.
@@ -62,7 +63,7 @@ namespace
 namespace ImGuiTouch
 {
 // The touch state is a part of the kit's (ImGuiKitContext), in use once a setup was called: the only place that knows
-ImGuiTouchContext* FindCurrentContext()
+ImGuiTouchContext* FindTouchContext()
 {
     if (GImGui == nullptr)
         return nullptr;
@@ -70,10 +71,11 @@ ImGuiTouchContext* FindCurrentContext()
     return kit.TouchSetUp ? &kit.Touch : nullptr;
 }
 
-ImGuiTouchContext& GetCurrentContext()
+ImGuiTouchContext& GetTouchContext()
 {
-    ImGuiTouchContext* state = FindCurrentContext();
-    IM_ASSERT(state != nullptr && "imgui_kit's touch layer: call ImGuiTouch::Setup() first (or another ImGuiTouch setup)");
+    ImGuiTouchContext* state = FindTouchContext();
+    IM_ASSERT(state != nullptr
+              && "imgui_kit's touch layer: call ImGuiTouch::Setup() first (or another ImGuiTouch setup)");
     return *state;
 }
 
@@ -120,19 +122,20 @@ void Setup(const ImGuiTouchConfig& config)
             [](ImGuiContext*, ImGuiContextHook*) { ApplyTouchOverscroll(); });
 }
 
+bool IsInstalled() { return FindTouchContext() != nullptr; }
 ImGuiTouchConfig& GetConfig() { return Ctx().Config; }
 
 // Without the touch layer, nothing records the animations: the kit's widgets animate all the same (an app that draws
 // every frame), and IsAnimating() says false
 bool IsAnimating()
 {
-    ImGuiTouchContext* state = FindCurrentContext();
+    ImGuiTouchContext* state = FindTouchContext();
     return state != nullptr && (state->Animating || state->WasAnimating);
 }
 
 void RequestAnimation()
 {
-    if (ImGuiTouchContext* state = FindCurrentContext())
+    if (ImGuiTouchContext* state = FindTouchContext())
         state->Animating = true;
 }
 

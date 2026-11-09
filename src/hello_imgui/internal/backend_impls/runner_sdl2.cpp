@@ -23,6 +23,7 @@
 #include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
 #include "stb_image.h"
 #include "imgui_impl_sdl2.h"
+#include "imgui_kit/imgui_kit.h"  // ImGuiTouch::AddFingerEvent
 
 #include "hello_imgui/hello_imgui_error.h"
 #include "backend_window_helper/sdl_window_helper.h"
@@ -134,6 +135,27 @@ namespace HelloImGui
         params.backendPointers.sdlWindow = mWindow;
     }
 
+    // The fingers of a touch screen, to imgui_kit's touch layer (the pinch, the two-finger drag, a touch the system
+    // cancels); SDL and the backend make the first finger the mouse as well. Only the screens: a trackpad is a touch
+    // device too, an indirect one. SDL gives a position as a fraction of the window: in the window's coordinates here,
+    // as the mouse's. A finger's id is SDL's, folded to an int.
+    static void ForwardFingerEvent(const SDL_TouchFingerEvent& finger, SDL_Window* window)
+    {
+#if SDL_VERSION_ATLEAST(2, 0, 10)
+        bool direct = (SDL_GetTouchDeviceType(finger.touchId) == SDL_TOUCH_DEVICE_DIRECT)
+                      || (finger.touchId == SDL_MOUSE_TOUCHID);  // the mouse as a touch device (SDL_MOUSE_TOUCH_EVENTS)
+        if (!direct)
+            return;
+#endif
+        ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;  // a screen was touched: thin scroll bars
+        int w = 0, h = 0;
+        SDL_GetWindowSize(window, &w, &h);
+        ImGuiTouchPhase phase = (finger.type == SDL_FINGERDOWN) ? ImGuiTouchPhase_Began
+                              : (finger.type == SDL_FINGERUP) ? ImGuiTouchPhase_Ended : ImGuiTouchPhase_Moved;
+        int id = (int)(finger.fingerId ^ (finger.fingerId >> 32));
+        ImGuiTouch::AddFingerEvent(id, ImVec2(finger.x * (float)w, finger.y * (float)h), phase);
+    }
+
     void RunnerSdl2::Impl_PollEvents()
     {
         SDL_Event event;
@@ -144,6 +166,8 @@ namespace HelloImGui
                 if (params.callbacks.AnyBackendEventCallback(&event))
                     continue;
             }
+            if (event.type == SDL_FINGERDOWN || event.type == SDL_FINGERMOTION || event.type == SDL_FINGERUP)
+                ForwardFingerEvent(event.tfinger, (SDL_Window*)mWindow);
             // A press gets its own position first: SDL drops a motion that does not move (a second tap on the same
             // spot), and the touch layer clears the position at each lift, so the press would come without one
             if (event.type == SDL_MOUSEBUTTONDOWN)

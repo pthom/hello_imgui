@@ -327,11 +327,14 @@ function(him_install_imgui)
         endif()
 
         install(TARGETS imgui DESTINATION lib)
-        file(GLOB imgui_headers
-            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.h
-            ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/*.h
-        )
+        file(GLOB imgui_headers ${HELLOIMGUI_IMGUI_SOURCE_DIR}/*.h)
         install(FILES ${imgui_headers} DESTINATION include)
+        # imgui_stdlib.h at Dear ImGui's own path (misc/cpp/imgui_stdlib.h), and at the include root, where earlier
+        # installs had it: there, a header that includes it (a copy would declare its default arguments twice)
+        install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/misc/cpp/imgui_stdlib.h DESTINATION include/misc/cpp)
+        set(stdlib_forward ${CMAKE_CURRENT_BINARY_DIR}/imgui_stdlib_forward/imgui_stdlib.h)
+        file(WRITE ${stdlib_forward} "#pragma once\n#include \"misc/cpp/imgui_stdlib.h\"\n")
+        install(FILES ${stdlib_forward} DESTINATION include)
 
         if(HELLOIMGUI_HAS_OPENGL3)
             install(FILES ${HELLOIMGUI_IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.h DESTINATION include)

@@ -1348,8 +1348,8 @@ function(him_add_nlohmann_json)
 
             him_add_installable_dependency(nlohmann_json)
             if(HELLOIMGUI_INSTALL)
-                install(FILES ${nlohmann_json_dir}/nlohmann/json.hpp DESTINATION include/nlohmann/json.hpp)
-                install(FILES ${nlohmann_json_dir}/nlohmann/json_fwd.hpp DESTINATION include/nlohmann/json_fwd.hpp)
+                install(FILES ${nlohmann_json_dir}/nlohmann/json.hpp ${nlohmann_json_dir}/nlohmann/json_fwd.hpp
+                        DESTINATION include/nlohmann)
             endif()
         endif()
     endif()

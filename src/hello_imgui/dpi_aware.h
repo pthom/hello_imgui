@@ -158,7 +158,7 @@ Screen coordinates are the coordinates you use to place and size windows on the 
 
 The frame buffer size is the size of the internal buffer used by the rendering backend.
 It might be bigger than the actual window size.
-`ImVec2 ImGui::GetIO().DisplayFramebufferScale` is a factor by which the frame buffer size is bigger than the window size.
+`ImGui::GetIO().DisplayFramebufferScale` (an ImVec2) is a factor by which the frame buffer size is bigger than the window size.
 It is set by the platform backend after it was initialized, and typically reflects the scaling ratio between
 physical pixels and screen coordinates.
 
@@ -177,7 +177,7 @@ Notes:
  with the correct size, taking into account the DPI scaling.
 
 ### Using Dear ImGui
-`ImGui::GetIO().Fonts->AddFontFromFileTTF()` loads a font with a given size, in *physical pixels*.
+The font atlas, `ImGui::GetIO().Fonts`, loads a font with a given size, in *physical pixels*.
 KKDYNFONT: TBC...
 
 ## Reproducible physical window sizes (in mm or inches)

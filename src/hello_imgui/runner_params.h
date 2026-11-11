@@ -373,8 +373,9 @@ struct RunnerParams
 
     // `touchConfig`: _ImGuiTouchConfig (from imgui_kit)_.
     // The touch layer, as on a phone: the swipe (a finger drags the content, with inertia and a bounce), the long
-    // press as a right click, thin scroll bars, the pinch (the font scales). See ImGuiTouchConfig in imgui_kit.h,
-    // e.g. `runnerParams.touchConfig.ScrollMode = ImGuiTouchScrollMode_Always` to try the swipe with a mouse.
+    // press as a right click, thin scroll bars, the pinch (the font scales). See ImGuiTouchConfig in imgui_kit.h.
+    // To try the swipe with a mouse, set its scroll mode to Always (C++: `ImGuiTouchScrollMode_Always`,
+    // Python: `imgui_kit.TouchScrollMode_.always`).
     // Applied when it changes (a change through ImGuiTouch::GetConfig() then stays).
     ImGuiTouchConfig touchConfig;
 

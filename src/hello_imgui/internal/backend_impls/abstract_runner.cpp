@@ -1521,7 +1521,8 @@ void AbstractRunner::TearDown(bool gotException)
     params.callbacks.LoadAdditionalFonts = mLoadAdditionalFontsAtSetup;
     if (! gotException)
     {
-        // Store screenshot before exiting
+        // Store screenshot before exiting, if a frame was rendered (an app may be stopped right after its setup)
+        if (ImGui::GetDrawData() != nullptr)
         {
             ImageBuffer b = ScreenshotRgb();
             setFinalAppWindowScreenshotRgbBuffer(b);

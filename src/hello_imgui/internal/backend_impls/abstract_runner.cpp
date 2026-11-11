@@ -32,6 +32,8 @@
 #include <cassert>
 #include <filesystem>
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <mutex>
 #include <optional>
 #include <thread>
@@ -126,6 +128,15 @@ static std::atomic<bool> gRefreshRequested{false};
 // helper that the runner is shutting down.
 static std::mutex gRefreshWakeUpMutex;
 static BackendApi::IBackendWindowHelper* gRefreshWakeUpHelper = nullptr;
+
+// HELLOIMGUI_TEST_HIDDEN_WINDOWS=1 keeps every window hidden (the app window and the viewports' windows), for the
+// automated tests and the screenshots on a desktop. The app still renders: the screenshots and the test engine's
+// captures work (checked on macOS). Read at each call: a Python process may set it between two runs.
+static bool TestHiddenWindows()
+{
+    const char* value = std::getenv("HELLOIMGUI_TEST_HIDDEN_WINDOWS");
+    return value != nullptr && value[0] != '\0' && strcmp(value, "0") != 0;
+}
 
 bool ConsumeRefreshRequest() { return gRefreshRequested.exchange(false); }
 
@@ -757,6 +768,15 @@ void AbstractRunner::Setup()
 
     Impl_LinkPlatformAndRenderBackends();
 
+    if (TestHiddenWindows())
+    {
+        // The viewports' windows are created hidden. Platform_ShowWindow shows them, and so does
+        // Platform_SetWindowFocus on macOS (GLFW's focus orders the window front): both do nothing
+        ImGuiPlatformIO& platformIo = ImGui::GetPlatformIO();
+        platformIo.Platform_ShowWindow = [](ImGuiViewport*) {};
+        platformIo.Platform_SetWindowFocus = [](ImGuiViewport*) {};
+    }
+
     // From here on, user callbacks run (PostInit, LoadAdditionalFonts, SetupImGuiStyle...) and may throw, e.g. on a
     // missing font asset. Tear down the backends and the ImGui context before rethrowing: otherwise a new Setup after
     // a caught exception (Python REPL, notebook, Pyodide) finds them, and fails ("Already initialized a platform
@@ -1039,16 +1059,17 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
 
         // v/   At the 4th frame (mIdxFrame >= 3), we finally show the window
+        const bool hideWindow = params.appWindowParams.hidden || TestHiddenWindows();
         if (mIdxFrame == 3)
         {
-            if (params.appWindowParams.hidden)
+            if (hideWindow)
                 mBackendWindowHelper->HideWindow(mWindow);
             else
             {
                 mBackendWindowHelper->RaiseWindow(mWindow);
                 //mBackendWindowHelper->ShowWindow(mWindow);
             }
-            gStatics.lastHiddenState = params.appWindowParams.hidden;
+            gStatics.lastHiddenState = hideWindow;
 
             // Set initial topMost state (ignore if fullscreen)
             if (params.appWindowParams.windowGeometry.fullScreenMode == FullScreenMode::NoFullScreen)
@@ -1060,10 +1081,10 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         // On subsequent frames, we take into account user modifications of appWindowParams.hidden
         if (mIdxFrame > 3)
         {
-            if (params.appWindowParams.hidden != gStatics.lastHiddenState)
+            if (hideWindow != gStatics.lastHiddenState)
             {
-                gStatics.lastHiddenState = params.appWindowParams.hidden;
-                if (params.appWindowParams.hidden)
+                gStatics.lastHiddenState = hideWindow;
+                if (hideWindow)
                     mBackendWindowHelper->HideWindow(mWindow);
                 else
                     mBackendWindowHelper->ShowWindow(mWindow);

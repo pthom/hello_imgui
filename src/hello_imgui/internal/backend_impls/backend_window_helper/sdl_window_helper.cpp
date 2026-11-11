@@ -180,17 +180,17 @@ namespace HelloImGui { namespace BackendApi
 
     std::vector<ScreenBounds> SdlWindowHelper::GetMonitorsWorkAreas()
     {
-        int nbMonitors = SDL_GetNumVideoDisplays();
+        int nbMonitors = SDL_GetNumVideoDisplays();  // negative on error
         std::vector<ScreenBounds> r;
-        for (size_t i = 0; i < nbMonitors; ++i)
+        for (int i = 0; i < nbMonitors; ++i)
         {
             SDL_Rect rect;
-            SDL_GetDisplayUsableBounds((int)i, &rect);
+            SDL_GetDisplayUsableBounds(i, &rect);
             ScreenBounds b{{rect.x, rect.y},
                            {rect.w, rect.h}};
             r.push_back(b);
         }
-        return r;
+        return WorkAreasOrDefault(r);
     }
 
     bool SdlWindowHelper::IsWindowIconified(WindowPointer window)

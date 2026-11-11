@@ -36,6 +36,10 @@ namespace HelloImGui { namespace BackendApi
     // Container for pointers to SDLWindow, GLFWwindow, etc.
     using WindowPointer = void *;
 
+    // The work areas, or one default area when the platform reports no monitor (macOS, while the display sleeps):
+    // the callers can always use the first one.
+    std::vector<ScreenBounds> WorkAreasOrDefault(std::vector<ScreenBounds> workAreas);
+
 
     class IBackendWindowHelper
     {

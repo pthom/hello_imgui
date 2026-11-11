@@ -70,21 +70,24 @@ namespace HelloImGui { namespace BackendApi
         {
             int nbMonitors;
             auto monitors = glfwGetMonitors(&nbMonitors);
-            monitor = monitors[realMonitorIdx];
+            monitor = (realMonitorIdx < nbMonitors) ? monitors[realMonitorIdx] : nullptr;  // none: a window
 
-            const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-            glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-            glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-            glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-            glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-            windowSize[0] = mode->width;
-            windowSize[1] = mode->height;
+            if (monitor != nullptr)
+            {
+                const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+                glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+                glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+                glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+                glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+                windowSize[0] = mode->width;
+                windowSize[1] = mode->height;
+            }
         }
         else if (fullScreenMode == FullScreenMode::FullScreen)
         {
             int nbMonitors;
             auto monitors = glfwGetMonitors(&nbMonitors);
-            monitor = monitors[realMonitorIdx];
+            monitor = (realMonitorIdx < nbMonitors) ? monitors[realMonitorIdx] : nullptr;  // none: a window
         } else if (fullScreenMode == FullScreenMode::NoFullScreen)
             {}
         else
@@ -223,7 +226,7 @@ namespace HelloImGui { namespace BackendApi
 #endif
             r.push_back(bounds);
         }
-        return r;
+        return WorkAreasOrDefault(r);
     }
 
     bool GlfwWindowHelper::IsWindowIconified(WindowPointer window)

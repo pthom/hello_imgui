@@ -162,11 +162,7 @@ Quality contributions are welcome!
 
 Hello ImGui is a free and open source project, and its development and maintenance require considerable efforts.
 
-If you find it valuable for your work – especially in a commercial enterprise or a research setting – please consider supporting its development by [making a donation](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA). Thank you!
-
-<!--
-[![](https://raw.githubusercontent.com/pthom/imgui_bundle/main/bindings/imgui_bundle/doc/doc_images/btn_donate.gif)](https://www.paypal.com/donate/?hosted_button_id=SHJ68RVDKURZA)
--->
+If you find it valuable for your work, especially in a commercial enterprise or a research setting, please consider [sponsoring its maintenance](https://github.com/sponsors/pthom). Thank you!
 
 
 # More info

@@ -55,6 +55,16 @@ namespace ImGuiTheme
             }
         }
 
+        // A multiplier may push r, g, b out of [0, 1]. Clamped here as Dear ImGui clamps them when it draws:
+        // the drawn color stays the same, and the style holds valid values (for an export, or the style editor).
+        static void _Saturate(ImVec4& col)
+        {
+            auto saturate = [](float f) { return f < 0.f ? 0.f : (f > 1.f ? 1.f : f); };
+            col.x = saturate(col.x);
+            col.y = saturate(col.y);
+            col.z = saturate(col.z);
+        }
+
         void ApplySaturationMultiplier(ImGuiStyle& io_style, float saturation_multiplier, ImGuiStyle& reference_style)
         {
             for (int i = 0; i < ImGuiCol_COUNT; ++i)
@@ -68,6 +78,7 @@ namespace ImGuiTheme
                 ImGui::ColorConvertRGBtoHSV(col_ref.x, col_ref.y, col_ref.z, h_ref, s_ref, v_ref);
                 s = s_ref * saturation_multiplier;
                 ImGui::ColorConvertHSVtoRGB(h, s, v, col.x, col.y, col.z);
+                _Saturate(col);
             }
         }
 
@@ -110,6 +121,7 @@ namespace ImGuiTheme
             v = v * value_multiplier;
             ImVec4 r = col;
             ImGui::ColorConvertHSVtoRGB(h, s, v, r.x, r.y, r.z);
+            _Saturate(r);
             return r;
         }
 
@@ -120,6 +132,7 @@ namespace ImGuiTheme
             v = value;
             ImVec4 r = col;
             ImGui::ColorConvertHSVtoRGB(h, s, v, r.x, r.y, r.z);
+            _Saturate(r);
             return r;
         }
 
@@ -139,6 +152,7 @@ namespace ImGuiTheme
                     ImGui::ColorConvertRGBtoHSV(col_ref.x, col_ref.y, col_ref.z, h_ref, s_ref, v_ref);
                     v = v_ref * value_multiplier;
                     ImGui::ColorConvertHSVtoRGB(h, s, v, col.x, col.y, col.z);
+                    _Saturate(col);
                 }
             }
         }
@@ -173,6 +187,7 @@ namespace ImGuiTheme
                 ImGui::ColorConvertRGBtoHSV(col.x, col.y, col.z, h, s, v);
                 h = hue;
                 ImGui::ColorConvertHSVtoRGB(h, s, v, col.x, col.y, col.z);
+                _Saturate(col);
             }
         }
 

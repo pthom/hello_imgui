@@ -101,6 +101,40 @@ TEST_CASE("Every theme is readable: the caret, links, selection, slider grab, bo
     ImGui::DestroyContext(ctx);
 }
 
+// Regression test: the tweaks' multipliers pushed some components above 1 (WhiteIsWhite's WindowBg was 6.64)
+TEST_CASE("Every theme's colors stay in [0, 1], tweaked ones too")
+{
+    ImGuiContext* ctx = ImGui::CreateContext();
+    auto check_in_range = [](const ImGuiStyle& style) {
+        for (int c = 0; c < ImGuiCol_COUNT; ++c)
+        {
+            std::string color_name = ImGui::GetStyleColorName(c);
+            CAPTURE(color_name);
+            const ImVec4& col = style.Colors[c];
+            for (float f : {col.x, col.y, col.z, col.w})
+                CHECK((f >= 0.f && f <= 1.f));
+        }
+    };
+    for (int i = 0; i < ImGuiTheme::ImGuiTheme_Count; ++i)
+    {
+        auto theme = (ImGuiTheme::ImGuiTheme_)i;
+        std::string name = ImGuiTheme::ImGuiTheme_Name(theme);
+        CAPTURE(name);
+        check_in_range(ImGuiTheme::ThemeToStyle(theme));
+
+        ImGuiTheme::ImGuiTweakedTheme tweaked;
+        tweaked.Theme = theme;
+        tweaked.Tweaks.Hue = 0.3f;
+        tweaked.Tweaks.SaturationMultiplier = 3.f;
+        tweaked.Tweaks.ValueMultiplierFront = 3.f;
+        tweaked.Tweaks.ValueMultiplierBg = 3.f;
+        tweaked.Tweaks.ValueMultiplierText = 3.f;
+        tweaked.Tweaks.ValueMultiplierFrameBg = 3.f;
+        check_in_range(ImGuiTheme::TweakedThemeThemeToStyle(tweaked));
+    }
+    ImGui::DestroyContext(ctx);
+}
+
 TEST_CASE("A theme's colors do not depend on the current style")
 {
     ImGuiContext* ctx = ImGui::CreateContext();

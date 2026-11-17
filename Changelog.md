@@ -27,6 +27,8 @@
 
 **Themes:** the grab of a held slider stands out from its frame. In Darcula, DarculaDarker, MaterialFlat, Cherry, LightRounded, the three SoDark themes and BlackIsBlack, it had nearly the color of the held frame, and vanished while dragged; its contrast with the frame is now 3:1 at least (WCAG's minimum for the state of a control). Dear ImGui's own three styles are unchanged.
 
+**Themes: colors in [0, 1].** The theme tweaks (`ImGuiThemeTweaks`, and the themes built with them) keep each color's components in [0, 1]. WhiteIsWhite's window background was 6.64, and a few colors of BlackIsBlack and GrayVariations_Darker were above 1: harmless on screen, since Dear ImGui clamps them when it draws, but wrong in a style that is exported or edited. Every theme looks the same.
+
 **Browser's page zoom:** the canvas follows Safari's page zoom. Safari applies it just after the load, and fires the window's `resize` before the page's width changes: the canvas often kept the unzoomed width, wider than the page (its right part and its bottom out of view). The window's `resize` is now fired again when a `visualViewport` resize changes the page's size.
 
 **Ini settings:** `LoadUserPref` gives back the value as saved by `SaveUserPref`. It came back with a trailing newline from the second run on: each read and write of the ini file added a `\n` to its last part.

@@ -139,6 +139,8 @@ namespace HelloImGui
     // cancels); SDL and the backend make the first finger the mouse as well. Only the screens: a trackpad is a touch
     // device too, an indirect one. SDL gives a position as a fraction of the window: in the window's coordinates here,
     // as the mouse's. A finger's id is SDL's, folded to an int.
+    // Not in a browser: there, ImGuiTouch::SetupEmscripten() relays the fingers, from the browser's pointer events.
+#ifndef __EMSCRIPTEN__
     static void ForwardFingerEvent(const SDL_TouchFingerEvent& finger, SDL_Window* window)
     {
 #if SDL_VERSION_ATLEAST(2, 0, 10)
@@ -155,6 +157,7 @@ namespace HelloImGui
         int id = (int)(finger.fingerId ^ (finger.fingerId >> 32));
         ImGuiTouch::AddFingerEvent(id, ImVec2(finger.x * (float)w, finger.y * (float)h), phase);
     }
+#endif
 
     void RunnerSdl2::Impl_PollEvents()
     {
@@ -166,8 +169,10 @@ namespace HelloImGui
                 if (params.callbacks.AnyBackendEventCallback(&event))
                     continue;
             }
+#ifndef __EMSCRIPTEN__  // in a browser, ImGuiTouch::SetupEmscripten() relays the fingers
             if (event.type == SDL_FINGERDOWN || event.type == SDL_FINGERMOTION || event.type == SDL_FINGERUP)
                 ForwardFingerEvent(event.tfinger, (SDL_Window*)mWindow);
+#endif
             // A press gets its own position first: SDL drops a motion that does not move (a second tap on the same
             // spot), and the touch layer clears the position at each lift, so the press would come without one
             if (event.type == SDL_MOUSEBUTTONDOWN)

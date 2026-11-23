@@ -147,7 +147,10 @@ void SetRefreshWakeUp(BackendApi::IBackendWindowHelper* windowHelper)
 }
 
 // The touch layer lives in imgui_kit: this keeps hello_imgui's API
-void SetItemTakesTouchDrags(bool longPressIsRightClick) { ImGuiTouch::SetItemTakesDrags(longPressIsRightClick); }
+void SetItemTakesTouchDrags(bool longPressIsRightClick)
+{
+    ImGuiTouch::SetItemTakesDrags(ImGuiTouchAxis_Any, longPressIsRightClick);
+}
 
 void RequestRefresh()
 {

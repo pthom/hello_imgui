@@ -1,12 +1,12 @@
-// imgui_kit: the keyboard's insets, and the caret kept above the keyboard (ImGuiTouch::SetKeyboardInsets)
-// https://github.com/pthom/imgui_kit (MIT license)
-// Any platform: the browser's keyboard code sets the insets (imgui_kit_emscripten_keyboard.cpp), a native app sets them
+// imgui_touch: the keyboard's insets, and the caret kept above the keyboard (ImGuiTouch::SetKeyboardInsets)
+// https://github.com/pthom/imgui_touch (MIT license)
+// Any platform: the browser's keyboard code sets the insets (imgui_touch_emscripten_keyboard.cpp), a native app sets them
 // from its keyboard's notifications.
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
-#include "imgui_kit.h"
-#include "imgui_kit_touch_internal.h"
+#include "imgui_touch.h"
+#include "imgui_touch_internal.h"
 #include "imgui_internal.h"
 
 namespace ImGuiTouch

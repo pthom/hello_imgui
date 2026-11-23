@@ -90,8 +90,7 @@ ImGuiKitContext& GetCurrentContext()
 bool IsAnimating()
 {
     const ImGuiKitContext& kit = GetCurrentContext();
-    const bool widgets = kit.AnimationFrame >= 0 && GImGui->FrameCount - kit.AnimationFrame <= 1;
-    return widgets || ImGuiTouch::IsAnimating();
+    return kit.AnimationFrame >= 0 && GImGui->FrameCount - kit.AnimationFrame <= 1;
 }
 
 void RequestAnimation() { GetCurrentContext().AnimationFrame = GImGui->FrameCount; }

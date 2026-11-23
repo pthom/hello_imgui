@@ -7,7 +7,7 @@
 #include "hello_imgui/remote_params.h"
 #include "hello_imgui/renderer_backend_options.h"
 #include "hello_imgui/dpi_aware.h"
-#include "imgui_kit/imgui_kit.h"  // ImGuiTouchConfig
+#include "imgui_touch/imgui_touch.h"  // ImGuiTouchConfig
 #include <vector>
 #include <string>
 #include <optional>
@@ -371,11 +371,11 @@ struct RunnerParams
     // (only used on emscripten: 0 stands for "let the app or the browser decide")
     int emscripten_fps = 0;
 
-    // `touchConfig`: _ImGuiTouchConfig (from imgui_kit)_.
+    // `touchConfig`: _ImGuiTouchConfig (from imgui_touch)_.
     // The touch layer, as on a phone: the swipe (a finger drags the content, with inertia and a bounce), the long
-    // press as a right click, thin scroll bars, the pinch (the font scales). See ImGuiTouchConfig in imgui_kit.h.
+    // press as a right click, thin scroll bars, the pinch (the font scales). See ImGuiTouchConfig in imgui_touch.h.
     // To try the swipe with a mouse, set its scroll mode to Always (C++: `ImGuiTouchScrollMode_Always`,
-    // Python: `imgui_kit.TouchScrollMode_.always`).
+    // Python: `imgui_touch.ScrollMode_.always`).
     // Applied when it changes (a change through ImGuiTouch::GetConfig() then stays).
     ImGuiTouchConfig touchConfig;
 

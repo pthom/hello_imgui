@@ -1,8 +1,8 @@
-// imgui_kit: the touch layer in a browser (ImGuiTouch::SetupEmscripten)
-// https://github.com/pthom/imgui_kit (MIT license)
+// imgui_touch: the touch layer in a browser (ImGuiTouch::SetupEmscripten)
+// https://github.com/pthom/imgui_touch (MIT license)
 #ifdef __EMSCRIPTEN__
-#include "imgui_kit.h"
-#include "imgui_kit_touch_internal.h"
+#include "imgui_touch.h"
+#include "imgui_touch_internal.h"
 #include "imgui_internal.h"  // AddContextHook, g.InputEventsQueue
 
 #include <emscripten.h>
@@ -16,7 +16,7 @@
 // where each finger is; Dear ImGui's GLFW backend knows neither. A probe on the document keeps them, and a hook reads
 // them at the start of each frame (NewFramePre: after the backend's NewFrame, before Dear ImGui reads the inputs).
 // emscripten_run_script rather than EM_JS or EM_ASM: it also works in a side module, as in Pyodide. Each call evaluates
-// a script: the hook makes one per frame (imguiKitFrame(), installed by the probe), and allocates nothing.
+// a script: the hook makes one per frame (imguiTouchFrame(), installed by the probe), and allocates nothing.
 const ImGuiID EMSCRIPTEN_HOOKS_OWNER = ImHashStr("ImGuiTouch_Emscripten");
 
 // The schemes the page opens; anything else (a javascript: url) would run in the page
@@ -29,32 +29,32 @@ static bool IsWebUrl(const char* url)
 static void InstallProbe()
 {
     const char* script =
-        "if (window.imguiKitPointerType === undefined) {"
-        "  window.imguiKitPointerType = 0;"
-        "  window.imguiKitPointerDown = 0;"
+        "if (window.imguiTouchPointerType === undefined) {"
+        "  window.imguiTouchPointerType = 0;"
+        "  window.imguiTouchPointerDown = 0;"
         "  const fingers = {};"  // the fingers down: their pointer id -> [clientX, clientY]
         "  const cancelled = [];"  // the fingers the browser took over since the last frame (pointercancel)
-        "  window.imguiKitFingers = fingers;"
+        "  window.imguiTouchFingers = fingers;"
         // The url zones (SetItemOpensUrl): the links of the last frame, in Dear ImGui's units; a press that lands
         // on one and lifts on it (a tap, or a mouse's click) opens its url here, inside the handler: the only
-        // place WebKit allows a new tab. What was opened, for the fallback not to open it again (imguiKitUrlOpened)
-        "  window.imguiKitUrlZones = []; window.imguiKitUrlZonesDisplayW = 0; window.imguiKitUrlOpened = null;"
+        // place WebKit allows a new tab. What was opened, for the fallback not to open it again (imguiTouchUrlOpened)
+        "  window.imguiTouchUrlZones = []; window.imguiTouchUrlZonesDisplayW = 0; window.imguiTouchUrlOpened = null;"
         "  let press = null;"
         "  const toImGui = (e) => { const c = document.getElementById('canvas'); if (!c) return null;"
-        "    const r = c.getBoundingClientRect(), w = window.imguiKitUrlZonesDisplayW;"
+        "    const r = c.getBoundingClientRect(), w = window.imguiTouchUrlZonesDisplayW;"
         "    const s = (w > 0 && r.width > 0) ? r.width / w : 1;"
         "    return [(e.clientX - r.left) / s, (e.clientY - r.top) / s]; };"
         "  const inZone = (p, z) => p[0] >= z.x0 && p[0] <= z.x1 && p[1] >= z.y0 && p[1] <= z.y1;"
         "  const options = {capture: true, passive: true};"
         "  const onPointer = (e) => {"
-        "    window.imguiKitPointerType = (e.pointerType === 'touch') ? 1 : (e.pointerType === 'pen') ? 2 : 0; };"
-        "  const onUp = (e) => { window.imguiKitPointerDown = 0; delete fingers[e.pointerId]; };"
+        "    window.imguiTouchPointerType = (e.pointerType === 'touch') ? 1 : (e.pointerType === 'pen') ? 2 : 0; };"
+        "  const onUp = (e) => { window.imguiTouchPointerDown = 0; delete fingers[e.pointerId]; };"
         "  document.addEventListener('pointerdown', (e) => {"
-        "    onPointer(e); window.imguiKitPointerDown = 1;"
+        "    onPointer(e); window.imguiTouchPointerDown = 1;"
         "    if (e.pointerType === 'touch') fingers[e.pointerId] = [e.clientX, e.clientY];"
         "    const p = toImGui(e);"
         "    press = (e.isPrimary && e.button === 0 && p) ? {id: e.pointerId,"
-        "      zone: window.imguiKitUrlZones.find((z) => inZone(p, z)), at: performance.now(),"
+        "      zone: window.imguiTouchUrlZones.find((z) => inZone(p, z)), at: performance.now(),"
         "      x: e.clientX, y: e.clientY, touch: e.pointerType === 'touch'} : null; }, options);"
         "  document.addEventListener('pointermove', (e) => {"
         "    onPointer(e); if (e.pointerId in fingers) fingers[e.pointerId] = [e.clientX, e.clientY]; }, options);"
@@ -64,16 +64,16 @@ static void InstallProbe()
         "    if (Math.hypot(e.clientX - s.x, e.clientY - s.y) > 8) return;"
         "    const p = toImGui(e); if (!p || !inZone(p, s.zone)) return;"
         "    const w = window.open(s.zone.url, '_blank');"
-        "    if (w) { w.opener = null; window.imguiKitUrlOpened = {url: s.zone.url, at: performance.now()}; }"
+        "    if (w) { w.opener = null; window.imguiTouchUrlOpened = {url: s.zone.url, at: performance.now()}; }"
         "  }, options);"
         "  document.addEventListener('pointercancel', (e) => {"
         "    press = null; if (e.pointerId in fingers) cancelled.push(e.pointerId); onUp(e); }, options);"
         // The frame's state in one string: "type down cssWidth" then ";id x y" for each finger (CSS px from the
         // canvas's corner), then "|id id" for the fingers cancelled since the last frame
-        "  window.imguiKitFrame = () => {"
+        "  window.imguiTouchFrame = () => {"
         "    const c = document.getElementById('canvas');"
         "    const r = c ? c.getBoundingClientRect() : {left: 0, top: 0, width: 0};"
-        "    let s = window.imguiKitPointerType + ' ' + window.imguiKitPointerDown + ' ' + r.width;"
+        "    let s = window.imguiTouchPointerType + ' ' + window.imguiTouchPointerDown + ' ' + r.width;"
         "    for (const id in fingers)"
         "      s += ';' + id + ' ' + (fingers[id][0] - r.left) + ' ' + (fingers[id][1] - r.top);"
         "    if (cancelled.length > 0) { s += '|' + cancelled.join(' '); cancelled.length = 0; }"
@@ -158,7 +158,7 @@ static bool OpenUrl(ImGuiContext*, const char* url)
     ImVector<char>& script = ImGuiTouch::GetTouchContext().Browser.Script;
     script.resize(0);
     ImGuiTouchScriptAppend(script, "(u => {"
-        " const o = window.imguiKitUrlOpened; if (o && o.url === u && performance.now() - o.at < 1500) return;"
+        " const o = window.imguiTouchUrlOpened; if (o && o.url === u && performance.now() - o.at < 1500) return;"
         " const ua = navigator.userAgent;"
         " const webkit = /iPhone|iPad|iPod/.test(ua)"
         "   || (/AppleWebKit/.test(ua) && !/Chrome|Chromium|Edg|OPR|Firefox/.test(ua));"
@@ -194,7 +194,7 @@ static void PushUrlZones(ImGuiIO& io, ImGuiTouchBrowserState& b)
         return;
     ImVector<char>& s = b.UrlZonesScript;
     s.resize(0);
-    ImGuiTouchScriptAppend(s, "window.imguiKitUrlZones = [");
+    ImGuiTouchScriptAppend(s, "window.imguiTouchUrlZones = [");
     char buffer[96];
     for (const ImGuiTouchUrlZone& z : b.UrlZonesPushed)
     {
@@ -205,7 +205,7 @@ static void PushUrlZones(ImGuiIO& io, ImGuiTouchBrowserState& b)
         ImGuiTouchScriptAppendString(s, url, (int)strlen(url));
         ImGuiTouchScriptAppend(s, "},");
     }
-    snprintf(buffer, sizeof(buffer), "]; window.imguiKitUrlZonesDisplayW = %.1f;", io.DisplaySize.x);
+    snprintf(buffer, sizeof(buffer), "]; window.imguiTouchUrlZonesDisplayW = %.1f;", io.DisplaySize.x);
     ImGuiTouchScriptAppend(s, buffer);
     emscripten_run_script(ImGuiTouchScriptEnd(s));
 }
@@ -216,7 +216,7 @@ static void BeforeNewFrame(ImGuiContext* ctx, ImGuiContextHook*)
     ImGuiTouchBrowserState& b = ImGuiTouch::GetTouchContext().Browser;
     PushUrlZones(g.IO, b);
     // The frame's state: "type down cssWidth;id x y;...|cancelled ids"
-    const char* frame = emscripten_run_script_string("window.imguiKitFrame ? window.imguiKitFrame() : ''");
+    const char* frame = emscripten_run_script_string("window.imguiTouchFrame ? window.imguiTouchFrame() : ''");
     if (frame == nullptr)
         frame = "";
     char* p = nullptr;
@@ -231,7 +231,9 @@ static void BeforeNewFrame(ImGuiContext* ctx, ImGuiContextHook*)
     // There is no pointer between two touches: the position is invalid, as when a mouse leaves the window.
     // Otherwise the last touch keeps hovering what passes under it (the content that coasts after a fling), and
     // the GLFW backend re-adds that position at each frame (a finger triggers no mouseenter).
-    if (source == ImGuiMouseSource_TouchScreen && !pointer_down)
+    // Not while two fingers that lifted still hold their drag's button: the widget they dragged sees its release at
+    // the last position (with no position, a pan measured from the press would go back to its start).
+    if (source == ImGuiMouseSource_TouchScreen && !pointer_down && !ImGuiTouch::PinchHoldsMouseButton())
         g.IO.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
     RelayFingers(g.IO, b, p, cssWidth);
 }
@@ -328,7 +330,7 @@ void SetupEmscripten()
 } // namespace ImGuiTouch
 
 #else  // not a browser: the caller opens its links itself
-#include "imgui_kit.h"
+#include "imgui_touch.h"
 
 namespace ImGuiTouch
 {

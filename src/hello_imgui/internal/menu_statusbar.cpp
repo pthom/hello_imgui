@@ -87,7 +87,7 @@ void ShowStatusBar(RunnerParams & params)
         EdgeInsets edgeInsets;
         if (params.appWindowParams.handleEdgeInsets)
             edgeInsets = params.appWindowParams.edgeInsets;
-        // In a browser, the phone's keyboard hides a part of the canvas (imgui_kit: zero elsewhere)
+        // In a browser, the phone's keyboard hides a part of the canvas (imgui_touch: zero elsewhere)
         edgeInsets.bottom += ImGuiTouch::GetKeyboardInsets().Bottom;
         statusBarSize = ImVec2(viewport->Size.x - (float)edgeInsets.left - (float)edgeInsets.right, statusWindowHeight);
         statusBarPos = viewport->Pos + ImVec2((float)edgeInsets.left, viewport->Size.y - (float)edgeInsets.bottom - statusBarSize.y);

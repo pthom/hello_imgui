@@ -1,7 +1,8 @@
 #include "hello_imgui/internal/backend_impls/abstract_runner.h"
 #include "hello_imgui/hello_imgui_theme.h"
 #include "hello_imgui/internal/borderless_movable.h"
-#include "imgui_kit/imgui_kit.h"  // ImGuiTouch, ImGuiKit::SetupWheelSession
+#include "imgui_touch/imgui_touch.h"  // ImGuiTouch
+#include "imgui_kit/imgui_kit.h"  // ImGuiKit::SetupWheelSession
 #include "hello_imgui/internal/refresh_request.h"
 #include "hello_imgui/internal/clock_seconds.h"
 #include "hello_imgui/internal/docking_details.h"
@@ -146,7 +147,7 @@ void SetRefreshWakeUp(BackendApi::IBackendWindowHelper* windowHelper)
     gRefreshWakeUpHelper = windowHelper;
 }
 
-// The touch layer lives in imgui_kit: this keeps hello_imgui's API
+// The touch layer lives in imgui_touch: this keeps hello_imgui's API
 void SetItemTakesTouchDrags(bool longPressIsRightClick)
 {
     ImGuiTouch::SetItemTakesDrags(ImGuiTouchAxis_Any, longPressIsRightClick);
@@ -1139,7 +1140,8 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         // A mouse button (or a finger) held down is an activity, even still: a button that repeats, a drag that pauses
         bool mouseDown = ImGui::GetCurrentContext() != nullptr && ImGui::IsAnyMouseDown();
         // Content that changes on its own asked for this frame (RequestRefresh(), SetItemIsLive()): read at each frame
-        bool refreshRequested = ConsumeRefreshRequest() || ImGuiKit::IsAnimating();  // the inertia, a switch that slides
+        // (the inertia, a switch that slides)
+        bool refreshRequested = ConsumeRefreshRequest() || ImGuiTouch::IsAnimating() || ImGuiKit::IsAnimating();
         inputs.busy = isTestEngineRunning || ShouldRemoteDisplay() || startedRecently || mouseDown || refreshRequested;
 
         IdlingDecision decision = DecideIdling(params.fpsIdling, inputs, gStatics.idling);
@@ -1420,8 +1422,8 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
 
     // ImGui::NewFrame may call ImGuiTestEngine_PostNewFrame, which in turn handles the GIL in its own way,
     // so that it can *NOT* be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
-    // The touch layer and the wheel session run in NewFrame() (imgui_kit's hooks). The params are applied when they
-    // change: a change made through the kit (ImGuiTouch::GetConfig()) stays until then.
+    // The touch layer and the wheel session run in NewFrame() (imgui_touch's and imgui_kit's hooks). The params are
+    // applied when they change: a change made through imgui_touch (ImGuiTouch::GetConfig()) stays until then.
     if (!SameTouchConfig(params.touchConfig, mAppliedTouchConfig))
     {
         ImGuiTouch::GetConfig() = params.touchConfig;

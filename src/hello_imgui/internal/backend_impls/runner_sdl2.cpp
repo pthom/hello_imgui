@@ -23,7 +23,7 @@
 #include "hello_imgui/internal/backend_impls/rendering_callbacks.h"
 #include "stb_image.h"
 #include "imgui_impl_sdl2.h"
-#include "imgui_kit/imgui_kit.h"  // ImGuiTouch::AddFingerEvent
+#include "imgui_touch/imgui_touch.h"  // ImGuiTouch::AddFingerEvent
 
 #include "hello_imgui/hello_imgui_error.h"
 #include "backend_window_helper/sdl_window_helper.h"
@@ -135,7 +135,7 @@ namespace HelloImGui
         params.backendPointers.sdlWindow = mWindow;
     }
 
-    // The fingers of a touch screen, to imgui_kit's touch layer (the pinch, the two-finger drag, a touch the system
+    // The fingers of a touch screen, to imgui_touch's touch layer (the pinch, the two-finger drag, a touch the system
     // cancels); SDL and the backend make the first finger the mouse as well. Only the screens: a trackpad is a touch
     // device too, an indirect one. SDL gives a position as a fraction of the window: in the window's coordinates here,
     // as the mouse's. A finger's id is SDL's, folded to an int.

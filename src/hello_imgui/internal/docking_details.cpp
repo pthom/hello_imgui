@@ -343,7 +343,7 @@ ImRect FullScreenRect_MinusInsets(const RunnerParams& runnerParams)
         EdgeInsets edgeInsets;
         if (runnerParams.appWindowParams.handleEdgeInsets)
             edgeInsets = runnerParams.appWindowParams.edgeInsets;
-        // In a browser, the phone's keyboard hides a part of the canvas (imgui_kit: zero elsewhere)
+        // In a browser, the phone's keyboard hides a part of the canvas (imgui_touch: zero elsewhere)
         ImGuiTouchKeyboardInsets keyboardInsets = ImGuiTouch::GetKeyboardInsets();
         edgeInsets.top += keyboardInsets.Top;
         edgeInsets.bottom += keyboardInsets.Bottom;

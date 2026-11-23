@@ -1,5 +1,5 @@
-// imgui_kit: the pinch of a touch screen (ImGuiTouch)
-// https://github.com/pthom/imgui_kit (MIT license)
+// imgui_touch: the pinch of a touch screen (ImGuiTouch)
+// https://github.com/pthom/imgui_touch (MIT license)
 
 /*
 
@@ -14,8 +14,8 @@ Index of this file:
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
-#include "imgui_kit.h"
-#include "imgui_kit_touch_internal.h"
+#include "imgui_touch.h"
+#include "imgui_touch_internal.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"  // ImClamp, the input queue
@@ -90,8 +90,7 @@ static ImGuiTouchPinchState::PinchTaker* Claim(ImGuiID id, const ImRect& rect)
     ImGuiTouchContext* touch = FindTouchContext();
     if (touch == nullptr || touch->Pinch.FrameCount != g.FrameCount)
         return nullptr;
-    ImRect visible = rect;
-    visible.ClipWith(g.CurrentWindow->ClipRect);
+    ImRect visible = ClaimRectOnScreen(rect);
     if (visible.GetWidth() <= 0.0f || visible.GetHeight() <= 0.0f)
         return nullptr;
     ImGuiTouchPinchState& s = touch->Pinch;
@@ -197,9 +196,9 @@ void SetItemPinchAsWheel(float wheel_zoom_factor, ImGuiTouchPinchDelivery delive
 }
 
 void SetRectPinchAsWheel(const ImVec2& min, const ImVec2& max, float wheel_zoom_factor,
-                         ImGuiTouchPinchDelivery delivery)
+                         ImGuiTouchPinchDelivery delivery, ImGuiID id)
 {
-    ClaimWheel(0, ImRect(min, max), wheel_zoom_factor, delivery);
+    ClaimWheel(id, ImRect(min, max), wheel_zoom_factor, delivery);
 }
 
 void SetItemTwoFingerPanAsMouseDrag(ImGuiMouseButton button)
@@ -207,9 +206,55 @@ void SetItemTwoFingerPanAsMouseDrag(ImGuiMouseButton button)
     ClaimPan(GImGui->LastItemData.ID, GImGui->LastItemData.Rect, button);
 }
 
-void SetRectTwoFingerPanAsMouseDrag(const ImVec2& min, const ImVec2& max, ImGuiMouseButton button)
+void SetRectTwoFingerPanAsMouseDrag(const ImVec2& min, const ImVec2& max, ImGuiMouseButton button, ImGuiID id)
 {
-    ClaimPan(0, ImRect(min, max), button);
+    ClaimPan(id, ImRect(min, max), button);
+}
+
+bool PinchHoldsMouseButton()
+{
+    ImGuiTouchContext* touch = FindTouchContext();
+    ImGuiMouseButton button;
+    return touch != nullptr && touch->Pinch.Gesture == ImGuiTouchPinchGesture_Drag && DragButton(touch->Pinch, &button);
+}
+
+void PushClaimTransform(float scale, const ImVec2& offset)
+{
+    ImGuiTouchContext* touch = FindTouchContext();
+    if (touch == nullptr)
+        return;
+    ImGuiTouchClaimTransform t;
+    t.Scale = scale;
+    t.Offset = offset;
+    if (!touch->ClaimTransforms.empty())  // a canvas inside another: the outer one's transform applies after this one
+    {
+        const ImGuiTouchClaimTransform& outer = touch->ClaimTransforms.back();
+        t.Scale = outer.Scale * scale;
+        t.Offset = outer.Offset + offset * outer.Scale;
+    }
+    touch->ClaimTransforms.push_back(t);
+}
+
+void PopClaimTransform()
+{
+    ImGuiTouchContext* touch = FindTouchContext();
+    if (touch == nullptr)
+        return;
+    IM_ASSERT(!touch->ClaimTransforms.empty() && "PopClaimTransform() without PushClaimTransform()");
+    touch->ClaimTransforms.pop_back();
+}
+
+ImRect ClaimRectOnScreen(const ImRect& item_rect)
+{
+    ImRect rect = item_rect;
+    rect.ClipWith(GImGui->CurrentWindow->ClipRect);  // inside a canvas, both are in its coordinates
+    ImGuiTouchContext* touch = FindTouchContext();
+    if (touch != nullptr && !touch->ClaimTransforms.empty())
+    {
+        const ImGuiTouchClaimTransform& t = touch->ClaimTransforms.back();
+        rect = ImRect(rect.Min * t.Scale + t.Offset, rect.Max * t.Scale + t.Offset);
+    }
+    return rect;
 }
 
 //-----------------------------------------------------------------------------
@@ -283,8 +328,23 @@ void PinchBeforeNewFrame()
     if (touch == nullptr)
         return;
     ImGuiTouchPinchState& s = touch->Pinch;
-    if (!s.HasTaker || s.Gesture == ImGuiTouchPinchGesture_None || s.Fingers.Size < 2)
+    if (!s.HasTaker || s.Gesture == ImGuiTouchPinchGesture_None)
         return;
+    if (s.Fingers.Size < 2)
+    {
+        // The fingers lifted, and their drag's button is released at the next frame: until then the mouse stays at
+        // their center, where the drag ends (the platform's last move is the first finger's)
+        if (PinchHoldsMouseButton())
+            for (int i = 0; i < g.InputEventsQueue.Size;)
+            {
+                const ImGuiInputEvent& e = g.InputEventsQueue[i];
+                if (e.Type == ImGuiInputEventType_MousePos && !e.AddedByTestEngine)
+                    g.InputEventsQueue.erase(g.InputEventsQueue.Data + i);
+                else
+                    ++i;
+            }
+        return;
+    }
     const ImVec2 center = Center(s.Fingers[0], s.Fingers[1]);
     const float tolerance = g.FontSize * 0.5f;
     const bool far = ImLengthSqr(g.IO.MousePos - center) > tolerance * tolerance;
@@ -315,6 +375,7 @@ void PinchBeforeNewFrame()
 void UpdateTouchPinch(bool scales_font)
 {
     ImGuiContext& g = *GImGui;
+    IM_ASSERT(GetTouchContext().ClaimTransforms.empty() && "PushClaimTransform() without PopClaimTransform()");
     ImGuiTouchPinchState& s = GetTouchContext().Pinch;
     s.PreviousTakers.swap(s.Takers);
     s.Takers.resize(0);

@@ -1,8 +1,8 @@
-// imgui_kit: the phone's virtual keyboard in a browser (ImGuiTouch::SetupEmscriptenKeyboard)
-// https://github.com/pthom/imgui_kit (MIT license)
+// imgui_touch: the phone's virtual keyboard in a browser (ImGuiTouch::SetupEmscriptenKeyboard)
+// https://github.com/pthom/imgui_touch (MIT license)
 #ifdef __EMSCRIPTEN__
-#include "imgui_kit.h"
-#include "imgui_kit_touch_internal.h"
+#include "imgui_touch.h"
+#include "imgui_touch_internal.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"  // g.PlatformImeDataPrev, ImGui::GetInputTextState
@@ -35,19 +35,19 @@ namespace ImGuiTouch
     // the browser scrolls to the right place. The focus happens inside touch handlers only (a focus from a frame
     // shows no keyboard on iOS). The field's keys never reach the backends (stopPropagation at the field, which is
     // outside the canvas). The field counts in UTF-16 units, ImGui's caret in bytes: converted here.
-    // The script is imgui_kit_emscripten_keyboard.js, copied here by tools/embed_js.py (edit the .js, run the script).
-    // <embedded file="imgui_kit_emscripten_keyboard.js" sha1="399d2be84a7707fbc3047dbaba9d4b8ef54f3851">
+    // The script is imgui_touch_emscripten_keyboard.js, copied here by tools/embed_js.py (edit the .js, run the script).
+    // <embedded file="imgui_touch_emscripten_keyboard.js" sha1="f279e6e2cacaf0556507b1b03076ea76ae15601c">
     const char* KEYBOARD_SCRIPT = R"JS(
-// imgui_kit: the phone's virtual keyboard in a browser: the page's side (the hidden field, the keyboard button).
-// https://github.com/pthom/imgui_kit (MIT license)
-// Embedded into imgui_kit_emscripten_keyboard.cpp by tools/embed_js.py: edit this file, then run the script.
+// imgui_touch: the phone's virtual keyboard in a browser: the page's side (the hidden field, the keyboard button).
+// https://github.com/pthom/imgui_touch (MIT license)
+// Embedded into imgui_touch_emscripten_keyboard.cpp by tools/embed_js.py: edit this file, then run the script.
 
-if (!window.imguiKitKeyboard) {
-  const K = window.imguiKitKeyboard = {want: 0, id: 0, dismissed: 0, x: 0, y: 0, h: 0, displayW: 0, mirror: '',
+if (!window.imguiTouchKeyboard) {
+  const K = window.imguiTouchKeyboard = {want: 0, id: 0, dismissed: 0, x: 0, y: 0, h: 0, displayW: 0, mirror: '',
                                          mirrorCaret: 0, edits: [], caret: -1, keys: [],
                                          keysMode: false, actions: [], lastMove: null};
   const input = document.createElement('textarea');
-  input.id = 'imguiKitTextInput'; input.autocapitalize = 'off'; input.autocomplete = 'off';
+  input.id = 'imguiTouchTextInput'; input.autocapitalize = 'off'; input.autocomplete = 'off';
   input.setAttribute('autocorrect', 'on'); input.spellcheck = false; input.rows = 1;
   // Invisible, but laid out like the text ImGui draws (the widget's width, its line height): the caret moved by the
   // keyboard's trackpad travels pixels, in this layout; a 2 px wide field wrapped one character per line
@@ -59,14 +59,14 @@ if (!window.imguiKitKeyboard) {
     + 'line-height:20px;z-index:1000;resize:none;white-space:pre;overflow:hidden;font-family:sans-serif;'
     + 'pointer-events:none;-webkit-text-fill-color:transparent;';
   const button = document.createElement('button');
-  button.id = 'imguiKitKeyboardButton'; button.textContent = '⌨'; button.title = 'Keyboard';
+  button.id = 'imguiTouchKeyboardButton'; button.textContent = '⌨'; button.title = 'Keyboard';
   button.style.cssText = 'position:fixed;display:none;z-index:1001;font-size:24px;line-height:1;padding:6px 12px;'
     + 'border-radius:10px;border:1px solid #999;background:#333;color:#eee;';
   document.body.appendChild(input); document.body.appendChild(button);
   // A debug overlay on the page (the url with 'kbddebug'): the field's events, to see what a phone sends. Only in a
-  // build with IMGUI_KIT_EMSCRIPTEN_KEYBOARD_DEBUG (window.imguiKitKeyboardDebugBuild, set by the C++ before this
+  // build with IMGUI_TOUCH_EMSCRIPTEN_KEYBOARD_DEBUG (window.imguiTouchKeyboardDebugBuild, set by the C++ before this
   // script runs): the log holds what is typed, and a link could turn it on.
-  const debugBuild = !!window.imguiKitKeyboardDebugBuild;
+  const debugBuild = !!window.imguiTouchKeyboardDebugBuild;
   const debug = debugBuild && (location.search.includes('kbddebug') || location.hash.includes('kbddebug'));
   let logEl = null;
   if (debug) {
@@ -148,7 +148,7 @@ if (!window.imguiKitKeyboard) {
     input.style.pointerEvents = focused ? 'auto' : 'none';
     place();
     // No button for a widget whose keyboard the user hid: a tap on its line still opens the keyboard
-    const showButton = K.want && !focused && K.id !== K.dismissed && window.imguiKitPointerType === 1;
+    const showButton = K.want && !focused && K.id !== K.dismissed && window.imguiTouchPointerType === 1;
     button.style.display = showButton ? 'block' : 'none';
     if (!K.want && focused) input.blur(); };
   K.set = (want, id, x, y, h, displayW, keysMode) => {
@@ -359,7 +359,7 @@ if (!window.imguiKitKeyboard) {
   input.addEventListener('keypress', (e) => e.stopPropagation());
   input.addEventListener('focus', refresh);
   // The keyboard covering the page. iOS scrolls the page to show the focused field: a fixed field, which no scroll
-  // reveals, so the canvas would leave the screen. The page stays in place, and the kit learns which part of the
+  // reveals, so the canvas would leave the screen. The page stays in place, and the layer learns which part of the
   // canvas is visible, in ImGui units from its top (its full-screen window shrinks to it). The canvas element's own
   // height is no guide: it may follow the keyboard while ImGui's display keeps its height.
   const vv = window.visualViewport;
@@ -500,7 +500,7 @@ if (!window.imguiKitKeyboard) {
             if (e.Type == ImGuiInputEventType_Key)
                 return;
         const char* action =
-            emscripten_run_script_string("window.imguiKitKeyboard ? window.imguiKitKeyboard.drainAction() : ''");
+            emscripten_run_script_string("window.imguiTouchKeyboard ? window.imguiTouchKeyboard.drainAction() : ''");
         if (action == nullptr)
             return;
         if (strncmp(action, "K:", 2) == 0 || strncmp(action, "M:", 2) == 0)
@@ -555,14 +555,14 @@ static void UpdateKeyboard(ImGuiContext*, ImGuiContextHook*)
 
     // The page's state: the visible area while the keyboard is shown (the full-screen window shrinks to it, the clicks
     // under the keyboard are dropped, the caret stays in view), the tap's clicks to drop, and whether input waits
-    const char* poll = emscripten_run_script_string("window.imguiKitKeyboard ? window.imguiKitKeyboard.poll() : ''");
+    const char* poll = emscripten_run_script_string("window.imguiTouchKeyboard ? window.imguiTouchKeyboard.poll() : ''");
     if (poll == nullptr)
         poll = "";
     int visible_top = 0, visible_bottom = 0, drop_tap = 0, pending = 0;
     bool keyboard_shown = sscanf(poll, "%d,%d|%d|%d", &visible_top, &visible_bottom, &drop_tap, &pending) == 4;
     if (!keyboard_shown)
         sscanf(poll, "|%d|%d", &drop_tap, &pending);
-    // The kit keeps the caret in view from these insets (imgui_kit_touch_keyboard.cpp)
+    // The layer keeps the caret in view from these insets (imgui_touch_keyboard.cpp)
     SetKeyboardInsets(keyboard_shown ? ImGuiTouchKeyboardInsets{ImMax(0.0f, (float)visible_top),
                                                                 ImMax(0.0f, io.DisplaySize.y - (float)visible_bottom)}
                                     : ImGuiTouchKeyboardInsets{});
@@ -615,7 +615,7 @@ static void UpdateKeyboard(ImGuiContext*, ImGuiContextHook*)
     {
         char script[256];
         snprintf(script, sizeof(script),
-                 "window.imguiKitKeyboard && window.imguiKitKeyboard.set(%d, %u, %.1f, %.1f, %.1f, %.1f, %d)",
+                 "window.imguiTouchKeyboard && window.imguiTouchKeyboard.set(%d, %u, %.1f, %.1f, %.1f, %.1f, %d)",
                  want ? 1 : 0, id, pos.x, pos.y, lineHeight, displayW, want_keys_mode ? 1 : 0);
         emscripten_run_script(script);
     }
@@ -642,7 +642,7 @@ static void UpdateKeyboard(ImGuiContext*, ImGuiContextHook*)
     {
         // "caret\nkey,key\nat|removed|inserted\n...": the page's answer stays valid until the next script call
         const char* drained =
-            emscripten_run_script_string("window.imguiKitKeyboard ? window.imguiKitKeyboard.drainAll() : ''");
+            emscripten_run_script_string("window.imguiTouchKeyboard ? window.imguiTouchKeyboard.drainAll() : ''");
         if (drained == nullptr)
             drained = "";
         char* p = nullptr;
@@ -729,7 +729,7 @@ static void UpdateKeyboard(ImGuiContext*, ImGuiContextHook*)
             char caret_text[32];
             snprintf(caret_text, sizeof(caret_text), ", %d)", caret_units);
             b.Script.resize(0);
-            ImGuiTouchScriptAppend(b.Script, "window.imguiKitKeyboard && window.imguiKitKeyboard.mirrorTo(");
+            ImGuiTouchScriptAppend(b.Script, "window.imguiTouchKeyboard && window.imguiTouchKeyboard.mirrorTo(");
             ImGuiTouchScriptAppendString(b.Script, state->GetText(), state->TextLen);
             ImGuiTouchScriptAppend(b.Script, caret_text);
             emscripten_run_script(ImGuiTouchScriptEnd(b.Script));
@@ -743,8 +743,8 @@ void SetupEmscriptenKeyboard()
     IM_ASSERT(ctx != nullptr
               && "ImGuiTouch::SetupEmscriptenKeyboard() needs a context: call ImGui::CreateContext() first");
     CreateCurrentContextIfNeeded();  // the page's state (ImGuiTouchContext::Browser)
-#ifdef IMGUI_KIT_EMSCRIPTEN_KEYBOARD_DEBUG
-    emscripten_run_script("window.imguiKitKeyboardDebugBuild = true;");
+#ifdef IMGUI_TOUCH_EMSCRIPTEN_KEYBOARD_DEBUG
+    emscripten_run_script("window.imguiTouchKeyboardDebugBuild = true;");
 #endif
     emscripten_run_script(KEYBOARD_SCRIPT);
     const ImGuiID owner = ImHashStr("ImGuiTouch_EmscriptenKeyboard");

@@ -4,17 +4,14 @@
 // As Dear ImGui's imgui_internal.h: no guarantee of forward compatibility here. Code that includes it may need changes
 // at a new version of the kit.
 //
-// The kit's state, ImGuiKitContext: the layout helpers' Begin/End stacks, the help markers', FitText's buffer, the
-// wheel session's state, and the touch layer's (imgui_kit_touch_internal.h). Dear ImGui has no slot for an extension's
-// state, so the kit stores it in the UserData of a context hook it adds (ImGui::AddContextHook, of type Shutdown), as
+// The kit's state, ImGuiKitContext: the layout helpers' Begin/End stacks, the help markers', FitText's buffer, and the
+// wheel session's state. Dear ImGui has no slot for an extension's state, so the kit stores it in the UserData of a context hook it adds (ImGui::AddContextHook, of type Shutdown), as
 // the Test Engine stores its own. The hooks are per context: each Dear ImGui context has its own state, found again
 // through its hooks (no global: GImGui may be thread-local). ImGui::DestroyContext() calls that hook, which frees the
 // state.
-// It is created at its first use: the widgets need no setup. The touch layer's part is in use once a touch setup was
-// called.
+// It is created at its first use: the widgets need no setup.
 #pragma once
 #include "imgui_kit.h"
-#include "imgui_kit_touch_internal.h"
 #include "imgui_internal.h"  // ImRect, ImGuiWindow, ImGuiAxis
 
 struct ImGuiKitContext;
@@ -163,6 +160,4 @@ struct ImGuiKitContext
     ImGuiKitWheelSessionState WheelSession;
     int AnimationFrame = -1;                            // the last frame a widget asked to animate (RequestAnimation)
     ImGuiKit::HelpMarkerTextRenderer HelpMarkerRenderer = nullptr;  // SetHelpMarkerTextRenderer(); null: plain text
-    bool TouchSetUp = false;                            // an input setup was called: Touch is in use
-    ImGuiTouchContext Touch;
 };

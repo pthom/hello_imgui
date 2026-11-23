@@ -1,7 +1,7 @@
-// imgui_kit: the setup of the touch layer (ImGuiTouch), through Dear ImGui's context hooks
-// https://github.com/pthom/imgui_kit (MIT license)
-#include "imgui_kit.h"
-#include "imgui_kit_internal.h"
+// imgui_touch: the setup of the touch layer (ImGuiTouch), through Dear ImGui's context hooks
+// https://github.com/pthom/imgui_touch (MIT license)
+#include "imgui_touch.h"
+#include "imgui_touch_internal.h"
 #include "imgui_internal.h"  // AddContextHook
 
 // Each step runs at a moment Dear ImGui names:
@@ -79,30 +79,51 @@ static void ItemDragAxisCallback(ImGuiContext*, ImGuiID, const ImRect& bb, ImGui
 }
 #endif
 
+// The touch state hangs on a Shutdown hook of the Dear ImGui context (its UserData), as the Test Engine's: the hook
+// frees it with the context (see imgui_touch_internal.h's top). The hooks are per context: no global (GImGui may be
+// thread-local).
+static const ImGuiID TOUCH_STATE_OWNER = ImHashStr("ImGuiTouchContext");
+
+static void ShutdownHook(ImGuiContext*, ImGuiContextHook* h)
+{
+    IM_DELETE((ImGuiTouchContext*)h->UserData);
+    h->UserData = nullptr;
+}
+
 namespace ImGuiTouch
 {
-// The touch state is a part of the kit's (ImGuiKitContext), in use once a setup was called: the only place that knows
 ImGuiTouchContext* FindTouchContext()
 {
-    if (GImGui == nullptr)
+    ImGuiContext* ctx = GImGui;
+    if (ctx == nullptr)
         return nullptr;
-    ImGuiKitContext& kit = ImGuiKit::GetCurrentContext();
-    return kit.TouchSetUp ? &kit.Touch : nullptr;
+    for (ImGuiContextHook& hook : ctx->Hooks)
+        if (hook.Owner == TOUCH_STATE_OWNER && hook.Type == ImGuiContextHookType_Shutdown)
+            return (ImGuiTouchContext*)hook.UserData;
+    return nullptr;
 }
 
 ImGuiTouchContext& GetTouchContext()
 {
     ImGuiTouchContext* state = FindTouchContext();
-    IM_ASSERT(state != nullptr
-              && "imgui_kit's touch layer: call ImGuiTouch::Setup() first (or another ImGuiTouch setup)");
+    IM_ASSERT(state != nullptr && "imgui_touch: call ImGuiTouch::Setup() first (or another ImGuiTouch setup)");
     return *state;
 }
 
 ImGuiTouchContext& CreateCurrentContextIfNeeded()
 {
-    ImGuiKitContext& kit = ImGuiKit::GetCurrentContext();
-    kit.TouchSetUp = true;
-    return kit.Touch;
+    if (ImGuiTouchContext* state = FindTouchContext())
+        return *state;
+    ImGuiContext* ctx = GImGui;
+    IM_ASSERT(ctx != nullptr && "imgui_touch needs a Dear ImGui context: call ImGui::CreateContext() first");
+    ImGuiTouchContext* state = IM_NEW(ImGuiTouchContext)();
+    ImGuiContextHook hook;
+    hook.Type = ImGuiContextHookType_Shutdown;
+    hook.Owner = TOUCH_STATE_OWNER;
+    hook.UserData = state;
+    hook.Callback = ShutdownHook;
+    ImGui::AddContextHook(ctx, &hook);
+    return *state;
 }
 } // namespace ImGuiTouch
 
@@ -129,8 +150,7 @@ void Setup(const ImGuiTouchConfig& config)
 bool IsInstalled() { return FindTouchContext() != nullptr; }
 ImGuiTouchConfig& GetConfig() { return GetTouchContext().Config; }
 
-// Without the touch layer, nothing records the animations: the kit's widgets animate all the same (an app that draws
-// every frame), and IsAnimating() says false
+// Without the touch layer, nothing records the animations, and IsAnimating() says false
 bool IsAnimating()
 {
     ImGuiTouchContext* state = FindTouchContext();

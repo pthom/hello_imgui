@@ -1,7 +1,7 @@
 #include "runner_glfw3_emscripten.h"
 #if defined(__EMSCRIPTEN__) && defined(HELLOIMGUI_USE_GLFW3)
 #include "hello_imgui/internal/backend_impls/emscripten_pointer_probe.h"
-#include "imgui_kit/imgui_kit.h"  // ImGuiTouch::SetupEmscripten
+#include "imgui_touch/imgui_touch.h"  // ImGuiTouch::SetupEmscripten
 #include <iostream>
 
 #include <emscripten.h>

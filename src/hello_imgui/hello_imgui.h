@@ -195,7 +195,7 @@ namespace ManualRender
 //  opens the url in a new tab, whatever the browser and the pointer. Call it each frame while the button or the link
 //  is shown (several rectangles per frame: the links of a text). Returns true when the page takes the link: the
 //  caller then does nothing on the click. False outside the browser: the caller opens the url itself on the click.
-//  (imgui_kit's ImGuiTouch::SetRectOpensUrl: the page opens the tab from inside the tap's own handler, the only place
+//  (imgui_touch's ImGuiTouch::SetRectOpensUrl: the page opens the tab from inside the tap's own handler, the only place
 //  every browser allows one; ImGui sees the click two frames later, too late for WebKit.)
     bool SetTapOpensUrl(ImVec2 rectMin, ImVec2 rectMax, const std::string& url);
 

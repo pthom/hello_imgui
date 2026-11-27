@@ -1128,6 +1128,119 @@ namespace ImGuiTheme
         }
     }
 
+    // The states of the widgets, measured on the final colors: a hover or a press shows, text reads on a hovered or
+    // pressed item, the slider grab and the check mark stand out from their frame, a scrollbar grab never fades when
+    // hovered or held (the floors are in imgui_theme_test.cpp). Each is the theme's own color, with another value or
+    // opacity: no new hue. Dear ImGui's own styles are left as they are.
+    static void ApplyStateAdjustments(ImGuiTheme_ theme, ImGuiStyle& style)
+    {
+        struct ColorValue { ImGuiCol Col; ImVec4 Value; };
+        auto apply = [&style](std::initializer_list<ColorValue> values) {
+            for (const ColorValue& v : values)
+                style.Colors[v.Col] = v.Value;
+        };
+        switch (theme)
+        {
+            case ImGuiTheme_MaterialFlat:
+                apply({
+                    {ImGuiCol_ButtonActive, ImVec4(0.244f, 0.491f, 0.735f, 1.000f)},
+                    {ImGuiCol_FrameBgActive, ImVec4(0.244f, 0.491f, 0.735f, 1.000f)},
+                    {ImGuiCol_HeaderHovered, ImVec4(0.312f, 0.628f, 0.940f, 0.280f)},
+                    {ImGuiCol_HeaderActive, ImVec4(0.244f, 0.491f, 0.735f, 1.000f)},
+                    {ImGuiCol_ScrollbarGrabHovered, ImVec4(0.640f, 0.640f, 0.640f, 1.000f)},
+                    {ImGuiCol_ScrollbarGrabActive, ImVec4(0.695f, 0.695f, 0.695f, 1.000f)},
+                    {ImGuiCol_CheckMark, ImVec4(0.728f, 0.862f, 0.995f, 1.000f)},
+                });
+                break;
+            case ImGuiTheme_PhotoshopStyle:
+                apply({
+                    {ImGuiCol_ButtonHovered, ImVec4(1.000f, 1.000f, 1.000f, 0.260f)},
+                    {ImGuiCol_FrameBgHovered, ImVec4(0.330f, 0.330f, 0.330f, 1.000f)},
+                    {ImGuiCol_HeaderActive, ImVec4(0.415f, 0.415f, 0.415f, 1.000f)},
+                    {ImGuiCol_ScrollbarGrabHovered, ImVec4(0.445f, 0.445f, 0.445f, 1.000f)},
+                    {ImGuiCol_SliderGrab, ImVec4(0.525f, 0.525f, 0.525f, 1.000f)},
+                });
+                break;
+            case ImGuiTheme_GrayVariations:
+            case ImGuiTheme_MicrosoftStyle:
+                apply({
+                    {ImGuiCol_ButtonHovered, ImVec4(0.648f, 0.744f, 0.820f, 0.680f)},
+                    {ImGuiCol_FrameBgHovered, ImVec4(0.656f, 0.753f, 0.830f, 0.260f)},
+                    {ImGuiCol_HeaderHovered, ImVec4(0.648f, 0.744f, 0.820f, 0.680f)},
+                    {ImGuiCol_TabHovered, ImVec4(0.649f, 0.661f, 0.675f, 0.800f)},
+                    {ImGuiCol_ScrollbarGrabHovered, ImVec4(0.000f, 0.000f, 0.000f, 0.340f)},
+                    {ImGuiCol_SliderGrab, ImVec4(0.580f, 0.580f, 0.580f, 1.000f)},
+                });
+                break;
+            case ImGuiTheme_GrayVariations_Darker:
+                apply({
+                    {ImGuiCol_TabHovered, ImVec4(0.769f, 0.783f, 0.800f, 0.800f)},
+                    {ImGuiCol_ScrollbarGrabHovered, ImVec4(0.000f, 0.000f, 0.000f, 0.400f)},
+                    {ImGuiCol_SliderGrab, ImVec4(0.580f, 0.580f, 0.580f, 1.000f)},
+                });
+                break;
+            case ImGuiTheme_Cherry:
+                apply({
+                    {ImGuiCol_HeaderHovered, ImVec4(0.515f, 0.222f, 0.480f, 0.860f)},
+                    {ImGuiCol_TabHovered, ImVec4(0.850f, 0.225f, 0.776f, 0.800f)},
+                    {ImGuiCol_ScrollbarGrabHovered, ImVec4(0.690f, 0.297f, 0.644f, 0.780f)},
+                    {ImGuiCol_ScrollbarGrabActive, ImVec4(0.630f, 0.272f, 0.588f, 1.000f)},
+                    {ImGuiCol_SliderGrab, ImVec4(0.820f, 0.462f, 0.778f, 0.780f)},
+                    {ImGuiCol_CheckMark, ImVec4(0.965f, 0.299f, 0.886f, 1.000f)},
+                });
+                break;
+            case ImGuiTheme_Darcula:
+                apply({
+                    {ImGuiCol_FrameBgHovered, ImVec4(0.326f, 0.487f, 0.719f, 0.660f)},
+                    {ImGuiCol_HeaderHovered, ImVec4(0.326f, 0.487f, 0.719f, 0.660f)},
+                    {ImGuiCol_TabHovered, ImVec4(0.188f, 0.428f, 0.710f, 0.880f)},
+                    {ImGuiCol_ScrollbarGrabHovered, ImVec4(0.322f, 0.454f, 0.615f, 1.000f)},
+                    {ImGuiCol_ScrollbarGrabActive, ImVec4(0.306f, 0.429f, 0.880f, 0.920f)},
+                });
+                break;
+            case ImGuiTheme_DarculaDarker:
+                apply({
+                    {ImGuiCol_ScrollbarGrabHovered, ImVec4(0.242f, 0.316f, 0.460f, 1.000f)},
+                    {ImGuiCol_ScrollbarGrabActive, ImVec4(0.206f, 0.335f, 0.585f, 0.840f)},
+                    {ImGuiCol_CheckMark, ImVec4(0.895f, 0.895f, 0.895f, 0.760f)},
+                });
+                break;
+            case ImGuiTheme_LightRounded:
+                apply({
+                    {ImGuiCol_SliderGrab, ImVec4(0.212f, 0.482f, 0.800f, 0.780f)},
+                    {ImGuiCol_CheckMark, ImVec4(0.164f, 0.373f, 0.620f, 1.000f)},
+                });
+                break;
+            case ImGuiTheme_SoDark_AccentBlue:
+            case ImGuiTheme_SoDark_AccentYellow:
+            case ImGuiTheme_SoDark_AccentRed:
+                apply({
+                    {ImGuiCol_ButtonHovered, ImVec4(0.170f, 0.170f, 0.170f, 0.540f)},
+                    {ImGuiCol_FrameBgHovered, ImVec4(0.095f, 0.095f, 0.095f, 0.540f)},
+                    {ImGuiCol_ScrollbarGrabHovered, ImVec4(0.595f, 0.595f, 0.595f, 0.580f)},
+                    {ImGuiCol_ScrollbarGrabActive, ImVec4(0.700f, 0.700f, 0.700f, 0.560f)},
+                });
+                break;
+            case ImGuiTheme_BlackIsBlack:
+                apply({
+                    {ImGuiCol_ButtonHovered, ImVec4(0.250f, 0.250f, 0.250f, 0.540f)},
+                    {ImGuiCol_FrameBgHovered, ImVec4(0.330f, 0.330f, 0.330f, 0.540f)},
+                    {ImGuiCol_ScrollbarGrabHovered, ImVec4(0.595f, 0.595f, 0.595f, 0.580f)},
+                });
+                break;
+            case ImGuiTheme_WhiteIsWhite:
+                apply({
+                    {ImGuiCol_FrameBgHovered, ImVec4(0.612f, 0.703f, 0.775f, 0.360f)},
+                    {ImGuiCol_TabHovered, ImVec4(0.865f, 0.881f, 0.900f, 0.800f)},
+                    {ImGuiCol_ScrollbarGrabHovered, ImVec4(0.000f, 0.000f, 0.000f, 0.340f)},
+                    {ImGuiCol_SliderGrab, ImVec4(0.575f, 0.575f, 0.575f, 1.000f)},
+                });
+                break;
+            default:
+                break;
+        }
+    }
+
     ImGuiStyle ThemeToStyle(ImGuiTheme_ theme)
     {
         IM_ASSERT((theme >= 0) && (theme < ImGuiTheme_Count));
@@ -1137,6 +1250,7 @@ namespace ImGuiTheme
             {
                 ImGuiStyle style = gThemeInfos[i].GetStyleFn();
                 ApplyReadabilityAdjustments(theme, style);
+                ApplyStateAdjustments(theme, style);
                 return style;
             }
         }

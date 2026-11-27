@@ -1,59 +1,86 @@
 *Version numbers are synced between Hello ImGui and Dear ImGui Bundle, using the scheme `major.minor.patch` where `patch = ImGui_patch × 100 + release`. For example, ImGui v1.92.6 → v1.92.600, and a bugfix release becomes v1.92.601.*
 
-# Changes in upcoming release
+# v1.93.100
 
-**Touch screens: scroll with a swipe**
-* The touch layer comes from [imgui_touch](https://github.com/pthom/imgui_touch), and the wheel session from [imgui_kit](https://github.com/pthom/imgui_kit) (vendored in `external/imgui_touch` and `external/imgui_kit`, or the app's own targets): the touch settings are `RunnerParams::touchConfig`, an `ImGuiTouchConfig`.
-* `SetItemTakesTouchDrags()`: a press on the item goes to it in every direction (it took only the vertical drags).
-* `SetTapOpensUrl()` opens its link in a new tab with a mouse too, and on desktop Safari, and returns true when the page takes the link (the caller then does nothing on the click). It is imgui_touch's `ImGuiTouch::SetRectOpensUrl()`.
-* iOS: the app fills the screen (a launch screen key in the Info.plist template: without one, iOS letterboxed it to an old phone's size), and the on-screen keyboard opens when a widget wants text (SDL's text input started and stopped by the runner with Dear ImGui before 1.93.1, whose SDL2 backend does it on iOS too).
-* Android: the app runs where the display has no multisampled window surface (the emulator): the SDL runner probes for one and falls back to no anti-aliasing. The generated Android Studio project builds with a current JDK (Gradle 8.9, AGP 8.5.2, minSdk 21).
-* The SDL2 runner forwards the fingers of a touch screen to imgui_touch (`ImGuiTouch::AddFingerEvent()`): a native app on a touch screen (a Windows laptop, iOS and Android through SDL) gets the pinch and the two-finger drag, and the thin scroll bars once a finger touched the screen. The GLFW runner cannot: GLFW reports no fingers.
-* Two fingers on a widget zoom and pan it, instead of scaling the font, when the widget claims them with imgui_touch: `ImGuiTouch::ItemPinch()` (the gesture's data), or for a widget that zooms with the wheel (a plot, an image), `SetItemPinchAsWheel()` and `SetItemTwoFingerPanAsMouseDrag()`.
-* A finger that drags the content of a window scrolls it, with inertia after the release and a bounce at the end (the content pulled past its end follows the finger with a growing resistance, an inertia that reaches the end overshoots, both spring back), as on a phone, even when the drag starts on a button: a tap still clicks it (when the finger lifts), two taps are a double click, and a short hold then a drag goes to the widget (a slider, a text selection; a ring around the finger shows when the hold took effect). `RunnerParams::touchConfig.ScrollMode` (`Auto`: when the input is a touch screen; `Always`: also with the mouse, to try it on a desktop; `Disabled`). Demo: `hello_touch_scroll`.
-* The scroll bars are thin on a touch screen (0.3 em, rounded), while the pointer in use is a finger (a touch laptop driven by its mouse keeps the theme's bars): indicators rather than controls, `RunnerParams::touchConfig.ThinScrollbars` (true by default). The hold's and the long press's delays: `touchConfig.HoldSeconds` (0.15) and `LongPressSeconds` (0.5). A swipe that starts on a bar scrolls the content with the finger, as on the content: it dragged the thumb, which moved the content against the finger, and faster than it. A hold still hands the thumb over, drawn wider over the content while held (as on iOS).
-* A finger still for half a second, then lifted, is a right click (the context menus), as Windows' press-and-hold: `RunnerParams::touchConfig.LongPressIsRightClick`. A ring around the finger shows when the lift will right click; a move after it cancels the right click, and the widget under the finger keeps its press (a slider dragged after a pause, a text selection that grows). Not on a widget that acted on the press already (a button that repeats while held).
-* `HelloImGui::SetItemTakesTouchDrags()`, called right after a widget that is dragged (a plot, a node editor, a canvas): a press on it goes to the widget at once, without the hold, even in a window that scrolls (a swipe that starts on it then does not scroll the window). A drag along an axis the window does not scroll already went to the widget. `SetItemTakesTouchDrags(false)`: a finger held still then lifted on the widget is no right click (a piano key).
-* In the browser, `HelloImGui::SetTapOpensUrl(rectMin, rectMax, url)`: a tap on a rectangle opens a url in a new tab, from the touch itself (a browser allows a new tab only there, and ImGui sees a tap two frames later). Several rectangles per frame: the links of a text.
-* In the browser, the virtual keyboard of a phone: a text widget that is active shows a keyboard button next to it; a tap on it, or on the widget again, opens the keyboard, and what is typed goes to the widget (the browser shows a keyboard only for a text field focused inside a touch handler, which a frame cannot do). The keyboard stays open when the application activates the widget again (Enter, then `SetKeyboardFocusHere()`: a find bar, a console). Once the user hid the keyboard, the button stays hidden until another widget becomes active. It is imgui_touch's `ImGuiTouch::SetupEmscriptenKeyboard()`, which the runner calls; `ImGuiTouch::GetKeyboardInsets()` gives the part of the screen it covers, which the full-screen windows keep out of.
-* In the browser, two fingers that pinch scale the font (`style.FontScaleMain`): `RunnerParams::touchConfig.PinchScalesFont` (true by default; false leaves the font, and a widget that takes the pinch still zooms). A second finger leaves its drag to a widget that holds the first one. ImGui also learns whether the pointer is a mouse, a finger or a pen (with GLFW, which has no API for it), and keeps no pointer between two touches.
+Dear ImGui 1.93.1, touch screens through [ImGuiTouch](https://github.com/pthom/imgui_touch), callbacks that add instead of replace, and a window that follows a monitor's change of scale on Windows (opt-in). There was no v1.93.0 of Hello ImGui: this release follows v1.92.901.
 
-**Mouse wheel:** the wheel stays with the window it scrolls, as in a browser. A page scrolled with the wheel keeps scrolling when a plot or an image passes under the mouse, and the plot does not zoom; a wheel that starts on the plot zooms it. The page lets go of the wheel when the mouse moves, or 0.7 s after the last wheel event.
-* A widget of your own that reads the wheel claims it while hovered, as ImPlot and ImmVision do: `if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY)) zoom *= powf(1.1f, ImGui::GetIO().MouseWheel);`. Without the claim, in a page that scrolls, the widget never sees the wheel.
-* `RunnerParams::wheelSession` (default true): false gives Dear ImGui's own behavior.
+### Breaking changes
 
-**Reduced motion:** `HelloImGui::PrefersReducedMotion()` tells whether the system asks for less motion: "Reduce motion" on macOS and iOS, "Show animations in Windows" turned off, a browser's `prefers-reduced-motion`. An application can then skip its animations. False where the system has no such setting (Linux, Android).
+- The CMake package is `hello_imgui`: `find_package(hello_imgui)` and `hello_imgui::hello_imgui` replace `find_package(hello-imgui)` and `hello-imgui::hello_imgui`.
+  - The former name still works, through a deprecated shim, to be removed later.
+  - The config files are in `lib/cmake/hello_imgui/`, where `find_package` finds them without vcpkg's fixup.
+  - The vcpkg port keeps its name, `hello-imgui` (vcpkg forbids underscores).
 
-**Idling:** a mouse button (or a finger) held down keeps the app awake, even still: a button that repeats, a drag that pauses.
+### Dear ImGui 1.93.1
 
-**Themes:** the grab of a held slider stands out from its frame. In Darcula, DarculaDarker, MaterialFlat, Cherry, LightRounded, the three SoDark themes and BlackIsBlack, it had nearly the color of the held frame, and vanished while dragged; its contrast with the frame is now 3:1 at least (WCAG's minimum for the state of a control). Dear ImGui's own three styles are unchanged.
+- Hello ImGui follows Dear ImGui 1.93.1 (docking branch).
+- On iOS, its SDL2 backend opens the on-screen keyboard: the runner's own call stays for older versions only.
 
-**Callbacks that add instead of replace.** `RunnerCallbacks::AddCallback(slot, callback, owner)` adds a callback beside the app's own (`PostInit`, `BeforeExit`, `PreNewFrame`... 14 slots, `CallbackSlot`): a later plain assignment (`callbacks.PostInit = f`) replaces only the app's function. The added callbacks run before the app's in the setup slots and `PreNewFrame`, after it elsewhere, in reverse order in the exit slots (`CallbackOrder::Before` / `After` to choose); `RemoveCallback(id)`, `RemoveCallbacks(owner)`. `CallSoon(f, afterFrames = 1)` calls a function once on a later frame (the app does not idle meanwhile), `CallLater(f, seconds)` after a delay (an idling app wakes up for it). `CallbackSlot::BeforeGui` and `AfterGui` name the slots around the GUI.
+### Touch screens
 
-**Themes: the hover, the press, the grab at rest.** In Hello ImGui's 14 themes, a hover or a press shows, text reads on a hovered or pressed item (3:1), the slider grab at rest and the check mark stand out from their frame (3:1), and a scrollbar grab no longer fades when hovered. Darcula's text on its blue hover read at 1.9; the tabs and scroll bars of GrayVariations, MicrosoftStyle and WhiteIsWhite showed no hover; MaterialFlat's check mark vanished while held. Each fix is the theme's own color, with another value or opacity; the floors are in the theme test. Dear ImGui's own three styles are unchanged.
+The touch layer comes from [imgui_touch](https://github.com/pthom/imgui_touch), and the wheel session from [imgui_kit](https://github.com/pthom/imgui_kit). Both are vendored in `external/`, or come from the app's own targets. The settings are one field, `RunnerParams::touchConfig` (an `ImGuiTouchConfig`). What a finger does:
+- *A drag scrolls the window*, with inertia after the release and a bounce at the end, as on a phone. A tap still clicks, two taps are a double click, and a short hold then a drag goes to the widget (a slider, a text selection). `touchConfig.ScrollMode`: `Auto` (on a touch screen), `Always` (also with the mouse, to try it on a desktop) or `Disabled`. Demo: `hello_touch_scroll`.
+- *The scroll bars are thin* (0.3 em, rounded) while the pointer is a finger: `touchConfig.ThinScrollbars`. A swipe that starts on a bar scrolls the content with the finger.
+- *A long press is a right click* (the context menus): `touchConfig.LongPressIsRightClick`. A ring around the finger shows when the lift will right click.
+- *Two fingers on a widget zoom and pan it*, when the widget claims them: `ImGuiTouch::ItemPinch()`, or for a widget that zooms with the wheel, `SetItemPinchAsWheel()` and `SetItemTwoFingerPanAsMouseDrag()`. Elsewhere, a pinch scales the font (`touchConfig.PinchScalesFont`).
+- *A widget dragged by a finger at once*: `SetItemTakesTouchDrags()`, right after the widget (a plot, a canvas), takes the press in every direction, without the hold.
+- The delays: `touchConfig.HoldSeconds` (0.15) and `LongPressSeconds` (0.5).
 
-**Themes: colors in [0, 1].** The theme tweaks (`ImGuiThemeTweaks`, and the themes built with them) keep each color's components in [0, 1]. WhiteIsWhite's window background was 6.64, and a few colors of BlackIsBlack and GrayVariations_Darker were above 1: harmless on screen, since Dear ImGui clamps them when it draws, but wrong in a style that is exported or edited. Every theme looks the same.
+Where:
+- *In the browser*:
+  - `SetTapOpensUrl(rectMin, rectMax, url)`: a tap on a rectangle opens a link in a new tab, with a mouse too, and on desktop Safari. It returns true when the page takes the link;
+  - the phone's virtual keyboard: an active text widget shows a keyboard button next to it, and the full-screen windows keep out of the keyboard (`ImGuiTouch::GetKeyboardInsets()`);
+  - ImGui learns whether the pointer is a mouse, a finger or a pen.
+- *In a native app, through SDL2* (a Windows touch laptop, iOS, Android): the runner forwards the fingers, for the pinch and the two-finger drag. GLFW reports no fingers.
+- *iOS*: the app fills the screen (a launch screen in the Info.plist template), and the keyboard opens when a widget wants text.
+- *Android*: the app runs where the display has no multisampled surface (the emulator), and the generated Android Studio project builds with a current JDK (Gradle 8.9, AGP 8.5.2, minSdk 21).
 
-**Browser's page zoom:** the canvas follows Safari's page zoom. Safari applies it just after the load, and fires the window's `resize` before the page's width changes: the canvas often kept the unzoomed width, wider than the page (its right part and its bottom out of view). The window's `resize` is now fired again when a `visualViewport` resize changes the page's size.
+### The mouse wheel
 
-**Ini settings:** `LoadUserPref` gives back the value as saved by `SaveUserPref`. It came back with a trailing newline from the second run on: each read and write of the ini file added a `\n` to its last part.
+- The wheel stays with the window it scrolls, as in a browser: a page scrolled with the wheel keeps scrolling when a plot passes under the mouse, and the plot does not zoom. A wheel that starts on the plot zooms it.
+- A widget of your own that reads the wheel claims it while hovered: `if (ImGui::SetItemKeyOwner(ImGuiKey_MouseWheelY)) zoom *= powf(1.1f, ImGui::GetIO().MouseWheel);`.
+- `RunnerParams::wheelSession` (true by default): false gives Dear ImGui's own behavior.
 
-**Borderless windows:** on Windows, a full-screen window with `borderlessResizable` keeps its size when it is minimized and restored, or after an Alt-Tab. It came back at 640x480: Windows reports a minimized window as 0x0, and the resize handle's minimum size became the window's video mode ([#171](https://github.com/pthom/hello_imgui/issues/171)).
+### Callbacks that add instead of replace
 
-**Borderless windows in full screen:** a full-screen window has no resize handle. A drag on the handle changed the monitor's video mode.
+- `RunnerCallbacks::AddCallback(slot, callback, owner)` adds a callback beside the app's own, in 14 slots (`CallbackSlot`): a later `callbacks.PostInit = f` replaces only the app's function.
+- They run before the app's in the setup slots and in `PreNewFrame`, after it elsewhere, in reverse order in the exit slots (`CallbackOrder::Before` / `After` to choose). `RemoveCallback(id)`, `RemoveCallbacks(owner)`.
+- `CallSoon(f, afterFrames = 1)` calls a function once, on a later frame. `CallLater(f, seconds)` calls it after a delay: an idling app wakes up for it.
 
-**Borderless windows, slow drags:** the resize handle, and the move zone with viewports, follow a slow drag. They moved only in the frames where the mouse moved more than Dear ImGui's drag threshold (6 px).
+### A monitor with another scale (Windows, opt-in)
 
-**A monitor with another scale (Windows, opt-in):** with `appWindowParams.windowGeometry.followMonitorScale = true` (GLFW), the window keeps its size relative to its content when it moves to a monitor with another scale: Windows resizes it, and the fonts and the style follow. The content is redrawn once during a drag, when the window reaches the other monitor. The saved geometry reopens at the same size and place. Off by default: the window keeps its size in pixels, as before ([imgui_bundle#516](https://github.com/pthom/imgui_bundle/issues/516)).
+- With `appWindowParams.windowGeometry.followMonitorScale = true` (GLFW), the window keeps its size relative to its content when it moves to a monitor with another scale: Windows resizes it, and the fonts and the style follow. The content is redrawn once during a drag, when the window reaches the other monitor.
+- Off by default: the window keeps its size in pixels, as before. With SDL, the flag does nothing ([imgui_bundle#516](https://github.com/pthom/imgui_bundle/issues/516)).
 
-**Command line on Windows:** `main()` gets the application's arguments in an app made with `hello_imgui_add_app`. The `WinMain` it adds called `main(0, NULL)`.
+### Themes
 
-**plutosvg / plutovg:**
-* Now git submodules (`external/plutosvg`, with plutovg as its own submodule), updated to plutosvg v0.0.8 and plutovg v1.3.3. They are no longer downloaded at configure time, which also makes the release source archives complete. Both are compiled into a single static library `plutosvg`, part of the install.
-* New option `HELLOIMGUI_USE_SYSTEM_PLUTOSVG`: link an installed plutosvg (found via `find_package(plutosvg CONFIG)` or pkg-config; it must be built with freetype support) instead of compiling the submodule. Defaults to ON when `IMGUI_BUNDLE_PYTHON_USE_SYSTEM_LIBS` is set. Packagers (conda, vcpkg, distributions) should use this.
+- In the 14 Hello ImGui themes, a hover or a press shows, and text reads on a hovered or pressed item (3:1). The slider grab, at rest and held, and the check mark stand out from their frame (3:1). Dear ImGui's own three styles are unchanged.
+- The theme tweaks keep each color's components in [0, 1]: harmless on screen, but wrong in an exported style.
 
-**CMake package renamed to `hello_imgui`:**
-* `find_package(hello_imgui)` and `hello_imgui::hello_imgui` replace `find_package(hello-imgui)` and `hello-imgui::hello_imgui`, so that the package, namespace and target share one name. The former name still works through a deprecated compatibility shim, to be removed in a future release. The config files are now installed in `lib/cmake/hello_imgui/`, where `find_package` can find them without vcpkg's config fixup. (The vcpkg port keeps its `hello-imgui` name, as vcpkg forbids underscores.)
+### Other novelties
+
+- `HelloImGui::PrefersReducedMotion()`: the system asks for less motion ("Reduce motion" on macOS and iOS, a browser's `prefers-reduced-motion`...).
+- Hidden windows for tests: with `HELLOIMGUI_TEST_HIDDEN_WINDOWS=1`, every window stays hidden, while the app still renders and the test engine drives it.
+- Idling: a mouse button or a finger held down keeps the app awake.
+- plutosvg and plutovg are git submodules (plutosvg v0.0.8, plutovg v1.3.3), no longer downloaded at configure time: the release archives are complete. `HELLOIMGUI_USE_SYSTEM_PLUTOSVG` links an installed plutosvg (for packagers).
+
+### Fixes
+
+- *Windows*:
+  - a borderless full-screen window with `borderlessResizable` keeps its size when it is minimized and restored ([#171](https://github.com/pthom/hello_imgui/issues/171));
+  - `main()` gets the command line in an app made with `hello_imgui_add_app`;
+  - borderless windows: no resize handle in full screen, and the handle follows a slow drag.
+- *macOS*: an app starts while the display sleeps (no monitor reported). It crashed.
+- *SDL*: the DPI factor comes from the window's display, not from display 0.
+- *Safari*: the canvas follows the page zoom.
+- *Ini settings*:
+  - `LoadUserPref` gives back the value as saved (it gained a newline from the second run on), and a value with lines that look like the file's markers comes back intact;
+  - a malformed `hello_imgui.ini` no longer stops the app at each start.
+- *Running twice with the same `RunnerParams`* (a notebook cell run again): the DPI factor is measured again, `appShallExit` is reset.
+- *Install*: `nlohmann/json.hpp` and `json_fwd.hpp` go into `include/nlohmann`; `imgui_stdlib.h` is also at Dear ImGui's own path (`include/misc/cpp/imgui_stdlib.h`).
+- *TearDown*: no final screenshot when no frame was rendered (an app stopped right after its setup).
+- *The log window*: its level buttons read on every theme.
+- *The GLFW fallback download*: 3.5.1, instead of 3.3.8.
 
 # v1.92.901
 

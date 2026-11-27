@@ -335,9 +335,9 @@ namespace HelloImGui
 
     void RunnerSdl2::Impl_NewFrame_PlatformBackend()
     {
-#ifdef HELLOIMGUI_IOS
-        // The on-screen keyboard: SDL shows it while its text input is started. Dear ImGui's SDL2 backend starts it
-        // on Android only (its IME handler); iOS needs the same, when a widget wants text.
+#if defined(HELLOIMGUI_IOS) && IMGUI_VERSION_NUM < 19310
+        // The on-screen keyboard: SDL shows it while its text input is started. Before Dear ImGui 1.93.1, its SDL2
+        // backend starts it on Android only (its IME handler); iOS needs the same, when a widget wants text.
         static bool textInputStarted = false;
         bool wantTextInput = ImGui::GetIO().WantTextInput;
         if (wantTextInput != textInputStarted)

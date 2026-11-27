@@ -44,6 +44,8 @@
 
 **Borderless windows, slow drags:** the resize handle, and the move zone with viewports, follow a slow drag. They moved only in the frames where the mouse moved more than Dear ImGui's drag threshold (6 px).
 
+**A monitor with another scale (Windows, opt-in):** with `appWindowParams.windowGeometry.followMonitorScale = true` (GLFW), the window keeps its size relative to its content when it moves to a monitor with another scale: Windows resizes it, and the fonts and the style follow. The content is redrawn once during a drag, when the window reaches the other monitor. The saved geometry reopens at the same size and place. Off by default: the window keeps its size in pixels, as before ([imgui_bundle#516](https://github.com/pthom/imgui_bundle/issues/516)).
+
 **Command line on Windows:** `main()` gets the application's arguments in an app made with `hello_imgui_add_app`. The `WinMain` it adds called `main(0, NULL)`.
 
 **plutosvg / plutovg:**

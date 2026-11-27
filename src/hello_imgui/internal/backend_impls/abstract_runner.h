@@ -98,6 +98,8 @@ private:
     void PrepareWindowGeometry();
     void AdjustWindowBoundsAfterCreation_IfDpiChangedBetweenRuns();
     void HandleDpiOnSecondFrame();
+    bool IsFollowMonitorScaleActive();
+    void FollowMonitorScaleChange_IfRequired();
     void MakeWindowSizeRelativeTo96Ppi_IfRequired();
     bool ShallSizeWindowRelativeTo96Ppi();
     bool WantAutoSize();

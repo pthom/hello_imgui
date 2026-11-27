@@ -132,6 +132,11 @@ namespace HelloImGui { namespace BackendApi
         // (and if set to true, the rendering is too big)
         glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_FALSE);
 #endif
+#ifdef _WIN32
+        // followMonitorScale: Windows sizes the window for its monitor's scale, at creation and on a change of monitor
+        if (appWindowParams.windowGeometry.followMonitorScale)
+            glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+#endif
 
 #ifdef __EMSCRIPTEN__
         // Make hi dpi aware (note that GLFW_SCALE_FRAMEBUFFER already defaults to GLFW_TRUE
@@ -185,6 +190,12 @@ namespace HelloImGui { namespace BackendApi
             glfwSetWindowPos(window, windowPosition[0], windowPosition[1]);
             // We need to set the size again, in case we changed monitor
             glfwSetWindowSize(window, windowSize[0], windowSize[1]);
+#ifdef _WIN32
+            // followMonitorScale: a move to a monitor with another scale makes Windows resize the window, and shift it
+            // (its title bar's height changes): set the position again, now on the right monitor
+            if (appWindowParams.windowGeometry.followMonitorScale)
+                glfwSetWindowPos(window, windowPosition[0], windowPosition[1]);
+#endif
         }
         else if ( (positionMode == WindowPositionMode::MonitorCenter) && (fullScreenMode==FullScreenMode::NoFullScreen))
         {

@@ -396,8 +396,43 @@ void AbstractRunner::SetupDpiAwareParams()
 }
 
 
+// followMonitorScale applies on Windows with GLFW only (GLFW_SCALE_TO_MONITOR lets Windows size the window for its
+// monitor's scale). With SDL, or elsewhere, the window keeps its size in pixels.
+bool AbstractRunner::IsFollowMonitorScaleActive()
+{
+#if defined(_WIN32) && defined(HELLOIMGUI_USE_GLFW3)
+    return params.appWindowParams.windowGeometry.followMonitorScale
+        && params.platformBackendType == PlatformBackendType::Glfw;
+#else
+    return false;
+#endif
+}
+
+// followMonitorScale (Windows, GLFW): after a change of monitor scale, the fonts and the style follow the new scale
+void AbstractRunner::FollowMonitorScaleChange_IfRequired()
+{
+    if (!IsFollowMonitorScaleActive())
+        return;
+    float oldFactor = params.dpiAwareParams.dpiWindowSizeFactor;
+    float newFactor = mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow);
+    bool isSane = newFactor > 0.f && oldFactor > 0.f;
+    if (!isSane || newFactor == oldFactor)
+        return;
+    params.dpiAwareParams.dpiWindowSizeFactor = newFactor;
+    ImGui::GetStyle().FontScaleDpi = newFactor;
+    // HandleDpiOnSecondFrame() scaled the style sizes by the factor when it was above 1: keep that rule
+    float oldStyleScale = oldFactor > 1.f ? oldFactor : 1.f;
+    float newStyleScale = newFactor > 1.f ? newFactor : 1.f;
+    if (newStyleScale != oldStyleScale)
+        ImGui::GetStyle().ScaleAllSizes(newStyleScale / oldStyleScale);
+    _LogDpiParams("FollowMonitorScaleChange_IfRequired", params.dpiAwareParams);
+}
+
+
 void AbstractRunner::MakeWindowSizeRelativeTo96Ppi_IfRequired()
 {
+    if (IsFollowMonitorScaleActive())
+        return; // Windows sized the window at its creation (GLFW_SCALE_TO_MONITOR)
     if (ShallSizeWindowRelativeTo96Ppi())
     {
         float scaleFactor = params.dpiAwareParams.dpiWindowSizeFactor;
@@ -978,8 +1013,19 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     // This reentrant call is used to be able to repaint during window resize.
     // It works on some combinations of OS / platform / rendering backends, but not all.
     // See https://github.com/pthom/hello_imgui/issues/112
-    if (insideReentrantCall && ! params.appWindowParams.repaintDuringResize_GotchaReentrantRepaint)
-        return;
+    if (insideReentrantCall)
+    {
+        // followMonitorScale (Windows, GLFW): during a drag, Windows resizes the window when it reaches a monitor with
+        // another scale. One frame is drawn then: otherwise the content stays at the old scale until the mouse is
+        // released. Not from inside a frame (the app moved its window from its GUI code): ImGui cannot nest frames.
+        bool isScaleChanging =
+            mBackendWindowHelper->GetWindowSizeDpiScaleFactor(mWindow) != params.dpiAwareParams.dpiWindowSizeFactor;
+        bool isInsideFrame = ImGui::GetCurrentContext()->WithinFrameScope;
+        bool repaintForScaleChange = IsFollowMonitorScaleActive() && isScaleChanging && !isInsideFrame;
+        bool repaintForAnyResize = params.appWindowParams.repaintDuringResize_GotchaReentrantRepaint;
+        if (!repaintForAnyResize && !repaintForScaleChange)
+            return;
+    }
 
     // ======================================================================================
     //                         Introduction - Lambdas definitions
@@ -1043,6 +1089,8 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
             // (and rescale ImGui style)
             HandleDpiOnSecondFrame();
         }
+        else if (mIdxFrame > 1)
+            FollowMonitorScaleChange_IfRequired();
 
         // iv/ At the beginning of the third frame (mIdxFrame==2 / mWasWindowAutoResizedOnPreviousFrame), we may apply the auto-size and recenter the window to the center of the monitor
         if (mWasWindowAutoResizedOnPreviousFrame)

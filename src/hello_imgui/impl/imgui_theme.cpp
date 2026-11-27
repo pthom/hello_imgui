@@ -5,6 +5,7 @@
 // Some themes were adapted by themes posted by ImGui users at https://github.com/ocornut/imgui/issues/707
 //
 #include "hello_imgui/imgui_theme.h"
+#include "hello_imgui/internal/runner_callbacks_internal.h"
 #include "hello_imgui/runner_params.h"
 #include <string>
 #include <stack>
@@ -1263,9 +1264,8 @@ namespace ImGuiTheme
     {
         if (!HelloImGui::IsUsingHelloImGui())
             return;
-        auto& themeChanged = HelloImGui::GetRunnerParams()->callbacks.ThemeChanged;
-        if (themeChanged)
-            themeChanged();
+        auto& callbacks = HelloImGui::GetRunnerParams()->callbacks;
+        HelloImGui::RunnerCallbacksInternal_::CallSlot(callbacks, HelloImGui::CallbackSlot::ThemeChanged, callbacks.ThemeChanged);
     }
 
     void ApplyTheme(ImGuiTheme_ theme)

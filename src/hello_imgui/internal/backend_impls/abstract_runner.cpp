@@ -5,6 +5,7 @@
 #include "imgui_kit/imgui_kit.h"  // ImGuiKit::SetupWheelSession
 #include "hello_imgui/internal/refresh_request.h"
 #include "hello_imgui/internal/clock_seconds.h"
+#include "hello_imgui/internal/runner_callbacks_internal.h"
 #include "hello_imgui/internal/docking_details.h"
 #include "hello_imgui/internal/idle_frame_wait_for_python_async_io.h"
 #include "hello_imgui/internal/idling.h"
@@ -767,8 +768,7 @@ void AbstractRunner::Setup()
     // because, in the case of glfw ImGui_ImplGlfw_InstallCallbacks
     // will chain the user callbacks with ImGui callbacks;
 	// and PostInit() is a good place for the user to install callbacks
-    if (params.callbacks.PostInit_AddPlatformBackendCallbacks)
-        params.callbacks.PostInit_AddPlatformBackendCallbacks();
+    RunnerCallbacksInternal_::CallSlot(params.callbacks, CallbackSlot::PostInit_AddPlatformBackendCallbacks, params.callbacks.PostInit_AddPlatformBackendCallbacks);
 
     Impl_LinkPlatformAndRenderBackends();
 
@@ -800,10 +800,9 @@ void AbstractRunner::Setup()
                 ImGui::GetIO().ConfigMacOSXBehaviors = true;
         #endif
 
-        if (params.callbacks.PostInit)
-            params.callbacks.PostInit();
+        RunnerCallbacksInternal_::CallSlot(params.callbacks, CallbackSlot::PostInit, params.callbacks.PostInit);
 
-        params.callbacks.SetupImGuiConfig();
+        RunnerCallbacksInternal_::CallSlot(params.callbacks, CallbackSlot::SetupImGuiConfig, params.callbacks.SetupImGuiConfig);
 
         #ifdef HELLOIMGUI_WITH_TEST_ENGINE
             if (params.useImGuiTestEngine)
@@ -834,13 +833,14 @@ void AbstractRunner::Setup()
             style.Colors[ImGuiCol_TitleBgActive].w = 1.f;
             style.Colors[ImGuiCol_TitleBgCollapsed].w = 1.f;
         }
-        params.callbacks.SetupImGuiStyle();
+        RunnerCallbacksInternal_::CallSlot(params.callbacks, CallbackSlot::SetupImGuiStyle, params.callbacks.SetupImGuiStyle);
 
         // Create a remote display handler if needed
         mRemoteDisplayHandler.Create();
         mRemoteDisplayHandler.SendFonts();
 
         mIdxFrame = 0;
+        RunnerCallbacksInternal_::SetFrameIndex(0);
     }
     catch (...)
     {
@@ -932,8 +932,7 @@ void AbstractRunner::RenderGui()
 
     ShowThemeTweakGuiWindow_Static();
 
-    if (params.callbacks.PostRenderDockableWindows)
-        params.callbacks.PostRenderDockableWindows();
+    RunnerCallbacksInternal_::CallSlot(params.callbacks, CallbackSlot::PostRenderDockableWindows, params.callbacks.PostRenderDockableWindows);
 
     DockingDetails::CloseWindowOrDock(params.imGuiWindowParams);
 }
@@ -1013,9 +1012,11 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         // This block calls a user callback, so it cannot be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
         if (mIdxFrame >= 1)
         {
-            if (params.useImGuiTestEngine && params.callbacks.RegisterTests && (!params.callbacks.registerTestsCalled))
+            bool hasRegisterTests = RunnerCallbacksInternal_::HasCallbacks(
+                params.callbacks, CallbackSlot::RegisterTests, params.callbacks.RegisterTests);
+            if (params.useImGuiTestEngine && hasRegisterTests && (!params.callbacks.registerTestsCalled))
             {
-                params.callbacks.RegisterTests();
+                RunnerCallbacksInternal_::CallSlot(params.callbacks, CallbackSlot::RegisterTests, params.callbacks.RegisterTests);
                 params.callbacks.registerTestsCalled = true;
             }
         }
@@ -1141,7 +1142,10 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         bool mouseDown = ImGui::GetCurrentContext() != nullptr && ImGui::IsAnyMouseDown();
         // Content that changes on its own asked for this frame (RequestRefresh(), SetItemIsLive()): read at each frame
         // (the inertia, a switch that slides)
-        bool refreshRequested = ConsumeRefreshRequest() || ImGuiTouch::IsAnimating() || ImGuiKit::IsAnimating();
+        // A CallSoon waits for its frame: the frames come at full speed until it runs
+        bool refreshRequested = ConsumeRefreshRequest() || ImGuiTouch::IsAnimating() || ImGuiKit::IsAnimating() ||
+                                RunnerCallbacksInternal_::HasCallSoonWaiting(params.callbacks);
+        inputs.nextCallTime = RunnerCallbacksInternal_::NextCallLaterTime(params.callbacks);
         inputs.busy = isTestEngineRunning || ShouldRemoteDisplay() || startedRecently || mouseDown || refreshRequested;
 
         IdlingDecision decision = DecideIdling(params.fpsIdling, inputs, gStatics.idling);
@@ -1412,8 +1416,8 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     if (!insideReentrantCall && mIdxFrame > 3)
         AddDockableWindowHelper::Callback_2_PreNewFrame();
 
-    if ((params.callbacks.PreNewFrame) && !insideReentrantCall)
-        params.callbacks.PreNewFrame();
+    if (!insideReentrantCall)
+        RunnerCallbacksInternal_::CallSlot(params.callbacks, CallbackSlot::PreNewFrame, params.callbacks.PreNewFrame);
 
     {
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
@@ -1436,8 +1440,8 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     }
     ImGui::NewFrame();
 
-    if ((params.callbacks.PostNewFrame) && !insideReentrantCall)
-        params.callbacks.PostNewFrame();
+    if (!insideReentrantCall)
+        RunnerCallbacksInternal_::CallSlot(params.callbacks, CallbackSlot::PostNewFrame, params.callbacks.PostNewFrame);
 
     {
         fnCheckOpenGlErrorOnFirstFrame_WarnPotentialFontError(); // not in a SCOPED_RELEASE_GIL_ON_MAIN_THREAD, because it is very fast and rare
@@ -1455,8 +1459,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     // RenderGui may call many user callbacks, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
     fnRenderGui_UserCallback();
 
-    if (params.callbacks.BeforeImGuiRender)
-        params.callbacks.BeforeImGuiRender();
+    RunnerCallbacksInternal_::CallSlot(params.callbacks, CallbackSlot::BeforeImGuiRender, params.callbacks.BeforeImGuiRender);
 
     {
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
@@ -1464,8 +1467,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     }
 
     // BeforeSwap is a user callback, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
-    if (params.callbacks.BeforeSwap)
-        params.callbacks.BeforeSwap();
+    RunnerCallbacksInternal_::CallSlot(params.callbacks, CallbackSlot::BeforeSwap, params.callbacks.BeforeSwap);
 
     {
         SCOPED_RELEASE_GIL_ON_MAIN_THREAD;
@@ -1473,8 +1475,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
     }
 
     // AfterSwap is a user callback, so it should not be inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
-    if (params.callbacks.AfterSwap)
-        params.callbacks.AfterSwap();
+    RunnerCallbacksInternal_::CallSlot(params.callbacks, CallbackSlot::AfterSwap, params.callbacks.AfterSwap);
 
     // TestEngineCallbacks::PostSwap() handles the GIL in its own way,
     // it can not be called inside SCOPED_RELEASE_GIL_ON_MAIN_THREAD
@@ -1484,6 +1485,7 @@ void AbstractRunner::CreateFramesAndRender(bool insideReentrantCall)
         params.appShallExit = false;
 
     mIdxFrame += 1;
+    RunnerCallbacksInternal_::SetFrameIndex(mIdxFrame);
 }
 
 void AbstractRunner::OnPause()
@@ -1543,8 +1545,8 @@ void AbstractRunner::TearDown(bool gotException)
 
     HelloImGui::internal::Free_ImageFromAssetMap();
 
-    if (!gotException && params.callbacks.BeforeExit)
-            params.callbacks.BeforeExit();
+    if (!gotException)
+        RunnerCallbacksInternal_::CallSlot(params.callbacks, CallbackSlot::BeforeExit, params.callbacks.BeforeExit);
 
     #ifdef HELLOIMGUI_WITH_TEST_ENGINE
         if (params.useImGuiTestEngine)
@@ -1556,8 +1558,9 @@ void AbstractRunner::TearDown(bool gotException)
     Impl_Cleanup();
 
 
-    if (!gotException && params.callbacks.BeforeExit_PostCleanup)
-        params.callbacks.BeforeExit_PostCleanup();
+    if (!gotException)
+        RunnerCallbacksInternal_::CallSlot(params.callbacks, CallbackSlot::BeforeExit_PostCleanup, params.callbacks.BeforeExit_PostCleanup);
+    RunnerCallbacksInternal_::SetFrameIndex(-1);
     #ifdef HELLOIMGUI_WITH_TEST_ENGINE
         if (params.useImGuiTestEngine)
             TestEngineCallbacks::TearDown_ImGuiContextDestroyed();

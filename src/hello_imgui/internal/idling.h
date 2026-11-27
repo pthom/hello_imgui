@@ -12,6 +12,7 @@ namespace HelloImGui
         double timeLastEvent = -1.; // s: an event keeps the app awake for FpsIdling::timeActiveAfterLastEvent
         bool busy = false;          // the first frames, a test, a remote display, a button held, a refresh requested
         bool earlyReturn = false;   // the frames are skipped (a browser, a notebook), instead of waited for
+        double nextCallTime = -1.;  // s: a callback is due then (RunnerCallbacks::CallLater): the wait ends there
     };
 
     // The idling's memory, from one frame to the next

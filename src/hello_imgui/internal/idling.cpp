@@ -26,12 +26,15 @@ IdlingDecision DecideIdling(const FpsIdling& fpsIdling, const IdlingInputs& inpu
     {
         double idlePeriod = 1. / (double)fpsIdling.fpsIdle;
         double idleWait = idlePeriod - sinceLastFrame;
+        if (inputs.nextCallTime >= 0.)  // a CallLater is due: the wait ends then
+            idleWait = std::min(idleWait, inputs.nextCallTime - inputs.now);
         if (inputs.earlyReturn)
         {
             // The caller calls at the display's rate: a frame is drawn at the call nearest to the idle period, half a
             // call early at most. Otherwise the frame rate rounds down, or alternates: on a 60 Hz display, 30 would
             // give 20 or 30 at random, 27 would give 20.
-            if (sinceLastFrame < idlePeriod - callInterval * 0.5)
+            bool callDue = inputs.nextCallTime >= 0. && inputs.now >= inputs.nextCallTime;
+            if (!callDue && sinceLastFrame < idlePeriod - callInterval * 0.5)
             {
                 decision.skipFrame = true;
                 decision.asyncWaitSeconds = std::max(idleWait, 0.);

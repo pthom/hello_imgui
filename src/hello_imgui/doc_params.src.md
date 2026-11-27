@@ -43,6 +43,34 @@ See [runner_callbacks.h](https://github.com/pthom/hello_imgui/blob/master/src/he
 ## RunnerCallbacks
 ![[runner_callbacks.h#RunnerCallbacks]]
 
+## Add-on callbacks: AddCallback, CallSoon, CallLater
+
+Each slot of `RunnerCallbacks` (`PostInit`, `BeforeExit`...) holds the app's own function: a plain assignment replaces it. A library or an add-on adds its callbacks beside it with `AddCallback`, so that the app's assignments never drop them. `CallSoon` and `CallLater` call a function once, on a later frame or after a delay.
+
+![[runner_callbacks.h#CallbackSlot]]
+
+The order: the added callbacks run before the app's function in the setup slots and in `PreNewFrame` (the app may use what they set up), after it elsewhere, and in reverse order of addition in the exit slots (the app releases what depends on them first). `CallbackOrder::Before` or `After` asks for the other side.
+
+C++:
+```cpp
+// An add-on: its setup and its teardown, beside the app's
+runnerParams.callbacks.AddCallback(HelloImGui::CallbackSlot::PostInit, MyAddon_Init, "my_addon");
+runnerParams.callbacks.AddCallback(HelloImGui::CallbackSlot::BeforeExit, MyAddon_Release, "my_addon");
+runnerParams.callbacks.RemoveCallbacks("my_addon");  // after the run, if the params run again without it
+
+// Once, on the next frame (before the GUI), or after a delay
+HelloImGui::GetRunnerParams()->callbacks.CallSoon([] { gShowHelp = true; });
+HelloImGui::GetRunnerParams()->callbacks.CallLater([] { gStatus = ""; }, 3.0);
+```
+
+Python:
+```python
+cb = runner_params.callbacks
+cb.add_callback(hello_imgui.CallbackSlot.post_init, my_addon_init, owner="my_addon")
+hello_imgui.get_runner_params().callbacks.call_soon(lambda: print("next frame"))
+hello_imgui.get_runner_params().callbacks.call_later(lambda: print("3 s later"), 3.0)
+```
+
 
 ## Edge Toolbars Callbacks
 More details on `RunnerParams.edgesToolbars` (a dictionary of `EdgeToolbar`, per edge type)
